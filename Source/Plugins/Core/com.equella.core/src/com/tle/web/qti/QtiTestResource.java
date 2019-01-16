@@ -29,19 +29,16 @@ import com.tle.web.viewurl.attachments.AttachmentResourceExtension;
 @Bind
 @Singleton
 public class QtiTestResource
-	implements
-		AttachmentResourceExtension<CustomAttachment>,
-		RegisterMimeTypeExtension<CustomAttachment>
-{
-	@Override
-	public ViewableResource process(SectionInfo info, ViewableResource resource, CustomAttachment attachment)
-	{
-		return new QtiTestViewableResource(resource, attachment);
-	}
+    implements AttachmentResourceExtension<CustomAttachment>,
+        RegisterMimeTypeExtension<CustomAttachment> {
+  @Override
+  public ViewableResource process(
+      SectionInfo info, ViewableResource resource, CustomAttachment attachment) {
+    return new QtiTestViewableResource(resource, attachment);
+  }
 
-	@Override
-	public String getMimeType(CustomAttachment attachment)
-	{
-		return QtiConstants.TEST_MIME_TYPE;
-	}
+  @Override
+  public String getMimeType(CustomAttachment attachment) {
+    return QtiConstants.TEST_MIME_TYPE;
+  }
 }

@@ -25,13 +25,12 @@ import com.tle.web.sections.result.util.IconLabel.Icon;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface PlugKey
-{
-	String value();
+public @interface PlugKey {
+  String value();
 
-	boolean html() default true;
+  boolean html() default true;
 
-	boolean global() default false;
+  boolean global() default false;
 
-	Icon icon() default Icon.NONE;
+  Icon icon() default Icon.NONE;
 }

@@ -26,22 +26,17 @@ import com.tle.web.remoterepo.RemoteRepoListEntry;
 import com.tle.web.remoterepo.RemoteRepoListEntryFactory;
 import com.tle.web.sections.SectionInfo;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class SrwListEntryFactory implements RemoteRepoListEntryFactory<SrwSearchResult>
-{
-	@Inject
-	private Provider<SrwListEntry> entryProvider;
+public class SrwListEntryFactory implements RemoteRepoListEntryFactory<SrwSearchResult> {
+  @Inject private Provider<SrwListEntry> entryProvider;
 
-	@Override
-	public RemoteRepoListEntry<SrwSearchResult> createListEntry(SectionInfo info, SrwSearchResult result)
-	{
-		SrwListEntry entry = entryProvider.get();
-		entry.setResult(result);
-		return entry;
-	}
-
+  @Override
+  public RemoteRepoListEntry<SrwSearchResult> createListEntry(
+      SectionInfo info, SrwSearchResult result) {
+    SrwListEntry entry = entryProvider.get();
+    entry.setResult(result);
+    return entry;
+  }
 }

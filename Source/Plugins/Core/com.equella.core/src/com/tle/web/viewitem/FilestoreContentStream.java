@@ -20,13 +20,12 @@ import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.ItemKey;
 import com.tle.web.stream.ContentStream;
 
-public interface FilestoreContentStream extends ContentStream
-{
-	ItemKey getItemId();
+public interface FilestoreContentStream extends ContentStream {
+  ItemKey getItemId();
 
-	FileHandle getFileHandle();
+  FileHandle getFileHandle();
 
-	String getFileDirectoryPath();
+  String getFileDirectoryPath();
 
-	String getFilepath();
+  String getFilepath();
 }

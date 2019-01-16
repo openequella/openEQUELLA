@@ -27,28 +27,21 @@ import com.tle.web.sections.generic.CachedData.CacheFiller;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class SelectionAllowedMimeTypes implements CacheFiller<Collection<String>>
-{
-	@Inject
-	private SelectionService selectionService;
+public class SelectionAllowedMimeTypes implements CacheFiller<Collection<String>> {
+  @Inject private SelectionService selectionService;
 
-	@Override
-	public Collection<String> get(SectionInfo info)
-	{
-		SelectionSession session = selectionService.getCurrentSession(info);
-		if( session != null )
-		{
-			SelectionFilter mimeFilter = (SelectionFilter) session.getAttribute(SelectionFilter.class);
-			if( mimeFilter != null )
-			{
-				return mimeFilter.getAllowedMimeTypes();
-			}
-		}
-		return null;
-	}
+  @Override
+  public Collection<String> get(SectionInfo info) {
+    SelectionSession session = selectionService.getCurrentSession(info);
+    if (session != null) {
+      SelectionFilter mimeFilter = (SelectionFilter) session.getAttribute(SelectionFilter.class);
+      if (mimeFilter != null) {
+        return mimeFilter.getAllowedMimeTypes();
+      }
+    }
+    return null;
+  }
 }

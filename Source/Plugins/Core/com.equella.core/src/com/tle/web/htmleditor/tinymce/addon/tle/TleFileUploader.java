@@ -39,71 +39,68 @@ import com.tle.web.selection.SelectableInterface;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.SelectionsMadeCallback;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class TleFileUploader extends AbstractSelectionAddon
-{
-	@PlugKey("uploader.button.name")
-	private static Label LABEL_BUTTON;
-	static
-	{
-		PluginResourceHandler.init(TleFileUploader.class);
-	}
+public class TleFileUploader extends AbstractSelectionAddon {
+  @PlugKey("uploader.button.name")
+  private static Label LABEL_BUTTON;
 
-	private static final PluginResourceHelper resources = ResourcesService.getResourceHelper(TleFileUploader.class);
-	private static final List<HtmlEditorButtonDefinition> BUTTONS = Collections
-		.unmodifiableList(Lists.newArrayList(new HtmlEditorButtonDefinition("tle_fileuploader",
-			TleTinyMceAddonConstants.FILE_UPLOADER_ID, new TinyMceAddonButtonRenderer(resources
-				.url("scripts/tle_fileuploader/images/paperclip.gif"), LABEL_BUTTON), LABEL_BUTTON, 2, true)));
+  static {
+    PluginResourceHandler.init(TleFileUploader.class);
+  }
 
-	@Inject
-	private FileUploadSelectable selectable;
+  private static final PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(TleFileUploader.class);
+  private static final List<HtmlEditorButtonDefinition> BUTTONS =
+      Collections.unmodifiableList(
+          Lists.newArrayList(
+              new HtmlEditorButtonDefinition(
+                  "tle_fileuploader",
+                  TleTinyMceAddonConstants.FILE_UPLOADER_ID,
+                  new TinyMceAddonButtonRenderer(
+                      resources.url("scripts/tle_fileuploader/images/paperclip.gif"), LABEL_BUTTON),
+                  LABEL_BUTTON,
+                  2,
+                  true)));
 
-	@Override
-	protected boolean isAddToRecentSelections()
-	{
-		return false;
-	}
+  @Inject private FileUploadSelectable selectable;
 
-	@Override
-	protected Class<? extends SelectionsMadeCallback> getCallbackClass()
-	{
-		return ResourceLinkerCallback.class;
-	}
+  @Override
+  protected boolean isAddToRecentSelections() {
+    return false;
+  }
 
-	@Override
-	protected PluginResourceHelper getResourceHelper()
-	{
-		return resources;
-	}
+  @Override
+  protected Class<? extends SelectionsMadeCallback> getCallbackClass() {
+    return ResourceLinkerCallback.class;
+  }
 
-	@Override
-	protected SelectableInterface getSelectable(SectionInfo info, SelectionSession session)
-	{
-		session.setCancelDisabled(true);
-		session.setAllowedSelectNavActions(Sets.<String> newHashSet());
-		return selectable;
-	}
+  @Override
+  protected PluginResourceHelper getResourceHelper() {
+    return resources;
+  }
 
-	@Override
-	public boolean applies(String action)
-	{
-		return action.equals("select_upload");
-	}
+  @Override
+  protected SelectableInterface getSelectable(SectionInfo info, SelectionSession session) {
+    session.setCancelDisabled(true);
+    session.setAllowedSelectNavActions(Sets.<String>newHashSet());
+    return selectable;
+  }
 
-	@Override
-	public String getId()
-	{
-		return TleTinyMceAddonConstants.FILE_UPLOADER_ID;
-	}
+  @Override
+  public boolean applies(String action) {
+    return action.equals("select_upload");
+  }
 
-	@Override
-	public List<HtmlEditorButtonDefinition> getButtons(SectionInfo info)
-	{
-		return BUTTONS;
-	}
+  @Override
+  public String getId() {
+    return TleTinyMceAddonConstants.FILE_UPLOADER_ID;
+  }
+
+  @Override
+  public List<HtmlEditorButtonDefinition> getButtons(SectionInfo info) {
+    return BUTTONS;
+  }
 }

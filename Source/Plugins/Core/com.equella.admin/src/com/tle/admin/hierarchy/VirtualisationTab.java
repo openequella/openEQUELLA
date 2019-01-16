@@ -28,48 +28,44 @@ import com.tle.common.hierarchy.SearchSetAdapter;
 import com.tle.core.plugins.PluginService;
 
 @SuppressWarnings("nls")
-public class VirtualisationTab extends AbstractTopicEditorTab
-{
-	private final PluginService pluginService;
-	private final ClientService clientService;
+public class VirtualisationTab extends AbstractTopicEditorTab {
+  private final PluginService pluginService;
+  private final ClientService clientService;
 
-	private VirtualisationEditor editor;
+  private VirtualisationEditor editor;
 
-	public VirtualisationTab(PluginService pluginService, ClientService clientService)
-	{
-		this.pluginService = pluginService;
-		this.clientService = clientService;
-	}
+  public VirtualisationTab(PluginService pluginService, ClientService clientService) {
+    this.pluginService = pluginService;
+    this.clientService = clientService;
+  }
 
-	@Override
-	public void setup(ChangeDetector changeDetector)
-	{
-		editor = new VirtualisationEditor(pluginService, clientService,
-			getKey("virtual.entityname"), getKey("virtual.renameHelp"));
+  @Override
+  public void setup(ChangeDetector changeDetector) {
+    editor =
+        new VirtualisationEditor(
+            pluginService,
+            clientService,
+            getKey("virtual.entityname"),
+            getKey("virtual.renameHelp"));
 
-		setLayout(new GridLayout(1, 1));
-		add(editor);
+    setLayout(new GridLayout(1, 1));
+    add(editor);
 
-		changeDetector.watch(editor);
-	}
+    changeDetector.watch(editor);
+  }
 
-	@Override
-	public void load(HierarchyPack pack)
-	{
-		editor.load(new SearchSetAdapter(pack.getTopic()));
-	}
+  @Override
+  public void load(HierarchyPack pack) {
+    editor.load(new SearchSetAdapter(pack.getTopic()));
+  }
 
-	@Override
-	public void save(HierarchyPack pack)
-	{
-		editor.save(new SearchSetAdapter(pack.getTopic()));
-	}
+  @Override
+  public void save(HierarchyPack pack) {
+    editor.save(new SearchSetAdapter(pack.getTopic()));
+  }
 
-	@Override
-	public void validation() throws EditorException
-	{
-		editor.validation();
-
-	}
-
+  @Override
+  public void validation() throws EditorException {
+    editor.validation();
+  }
 }

@@ -32,104 +32,89 @@ import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.usermanagement.util.TokenSecurity.Token;
 
 @Bind
-public class AppletSharedSecretWrapper extends AbstractSharedSecretWrapper<AppletSharedSecretValue>
-{
-	private static final Logger LOGGER = Logger.getLogger(AppletSharedSecretWrapper.class);
+public class AppletSharedSecretWrapper
+    extends AbstractSharedSecretWrapper<AppletSharedSecretValue> {
+  private static final Logger LOGGER = Logger.getLogger(AppletSharedSecretWrapper.class);
 
-	@Override
-	protected boolean initialise(UserManagementSettings settings)
-	{
-		// Applet tokens don't make sense unless we're in an institution, so
-		// just don't bother initialising anything.
-		if( CurrentInstitution.get() == null )
-		{
-			return false;
-		}
+  @Override
+  protected boolean initialise(UserManagementSettings settings) {
+    // Applet tokens don't make sense unless we're in an institution, so
+    // just don't bother initialising anything.
+    if (CurrentInstitution.get() == null) {
+      return false;
+    }
 
-		super.initialise(settings);
+    super.initialise(settings);
 
-		// Ssettings may not have a list of secrets yet if this is the first
-		// time this method has been called on a fresh institution.
+    // Ssettings may not have a list of secrets yet if this is the first
+    // time this method has been called on a fresh institution.
 
-		if( !secrets.isEmpty() )
-		{
-			return false;
-		}
+    if (!secrets.isEmpty()) {
+      return false;
+    }
 
-		AppletSharedSecretValue value = new AppletSharedSecretValue();
-		value.setSecret(UUID.randomUUID().toString());
+    AppletSharedSecretValue value = new AppletSharedSecretValue();
+    value.setSecret(UUID.randomUUID().toString());
 
-		List<AppletSharedSecretValue> values = new ArrayList<AppletSharedSecretValue>();
-		values.add(value);
+    List<AppletSharedSecretValue> values = new ArrayList<AppletSharedSecretValue>();
+    values.add(value);
 
-		AppletSharedSecretSettings asss = (AppletSharedSecretSettings) settings;
-		asss.setSharedSecrets(values);
+    AppletSharedSecretSettings asss = (AppletSharedSecretSettings) settings;
+    asss.setSharedSecrets(values);
 
-		// Chuck the secret in our own map for now to make things work.
-		secrets.put(Constants.APPLET_SECRET_ID, value);
+    // Chuck the secret in our own map for now to make things work.
+    secrets.put(Constants.APPLET_SECRET_ID, value);
 
-		return true;
-	}
+    return true;
+  }
 
-	@Override
-	public String getGeneratedToken(String secretId, String username)
-	{
-		AppletSharedSecretValue secret = secrets.get(secretId);
-		if( secret == null )
-		{
-			return null;
-		}
+  @Override
+  public String getGeneratedToken(String secretId, String username) {
+    AppletSharedSecretValue secret = secrets.get(secretId);
+    if (secret == null) {
+      return null;
+    }
 
-		try
-		{
-			return TokenGenerator.createSecureToken(username, secretId, secret.getSecret(), username);
-		}
-		catch( Exception e )
-		{
-			LOGGER.error("Error generating applet token.");
-			throw new RuntimeException(e);
-		}
-	}
+    try {
+      return TokenGenerator.createSecureToken(username, secretId, secret.getSecret(), username);
+    } catch (Exception e) {
+      LOGGER.error("Error generating applet token.");
+      throw new RuntimeException(e);
+    }
+  }
 
-	@Override
-	protected boolean isAcceptableToken(Token token)
-	{
-		if( token != null && token.getId().equals(Constants.APPLET_SECRET_ID) )
-		{
-			return super.isAcceptableToken(token);
-		}
-		return false;
-	}
+  @Override
+  protected boolean isAcceptableToken(Token token) {
+    if (token != null && token.getId().equals(Constants.APPLET_SECRET_ID)) {
+      return super.isAcceptableToken(token);
+    }
+    return false;
+  }
 
-	@Override
-	protected String getUsername(AppletSharedSecretValue value, Token token)
-	{
-		return token.getInsecure();
-	}
+  @Override
+  protected String getUsername(AppletSharedSecretValue value, Token token) {
+    return token.getInsecure();
+  }
 
-	@Override
-	protected boolean isAutoCreate(AppletSharedSecretValue value)
-	{
-		return false;
-	}
+  @Override
+  protected boolean isAutoCreate(AppletSharedSecretValue value) {
+    return false;
+  }
 
-	@Override
-	public List<String> getTokenSecretIds()
-	{
-		// We do not want to list the Applet shared secret ID, as it is
-		// internal.
-		return null;
-	}
+  @Override
+  public List<String> getTokenSecretIds() {
+    // We do not want to list the Applet shared secret ID, as it is
+    // internal.
+    return null;
+  }
 
-	@Override
-	protected boolean isIgnoreNonExistantUser(AppletSharedSecretValue value)
-	{
-		return false;
-	}
+  @Override
+  protected boolean isIgnoreNonExistantUser(AppletSharedSecretValue value) {
+    return false;
+  }
 
-	@Override
-	public boolean isAuditable()
-	{
-		return false;
-	}
+  @Override
+  public boolean isAuditable() {
+    return false;
+  }
 }

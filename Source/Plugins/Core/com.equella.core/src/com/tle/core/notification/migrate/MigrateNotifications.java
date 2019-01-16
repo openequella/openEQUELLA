@@ -47,106 +47,100 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 
 @Bind
 @SuppressWarnings("nls")
-public class MigrateNotifications extends AbstractHibernateSchemaMigration
-{
-	private static final String KEY_PREFIX = PluginServiceImpl.getMyPluginId(MigrateNotifications.class) + ".";
+public class MigrateNotifications extends AbstractHibernateSchemaMigration {
+  private static final String KEY_PREFIX =
+      PluginServiceImpl.getMyPluginId(MigrateNotifications.class) + ".";
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return count(session, "from ItemUsersNotified");
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return count(session, "from ItemUsersNotified");
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-	{
-		Date convertDate = new Date();
-		Query query = session.createSQLQuery("SELECT i.uuid, i.version, i.institution_id,"
-			+ " un.element FROM item_users_notified un INNER JOIN item i ON i.id = un.item_id");
-		ScrollableResults results = query.scroll();
-		while( results.next() )
-		{
-			Object[] oldnote = results.get();
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) {
+    Date convertDate = new Date();
+    Query query =
+        session.createSQLQuery(
+            "SELECT i.uuid, i.version, i.institution_id,"
+                + " un.element FROM item_users_notified un INNER JOIN item i ON i.id = un.item_id");
+    ScrollableResults results = query.scroll();
+    while (results.next()) {
+      Object[] oldnote = results.get();
 
-			ItemId itemId = new ItemId((String) oldnote[0], ((Number) oldnote[1]).intValue());
+      ItemId itemId = new ItemId((String) oldnote[0], ((Number) oldnote[1]).intValue());
 
-			Institution inst = new Institution();
-			inst.setDatabaseId(((Number) oldnote[2]).longValue());
+      Institution inst = new Institution();
+      inst.setDatabaseId(((Number) oldnote[2]).longValue());
 
-			FakeNotification notification = new FakeNotification();
-			notification.reason = FakeNotification.REASON_WENTLIVE;
-			notification.date = convertDate;
-			notification.itemid = itemId.toString();
-			notification.institution = inst;
-			notification.userTo = (String) oldnote[3];
+      FakeNotification notification = new FakeNotification();
+      notification.reason = FakeNotification.REASON_WENTLIVE;
+      notification.date = convertDate;
+      notification.itemid = itemId.toString();
+      notification.institution = inst;
+      notification.userTo = (String) oldnote[3];
 
-			session.save(notification);
-			session.flush();
-			session.clear();
-		}
-	}
+      session.save(notification);
+      session.flush();
+      session.clear();
+    }
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		return helper.getCreationSql(new TablesOnlyFilter("notification"));
-	}
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    return helper.getCreationSql(new TablesOnlyFilter("notification"));
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{FakeNotification.class, Institution.class, FakeItemUsersNotified.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {FakeNotification.class, Institution.class, FakeItemUsersNotified.class};
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		return helper.getDropTableSql("item_users_notified");
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    return helper.getDropTableSql("item_users_notified");
+  }
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(KEY_PREFIX + "migratenotifications.title");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(KEY_PREFIX + "migratenotifications.title");
+  }
 
-	@Entity(name = "ItemUsersNotified")
-	public static class FakeItemUsersNotified
-	{
-		@Id
-		long id;
-	}
+  @Entity(name = "ItemUsersNotified")
+  public static class FakeItemUsersNotified {
+    @Id long id;
+  }
 
-	@Entity(name = "Notification")
-	@AccessType("field")
-	public static class FakeNotification
-	{
-		public static final String REASON_WENTLIVE = "wentlive";
+  @Entity(name = "Notification")
+  @AccessType("field")
+  public static class FakeNotification {
+    public static final String REASON_WENTLIVE = "wentlive";
 
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    long id;
 
-		@ManyToOne(fetch = FetchType.LAZY)
-		@JoinColumn(nullable = false)
-		@Index(name = "inst_idx")
-		@XStreamOmitField
-		Institution institution;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    @Index(name = "inst_idx")
+    @XStreamOmitField
+    Institution institution;
 
-		@Column(length = 255, nullable = true)
-		@Index(name = "itemid_idx")
-		String itemid;
-		@Column(length = 8, nullable = false)
-		String reason;
+    @Column(length = 255, nullable = true)
+    @Index(name = "itemid_idx")
+    String itemid;
 
-		@Column(length = 255, nullable = false)
-		@Index(name = "userto_idx")
-		String userTo;
-		@Column(nullable = false)
-		Date date;
+    @Column(length = 8, nullable = false)
+    String reason;
 
-		@Column(length = 255)
-		String userFrom;
-	}
+    @Column(length = 255, nullable = false)
+    @Index(name = "userto_idx")
+    String userTo;
 
+    @Column(nullable = false)
+    Date date;
+
+    @Column(length = 255)
+    String userFrom;
+  }
 }

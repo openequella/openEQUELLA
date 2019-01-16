@@ -25,19 +25,15 @@ import com.tle.web.sections.registry.handler.CachedScannerHandler;
 
 @Bind
 @Singleton
-public class ResourceHelperHandler extends CachedScannerHandler<AnnotatedResourceHelperScanner>
-{
+public class ResourceHelperHandler extends CachedScannerHandler<AnnotatedResourceHelperScanner> {
 
-	@Override
-	protected AnnotatedResourceHelperScanner newEntry(Class<?> clazz)
-	{
-		return new AnnotatedResourceHelperScanner(clazz, this);
-	}
+  @Override
+  protected AnnotatedResourceHelperScanner newEntry(Class<?> clazz) {
+    return new AnnotatedResourceHelperScanner(clazz, this);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree, Section section)
-	{
-		getForClass(section.getClass()).setup(section);
-	}
-
+  @Override
+  public void registered(String id, SectionTree tree, Section section) {
+    getForClass(section.getClass()).setup(section);
+  }
 }

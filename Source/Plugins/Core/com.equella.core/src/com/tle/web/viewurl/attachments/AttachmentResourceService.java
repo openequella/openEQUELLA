@@ -29,31 +29,36 @@ import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.impl.AttachmentResourceServiceImpl.PathViewableResource;
 
 @NonNullByDefault
-public interface AttachmentResourceService
-{
-	ViewableResource getViewableResource(SectionInfo info, ViewableItem viewableItem, IAttachment attachment);
+public interface AttachmentResourceService {
+  ViewableResource getViewableResource(
+      SectionInfo info, ViewableItem viewableItem, IAttachment attachment);
 
-	/**
-	 * @param info
-	 * @param viewableItem
-	 * @param path
-	 * @param attachment May be null. Used to extract the associated viewer
-	 * @return
-	 */
-	PathViewableResource createPathResource(SectionInfo info, ViewableItem viewableItem, String path,
-		@Nullable IAttachment attachment);
+  /**
+   * @param info
+   * @param viewableItem
+   * @param path
+   * @param attachment May be null. Used to extract the associated viewer
+   * @return
+   */
+  PathViewableResource createPathResource(
+      SectionInfo info, ViewableItem viewableItem, String path, @Nullable IAttachment attachment);
 
-	/**
-	 * @param info
-	 * @param viewableItem
-	 * @param path
-	 * @param description
-	 * @param mimeType
-	 * @param attachment May be null. Used to extract the associated viewer
-	 * @return
-	 */
-	PathViewableResource createPathResource(SectionInfo info, ViewableItem viewableItem, String path,
-		String description, String mimeType, @Nullable IAttachment attachment);
+  /**
+   * @param info
+   * @param viewableItem
+   * @param path
+   * @param description
+   * @param mimeType
+   * @param attachment May be null. Used to extract the associated viewer
+   * @return
+   */
+  PathViewableResource createPathResource(
+      SectionInfo info,
+      ViewableItem viewableItem,
+      String path,
+      String description,
+      String mimeType,
+      @Nullable IAttachment attachment);
 
-	URI getPackageZipFileUrl(Item item, Attachment attachment);
+  URI getPackageZipFileUrl(Item item, Attachment attachment);
 }

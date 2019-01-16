@@ -37,50 +37,42 @@ import com.tle.core.guice.Bind;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class MsExcelExtracter extends AbstractTextExtracterExtension
-{
-	private static final Logger LOGGER = LoggerFactory.getLogger(MsExcelExtracter.class);
+public class MsExcelExtracter extends AbstractTextExtracterExtension {
+  private static final Logger LOGGER = LoggerFactory.getLogger(MsExcelExtracter.class);
 
-	@Override
-	public boolean isSupportedByDefault(MimeEntry mimeEntry)
-	{
-		return mimeEntry.getType().startsWith("application/vnd.ms-excel");
-	}
+  @Override
+  public boolean isSupportedByDefault(MimeEntry mimeEntry) {
+    return mimeEntry.getType().startsWith("application/vnd.ms-excel");
+  }
 
-	@Override
-	public void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration)
-		throws IOException
-	{
-		// Ignore parseDuration for now.
-		try
-		{
-			Metadata meta = new Metadata();
-			ContentHandler handler = new BodyContentHandler();
-			Parser parser = new AutoDetectParser(new TikaConfig(getClass().getClassLoader()));
-			parser.parse(input, handler, meta, new ParseContext());
+  @Override
+  public void extractText(
+      String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration)
+      throws IOException {
+    // Ignore parseDuration for now.
+    try {
+      Metadata meta = new Metadata();
+      ContentHandler handler = new BodyContentHandler();
+      Parser parser = new AutoDetectParser(new TikaConfig(getClass().getClassLoader()));
+      parser.parse(input, handler, meta, new ParseContext());
 
-			String content = handler.toString();
+      String content = handler.toString();
 
-			if( content.length() > maxSize )
-			{
-				content = content.substring(0, maxSize);
-			}
+      if (content.length() > maxSize) {
+        content = content.substring(0, maxSize);
+      }
 
-			outputText.append(content);
-			if( LOGGER.isDebugEnabled() )
-			{
-				LOGGER.debug("Excel Summary:" + content); //$NON-NLS-1$
-			}
-		}
-		catch( Exception e )
-		{
-			// Do nothing
-		}
-	}
+      outputText.append(content);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Excel Summary:" + content); // $NON-NLS-1$
+      }
+    } catch (Exception e) {
+      // Do nothing
+    }
+  }
 
-	@Override
-	public boolean isMimeTypeSupported(String mimeType)
-	{
-		return mimeType.toLowerCase().contains("ms-excel");
-	}
+  @Override
+  public boolean isMimeTypeSupported(String mimeType) {
+    return mimeType.toLowerCase().contains("ms-excel");
+  }
 }

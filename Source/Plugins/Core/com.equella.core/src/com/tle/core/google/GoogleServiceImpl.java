@@ -47,226 +47,190 @@ import com.tle.core.guice.Bind;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.google.api.GoogleApiUtils;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind(GoogleService.class)
 @Singleton
-public class GoogleServiceImpl implements GoogleService
-{
-	private static final String EQUELLA = "EQUELLA";
+public class GoogleServiceImpl implements GoogleService {
+  private static final String EQUELLA = "EQUELLA";
 
-	@Inject
-	private ConfigurationService configService;
+  @Inject private ConfigurationService configService;
 
-	private YouTube tubeService;
-	private BooksService booksService;
+  private YouTube tubeService;
+  private BooksService booksService;
 
-	@Override
-	public List<SearchResult> searchVideos(String query, String orderBy, long limit) throws GoogleJsonResponseException
-	{
-		return search(query, orderBy, null, limit, "id,snippet").getItems();
-	}
+  @Override
+  public List<SearchResult> searchVideos(String query, String orderBy, long limit)
+      throws GoogleJsonResponseException {
+    return search(query, orderBy, null, limit, "id,snippet").getItems();
+  }
 
-	@Override
-	public List<SearchResult> searchVideoIds(String query, String orderBy, long limit)
-		throws GoogleJsonResponseException
-	{
-		return search(query, orderBy, null, limit, "id").getItems();
-	}
+  @Override
+  public List<SearchResult> searchVideoIds(String query, String orderBy, long limit)
+      throws GoogleJsonResponseException {
+    return search(query, orderBy, null, limit, "id").getItems();
+  }
 
-	@Override
-	public List<SearchResult> searchVideoIdsWithinChannel(String query, String orderBy, String channelId, long limit)
-		throws GoogleJsonResponseException
-	{
-		return search(query, orderBy, channelId, limit, "id").getItems();
-	}
+  @Override
+  public List<SearchResult> searchVideoIdsWithinChannel(
+      String query, String orderBy, String channelId, long limit)
+      throws GoogleJsonResponseException {
+    return search(query, orderBy, channelId, limit, "id").getItems();
+  }
 
-	private SearchListResponse search(String query, String orderBy, String channelId, long limit, String data)
-		throws GoogleJsonResponseException
-	{
-		try
-		{
-			YouTube.Search.List search = getTubeService().search().list(data);
-			search.setKey(getApiKey());
-			search.setQ(query);
-			search.setType("video");
-			search.setMaxResults(limit);
-			search.setVideoEmbeddable("true");
-			search.setOrder(orderBy);
+  private SearchListResponse search(
+      String query, String orderBy, String channelId, long limit, String data)
+      throws GoogleJsonResponseException {
+    try {
+      YouTube.Search.List search = getTubeService().search().list(data);
+      search.setKey(getApiKey());
+      search.setQ(query);
+      search.setType("video");
+      search.setMaxResults(limit);
+      search.setVideoEmbeddable("true");
+      search.setOrder(orderBy);
 
-			if( !Check.isEmpty(channelId) )
-			{
-				search.setChannelId(channelId);
-			}
+      if (!Check.isEmpty(channelId)) {
+        search.setChannelId(channelId);
+      }
 
-			SearchListResponse searchListResponse = search.execute();
+      SearchListResponse searchListResponse = search.execute();
 
-			return searchListResponse;
-		}
-		catch( GoogleJsonResponseException gjre )
-		{
-			/*
-			 * This is some ghetto code to handle the switch from V2 to V3. All
-			 * V3 calls work with channelIds and there is no longer the option
-			 * to use userIds.
-			 */
-			String message = gjre.getDetails().getMessage();
-			if( "Invalid channel.".equals(message) )
-			{
-				Channel channel = getChannelForUser(channelId);
-				if( channel != null )
-				{
-					SearchListResponse searchListResponse = search(query, orderBy, channel.getId(), limit, data);
-					return searchListResponse;
-				}
-			}
+      return searchListResponse;
+    } catch (GoogleJsonResponseException gjre) {
+      /*
+       * This is some ghetto code to handle the switch from V2 to V3. All
+       * V3 calls work with channelIds and there is no longer the option
+       * to use userIds.
+       */
+      String message = gjre.getDetails().getMessage();
+      if ("Invalid channel.".equals(message)) {
+        Channel channel = getChannelForUser(channelId);
+        if (channel != null) {
+          SearchListResponse searchListResponse =
+              search(query, orderBy, channel.getId(), limit, data);
+          return searchListResponse;
+        }
+      }
 
-			// Throw the exception to be handled by the Youtube Handler
-			throw gjre;
-		}
-		catch( Exception e )
-		{
-			throw Throwables.propagate(e);
-		}
-	}
+      // Throw the exception to be handled by the Youtube Handler
+      throw gjre;
+    } catch (Exception e) {
+      throw Throwables.propagate(e);
+    }
+  }
 
-	@Override
-	public Channel getChannel(String channelId)
-	{
-		List<Channel> channels = getChannels(Lists.newArrayList(channelId));
-		return Check.isEmpty(channels) ? null : channels.get(0);
-	}
+  @Override
+  public Channel getChannel(String channelId) {
+    List<Channel> channels = getChannels(Lists.newArrayList(channelId));
+    return Check.isEmpty(channels) ? null : channels.get(0);
+  }
 
-	@Override
-	public Channel getChannelForUser(String userId)
-	{
-		try
-		{
-			YouTube.Channels.List channels = getTubeService().channels().list("snippet");
-			channels.setKey(getApiKey());
-			channels.setForUsername(userId);
-			ChannelListResponse channelListResponse = channels.execute();
+  @Override
+  public Channel getChannelForUser(String userId) {
+    try {
+      YouTube.Channels.List channels = getTubeService().channels().list("snippet");
+      channels.setKey(getApiKey());
+      channels.setForUsername(userId);
+      ChannelListResponse channelListResponse = channels.execute();
 
-			List<Channel> items = channelListResponse.getItems();
+      List<Channel> items = channelListResponse.getItems();
 
-			return Check.isEmpty(items) ? null : items.get(0);
-		}
-		catch( Exception ex )
-		{
-			throw Throwables.propagate(ex);
-		}
-	}
+      return Check.isEmpty(items) ? null : items.get(0);
+    } catch (Exception ex) {
+      throw Throwables.propagate(ex);
+    }
+  }
 
-	@Override
-	public List<Channel> getChannels(List<String> channelIds)
-	{
-		try
-		{
-			YouTube.Channels.List channels = getTubeService().channels().list("snippet");
-			channels.setKey(getApiKey());
-			channels.setId(Joiner.on(",").join(channelIds));
-			ChannelListResponse channelListResponse = channels.execute();
+  @Override
+  public List<Channel> getChannels(List<String> channelIds) {
+    try {
+      YouTube.Channels.List channels = getTubeService().channels().list("snippet");
+      channels.setKey(getApiKey());
+      channels.setId(Joiner.on(",").join(channelIds));
+      ChannelListResponse channelListResponse = channels.execute();
 
-			return channelListResponse.getItems();
-		}
-		catch( Exception ex )
-		{
-			throw Throwables.propagate(ex);
-		}
-	}
+      return channelListResponse.getItems();
+    } catch (Exception ex) {
+      throw Throwables.propagate(ex);
+    }
+  }
 
-	@Override
-	public Video getVideo(String videoId)
-	{
-		List<Video> videos = getVideos(Lists.newArrayList(videoId));
-		return Check.isEmpty(videos) ? null : videos.get(0);
-	}
+  @Override
+  public Video getVideo(String videoId) {
+    List<Video> videos = getVideos(Lists.newArrayList(videoId));
+    return Check.isEmpty(videos) ? null : videos.get(0);
+  }
 
-	@Override
-	public List<Video> getVideos(List<String> videoIds)
-	{
-		try
-		{
-			YouTube.Videos.List videos = getTubeService().videos().list("id,snippet,player,contentDetails,statistics");
-			videos.setKey(getApiKey());
-			videos.setId(Joiner.on(",").join(videoIds));
-			VideoListResponse vlr = videos.execute();
+  @Override
+  public List<Video> getVideos(List<String> videoIds) {
+    try {
+      YouTube.Videos.List videos =
+          getTubeService().videos().list("id,snippet,player,contentDetails,statistics");
+      videos.setKey(getApiKey());
+      videos.setId(Joiner.on(",").join(videoIds));
+      VideoListResponse vlr = videos.execute();
 
-			return vlr.getItems();
-		}
-		catch( Exception ex )
-		{
-			throw Throwables.propagate(ex);
-		}
-	}
+      return vlr.getItems();
+    } catch (Exception ex) {
+      throw Throwables.propagate(ex);
+    }
+  }
 
-	private synchronized YouTube getTubeService()
-	{
-		if( tubeService == null )
-		{
-			tubeService = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
-				new HttpRequestInitializer()
-				{
-					@Override
-					public void initialize(HttpRequest request) throws IOException
-					{
-						// Nothing?
-					}
-				}).setApplicationName(EQUELLA).build();
-		}
-		return tubeService;
-	}
+  private synchronized YouTube getTubeService() {
+    if (tubeService == null) {
+      tubeService =
+          new YouTube.Builder(
+                  new NetHttpTransport(),
+                  new JacksonFactory(),
+                  new HttpRequestInitializer() {
+                    @Override
+                    public void initialize(HttpRequest request) throws IOException {
+                      // Nothing?
+                    }
+                  })
+              .setApplicationName(EQUELLA)
+              .build();
+    }
+    return tubeService;
+  }
 
-	@Override
-	public VolumeEntry getBook(String bookId)
-	{
-		try
-		{
-			return getBooksService().getEntry(new URL(bookId), VolumeEntry.class);
-		}
-		catch( Exception ex )
-		{
-			throw Throwables.propagate(ex);
-		}
-	}
+  @Override
+  public VolumeEntry getBook(String bookId) {
+    try {
+      return getBooksService().getEntry(new URL(bookId), VolumeEntry.class);
+    } catch (Exception ex) {
+      throw Throwables.propagate(ex);
+    }
+  }
 
-	@Override
-	public VolumeFeed searchBooks(String query, int offset, int limit)
-	{
-		try
-		{
-			VolumeQuery vquery = new VolumeQuery(new URL("http://www.google.com/books/feeds/volumes"));
-			vquery.setMinViewability(VolumeQuery.MinViewability.PARTIAL);
-			vquery.setFullTextQuery(query.trim());
-			vquery.setStartIndex(offset + 1);
-			vquery.setMaxResults(limit);
-			return getBooksService().query(vquery, VolumeFeed.class);
-		}
-		catch( Exception e )
-		{
-			throw Throwables.propagate(e);
-		}
-	}
+  @Override
+  public VolumeFeed searchBooks(String query, int offset, int limit) {
+    try {
+      VolumeQuery vquery = new VolumeQuery(new URL("http://www.google.com/books/feeds/volumes"));
+      vquery.setMinViewability(VolumeQuery.MinViewability.PARTIAL);
+      vquery.setFullTextQuery(query.trim());
+      vquery.setStartIndex(offset + 1);
+      vquery.setMaxResults(limit);
+      return getBooksService().query(vquery, VolumeFeed.class);
+    } catch (Exception e) {
+      throw Throwables.propagate(e);
+    }
+  }
 
-	private synchronized BooksService getBooksService()
-	{
-		if( booksService == null )
-		{
-			booksService = new BooksService("EQUELLA");
-		}
-		return booksService;
-	}
+  private synchronized BooksService getBooksService() {
+    if (booksService == null) {
+      booksService = new BooksService("EQUELLA");
+    }
+    return booksService;
+  }
 
-	private String getApiKey()
-	{
-		return configService.getProperty(GoogleApiUtils.GOOGLE_API_KEY);
-	}
+  private String getApiKey() {
+    return configService.getProperty(GoogleApiUtils.GOOGLE_API_KEY);
+  }
 
-	@Override
-	public boolean isEnabled()
-	{
-		return !Check.isEmpty(getApiKey());
-	}
+  @Override
+  public boolean isEnabled() {
+    return !Check.isEmpty(getApiKey());
+  }
 }

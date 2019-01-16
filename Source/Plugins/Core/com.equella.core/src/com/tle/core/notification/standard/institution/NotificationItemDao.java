@@ -26,15 +26,11 @@ import com.tle.core.notification.dao.NotificationDao;
 
 @Bind
 @Singleton
-public class NotificationItemDao implements ItemDaoExtension
-{
-	@Inject
-	private NotificationDao dao;
+public class NotificationItemDao implements ItemDaoExtension {
+  @Inject private NotificationDao dao;
 
-	@Override
-	public void delete(Item item)
-	{
-		dao.deleteAllForItem(item.getItemId());
-	}
-
+  @Override
+  public void delete(Item item) {
+    dao.deleteAllForItem(item.getItemId());
+  }
 }

@@ -23,16 +23,12 @@ import com.tle.web.searching.SearchTab;
 import com.tle.web.searching.section.AbstractSearchTabsSection;
 import com.tle.web.searching.section.AbstractSearchTabsSection.SearchTabsModel;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
 @Bind
-public class CloudSearchTabsSection extends AbstractSearchTabsSection<SearchTabsModel>
-{
-	@Override
-	protected Class<? extends SearchTab> getActiveSearchTabClass()
-	{
-		return CloudResultsTab.class;
-	}
+public class CloudSearchTabsSection extends AbstractSearchTabsSection<SearchTabsModel> {
+  @Override
+  protected Class<? extends SearchTab> getActiveSearchTabClass() {
+    return CloudResultsTab.class;
+  }
 }

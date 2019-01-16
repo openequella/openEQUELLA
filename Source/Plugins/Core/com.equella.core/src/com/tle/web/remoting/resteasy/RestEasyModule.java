@@ -19,17 +19,14 @@ package com.tle.web.remoting.resteasy;
 import com.tle.core.guice.PluginTrackerModule;
 
 @SuppressWarnings("nls")
-public class RestEasyModule extends PluginTrackerModule
-{
-	@Override
-	protected String getPluginId()
-	{
-		return "com.tle.web.remoting.rest";
-	}
+public class RestEasyModule extends PluginTrackerModule {
+  @Override
+  protected String getPluginId() {
+    return "com.tle.web.remoting.rest";
+  }
 
-	@Override
-	protected void configure()
-	{
-		bindTracker(Object.class, "resource", null);
-	}
+  @Override
+  protected void configure() {
+    bindTracker(Object.class, "resource", null);
+  }
 }

@@ -50,107 +50,85 @@ import com.tle.web.sections.standard.renderers.LabelTagRenderer;
 
 @SuppressWarnings("nls")
 public class FilterByNotificationReason extends AbstractPrototypeSection<Object>
-	implements
-		HtmlRenderer,
-		SearchEventListener<FreetextSearchEvent>,
-		ResetFiltersListener
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+    implements HtmlRenderer, SearchEventListener<FreetextSearchEvent>, ResetFiltersListener {
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Inject
-	private NotificationService notificationService;
+  @Inject private NotificationService notificationService;
 
-	@Component(parameter = "reason", supported = true)
-	private SingleSelectionList<Void> reasonList;
+  @Component(parameter = "reason", supported = true)
+  private SingleSelectionList<Void> reasonList;
 
-	@TreeLookup
-	private AbstractSearchResultsSection<?, ?, ?, ?> resultsSection;
+  @TreeLookup private AbstractSearchResultsSection<?, ?, ?, ?> resultsSection;
 
-	@PlugKey(value = "notereason.any", html = false)
-	private static Label LABEL_ANY;
+  @PlugKey(value = "notereason.any", html = false)
+  private static Label LABEL_ANY;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		reasonList.setListModel(new ReasonModel());
-		reasonList.addChangeEventHandler(resultsSection.getRestartSearchHandler(tree));
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    reasonList.setListModel(new ReasonModel());
+    reasonList.addChangeEventHandler(resultsSection.getRestartSearchHandler(tree));
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		return viewFactory.createResult("reasonfilter.ftl", this);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    return viewFactory.createResult("reasonfilter.ftl", this);
+  }
 
-	@Override
-	public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception
-	{
-		String reason = reasonList.getSelectedValueAsString(info);
-		if( !Check.isEmpty(reason) )
-		{
-			event.filterByTerm(false, NotificationIndex.FIELD_REASON, reason);
-		}
-	}
+  @Override
+  public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception {
+    String reason = reasonList.getSelectedValueAsString(info);
+    if (!Check.isEmpty(reason)) {
+      event.filterByTerm(false, NotificationIndex.FIELD_REASON, reason);
+    }
+  }
 
-	@Override
-	public void reset(SectionInfo info)
-	{
-		reasonList.setSelectedStringValue(info, null);
-	}
+  @Override
+  public void reset(SectionInfo info) {
+    reasonList.setSelectedStringValue(info, null);
+  }
 
-	public void setReason(SectionInfo info, String reason)
-	{
-		reasonList.setSelectedStringValue(info, reason);
-	}
+  public void setReason(SectionInfo info, String reason) {
+    reasonList.setSelectedStringValue(info, reason);
+  }
 
-	public LabelTagRenderer getLabelTag()
-	{
-		return new LabelTagRenderer(reasonList, null, null);
-	}
+  public LabelTagRenderer getLabelTag() {
+    return new LabelTagRenderer(reasonList, null, null);
+  }
 
-	public SingleSelectionList<Void> getReasonList()
-	{
-		return reasonList;
-	}
+  public SingleSelectionList<Void> getReasonList() {
+    return reasonList;
+  }
 
-	public class ReasonModel extends DynamicHtmlListModel<Void>
-	{
-		@Override
-		protected Iterable<Void> populateModel(SectionInfo info)
-		{
-			return null;
-		}
+  public class ReasonModel extends DynamicHtmlListModel<Void> {
+    @Override
+    protected Iterable<Void> populateModel(SectionInfo info) {
+      return null;
+    }
 
-		@Override
-		protected Iterable<Option<Void>> populateOptions(SectionInfo info)
-		{
-			List<Option<Void>> options = Lists.newArrayList();
-			Collection<String> notifications = notificationService.getNotificationTypes();
-			for( String type : notifications )
-			{
-				WebNotificationExtension extension = (WebNotificationExtension) notificationService
-					.getExtensionForType(type);
-				if( extension.isIndexed(type) )
-				{
-					options.add(new LabelOption<Void>(extension.getReasonFilterLabel(type), type, null));
-				}
-			}
-			return options;
-		}
+    @Override
+    protected Iterable<Option<Void>> populateOptions(SectionInfo info) {
+      List<Option<Void>> options = Lists.newArrayList();
+      Collection<String> notifications = notificationService.getNotificationTypes();
+      for (String type : notifications) {
+        WebNotificationExtension extension =
+            (WebNotificationExtension) notificationService.getExtensionForType(type);
+        if (extension.isIndexed(type)) {
+          options.add(new LabelOption<Void>(extension.getReasonFilterLabel(type), type, null));
+        }
+      }
+      return options;
+    }
 
-		@Override
-		protected Option<Void> getTopOption()
-		{
-			return new LabelOption<Void>(LABEL_ANY, "", null);
-		}
-	}
+    @Override
+    protected Option<Void> getTopOption() {
+      return new LabelOption<Void>(LABEL_ANY, "", null);
+    }
+  }
 }

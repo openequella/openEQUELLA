@@ -29,51 +29,46 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.remoting.RemoteAbstractEntityService;
 import com.tle.core.remoting.RemotePowerSearchService;
 
-public class PowerSearchTool extends BaseEntityTool<PowerSearch>
-{
-	public PowerSearchTool() throws Exception
-	{
-		super(PowerSearch.class, RemotePowerSearchService.ENTITY_TYPE);
-	}
+public class PowerSearchTool extends BaseEntityTool<PowerSearch> {
+  public PowerSearchTool() throws Exception {
+    super(PowerSearch.class, RemotePowerSearchService.ENTITY_TYPE);
+  }
 
-	@Override
-	protected RemoteAbstractEntityService<PowerSearch> getService(ClientService client)
-	{
-		return client.getService(RemotePowerSearchService.class);
-	}
+  @Override
+  protected RemoteAbstractEntityService<PowerSearch> getService(ClientService client) {
+    return client.getService(RemotePowerSearchService.class);
+  }
 
-	@Override
-	protected String getErrorPath()
-	{
-		return "powersearch";
-	}
+  @Override
+  protected String getErrorPath() {
+    return "powersearch";
+  }
 
-	@Override
-	protected BaseEntityEditor<PowerSearch> createEditor(boolean readonly)
-	{
-		return new PowerSearchEditor(this, readonly);
-	}
+  @Override
+  protected BaseEntityEditor<PowerSearch> createEditor(boolean readonly) {
+    return new PowerSearchEditor(this, readonly);
+  }
 
-	@Override
-	protected String getEntityName()
-	{
-		return CurrentLocale.get("com.tle.admin.gui.powersearchtool.title");
-	}
+  @Override
+  protected String getEntityName() {
+    return CurrentLocale.get("com.tle.admin.gui.powersearchtool.title");
+  }
 
-	@Override
-	protected PowerSearch process(PowerSearch powersearch)
-	{
-		List<Long> itemdefs = driver.getClientService().getService(RemotePowerSearchService.class)
-			.enumerateItemdefIds(powersearch.getId());
+  @Override
+  protected PowerSearch process(PowerSearch powersearch) {
+    List<Long> itemdefs =
+        driver
+            .getClientService()
+            .getService(RemotePowerSearchService.class)
+            .enumerateItemdefIds(powersearch.getId());
 
-		List<ItemDefinition> fullItemdefs = new ArrayList<ItemDefinition>();
-		powersearch.setItemdefs(fullItemdefs);
-		for( Long itemdef : itemdefs )
-		{
-			ItemDefinition definition = new ItemDefinition();
-			definition.setId(itemdef);
-			fullItemdefs.add(definition);
-		}
-		return powersearch;
-	}
+    List<ItemDefinition> fullItemdefs = new ArrayList<ItemDefinition>();
+    powersearch.setItemdefs(fullItemdefs);
+    for (Long itemdef : itemdefs) {
+      ItemDefinition definition = new ItemDefinition();
+      definition.setId(itemdef);
+      fullItemdefs.add(definition);
+    }
+    return powersearch;
+  }
 }

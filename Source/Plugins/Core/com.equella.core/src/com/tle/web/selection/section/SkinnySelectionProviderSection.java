@@ -37,103 +37,83 @@ import com.tle.web.selection.event.ItemSelectorEventListener;
 import com.tle.web.viewurl.ItemSectionInfo;
 
 /**
- * Normally the "select this resource" button is on the right hand side, however
- * in skinny sessions it's on the item summary, hence this class
- * 
+ * Normally the "select this resource" button is on the right hand side, however in skinny sessions
+ * it's on the item summary, hence this class
+ *
  * @author Aaron
  */
 @NonNullByDefault
 @SuppressWarnings("nls")
 public class SkinnySelectionProviderSection
-	extends
-		AbstractPrototypeSection<SkinnySelectionProviderSection.SkinnySelectionProviderModel>
-	implements
-		ItemSelectorEventListener
-{
-	@Inject
-	private SelectionService selectionService;
-	@Inject
-	private ItemService itemService;
+    extends AbstractPrototypeSection<SkinnySelectionProviderSection.SkinnySelectionProviderModel>
+    implements ItemSelectorEventListener {
+  @Inject private SelectionService selectionService;
+  @Inject private ItemService itemService;
 
-	@EventFactory
-	private EventGenerator events;
+  @EventFactory private EventGenerator events;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.addListener(null, ItemSelectorEventListener.class, this);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.addListener(null, ItemSelectorEventListener.class, this);
+  }
 
-	@EventHandlerMethod
-	public void selectItemSummary(SectionInfo info, ItemId itemId)
-	{
-		final Item item;
-		ItemSectionInfo itemInfo = info.getAttribute(ItemSectionInfo.class);
-		if( itemInfo != null )
-		{
-			item = itemInfo.getItem();
-		}
-		else
-		{
-			item = itemService.get(itemId);
-		}
-		selectionService.addSelectedItem(info, item, null, null);
-	}
+  @EventHandlerMethod
+  public void selectItemSummary(SectionInfo info, ItemId itemId) {
+    final Item item;
+    ItemSectionInfo itemInfo = info.getAttribute(ItemSectionInfo.class);
+    if (itemInfo != null) {
+      item = itemInfo.getItem();
+    } else {
+      item = itemService.get(itemId);
+    }
+    selectionService.addSelectedItem(info, item, null, null);
+  }
 
-	private boolean isApplicable(SectionInfo info)
-	{
-		final SkinnySelectionProviderModel model = getModel(info);
-		final Boolean applicable = model.getApplicable();
-		if( applicable != null )
-		{
-			return applicable;
-		}
+  private boolean isApplicable(SectionInfo info) {
+    final SkinnySelectionProviderModel model = getModel(info);
+    final Boolean applicable = model.getApplicable();
+    if (applicable != null) {
+      return applicable;
+    }
 
-		boolean applies = false;
-		final SelectionSession ss = selectionService.getCurrentSession(info);
-		if( ss != null )
-		{
-			applies = (ss.isSelectItem() && ss.getLayout() == SKINNY);
-			// String home = ss.getHomeSelectable();
-			// if( home != null && home.equals("skinnysearch") )
-			// {
-			// applies = true;
-			// }
-		}
-		model.setApplicable(applies);
-		return applies;
-	}
+    boolean applies = false;
+    final SelectionSession ss = selectionService.getCurrentSession(info);
+    if (ss != null) {
+      applies = (ss.isSelectItem() && ss.getLayout() == SKINNY);
+      // String home = ss.getHomeSelectable();
+      // if( home != null && home.equals("skinnysearch") )
+      // {
+      // applies = true;
+      // }
+    }
+    model.setApplicable(applies);
+    return applies;
+  }
 
-	@Override
-	public void supplyFunction(SectionInfo info, ItemSelectorEvent event)
-	{
-		if( isApplicable(info) )
-		{
-			event.setFunction(events.getSubmitValuesFunction("selectItemSummary"));
-			event.stopProcessing();
-		}
-	}
+  @Override
+  public void supplyFunction(SectionInfo info, ItemSelectorEvent event) {
+    if (isApplicable(info)) {
+      event.setFunction(events.getSubmitValuesFunction("selectItemSummary"));
+      event.stopProcessing();
+    }
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new SkinnySelectionProviderModel();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new SkinnySelectionProviderModel();
+  }
 
-	@NonNullByDefault(false)
-	public static class SkinnySelectionProviderModel
-	{
-		private Boolean applicable;
+  @NonNullByDefault(false)
+  public static class SkinnySelectionProviderModel {
+    private Boolean applicable;
 
-		public Boolean getApplicable()
-		{
-			return applicable;
-		}
+    public Boolean getApplicable() {
+      return applicable;
+    }
 
-		public void setApplicable(Boolean applicable)
-		{
-			this.applicable = applicable;
-		}
-	}
+    public void setApplicable(Boolean applicable) {
+      this.applicable = applicable;
+    }
+  }
 }

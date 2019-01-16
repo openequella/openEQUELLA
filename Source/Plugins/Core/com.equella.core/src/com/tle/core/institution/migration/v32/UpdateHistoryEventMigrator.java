@@ -27,25 +27,22 @@ import com.tle.core.institution.convert.ConverterParams;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class UpdateHistoryEventMigrator extends AbstractItemXmlMigrator
-{
-	@Override
-	public boolean migrate(ConverterParams params, PropBagEx xml, SubTemporaryFile file, String filename)
-		throws Exception
-	{
-		boolean changed = false;
+public class UpdateHistoryEventMigrator extends AbstractItemXmlMigrator {
+  @Override
+  public boolean migrate(
+      ConverterParams params, PropBagEx xml, SubTemporaryFile file, String filename)
+      throws Exception {
+    boolean changed = false;
 
-		for( PropBagEx history : xml.iterateAll("history/com.tle.beans.item.HistoryEvent") )
-		{
-			history.deleteNode("item");
-			PropBagEx d2 = history.getSubtree("date2");
-			if( d2 != null )
-			{
-				d2.setNodeName("date");
-			}
-			changed = true;
-		}
+    for (PropBagEx history : xml.iterateAll("history/com.tle.beans.item.HistoryEvent")) {
+      history.deleteNode("item");
+      PropBagEx d2 = history.getSubtree("date2");
+      if (d2 != null) {
+        d2.setNodeName("date");
+      }
+      changed = true;
+    }
 
-		return changed;
-	}
+    return changed;
+  }
 }

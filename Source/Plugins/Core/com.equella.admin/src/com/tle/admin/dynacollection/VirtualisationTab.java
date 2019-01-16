@@ -26,50 +26,45 @@ import com.tle.beans.entity.DynaCollection;
 import com.tle.common.dynacollection.SearchSetAdapter;
 import com.tle.common.i18n.CurrentLocale;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @SuppressWarnings("nls")
-public class VirtualisationTab extends BaseEntityTab<DynaCollection>
-{
-	private VirtualisationEditor editor;
+public class VirtualisationTab extends BaseEntityTab<DynaCollection> {
+  private VirtualisationEditor editor;
 
-	@Override
-	public void init(Component parent)
-	{
-		editor = new VirtualisationEditor(pluginService, clientService, getKey("entityname"),
-			getKey("virtualisationtab.renamingHelp"));
+  @Override
+  public void init(Component parent) {
+    editor =
+        new VirtualisationEditor(
+            pluginService,
+            clientService,
+            getKey("entityname"),
+            getKey("virtualisationtab.renamingHelp"));
 
-		setLayout(new GridLayout(1, 1));
-		add(editor);
+    setLayout(new GridLayout(1, 1));
+    add(editor);
 
-		if( state.isReadonly() )
-		{
-			editor.setEnabled(false);
-		}
-	}
+    if (state.isReadonly()) {
+      editor.setEnabled(false);
+    }
+  }
 
-	@Override
-	public String getTitle()
-	{
-		return getString("virtualisationtab.title");
-	}
+  @Override
+  public String getTitle() {
+    return getString("virtualisationtab.title");
+  }
 
-	@Override
-	public void load()
-	{
-		editor.load(new SearchSetAdapter(state.getEntity()));
-	}
+  @Override
+  public void load() {
+    editor.load(new SearchSetAdapter(state.getEntity()));
+  }
 
-	@Override
-	public void save()
-	{
-		editor.save(new SearchSetAdapter(state.getEntity()));
-	}
+  @Override
+  public void save() {
+    editor.save(new SearchSetAdapter(state.getEntity()));
+  }
 
-	@Override
-	public void validation() throws EditorException
-	{
-		editor.validation();
-	}
+  @Override
+  public void validation() throws EditorException {
+    editor.validation();
+  }
 }

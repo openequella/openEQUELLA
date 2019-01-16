@@ -31,30 +31,26 @@ import com.tle.core.xml.service.XmlService;
 
 /**
  * See http://dev.equella.com/issues/5963
- * 
+ *
  * @author Aaron
  */
 @Bind
 @Singleton
-public class RerunMimeMigrator extends MimeMigrator
-{
-	@Inject
-	private XmlService xmlService;
+public class RerunMimeMigrator extends MimeMigrator {
+  @Inject private XmlService xmlService;
 
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
-	{
-		List<MimeEntry> defaultTypes = getDefaultMimeEntries();
-		SubTemporaryFile mimeFolder = MimeEntryConverter.getMimeFolder(staging);
+  @Override
+  public void execute(
+      TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) {
+    List<MimeEntry> defaultTypes = getDefaultMimeEntries();
+    SubTemporaryFile mimeFolder = MimeEntryConverter.getMimeFolder(staging);
 
-		for( MimeEntry mimeEntry : defaultTypes )
-		{
-			// Don't overwrite any existing one
-			String filename = MimeEntryConverter.getFilenameForEntry(mimeEntry);
-			if( !fileExists(mimeFolder, filename) )
-			{
-				xmlHelper.writeFile(mimeFolder, filename, xmlService.serialiseToXml(mimeEntry));
-			}
-		}
-	}
+    for (MimeEntry mimeEntry : defaultTypes) {
+      // Don't overwrite any existing one
+      String filename = MimeEntryConverter.getFilenameForEntry(mimeEntry);
+      if (!fileExists(mimeFolder, filename)) {
+        xmlHelper.writeFile(mimeFolder, filename, xmlService.serialiseToXml(mimeEntry));
+      }
+    }
+  }
 }

@@ -65,289 +65,256 @@ import com.tle.web.sections.standard.model.Option;
 @NonNullByDefault
 @Bind
 @SuppressWarnings("nls")
-public class CloneOrMoveSection extends AbstractPrototypeSection<CloneOrMoveModel> implements HtmlRenderer
-{
-	public static final String CLONE_ITEM = "CLONE_ITEM"; //$NON-NLS-1$
-	public static final String MOVE_ITEM = "MOVE_ITEM"; //$NON-NLS-1$
+public class CloneOrMoveSection extends AbstractPrototypeSection<CloneOrMoveModel>
+    implements HtmlRenderer {
+  public static final String CLONE_ITEM = "CLONE_ITEM"; // $NON-NLS-1$
+  public static final String MOVE_ITEM = "MOVE_ITEM"; // $NON-NLS-1$
 
-	@PlugKey("selectcollection.button.clone")
-	private static Label CLONE_LABEL;
-	@PlugKey("selectcollection.button.move")
-	private static Label MOVE_LABEL;
-	@PlugKey("command.save.savedraft")
-	private static String KEY_SAVEDRAFT;
-	@PlugKey("command.save.submit")
-	private static String KEY_SAVESUBMIT;
-	@PlugKey("command.save.submitnoworkflow")
-	private static String KEY_SUBMITWORKFLOW;
+  @PlugKey("selectcollection.button.clone")
+  private static Label CLONE_LABEL;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @PlugKey("selectcollection.button.move")
+  private static Label MOVE_LABEL;
 
-	private JSCallable okFunction; // wired into the proceed button
-	@Component
-	private Button proceedButton;
-	@Component(name = "c")
-	private SingleSelectionList<ItemDefinition> collections;
-	@Component(name = "s")
-	private SingleSelectionList<String> schemaImports;
-	@Component(name = "o")
-	private SingleSelectionList<NameValue> cloneOptions;
-	@Component(name = "so")
-	private SingleSelectionList<Void> submitOptions;
+  @PlugKey("command.save.savedraft")
+  private static String KEY_SAVEDRAFT;
 
-	@AjaxFactory
-	private AjaxGenerator ajax;
-	@EventFactory
-	private EventGenerator events;
-	@Inject
-	private ItemDefinitionService itemDefService;
-	@Inject
-	private SchemaService schemaService;
-	@Inject
-	private BundleCache bundleCache;
+  @PlugKey("command.save.submit")
+  private static String KEY_SAVESUBMIT;
 
-	private boolean forBulk;
+  @PlugKey("command.save.submitnoworkflow")
+  private static String KEY_SUBMITWORKFLOW;
 
-	@Nullable
-	@TreeLookup(mandatory = false)
-	private ItemAdminResultsDialog dialog;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext info)
-	{
-		CloneOrMoveModel model = getModel(info);
+  private JSCallable okFunction; // wired into the proceed button
+  @Component private Button proceedButton;
 
-		boolean showSchemas = (schemaImports.getListModel().getOptions(info).size() > 1);
-		schemaImports.setDisabled(info, !showSchemas);
+  @Component(name = "c")
+  private SingleSelectionList<ItemDefinition> collections;
 
-		if( forBulk && !model.isHideClone() )
-		{
-			ItemDefinition col = collections.getSelectedValue(info);
-			if( col != null )
-			{
-				if( col.getWorkflow() != null )
-				{
-					model.setSubmitLabel("selectcollection.label.submitworkflow"); //$NON-NLS-1$
-				}
-				else
-				{
-					model.setSubmitLabel("selectcollection.label.submit"); //$NON-NLS-1$
-				}
-			}
-		}
+  @Component(name = "s")
+  private SingleSelectionList<String> schemaImports;
 
-		HtmlListModel<NameValue> cloneListModel = cloneOptions.getListModel();
-		List<Option<NameValue>> cloneOpts = cloneListModel.getOptions(info);
+  @Component(name = "o")
+  private SingleSelectionList<NameValue> cloneOptions;
 
-		boolean showCloneOpts = (cloneOpts.size() > 1);
-		model.setShowCloneOptions(showCloneOpts);
-		cloneOptions.setDisplayed(info, showCloneOpts);
+  @Component(name = "so")
+  private SingleSelectionList<Void> submitOptions;
 
-		if( Check.isEmpty(collections.getSelectedValueAsString(info)) )
-		{
-			proceedButton.setDisabled(info, true);
-		}
+  @AjaxFactory private AjaxGenerator ajax;
+  @EventFactory private EventGenerator events;
+  @Inject private ItemDefinitionService itemDefService;
+  @Inject private SchemaService schemaService;
+  @Inject private BundleCache bundleCache;
 
-		JSExpression schemaImportExpression = (showSchemas ? schemaImports.createGetExpression()
-			: new StringExpression("")); //$NON-NLS-1$
-		Object cloneParam = showCloneOpts ? cloneOptions.createGetExpression()
-			: cloneOptions.getSelectedValueAsString(info);
-		Object submitParam = model.getSubmitLabel() != null ? submitOptions.createGetExpression() : ""; //$NON-NLS-1$
-		if( !forBulk )
-		{
-			proceedButton.setClickHandler(info, new OverrideHandler(okFunction, cloneParam,
-				collections.createGetExpression(), schemaImportExpression, submitParam));
-		}
-		if( model.isMove() )
-		{
-			proceedButton.setLabel(info, MOVE_LABEL);
-		}
-		else
-		{
-			proceedButton.setLabel(info, CLONE_LABEL);
-		}
+  private boolean forBulk;
 
-		return viewFactory.createResult("clonemovebody.ftl", info); //$NON-NLS-1$
-	}
+  @Nullable
+  @TreeLookup(mandatory = false)
+  private ItemAdminResultsDialog dialog;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		collections.setListModel(new ContributableCollectionsModel(itemDefService, bundleCache));
-		schemaImports.setListModel(new SchemaTransformsModel(collections, schemaService));
-		submitOptions.setListModel(new SubmitOptionsModel());
-		submitOptions.setAlwaysSelect(true);
-		cloneOptions.setAlwaysSelect(true);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext info) {
+    CloneOrMoveModel model = getModel(info);
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		if( dialog != null )
-		{
-			collections.addChangeEventHandler(dialog.getFooterUpdate(tree, null, "collectionOptions"));
-		}
-		else
-		{
-			collections.addChangeEventHandler(ajax.getAjaxUpdateDomFunction(tree, null, null, "collectionOptions"));
-		}
-	}
+    boolean showSchemas = (schemaImports.getListModel().getOptions(info).size() > 1);
+    schemaImports.setDisabled(info, !showSchemas);
 
-	/**
-	 * For JS side callbacks
-	 * 
-	 * @param okFunction
-	 */
-	public void setClientSideCallbacks(JSCallable proceedFunction)
-	{
-		okFunction = proceedFunction;
-	}
+    if (forBulk && !model.isHideClone()) {
+      ItemDefinition col = collections.getSelectedValue(info);
+      if (col != null) {
+        if (col.getWorkflow() != null) {
+          model.setSubmitLabel("selectcollection.label.submitworkflow"); // $NON-NLS-1$
+        } else {
+          model.setSubmitLabel("selectcollection.label.submit"); // $NON-NLS-1$
+        }
+      }
+    }
 
-	public void setCloneOptionsModel(HtmlListModel<NameValue> cloneOpts)
-	{
-		cloneOptions.setListModel(cloneOpts);
-	}
+    HtmlListModel<NameValue> cloneListModel = cloneOptions.getListModel();
+    List<Option<NameValue>> cloneOpts = cloneListModel.getOptions(info);
 
-	public void setAllowCollectionChange(SectionInfo info, boolean allow)
-	{
-		getModel(info).setAllowCollectionChange(allow);
-	}
+    boolean showCloneOpts = (cloneOpts.size() > 1);
+    model.setShowCloneOptions(showCloneOpts);
+    cloneOptions.setDisplayed(info, showCloneOpts);
 
-	/**
-	 * Purely optional. Call this in your render method before rendering the
-	 * CloneOrMoveSection
-	 * 
-	 * @param info
-	 * @param source
-	 * @param dest
-	 */
-	public void setSchemas(SectionInfo info, Schema source, Schema dest)
-	{
-		CloneOrMoveModel model = getModel(info);
-		model.setSourceSchema(source);
-		model.setDestSchema(dest);
-	}
+    if (Check.isEmpty(collections.getSelectedValueAsString(info))) {
+      proceedButton.setDisabled(info, true);
+    }
 
-	public void setMove(SectionInfo info, boolean move)
-	{
-		getModel(info).setMove(move);
-	}
+    JSExpression schemaImportExpression =
+        (showSchemas
+            ? schemaImports.createGetExpression()
+            : new StringExpression("")); // $NON-NLS-1$
+    Object cloneParam =
+        showCloneOpts
+            ? cloneOptions.createGetExpression()
+            : cloneOptions.getSelectedValueAsString(info);
+    Object submitParam =
+        model.getSubmitLabel() != null ? submitOptions.createGetExpression() : ""; // $NON-NLS-1$
+    if (!forBulk) {
+      proceedButton.setClickHandler(
+          info,
+          new OverrideHandler(
+              okFunction,
+              cloneParam,
+              collections.createGetExpression(),
+              schemaImportExpression,
+              submitParam));
+    }
+    if (model.isMove()) {
+      proceedButton.setLabel(info, MOVE_LABEL);
+    } else {
+      proceedButton.setLabel(info, CLONE_LABEL);
+    }
 
-	public void setHideClone(SectionInfo info, boolean hideClone)
-	{
-		getModel(info).setHideClone(hideClone);
-	}
+    return viewFactory.createResult("clonemovebody.ftl", info); // $NON-NLS-1$
+  }
 
-	public boolean isHideClone(SectionInfo info)
-	{
-		return getModel(info).isHideClone();
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    collections.setListModel(new ContributableCollectionsModel(itemDefService, bundleCache));
+    schemaImports.setListModel(new SchemaTransformsModel(collections, schemaService));
+    submitOptions.setListModel(new SubmitOptionsModel());
+    submitOptions.setAlwaysSelect(true);
+    cloneOptions.setAlwaysSelect(true);
+  }
 
-	public void setHideCloneNoAttachments(SectionInfo info, boolean hideCloneNoAttachments)
-	{
-		getModel(info).setHideCloneNoAttachments(hideCloneNoAttachments);
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    if (dialog != null) {
+      collections.addChangeEventHandler(dialog.getFooterUpdate(tree, null, "collectionOptions"));
+    } else {
+      collections.addChangeEventHandler(
+          ajax.getAjaxUpdateDomFunction(tree, null, null, "collectionOptions"));
+    }
+  }
 
-	public boolean isHideCloneNoAttachments(SectionInfo info)
-	{
-		return getModel(info).isHideCloneNoAttachments();
-	}
+  /**
+   * For JS side callbacks
+   *
+   * @param okFunction
+   */
+  public void setClientSideCallbacks(JSCallable proceedFunction) {
+    okFunction = proceedFunction;
+  }
 
-	public void setHideMove(SectionInfo info, boolean hideMove)
-	{
-		getModel(info).setHideMove(hideMove);
-	}
+  public void setCloneOptionsModel(HtmlListModel<NameValue> cloneOpts) {
+    cloneOptions.setListModel(cloneOpts);
+  }
 
-	public boolean isHideMove(SectionInfo info)
-	{
-		return getModel(info).isHideMove();
-	}
+  public void setAllowCollectionChange(SectionInfo info, boolean allow) {
+    getModel(info).setAllowCollectionChange(allow);
+  }
 
-	@Nullable
-	public ItemDefinition getCurrentSelectedItemdef(SectionInfo info)
-	{
-		return collections.getSelectedValue(info);
-	}
+  /**
+   * Purely optional. Call this in your render method before rendering the CloneOrMoveSection
+   *
+   * @param info
+   * @param source
+   * @param dest
+   */
+  public void setSchemas(SectionInfo info, Schema source, Schema dest) {
+    CloneOrMoveModel model = getModel(info);
+    model.setSourceSchema(source);
+    model.setDestSchema(dest);
+  }
 
-	public void setCurrentSelectedItemdef(SectionInfo info, String itemdefUuid)
-	{
-		collections.setSelectedStringValue(info, itemdefUuid);
-	}
+  public void setMove(SectionInfo info, boolean move) {
+    getModel(info).setMove(move);
+  }
 
-	public Button getProceedButton()
-	{
-		return proceedButton;
-	}
+  public void setHideClone(SectionInfo info, boolean hideClone) {
+    getModel(info).setHideClone(hideClone);
+  }
 
-	public SingleSelectionList<ItemDefinition> getCollections()
-	{
-		return collections;
-	}
+  public boolean isHideClone(SectionInfo info) {
+    return getModel(info).isHideClone();
+  }
 
-	public SingleSelectionList<String> getSchemaImports()
-	{
-		return schemaImports;
-	}
+  public void setHideCloneNoAttachments(SectionInfo info, boolean hideCloneNoAttachments) {
+    getModel(info).setHideCloneNoAttachments(hideCloneNoAttachments);
+  }
 
-	public SingleSelectionList<NameValue> getCloneOptions()
-	{
-		return cloneOptions;
-	}
+  public boolean isHideCloneNoAttachments(SectionInfo info) {
+    return getModel(info).isHideCloneNoAttachments();
+  }
 
-	@Override
-	public Class<CloneOrMoveModel> getModelClass()
-	{
-		return CloneOrMoveModel.class;
-	}
+  public void setHideMove(SectionInfo info, boolean hideMove) {
+    getModel(info).setHideMove(hideMove);
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "scll"; //$NON-NLS-1$
-	}
+  public boolean isHideMove(SectionInfo info) {
+    return getModel(info).isHideMove();
+  }
 
-	public class SubmitOptionsModel extends DynamicHtmlListModel<Void>
-	{
-		@Override
-		protected Iterable<Option<Void>> populateOptions(SectionInfo info)
-		{
-			ArrayList<Option<Void>> options = new ArrayList<Option<Void>>();
-			ItemDefinition col = collections.getSelectedValue(info);
-			options.add(new VoidKeyOption(KEY_SAVEDRAFT, "draft")); //$NON-NLS-1$
-			if( col != null && col.getWorkflow() != null )
-			{
-				options.add(new VoidKeyOption(KEY_SAVESUBMIT,"submit")); //$NON-NLS-1$
-			}
-			else
-			{
-				options.add(new VoidKeyOption(KEY_SUBMITWORKFLOW, "submit")); //$NON-NLS-1$
-			}
-			return options;
-		}
+  @Nullable
+  public ItemDefinition getCurrentSelectedItemdef(SectionInfo info) {
+    return collections.getSelectedValue(info);
+  }
 
-		@Override
-		protected Iterable<Void> populateModel(SectionInfo info)
-		{
-			return null;
-		}
-	}
+  public void setCurrentSelectedItemdef(SectionInfo info, String itemdefUuid) {
+    collections.setSelectedStringValue(info, itemdefUuid);
+  }
 
-	public SingleSelectionList<Void> getSubmitOptions()
-	{
-		return submitOptions;
-	}
+  public Button getProceedButton() {
+    return proceedButton;
+  }
 
-	public void setForBulk(boolean forBulk)
-	{
-		this.forBulk = forBulk;
-	}
+  public SingleSelectionList<ItemDefinition> getCollections() {
+    return collections;
+  }
 
-	public boolean isForBulk()
-	{
-		return forBulk;
-	}
+  public SingleSelectionList<String> getSchemaImports() {
+    return schemaImports;
+  }
 
+  public SingleSelectionList<NameValue> getCloneOptions() {
+    return cloneOptions;
+  }
+
+  @Override
+  public Class<CloneOrMoveModel> getModelClass() {
+    return CloneOrMoveModel.class;
+  }
+
+  @Override
+  public String getDefaultPropertyName() {
+    return "scll"; //$NON-NLS-1$
+  }
+
+  public class SubmitOptionsModel extends DynamicHtmlListModel<Void> {
+    @Override
+    protected Iterable<Option<Void>> populateOptions(SectionInfo info) {
+      ArrayList<Option<Void>> options = new ArrayList<Option<Void>>();
+      ItemDefinition col = collections.getSelectedValue(info);
+      options.add(new VoidKeyOption(KEY_SAVEDRAFT, "draft")); // $NON-NLS-1$
+      if (col != null && col.getWorkflow() != null) {
+        options.add(new VoidKeyOption(KEY_SAVESUBMIT, "submit")); // $NON-NLS-1$
+      } else {
+        options.add(new VoidKeyOption(KEY_SUBMITWORKFLOW, "submit")); // $NON-NLS-1$
+      }
+      return options;
+    }
+
+    @Override
+    protected Iterable<Void> populateModel(SectionInfo info) {
+      return null;
+    }
+  }
+
+  public SingleSelectionList<Void> getSubmitOptions() {
+    return submitOptions;
+  }
+
+  public void setForBulk(boolean forBulk) {
+    this.forBulk = forBulk;
+  }
+
+  public boolean isForBulk() {
+    return forBulk;
+  }
 }

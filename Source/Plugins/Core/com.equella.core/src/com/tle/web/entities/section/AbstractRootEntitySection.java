@@ -31,58 +31,52 @@ import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @TreeIndexed
 @SuppressWarnings("nls")
-public abstract class AbstractRootEntitySection<M extends OneColumnLayoutModel> extends OneColumnLayout<M>
-{
-	@PlugKey("error.noaccess")
-	private static Label LABEL_NO_ACCESS;
+public abstract class AbstractRootEntitySection<M extends OneColumnLayoutModel>
+    extends OneColumnLayout<M> {
+  @PlugKey("error.noaccess")
+  private static Label LABEL_NO_ACCESS;
 
-	protected abstract boolean canView(SectionInfo info);
+  protected abstract boolean canView(SectionInfo info);
 
-	protected abstract Label getTitleLabel(SectionInfo info);
+  protected abstract Label getTitleLabel(SectionInfo info);
 
-	protected abstract HtmlLinkState getShowEntitiesLink(SectionInfo info);
+  protected abstract HtmlLinkState getShowEntitiesLink(SectionInfo info);
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !canView(context) )
-		{
-			throw new AccessDeniedException(LABEL_NO_ACCESS.getText());
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (!canView(context)) {
+      throw new AccessDeniedException(LABEL_NO_ACCESS.getText());
+    }
 
-		return super.renderHtml(context);
-	}
+    return super.renderHtml(context);
+  }
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		OneColumnLayoutModel model = getModel(info);
-		SectionId modalSection = model.getModalSection();
-		crumbs.add(SettingsUtils.getBreadcrumb(info));
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    OneColumnLayoutModel model = getModel(info);
+    SectionId modalSection = model.getModalSection();
+    crumbs.add(SettingsUtils.getBreadcrumb(info));
 
-		if( modalSection != null )
-		{
-			crumbs.add(getShowEntitiesLink(info));
+    if (modalSection != null) {
+      crumbs.add(getShowEntitiesLink(info));
 
-			SectionId section = info.getSectionForId(modalSection);
-			if( section instanceof AbstractEntityContributeSection )
-			{
-				((AbstractEntityContributeSection<?, ?, ?>) section).addBreadcrumbsAndTitle(info, decorations, crumbs);
-			}
-			return;
-		}
-		decorations.setTitle(getTitleLabel(info));
-		decorations.setContentBodyClass("entities");
-	}
+      SectionId section = info.getSectionForId(modalSection);
+      if (section instanceof AbstractEntityContributeSection) {
+        ((AbstractEntityContributeSection<?, ?, ?>) section)
+            .addBreadcrumbsAndTitle(info, decorations, crumbs);
+      }
+      return;
+    }
+    decorations.setTitle(getTitleLabel(info));
+    decorations.setContentBodyClass("entities");
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new OneColumnLayoutModel();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new OneColumnLayoutModel();
+  }
 }

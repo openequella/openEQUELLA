@@ -29,16 +29,13 @@ import com.tle.web.copyright.AbstractSelectableCopyrightAttachment;
 
 @Bind
 @Singleton
-public class SelectableCLAAttachment extends AbstractSelectableCopyrightAttachment<CLAHolding, CLAPortion, CLASection>
-{
+public class SelectableCLAAttachment
+    extends AbstractSelectableCopyrightAttachment<CLAHolding, CLAPortion, CLASection> {
 
-	@Inject
-	private CLAService claService;
+  @Inject private CLAService claService;
 
-	@Override
-	protected CopyrightService<CLAHolding, CLAPortion, CLASection> getCopyrightServiceImpl()
-	{
-		return claService;
-	}
-
+  @Override
+  protected CopyrightService<CLAHolding, CLAPortion, CLASection> getCopyrightServiceImpl() {
+    return claService;
+  }
 }

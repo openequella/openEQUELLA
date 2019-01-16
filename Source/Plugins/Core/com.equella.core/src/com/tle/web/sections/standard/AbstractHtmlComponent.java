@@ -31,129 +31,106 @@ import com.tle.web.sections.events.DocumentParamsEvent;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 
 @NonNullByDefault
-public abstract class AbstractHtmlComponent<M> extends AbstractPrototypeSection<M>
-{
-	@Nullable
-	protected String preferredId;
-	@Nullable
-	protected String parameterId;
-	protected boolean stateful = true;
-	protected BookmarkContextHolder contextHolder = new BookmarkContextHolder();
-	protected boolean finishedSetup;
-	@Nullable
-	private Map<Object, Object> componentAttributes;
+public abstract class AbstractHtmlComponent<M> extends AbstractPrototypeSection<M> {
+  @Nullable protected String preferredId;
+  @Nullable protected String parameterId;
+  protected boolean stateful = true;
+  protected BookmarkContextHolder contextHolder = new BookmarkContextHolder();
+  protected boolean finishedSetup;
+  @Nullable private Map<Object, Object> componentAttributes;
 
-	@Override
-	public boolean isTreeIndexed()
-	{
-		return false;
-	}
+  @Override
+  public boolean isTreeIndexed() {
+    return false;
+  }
 
-	public boolean isStateful()
-	{
-		return stateful;
-	}
+  public boolean isStateful() {
+    return stateful;
+  }
 
-	public void setStateful(boolean stateful)
-	{
-		this.stateful = stateful;
-	}
+  public void setStateful(boolean stateful) {
+    this.stateful = stateful;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return preferredId;
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return preferredId;
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		if( parameterId == null )
-		{
-			parameterId = id;
-		}
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    if (parameterId == null) {
+      parameterId = id;
+    }
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		finishedSetup = true;
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    finishedSetup = true;
+  }
 
-	@SuppressWarnings("nls")
-	protected void ensureBuildingTree()
-	{
-		if( finishedSetup )
-		{
-			throw new SectionsRuntimeException("Attempted to modify component settings after SectionTree has finished");
-		}
-	}
+  @SuppressWarnings("nls")
+  protected void ensureBuildingTree() {
+    if (finishedSetup) {
+      throw new SectionsRuntimeException(
+          "Attempted to modify component settings after SectionTree has finished");
+    }
+  }
 
-	protected boolean addToThisBookmark(SectionInfo info, BookmarkEvent event)
-	{
-		if( (!isStateful() && !event.isRendering()) || !event.isAllowedInThisContext(contextHolder) )
-		{
-			return false;
-		}
-		return true;
-	}
+  protected boolean addToThisBookmark(SectionInfo info, BookmarkEvent event) {
+    if ((!isStateful() && !event.isRendering()) || !event.isAllowedInThisContext(contextHolder)) {
+      return false;
+    }
+    return true;
+  }
 
-	protected void addDocumentedParam(DocumentParamsEvent event, String param, String type, String... values)
-	{
-		event.addParam(contextHolder.getContexts().contains(BookmarkEvent.CONTEXT_SUPPORTED), param, type, values);
-	}
+  protected void addDocumentedParam(
+      DocumentParamsEvent event, String param, String type, String... values) {
+    event.addParam(
+        contextHolder.getContexts().contains(BookmarkEvent.CONTEXT_SUPPORTED), param, type, values);
+  }
 
-	protected boolean hasBeenRendered(SectionInfo info)
-	{
-		return false;
-	}
+  protected boolean hasBeenRendered(SectionInfo info) {
+    return false;
+  }
 
-	public void setPreferredId(String preferredId)
-	{
-		this.preferredId = preferredId;
-	}
+  public void setPreferredId(String preferredId) {
+    this.preferredId = preferredId;
+  }
 
-	public String getParameterId()
-	{
-		return parameterId;
-	}
+  public String getParameterId() {
+    return parameterId;
+  }
 
-	public void setParameterId(String parameterId)
-	{
-		this.parameterId = parameterId;
-	}
+  public void setParameterId(String parameterId) {
+    this.parameterId = parameterId;
+  }
 
-	public void setOnlyForContext(Set<String> onlyForContexts)
-	{
-		contextHolder.setOnlyForContext(onlyForContexts);
-	}
+  public void setOnlyForContext(Set<String> onlyForContexts) {
+    contextHolder.setOnlyForContext(onlyForContexts);
+  }
 
-	public void setIgnoreForContext(Set<String> ignoreForContexts)
-	{
-		contextHolder.setIgnoreForContext(ignoreForContexts);
-	}
+  public void setIgnoreForContext(Set<String> ignoreForContexts) {
+    contextHolder.setIgnoreForContext(ignoreForContexts);
+  }
 
-	public void setContexts(Set<String> contexts)
-	{
-		contextHolder.setContexts(contexts);
-	}
+  public void setContexts(Set<String> contexts) {
+    contextHolder.setContexts(contexts);
+  }
 
-	public void setComponentAttribute(Object key, Object value)
-	{
-		ensureBuildingTree();
+  public void setComponentAttribute(Object key, Object value) {
+    ensureBuildingTree();
 
-		if( componentAttributes == null )
-		{
-			componentAttributes = Maps.newHashMap();
-		}
-		componentAttributes.put(key, value);
-	}
+    if (componentAttributes == null) {
+      componentAttributes = Maps.newHashMap();
+    }
+    componentAttributes.put(key, value);
+  }
 
-	@SuppressWarnings("unchecked")
-	@Nullable
-	public <T> T getComponentAttribute(Object key)
-	{
-		return componentAttributes == null ? null : (T) componentAttributes.get(key);
-	}
+  @SuppressWarnings("unchecked")
+  @Nullable
+  public <T> T getComponentAttribute(Object key) {
+    return componentAttributes == null ? null : (T) componentAttributes.get(key);
+  }
 }

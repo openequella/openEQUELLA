@@ -62,199 +62,168 @@ import net.oauth.OAuthMessage;
 @Bind(EchoService.class)
 @Singleton
 @SecureEntity("ECHO")
-public class EchoServiceImpl extends AbstractEntityServiceImpl<EntityEditingBean, EchoServer, EchoService>
-	implements
-		EchoService
-{
-	@Inject
-	private ObjectMapperService objectMapperService;
+public class EchoServiceImpl
+    extends AbstractEntityServiceImpl<EntityEditingBean, EchoServer, EchoService>
+    implements EchoService {
+  @Inject private ObjectMapperService objectMapperService;
 
-	private ObjectMapper mapper;
+  private ObjectMapper mapper;
 
-	protected final EchoDao echoDao;
+  protected final EchoDao echoDao;
 
-	@Inject
-	public EchoServiceImpl(EchoDao dao)
-	{
-		super(Node.ECHO, dao);
-		echoDao = dao;
-	}
+  @Inject
+  public EchoServiceImpl(EchoDao dao) {
+    super(Node.ECHO, dao);
+    echoDao = dao;
+  }
 
-	@Override
-	public synchronized ObjectMapper getMapper()
-	{
-		if( mapper == null )
-		{
-			mapper = objectMapperService.createObjectMapper("rest");
-		}
-		return mapper;
-	}
+  @Override
+  public synchronized ObjectMapper getMapper() {
+    if (mapper == null) {
+      mapper = objectMapperService.createObjectMapper("rest");
+    }
+    return mapper;
+  }
 
-	@Override
-	protected void doValidation(EntityEditingSession<EntityEditingBean, EchoServer> session, EchoServer es,
-		List<ValidationError> errors)
-	{
-		addIfEmpty(errors, LangUtils.isEmpty(es.getName()), "name");
-		boolean appUrlEmpty = Check.isEmpty(es.getApplicationUrl());
-		addIfEmpty(errors, appUrlEmpty, "applicationurl");
-		if( !appUrlEmpty )
-		{
-			addIfInvalid(errors, !validateUrl(es.getApplicationUrl()), "applicationurl");
-		}
-		boolean contentUrlEmpty = Check.isEmpty(es.getContentUrl());
-		addIfEmpty(errors, contentUrlEmpty, "contenturl");
-		if( !contentUrlEmpty )
-		{
-			addIfInvalid(errors, !validateUrl(es.getContentUrl()), "contenturl");
-		}
-		addIfEmpty(errors, Check.isEmpty(es.getConsumerKey()), "consumerkey");
-		addIfEmpty(errors, Check.isEmpty(es.getConsumerSecret()), "consumersecret");
-		addIfEmpty(errors, Check.isEmpty(es.getEchoSystemID()), "systemid");
-	}
+  @Override
+  protected void doValidation(
+      EntityEditingSession<EntityEditingBean, EchoServer> session,
+      EchoServer es,
+      List<ValidationError> errors) {
+    addIfEmpty(errors, LangUtils.isEmpty(es.getName()), "name");
+    boolean appUrlEmpty = Check.isEmpty(es.getApplicationUrl());
+    addIfEmpty(errors, appUrlEmpty, "applicationurl");
+    if (!appUrlEmpty) {
+      addIfInvalid(errors, !validateUrl(es.getApplicationUrl()), "applicationurl");
+    }
+    boolean contentUrlEmpty = Check.isEmpty(es.getContentUrl());
+    addIfEmpty(errors, contentUrlEmpty, "contenturl");
+    if (!contentUrlEmpty) {
+      addIfInvalid(errors, !validateUrl(es.getContentUrl()), "contenturl");
+    }
+    addIfEmpty(errors, Check.isEmpty(es.getConsumerKey()), "consumerkey");
+    addIfEmpty(errors, Check.isEmpty(es.getConsumerSecret()), "consumersecret");
+    addIfEmpty(errors, Check.isEmpty(es.getEchoSystemID()), "systemid");
+  }
 
-	private void addIfEmpty(List<ValidationError> errors, boolean empty, String field)
-	{
-		if( empty )
-		{
-			errors.add(new ValidationError(field, "mandatory"));
-		}
-	}
+  private void addIfEmpty(List<ValidationError> errors, boolean empty, String field) {
+    if (empty) {
+      errors.add(new ValidationError(field, "mandatory"));
+    }
+  }
 
-	private void addIfInvalid(List<ValidationError> errors, boolean empty, String field)
-	{
-		if( empty )
-		{
-			errors.add(new ValidationError(field, "invalid"));
-		}
-	}
+  private void addIfInvalid(List<ValidationError> errors, boolean empty, String field) {
+    if (empty) {
+      errors.add(new ValidationError(field, "invalid"));
+    }
+  }
 
-	private boolean validateUrl(String url)
-	{
-		try
-		{
-			@SuppressWarnings("unused")
-			URL u = new URL(url);
-		}
-		catch( MalformedURLException e )
-		{
-			return false;
-		}
-		return true;
-	}
+  private boolean validateUrl(String url) {
+    try {
+      @SuppressWarnings("unused")
+      URL u = new URL(url);
+    } catch (MalformedURLException e) {
+      return false;
+    }
+    return true;
+  }
 
-	@Override
-	public boolean canDelete(BaseEntityLabel server)
-	{
-		return canDelete((Object) server);
-	}
+  @Override
+  public boolean canDelete(BaseEntityLabel server) {
+    return canDelete((Object) server);
+  }
 
-	@Override
-	public boolean canDelete(EchoServer server)
-	{
-		return canDelete((Object) server);
-	}
+  @Override
+  public boolean canDelete(EchoServer server) {
+    return canDelete((Object) server);
+  }
 
-	private boolean canDelete(Object server)
-	{
-		return checkPrivs(server, Sets.newHashSet(EchoConstants.PRIV_DELETE_ECHO));
-	}
+  private boolean canDelete(Object server) {
+    return checkPrivs(server, Sets.newHashSet(EchoConstants.PRIV_DELETE_ECHO));
+  }
 
-	@Override
-	public boolean canEdit(BaseEntityLabel server)
-	{
-		return canEdit((Object) server);
-	}
+  @Override
+  public boolean canEdit(BaseEntityLabel server) {
+    return canEdit((Object) server);
+  }
 
-	@Override
-	public boolean canEdit(EchoServer server)
-	{
-		return canEdit((Object) server);
-	}
+  @Override
+  public boolean canEdit(EchoServer server) {
+    return canEdit((Object) server);
+  }
 
-	private boolean canEdit(Object server)
-	{
-		return checkPrivs(server, Sets.newHashSet(EchoConstants.PRIV_EDIT_ECHO));
-	}
+  private boolean canEdit(Object server) {
+    return checkPrivs(server, Sets.newHashSet(EchoConstants.PRIV_EDIT_ECHO));
+  }
 
-	private boolean checkPrivs(Object server, Set<String> privs)
-	{
-		return !aclManager.filterNonGrantedPrivileges(server, privs).isEmpty();
-	}
+  private boolean checkPrivs(Object server, Set<String> privs) {
+    return !aclManager.filterNonGrantedPrivileges(server, privs).isEmpty();
+  }
 
-	@Override
-	@SecureOnReturn(priv = EchoConstants.PRIV_EDIT_ECHO)
-	public EchoServer getForEdit(String uuid)
-	{
-		return getByUuid(uuid);
-	}
+  @Override
+  @SecureOnReturn(priv = EchoConstants.PRIV_EDIT_ECHO)
+  public EchoServer getForEdit(String uuid) {
+    return getByUuid(uuid);
+  }
 
-	@Override
-	public String addEchoServer(EchoServer es) throws InvalidDataException
-	{
-		EntityPack<EchoServer> pack = new EntityPack<EchoServer>();
-		pack.setEntity(es);
-		return add(pack, false).getUuid();
-	}
+  @Override
+  public String addEchoServer(EchoServer es) throws InvalidDataException {
+    EntityPack<EchoServer> pack = new EntityPack<EchoServer>();
+    pack.setEntity(es);
+    return add(pack, false).getUuid();
+  }
 
-	@Override
-	@Transactional
-	public void editEchoServer(String uuid, EchoServer newServer) throws InvalidDataException
-	{
-		EchoServer oldServer = getForEdit(uuid);
+  @Override
+  @Transactional
+  public void editEchoServer(String uuid, EchoServer newServer) throws InvalidDataException {
+    EchoServer oldServer = getForEdit(uuid);
 
-		// Common details
-		editCommonFields(oldServer, newServer);
+    // Common details
+    editCommonFields(oldServer, newServer);
 
-		// Other details
-		oldServer.setApplicationUrl(newServer.getApplicationUrl());
-		oldServer.setContentUrl(newServer.getContentUrl());
-		oldServer.setConsumerKey(newServer.getConsumerKey());
-		oldServer.setConsumerSecret(newServer.getConsumerSecret());
-		oldServer.setEchoSystemID(newServer.getEchoSystemID());
+    // Other details
+    oldServer.setApplicationUrl(newServer.getApplicationUrl());
+    oldServer.setContentUrl(newServer.getContentUrl());
+    oldServer.setConsumerKey(newServer.getConsumerKey());
+    oldServer.setConsumerSecret(newServer.getConsumerSecret());
+    oldServer.setEchoSystemID(newServer.getEchoSystemID());
 
-		// Validate
-		validate(null, oldServer);
+    // Validate
+    validate(null, oldServer);
 
-		echoDao.update(oldServer);
-	}
+    echoDao.update(oldServer);
+  }
 
-	public EchoServer getBySystemID(String esid)
-	{
-		return echoDao.getBySystemID(CurrentInstitution.get(), esid);
-	}
+  public EchoServer getBySystemID(String esid) {
+    return echoDao.getBySystemID(CurrentInstitution.get(), esid);
+  }
 
-	@Override
-	public String getAuthenticatedUrl(String esid, String redirectURL)
-	{
-		EchoServer es = getBySystemID(esid);
-		if( es != null )
-		{
-			OAuthConsumer consumer = new OAuthConsumer(null, es.getConsumerKey(), es.getConsumerSecret(), null);
-			OAuthAccessor oauthAccessor = new OAuthAccessor(consumer);
-			Map<String, String> params = Maps.newHashMap();
-			params.put("redirecturl", redirectURL);
+  @Override
+  public String getAuthenticatedUrl(String esid, String redirectURL) {
+    EchoServer es = getBySystemID(esid);
+    if (es != null) {
+      OAuthConsumer consumer =
+          new OAuthConsumer(null, es.getConsumerKey(), es.getConsumerSecret(), null);
+      OAuthAccessor oauthAccessor = new OAuthAccessor(consumer);
+      Map<String, String> params = Maps.newHashMap();
+      params.put("redirecturl", redirectURL);
 
-			try
-			{
-				OAuthMessage oam = oauthAccessor.newRequestMessage(OAuthMessage.GET,
-					es.getContentUrl() + "ess/personapi/v1/" + CurrentUser.getUsername() + "/session",
-					params.entrySet());
+      try {
+        OAuthMessage oam =
+            oauthAccessor.newRequestMessage(
+                OAuthMessage.GET,
+                es.getContentUrl() + "ess/personapi/v1/" + CurrentUser.getUsername() + "/session",
+                params.entrySet());
 
-				return oam.URL + "?" + Joiner.on("&").join(oam.getParameters());
-			}
-			catch( OAuthException e )
-			{
-				throw new RuntimeException(e);
-			}
-			catch( IOException e )
-			{
-				throw new RuntimeException(e);
-			}
-			catch( URISyntaxException e )
-			{
-				throw new RuntimeException(e);
-			}
-		}
-		return null;
-	}
+        return oam.URL + "?" + Joiner.on("&").join(oam.getParameters());
+      } catch (OAuthException e) {
+        throw new RuntimeException(e);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      } catch (URISyntaxException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    return null;
+  }
 }

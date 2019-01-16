@@ -39,44 +39,38 @@ import com.tle.common.usermanagement.user.CurrentUser;
 
 @Bind(IntegrationLoggingService.class)
 @Singleton
-public class IntegrationLoggingServiceImpl implements IntegrationLoggingService, AuditLogExtension
-{
-	@Inject
-	private IntegrationLoggingDao integrationLoggingDao;
+public class IntegrationLoggingServiceImpl implements IntegrationLoggingService, AuditLogExtension {
+  @Inject private IntegrationLoggingDao integrationLoggingDao;
 
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
-	public void logSelections(Collection<IntegrationSelection> selections)
-	{
-		for( IntegrationSelection selection : selections )
-		{
-			AuditLogLms lmsAudit = new AuditLogLms();
-			lmsAudit.setInstitution(CurrentInstitution.get());
-			lmsAudit.setUserId(CurrentUser.getUserID());
-			lmsAudit.setSessionId(CurrentUser.getSessionID());
-			lmsAudit.setTimestamp(new Date());
-			ItemId itemId = selection.getItemId();
-			lmsAudit.setUuid(itemId.getUuid());
-			lmsAudit.setVersion(itemId.getVersion());
-			lmsAudit.setLatest(selection.isLatest());
-			lmsAudit.setType(selection.getType());
-			lmsAudit.setResource(selection.getResource());
-			lmsAudit.setContentType(selection.getContentType());
-			lmsAudit.setSelected(selection.getSelection());
-			integrationLoggingDao.save(lmsAudit);
-		}
-	}
+  @Override
+  @Transactional(propagation = Propagation.REQUIRED)
+  public void logSelections(Collection<IntegrationSelection> selections) {
+    for (IntegrationSelection selection : selections) {
+      AuditLogLms lmsAudit = new AuditLogLms();
+      lmsAudit.setInstitution(CurrentInstitution.get());
+      lmsAudit.setUserId(CurrentUser.getUserID());
+      lmsAudit.setSessionId(CurrentUser.getSessionID());
+      lmsAudit.setTimestamp(new Date());
+      ItemId itemId = selection.getItemId();
+      lmsAudit.setUuid(itemId.getUuid());
+      lmsAudit.setVersion(itemId.getVersion());
+      lmsAudit.setLatest(selection.isLatest());
+      lmsAudit.setType(selection.getType());
+      lmsAudit.setResource(selection.getResource());
+      lmsAudit.setContentType(selection.getContentType());
+      lmsAudit.setSelected(selection.getSelection());
+      integrationLoggingDao.save(lmsAudit);
+    }
+  }
 
-	@Override
-	public AuditLogExtensionDao<? extends AuditLogTable> getDao()
-	{
-		return integrationLoggingDao;
-	}
+  @Override
+  public AuditLogExtensionDao<? extends AuditLogTable> getDao() {
+    return integrationLoggingDao;
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public String getShortName()
-	{
-		return "integration";
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public String getShortName() {
+    return "integration";
+  }
 }

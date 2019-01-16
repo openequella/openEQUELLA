@@ -29,44 +29,33 @@ import com.tle.core.freetext.indexer.AbstractIndexingExtension;
 import com.tle.core.guice.Bind;
 import com.tle.freetext.IndexedItem;
 
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @NonNullByDefault
 @Bind
 @Singleton
-public class VideoIndexer extends AbstractIndexingExtension
-{
-	@Inject
-	private VideoService videoService;
+public class VideoIndexer extends AbstractIndexingExtension {
+  @Inject private VideoService videoService;
 
-	@Override
-	public void indexFast(IndexedItem indexedItem)
-	{
-		for( IAttachment attachment : indexedItem.getItem().getAttachments() )
-		{
-			final String thumb = attachment.getThumbnail();
-			if( !"suppress".equals(thumb) )
-			{
-				if( videoService.isVideo((Attachment) attachment) )
-				{
-					indexedItem.getItemdoc().add(keyword(FreeTextQuery.FIELD_VIDEO_THUMB, "true"));
-					break;
-				}
-			}
-		}
-	}
+  @Override
+  public void indexFast(IndexedItem indexedItem) {
+    for (IAttachment attachment : indexedItem.getItem().getAttachments()) {
+      final String thumb = attachment.getThumbnail();
+      if (!"suppress".equals(thumb)) {
+        if (videoService.isVideo((Attachment) attachment)) {
+          indexedItem.getItemdoc().add(keyword(FreeTextQuery.FIELD_VIDEO_THUMB, "true"));
+          break;
+        }
+      }
+    }
+  }
 
-	@Override
-	public void indexSlow(IndexedItem indexedItem)
-	{
-		//Nah
-	}
+  @Override
+  public void indexSlow(IndexedItem indexedItem) {
+    // Nah
+  }
 
-	@Override
-	public void loadForIndexing(List<IndexedItem> items)
-	{
-		//Nah
-	}
+  @Override
+  public void loadForIndexing(List<IndexedItem> items) {
+    // Nah
+  }
 }

@@ -32,52 +32,42 @@ import com.tle.core.harvester.oai.error.NoMetadataFormatsException;
 
 @Bind(OAIHarvesterService.class)
 @Singleton
-public class OAIHarvesterServiceImpl implements OAIHarvesterService
-{
-	public OAIHarvesterServiceImpl()
-	{
-		super();
-	}
+public class OAIHarvesterServiceImpl implements OAIHarvesterService {
+  public OAIHarvesterServiceImpl() {
+    super();
+  }
 
-	@Override
-	public List<NameValue> listSets(URL url) throws Exception
-	{
-		OAIClient client = new OAIClient(url);
-		com.tle.core.harvester.oai.data.List listSets = client.listSets();
-		if( listSets == null )
-		{
-			return Collections.emptyList();
-		}
-		List<NameValue> nvs = new ArrayList<NameValue>();
-		for( Object set : listSets )
-		{
-			String name = ((Set) set).getName();
-			String spec = ((Set) set).getSpec();
-			nvs.add(new NameValue(name, spec));
-		}
+  @Override
+  public List<NameValue> listSets(URL url) throws Exception {
+    OAIClient client = new OAIClient(url);
+    com.tle.core.harvester.oai.data.List listSets = client.listSets();
+    if (listSets == null) {
+      return Collections.emptyList();
+    }
+    List<NameValue> nvs = new ArrayList<NameValue>();
+    for (Object set : listSets) {
+      String name = ((Set) set).getName();
+      String spec = ((Set) set).getSpec();
+      nvs.add(new NameValue(name, spec));
+    }
 
-		return nvs;
-	}
+    return nvs;
+  }
 
-	@Override
-	public List<String> listMetadataFormats(URL url) throws Exception
-	{
-		OAIClient client = new OAIClient(url);
-		com.tle.core.harvester.oai.data.List listMetas;
-		try
-		{
-			listMetas = client.listMetadataFormats();
-		}
-		catch( NoMetadataFormatsException e )
-		{
-			return Collections.emptyList();
-		}
-		List<String> metas = new ArrayList<String>();
-		for( Object meta : listMetas )
-		{
-			String prefix = ((MetadataFormat) meta).getMetadataPrefix();
-			metas.add(prefix);
-		}
-		return metas;
-	}
+  @Override
+  public List<String> listMetadataFormats(URL url) throws Exception {
+    OAIClient client = new OAIClient(url);
+    com.tle.core.harvester.oai.data.List listMetas;
+    try {
+      listMetas = client.listMetadataFormats();
+    } catch (NoMetadataFormatsException e) {
+      return Collections.emptyList();
+    }
+    List<String> metas = new ArrayList<String>();
+    for (Object meta : listMetas) {
+      String prefix = ((MetadataFormat) meta).getMetadataPrefix();
+      metas.add(prefix);
+    }
+    return metas;
+  }
 }

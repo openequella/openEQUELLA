@@ -22,23 +22,18 @@ import com.dytech.devlib.PropBagEx;
 import com.dytech.installer.Installer;
 import com.dytech.installer.InstallerException;
 
-public class Migrate
-{
-	public Migrate()
-	{
-	}
+public class Migrate {
+  public Migrate() {}
 
-	public void start() throws InstallerException
-	{
-		InputStream script = getClass().getResourceAsStream("/script/migrate-script.xml");
-		InputStream commands = getClass().getResourceAsStream("/script/migrate-commands.xml");
+  public void start() throws InstallerException {
+    InputStream script = getClass().getResourceAsStream("/script/migrate-script.xml");
+    InputStream commands = getClass().getResourceAsStream("/script/migrate-commands.xml");
 
-		new Installer(new PropBagEx(script), new PropBagEx(commands));
-	}
+    new Installer(new PropBagEx(script), new PropBagEx(commands));
+  }
 
-	public static void main(String[] args) throws Exception
-	{
-		Migrate migrate = new Migrate();
-		migrate.start();
-	}
+  public static void main(String[] args) throws Exception {
+    Migrate migrate = new Migrate();
+    migrate.start();
+  }
 }

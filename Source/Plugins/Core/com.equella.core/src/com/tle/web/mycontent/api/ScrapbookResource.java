@@ -88,319 +88,283 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
-/**
- * @author Dongsheng Cai
- */
+/** @author Dongsheng Cai */
 @Bind
 @Path("scrapbook")
 @Api(value = "Scrapbook items", description = "scrapbook")
 @Produces({"application/json"})
 @SuppressWarnings("nls")
 @Singleton
-public class ScrapbookResource
-{
-	@Inject
-	private FreeTextService freetextService;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private ItemStandardService itemStandardService;
-	@Inject
-	private ItemFileService itemFileService;
-	@Inject
-	private MyContentService myContentService;
-	@Inject
-	private MyPagesService myPagesService;
-	@Inject
-	private ItemOperationFactory workflowFactory;
-	@Inject
-	private StagingService stagingService;
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private ViewItemLinkFactory linkFactory;
+public class ScrapbookResource {
+  @Inject private FreeTextService freetextService;
+  @Inject private ItemService itemService;
+  @Inject private ItemStandardService itemStandardService;
+  @Inject private ItemFileService itemFileService;
+  @Inject private MyContentService myContentService;
+  @Inject private MyPagesService myPagesService;
+  @Inject private ItemOperationFactory workflowFactory;
+  @Inject private StagingService stagingService;
+  @Inject private FileSystemService fileSystemService;
+  @Inject private InstitutionService institutionService;
+  @Inject private ViewItemLinkFactory linkFactory;
 
-	@GET
-	@Path("/")
-	@ApiOperation(value = "Search my scrapbook")
-	public Response search(
-		// @formatter:off
-		@ApiParam(value="Query string", required = false)
-		@QueryParam("q")
-			String query,
-		@ApiParam(value="List of resource types", required = false)
-		@QueryParam("resourcetypes")
-			CsvList csvResourceTypes,
-		@ApiParam(value="List of mime types", required = false)
-		@QueryParam("mimetypes")
-			CsvList csvMimeTypes,
-		@ApiParam(value="Search offset", required = false, defaultValue="0") @QueryParam("offset")
-			int offset,
-		@ApiParam(value="Search results length", required = false, defaultValue = "10", allowableValues = "range[1,50]")
-		@QueryParam("length")
-		@DefaultValue("10")
-			int length,
-		@ApiParam(value="sorttype", allowableValues="range[0,2]", required = false) @QueryParam("sorttype")
-			int sortType
-		)
-		// @formatter:on
-	{
-		final SearchBean<ScrapbookItemBean> result = new SearchBean<ScrapbookItemBean>();
+  @GET
+  @Path("/")
+  @ApiOperation(value = "Search my scrapbook")
+  public Response search(
+      // @formatter:off
+      @ApiParam(value = "Query string", required = false) @QueryParam("q") String query,
+      @ApiParam(value = "List of resource types", required = false) @QueryParam("resourcetypes")
+          CsvList csvResourceTypes,
+      @ApiParam(value = "List of mime types", required = false) @QueryParam("mimetypes")
+          CsvList csvMimeTypes,
+      @ApiParam(value = "Search offset", required = false, defaultValue = "0") @QueryParam("offset")
+          int offset,
+      @ApiParam(
+              value = "Search results length",
+              required = false,
+              defaultValue = "10",
+              allowableValues = "range[1,50]")
+          @QueryParam("length")
+          @DefaultValue("10")
+          int length,
+      @ApiParam(value = "sorttype", allowableValues = "range[0,2]", required = false)
+          @QueryParam("sorttype")
+          int sortType)
+        // @formatter:on
+      {
+    final SearchBean<ScrapbookItemBean> result = new SearchBean<ScrapbookItemBean>();
 
-		List<String> resourceTypes = CsvList.asList(csvResourceTypes);
-		List<String> mimeTypes = CsvList.asList(csvMimeTypes);
-		final List<ScrapbookItemBean> resultItems = Lists.newArrayList();
+    List<String> resourceTypes = CsvList.asList(csvResourceTypes);
+    List<String> mimeTypes = CsvList.asList(csvMimeTypes);
+    final List<ScrapbookItemBean> resultItems = Lists.newArrayList();
 
-		MyResourcesSearch search = new MyResourcesSearch();
-		search.setItemStatuses(Collections.singletonList(ItemStatus.PERSONAL));
-		search.setOwner(CurrentUser.getUserID());
-		if( resourceTypes != null )
-		{
-			search.addMust("/" + MyContentConstants.CONTENT_TYPE_NODE, resourceTypes);
-		}
-		if( mimeTypes != null )
-		{
-			search.setMimeTypes(mimeTypes);
-		}
-		search.setQuery(query);
-		switch( sortType )
-		{
-			case 0:
-				search.setSortType(SortType.RANK);
-				break;
-			case 2:
-				search.setSortType(SortType.NAME);
-				break;
-			case 5:
-				search.setSortType(SortType.DATECREATED);
-				break;
-			case 1:
-			default:
-				search.setSortType(SortType.DATEMODIFIED);
-				break;
-		}
-		FreetextSearchResults<FreetextResult> results = freetextService.search(search, offset, length);
+    MyResourcesSearch search = new MyResourcesSearch();
+    search.setItemStatuses(Collections.singletonList(ItemStatus.PERSONAL));
+    search.setOwner(CurrentUser.getUserID());
+    if (resourceTypes != null) {
+      search.addMust("/" + MyContentConstants.CONTENT_TYPE_NODE, resourceTypes);
+    }
+    if (mimeTypes != null) {
+      search.setMimeTypes(mimeTypes);
+    }
+    search.setQuery(query);
+    switch (sortType) {
+      case 0:
+        search.setSortType(SortType.RANK);
+        break;
+      case 2:
+        search.setSortType(SortType.NAME);
+        break;
+      case 5:
+        search.setSortType(SortType.DATECREATED);
+        break;
+      case 1:
+      default:
+        search.setSortType(SortType.DATEMODIFIED);
+        break;
+    }
+    FreetextSearchResults<FreetextResult> results = freetextService.search(search, offset, length);
 
-		List<Item> items = results.getResults();
+    List<Item> items = results.getResults();
 
-		for( Item item : items )
-		{
-			resultItems.add(serializerToScrapbookBean(item));
-		}
-		result.setStart(results.getOffset());
-		result.setLength(results.getCount());
-		result.setAvailable(results.getAvailable());
-		result.setResults(resultItems);
-		return Response.ok(result).build();
-	}
+    for (Item item : items) {
+      resultItems.add(serializerToScrapbookBean(item));
+    }
+    result.setStart(results.getOffset());
+    result.setLength(results.getCount());
+    result.setAvailable(results.getAvailable());
+    result.setResults(resultItems);
+    return Response.ok(result).build();
+  }
 
-	@GET
-	@Path("/{uuid}")
-	@ApiOperation(value = "Get my scrapbook item")
-	public Response getScrapbookItem(@ApiParam(value = "Scrapbook item uuid") @PathParam("uuid") String uuid)
-	{
-		ItemId itemId = new ItemId(uuid, 1);
-		Item item = itemService.get(itemId);
-		ScrapbookItemBean scrapbookItem = serializerToScrapbookBean(item);
-		return Response.ok(scrapbookItem).build();
-	}
+  @GET
+  @Path("/{uuid}")
+  @ApiOperation(value = "Get my scrapbook item")
+  public Response getScrapbookItem(
+      @ApiParam(value = "Scrapbook item uuid") @PathParam("uuid") String uuid) {
+    ItemId itemId = new ItemId(uuid, 1);
+    Item item = itemService.get(itemId);
+    ScrapbookItemBean scrapbookItem = serializerToScrapbookBean(item);
+    return Response.ok(scrapbookItem).build();
+  }
 
-	@DELETE
-	@Path("/{uuid}")
-	@ApiOperation(value = "Delete a scrapbook item")
-	public Response delete(@ApiParam(value = "Scrapbook item uuid") @PathParam("uuid") String uuid)
-	{
-		ItemId itemId = new ItemId(uuid, 1);
-		itemStandardService.delete(itemId, true, false, false);
-		return Response.noContent().build();
-	}
+  @DELETE
+  @Path("/{uuid}")
+  @ApiOperation(value = "Delete a scrapbook item")
+  public Response delete(@ApiParam(value = "Scrapbook item uuid") @PathParam("uuid") String uuid) {
+    ItemId itemId = new ItemId(uuid, 1);
+    itemStandardService.delete(itemId, true, false, false);
+    return Response.noContent().build();
+  }
 
-	@POST
-	@Path("/")
-	@Consumes(MediaType.WILDCARD)
-	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(value = "Create new scrapbook item")
-	public Response create(@ApiParam(value = "Scrapbook item") ScrapbookItemBean itemBean, @Context UriInfo info)
-	{
-		return Response.status(Status.CREATED)
-			.location(getScrapbookItemURI(createOrUpdateScrapbookItem(null, itemBean, info).getItemId())).build();
-	}
+  @POST
+  @Path("/")
+  @Consumes(MediaType.WILDCARD)
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiOperation(value = "Create new scrapbook item")
+  public Response create(
+      @ApiParam(value = "Scrapbook item") ScrapbookItemBean itemBean, @Context UriInfo info) {
+    return Response.status(Status.CREATED)
+        .location(
+            getScrapbookItemURI(createOrUpdateScrapbookItem(null, itemBean, info).getItemId()))
+        .build();
+  }
 
-	@PUT
-	@Path("/{uuid}")
-	@Consumes(MediaType.WILDCARD)
-	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(value = "Update an scrapbook item")
-	public Response update(@ApiParam(value = "Scrapbook item uuid") @PathParam("uuid") String uuid,
-		@ApiParam(value = "Scrapbook item") ScrapbookItemBean itemBean, @Context UriInfo info)
-	{
-		return Response.status(Status.OK)
-			.location(getScrapbookItemURI(createOrUpdateScrapbookItem(uuid, itemBean, info).getItemId())).build();
-	}
+  @PUT
+  @Path("/{uuid}")
+  @Consumes(MediaType.WILDCARD)
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiOperation(value = "Update an scrapbook item")
+  public Response update(
+      @ApiParam(value = "Scrapbook item uuid") @PathParam("uuid") String uuid,
+      @ApiParam(value = "Scrapbook item") ScrapbookItemBean itemBean,
+      @Context UriInfo info) {
+    return Response.status(Status.OK)
+        .location(
+            getScrapbookItemURI(createOrUpdateScrapbookItem(uuid, itemBean, info).getItemId()))
+        .build();
+  }
 
-	private ItemPack<Item> createOrUpdateScrapbookItem(String uuid, ScrapbookItemBean scrapbookItem, UriInfo info)
-	{
-		ItemId itemId = null;
-		if( uuid != null )
-		{
-			itemId = new ItemId(uuid, 1);
-			itemService.get(itemId);
-		}
-		else
-		{
-			itemId = new ItemId(UUID.randomUUID().toString(), 1);
-		}
-		final MyContentFields fields = new MyContentFields();
-		fields.setResourceId(scrapbookItem.getType());
-		if( scrapbookItem.getKeywords() != null )
-		{
-			fields.setTags(scrapbookItem.getKeywords().toLowerCase());
-		}
-		else
-		{
-			fields.setTags("");
+  private ItemPack<Item> createOrUpdateScrapbookItem(
+      String uuid, ScrapbookItemBean scrapbookItem, UriInfo info) {
+    ItemId itemId = null;
+    if (uuid != null) {
+      itemId = new ItemId(uuid, 1);
+      itemService.get(itemId);
+    } else {
+      itemId = new ItemId(UUID.randomUUID().toString(), 1);
+    }
+    final MyContentFields fields = new MyContentFields();
+    fields.setResourceId(scrapbookItem.getType());
+    if (scrapbookItem.getKeywords() != null) {
+      fields.setTags(scrapbookItem.getKeywords().toLowerCase());
+    } else {
+      fields.setTags("");
+    }
+    fields.setTitle(scrapbookItem.getTitle());
 
-		}
-		fields.setTitle(scrapbookItem.getTitle());
+    final List<WorkflowOperation> operations = new ArrayList<WorkflowOperation>();
+    if (uuid != null) {
+      operations.add(workflowFactory.startEdit(true));
+    } else {
+      operations.add(
+          workflowFactory.create(myContentService.getMyContentItemDef(), ItemStatus.PERSONAL));
+    }
 
-		final List<WorkflowOperation> operations = new ArrayList<WorkflowOperation>();
-		if( uuid != null )
-		{
-			operations.add(workflowFactory.startEdit(true));
-		}
-		else
-		{
-			operations.add(workflowFactory.create(myContentService.getMyContentItemDef(), ItemStatus.PERSONAL));
-		}
+    List<Map<String, String>> pages = scrapbookItem.getPages();
+    if (!Check.isEmpty(pages)) {
+      for (Map<String, String> page : pages) {
+        String filename = page.get("title") + ".html";
 
-		List<Map<String, String>> pages = scrapbookItem.getPages();
-		if( !Check.isEmpty(pages) )
-		{
-			for( Map<String, String> page : pages )
-			{
-				String filename = page.get("title") + ".html";
+        if (scrapbookItem.getType().equals("mypages")) {
+          operations.add(
+              myPagesService.getEditOperation(
+                  fields,
+                  filename,
+                  new ByteArrayInputStream(page.get("html").getBytes()),
+                  false,
+                  false));
+        } else {
+          StagingFile staging = stagingService.createStagingArea();
+          try {
+            fileSystemService.write(
+                staging, filename, new ByteArrayInputStream(page.get("html").getBytes()), false);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+          operations.add(
+              myContentService.getEditOperation(fields, filename, staging.getUuid(), false, false));
+        }
+      }
+    }
+    Map<String, Object> file = scrapbookItem.getFile();
+    if (file != null && file.get("stagingUuid") != null) {
+      String stagingId = (String) file.get("stagingUuid");
+      if (!stagingService.stagingExists(stagingId)
+          || !fileSystemService.fileExists(new StagingFile(stagingId), null)) {
+        throw new WebApplicationException(Status.NOT_FOUND);
+      }
 
-				if( scrapbookItem.getType().equals("mypages") )
-				{
-					operations.add(myPagesService.getEditOperation(fields, filename,
-						new ByteArrayInputStream(page.get("html").getBytes()), false, false));
-				}
-				else
-				{
-					StagingFile staging = stagingService.createStagingArea();
-					try {
-						fileSystemService.write(staging, filename,
-								new ByteArrayInputStream(page.get("html").getBytes()), false);
-					} catch (IOException e) {
-						throw new RuntimeException(e);
-					}
-					operations.add(myContentService.getEditOperation(fields, filename,
-							staging.getUuid(), false, false));
-				}
+      operations.add(
+          myContentService.getEditOperation(
+              fields, (String) file.get("filename"), stagingId, false, false));
+    } else {
+      operations.add(myContentService.getEditOperation(fields, null, null, false, true));
+    }
+    operations.add(workflowFactory.save());
+    return itemService.operation(
+        itemId, operations.toArray(new WorkflowOperation[operations.size()]));
+  }
 
-			}
-		}
-		Map<String, Object> file = scrapbookItem.getFile();
-		if( file != null && file.get("stagingUuid") != null )
-		{
-			String stagingId = (String) file.get("stagingUuid");
-			if( !stagingService.stagingExists(stagingId)
-				|| !fileSystemService.fileExists(new StagingFile(stagingId), null) )
-			{
-				throw new WebApplicationException(Status.NOT_FOUND);
-			}
+  private URI getScrapbookItemURI(ItemKey itemKey) {
+    try {
+      ItemId itemId = ItemId.fromKey(itemKey);
+      String url = institutionService.institutionalise("api/scrapbook/" + itemId.getUuid() + '/');
+      return new URI(url);
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-			operations.add(myContentService.getEditOperation(fields, (String) file.get("filename"), stagingId,
-				false, false));
-		}
-		else
-		{
-			operations.add(myContentService.getEditOperation(fields, null, null, false, true));
-		}
-		operations.add(workflowFactory.save());
-		return itemService.operation(itemId, operations.toArray(new WorkflowOperation[operations.size()]));
-	}
+  private ScrapbookItemBean serializerToScrapbookBean(Item item) {
+    final ItemId itemId = new ItemId(item.getUuid(), item.getVersion());
+    ScrapbookItemBean scrapbookItem = new ScrapbookItemBean();
+    scrapbookItem.setUuid(item.getUuid());
+    scrapbookItem.setTitle(itemService.getItemXmlPropBag(item).getNode("//name"));
+    PropBagEx xmlBag = new PropBagEx();
+    xmlBag.setXML(item.getItemXml().getXml());
+    String type = xmlBag.getNode("//content_type", "myresource").toLowerCase();
+    scrapbookItem.setType(type);
+    UnmodifiableIterable<Attachment> attachments = item.getAttachmentsUnmodifiable();
 
-	private URI getScrapbookItemURI(ItemKey itemKey)
-	{
-		try
-		{
-			ItemId itemId = ItemId.fromKey(itemKey);
-			String url = institutionService.institutionalise("api/scrapbook/" + itemId.getUuid() + '/');
-			return new URI(url);
-		}
-		catch( URISyntaxException e )
-		{
-			throw new RuntimeException(e);
-		}
-	}
+    List<Map<String, String>> htmlPages = new ArrayList<Map<String, String>>();
+    for (Attachment att : attachments) {
+      if (att.getAttachmentType() == AttachmentType.HTML && type.equals("mypages")) {
+        final HtmlAttachment htmlAttach = (HtmlAttachment) att;
+        Map<String, String> page = Maps.newHashMap();
+        page.put("title", htmlAttach.getDescription());
 
-	private ScrapbookItemBean serializerToScrapbookBean(Item item)
-	{
-		final ItemId itemId = new ItemId(item.getUuid(), item.getVersion());
-		ScrapbookItemBean scrapbookItem = new ScrapbookItemBean();
-		scrapbookItem.setUuid(item.getUuid());
-		scrapbookItem.setTitle(itemService.getItemXmlPropBag(item).getNode("//name"));
-		PropBagEx xmlBag = new PropBagEx();
-		xmlBag.setXML(item.getItemXml().getXml());
-		String type = xmlBag.getNode("//content_type", "myresource").toLowerCase();
-		scrapbookItem.setType(type);
-		UnmodifiableIterable<Attachment> attachments = item.getAttachmentsUnmodifiable();
+        final String filename = htmlAttach.getFilename();
 
-		List<Map<String, String>> htmlPages = new ArrayList<Map<String, String>>();
-		for( Attachment att : attachments )
-		{
-			if( att.getAttachmentType() == AttachmentType.HTML && type.equals("mypages") )
-			{
-				final HtmlAttachment htmlAttach = (HtmlAttachment) att;
-				Map<String, String> page = Maps.newHashMap();
-				page.put("title", htmlAttach.getDescription());
+        try (InputStream input =
+            fileSystemService.read(itemFileService.getItemFile(htmlAttach.getItem()), filename)) {
+          java.util.Scanner s = new java.util.Scanner(input);
+          s.useDelimiter("\\A");
+          page.put("html", s.hasNext() ? s.next() : "");
+          s.close();
+        } catch (Exception ex) {
 
-				final String filename = htmlAttach.getFilename();
+        }
 
-				try( InputStream input = fileSystemService.read(itemFileService.getItemFile(htmlAttach.getItem()),
-					filename) )
-				{
-					java.util.Scanner s = new java.util.Scanner(input);
-					s.useDelimiter("\\A");
-					page.put("html", s.hasNext() ? s.next() : "");
-					s.close();
-				}
-				catch( Exception ex )
-				{
+        htmlPages.add(page);
+      } else if (att.getAttachmentType() == AttachmentType.FILE) {
+        final FileAttachment fileAtt = (FileAttachment) att;
+        Map<String, Object> file = Maps.newHashMap();
+        file.put("uuid", fileAtt.getUuid());
+        file.put("filename", fileAtt.getFilename());
+        file.put(
+            "links",
+            Collections.singletonMap(
+                "view", linkFactory.createViewAttachmentLink(itemId, fileAtt.getUuid()).getHref()));
+        scrapbookItem.setFile(file);
+      }
+    }
+    scrapbookItem.setPages(htmlPages);
+    scrapbookItem.setKeywords(xmlBag.getNode("//keywords", ""));
 
-				}
-
-				htmlPages.add(page);
-			}
-			else if( att.getAttachmentType() == AttachmentType.FILE )
-			{
-				final FileAttachment fileAtt = (FileAttachment) att;
-				Map<String, Object> file = Maps.newHashMap();
-				file.put("uuid", fileAtt.getUuid());
-				file.put("filename", fileAtt.getFilename());
-				file.put("links", Collections.singletonMap("view",
-					linkFactory.createViewAttachmentLink(itemId, fileAtt.getUuid()).getHref()));
-				scrapbookItem.setFile(file);
-			}
-		}
-		scrapbookItem.setPages(htmlPages);
-		scrapbookItem.setKeywords(xmlBag.getNode("//keywords", ""));
-
-		final Map<String, String> links = Maps.newHashMap();
-		links.put("self", institutionService.institutionalise("api/scrapbook/" + itemId.getUuid() + '/'));
-		if( type.equals("mypages") )
-		{
-			links.put("view", linkFactory.createViewLink(itemId).getHref() + "viewpages.jsp");
-		}
-		// There is no view for non page items
-		// else
-		// {
-		// links.put("view", linkFactory.createViewLink(itemId).getHref());
-		// }
-		scrapbookItem.setLinks(links);
-		return scrapbookItem;
-	}
+    final Map<String, String> links = Maps.newHashMap();
+    links.put(
+        "self", institutionService.institutionalise("api/scrapbook/" + itemId.getUuid() + '/'));
+    if (type.equals("mypages")) {
+      links.put("view", linkFactory.createViewLink(itemId).getHref() + "viewpages.jsp");
+    }
+    // There is no view for non page items
+    // else
+    // {
+    // links.put("view", linkFactory.createViewLink(itemId).getHref());
+    // }
+    scrapbookItem.setLinks(links);
+    return scrapbookItem;
+  }
 }

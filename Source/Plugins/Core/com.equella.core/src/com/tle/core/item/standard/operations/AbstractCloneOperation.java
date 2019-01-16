@@ -46,252 +46,214 @@ import com.tle.core.item.standard.CloneFileProcessingExtension;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 public abstract class AbstractCloneOperation extends AbstractStandardWorkflowOperation
-	implements
-		DuringSaveOperationGenerator,
-		MetadataTransformingOperation
-{
-	public static final String PRE_CLONE_EXTENSION = "preClone";
-	public static final String POST_CLONE_EXTENSION = "postClone";
+    implements DuringSaveOperationGenerator, MetadataTransformingOperation {
+  public static final String PRE_CLONE_EXTENSION = "preClone";
+  public static final String POST_CLONE_EXTENSION = "postClone";
 
-	private InitialiserService initialiserService;
-	@Inject
-	private StagingService stagingService;
+  private InitialiserService initialiserService;
+  @Inject private StagingService stagingService;
 
-	private PluginTracker<CloneFileProcessingExtension> fileProcessorTracker;
-	private List<WorkflowOperation> ranOperations = new ArrayList<WorkflowOperation>();
+  private PluginTracker<CloneFileProcessingExtension> fileProcessorTracker;
+  private List<WorkflowOperation> ranOperations = new ArrayList<WorkflowOperation>();
 
-	protected final boolean copyAttachments;
-	protected String transform;
-	private Function<CloningHelper, CloningHelper> cloner;
+  protected final boolean copyAttachments;
+  protected String transform;
+  private Function<CloningHelper, CloningHelper> cloner;
 
-	protected AbstractCloneOperation(boolean copyAttachments)
-	{
-		this.copyAttachments = copyAttachments;
-	}
+  protected AbstractCloneOperation(boolean copyAttachments) {
+    this.copyAttachments = copyAttachments;
+  }
 
-	/**
-	 * @param transform Xslt transform to perform when moving between schemas.
-	 *            Optional
-	 */
-	@Override
-	public void setTransform(String transform)
-	{
-		this.transform = transform;
-	}
+  /** @param transform Xslt transform to perform when moving between schemas. Optional */
+  @Override
+  public void setTransform(String transform) {
+    this.transform = transform;
+  }
 
-	@Override
-	public Collection<DuringSaveOperation> getDuringSaveOperation()
-	{
-		List<DuringSaveOperation> output = new ArrayList<DuringSaveOperation>();
-		for( WorkflowOperation op : ranOperations )
-		{
-			if( op instanceof DuringSaveOperationGenerator )
-			{
-				output.addAll(((DuringSaveOperationGenerator) op).getDuringSaveOperation());
-			}
-		}
-		return output;
-	}
+  @Override
+  public Collection<DuringSaveOperation> getDuringSaveOperation() {
+    List<DuringSaveOperation> output = new ArrayList<DuringSaveOperation>();
+    for (WorkflowOperation op : ranOperations) {
+      if (op instanceof DuringSaveOperationGenerator) {
+        output.addAll(((DuringSaveOperationGenerator) op).getDuringSaveOperation());
+      }
+    }
+    return output;
+  }
 
-	/**
-	 * The common execution code, which will farm out to your overridden methods
-	 */
-	@Override
-	public final boolean execute()
-	{
-		ranOperations.addAll(itemService.executeExtensionOperationsNow(params, PRE_CLONE_EXTENSION));
+  /** The common execution code, which will farm out to your overridden methods */
+  @Override
+  public final boolean execute() {
+    ranOperations.addAll(itemService.executeExtensionOperationsNow(params, PRE_CLONE_EXTENSION));
 
-		ItemFile from = itemFileService.getItemFile(getItem());
-		StagingFile staging = stagingService.createStagingArea();
-		if( copyAttachments )
-		{
-			fileSystemService.copy(from, staging);
-		}
-		ItemPack<Item> pack = getItemPack();
-		pack.setStagingID(staging.getUuid());
+    ItemFile from = itemFileService.getItemFile(getItem());
+    StagingFile staging = stagingService.createStagingArea();
+    if (copyAttachments) {
+      fileSystemService.copy(from, staging);
+    }
+    ItemPack<Item> pack = getItemPack();
+    pack.setStagingID(staging.getUuid());
 
-		params.setUpdate(false);
+    params.setUpdate(false);
 
-		Item origItem = pack.getItem();
-		Item item = new Item();
-		item.setId(0l);
-		item.setNewItem(true);
-		item.setItemDefinition(origItem.getItemDefinition());
-		item.setInstitution(origItem.getInstitution());
-		item.setHistory(new ArrayList<HistoryEvent>());
-		item.setRating(-1);
-		item.setOwner(CurrentUser.getUserID());
-		item.setStatus(ItemStatus.DRAFT);
-		item.setDateCreated(new Date());
-		item.setName(LanguageBundle.clone(origItem.getName()));
-		item.setDescription(LanguageBundle.clone(origItem.getDescription()));
-		item.setNavigationSettings(origItem.getNavigationSettings());
-		item.setThumb(origItem.getThumb());
+    Item origItem = pack.getItem();
+    Item item = new Item();
+    item.setId(0l);
+    item.setNewItem(true);
+    item.setItemDefinition(origItem.getItemDefinition());
+    item.setInstitution(origItem.getInstitution());
+    item.setHistory(new ArrayList<HistoryEvent>());
+    item.setRating(-1);
+    item.setOwner(CurrentUser.getUserID());
+    item.setStatus(ItemStatus.DRAFT);
+    item.setDateCreated(new Date());
+    item.setName(LanguageBundle.clone(origItem.getName()));
+    item.setDescription(LanguageBundle.clone(origItem.getDescription()));
+    item.setNavigationSettings(origItem.getNavigationSettings());
+    item.setThumb(origItem.getThumb());
 
-		item = initItemUuidAndVersion(item, origItem);
-		doCloning(origItem, item);
+    item = initItemUuidAndVersion(item, origItem);
+    doCloning(origItem, item);
 
-		DrmSettings drm = origItem.getDrmSettings();
-		if( drm != null )
-		{
-			drm = drm.databaseClone();
-			item.setDrmSettings(drm);
-		}
+    DrmSettings drm = origItem.getDrmSettings();
+    if (drm != null) {
+      drm = drm.databaseClone();
+      item.setDrmSettings(drm);
+    }
 
-		pack.setOriginalItem(origItem);
-		pack.setItem(item);
-		doHistory();
-		finalProcessing(origItem, item);
+    pack.setOriginalItem(origItem);
+    pack.setItem(item);
+    doHistory();
+    finalProcessing(origItem, item);
 
-		ranOperations.addAll(itemService.executeExtensionOperationsNow(params, POST_CLONE_EXTENSION));
-		return true;
-	}
+    ranOperations.addAll(itemService.executeExtensionOperationsNow(params, POST_CLONE_EXTENSION));
+    return true;
+  }
 
-	/**
-	 * The actual cloning functionality. The CloningHelper object as returned by
-	 * getCloningHelper determines the fields that are being cloned here.
-	 * 
-	 * @param origItem
-	 * @param item
-	 */
-	protected final void doCloning(Item origItem, Item item)
-	{
-		CloningHelper forCloning = getCloningHelper();
-		if( forCloning != null )
-		{
-			extractCloneData(origItem, forCloning);
-			forCloning = cloner.apply(forCloning);
-			initialiserService.initialiseClones(forCloning);
-			pushCloneData(item, forCloning);
-		}
-	}
+  /**
+   * The actual cloning functionality. The CloningHelper object as returned by getCloningHelper
+   * determines the fields that are being cloned here.
+   *
+   * @param origItem
+   * @param item
+   */
+  protected final void doCloning(Item origItem, Item item) {
+    CloningHelper forCloning = getCloningHelper();
+    if (forCloning != null) {
+      extractCloneData(origItem, forCloning);
+      forCloning = cloner.apply(forCloning);
+      initialiserService.initialiseClones(forCloning);
+      pushCloneData(item, forCloning);
+    }
+  }
 
-	/**
-	 * Anything you want to perform *after* the actual cloning is done, but
-	 * before post-clone operations are run. @
-	 */
-	protected void finalProcessing(Item origItem, Item item)
-	{
-		for( CloneFileProcessingExtension fileProcessor : fileProcessorTracker.getBeanList() )
-		{
-			fileProcessor.processFiles(origItem.getItemId(), itemFileService.getItemFile(origItem), item, getStaging());
-		}
-	}
+  /**
+   * Anything you want to perform *after* the actual cloning is done, but before post-clone
+   * operations are run. @
+   */
+  protected void finalProcessing(Item origItem, Item item) {
+    for (CloneFileProcessingExtension fileProcessor : fileProcessorTracker.getBeanList()) {
+      fileProcessor.processFiles(
+          origItem.getItemId(), itemFileService.getItemFile(origItem), item, getStaging());
+    }
+  }
 
-	/**
-	 * To override in any subclass
-	 * 
-	 * @param newItem
-	 * @param oldItem
-	 * @return @
-	 */
-	protected Item initItemUuidAndVersion(Item newItem, Item oldItem)
-	{
-		newItem.setUuid(UUID.randomUUID().toString());
-		newItem.setVersion(1);
-		return newItem;
-	}
+  /**
+   * To override in any subclass
+   *
+   * @param newItem
+   * @param oldItem
+   * @return @
+   */
+  protected Item initItemUuidAndVersion(Item newItem, Item oldItem) {
+    newItem.setUuid(UUID.randomUUID().toString());
+    newItem.setVersion(1);
+    return newItem;
+  }
 
-	/**
-	 * This method determines the Item fields you want to clone, based on the
-	 * CloningHelper object and the code inside extractCloneData and
-	 * pushCloneData. To override in any subclass
-	 * 
-	 * @return
-	 */
-	protected CloningHelper getCloningHelper()
-	{
-		return new CloningHelper();
-	}
+  /**
+   * This method determines the Item fields you want to clone, based on the CloningHelper object and
+   * the code inside extractCloneData and pushCloneData. To override in any subclass
+   *
+   * @return
+   */
+  protected CloningHelper getCloningHelper() {
+    return new CloningHelper();
+  }
 
-	/**
-	 * Here you will grab the item fields you require and put them into your
-	 * CloningHelper object. To override in any subclass. Do not call this super
-	 * method if not cloning attachments
-	 * 
-	 * @param originalItem
-	 * @param cloning The cloning helper returned from getCloningHelper()
-	 */
-	protected void extractCloneData(Item originalItem, CloningHelper cloning)
-	{
-		if( copyAttachments )
-		{
-			cloning.setAttachments(new ArrayList<Attachment>(originalItem.getAttachments()));
-			cloning.setNodes(new ArrayList<ItemNavigationNode>(originalItem.getTreeNodes()));
-		}
-	}
+  /**
+   * Here you will grab the item fields you require and put them into your CloningHelper object. To
+   * override in any subclass. Do not call this super method if not cloning attachments
+   *
+   * @param originalItem
+   * @param cloning The cloning helper returned from getCloningHelper()
+   */
+  protected void extractCloneData(Item originalItem, CloningHelper cloning) {
+    if (copyAttachments) {
+      cloning.setAttachments(new ArrayList<Attachment>(originalItem.getAttachments()));
+      cloning.setNodes(new ArrayList<ItemNavigationNode>(originalItem.getTreeNodes()));
+    }
+  }
 
-	/**
-	 * Here you will grab the fields back out of your CloningHelper object and
-	 * push them into the new item. To override in any subclass. Do not call
-	 * this super method if not cloning attachments
-	 * 
-	 * @param newItem
-	 * @param cloning
-	 */
-	protected void pushCloneData(Item newItem, CloningHelper cloning)
-	{
-		if( copyAttachments )
-		{
-			newItem.setAttachments(cloning.getAttachments());
-			newItem.setTreeNodes(cloning.getNodes());
-		}
-	}
+  /**
+   * Here you will grab the fields back out of your CloningHelper object and push them into the new
+   * item. To override in any subclass. Do not call this super method if not cloning attachments
+   *
+   * @param newItem
+   * @param cloning
+   */
+  protected void pushCloneData(Item newItem, CloningHelper cloning) {
+    if (copyAttachments) {
+      newItem.setAttachments(cloning.getAttachments());
+      newItem.setTreeNodes(cloning.getNodes());
+    }
+  }
 
-	/**
-	 * You must put something in this method Eg.
-	 * createHistory(HistoryEvent.Type.clone); The exact event will be dependant
-	 * on the operation
-	 */
-	protected abstract void doHistory();
+  /**
+   * You must put something in this method Eg. createHistory(HistoryEvent.Type.clone); The exact
+   * event will be dependant on the operation
+   */
+  protected abstract void doHistory();
 
-	/**
-	 * The CloningHelper class should be extended by your operation if you want
-	 * to clone additional Item fields. Return a new instance of your extended
-	 * CloningHelper object in getCloningHelper()
-	 */
-	public static class CloningHelper
-	{
-		private List<Attachment> attachments;
-		private List<ItemNavigationNode> nodes;
+  /**
+   * The CloningHelper class should be extended by your operation if you want to clone additional
+   * Item fields. Return a new instance of your extended CloningHelper object in getCloningHelper()
+   */
+  public static class CloningHelper {
+    private List<Attachment> attachments;
+    private List<ItemNavigationNode> nodes;
 
-		public List<Attachment> getAttachments()
-		{
-			return attachments;
-		}
+    public List<Attachment> getAttachments() {
+      return attachments;
+    }
 
-		public void setAttachments(List<Attachment> attachments)
-		{
-			this.attachments = attachments;
-		}
+    public void setAttachments(List<Attachment> attachments) {
+      this.attachments = attachments;
+    }
 
-		public List<ItemNavigationNode> getNodes()
-		{
-			return nodes;
-		}
+    public List<ItemNavigationNode> getNodes() {
+      return nodes;
+    }
 
-		public void setNodes(List<ItemNavigationNode> nodes)
-		{
-			this.nodes = nodes;
-		}
-	}
+    public void setNodes(List<ItemNavigationNode> nodes) {
+      this.nodes = nodes;
+    }
+  }
 
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		fileProcessorTracker = new PluginTracker<CloneFileProcessingExtension>(pluginService,
-			"com.tle.core.item.standard", "cloneFileProcessor", "id");
-		fileProcessorTracker.setBeanKey("bean");
-	}
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    fileProcessorTracker =
+        new PluginTracker<CloneFileProcessingExtension>(
+            pluginService, "com.tle.core.item.standard", "cloneFileProcessor", "id");
+    fileProcessorTracker.setBeanKey("bean");
+  }
 
-	@Inject
-	public void setInitialiserService(InitialiserService initialiserService) {
-		this.initialiserService = initialiserService;
-		this.cloner = initialiserService.createCloner(getClass().getClassLoader());
-	}
+  @Inject
+  public void setInitialiserService(InitialiserService initialiserService) {
+    this.initialiserService = initialiserService;
+    this.cloner = initialiserService.createCloner(getClass().getClassLoader());
+  }
 }

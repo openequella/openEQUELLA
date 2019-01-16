@@ -33,20 +33,18 @@ import org.w3c.dom.Node;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class WorkflowMessageUuidXmlMigration extends AbstractItemXmlMigrator
-{
-	@Override
-	public boolean migrate(ConverterParams params, PropBagEx xml, SubTemporaryFile file, String filename)
-		throws Exception
-	{
-		XmlDocument xpathDoc = new XmlDocument(xml.getRootElement().getOwnerDocument());
-		XmlDocument.NodeListIterable messages =
-				xpathDoc.nodeList("//com.tle.common.workflow.WorkflowMessage[count(uuid) = 0]");
+public class WorkflowMessageUuidXmlMigration extends AbstractItemXmlMigrator {
+  @Override
+  public boolean migrate(
+      ConverterParams params, PropBagEx xml, SubTemporaryFile file, String filename)
+      throws Exception {
+    XmlDocument xpathDoc = new XmlDocument(xml.getRootElement().getOwnerDocument());
+    XmlDocument.NodeListIterable messages =
+        xpathDoc.nodeList("//com.tle.common.workflow.WorkflowMessage[count(uuid) = 0]");
 
-		for (Node msg : messages)
-		{
-		    xpathDoc.createNode(msg, "uuid").setTextContent(UUID.randomUUID().toString());
-    	}
-		return messages.size() > 0;
-	}
+    for (Node msg : messages) {
+      xpathDoc.createNode(msg, "uuid").setTextContent(UUID.randomUUID().toString());
+    }
+    return messages.size() > 0;
+  }
 }

@@ -20,10 +20,7 @@ import java.util.EventListener;
 
 import com.tle.web.sections.SectionInfo;
 
-/**
- * @author aholland
- */
-public interface LoadItemEventListener extends EventListener
-{
-	void doLoadItemEvent(SectionInfo info, LoadItemEvent event);
+/** @author aholland */
+public interface LoadItemEventListener extends EventListener {
+  void doLoadItemEvent(SectionInfo info, LoadItemEvent event);
 }

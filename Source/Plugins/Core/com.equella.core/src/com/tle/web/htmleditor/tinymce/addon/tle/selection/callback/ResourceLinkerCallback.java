@@ -20,13 +20,9 @@ import javax.inject.Singleton;
 
 import com.tle.core.guice.Bind;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class ResourceLinkerCallback extends AbstractSelectionsMadeCallback
-{
-	private static final long serialVersionUID = 1L;
-
+public class ResourceLinkerCallback extends AbstractSelectionsMadeCallback {
+  private static final long serialVersionUID = 1L;
 }

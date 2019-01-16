@@ -25,83 +25,68 @@ import org.hibernate.annotations.AccessType;
 
 import com.tle.beans.entity.BaseEntity;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Entity
 @AccessType("field")
-public final class Connector extends BaseEntity
-{
-	private static final long serialVersionUID = 1L;
+public final class Connector extends BaseEntity {
+  private static final long serialVersionUID = 1L;
 
-	@Column(length = 16, nullable = false)
-	private String lmsType;
-	@Column(length = 1024, nullable = false)
-	private String serverUrl;
-	private boolean useLoggedInUsername;
-	@Lob
-	private String usernameScript;
+  @Column(length = 16, nullable = false)
+  private String lmsType;
 
-	@Transient
-	private Object extraData;
+  @Column(length = 1024, nullable = false)
+  private String serverUrl;
 
-	public Connector()
-	{
-		// for hibernate
-	}
+  private boolean useLoggedInUsername;
+  @Lob private String usernameScript;
 
-	public Connector(String lmsType)
-	{
-		this.lmsType = lmsType;
-	}
+  @Transient private Object extraData;
 
-	public String getLmsType()
-	{
-		return lmsType;
-	}
+  public Connector() {
+    // for hibernate
+  }
 
-	public void setLmsType(String lmsType)
-	{
-		this.lmsType = lmsType;
-	}
+  public Connector(String lmsType) {
+    this.lmsType = lmsType;
+  }
 
-	public String getServerUrl()
-	{
-		return serverUrl;
-	}
+  public String getLmsType() {
+    return lmsType;
+  }
 
-	public void setServerUrl(String serverUrl)
-	{
-		this.serverUrl = serverUrl;
-	}
+  public void setLmsType(String lmsType) {
+    this.lmsType = lmsType;
+  }
 
-	public boolean isUseLoggedInUsername()
-	{
-		return useLoggedInUsername;
-	}
+  public String getServerUrl() {
+    return serverUrl;
+  }
 
-	public void setUseLoggedInUsername(boolean useLoggedInUsername)
-	{
-		this.useLoggedInUsername = useLoggedInUsername;
-	}
+  public void setServerUrl(String serverUrl) {
+    this.serverUrl = serverUrl;
+  }
 
-	public String getUsernameScript()
-	{
-		return usernameScript;
-	}
+  public boolean isUseLoggedInUsername() {
+    return useLoggedInUsername;
+  }
 
-	public void setUsernameScript(String usernameScript)
-	{
-		this.usernameScript = usernameScript;
-	}
+  public void setUseLoggedInUsername(boolean useLoggedInUsername) {
+    this.useLoggedInUsername = useLoggedInUsername;
+  }
 
-	public Object getExtraData()
-	{
-		return extraData;
-	}
+  public String getUsernameScript() {
+    return usernameScript;
+  }
 
-	public void setExtraData(Object extraData)
-	{
-		this.extraData = extraData;
-	}
+  public void setUsernameScript(String usernameScript) {
+    this.usernameScript = usernameScript;
+  }
+
+  public Object getExtraData() {
+    return extraData;
+  }
+
+  public void setExtraData(Object extraData) {
+    this.extraData = extraData;
+  }
 }

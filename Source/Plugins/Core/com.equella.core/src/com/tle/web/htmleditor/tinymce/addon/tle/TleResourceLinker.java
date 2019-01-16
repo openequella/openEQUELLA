@@ -41,86 +41,83 @@ import com.tle.web.selection.SelectionsMadeCallback;
 import com.tle.web.selection.home.SelectionHomeSelectable;
 
 /**
- * Embeds selected item attachments into a HTML editor. If the attachment is not
- * embeddable then the attachment is linked to instead. Attachments are
- * embeddable if they have an embedding template setup, either in the the
- * learningedge-config/plugins/com.tle.web.htmleditor
- * .tinymce.addon.tle/deftemplate.properties file, or
- * MimeEntry.attributes["EmbeddingTemplate"] (configured through mime.do)
- * 
+ * Embeds selected item attachments into a HTML editor. If the attachment is not embeddable then the
+ * attachment is linked to instead. Attachments are embeddable if they have an embedding template
+ * setup, either in the the learningedge-config/plugins/com.tle.web.htmleditor
+ * .tinymce.addon.tle/deftemplate.properties file, or MimeEntry.attributes["EmbeddingTemplate"]
+ * (configured through mime.do)
+ *
  * @author aholland
  */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class TleResourceLinker extends AbstractSelectionAddon
-{
-	@PlugKey("linker.button.name")
-	private static Label LABEL_BUTTON;
-	static
-	{
-		PluginResourceHandler.init(TleResourceLinker.class);
-	}
+public class TleResourceLinker extends AbstractSelectionAddon {
+  @PlugKey("linker.button.name")
+  private static Label LABEL_BUTTON;
 
-	private static final PluginResourceHelper resources = ResourcesService.getResourceHelper(TleResourceLinker.class);
-	private static final List<HtmlEditorButtonDefinition> BUTTONS = Collections.unmodifiableList(Lists
-		.newArrayList(new HtmlEditorButtonDefinition("tle_reslinker", TleTinyMceAddonConstants.RESOURCE_LINKER_ID,
-			new TinyMceAddonButtonRenderer(resources.url("scripts/tle_reslinker/images/equellabutton.gif"),
-				LABEL_BUTTON), LABEL_BUTTON, 2, true)));
+  static {
+    PluginResourceHandler.init(TleResourceLinker.class);
+  }
 
-	@Inject
-	private MyContentService myContentService;
-	@Inject
-	private SelectionHomeSelectable selectionHomeSelectable;
+  private static final PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(TleResourceLinker.class);
+  private static final List<HtmlEditorButtonDefinition> BUTTONS =
+      Collections.unmodifiableList(
+          Lists.newArrayList(
+              new HtmlEditorButtonDefinition(
+                  "tle_reslinker",
+                  TleTinyMceAddonConstants.RESOURCE_LINKER_ID,
+                  new TinyMceAddonButtonRenderer(
+                      resources.url("scripts/tle_reslinker/images/equellabutton.gif"),
+                      LABEL_BUTTON),
+                  LABEL_BUTTON,
+                  2,
+                  true)));
 
-	@Override
-	protected boolean isAddToRecentSelections()
-	{
-		return true;
-	}
+  @Inject private MyContentService myContentService;
+  @Inject private SelectionHomeSelectable selectionHomeSelectable;
 
-	@Override
-	public boolean applies(String action)
-	{
-		return action.equals("select_link");
-	}
+  @Override
+  protected boolean isAddToRecentSelections() {
+    return true;
+  }
 
-	@Override
-	protected Class<? extends SelectionsMadeCallback> getCallbackClass()
-	{
-		return ResourceLinkerCallback.class;
-	}
+  @Override
+  public boolean applies(String action) {
+    return action.equals("select_link");
+  }
 
-	@Override
-	protected SelectableInterface getSelectable(SectionInfo info, SelectionSession session)
-	{
-		if( myContentService.isMyContentContributionAllowed() )
-		{
-			MyContentSelectionSettings settings = new MyContentSelectionSettings();
-			settings.setRawFilesOnly(true);
-			session.setAttribute(MyContentSelectionSettings.class, settings);
-			session.setCancelDisabled(true);
-		}
-		session.setHomeSelectable("home");
+  @Override
+  protected Class<? extends SelectionsMadeCallback> getCallbackClass() {
+    return ResourceLinkerCallback.class;
+  }
 
-		return selectionHomeSelectable;
-	}
+  @Override
+  protected SelectableInterface getSelectable(SectionInfo info, SelectionSession session) {
+    if (myContentService.isMyContentContributionAllowed()) {
+      MyContentSelectionSettings settings = new MyContentSelectionSettings();
+      settings.setRawFilesOnly(true);
+      session.setAttribute(MyContentSelectionSettings.class, settings);
+      session.setCancelDisabled(true);
+    }
+    session.setHomeSelectable("home");
 
-	@Override
-	public String getId()
-	{
-		return TleTinyMceAddonConstants.RESOURCE_LINKER_ID;
-	}
+    return selectionHomeSelectable;
+  }
 
-	@Override
-	protected PluginResourceHelper getResourceHelper()
-	{
-		return resources;
-	}
+  @Override
+  public String getId() {
+    return TleTinyMceAddonConstants.RESOURCE_LINKER_ID;
+  }
 
-	@Override
-	public List<HtmlEditorButtonDefinition> getButtons(SectionInfo info)
-	{
-		return BUTTONS;
-	}
+  @Override
+  protected PluginResourceHelper getResourceHelper() {
+    return resources;
+  }
+
+  @Override
+  public List<HtmlEditorButtonDefinition> getButtons(SectionInfo info) {
+    return BUTTONS;
+  }
 }

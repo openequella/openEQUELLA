@@ -48,358 +48,317 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.annotations.Component;
 
 @SuppressWarnings("nls")
-public abstract class AbstractEntityEditor<B extends EntityEditingBean, E extends BaseEntity, M extends AbstractEntityEditor<B, E, M>.AbstractEntityEditorModel>
-	extends
-		AbstractPrototypeSection<M>
-	implements HtmlRenderer, EntityEditor<B, E>
-{
-	private static final String KEY_ERROR_TITLE = "title";
+public abstract class AbstractEntityEditor<
+        B extends EntityEditingBean,
+        E extends BaseEntity,
+        M extends AbstractEntityEditor<B, E, M>.AbstractEntityEditorModel>
+    extends AbstractPrototypeSection<M> implements HtmlRenderer, EntityEditor<B, E> {
+  private static final String KEY_ERROR_TITLE = "title";
 
-	@PlugKey("editor.label.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("editor.label.description")
-	private static Label LABEL_DESCRIPTION;
+  @PlugKey("editor.label.title")
+  private static Label LABEL_TITLE;
 
-	@PlugKey("editor.error.title.mandatory")
-	private static Label LABEL_ERROR_TITLE;
-	@PlugKey("editor.warning.navigateaway")
-	private static Label LABEL_WARNING_NAVIGATEAWAY;
+  @PlugKey("editor.label.description")
+  private static Label LABEL_DESCRIPTION;
 
-	@ViewFactory
-	private FreemarkerFactory view;
+  @PlugKey("editor.error.title.mandatory")
+  private static Label LABEL_ERROR_TITLE;
 
-	@Inject
-	@Component(name = "t", stateful = false)
-	private MultiEditBox title;
-	@Inject
-	@Component(name = "d", stateful = false)
-	private MultiEditBox description;
+  @PlugKey("editor.warning.navigateaway")
+  private static Label LABEL_WARNING_NAVIGATEAWAY;
 
-	protected abstract AbstractEntityService<B, E> getEntityService();
+  @ViewFactory private FreemarkerFactory view;
 
-	protected abstract E createNewEntity(SectionInfo info);
+  @Inject
+  @Component(name = "t", stateful = false)
+  private MultiEditBox title;
 
-	protected abstract SectionRenderable renderFields(RenderEventContext context, EntityEditingSession<B, E> session);
+  @Inject
+  @Component(name = "d", stateful = false)
+  private MultiEditBox description;
 
-	/**
-	 * Populate form fields
-	 * 
-	 * @param info
-	 * @param session
-	 */
-	protected abstract void loadFromSession(SectionInfo info, EntityEditingSession<B, E> session);
+  protected abstract AbstractEntityService<B, E> getEntityService();
 
-	/**
-	 * Store form fields into editing session entity
-	 * 
-	 * @param info
-	 * @param session
-	 * @param validate
-	 */
-	protected abstract void saveToSession(SectionInfo info, EntityEditingSession<B, E> session, boolean validate);
+  protected abstract E createNewEntity(SectionInfo info);
 
-	/**
-	 * Check mandatory fields etc
-	 * 
-	 * @param info
-	 * @param ent
-	 * @param errors
-	 */
-	protected void validate(SectionInfo info, EntityEditingSession<B, E> session)
-	{
-		try
-		{
-			getEntityService().validate(session, session.getEntity());
-		}
-		catch( InvalidDataException ide )
-		{
-			session.getValidationErrors().putAll(ide.getErrorsAsMap());
-		}
-	}
+  protected abstract SectionRenderable renderFields(
+      RenderEventContext context, EntityEditingSession<B, E> session);
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		final M model = getModel(context);
-		final EntityEditingSession<B, E> session = getEntityService().loadSession(model.getSessionId());
+  /**
+   * Populate form fields
+   *
+   * @param info
+   * @param session
+   */
+  protected abstract void loadFromSession(SectionInfo info, EntityEditingSession<B, E> session);
 
-		model.setEntityUuid(session.getBean().getUuid());
-		model.setErrors(session.getValidationErrors());
-		model.setCustomEditor(renderFields(context, session));
+  /**
+   * Store form fields into editing session entity
+   *
+   * @param info
+   * @param session
+   * @param validate
+   */
+  protected abstract void saveToSession(
+      SectionInfo info, EntityEditingSession<B, E> session, boolean validate);
 
-		if( !DebugSettings.isAutoTestMode() )
-		{
-			context.getBody().addEventStatements(JSHandler.EVENT_BEFOREUNLOAD,
-				new ReturnStatement(LABEL_WARNING_NAVIGATEAWAY));
-		}
+  /**
+   * Check mandatory fields etc
+   *
+   * @param info
+   * @param ent
+   * @param errors
+   */
+  protected void validate(SectionInfo info, EntityEditingSession<B, E> session) {
+    try {
+      getEntityService().validate(session, session.getEntity());
+    } catch (InvalidDataException ide) {
+      session.getValidationErrors().putAll(ide.getErrorsAsMap());
+    }
+  }
 
-		return view.createResult("editcommon.ftl", context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    final M model = getModel(context);
+    final EntityEditingSession<B, E> session = getEntityService().loadSession(model.getSessionId());
 
-	/**
-	 * Called from Contrib section
-	 */
-	@Override
-	public SectionRenderable renderEditor(RenderContext info)
-	{
-		return renderSection(info, this);
-	}
+    model.setEntityUuid(session.getBean().getUuid());
+    model.setErrors(session.getValidationErrors());
+    model.setCustomEditor(renderFields(context, session));
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		description.setSize(3);
-	}
+    if (!DebugSettings.isAutoTestMode()) {
+      context
+          .getBody()
+          .addEventStatements(
+              JSHandler.EVENT_BEFOREUNLOAD, new ReturnStatement(LABEL_WARNING_NAVIGATEAWAY));
+    }
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-	}
+    return view.createResult("editcommon.ftl", context);
+  }
 
-	/**
-	 * Override if you want to
-	 */
-	@Override
-	public SectionRenderable renderHelp(RenderContext context)
-	{
-		return null;
-	}
+  /** Called from Contrib section */
+  @Override
+  public SectionRenderable renderEditor(RenderContext info) {
+    return renderSection(info, this);
+  }
 
-	@Override
-	public final void create(SectionInfo info)
-	{
-		final EntityEditingSession<B, E> session = getEntityService().startNewSession(createNewEntity(info));
-		startSession(info, session);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    description.setSize(3);
+  }
 
-	@Override
-	public final void edit(SectionInfo info, String entityUuid, boolean clone)
-	{
-		AbstractEntityService<B, E> entityService = getEntityService();
-		final EntityEditingSession<B, E> session = (clone ? entityService.cloneIntoSession(entityUuid)
-			: entityService.startEditingSession(entityUuid));
-		startSession(info, session);
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+  }
 
-	@Override
-	public final boolean save(SectionInfo info)
-	{
-		final M model = getModel(info);
-		final EntityEditingSession<B, E> session = getEntityService().loadSession(model.getSessionId());
-		saveToSessionPrivate(info, session, true);
-		if( session.isValid() )
-		{
-			getEntityService().commitSession(session);
-			model.setSessionId(null);
-			return true;
-		}
-		return false;
-	}
+  /** Override if you want to */
+  @Override
+  public SectionRenderable renderHelp(RenderContext context) {
+    return null;
+  }
 
-	@Override
-	public final void cancel(SectionInfo info)
-	{
-		final M model = getModel(info);
-		getEntityService().cancelSessionId(model.getSessionId());
-		model.setSessionId(null);
-	}
+  @Override
+  public final void create(SectionInfo info) {
+    final EntityEditingSession<B, E> session =
+        getEntityService().startNewSession(createNewEntity(info));
+    startSession(info, session);
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final <S extends EntityEditingSession<B, E>> S loadFromSession(SectionInfo info)
-	{
-		final String sessionId = getModel(info).getSessionId();
-		if( sessionId != null )
-		{
-			final EntityEditingSession<B, E> session = getEntityService().loadSession(sessionId);
-			loadFromSessionPrivate(info, session);
-			return (S) session;
-		}
-		return null;
-	}
+  @Override
+  public final void edit(SectionInfo info, String entityUuid, boolean clone) {
+    AbstractEntityService<B, E> entityService = getEntityService();
+    final EntityEditingSession<B, E> session =
+        (clone
+            ? entityService.cloneIntoSession(entityUuid)
+            : entityService.startEditingSession(entityUuid));
+    startSession(info, session);
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final <S extends EntityEditingSession<B, E>> S saveToSession(SectionInfo info)
-	{
-		final String sessionId = getModel(info).getSessionId();
-		if( sessionId != null )
-		{
-			final EntityEditingSession<B, E> session = getEntityService().loadSession(sessionId);
-			saveToSessionPrivate(info, session, false);
-			return (S) session;
-		}
-		return null;
-	}
+  @Override
+  public final boolean save(SectionInfo info) {
+    final M model = getModel(info);
+    final EntityEditingSession<B, E> session = getEntityService().loadSession(model.getSessionId());
+    saveToSessionPrivate(info, session, true);
+    if (session.isValid()) {
+      getEntityService().commitSession(session);
+      model.setSessionId(null);
+      return true;
+    }
+    return false;
+  }
 
-	@Override
-	public B getEditedEntity(SectionInfo info)
-	{
-		return getModel(info).getEditedEntity();
-	}
+  @Override
+  public final void cancel(SectionInfo info) {
+    final M model = getModel(info);
+    getEntityService().cancelSessionId(model.getSessionId());
+    model.setSessionId(null);
+  }
 
-	private void startSession(SectionInfo info, EntityEditingSession<B, E> session)
-	{
-		loadFromSessionPrivate(info, session);
-		getModel(info).setSessionId(session.getSessionId());
-	}
+  @SuppressWarnings("unchecked")
+  @Override
+  public final <S extends EntityEditingSession<B, E>> S loadFromSession(SectionInfo info) {
+    final String sessionId = getModel(info).getSessionId();
+    if (sessionId != null) {
+      final EntityEditingSession<B, E> session = getEntityService().loadSession(sessionId);
+      loadFromSessionPrivate(info, session);
+      return (S) session;
+    }
+    return null;
+  }
 
-	private void saveToSessionPrivate(SectionInfo info, EntityEditingSession<B, E> session, boolean validate)
-	{
-		final EntityEditingBean bean = session.getBean();
-		if( validate )
-		{
-			session.setValid(validatePrivate(info, session));
-		}
-		else
-		{
-			session.getValidationErrors().clear();
-		}
+  @SuppressWarnings("unchecked")
+  @Override
+  public final <S extends EntityEditingSession<B, E>> S saveToSession(SectionInfo info) {
+    final String sessionId = getModel(info).getSessionId();
+    if (sessionId != null) {
+      final EntityEditingSession<B, E> session = getEntityService().loadSession(sessionId);
+      saveToSessionPrivate(info, session, false);
+      return (S) session;
+    }
+    return null;
+  }
 
-		// Save fields even if invalid, it wont be committed until the session
-		// is valid
-		bean.setName(title.getLanguageBundle(info));
-		bean.setDescription(description.getLanguageBundle(info));
+  @Override
+  public B getEditedEntity(SectionInfo info) {
+    return getModel(info).getEditedEntity();
+  }
 
-		saveToSession(info, session, validate);
+  private void startSession(SectionInfo info, EntityEditingSession<B, E> session) {
+    loadFromSessionPrivate(info, session);
+    getModel(info).setSessionId(session.getSessionId());
+  }
 
-		getEntityService().saveSession(session);
-	}
+  private void saveToSessionPrivate(
+      SectionInfo info, EntityEditingSession<B, E> session, boolean validate) {
+    final EntityEditingBean bean = session.getBean();
+    if (validate) {
+      session.setValid(validatePrivate(info, session));
+    } else {
+      session.getValidationErrors().clear();
+    }
 
-	private void loadFromSessionPrivate(SectionInfo info, EntityEditingSession<B, E> session)
-	{
-		final B bean = session.getBean();
-		final M model = getModel(info);
-		model.setEditedEntity(bean);
+    // Save fields even if invalid, it wont be committed until the session
+    // is valid
+    bean.setName(title.getLanguageBundle(info));
+    bean.setDescription(description.getLanguageBundle(info));
 
-		final LanguageBundleBean name = bean.getName();
-		if( name != null )
-		{
-			title.setLanguageBundle(info, name);
-		}
+    saveToSession(info, session, validate);
 
-		final LanguageBundleBean desc = bean.getDescription();
-		if( desc != null )
-		{
-			description.setLanguageBundle(info, desc);
-		}
+    getEntityService().saveSession(session);
+  }
 
-		loadFromSession(info, session);
-	}
+  private void loadFromSessionPrivate(SectionInfo info, EntityEditingSession<B, E> session) {
+    final B bean = session.getBean();
+    final M model = getModel(info);
+    model.setEditedEntity(bean);
 
-	private boolean validatePrivate(SectionInfo info, EntityEditingSession<B, E> session)
-	{
-		final Map<String, Object> errors = session.getValidationErrors();
-		errors.clear();
+    final LanguageBundleBean name = bean.getName();
+    if (name != null) {
+      title.setLanguageBundle(info, name);
+    }
 
-		final LanguageBundleBean bundle = title.getLanguageBundle(info);
-		if( LangUtils.isEmpty(bundle) )
-		{
-			errors.put(KEY_ERROR_TITLE, getTitleMandatoryErrorLabel().getText());
-		}
+    final LanguageBundleBean desc = bean.getDescription();
+    if (desc != null) {
+      description.setLanguageBundle(info, desc);
+    }
 
-		validate(info, session);
-		return errors.isEmpty();
-	}
+    loadFromSession(info, session);
+  }
 
-	protected Label getTitleMandatoryErrorLabel()
-	{
-		return LABEL_ERROR_TITLE;
-	}
+  private boolean validatePrivate(SectionInfo info, EntityEditingSession<B, E> session) {
+    final Map<String, Object> errors = session.getValidationErrors();
+    errors.clear();
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new AbstractEntityEditorModel();
-	}
+    final LanguageBundleBean bundle = title.getLanguageBundle(info);
+    if (LangUtils.isEmpty(bundle)) {
+      errors.put(KEY_ERROR_TITLE, getTitleMandatoryErrorLabel().getText());
+    }
 
-	public MultiEditBox getTitle()
-	{
-		return title;
-	}
+    validate(info, session);
+    return errors.isEmpty();
+  }
 
-	public MultiEditBox getDescription()
-	{
-		return description;
-	}
+  protected Label getTitleMandatoryErrorLabel() {
+    return LABEL_ERROR_TITLE;
+  }
 
-	public Label getTitleLabel()
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new AbstractEntityEditorModel();
+  }
 
-	public Label getDescriptionLabel()
-	{
-		return LABEL_DESCRIPTION;
-	}
+  public MultiEditBox getTitle() {
+    return title;
+  }
 
-	public Label getWarningNavigateAway()
-	{
-		return LABEL_WARNING_NAVIGATEAWAY;
-	}
+  public MultiEditBox getDescription() {
+    return description;
+  }
 
-	public class AbstractEntityEditorModel
-	{
-		@Bookmarked(name = "s")
-		private String sessionId;
-		private String entityUuid;
+  public Label getTitleLabel() {
+    return LABEL_TITLE;
+  }
 
-		private SectionRenderable customEditor;
-		private Map<String, Object> errors = Maps.newHashMap();
+  public Label getDescriptionLabel() {
+    return LABEL_DESCRIPTION;
+  }
 
-		// Just a cache
-		private B editedEntity;
+  public Label getWarningNavigateAway() {
+    return LABEL_WARNING_NAVIGATEAWAY;
+  }
 
-		public String getSessionId()
-		{
-			return sessionId;
-		}
+  public class AbstractEntityEditorModel {
+    @Bookmarked(name = "s")
+    private String sessionId;
 
-		public void setSessionId(String sessionId)
-		{
-			this.sessionId = sessionId;
-		}
+    private String entityUuid;
 
-		public SectionRenderable getCustomEditor()
-		{
-			return customEditor;
-		}
+    private SectionRenderable customEditor;
+    private Map<String, Object> errors = Maps.newHashMap();
 
-		public void setCustomEditor(SectionRenderable customEditor)
-		{
-			this.customEditor = customEditor;
-		}
+    // Just a cache
+    private B editedEntity;
 
-		public Map<String, Object> getErrors()
-		{
-			return errors;
-		}
+    public String getSessionId() {
+      return sessionId;
+    }
 
-		public void setErrors(Map<String, Object> errors)
-		{
-			this.errors = errors;
-		}
+    public void setSessionId(String sessionId) {
+      this.sessionId = sessionId;
+    }
 
-		public B getEditedEntity()
-		{
-			return editedEntity;
-		}
+    public SectionRenderable getCustomEditor() {
+      return customEditor;
+    }
 
-		public void setEditedEntity(B editedEntity)
-		{
-			this.editedEntity = editedEntity;
-		}
+    public void setCustomEditor(SectionRenderable customEditor) {
+      this.customEditor = customEditor;
+    }
 
-		public String getEntityUuid()
-		{
-			return entityUuid;
-		}
+    public Map<String, Object> getErrors() {
+      return errors;
+    }
 
-		public void setEntityUuid(String entityUuid)
-		{
-			this.entityUuid = entityUuid;
-		}
-	}
+    public void setErrors(Map<String, Object> errors) {
+      this.errors = errors;
+    }
+
+    public B getEditedEntity() {
+      return editedEntity;
+    }
+
+    public void setEditedEntity(B editedEntity) {
+      this.editedEntity = editedEntity;
+    }
+
+    public String getEntityUuid() {
+      return entityUuid;
+    }
+
+    public void setEntityUuid(String entityUuid) {
+      this.entityUuid = entityUuid;
+    }
+  }
 }

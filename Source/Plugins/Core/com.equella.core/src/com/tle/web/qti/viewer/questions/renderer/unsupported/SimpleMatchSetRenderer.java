@@ -24,20 +24,16 @@ import com.tle.web.qti.viewer.QtiViewerContext;
 import com.tle.web.qti.viewer.questions.renderer.QtiNodeRenderer;
 import com.tle.web.sections.render.SectionRenderable;
 
-/**
- * NOT SUPPORTED
- */
-public class SimpleMatchSetRenderer extends QtiNodeRenderer
-{
-	@AssistedInject
-	protected SimpleMatchSetRenderer(@Assisted SimpleMatchSet model, @Assisted QtiViewerContext context)
-	{
-		super(model, context);
-	}
+/** NOT SUPPORTED */
+public class SimpleMatchSetRenderer extends QtiNodeRenderer {
+  @AssistedInject
+  protected SimpleMatchSetRenderer(
+      @Assisted SimpleMatchSet model, @Assisted QtiViewerContext context) {
+    super(model, context);
+  }
 
-	@Override
-	protected SectionRenderable createTopRenderable()
-	{
-		throw new UnsupportedQuestionException("simpleMatchSet", true);
-	}
+  @Override
+  protected SectionRenderable createTopRenderable() {
+    throw new UnsupportedQuestionException("simpleMatchSet", true);
+  }
 }

@@ -40,68 +40,63 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 
 @Bind
 @Singleton
-public class CALAddNullConstraints extends AbstractHibernateMigration
-{
-	private static final String keyPrefix = PluginServiceImpl.getMyPluginId(CALAddNullConstraints.class) + ".cal.addnulls."; //$NON-NLS-1$
+public class CALAddNullConstraints extends AbstractHibernateMigration {
+  private static final String keyPrefix =
+      PluginServiceImpl.getMyPluginId(CALAddNullConstraints.class)
+          + ".cal.addnulls."; //$NON-NLS-1$
 
-	@SuppressWarnings("nls")
-	@Override
-	public void migrate(MigrationResult status) throws Exception
-	{
-		status.setCanRetry(true);
-		HibernateMigrationHelper helper = createMigrationHelper();
-		List<String> sql = new ArrayList<String>();
-		Session session = helper.getFactory().openSession();
-		ExtendedDialect extDialect = helper.getExtDialect();
-		if( !extDialect.supportsModifyWithConstraints() )
-		{
-			sql.addAll(helper.getDropConstraintsSQL("cal_portion", "item_id"));
-			sql.addAll(helper.getDropConstraintsSQL("cal_section", "portion_id"));
-		}
-		sql.addAll(helper.getAddNotNullSQLIfRequired(session, "cal_portion", "item_id"));
-		sql.addAll(helper.getAddNotNullSQLIfRequired(session, "cal_section", "portion_id"));
-		if( !extDialect.supportsModifyWithConstraints() )
-		{
-			sql.addAll(helper.getAddIndexesAndConstraintsForColumns("cal_portion", "item_id"));
-			sql.addAll(helper.getAddIndexesAndConstraintsForColumns("cal_section", "portion_id"));
-		}
-		session.close();
-		runSqlStatements(sql, helper.getFactory(), status, AbstractCreateMigration.KEY_STATUS);
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public void migrate(MigrationResult status) throws Exception {
+    status.setCanRetry(true);
+    HibernateMigrationHelper helper = createMigrationHelper();
+    List<String> sql = new ArrayList<String>();
+    Session session = helper.getFactory().openSession();
+    ExtendedDialect extDialect = helper.getExtDialect();
+    if (!extDialect.supportsModifyWithConstraints()) {
+      sql.addAll(helper.getDropConstraintsSQL("cal_portion", "item_id"));
+      sql.addAll(helper.getDropConstraintsSQL("cal_section", "portion_id"));
+    }
+    sql.addAll(helper.getAddNotNullSQLIfRequired(session, "cal_portion", "item_id"));
+    sql.addAll(helper.getAddNotNullSQLIfRequired(session, "cal_section", "portion_id"));
+    if (!extDialect.supportsModifyWithConstraints()) {
+      sql.addAll(helper.getAddIndexesAndConstraintsForColumns("cal_portion", "item_id"));
+      sql.addAll(helper.getAddIndexesAndConstraintsForColumns("cal_section", "portion_id"));
+    }
+    session.close();
+    runSqlStatements(sql, helper.getFactory(), status, AbstractCreateMigration.KEY_STATUS);
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{Portion.class, Section.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {Portion.class, Section.class};
+  }
 
-	@Entity
-	@AccessType("field")
-	@Table(name = "cal_portion")
-	public class Portion
-	{
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		long id;
-		long itemId;
-	}
+  @Entity
+  @AccessType("field")
+  @Table(name = "cal_portion")
+  public class Portion {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    long id;
 
-	@Entity
-	@AccessType("field")
-	@Table(name = "cal_section")
-	public class Section
-	{
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		long id;
-		long portionId;
-	}
+    long itemId;
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(keyPrefix + "title", keyPrefix + "description");
-	}
+  @Entity
+  @AccessType("field")
+  @Table(name = "cal_section")
+  public class Section {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    long id;
 
+    long portionId;
+  }
+
+  @SuppressWarnings("nls")
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(keyPrefix + "title", keyPrefix + "description");
+  }
 }

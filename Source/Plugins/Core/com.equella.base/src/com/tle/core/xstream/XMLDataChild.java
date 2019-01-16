@@ -16,10 +16,7 @@
 
 package com.tle.core.xstream;
 
-/**
- * @author jmaginnis
- */
-public interface XMLDataChild
-{
-	void setParentObject(Object o);
+/** @author jmaginnis */
+public interface XMLDataChild {
+  void setParentObject(Object o);
 }

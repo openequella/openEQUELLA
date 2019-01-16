@@ -34,46 +34,37 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.annotations.Component;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
 @TreeIndexed
 @Bind
-public class CALAgreementSection extends AbstractCopyrightAgreementSection
-{
-	@Inject
-	private CALWebServiceImpl calService;
+public class CALAgreementSection extends AbstractCopyrightAgreementSection {
+  @Inject private CALWebServiceImpl calService;
 
-	@ViewFactory
-	private FreemarkerFactory view;
+  @ViewFactory private FreemarkerFactory view;
 
-	@Inject
-	@Component
-	private CALAgreementDialog agreementDialog;
+  @Inject @Component private CALAgreementDialog agreementDialog;
 
-	@Override
-	protected AbstractCopyrightAgreementDialog getDialog()
-	{
-		return agreementDialog;
-	}
+  @Override
+  protected AbstractCopyrightAgreementDialog getDialog() {
+    return agreementDialog;
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	protected SectionRenderable getStandardAgreement(RenderContext info)
-	{
-		return view.createResult("stdagreement.ftl", this);
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected SectionRenderable getStandardAgreement(RenderContext info) {
+    return view.createResult("stdagreement.ftl", this);
+  }
 
-	@Override
-	protected CopyrightWebService<? extends Holding> getCopyrightWebServiceImpl()
-	{
-		return calService;
-	}
+  @Override
+  protected CopyrightWebService<? extends Holding> getCopyrightWebServiceImpl() {
+    return calService;
+  }
 
-	@Override
-	protected CopyrightService<? extends Holding, ? extends Portion, ? extends com.tle.core.copyright.Section> getCopyrightServiceImpl()
-	{
-		return calService.getCopyrightServiceImpl();
-	}
+  @Override
+  protected CopyrightService<
+          ? extends Holding, ? extends Portion, ? extends com.tle.core.copyright.Section>
+      getCopyrightServiceImpl() {
+    return calService.getCopyrightServiceImpl();
+  }
 }

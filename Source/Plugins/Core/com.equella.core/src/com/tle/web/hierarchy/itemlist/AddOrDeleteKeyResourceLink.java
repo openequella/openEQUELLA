@@ -51,90 +51,78 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 @Bind
 @SuppressWarnings("nls")
 public class AddOrDeleteKeyResourceLink extends AbstractPrototypeSection<Object>
-	implements
-		ItemlikeListEntryExtension<Item, ItemListEntry>
-{
-	@PlugKey("itemlist.addtotopiclink")
-	private static Label ADD_TO_TOPIC_LABEL;
+    implements ItemlikeListEntryExtension<Item, ItemListEntry> {
+  @PlugKey("itemlist.addtotopiclink")
+  private static Label ADD_TO_TOPIC_LABEL;
 
-	@PlugKey("itemlist.removefromtopiclink")
-	private static Label REMOVE_KEY_RESOURCE_LABEL;
+  @PlugKey("itemlist.removefromtopiclink")
+  private static Label REMOVE_KEY_RESOURCE_LABEL;
 
-	@TreeLookup
-	private TopicDisplaySection topicDisplay;
-	@EventFactory
-	private EventGenerator events;
-	@Inject
-	private HierarchyService hierarchyService;
-	@Inject
-	private TLEAclManager aclManager;
+  @TreeLookup private TopicDisplaySection topicDisplay;
+  @EventFactory private EventGenerator events;
+  @Inject private HierarchyService hierarchyService;
+  @Inject private TLEAclManager aclManager;
 
-	@Override
-	public ProcessEntryCallback<Item, ItemListEntry> processEntries(RenderContext context, List<ItemListEntry> entries,
-		ListSettings<ItemListEntry> listSettings)
-	{
-		if( CurrentUser.wasAutoLoggedIn() )
-		{
-			return null;
-		}
+  @Override
+  public ProcessEntryCallback<Item, ItemListEntry> processEntries(
+      RenderContext context,
+      List<ItemListEntry> entries,
+      ListSettings<ItemListEntry> listSettings) {
+    if (CurrentUser.wasAutoLoggedIn()) {
+      return null;
+    }
 
-		ExtendedTopicDisplayModel model = topicDisplay.getModel(context);
-		final HierarchyTopic currentTopic = model.getTopic();
-		final String topicValue = model.getTopicValue();
-		final Map<String, String> values = model.getValues();
+    ExtendedTopicDisplayModel model = topicDisplay.getModel(context);
+    final HierarchyTopic currentTopic = model.getTopic();
+    final String topicValue = model.getTopicValue();
+    final Map<String, String> values = model.getValues();
 
-		return new ProcessEntryCallback<Item, ItemListEntry>()
-		{
-			@Override
-			public void processEntry(ItemListEntry entry)
-			{
-				final Set<String> privilege = aclManager.filterNonGrantedPrivileges(currentTopic,
-					Collections.singleton("MODIFY_KEY_RESOURCE"));
+    return new ProcessEntryCallback<Item, ItemListEntry>() {
+      @Override
+      public void processEntry(ItemListEntry entry) {
+        final Set<String> privilege =
+            aclManager.filterNonGrantedPrivileges(
+                currentTopic, Collections.singleton("MODIFY_KEY_RESOURCE"));
 
-				HtmlLinkState link = null;
-				if( !privilege.isEmpty() )
-				{
-					ItemId itemId = entry.getItem().getItemId();
-					String topicId = VirtualTopicUtils.buildTopicId(currentTopic, topicValue, values);
+        HtmlLinkState link = null;
+        if (!privilege.isEmpty()) {
+          ItemId itemId = entry.getItem().getItemId();
+          String topicId = VirtualTopicUtils.buildTopicId(currentTopic, topicValue, values);
 
-					if( entry.isHilighted() )
-					{
-						link = new HtmlLinkState(REMOVE_KEY_RESOURCE_LABEL, events.getNamedHandler("removeKeyResource",
-							itemId, topicId));
-					}
-					else
-					{
-						link = new HtmlLinkState(ADD_TO_TOPIC_LABEL, events.getNamedHandler("addAsKeyResource", itemId,
-							topicId));
-					}
-					entry.addRatingMetadata(link);
-				}
+          if (entry.isHilighted()) {
+            link =
+                new HtmlLinkState(
+                    REMOVE_KEY_RESOURCE_LABEL,
+                    events.getNamedHandler("removeKeyResource", itemId, topicId));
+          } else {
+            link =
+                new HtmlLinkState(
+                    ADD_TO_TOPIC_LABEL,
+                    events.getNamedHandler("addAsKeyResource", itemId, topicId));
+          }
+          entry.addRatingMetadata(link);
+        }
+      }
+    };
+  }
 
-			}
-		};
-	}
+  @EventHandlerMethod
+  public void removeKeyResource(SectionInfo info, ItemId itemId, String topicId) {
+    hierarchyService.deleteKeyResources(topicId, itemId);
+  }
 
-	@EventHandlerMethod
-	public void removeKeyResource(SectionInfo info, ItemId itemId, String topicId)
-	{
-		hierarchyService.deleteKeyResources(topicId, itemId);
-	}
+  @EventHandlerMethod
+  public void addAsKeyResource(SectionInfo info, ItemId itemId, String topicId) {
+    hierarchyService.addKeyResource(topicId, itemId);
+  }
 
-	@EventHandlerMethod
-	public void addAsKeyResource(SectionInfo info, ItemId itemId, String topicId)
-	{
-		hierarchyService.addKeyResource(topicId, itemId);
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+  }
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-	}
-
-	@Override
-	public String getItemExtensionType()
-	{
-		return null;
-	}
+  @Override
+  public String getItemExtensionType() {
+    return null;
+  }
 }

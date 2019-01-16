@@ -37,103 +37,90 @@ import com.tle.web.sections.standard.model.HtmlTextFieldState;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public class TextEntryInteractionRenderer extends QtiNodeRenderer
-{
-	private static final PluginResourceHelper resources = ResourcesService
-		.getResourceHelper(TextEntryInteractionRenderer.class);
+public class TextEntryInteractionRenderer extends QtiNodeRenderer {
+  private static final PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(TextEntryInteractionRenderer.class);
 
-	/**
-	 * Standard sections components factory
-	 */
-	// @Inject
-	// private RendererFactory renderFactory;
+  /** Standard sections components factory */
+  // @Inject
+  // private RendererFactory renderFactory;
 
-	private final HtmlTextFieldState state = new HtmlTextFieldState();
-	private TextEntryInteraction model;
+  private final HtmlTextFieldState state = new HtmlTextFieldState();
 
-	@AssistedInject
-	protected TextEntryInteractionRenderer(@Assisted TextEntryInteraction model, @Assisted QtiViewerContext context)
-	{
-		super(model, context);
-		this.model = model;
-	}
+  private TextEntryInteraction model;
 
-	@Override
-	public void preProcess()
-	{
-		super.preProcess();
-		final QtiViewerContext context = getContext();
-		final ItemSessionController itemSessionController = context.getItemSessionController();
-		final ItemSessionState itemSessionState = itemSessionController.getItemSessionState();
-		final Identifier responseId = model.getResponseIdentifier();
+  @AssistedInject
+  protected TextEntryInteractionRenderer(
+      @Assisted TextEntryInteraction model, @Assisted QtiViewerContext context) {
+    super(model, context);
+    this.model = model;
+  }
 
-		final Set<Identifier> unboundResponseIdentifiers = itemSessionState.getUnboundResponseIdentifiers();
-		if( !unboundResponseIdentifiers.isEmpty() )
-		{
-			for( Identifier unboundResponseId : unboundResponseIdentifiers )
-			{
-				if( unboundResponseId.equals(responseId) )
-				{
-					context.addError(resources.getString("viewer.error.unboundresponse"), unboundResponseId);
-					state.addClass("unboundresponse");
-				}
-			}
-		}
+  @Override
+  public void preProcess() {
+    super.preProcess();
+    final QtiViewerContext context = getContext();
+    final ItemSessionController itemSessionController = context.getItemSessionController();
+    final ItemSessionState itemSessionState = itemSessionController.getItemSessionState();
+    final Identifier responseId = model.getResponseIdentifier();
 
-		final Set<Identifier> invalidResponseIdentifiers = itemSessionState.getInvalidResponseIdentifiers();
-		if( !invalidResponseIdentifiers.isEmpty() )
-		{
-			for( Identifier invalidResponseId : unboundResponseIdentifiers )
-			{
-				if( invalidResponseId.equals(responseId) )
-				{
-					context.addError(resources.getString("viewer.error.invalidresponse"), invalidResponseId);
-					state.addClass("invalidresponse");
-				}
-			}
-		}
-	}
+    final Set<Identifier> unboundResponseIdentifiers =
+        itemSessionState.getUnboundResponseIdentifiers();
+    if (!unboundResponseIdentifiers.isEmpty()) {
+      for (Identifier unboundResponseId : unboundResponseIdentifiers) {
+        if (unboundResponseId.equals(responseId)) {
+          context.addError(resources.getString("viewer.error.unboundresponse"), unboundResponseId);
+          state.addClass("unboundresponse");
+        }
+      }
+    }
 
-	@Override
-	protected SectionRenderable createTopRenderable()
-	{
-		final QtiViewerContext context = getContext();
+    final Set<Identifier> invalidResponseIdentifiers =
+        itemSessionState.getInvalidResponseIdentifiers();
+    if (!invalidResponseIdentifiers.isEmpty()) {
+      for (Identifier invalidResponseId : unboundResponseIdentifiers) {
+        if (invalidResponseId.equals(responseId)) {
+          context.addError(resources.getString("viewer.error.invalidresponse"), invalidResponseId);
+          state.addClass("invalidresponse");
+        }
+      }
+    }
+  }
 
-		final Identifier responseId = model.getResponseIdentifier();
-		state.setName(QtiViewerConstants.CONTROL_PREFIX + id(responseId));
+  @Override
+  protected SectionRenderable createTopRenderable() {
+    final QtiViewerContext context = getContext();
 
-		final List<String> values = context.getValues(responseId);
-		if( values != null && values.size() > 0 )
-		{
-			state.setValue(values.get(0));
-		}
-		state.setSize(model.getExpectedLength());
+    final Identifier responseId = model.getResponseIdentifier();
+    state.setName(QtiViewerConstants.CONTROL_PREFIX + id(responseId));
 
-		final ItemSessionController itemSessionController = context.getItemSessionController();
-		final ItemSessionState itemSessionState = itemSessionController.getItemSessionState();
-		if( itemSessionState.isEnded() )
-		{
-			state.setDisabled(true);
-		}
+    final List<String> values = context.getValues(responseId);
+    if (values != null && values.size() > 0) {
+      state.setValue(values.get(0));
+    }
+    state.setSize(model.getExpectedLength());
 
-		final DisplayModel dm = new DisplayModel();
-		dm.setTextEntry(state);
-		return view.createResultWithModel("textinteraction.ftl", dm);
-	}
+    final ItemSessionController itemSessionController = context.getItemSessionController();
+    final ItemSessionState itemSessionState = itemSessionController.getItemSessionState();
+    if (itemSessionState.isEnded()) {
+      state.setDisabled(true);
+    }
 
-	@NonNullByDefault(false)
-	public static class DisplayModel
-	{
-		private HtmlTextFieldState textEntry;
+    final DisplayModel dm = new DisplayModel();
+    dm.setTextEntry(state);
+    return view.createResultWithModel("textinteraction.ftl", dm);
+  }
 
-		public HtmlTextFieldState getTextEntry()
-		{
-			return textEntry;
-		}
+  @NonNullByDefault(false)
+  public static class DisplayModel {
+    private HtmlTextFieldState textEntry;
 
-		public void setTextEntry(HtmlTextFieldState textEntry)
-		{
-			this.textEntry = textEntry;
-		}
-	}
+    public HtmlTextFieldState getTextEntry() {
+      return textEntry;
+    }
+
+    public void setTextEntry(HtmlTextFieldState textEntry) {
+      this.textEntry = textEntry;
+    }
+  }
 }

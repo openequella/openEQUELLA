@@ -20,21 +20,18 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Equivalent of the staging folder, hence the UUID.
- * 
+ *
  * @author Aaron
  */
 @JsonTypeName("root")
-public class RootFolderBean extends FolderBean
-{
-	private String uuid;
+public class RootFolderBean extends FolderBean {
+  private String uuid;
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public void setUuid(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 }

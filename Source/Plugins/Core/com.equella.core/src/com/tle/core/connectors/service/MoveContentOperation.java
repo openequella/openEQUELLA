@@ -28,43 +28,37 @@ import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.exceptions.AccessDeniedException;
 
-public class MoveContentOperation extends AbstractContentOperation
-{
-	private final String courseId;
-	private final String locationId;
+public class MoveContentOperation extends AbstractContentOperation {
+  private final String courseId;
+  private final String locationId;
 
-	@Inject
-	private ConnectorRepositoryService repositoryService;
-	@Inject
-	private ConnectorService connectorService;
+  @Inject private ConnectorRepositoryService repositoryService;
+  @Inject private ConnectorService connectorService;
 
-	@AssistedInject
-	public MoveContentOperation(@Assisted("courseId") String courseId, @Assisted("locationId") String locationId)
-	{
-		super();
-		this.courseId = courseId;
-		this.locationId = locationId;
-	}
+  @AssistedInject
+  public MoveContentOperation(
+      @Assisted("courseId") String courseId, @Assisted("locationId") String locationId) {
+    super();
+    this.courseId = courseId;
+    this.locationId = locationId;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		ConnectorItemKey itemKey = (ConnectorItemKey) params.getItemKey();
-		Connector connector = connectorService.get(itemKey.getConnectorId());
-		if( !connectorService.canExport(connector) )
-		{
-			throw new AccessDeniedException(CurrentLocale.get("com.tle.core.connectors.bulk.error.permission")); //$NON-NLS-1$
-		}
+  @Override
+  public boolean execute() {
+    ConnectorItemKey itemKey = (ConnectorItemKey) params.getItemKey();
+    Connector connector = connectorService.get(itemKey.getConnectorId());
+    if (!connectorService.canExport(connector)) {
+      throw new AccessDeniedException(
+          CurrentLocale.get("com.tle.core.connectors.bulk.error.permission")); // $NON-NLS-1$
+    }
 
-		try
-		{
-			boolean success = repositoryService.moveContent(connector, CurrentUser.getUsername(),
-				itemKey.getContentId(), courseId, locationId);
-			return success;
-		}
-		catch( LmsUserNotFoundException lms )
-		{
-			throw new WorkflowException(lms);
-		}
-	}
+    try {
+      boolean success =
+          repositoryService.moveContent(
+              connector, CurrentUser.getUsername(), itemKey.getContentId(), courseId, locationId);
+      return success;
+    } catch (LmsUserNotFoundException lms) {
+      throw new WorkflowException(lms);
+    }
+  }
 }

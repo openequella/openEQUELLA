@@ -41,145 +41,129 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.selection.section.CourseListVetoSection;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 public class ViewZ3950ResultSection
-	extends
-		RemoteRepoViewResultSection<ViewZ3950ResultSection.ViewZ3950ResultModel, Z3950ListEntry, GenericRecord>
-	implements
-		CourseListVetoSection
-{
-	private static final PluginResourceHelper resources = ResourcesService
-		.getResourceHelper(ViewZ3950ResultSection.class);
+    extends RemoteRepoViewResultSection<
+        ViewZ3950ResultSection.ViewZ3950ResultModel, Z3950ListEntry, GenericRecord>
+    implements CourseListVetoSection {
+  private static final PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(ViewZ3950ResultSection.class);
 
-	@Inject
-	private Z3950Service z3950Service;
+  @Inject private Z3950Service z3950Service;
 
-	@Override
-	protected void setupModel(SectionInfo info, ViewZ3950ResultModel model, FederatedSearch search)
-	{
-		model.setResult(resolveRecord(info, search, false));
-	}
+  @Override
+  protected void setupModel(SectionInfo info, ViewZ3950ResultModel model, FederatedSearch search) {
+    model.setResult(resolveRecord(info, search, false));
+  }
 
-	@Override
-	protected Label getTitle(SectionInfo info, ViewZ3950ResultModel model)
-	{
-		return new TextLabel(model.getResult().getTitle());
-	}
+  @Override
+  protected Label getTitle(SectionInfo info, ViewZ3950ResultModel model) {
+    return new TextLabel(model.getResult().getTitle());
+  }
 
-	@Override
-	protected void getContents(SectionInfo info, ViewZ3950ResultModel model, List<SectionRenderable> contents)
-	{
-		final GenericRecord result = model.getResult();
-		addField(contents, "view.description", result.getDescription());
-		if( !Check.isEmpty(result.getAuthors()) )
-		{
-			addField(contents, "view.author", result.getAuthors().toArray());
-		}
-		addField(contents, "view.isbn", result.getIsbn());
-		addField(contents, "view.issn", result.getIssn());
-		addField(contents, "view.lccn", result.getLccn());
-		addField(contents, "view.physicaldescription", result.getPhysicalDescription());
+  @Override
+  protected void getContents(
+      SectionInfo info, ViewZ3950ResultModel model, List<SectionRenderable> contents) {
+    final GenericRecord result = model.getResult();
+    addField(contents, "view.description", result.getDescription());
+    if (!Check.isEmpty(result.getAuthors())) {
+      addField(contents, "view.author", result.getAuthors().toArray());
+    }
+    addField(contents, "view.isbn", result.getIsbn());
+    addField(contents, "view.issn", result.getIssn());
+    addField(contents, "view.lccn", result.getLccn());
+    addField(contents, "view.physicaldescription", result.getPhysicalDescription());
 
-		if( result instanceof ModsRecord )
-		{
-			final ModsRecord mods = (ModsRecord) result;
-			addField(contents, "view.notes", mods.getNotes().toArray());
-			addField(contents, "view.typeofresource", mods.getTypeOfResource());
-		}
-	}
+    if (result instanceof ModsRecord) {
+      final ModsRecord mods = (ModsRecord) result;
+      addField(contents, "view.notes", mods.getNotes().toArray());
+      addField(contents, "view.typeofresource", mods.getTypeOfResource());
+    }
+  }
 
-	@Override
-	protected PropBagEx getImportXml(SectionInfo info, FederatedSearch search)
-	{
-		return resolveRecord(info, search, true).getXml();
-	}
+  @Override
+  protected PropBagEx getImportXml(SectionInfo info, FederatedSearch search) {
+    return resolveRecord(info, search, true).getXml();
+  }
 
-	@Override
-	public Class<ViewZ3950ResultModel> getModelClass()
-	{
-		return ViewZ3950ResultModel.class;
-	}
+  @Override
+  public Class<ViewZ3950ResultModel> getModelClass() {
+    return ViewZ3950ResultModel.class;
+  }
 
-	@Override
-	protected void clearResult(SectionInfo info)
-	{
-		getModel(info).setShowResults(false);
-	}
+  @Override
+  protected void clearResult(SectionInfo info) {
+    getModel(info).setShowResults(false);
+  }
 
-	@Override
-	public boolean isShowing(SectionInfo info)
-	{
-		final ViewZ3950ResultModel model = getModel(info);
-		return model.isShowResults();
-	}
+  @Override
+  public boolean isShowing(SectionInfo info) {
+    final ViewZ3950ResultModel model = getModel(info);
+    return model.isShowResults();
+  }
 
-	private GenericRecord resolveRecord(SectionInfo info, FederatedSearch z3950Search, boolean useImportSchema)
-	{
-		final ViewZ3950ResultModel model = getModel(info);
-		final Z3950SearchEvent searchEvent = new Z3950SearchEvent(getRootRemoteRepoSection(), z3950Search);
-		info.processEvent(searchEvent);
-		return z3950Service.getRecord(searchEvent.getSearch(), searchEvent.getQuery(), model.getRecordIndex(),
-			searchEvent.getAdvancedOptions(), useImportSchema);
-	}
+  private GenericRecord resolveRecord(
+      SectionInfo info, FederatedSearch z3950Search, boolean useImportSchema) {
+    final ViewZ3950ResultModel model = getModel(info);
+    final Z3950SearchEvent searchEvent =
+        new Z3950SearchEvent(getRootRemoteRepoSection(), z3950Search);
+    info.processEvent(searchEvent);
+    return z3950Service.getRecord(
+        searchEvent.getSearch(),
+        searchEvent.getQuery(),
+        model.getRecordIndex(),
+        searchEvent.getAdvancedOptions(),
+        useImportSchema);
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "z";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "z";
+  }
 
-	@Override
-	public Bookmark getViewHandler(SectionInfo info, Z3950ListEntry listItem)
-	{
-		final Z3950SearchResult result = listItem.getResult();
-		return new BookmarkAndModify(info, events.getNamedModifier("viewResult", result.getIndex())); //$NON-NLS-1$
-	}
+  @Override
+  public Bookmark getViewHandler(SectionInfo info, Z3950ListEntry listItem) {
+    final Z3950SearchResult result = listItem.getResult();
+    return new BookmarkAndModify(
+        info, events.getNamedModifier("viewResult", result.getIndex())); // $NON-NLS-1$
+  }
 
-	@EventHandlerMethod
-	public void viewResult(SectionInfo info, int index)
-	{
-		final ViewZ3950ResultModel model = getModel(info);
-		model.setRecordIndex(index);
-		model.setShowResults(true);
-	}
+  @EventHandlerMethod
+  public void viewResult(SectionInfo info, int index) {
+    final ViewZ3950ResultModel model = getModel(info);
+    model.setRecordIndex(index);
+    model.setShowResults(true);
+  }
 
-	@Override
-	protected String getKeyPrefix()
-	{
-		return resources.pluginId() + ".";
-	}
+  @Override
+  protected String getKeyPrefix() {
+    return resources.pluginId() + ".";
+  }
 
-	public static class ViewZ3950ResultModel
-		extends
-			RemoteRepoViewResultSection.RemoteRepoViewResultModel<GenericRecord>
-	{
-		@Bookmarked(name = "r")
-		private int recordIndex;
-		@Bookmarked(name = "s")
-		private boolean showResults;
+  public static class ViewZ3950ResultModel
+      extends RemoteRepoViewResultSection.RemoteRepoViewResultModel<GenericRecord> {
+    @Bookmarked(name = "r")
+    private int recordIndex;
 
-		public boolean isShowResults()
-		{
-			return showResults;
-		}
+    @Bookmarked(name = "s")
+    private boolean showResults;
 
-		public void setShowResults(boolean showResults)
-		{
-			this.showResults = showResults;
-		}
+    public boolean isShowResults() {
+      return showResults;
+    }
 
-		public int getRecordIndex()
-		{
-			return recordIndex;
-		}
+    public void setShowResults(boolean showResults) {
+      this.showResults = showResults;
+    }
 
-		public void setRecordIndex(int recordIndex)
-		{
-			this.recordIndex = recordIndex;
-		}
-	}
+    public int getRecordIndex() {
+      return recordIndex;
+    }
+
+    public void setRecordIndex(int recordIndex) {
+      this.recordIndex = recordIndex;
+    }
+  }
 }

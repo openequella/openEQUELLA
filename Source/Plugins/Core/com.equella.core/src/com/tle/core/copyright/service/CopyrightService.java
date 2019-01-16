@@ -29,31 +29,30 @@ import com.tle.core.copyright.Portion;
 import com.tle.core.copyright.Section;
 import com.tle.core.copyright.exception.CopyrightViolationException;
 
-public interface CopyrightService<H extends Holding, P extends Portion, S extends Section>
-{
-	String getActivationType();
+public interface CopyrightService<H extends Holding, P extends Portion, S extends Section> {
+  String getActivationType();
 
-	Item getCopyrightedItem(ItemId item);
+  Item getCopyrightedItem(ItemId item);
 
-	boolean isCopyrightedItem(Item item);
+  boolean isCopyrightedItem(Item item);
 
-	S getSectionForAttachment(Item item, String attachmentUuid);
+  S getSectionForAttachment(Item item, String attachmentUuid);
 
-	H getHoldingForItem(Item item);
+  H getHoldingForItem(Item item);
 
-	List<ActivateRequest> getCurrentOrPendingActivations(H holding);
+  List<ActivateRequest> getCurrentOrPendingActivations(H holding);
 
-	Attachment getSectionAttachmentForFilepath(Item item, String filepath);
+  Attachment getSectionAttachmentForFilepath(Item item, String filepath);
 
-	CopyrightViolationException createViolation(Item item);
+  CopyrightViolationException createViolation(Item item);
 
-	String citate(H holding, P portion);
+  String citate(H holding, P portion);
 
-	Map<Long, H> getHoldingsForItems(List<Item> items);
+  Map<Long, H> getHoldingsForItems(List<Item> items);
 
-	Map<Long, List<P>> getPortionsForItems(List<Item> items);
+  Map<Long, List<P>> getPortionsForItems(List<Item> items);
 
-	AgreementStatus getAgreementStatus(Item item, IAttachment attachment);
+  AgreementStatus getAgreementStatus(Item item, IAttachment attachment);
 
-	void acceptAgreement(Item item, IAttachment attachment);
+  void acceptAgreement(Item item, IAttachment attachment);
 }

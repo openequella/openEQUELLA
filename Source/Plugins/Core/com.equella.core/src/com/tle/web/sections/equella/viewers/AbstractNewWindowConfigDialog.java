@@ -34,96 +34,88 @@ import com.tle.web.sections.standard.dialog.model.DialogControl;
 import com.tle.web.sections.standard.js.impl.DisableComponentsFunction;
 
 @SuppressWarnings("nls")
-public abstract class AbstractNewWindowConfigDialog extends AbstractResourceViewerConfigDialog
-{
-	private static PluginResourceHelper urlHelper = ResourcesService
-		.getResourceHelper(AbstractNewWindowConfigDialog.class);
+public abstract class AbstractNewWindowConfigDialog extends AbstractResourceViewerConfigDialog {
+  private static PluginResourceHelper urlHelper =
+      ResourcesService.getResourceHelper(AbstractNewWindowConfigDialog.class);
 
-	private final boolean allowThickbox;
+  private final boolean allowThickbox;
 
-	@Component
-	private Checkbox openInNewWindow;
-	@Component
-	private Checkbox openInThickbox;
-	@Component
-	private TextField widthField;
-	@Component
-	private TextField heightField;
+  @Component private Checkbox openInNewWindow;
+  @Component private Checkbox openInThickbox;
+  @Component private TextField widthField;
+  @Component private TextField heightField;
 
-	private DisableComponentsFunction disablerFunc;
-	private JSExpression shouldDisable;
+  private DisableComponentsFunction disablerFunc;
+  private JSExpression shouldDisable;
 
-	public AbstractNewWindowConfigDialog()
-	{
-		this(true);
-	}
+  public AbstractNewWindowConfigDialog() {
+    this(true);
+  }
 
-	@Override
-	protected abstract Label getTitleLabel(RenderContext context);
+  @Override
+  protected abstract Label getTitleLabel(RenderContext context);
 
-	protected AbstractNewWindowConfigDialog(boolean allowThickbox)
-	{
-		this.allowThickbox = allowThickbox;
-	}
+  protected AbstractNewWindowConfigDialog(boolean allowThickbox) {
+    this.allowThickbox = allowThickbox;
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		controls.add(new DialogControl(new KeyLabel(urlHelper.key("openinnewwindow")), openInNewWindow));
-		if( allowThickbox )
-		{
-			controls.add(new DialogControl(new KeyLabel(urlHelper.key("openinfancybox")), openInThickbox));
-		}
-		controls.add(new DialogControl(new KeyLabel(urlHelper.key("windowwidth")), widthField, getWindowSizeHelpTextLabel()));
-		controls.add(new DialogControl(new KeyLabel(urlHelper.key("windowheight")), heightField, getWindowSizeHelpTextLabel()));
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    controls.add(
+        new DialogControl(new KeyLabel(urlHelper.key("openinnewwindow")), openInNewWindow));
+    if (allowThickbox) {
+      controls.add(
+          new DialogControl(new KeyLabel(urlHelper.key("openinfancybox")), openInThickbox));
+    }
+    controls.add(
+        new DialogControl(
+            new KeyLabel(urlHelper.key("windowwidth")), widthField, getWindowSizeHelpTextLabel()));
+    controls.add(
+        new DialogControl(
+            new KeyLabel(urlHelper.key("windowheight")),
+            heightField,
+            getWindowSizeHelpTextLabel()));
 
-		mappings.addMapping("openInNewWindow", openInNewWindow);
-		if( allowThickbox )
-		{
-			mappings.addMapping("thickbox", openInThickbox);
-		}
-		mappings.addMapping("width", widthField);
-		mappings.addMapping("height", heightField);
+    mappings.addMapping("openInNewWindow", openInNewWindow);
+    if (allowThickbox) {
+      mappings.addMapping("thickbox", openInThickbox);
+    }
+    mappings.addMapping("width", widthField);
+    mappings.addMapping("height", heightField);
 
-		if( allowThickbox )
-		{
-			disablerFunc = new DisableComponentsFunction("change" + id, openInThickbox, widthField, heightField);
-		}
-		else
-		{
-			disablerFunc = new DisableComponentsFunction("change" + id, widthField, heightField);
-		}
+    if (allowThickbox) {
+      disablerFunc =
+          new DisableComponentsFunction("change" + id, openInThickbox, widthField, heightField);
+    } else {
+      disablerFunc = new DisableComponentsFunction("change" + id, widthField, heightField);
+    }
 
-		shouldDisable = new NotExpression(openInNewWindow.createGetExpression());
-		openInNewWindow.setEventHandler(JSHandler.EVENT_CHANGE, new StatementHandler(disablerFunc, shouldDisable));
-		openInNewWindow.setStyleClass("focus");
-	}
+    shouldDisable = new NotExpression(openInNewWindow.createGetExpression());
+    openInNewWindow.setEventHandler(
+        JSHandler.EVENT_CHANGE, new StatementHandler(disablerFunc, shouldDisable));
+    openInNewWindow.setStyleClass("focus");
+  }
 
-	protected Label getWindowSizeHelpTextLabel()
-	{
-		return new KeyLabel(urlHelper.key("help.windowsize"));
-	}
+  protected Label getWindowSizeHelpTextLabel() {
+    return new KeyLabel(urlHelper.key("help.windowsize"));
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		populateFunction.addExtraStatements(new FunctionCallStatement(disablerFunc, shouldDisable));
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    populateFunction.addExtraStatements(new FunctionCallStatement(disablerFunc, shouldDisable));
+  }
 
-	public Checkbox getOpenInNewWindow()
-	{
-		return openInNewWindow;
-	}
+  public Checkbox getOpenInNewWindow() {
+    return openInNewWindow;
+  }
 
-	public TextField getWidthField()
-	{
-		return widthField;
-	}
+  public TextField getWidthField() {
+    return widthField;
+  }
 
-	public TextField getHeightField()
-	{
-		return heightField;
-	}
+  public TextField getHeightField() {
+    return heightField;
+  }
 }

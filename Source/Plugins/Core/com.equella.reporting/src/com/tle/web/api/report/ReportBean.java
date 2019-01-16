@@ -21,28 +21,29 @@ import com.tle.web.api.interfaces.beans.BaseEntityBean;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class ReportBean extends BaseEntityBean
-{
-    private boolean hideReport;
-    private String filename;
+public class ReportBean extends BaseEntityBean {
+  private boolean hideReport;
+  private String filename;
 
-    public boolean isHideReport() {
-        return hideReport;
-    }
+  public boolean isHideReport() {
+    return hideReport;
+  }
 
-    public void setHideReport(boolean hideReport) {
-        this.hideReport = hideReport;
-    }
+  public void setHideReport(boolean hideReport) {
+    this.hideReport = hideReport;
+  }
 
-    public String getFilename() {
-        return filename;
-    }
+  public String getFilename() {
+    return filename;
+  }
 
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
+  public void setFilename(String filename) {
+    this.filename = filename;
+  }
 
-    public String toString() {
-        return String.format("[name: %s, desc: %s, uuid: %s, filename:  %s, hideReport: %s]", getName(), getDescription(), getUuid(), filename, hideReport);
-    }
+  public String toString() {
+    return String.format(
+        "[name: %s, desc: %s, uuid: %s, filename:  %s, hideReport: %s]",
+        getName(), getDescription(), getUuid(), filename, hideReport);
+  }
 }

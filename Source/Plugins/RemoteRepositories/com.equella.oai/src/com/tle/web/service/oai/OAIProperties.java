@@ -30,37 +30,30 @@ import com.tle.core.institution.InstitutionService;
 import com.tle.core.settings.service.ConfigurationService;
 
 @Bind
-public class OAIProperties extends Properties
-{
-	private static final long serialVersionUID = 1L;
+public class OAIProperties extends Properties {
+  private static final long serialVersionUID = 1L;
 
-	@Inject
-	private ConfigurationService configConstants;
-	@Inject
-	private InstitutionService institutionService;
+  @Inject private ConfigurationService configConstants;
+  @Inject private InstitutionService institutionService;
 
-	@Inject
-	public OAIProperties(@Named("oaiProps") Properties properties)
-	{
-		super(properties);
-	}
+  @Inject
+  public OAIProperties(@Named("oaiProps") Properties properties) {
+    super(properties);
+  }
 
-	@Override
-	public synchronized String getProperty(String key)
-	{
-		if( "Identify.adminEmail".equals(key) ) //$NON-NLS-1$
-		{
-			String email = configConstants.getProperties(new OAISettings()).getEmailAddress();
-			if( Check.isEmpty(email) )
-			{
-				email = configConstants.getProperties(new MailSettings()).getSender();
-			}
-			return Utils.ent(email);
-		}
-		else if( "OAIHandler.baseURL".equals(key) ) //$NON-NLS-1$
-		{
-			return institutionService.getInstitutionUrl() + "p/oai"; //$NON-NLS-1$
-		}
-		return super.getProperty(key);
-	}
+  @Override
+  public synchronized String getProperty(String key) {
+    if ("Identify.adminEmail".equals(key)) // $NON-NLS-1$
+    {
+      String email = configConstants.getProperties(new OAISettings()).getEmailAddress();
+      if (Check.isEmpty(email)) {
+        email = configConstants.getProperties(new MailSettings()).getSender();
+      }
+      return Utils.ent(email);
+    } else if ("OAIHandler.baseURL".equals(key)) // $NON-NLS-1$
+    {
+      return institutionService.getInstitutionUrl() + "p/oai"; // $NON-NLS-1$
+    }
+    return super.getProperty(key);
+  }
 }

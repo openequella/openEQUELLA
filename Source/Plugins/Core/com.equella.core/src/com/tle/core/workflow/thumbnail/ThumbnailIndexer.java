@@ -35,96 +35,75 @@ import com.tle.core.guice.Bind;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.freetext.IndexedItem;
 
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @NonNullByDefault
 @Bind
 @Singleton
-public class ThumbnailIndexer extends AbstractIndexingExtension
-{
-	private static final Logger LOGGER = LoggerFactory.getLogger(ThumbnailIndexer.class);
+public class ThumbnailIndexer extends AbstractIndexingExtension {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ThumbnailIndexer.class);
 
-	@Inject
-	private MimeTypeService mimeTypeService;
+  @Inject private MimeTypeService mimeTypeService;
 
-	@Override
-	public void indexFast(IndexedItem indexedItem)
-	{
-		final Item item = indexedItem.getItem();
-		final UnmodifiableAttachments attachments = new UnmodifiableAttachments(item);
+  @Override
+  public void indexFast(IndexedItem indexedItem) {
+    final Item item = indexedItem.getItem();
+    final UnmodifiableAttachments attachments = new UnmodifiableAttachments(item);
 
-		boolean indexedRealThumb = false;
-		final String thumb = item.getThumb();
-		if( thumb != null )
-		{
-			if( thumb.startsWith("custom:") )
-			{
-				String thumbUuid = thumb.split(":")[1];
-				Attachment attachment = ((Attachment) attachments.getAttachmentByUuid(thumbUuid));
-				if( attachment != null )
-				{
-					indexedRealThumb = true;
-					indexedItem.getItemdoc().add(
-						keyword(FreeTextQuery.FIELD_REAL_THUMB, Boolean.toString(attachmentHasRealThumb(attachment))));
-				}
-			}
-			else if( thumb.equals("default") )
-			{
-				for( IAttachment attachment : attachments )
-				{
-					// at least one image attachment w/thumbnails
-					if( attachmentHasRealThumb((Attachment) attachment) )
-					{
-						indexedRealThumb = true;
-						indexedItem.getItemdoc().add(keyword(FreeTextQuery.FIELD_REAL_THUMB, "true"));
-						break;
-					}
-				}
-			}
-			else if( thumb.equals("initial") )
-			{
-				LOGGER.trace("Thumb value initial, not indexing 'real thumb'");
-				//We didn't, but let's pretend we did since this is a real world case
-				indexedRealThumb = true;
-			}
-			else
-			{
-				LOGGER.warn("Unknown thumb value '" + thumb + "' on item " + item.getId());
-			}
-		}
-		else
-		{
-			LOGGER.error("No thumbnail for item with DB id: " + item.getId());
-		}
-		if( !indexedRealThumb )
-		{
-			LOGGER.debug("Did not index realThumb for item with DB id: " + item.getId());
-		}
-	}
+    boolean indexedRealThumb = false;
+    final String thumb = item.getThumb();
+    if (thumb != null) {
+      if (thumb.startsWith("custom:")) {
+        String thumbUuid = thumb.split(":")[1];
+        Attachment attachment = ((Attachment) attachments.getAttachmentByUuid(thumbUuid));
+        if (attachment != null) {
+          indexedRealThumb = true;
+          indexedItem
+              .getItemdoc()
+              .add(
+                  keyword(
+                      FreeTextQuery.FIELD_REAL_THUMB,
+                      Boolean.toString(attachmentHasRealThumb(attachment))));
+        }
+      } else if (thumb.equals("default")) {
+        for (IAttachment attachment : attachments) {
+          // at least one image attachment w/thumbnails
+          if (attachmentHasRealThumb((Attachment) attachment)) {
+            indexedRealThumb = true;
+            indexedItem.getItemdoc().add(keyword(FreeTextQuery.FIELD_REAL_THUMB, "true"));
+            break;
+          }
+        }
+      } else if (thumb.equals("initial")) {
+        LOGGER.trace("Thumb value initial, not indexing 'real thumb'");
+        // We didn't, but let's pretend we did since this is a real world case
+        indexedRealThumb = true;
+      } else {
+        LOGGER.warn("Unknown thumb value '" + thumb + "' on item " + item.getId());
+      }
+    } else {
+      LOGGER.error("No thumbnail for item with DB id: " + item.getId());
+    }
+    if (!indexedRealThumb) {
+      LOGGER.debug("Did not index realThumb for item with DB id: " + item.getId());
+    }
+  }
 
-	private boolean attachmentHasRealThumb(Attachment attachment)
-	{
-		String thumb = attachment.getThumbnail();
-		if( !"suppress".equals(thumb) )
-		{
-			String mime = mimeTypeService.getMimeEntryForAttachment(attachment);
-			return mime != null && mime.startsWith("image/");
-		}
-		return false;
-	}
+  private boolean attachmentHasRealThumb(Attachment attachment) {
+    String thumb = attachment.getThumbnail();
+    if (!"suppress".equals(thumb)) {
+      String mime = mimeTypeService.getMimeEntryForAttachment(attachment);
+      return mime != null && mime.startsWith("image/");
+    }
+    return false;
+  }
 
-	@Override
-	public void indexSlow(IndexedItem indexedItem)
-	{
-		// Nah
-	}
+  @Override
+  public void indexSlow(IndexedItem indexedItem) {
+    // Nah
+  }
 
-	@Override
-	public void loadForIndexing(List<IndexedItem> items)
-	{
-		// Nah
-	}
-
+  @Override
+  public void loadForIndexing(List<IndexedItem> items) {
+    // Nah
+  }
 }

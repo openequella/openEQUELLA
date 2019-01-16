@@ -24,7 +24,6 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.TreeIndexed;
 
 @TreeIndexed
-public interface CopyrightOverrideSection
-{
-	public void doOverride(SectionInfo info, Map<Long, List<ActivateRequest>> requestMap);
+public interface CopyrightOverrideSection {
+  public void doOverride(SectionInfo info, Map<Long, List<ActivateRequest>> requestMap);
 }

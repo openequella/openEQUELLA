@@ -23,19 +23,16 @@ import com.tle.web.echo.section.RootEchoServerSection;
 import com.tle.web.sections.equella.guice.SectionsModule;
 
 @SuppressWarnings("nls")
-public class EchoModule extends SectionsModule
-{
-	@Override
-	protected void configure()
-	{
-		bind(Object.class).annotatedWith(Names.named("/access/echoservers")).toProvider(echoTree());
-	}
+public class EchoModule extends SectionsModule {
+  @Override
+  protected void configure() {
+    bind(Object.class).annotatedWith(Names.named("/access/echoservers")).toProvider(echoTree());
+  }
 
-	private NodeProvider echoTree()
-	{
-		NodeProvider node = node(RootEchoServerSection.class);
-		node.innerChild(EchoServerEditorSection.class);
-		node.child(EchoServerListSection.class);
-		return node;
-	}
+  private NodeProvider echoTree() {
+    NodeProvider node = node(RootEchoServerSection.class);
+    node.innerChild(EchoServerEditorSection.class);
+    node.child(EchoServerListSection.class);
+    return node;
+  }
 }

@@ -42,75 +42,68 @@ import com.tle.web.stream.FileContentStream;
 
 @Bind
 @Singleton
-public class WorkflowMessageFileServlet extends HttpServlet
-{
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private MimeTypeService mimeService;
-	@Inject
-	private ContentStreamWriter contentStreamWriter;
-	@Inject
-	private SectionsController sectionsController;
-	@Inject
-	private InstitutionService institutionService;
+public class WorkflowMessageFileServlet extends HttpServlet {
+  @Inject private FileSystemService fileSystemService;
+  @Inject private MimeTypeService mimeService;
+  @Inject private ContentStreamWriter contentStreamWriter;
+  @Inject private SectionsController sectionsController;
+  @Inject private InstitutionService institutionService;
 
-	@Override
-	protected final void service(HttpServletRequest request, HttpServletResponse response)
-		throws ServletException, IOException
-	{
-		if( CurrentUser.isGuest() || CurrentInstitution.get() == null )
-		{
-			StringBuilder requestUrl = new StringBuilder(
-					institutionService.removeInstitution(request.getRequestURL().toString()));
-			String queryString = request.getQueryString();
-			if (queryString != null)
-			{
-				requestUrl.append('?').append(queryString);
-			}
-			LogonSection.forwardToLogon(sectionsController, request, response, requestUrl.toString(), LogonSection.STANDARD_LOGON_PATH);
-			return;
-		}
-		String path = request.getPathInfo();
+  @Override
+  protected final void service(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    if (CurrentUser.isGuest() || CurrentInstitution.get() == null) {
+      StringBuilder requestUrl =
+          new StringBuilder(
+              institutionService.removeInstitution(request.getRequestURL().toString()));
+      String queryString = request.getQueryString();
+      if (queryString != null) {
+        requestUrl.append('?').append(queryString);
+      }
+      LogonSection.forwardToLogon(
+          sectionsController,
+          request,
+          response,
+          requestUrl.toString(),
+          LogonSection.STANDARD_LOGON_PATH);
+      return;
+    }
+    String path = request.getPathInfo();
 
-		int i = path.indexOf('/', 1);
+    int i = path.indexOf('/', 1);
 
-		if( i < 0 )
-		{
-			throw new NotFoundException(path, true);
-		}
+    if (i < 0) {
+      throw new NotFoundException(path, true);
+    }
 
-		if( path.startsWith("/") )
-		{
-			path = path.substring(1);
-		}
+    if (path.startsWith("/")) {
+      path = path.substring(1);
+    }
 
-		int firstPart = path.indexOf('/');
-		if( firstPart < 0 )
-		{
-			throw new NotFoundException(path, true);
-		}
+    int firstPart = path.indexOf('/');
+    if (firstPart < 0) {
+      throw new NotFoundException(path, true);
+    }
 
-		String substring = path.substring(0, firstPart);
+    String substring = path.substring(0, firstPart);
 
-		if( substring.equals("$") )
-		{
-			path = path.substring(firstPart + 1);
-			firstPart = path.indexOf('/');
-			String stagingUuid = path.substring(0, firstPart);
-			String filePath = path.substring(firstPart + 1);
-			FileContentStream stream = fileSystemService.getContentStream(new StagingFile(stagingUuid), filePath,
-				mimeService.getMimeTypeForFilename(filePath));
-			contentStreamWriter.outputStream(request, response, stream);
-		}
-		else
-		{
-			String workflowMessageFilePath = path.substring(firstPart + 1);
-			String uuid = substring;
-			String mimetype = mimeService.getMimeTypeForFilename(workflowMessageFilePath);
-			WorkflowMessageFile handle = new WorkflowMessageFile(uuid);
-			FileContentStream stream = fileSystemService.getContentStream(handle, workflowMessageFilePath, mimetype);
-			contentStreamWriter.outputStream(request, response, stream);
-		}
-	}
+    if (substring.equals("$")) {
+      path = path.substring(firstPart + 1);
+      firstPart = path.indexOf('/');
+      String stagingUuid = path.substring(0, firstPart);
+      String filePath = path.substring(firstPart + 1);
+      FileContentStream stream =
+          fileSystemService.getContentStream(
+              new StagingFile(stagingUuid), filePath, mimeService.getMimeTypeForFilename(filePath));
+      contentStreamWriter.outputStream(request, response, stream);
+    } else {
+      String workflowMessageFilePath = path.substring(firstPart + 1);
+      String uuid = substring;
+      String mimetype = mimeService.getMimeTypeForFilename(workflowMessageFilePath);
+      WorkflowMessageFile handle = new WorkflowMessageFile(uuid);
+      FileContentStream stream =
+          fileSystemService.getContentStream(handle, workflowMessageFilePath, mimetype);
+      contentStreamWriter.outputStream(request, response, stream);
+    }
+  }
 }

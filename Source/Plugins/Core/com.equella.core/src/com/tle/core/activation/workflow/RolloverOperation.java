@@ -34,109 +34,87 @@ import com.tle.core.activation.service.CourseInfoService;
 import com.tle.core.security.impl.SecureOnCall;
 import com.tle.common.usermanagement.user.CurrentUser;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SecureOnCall(priv = "COPYRIGHT_ITEM")
-public class RolloverOperation extends AbstractBulkableActivationOperation
-{
-	private long courseId;
-	private Date from;
-	private Date until;
-	private boolean cancel;
-	private boolean sameCourse;
-	private boolean rolloverDates;
+public class RolloverOperation extends AbstractBulkableActivationOperation {
+  private long courseId;
+  private Date from;
+  private Date until;
+  private boolean cancel;
+  private boolean sameCourse;
+  private boolean rolloverDates;
 
-	@Inject
-	private CourseInfoService courseService;
+  @Inject private CourseInfoService courseService;
 
-	@Inject
-	private ActivationService activationService;
+  @Inject private ActivationService activationService;
 
-	@AssistedInject
-	public RolloverOperation(@Assisted long courseId, @Assisted("from") Date from, @Assisted("until") Date until)
-	{
-		super();
-		this.courseId = courseId;
-		this.from = from;
-		this.until = until;
-	}
+  @AssistedInject
+  public RolloverOperation(
+      @Assisted long courseId, @Assisted("from") Date from, @Assisted("until") Date until) {
+    super();
+    this.courseId = courseId;
+    this.from = from;
+    this.until = until;
+  }
 
-	public void setUseSameCourse(boolean sameCourse)
-	{
-		this.sameCourse = sameCourse;
-	}
+  public void setUseSameCourse(boolean sameCourse) {
+    this.sameCourse = sameCourse;
+  }
 
-	public void setRolloverDates(boolean rolloverDates)
-	{
-		this.rolloverDates = rolloverDates;
-	}
+  public void setRolloverDates(boolean rolloverDates) {
+    this.rolloverDates = rolloverDates;
+  }
 
-	public void setCancel(boolean cancel)
-	{
-		this.cancel = cancel;
-	}
+  public void setCancel(boolean cancel) {
+    this.cancel = cancel;
+  }
 
-	@Override
-	protected boolean doOperation(ActivateRequest request, ActivateRequestDao dao)
-	{
-		ActivateRequest rolledOverRequest;
-		try
-		{
-			rolledOverRequest = (ActivateRequest) request.clone();
-			rolledOverRequest.setId(0);
-			rolledOverRequest.setUser(CurrentUser.getUserID());
-			rolledOverRequest.setUuid(UUID.randomUUID().toString());
-			if( !sameCourse )
-			{
-				CourseInfo course = courseService.get(courseId);
-				rolledOverRequest.setCourse(course);
-			}
-			if( rolloverDates )
-			{
-				incrementYears(rolledOverRequest);
-			}
-			else
-			{
-				rolledOverRequest.setFrom(from);
-				rolledOverRequest.setUntil(until);
-			}
-			rolledOverRequest.setTime(params.getDateNow());
-			rolledOverRequest.setStatus(ActivateRequest.TYPE_PENDING);
-			dao.save(rolledOverRequest);
-		}
-		catch( CloneNotSupportedException e )
-		{
-			throw new RuntimeException(e);
-		}
-		if( cancel && request.getUntil().after(from) )
-		{
-			// If new start date < now then deactivate old
-			// otherwise set end date of old activation to start date of new
-			// activation
-			if( from.before(new Date()) )
-			{
-				activationService.deactivateByUuid(request.getUuid());
-			}
-			else
-			{
-				request.setUntil(from);
-				dao.update(request);
-			}
-		}
-		activationService.validateItem(request.getType(), request.getItem(), true, false);
-		return true;
-	}
+  @Override
+  protected boolean doOperation(ActivateRequest request, ActivateRequestDao dao) {
+    ActivateRequest rolledOverRequest;
+    try {
+      rolledOverRequest = (ActivateRequest) request.clone();
+      rolledOverRequest.setId(0);
+      rolledOverRequest.setUser(CurrentUser.getUserID());
+      rolledOverRequest.setUuid(UUID.randomUUID().toString());
+      if (!sameCourse) {
+        CourseInfo course = courseService.get(courseId);
+        rolledOverRequest.setCourse(course);
+      }
+      if (rolloverDates) {
+        incrementYears(rolledOverRequest);
+      } else {
+        rolledOverRequest.setFrom(from);
+        rolledOverRequest.setUntil(until);
+      }
+      rolledOverRequest.setTime(params.getDateNow());
+      rolledOverRequest.setStatus(ActivateRequest.TYPE_PENDING);
+      dao.save(rolledOverRequest);
+    } catch (CloneNotSupportedException e) {
+      throw new RuntimeException(e);
+    }
+    if (cancel && request.getUntil().after(from)) {
+      // If new start date < now then deactivate old
+      // otherwise set end date of old activation to start date of new
+      // activation
+      if (from.before(new Date())) {
+        activationService.deactivateByUuid(request.getUuid());
+      } else {
+        request.setUntil(from);
+        dao.update(request);
+      }
+    }
+    activationService.validateItem(request.getType(), request.getItem(), true, false);
+    return true;
+  }
 
-	private void incrementYears(ActivateRequest rolledOverRequest)
-	{
-		Calendar cal = Calendar.getInstance(CurrentTimeZone.get(), CurrentLocale.getLocale());
-		cal.setTime(rolledOverRequest.getFrom());
-		cal.roll(Calendar.YEAR, true);
-		rolledOverRequest.setFrom(cal.getTime());
-		cal.setTime(rolledOverRequest.getUntil());
-		cal.roll(Calendar.YEAR, true);
-		rolledOverRequest.setUntil(cal.getTime());
-
-	}
+  private void incrementYears(ActivateRequest rolledOverRequest) {
+    Calendar cal = Calendar.getInstance(CurrentTimeZone.get(), CurrentLocale.getLocale());
+    cal.setTime(rolledOverRequest.getFrom());
+    cal.roll(Calendar.YEAR, true);
+    rolledOverRequest.setFrom(cal.getTime());
+    cal.setTime(rolledOverRequest.getUntil());
+    cal.roll(Calendar.YEAR, true);
+    rolledOverRequest.setUntil(cal.getTime());
+  }
 }

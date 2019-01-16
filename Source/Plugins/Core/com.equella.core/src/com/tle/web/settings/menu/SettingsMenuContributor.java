@@ -39,49 +39,43 @@ import com.tle.web.template.section.MenuContributor;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class SettingsMenuContributor implements MenuContributor
-{
-	private static final Label LABEL_KEY = new KeyLabel(
-		ResourcesService.getResourceHelper(SettingsMenuContributor.class).key("menu"));
-	private static final String ICON_PATH = ResourcesService.getResourceHelper(SettingsMenuContributor.class)
-		.url("images/menu-icon-settings.png");
-	private static final String SESSION_KEY = "SETTINGS-MENU";
+public class SettingsMenuContributor implements MenuContributor {
+  private static final Label LABEL_KEY =
+      new KeyLabel(ResourcesService.getResourceHelper(SettingsMenuContributor.class).key("menu"));
+  private static final String ICON_PATH =
+      ResourcesService.getResourceHelper(SettingsMenuContributor.class)
+          .url("images/menu-icon-settings.png");
+  private static final String SESSION_KEY = "SETTINGS-MENU";
 
-	@Inject
-	private UserSessionService userSessionService;
+  @Inject private UserSessionService userSessionService;
 
+  @Override
+  public List<MenuContribution> getMenuContributions(SectionInfo info) {
+    Boolean showSettings = userSessionService.getAttribute(SESSION_KEY);
+    if (showSettings == null) {
+      showSettings = canView(info);
+      userSessionService.setAttribute(SESSION_KEY, showSettings);
+    }
 
-	@Override
-	public List<MenuContribution> getMenuContributions(SectionInfo info)
-	{
-		Boolean showSettings = userSessionService.getAttribute(SESSION_KEY);
-		if( showSettings == null )
-		{
-			showSettings = canView(info);
-			userSessionService.setAttribute(SESSION_KEY, showSettings);
-		}
+    List<MenuContribution> mcs = new ArrayList<MenuContribution>();
+    if (showSettings) {
+      HtmlLinkState hls = new HtmlLinkState(SettingsUtils.getBookmark(info));
+      hls.setLabel(LABEL_KEY);
 
-		List<MenuContribution> mcs = new ArrayList<MenuContribution>();
-		if( showSettings )
-		{
-			HtmlLinkState hls = new HtmlLinkState(SettingsUtils.getBookmark(info));
-			hls.setLabel(LABEL_KEY);
+      MenuContribution mc =
+          new MenuContribution(hls, ICON_PATH, 30, 30, "settings", "page/settings");
+      mcs.add(mc);
+    }
 
-			MenuContribution mc = new MenuContribution(hls, ICON_PATH, 30, 30, "settings", "page/settings");
-			mcs.add(mc);
-		}
+    return mcs;
+  }
 
-		return mcs;
-	}
+  private boolean canView(SectionInfo info) {
+    return SettingsList.anyEditable();
+  }
 
-	private boolean canView(SectionInfo info)
-	{
-		return SettingsList.anyEditable();
-	}
-
-	@Override
-	public void clearCachedData()
-	{
-		userSessionService.removeAttribute(SESSION_KEY);
-	}
+  @Override
+  public void clearCachedData() {
+    userSessionService.removeAttribute(SESSION_KEY);
+  }
 }

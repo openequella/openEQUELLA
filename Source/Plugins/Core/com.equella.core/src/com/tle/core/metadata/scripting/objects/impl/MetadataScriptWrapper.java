@@ -33,29 +33,28 @@ import javax.inject.Singleton;
 
 @Bind(MetadataScriptObject.class)
 @Singleton
-public class MetadataScriptWrapper extends AbstractScriptWrapper implements MetadataScriptObject
-{
-	@Inject
-	private MetadataService metadataService;
-	@Inject
-	private FileSystemService fileSystemService;
+public class MetadataScriptWrapper extends AbstractScriptWrapper implements MetadataScriptObject {
+  @Inject private MetadataService metadataService;
+  @Inject private FileSystemService fileSystemService;
 
-	@Override
-	public MetadataScriptType getMetadata(FileHandleScriptType f)
-	{
-		MetadataScriptType mdst = new MetadataScriptTypeImpl(metadataService.getMetadata(fileSystemService
-			.getExternalFile(((FileHandleScriptTypeImpl) f).getHandle(), f.getName())));
+  @Override
+  public MetadataScriptType getMetadata(FileHandleScriptType f) {
+    MetadataScriptType mdst =
+        new MetadataScriptTypeImpl(
+            metadataService.getMetadata(
+                fileSystemService.getExternalFile(
+                    ((FileHandleScriptTypeImpl) f).getHandle(), f.getName())));
 
-		return mdst;
-	}
+    return mdst;
+  }
 
-	@Override
-	public MetadataScriptType getMetadata(AttachmentScriptType a)
-	{
-		AttachmentScriptTypeImpl impl = (AttachmentScriptTypeImpl) a;
-		MetadataScriptType mdst = new MetadataScriptTypeImpl(metadataService.getMetadata(impl.getWrapped(),
-			impl.getStagingFile()));
+  @Override
+  public MetadataScriptType getMetadata(AttachmentScriptType a) {
+    AttachmentScriptTypeImpl impl = (AttachmentScriptTypeImpl) a;
+    MetadataScriptType mdst =
+        new MetadataScriptTypeImpl(
+            metadataService.getMetadata(impl.getWrapped(), impl.getStagingFile()));
 
-		return mdst;
-	}
+    return mdst;
+  }
 }

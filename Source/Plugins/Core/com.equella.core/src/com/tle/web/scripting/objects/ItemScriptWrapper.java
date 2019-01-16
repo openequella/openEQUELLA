@@ -27,59 +27,42 @@ import com.tle.core.guice.Bind;
 import com.tle.core.item.service.ItemService;
 import com.tle.web.scripting.ScriptTypeFactory;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind(ItemScriptObject.class)
 @Singleton
-public class ItemScriptWrapper extends AbstractScriptWrapper implements ItemScriptObject
-{
-	private static final long serialVersionUID = 1L;
+public class ItemScriptWrapper extends AbstractScriptWrapper implements ItemScriptObject {
+  private static final long serialVersionUID = 1L;
 
-	@Inject
-	private ScriptTypeFactory scriptTypeFactory;
+  @Inject private ScriptTypeFactory scriptTypeFactory;
 
-	@Inject
-	private ItemService itemService;
+  @Inject private ItemService itemService;
 
-	@Override
-	public ItemScriptType getItem(String uuid, int version)
-	{
-		try
-		{
-			return scriptTypeFactory.createItem(new ItemId(uuid, version));
-		}
-		catch( ItemNotFoundException e )
-		{
-			return null;
-		}
-	}
+  @Override
+  public ItemScriptType getItem(String uuid, int version) {
+    try {
+      return scriptTypeFactory.createItem(new ItemId(uuid, version));
+    } catch (ItemNotFoundException e) {
+      return null;
+    }
+  }
 
-	@Override
-	public ItemScriptType getLatestVersionItem(String uuid)
-	{
-		try
-		{
-			int version = itemService.getLatestVersion(uuid);
-			return scriptTypeFactory.createItem(new ItemId(uuid, version));
-		}
-		catch( ItemNotFoundException e )
-		{
-			return null;
-		}
-	}
+  @Override
+  public ItemScriptType getLatestVersionItem(String uuid) {
+    try {
+      int version = itemService.getLatestVersion(uuid);
+      return scriptTypeFactory.createItem(new ItemId(uuid, version));
+    } catch (ItemNotFoundException e) {
+      return null;
+    }
+  }
 
-	@Override
-	public ItemScriptType getLiveItem(String uuid)
-	{
-		try
-		{
-			int version = itemService.getLiveItemVersion(uuid);
-			return scriptTypeFactory.createItem(new ItemId(uuid, version));
-		}
-		catch( ItemNotFoundException e )
-		{
-			return null;
-		}
-	}
+  @Override
+  public ItemScriptType getLiveItem(String uuid) {
+    try {
+      int version = itemService.getLiveItemVersion(uuid);
+      return scriptTypeFactory.createItem(new ItemId(uuid, version));
+    } catch (ItemNotFoundException e) {
+      return null;
+    }
+  }
 }

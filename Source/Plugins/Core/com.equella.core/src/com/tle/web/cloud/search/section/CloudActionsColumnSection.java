@@ -26,23 +26,19 @@ import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.ResultListCollector;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
 @Bind
-public class CloudActionsColumnSection extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		return renderChildren(context, new ResultListCollector(true)).getFirstResult();
-	}
+public class CloudActionsColumnSection extends AbstractPrototypeSection<Object>
+    implements HtmlRenderer {
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    return renderChildren(context, new ResultListCollector(true)).getFirstResult();
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.setLayout(id, TwoColumnLayout.RIGHT);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.setLayout(id, TwoColumnLayout.RIGHT);
+  }
 }

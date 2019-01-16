@@ -39,134 +39,112 @@ import com.tle.web.sections.events.StandardRenderContext;
 import com.tle.web.sections.generic.DefaultSectionInfo;
 import com.tle.web.sections.render.SectionRenderable;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
 @Singleton
-public class CanvasConfigurationServlet extends HttpServlet
-{
-	private static final String DEFAULT_WIDTH = "1024";
-	private static final String DEFAULT_HEIGHT = "768";
+public class CanvasConfigurationServlet extends HttpServlet {
+  private static final String DEFAULT_WIDTH = "1024";
+  private static final String DEFAULT_HEIGHT = "768";
 
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private SectionsController sectionController;
-	@Inject
-	private CustomTemplateLoader templateLoader;
-	@Inject
-	private PluginService pluginService;
+  @Inject private InstitutionService institutionService;
+  @Inject private SectionsController sectionController;
+  @Inject private CustomTemplateLoader templateLoader;
+  @Inject private PluginService pluginService;
 
-	@SuppressWarnings("null")
-	@ViewFactory
-	private FreemarkerFactory view;
+  @SuppressWarnings("null")
+  @ViewFactory
+  private FreemarkerFactory view;
 
-	@Override
-	public void init()
-	{
-		String factoryId = pluginService.getPluginIdForObject(CanvasConfigurationServlet.class) + '@';
-		FreemarkerFactory ff = templateLoader.getFactoryForName(factoryId);
-		if( ff == null )
-		{
-			throw new RuntimeException("No freemarker factory for CanvasConfigurationServlet");
-		}
-		view = ff;
-	}
+  @Override
+  public void init() {
+    String factoryId = pluginService.getPluginIdForObject(CanvasConfigurationServlet.class) + '@';
+    FreemarkerFactory ff = templateLoader.getFactoryForName(factoryId);
+    if (ff == null) {
+      throw new RuntimeException("No freemarker factory for CanvasConfigurationServlet");
+    }
+    view = ff;
+  }
 
-	@Override
-	protected void service(@SuppressWarnings("null") HttpServletRequest req,
-		@SuppressWarnings("null") HttpServletResponse resp) throws ServletException, IOException
-	{
-		resp.setContentType("application/xml");
-		resp.setCharacterEncoding("utf-8");
-		final CanvasConfigurationModel model = new CanvasConfigurationModel();
-		final URL instUrl = institutionService.getInstitutionUrl();
-		model.setDomain(instUrl.getHost());
-		model.setInstUrl(instUrl.toString());
-		// You could render the labels in the FTL in a similar manner
-		model.setWidth(initSizeFromParam(req, "width", DEFAULT_WIDTH));
-		model.setHeight(initSizeFromParam(req, "height", DEFAULT_HEIGHT));
+  @Override
+  protected void service(
+      @SuppressWarnings("null") HttpServletRequest req,
+      @SuppressWarnings("null") HttpServletResponse resp)
+      throws ServletException, IOException {
+    resp.setContentType("application/xml");
+    resp.setCharacterEncoding("utf-8");
+    final CanvasConfigurationModel model = new CanvasConfigurationModel();
+    final URL instUrl = institutionService.getInstitutionUrl();
+    model.setDomain(instUrl.getHost());
+    model.setInstUrl(instUrl.toString());
+    // You could render the labels in the FTL in a similar manner
+    model.setWidth(initSizeFromParam(req, "width", DEFAULT_WIDTH));
+    model.setHeight(initSizeFromParam(req, "height", DEFAULT_HEIGHT));
 
-		final SectionRenderable renderable = view.createResultWithModel("canvasconfig.ftl", model);
-		final DefaultSectionInfo info = new DefaultSectionInfo(sectionController);
-		info.setRequest(req);
-		info.setResponse(resp);
+    final SectionRenderable renderable = view.createResultWithModel("canvasconfig.ftl", model);
+    final DefaultSectionInfo info = new DefaultSectionInfo(sectionController);
+    info.setRequest(req);
+    info.setResponse(resp);
 
-		try( SectionWriter sectionWriter = new SectionWriter(resp.getWriter(), new StandardRenderContext(info)) )
-		{
-			sectionWriter.preRender(renderable);
-			renderable.realRender(sectionWriter);
-		}
-	}
+    try (SectionWriter sectionWriter =
+        new SectionWriter(resp.getWriter(), new StandardRenderContext(info))) {
+      sectionWriter.preRender(renderable);
+      renderable.realRender(sectionWriter);
+    }
+  }
 
-	@SuppressWarnings("null")
-	private String initSizeFromParam(HttpServletRequest req, String paramName, String defaultValue)
-	{
-		final String sizeParam = req.getParameter(paramName);
-		if( sizeParam != null )
-		{
-			try
-			{
-				Integer.parseInt(sizeParam);
-				return sizeParam.trim();
-			}
-			catch( NumberFormatException nfe )
-			{
-				// Ignore
-			}
-		}
-		return defaultValue;
-	}
+  @SuppressWarnings("null")
+  private String initSizeFromParam(HttpServletRequest req, String paramName, String defaultValue) {
+    final String sizeParam = req.getParameter(paramName);
+    if (sizeParam != null) {
+      try {
+        Integer.parseInt(sizeParam);
+        return sizeParam.trim();
+      } catch (NumberFormatException nfe) {
+        // Ignore
+      }
+    }
+    return defaultValue;
+  }
 
-	@NonNullByDefault(false)
-	public static class CanvasConfigurationModel
-	{
-		private String instUrl;
-		private String domain;
-		private String width;
-		private String height;
+  @NonNullByDefault(false)
+  public static class CanvasConfigurationModel {
+    private String instUrl;
+    private String domain;
+    private String width;
+    private String height;
 
-		public String getInstUrl()
-		{
-			return instUrl;
-		}
+    public String getInstUrl() {
+      return instUrl;
+    }
 
-		public void setInstUrl(String instUrl)
-		{
-			this.instUrl = instUrl;
-		}
+    public void setInstUrl(String instUrl) {
+      this.instUrl = instUrl;
+    }
 
-		public String getDomain()
-		{
-			return domain;
-		}
+    public String getDomain() {
+      return domain;
+    }
 
-		public void setDomain(String domain)
-		{
-			this.domain = domain;
-		}
+    public void setDomain(String domain) {
+      this.domain = domain;
+    }
 
-		public String getWidth()
-		{
-			return width;
-		}
+    public String getWidth() {
+      return width;
+    }
 
-		public void setWidth(String width)
-		{
-			this.width = width;
-		}
+    public void setWidth(String width) {
+      this.width = width;
+    }
 
-		public String getHeight()
-		{
-			return height;
-		}
+    public String getHeight() {
+      return height;
+    }
 
-		public void setHeight(String height)
-		{
-			this.height = height;
-		}
-	}
+    public void setHeight(String height) {
+      this.height = height;
+    }
+  }
 }

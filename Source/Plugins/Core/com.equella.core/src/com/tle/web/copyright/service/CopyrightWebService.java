@@ -24,16 +24,13 @@ import com.tle.beans.item.attachments.Attachment;
 import com.tle.core.copyright.Holding;
 import com.tle.web.sections.SectionInfo;
 
-/**
- * @author Aaron
- */
-public interface CopyrightWebService<H extends Holding>
-{
-	Map<String, Attachment> getAttachmentMap(SectionInfo info, Item item);
+/** @author Aaron */
+public interface CopyrightWebService<H extends Holding> {
+  Map<String, Attachment> getAttachmentMap(SectionInfo info, Item item);
 
-	int getStatus(SectionInfo info, Item item, String attachmentUuid);
+  int getStatus(SectionInfo info, Item item, String attachmentUuid);
 
-	H getHolding(SectionInfo info, Item item);
+  H getHolding(SectionInfo info, Item item);
 
-	String getAgreement(FileHandle agreementFile);
+  String getAgreement(FileHandle agreementFile);
 }

@@ -33,26 +33,21 @@ import com.tle.web.workflow.view.CurrentModerationLinkSection;
 
 @Bind
 @Singleton
-public class ModerationSummaryView implements ModerationView
-{
+public class ModerationSummaryView implements ModerationView {
 
-	@Inject
-	private ViewItemUrlFactory urlFactory;
-	@Inject
-	private ViewableItemFactory viewableItemFactory;
+  @Inject private ViewItemUrlFactory urlFactory;
+  @Inject private ViewableItemFactory viewableItemFactory;
 
-	@Override
-	public SectionInfo getViewForward(SectionInfo info, ItemTaskId itemTaskId, String view)
-	{
-		NewDefaultViewableItem viewable = viewableItemFactory.createNewViewableItem(itemTaskId);
-		ViewItemUrl vurl = urlFactory.createItemUrl(info, viewable);
-		vurl.getQueryString();
-		SectionInfo sinfo = vurl.getSectionInfo();
-		if( view.equals(ModerationService.VIEW_PROGRESS) )
-		{
-			sinfo.lookupSection(CurrentModerationLinkSection.class).execute(sinfo);
-		}
-		sinfo.setAttribute(ItemServlet.VIEWABLE_ITEM, viewable);
-		return sinfo;
-	}
+  @Override
+  public SectionInfo getViewForward(SectionInfo info, ItemTaskId itemTaskId, String view) {
+    NewDefaultViewableItem viewable = viewableItemFactory.createNewViewableItem(itemTaskId);
+    ViewItemUrl vurl = urlFactory.createItemUrl(info, viewable);
+    vurl.getQueryString();
+    SectionInfo sinfo = vurl.getSectionInfo();
+    if (view.equals(ModerationService.VIEW_PROGRESS)) {
+      sinfo.lookupSection(CurrentModerationLinkSection.class).execute(sinfo);
+    }
+    sinfo.setAttribute(ItemServlet.VIEWABLE_ITEM, viewable);
+    return sinfo;
+  }
 }

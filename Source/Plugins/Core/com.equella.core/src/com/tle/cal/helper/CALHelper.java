@@ -40,49 +40,46 @@ import com.tle.core.item.helper.AbstractHelper;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class CALHelper extends AbstractHelper
-{
-	@Inject
-	private CALService calService;
-	@Inject
-	private ActivationService activationService;
+public class CALHelper extends AbstractHelper {
+  @Inject private CALService calService;
+  @Inject private ActivationService activationService;
 
-	@Override
-	public void load(PropBagEx itemxml, Item item)
-	{
-		if( calService.isCopyrightedItem(item) )
-		{
-			PropBagEx activations = itemxml.aquireSubtree("activations");
-			activations.deleteAll(Constants.XML_WILD);
-			for( ActivateRequest activation : activationService.getAllRequests(calService.getActivationType(), item) )
-			{
-				PropBagEx activeXML = activations.newSubtree("activation");
-				setNode(activeXML, "@uuid", activation.getUuid());
-				setNode(activeXML, "@status",
-					CurrentLocale.get(activationService.getStatusKey(activation.getStatus())));
+  @Override
+  public void load(PropBagEx itemxml, Item item) {
+    if (calService.isCopyrightedItem(item)) {
+      PropBagEx activations = itemxml.aquireSubtree("activations");
+      activations.deleteAll(Constants.XML_WILD);
+      for (ActivateRequest activation :
+          activationService.getAllRequests(calService.getActivationType(), item)) {
+        PropBagEx activeXML = activations.newSubtree("activation");
+        setNode(activeXML, "@uuid", activation.getUuid());
+        setNode(
+            activeXML,
+            "@status",
+            CurrentLocale.get(activationService.getStatusKey(activation.getStatus())));
 
-				setNode(activeXML, "attachment", activation.getAttachment());
+        setNode(activeXML, "attachment", activation.getAttachment());
 
-				CourseInfo course = activation.getCourse();
-				setNode(activeXML, "coursename", CurrentLocale.get(course.getName()));
-				setNode(activeXML, "coursecode", course.getCode());
+        CourseInfo course = activation.getCourse();
+        setNode(activeXML, "coursename", CurrentLocale.get(course.getName()));
+        setNode(activeXML, "coursecode", course.getCode());
 
-				setNode(activeXML, "startdate", activation.getFrom());
-				setNode(activeXML, "enddate", activation.getUntil());
+        setNode(activeXML, "startdate", activation.getFrom());
+        setNode(activeXML, "enddate", activation.getUntil());
 
-				CALHolding holding = calService.getHoldingForItem(item);
-				Map<Long, List<CALPortion>> portions = calService.getPortionsForItems(Collections.singletonList(item));
-				CALPortion portion = portions.get(item.getId()) == null ? null : portions.get(item.getId()).get(0);
-				String citation = calService.citate(holding, portion);
-				setNode(activeXML, "citation", citation);
-			}
-		}
-	}
+        CALHolding holding = calService.getHoldingForItem(item);
+        Map<Long, List<CALPortion>> portions =
+            calService.getPortionsForItems(Collections.singletonList(item));
+        CALPortion portion =
+            portions.get(item.getId()) == null ? null : portions.get(item.getId()).get(0);
+        String citation = calService.citate(holding, portion);
+        setNode(activeXML, "citation", citation);
+      }
+    }
+  }
 
-	@Override
-	public void save(PropBagEx xml, Item item, Set<String> handled)
-	{
-		// nothing
-	}
-
+  @Override
+  public void save(PropBagEx xml, Item item, Set<String> handled) {
+    // nothing
+  }
 }

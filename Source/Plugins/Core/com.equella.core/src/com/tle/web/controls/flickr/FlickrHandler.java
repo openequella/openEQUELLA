@@ -58,283 +58,254 @@ import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.AttachmentResourceService;
 
 /**
- * A class to handle Flickr pages. First cut is to present the entire
- * www.flickr.com url (the image's home page on Flickr) rather than isolate the
- * image.
- * 
+ * A class to handle Flickr pages. First cut is to present the entire www.flickr.com url (the
+ * image's home page on Flickr) rather than isolate the image.
+ *
  * @author Larry. Based on the YouTube plugin.
  */
 @SuppressWarnings("nls")
 @Bind
 @NonNullByDefault
 public class FlickrHandler extends BasicAbstractAttachmentHandler<FlickrHandler.FlickrHandlerModel>
-	implements
-		InfoEventListener
-{
-	@PlugKey("flickr.name")
-	private static Label NAME_LABEL;
-	@PlugKey("flickr.description")
-	private static Label DESCRIPTION_LABEL;
-	@PlugKey("flickr.add.title")
-	private static Label ADD_TITLE_LABEL;
-	@PlugKey("flickr.edit.title")
-	private static Label EDIT_TITLE_LABEL;
+    implements InfoEventListener {
+  @PlugKey("flickr.name")
+  private static Label NAME_LABEL;
 
-	@PlugKey("flickr.details.viewlink")
-	private static Label VIEW_LINK_LABEL;
+  @PlugKey("flickr.description")
+  private static Label DESCRIPTION_LABEL;
 
-	@Inject
-	private RegistrationController controller;
-	@Inject
-	private AttachmentResourceService attachmentResourceService;
-	@Inject
-	private SectionNode flickrRoot;
+  @PlugKey("flickr.add.title")
+  private static Label ADD_TITLE_LABEL;
 
-	private DefaultSectionTree flickrTree;
-	private FlickrLayoutSection flickrLayoutSection;
-	private FlickrQuerySection flickrQuerySection;
-	private FlickrSearchResultsSection flickrSearchResultsSection;
+  @PlugKey("flickr.edit.title")
+  private static Label EDIT_TITLE_LABEL;
 
-	public FlickrQuerySection getFlickrQuerySection()
-	{
-		return flickrQuerySection;
-	}
+  @PlugKey("flickr.details.viewlink")
+  private static Label VIEW_LINK_LABEL;
 
-	public FlickrSearchResultsSection getFlickrSearchResultsSection()
-	{
-		return flickrSearchResultsSection;
-	}
+  @Inject private RegistrationController controller;
+  @Inject private AttachmentResourceService attachmentResourceService;
+  @Inject private SectionNode flickrRoot;
 
-	@Override
-	public String getHandlerId()
-	{
-		return "flickrHandler";
-	}
+  private DefaultSectionTree flickrTree;
+  private FlickrLayoutSection flickrLayoutSection;
+  private FlickrQuerySection flickrQuerySection;
+  private FlickrSearchResultsSection flickrSearchResultsSection;
 
-	@Override
-	public void registered(final String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  public FlickrQuerySection getFlickrQuerySection() {
+    return flickrQuerySection;
+  }
 
-		String rootId = id + "fl";
-		flickrTree = new DefaultSectionTree(controller, new SectionNode(rootId));
-		flickrTree.registerSections(flickrRoot, rootId);
+  public FlickrSearchResultsSection getFlickrSearchResultsSection() {
+    return flickrSearchResultsSection;
+  }
 
-		flickrLayoutSection = flickrTree.lookupSection(FlickrLayoutSection.class, null);
-		flickrQuerySection = flickrTree.lookupSection(FlickrQuerySection.class, flickrLayoutSection);
+  @Override
+  public String getHandlerId() {
+    return "flickrHandler";
+  }
 
-		flickrSearchResultsSection = flickrTree.lookupSection(FlickrSearchResultsSection.class, flickrLayoutSection);
-		flickrSearchResultsSection.setFlickrHandler(this);
-		flickrSearchResultsSection.setUpdateHandler(new StatementHandler(dialogState.getDialog().getFooterUpdate(tree,
-			events.getEventHandler("updateButtons"))));
-		flickrQuerySection.setDialogFooterId(dialogState.getDialog().getFooterId());
+  @Override
+  public void registered(final String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		flickrTree.treeFinished();
-	}
+    String rootId = id + "fl";
+    flickrTree = new DefaultSectionTree(controller, new SectionNode(rootId));
+    flickrTree.registerSections(flickrRoot, rootId);
 
-	@Override
-	public AttachmentHandlerLabel getLabel()
-	{
-		return new AttachmentHandlerLabel(NAME_LABEL, DESCRIPTION_LABEL);
-	}
+    flickrLayoutSection = flickrTree.lookupSection(FlickrLayoutSection.class, null);
+    flickrQuerySection = flickrTree.lookupSection(FlickrQuerySection.class, flickrLayoutSection);
 
-	@Override
-	public boolean supports(IAttachment attachment)
-	{
-		if( attachment instanceof CustomAttachment )
-		{
-			CustomAttachment ca = (CustomAttachment) attachment;
-			return FlickrUtils.ATTACHMENT_TYPE.equals(ca.getType());
-		}
-		return false;
-	}
+    flickrSearchResultsSection =
+        flickrTree.lookupSection(FlickrSearchResultsSection.class, flickrLayoutSection);
+    flickrSearchResultsSection.setFlickrHandler(this);
+    flickrSearchResultsSection.setUpdateHandler(
+        new StatementHandler(
+            dialogState
+                .getDialog()
+                .getFooterUpdate(tree, events.getEventHandler("updateButtons"))));
+    flickrQuerySection.setDialogFooterId(dialogState.getDialog().getFooterId());
 
-	@Override
-	public Label getTitleLabel(RenderContext context, boolean editing)
-	{
-		return editing ? EDIT_TITLE_LABEL : ADD_TITLE_LABEL;
-	}
+    flickrTree.treeFinished();
+  }
 
-	@Override
-	protected SectionRenderable renderAdd(RenderContext context, DialogRenderOptions renderOptions)
-	{
-		TemplateResult tr = renderToTemplate(context, flickrLayoutSection.getSectionId());
-		renderOptions.setShowSave(!Check.isEmpty(flickrSearchResultsSection.getResults().getSelectedValuesAsStrings(
-			context)));
-		return tr.getNamedResult(context, OneColumnLayout.BODY);
-	}
+  @Override
+  public AttachmentHandlerLabel getLabel() {
+    return new AttachmentHandlerLabel(NAME_LABEL, DESCRIPTION_LABEL);
+  }
 
-	@Override
-	protected List<Attachment> createAttachments(SectionInfo info)
-	{
-		List<Attachment> attachments = Lists.newArrayList();
-		List<Photo> photos = flickrSearchResultsSection.getResults().getSelectedValues(info);
+  @Override
+  public boolean supports(IAttachment attachment) {
+    if (attachment instanceof CustomAttachment) {
+      CustomAttachment ca = (CustomAttachment) attachment;
+      return FlickrUtils.ATTACHMENT_TYPE.equals(ca.getType());
+    }
+    return false;
+  }
 
-		for( Photo photo : photos )
-		{
+  @Override
+  public Label getTitleLabel(RenderContext context, boolean editing) {
+    return editing ? EDIT_TITLE_LABEL : ADD_TITLE_LABEL;
+  }
 
-			CustomAttachment a = new CustomAttachment();
-			a.setType(FlickrUtils.ATTACHMENT_TYPE);
-			a.setData(FlickrUtils.PROPERTY_THUMB_URL, photo.getThumbnailUrl());
+  @Override
+  protected SectionRenderable renderAdd(RenderContext context, DialogRenderOptions renderOptions) {
+    TemplateResult tr = renderToTemplate(context, flickrLayoutSection.getSectionId());
+    renderOptions.setShowSave(
+        !Check.isEmpty(
+            flickrSearchResultsSection.getResults().getSelectedValuesAsStrings(context)));
+    return tr.getNamedResult(context, OneColumnLayout.BODY);
+  }
 
-			a.setDescription(photo.getTitle());
-			a.setData(FlickrUtils.PROPERTY_ID, photo.getId());
+  @Override
+  protected List<Attachment> createAttachments(SectionInfo info) {
+    List<Attachment> attachments = Lists.newArrayList();
+    List<Photo> photos = flickrSearchResultsSection.getResults().getSelectedValues(info);
 
-			String hw = FlickrUtils.describePhotoSize(photo);
-			if( !Check.isEmpty(hw) )
-			{
-				a.setData(FlickrUtils.PROPERTY_IMAGE_SIZE, hw);
-			}
-			a.setData(FlickrUtils.PROPERTY_SHOW_URL, photo.getUrl());
+    for (Photo photo : photos) {
 
-			// there may or may not be a 'real' name, but there should always be
-			// a
-			// username
-			String ownerName = photo.getOwner() != null ? photo.getOwner().getRealName() : "";
-			if( !Check.isEmpty(ownerName) )
-			{
-				ownerName += "(" + photo.getOwner().getUsername() + ")";
-			}
-			else
-			{
-				ownerName = photo.getOwner().getUsername();
-			}
+      CustomAttachment a = new CustomAttachment();
+      a.setType(FlickrUtils.ATTACHMENT_TYPE);
+      a.setData(FlickrUtils.PROPERTY_THUMB_URL, photo.getThumbnailUrl());
 
-			if( !Check.isEmpty(ownerName) )
-			{
-				a.setData(FlickrUtils.PROPERTY_AUTHOR, ownerName);
-			}
+      a.setDescription(photo.getTitle());
+      a.setData(FlickrUtils.PROPERTY_ID, photo.getId());
 
-			a.setData(FlickrUtils.PROPERTY_DATE_POSTED, photo.getDatePosted());
-			a.setData(FlickrUtils.PROPERTY_DATE_TAKEN, photo.getDateTaken());
+      String hw = FlickrUtils.describePhotoSize(photo);
+      if (!Check.isEmpty(hw)) {
+        a.setData(FlickrUtils.PROPERTY_IMAGE_SIZE, hw);
+      }
+      a.setData(FlickrUtils.PROPERTY_SHOW_URL, photo.getUrl());
 
-			String mediumUrl = photo.getMediumUrl();
-			if( !Check.isEmpty(mediumUrl) )
-			{
-				a.setData(FlickrUtils.PROPERTY_MEDIUM_URL, mediumUrl);
-			}
+      // there may or may not be a 'real' name, but there should always be
+      // a
+      // username
+      String ownerName = photo.getOwner() != null ? photo.getOwner().getRealName() : "";
+      if (!Check.isEmpty(ownerName)) {
+        ownerName += "(" + photo.getOwner().getUsername() + ")";
+      } else {
+        ownerName = photo.getOwner().getUsername();
+      }
 
-			String rawPhotoLicence = photo.getLicense();
-			if( !Check.isEmpty(rawPhotoLicence) )
-			{
-				a.setData(FlickrUtils.PROPERTY_LICENCE_KEY, rawPhotoLicence);
-				for( NameValueExtra nve : flickrSearchResultsSection.getAllLicenceValues() )
-				{
-					if( rawPhotoLicence.equals(nve.getValue()) )
-					{
-						a.setData(FlickrUtils.PROPERTY_LICENCE_CODE, nve.getName());
-						a.setData(FlickrUtils.PROPERTY_LICENCE_NAME, nve.getExtra());
-						break; // from .. for (NameValueExtra nve ...)
-					}
-				}
-			}
-			attachments.add(a);
-		}
-		return attachments;
-	}
+      if (!Check.isEmpty(ownerName)) {
+        a.setData(FlickrUtils.PROPERTY_AUTHOR, ownerName);
+      }
 
-	@Override
-	protected SectionRenderable renderDetails(RenderContext context, DialogRenderOptions renderOptions)
-	{
-		final FlickrHandlerModel model = getModel(context);
-		// Common Details
-		final Attachment a = getDetailsAttachment(context);
-		ItemSectionInfo itemInfo = context.getAttributeForClass(ItemSectionInfo.class);
-		ViewableResource resource = attachmentResourceService.getViewableResource(context, itemInfo.getViewableItem(),
-			a);
-		addAttachmentDetails(context, resource.getCommonAttachmentDetails());
+      a.setData(FlickrUtils.PROPERTY_DATE_POSTED, photo.getDatePosted());
+      a.setData(FlickrUtils.PROPERTY_DATE_TAKEN, photo.getDateTaken());
 
-		// Additional Details
-		String embedUrl = (String) a.getData(FlickrUtils.PROPERTY_MEDIUM_URL);
-		// Haven't yet seen a case where Medium URL didn't exist, but there's
-		// always
-		// a first time ...
-		if( Check.isEmpty(embedUrl) )
-		{
-			embedUrl = (String) a.getData(FlickrUtils.PROPERTY_THUMB_URL);
-		}
+      String mediumUrl = photo.getMediumUrl();
+      if (!Check.isEmpty(mediumUrl)) {
+        a.setData(FlickrUtils.PROPERTY_MEDIUM_URL, mediumUrl);
+      }
 
-		if( embedUrl != null && embedUrl.length() > 0 )
-		{
-			String embedStr = "<iframe class='preview' src='" + embedUrl
-				+ "' frameborder='0' allowfullscreen></iframe>";
-			model.addSpecificDetail("embed", new Pair<Label, Object>(null, embedStr));
-		}
+      String rawPhotoLicence = photo.getLicense();
+      if (!Check.isEmpty(rawPhotoLicence)) {
+        a.setData(FlickrUtils.PROPERTY_LICENCE_KEY, rawPhotoLicence);
+        for (NameValueExtra nve : flickrSearchResultsSection.getAllLicenceValues()) {
+          if (rawPhotoLicence.equals(nve.getValue())) {
+            a.setData(FlickrUtils.PROPERTY_LICENCE_CODE, nve.getName());
+            a.setData(FlickrUtils.PROPERTY_LICENCE_NAME, nve.getExtra());
+            break; // from .. for (NameValueExtra nve ...)
+          }
+        }
+      }
+      attachments.add(a);
+    }
+    return attachments;
+  }
 
-		String descr = a.getDescription();
-		if( !Check.isEmpty(descr) )
-		{
-			descr = FlickrUtils.formatToSize(descr);
-			model.addSpecificDetail("description", new Pair<Label, Object>(new TextLabel(""), descr));
-		}
+  @Override
+  protected SectionRenderable renderDetails(
+      RenderContext context, DialogRenderOptions renderOptions) {
+    final FlickrHandlerModel model = getModel(context);
+    // Common Details
+    final Attachment a = getDetailsAttachment(context);
+    ItemSectionInfo itemInfo = context.getAttributeForClass(ItemSectionInfo.class);
+    ViewableResource resource =
+        attachmentResourceService.getViewableResource(context, itemInfo.getViewableItem(), a);
+    addAttachmentDetails(context, resource.getCommonAttachmentDetails());
 
-		// View link
-		HtmlLinkState linkState = new HtmlLinkState(VIEW_LINK_LABEL, new SimpleBookmark(
-			(String) a.getData(FlickrUtils.PROPERTY_SHOW_URL)));
-		linkState.setTarget(HtmlLinkState.TARGET_BLANK);
-		model.setViewlink(new LinkRenderer(linkState));
-		return viewFactory.createResult("edit-flickr.ftl", this);
-	}
+    // Additional Details
+    String embedUrl = (String) a.getData(FlickrUtils.PROPERTY_MEDIUM_URL);
+    // Haven't yet seen a case where Medium URL didn't exist, but there's
+    // always
+    // a first time ...
+    if (Check.isEmpty(embedUrl)) {
+      embedUrl = (String) a.getData(FlickrUtils.PROPERTY_THUMB_URL);
+    }
 
-	public FlickrSettings getFlickrSettings()
-	{
-		return new FlickrSettings(getSettings());
-	}
+    if (embedUrl != null && embedUrl.length() > 0) {
+      String embedStr =
+          "<iframe class='preview' src='"
+              + embedUrl
+              + "' frameborder='0' allowfullscreen></iframe>";
+      model.addSpecificDetail("embed", new Pair<Label, Object>(null, embedStr));
+    }
 
-	@Override
-	public Class<FlickrHandlerModel> getModelClass()
-	{
-		return FlickrHandlerModel.class;
-	}
+    String descr = a.getDescription();
+    if (!Check.isEmpty(descr)) {
+      descr = FlickrUtils.formatToSize(descr);
+      model.addSpecificDetail("description", new Pair<Label, Object>(new TextLabel(""), descr));
+    }
 
-	@Override
-	public void handleInfoEvent(MutableSectionInfo info, boolean removed, boolean processParameters)
-	{
-		if( !removed )
-		{
-			info.getAttributeForClass(MutableSectionInfo.class).addTreeToBottom(flickrTree, processParameters);
-		}
-	}
+    // View link
+    HtmlLinkState linkState =
+        new HtmlLinkState(
+            VIEW_LINK_LABEL, new SimpleBookmark((String) a.getData(FlickrUtils.PROPERTY_SHOW_URL)));
+    linkState.setTarget(HtmlLinkState.TARGET_BLANK);
+    model.setViewlink(new LinkRenderer(linkState));
+    return viewFactory.createResult("edit-flickr.ftl", this);
+  }
 
-	public static class FlickrHandlerModel extends AbstractDetailsAttachmentHandler.AbstractAttachmentHandlerModel
-	{
-		/**
-		 * Provide for a warning message for soft errors, specifically, user not
-		 * found
-		 */
-		private String warningMsg;
-		private Boolean noResult;
+  public FlickrSettings getFlickrSettings() {
+    return new FlickrSettings(getSettings());
+  }
 
-		public String getWarningMsg()
-		{
-			return warningMsg;
-		}
+  @Override
+  public Class<FlickrHandlerModel> getModelClass() {
+    return FlickrHandlerModel.class;
+  }
 
-		public void setWarningMsg(String warningMsg)
-		{
-			this.warningMsg = warningMsg;
-		}
+  @Override
+  public void handleInfoEvent(MutableSectionInfo info, boolean removed, boolean processParameters) {
+    if (!removed) {
+      info.getAttributeForClass(MutableSectionInfo.class)
+          .addTreeToBottom(flickrTree, processParameters);
+    }
+  }
 
-		public Boolean getNoResult()
-		{
-			return noResult;
-		}
+  public static class FlickrHandlerModel
+      extends AbstractDetailsAttachmentHandler.AbstractAttachmentHandlerModel {
+    /** Provide for a warning message for soft errors, specifically, user not found */
+    private String warningMsg;
 
-		public void setNoResult(boolean noResult)
-		{
-			this.noResult = noResult;
-		}
-	}
+    private Boolean noResult;
 
-	@Override
-	protected boolean validateAddPage(SectionInfo info)
-	{
-		return true;
-	}
+    public String getWarningMsg() {
+      return warningMsg;
+    }
 
-	@Override
-	public String getMimeType(SectionInfo info)
-	{
-		return FlickrUtils.MIME_TYPE;
-	}
+    public void setWarningMsg(String warningMsg) {
+      this.warningMsg = warningMsg;
+    }
+
+    public Boolean getNoResult() {
+      return noResult;
+    }
+
+    public void setNoResult(boolean noResult) {
+      this.noResult = noResult;
+    }
+  }
+
+  @Override
+  protected boolean validateAddPage(SectionInfo info) {
+    return true;
+  }
+
+  @Override
+  public String getMimeType(SectionInfo info) {
+    return FlickrUtils.MIME_TYPE;
+  }
 }

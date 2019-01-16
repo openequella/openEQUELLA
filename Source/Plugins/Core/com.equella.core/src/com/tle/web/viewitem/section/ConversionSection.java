@@ -34,112 +34,87 @@ import com.tle.web.viewurl.ViewItemResource;
 import com.tle.web.viewurl.WrappedViewItemResource;
 
 public class ConversionSection extends AbstractPrototypeSection<ConversionSection.ConversionModel>
-	implements
-		ViewItemFilter
-{
-	@Inject
-	private Office2HtmlConversionService conversionService;
-	@TreeLookup
-	private RootItemFileSection rootSection;
+    implements ViewItemFilter {
+  @Inject private Office2HtmlConversionService conversionService;
+  @TreeLookup private RootItemFileSection rootSection;
 
-	public static class ConversionModel
-	{
-		@Bookmarked
-		private String convert;
+  public static class ConversionModel {
+    @Bookmarked private String convert;
 
-		public String getConvert()
-		{
-			return convert;
-		}
+    public String getConvert() {
+      return convert;
+    }
 
-		public void setConvert(String convert)
-		{
-			this.convert = convert;
-		}
-	}
+    public void setConvert(String convert) {
+      this.convert = convert;
+    }
+  }
 
-	public static class ConversionUrl implements ItemUrlExtender
-	{
-		private static final long serialVersionUID = 1L;
-		private final String type;
+  public static class ConversionUrl implements ItemUrlExtender {
+    private static final long serialVersionUID = 1L;
+    private final String type;
 
-		public ConversionUrl(String type)
-		{
-			this.type = type;
-		}
+    public ConversionUrl(String type) {
+      this.type = type;
+    }
 
-		@Override
-		public void execute(SectionInfo info)
-		{
-			ConversionSection section = info.lookupSection(ConversionSection.class);
-			section.setConvert(info, type);
-		}
-	}
+    @Override
+    public void execute(SectionInfo info) {
+      ConversionSection section = info.lookupSection(ConversionSection.class);
+      section.setConvert(info, type);
+    }
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		rootSection.addFilterMapping(Type.ALWAYS, this);
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    rootSection.addFilterMapping(Type.ALWAYS, this);
+  }
 
-	@Override
-	public Class<ConversionModel> getModelClass()
-	{
-		return ConversionModel.class;
-	}
+  @Override
+  public Class<ConversionModel> getModelClass() {
+    return ConversionModel.class;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "convert"; //$NON-NLS-1$
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "convert"; //$NON-NLS-1$
+  }
 
-	@Override
-	public int getOrder()
-	{
-		return -300;
-	}
+  @Override
+  public int getOrder() {
+    return -300;
+  }
 
-	public class ConversionResource extends WrappedViewItemResource
-	{
-		private final String type;
+  public class ConversionResource extends WrappedViewItemResource {
+    private final String type;
 
-		public ConversionResource(ViewItemResource resource, String convert)
-		{
-			super(resource);
-			this.type = convert;
-		}
+    public ConversionResource(ViewItemResource resource, String convert) {
+      super(resource);
+      this.type = convert;
+    }
 
-		@Override
-		public Bookmark createCanonicalURL()
-		{
-			try
-			{
-				String convertedFile = conversionService.convert(getViewableItem().getFileHandle(), getFilepath(),
-					type);
-				return getViewableItem().createStableResourceUrl(convertedFile);
-			}
-			catch( Exception e )
-			{
-				throw new SectionsRuntimeException(e);
-			}
-		}
+    @Override
+    public Bookmark createCanonicalURL() {
+      try {
+        String convertedFile =
+            conversionService.convert(getViewableItem().getFileHandle(), getFilepath(), type);
+        return getViewableItem().createStableResourceUrl(convertedFile);
+      } catch (Exception e) {
+        throw new SectionsRuntimeException(e);
+      }
+    }
+  }
 
-	}
+  public void setConvert(SectionInfo info, String convert) {
+    getModel(info).setConvert(convert);
+  }
 
-	public void setConvert(SectionInfo info, String convert)
-	{
-		getModel(info).setConvert(convert);
-	}
-
-	@Override
-	public ViewItemResource filter(SectionInfo info, ViewItemResource resource)
-	{
-		String conversionType = getModel(info).getConvert();
-		if( Check.isEmpty(conversionType) )
-		{
-			return resource;
-		}
-		return new ConversionResource(resource, conversionType);
-	}
+  @Override
+  public ViewItemResource filter(SectionInfo info, ViewItemResource resource) {
+    String conversionType = getModel(info).getConvert();
+    if (Check.isEmpty(conversionType)) {
+      return resource;
+    }
+    return new ConversionResource(resource, conversionType);
+  }
 }

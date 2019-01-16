@@ -29,45 +29,39 @@ import com.tle.web.viewurl.ViewItemResource;
 import com.tle.web.viewurl.ViewItemViewer;
 import com.tle.web.viewurl.ViewableResource;
 
-public abstract class AbstractEchoViewer extends AbstractResourceViewer
-{
-	@Inject
-	private EchoService echoService;
+public abstract class AbstractEchoViewer extends AbstractResourceViewer {
+  @Inject private EchoService echoService;
 
-	@Override
-	public boolean supports(SectionInfo info, ViewableResource resource)
-	{
-		return resource.getMimeType().equals(EchoUtils.MIME_TYPE);
-	}
+  @Override
+  public boolean supports(SectionInfo info, ViewableResource resource) {
+    return resource.getMimeType().equals(EchoUtils.MIME_TYPE);
+  }
 
-	@Override
-	public Class<? extends SectionId> getViewerSectionClass()
-	{
-		return EchoViewerSection.class;
-	}
+  @Override
+  public Class<? extends SectionId> getViewerSectionClass() {
+    return EchoViewerSection.class;
+  }
 
-	@Override
-	public ViewItemViewer getViewer(SectionInfo info, ViewItemResource resource)
-	{
-		EchoViewerSection viewerSection = info.lookupSection(EchoViewerSection.class);
-		viewerSection.setViewerId(info, getViewerId());
-		return viewerSection;
-	}
+  @Override
+  public ViewItemViewer getViewer(SectionInfo info, ViewItemResource resource) {
+    EchoViewerSection viewerSection = info.lookupSection(EchoViewerSection.class);
+    viewerSection.setViewerId(info, getViewerId());
+    return viewerSection;
+  }
 
-	protected EchoAttachmentData getEchoAttachmentData(IAttachment a)
-	{
-		EchoAttachmentData ed = null;
-		try
-		{
-			ed = echoService.getMapper().readValue((String) a.getData(EchoUtils.PROPERTY_ECHO_DATA),
-				EchoAttachmentData.class);
+  protected EchoAttachmentData getEchoAttachmentData(IAttachment a) {
+    EchoAttachmentData ed = null;
+    try {
+      ed =
+          echoService
+              .getMapper()
+              .readValue(
+                  (String) a.getData(EchoUtils.PROPERTY_ECHO_DATA), EchoAttachmentData.class);
 
-		}
-		catch( Exception e )
-		{
-			throw new RuntimeException(e);
-		}
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
 
-		return ed;
-	}
+    return ed;
+  }
 }

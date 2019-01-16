@@ -40,413 +40,311 @@ import javax.swing.border.EmptyBorder;
  * @author Nicholas Read
  * @author Charles O'Farrell
  */
-public class JStatusBar extends JComponent
-{
-	/**
-	 * Used internally to indicate an empty message.
-	 */
-	private static final int LEVEL_CLEAR = 0;
+public class JStatusBar extends JComponent {
+  /** Used internally to indicate an empty message. */
+  private static final int LEVEL_CLEAR = 0;
 
-	/**
-	 * Default message level. This should be used by tool tips, etc.
-	 */
-	public static final int LEVEL_GENERAL = 1;
+  /** Default message level. This should be used by tool tips, etc. */
+  public static final int LEVEL_GENERAL = 1;
 
-	/**
-	 * For more urgent messages. This should be used for information that should
-	 * override tool tips, etc.
-	 */
-	public static final int LEVEL_IMPORTANT = 2;
+  /**
+   * For more urgent messages. This should be used for information that should override tool tips,
+   * etc.
+   */
+  public static final int LEVEL_IMPORTANT = 2;
 
-	/**
-	 * For more internal use to override all other levels.
-	 */
-	public static final int LEVEL_GOD_LIKE = 3;
+  /** For more internal use to override all other levels. */
+  public static final int LEVEL_GOD_LIKE = 3;
 
-	/**
-	 * The default timeout if not specified. The message will never be cleared
-	 * automatically.
-	 */
-	public static final long TIMEOUT_NEVER = Long.MIN_VALUE;
+  /** The default timeout if not specified. The message will never be cleared automatically. */
+  public static final long TIMEOUT_NEVER = Long.MIN_VALUE;
 
-	/**
-	 * Clears the message after 5 seconds if it hasn't already been superceeded
-	 * by another message.
-	 */
-	public static final long TIMEOUT_5_SECONDS = 5000;
+  /**
+   * Clears the message after 5 seconds if it hasn't already been superceeded by another message.
+   */
+  public static final long TIMEOUT_5_SECONDS = 5000;
 
-	/**
-	 * Clears the message after 10 seconds if it hasn't already been superceeded
-	 * by another message.
-	 */
-	public static final long TIMEOUT_10_SECONDS = TIMEOUT_5_SECONDS * 2;
+  /**
+   * Clears the message after 10 seconds if it hasn't already been superceeded by another message.
+   */
+  public static final long TIMEOUT_10_SECONDS = TIMEOUT_5_SECONDS * 2;
 
-	/**
-	 * Used when there is no message.
-	 */
-	private static final String EMPTY_MESSAGE = " ";
+  /** Used when there is no message. */
+  private static final String EMPTY_MESSAGE = " ";
 
-	/**
-	 * The timer used to keep track of the current message clearing task.
-	 */
-	private Timer clearMessageTimer;
+  /** The timer used to keep track of the current message clearing task. */
+  private Timer clearMessageTimer;
 
-	/**
-	 * The current level of the message being shown.
-	 */
-	private int currentLevel;
+  /** The current level of the message being shown. */
+  private int currentLevel;
 
-	/**
-	 * The Swing component that stores and shows the message.
-	 */
-	private JLabel message;
+  /** The Swing component that stores and shows the message. */
+  private JLabel message;
 
-	/**
-	 * The spinner image.
-	 */
-	private ImageIcon image;
+  /** The spinner image. */
+  private ImageIcon image;
 
-	/**
-	 * Status text location - left or right
-	 */
-	private int location;
+  /** Status text location - left or right */
+  private int location;
 
-	/**
-	 * Spinner location - left or right
-	 */
-	private int spinnerLocation;
+  /** Spinner location - left or right */
+  private int spinnerLocation;
 
-	/**
-	 * Left panel
-	 */
-	private JPanel left;
+  /** Left panel */
+  private JPanel left;
 
-	/**
-	 * Right panel
-	 */
-	private JPanel right;
+  /** Right panel */
+  private JPanel right;
 
-	/**
-	 * Spinner
-	 */
-	private JImage spinner;
+  /** Spinner */
+  private JImage spinner;
 
-	/**
-	 * Inidicates whether the spinner is visible or not.
-	 */
-	private boolean spinnerVisible;
+  /** Inidicates whether the spinner is visible or not. */
+  private boolean spinnerVisible;
 
-	/**
-	 * Constructs a new status bar. Message and Spinner locations default to
-	 * left
-	 */
-	public JStatusBar(ImageIcon image)
-	{
-		this(image, SwingConstants.LEFT, SwingConstants.LEFT);
-	}
+  /** Constructs a new status bar. Message and Spinner locations default to left */
+  public JStatusBar(ImageIcon image) {
+    this(image, SwingConstants.LEFT, SwingConstants.LEFT);
+  }
 
-	/**
-	 * Constructs a new status bar
-	 */
-	public JStatusBar(ImageIcon image, int messageLocation, int spinnerLocation)
-	{
-		this.image = image;
-		this.location = messageLocation;
-		this.spinnerLocation = spinnerLocation;
-		setup();
-	}
+  /** Constructs a new status bar */
+  public JStatusBar(ImageIcon image, int messageLocation, int spinnerLocation) {
+    this.image = image;
+    this.location = messageLocation;
+    this.spinnerLocation = spinnerLocation;
+    setup();
+  }
 
-	/**
-	 * Clears any existing message that are LEVEL_GENERAL or below. Equivalent
-	 * to <code>clearMessage(LEVEL_GENERAL)</code>
-	 */
-	public void clearMessage()
-	{
-		clearMessage(LEVEL_GENERAL);
-	}
+  /**
+   * Clears any existing message that are LEVEL_GENERAL or below. Equivalent to <code>
+   * clearMessage(LEVEL_GENERAL)</code>
+   */
+  public void clearMessage() {
+    clearMessage(LEVEL_GENERAL);
+  }
 
-	/**
-	 * Clears any existing message if it is at the given level or below.
-	 */
-	public void clearMessage(int level)
-	{
-		if( level != LEVEL_CLEAR )
-		{
-			if( currentLevel <= level )
-			{
-				cancelAnyClearMessageActions();
-				message.setText(EMPTY_MESSAGE);
-				currentLevel = LEVEL_CLEAR;
-			}
-		}
-	}
+  /** Clears any existing message if it is at the given level or below. */
+  public void clearMessage(int level) {
+    if (level != LEVEL_CLEAR) {
+      if (currentLevel <= level) {
+        cancelAnyClearMessageActions();
+        message.setText(EMPTY_MESSAGE);
+        currentLevel = LEVEL_CLEAR;
+      }
+    }
+  }
 
-	/**
-	 * Clears the message after a certain time has passed.
-	 * 
-	 * @param timeout the number of milliseconds until the message is cleared.
-	 */
-	public void clearMessage(int level, long timeout)
-	{
-		cancelAnyClearMessageActions();
-		if( timeout != TIMEOUT_NEVER )
-		{
-			if( timeout <= 0 )
-			{
-				clearMessage(level);
-			}
-			else
-			{
-				clearMessageTimer = new Timer();
-				clearMessageTimer.schedule(new ClearMessageTask(level), timeout);
-			}
-		}
-	}
+  /**
+   * Clears the message after a certain time has passed.
+   *
+   * @param timeout the number of milliseconds until the message is cleared.
+   */
+  public void clearMessage(int level, long timeout) {
+    cancelAnyClearMessageActions();
+    if (timeout != TIMEOUT_NEVER) {
+      if (timeout <= 0) {
+        clearMessage(level);
+      } else {
+        clearMessageTimer = new Timer();
+        clearMessageTimer.schedule(new ClearMessageTask(level), timeout);
+      }
+    }
+  }
 
-	/**
-	 * Sets the message. This is equivalent to
-	 * <code>setMessage(message, LEVEL_GENERAL)</code>
-	 */
-	public void setMessage(String message)
-	{
-		setMessage(message, LEVEL_GENERAL);
-	}
+  /** Sets the message. This is equivalent to <code>setMessage(message, LEVEL_GENERAL)</code> */
+  public void setMessage(String message) {
+    setMessage(message, LEVEL_GENERAL);
+  }
 
-	/**
-	 * Sets the message. This is equivalent to
-	 * <code>setMessage(message, level, TIMEOUT_NEVER)</code>
-	 */
-	public void setMessage(String message, int level)
-	{
-		setMessage(message, level, TIMEOUT_NEVER);
-	}
+  /**
+   * Sets the message. This is equivalent to <code>setMessage(message, level, TIMEOUT_NEVER)</code>
+   */
+  public void setMessage(String message, int level) {
+    setMessage(message, level, TIMEOUT_NEVER);
+  }
 
-	/**
-	 * Sets the message. A message will only be displayed if the level is
-	 * greater than or equals to the current level.
-	 */
-	public void setMessage(String message, int level, long timeout)
-	{
-		if( level >= currentLevel )
-		{
-			if( message.trim().length() == 0 )
-			{
-				clearMessage(level);
-			}
-			else
-			{
-				currentLevel = level;
-				this.message.setText(message);
-				clearMessage(level, timeout);
-			}
-		}
-	}
+  /**
+   * Sets the message. A message will only be displayed if the level is greater than or equals to
+   * the current level.
+   */
+  public void setMessage(String message, int level, long timeout) {
+    if (level >= currentLevel) {
+      if (message.trim().length() == 0) {
+        clearMessage(level);
+      } else {
+        currentLevel = level;
+        this.message.setText(message);
+        clearMessage(level, timeout);
+      }
+    }
+  }
 
-	/**
-	 * Adds the StatusBar to the bottom of the panel, and returns the new panel.
-	 */
-	public JPanel attachToPanel(JPanel panel)
-	{
-		JPanel outer = new JPanel(new BorderLayout());
-		outer.add(panel, BorderLayout.CENTER);
-		outer.add(this, BorderLayout.SOUTH);
+  /** Adds the StatusBar to the bottom of the panel, and returns the new panel. */
+  public JPanel attachToPanel(JPanel panel) {
+    JPanel outer = new JPanel(new BorderLayout());
+    outer.add(panel, BorderLayout.CENTER);
+    outer.add(this, BorderLayout.SOUTH);
 
-		return outer;
-	}
+    return outer;
+  }
 
-	@Override
-	public void setBackground(Color bg)
-	{
-		super.setBackground(bg);
-		message.setBackground(bg);
-	}
+  @Override
+  public void setBackground(Color bg) {
+    super.setBackground(bg);
+    message.setBackground(bg);
+  }
 
-	private void cancelAnyClearMessageActions()
-	{
-		if( clearMessageTimer != null )
-		{
-			clearMessageTimer.cancel();
-		}
-	}
+  private void cancelAnyClearMessageActions() {
+    if (clearMessageTimer != null) {
+      clearMessageTimer.cancel();
+    }
+  }
 
-	private void setup()
-	{
-		left = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+  private void setup() {
+    left = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+    right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
 
-		clearMessageTimer = new Timer();
+    clearMessageTimer = new Timer();
 
-		spinner = new JImage(image);
-		spinner.setIcon(null);
+    spinner = new JImage(image);
+    spinner.setIcon(null);
 
-		message = new JLabel();
-		message.setBorder(BorderFactory.createEmptyBorder(0, 5, 2, 5));
-		message.setOpaque(true);
-		message.setForeground(Color.DARK_GRAY);
-		clearMessage(LEVEL_GOD_LIKE);
+    message = new JLabel();
+    message.setBorder(BorderFactory.createEmptyBorder(0, 5, 2, 5));
+    message.setOpaque(true);
+    message.setForeground(Color.DARK_GRAY);
+    clearMessage(LEVEL_GOD_LIKE);
 
-		setBorder(new LineBorder(Color.GRAY, 1, 0, 0, 0));
-		setOpaque(true);
+    setBorder(new LineBorder(Color.GRAY, 1, 0, 0, 0));
+    setOpaque(true);
 
-		final int[] rows = new int[]{image.getIconHeight()};
-		final int[] cols = new int[]{TableLayout.FILL, TableLayout.FILL};
-		TableLayout layout = new TableLayout(rows, cols);
+    final int[] rows = new int[] {image.getIconHeight()};
+    final int[] cols = new int[] {TableLayout.FILL, TableLayout.FILL};
+    TableLayout layout = new TableLayout(rows, cols);
 
-		setLayout(layout);
+    setLayout(layout);
 
-		add(left, new Rectangle(0, 0, 1, 1));
-		add(right, new Rectangle(1, 0, 1, 1));
+    add(left, new Rectangle(0, 0, 1, 1));
+    add(right, new Rectangle(1, 0, 1, 1));
 
-		resetSpinner();
-		resetMessage();
-	}
+    resetSpinner();
+    resetMessage();
+  }
 
-	private void resetSpinner()
-	{
-		removeComponentFromParent(spinner);
-		addToBar(spinner, spinnerLocation, true, true);
-	}
+  private void resetSpinner() {
+    removeComponentFromParent(spinner);
+    addToBar(spinner, spinnerLocation, true, true);
+  }
 
-	private void resetMessage()
-	{
-		removeComponentFromParent(message);
-		addToBar(message, location, false, false);
-	}
+  private void resetMessage() {
+    removeComponentFromParent(message);
+    addToBar(message, location, false, false);
+  }
 
-	private void removeComponentFromParent(Component comp)
-	{
-		Container container = comp.getParent();
-		if( container != null )
-		{
-			container.remove(comp);
-		}
-	}
+  private void removeComponentFromParent(Component comp) {
+    Container container = comp.getParent();
+    if (container != null) {
+      container.remove(comp);
+    }
+  }
 
-	/**
-	 * Adds a component to the status bar in the given location.
-	 * 
-	 * @param comp
-	 * @param pos - either SwingConstants.LEFT or SwingConstants.RIGHT
-	 */
-	public void addToBar(JComponent comp, int pos)
-	{
-		addToBar(comp, pos, false, true);
-		resetMessage();
-	}
+  /**
+   * Adds a component to the status bar in the given location.
+   *
+   * @param comp
+   * @param pos - either SwingConstants.LEFT or SwingConstants.RIGHT
+   */
+  public void addToBar(JComponent comp, int pos) {
+    addToBar(comp, pos, false, true);
+    resetMessage();
+  }
 
-	private void addToBar(JComponent comp, int pos, boolean priority, boolean separator)
-	{
-		JPanel panel = getPanel(pos);
-		JSeparator sep = new JSeparator(SwingConstants.VERTICAL);
-		sep.setPreferredSize(new Dimension(3, image.getIconHeight()));
-		comp.setBorder(new EmptyBorder(0, 5, 0, 5));
-		boolean sepFirst = false;
-		int loc = -1;
+  private void addToBar(JComponent comp, int pos, boolean priority, boolean separator) {
+    JPanel panel = getPanel(pos);
+    JSeparator sep = new JSeparator(SwingConstants.VERTICAL);
+    sep.setPreferredSize(new Dimension(3, image.getIconHeight()));
+    comp.setBorder(new EmptyBorder(0, 5, 0, 5));
+    boolean sepFirst = false;
+    int loc = -1;
 
-		// This could all be done nicer, but who cares if it works?
-		if( pos == SwingConstants.RIGHT )
-		{
-			if( priority )
-			{
-				sepFirst = true;
-			}
-			else
-			{
-				loc = 0;
-			}
-		}
-		else
-		{
-			if( priority )
-			{
-				loc = 0;
-				sepFirst = true;
-			}
-		}
+    // This could all be done nicer, but who cares if it works?
+    if (pos == SwingConstants.RIGHT) {
+      if (priority) {
+        sepFirst = true;
+      } else {
+        loc = 0;
+      }
+    } else {
+      if (priority) {
+        loc = 0;
+        sepFirst = true;
+      }
+    }
 
-		if( sepFirst && separator )
-		{
-			panel.add(sep, loc);
-		}
-		panel.add(comp, loc);
-		if( !sepFirst && separator )
-		{
-			panel.add(sep, loc);
-		}
-	}
+    if (sepFirst && separator) {
+      panel.add(sep, loc);
+    }
+    panel.add(comp, loc);
+    if (!sepFirst && separator) {
+      panel.add(sep, loc);
+    }
+  }
 
-	private JPanel getPanel(int pos)
-	{
-		JPanel panel = null;
-		if( pos == SwingConstants.LEFT )
-		{
-			panel = left;
-		}
-		else
-		{
-			panel = right;
-		}
-		return panel;
-	}
+  private JPanel getPanel(int pos) {
+    JPanel panel = null;
+    if (pos == SwingConstants.LEFT) {
+      panel = left;
+    } else {
+      panel = right;
+    }
+    return panel;
+  }
 
-	/**
-	 * Shows (or hides) the spinner.
-	 * 
-	 * @param b true to show the spinner, or false to hide it.
-	 */
-	public void setSpinnerVisible(boolean b)
-	{
-		if( b )
-		{
-			spinner.setIcon(image);
-		}
-		else
-		{
-			spinner.setIcon(null);
-		}
-		spinnerVisible = b;
-	}
+  /**
+   * Shows (or hides) the spinner.
+   *
+   * @param b true to show the spinner, or false to hide it.
+   */
+  public void setSpinnerVisible(boolean b) {
+    if (b) {
+      spinner.setIcon(image);
+    } else {
+      spinner.setIcon(null);
+    }
+    spinnerVisible = b;
+  }
 
-	/**
-	 * Indicates whether the spinner is currently showing.
-	 */
-	public boolean isSpinnerVisible()
-	{
-		return spinnerVisible;
-	}
+  /** Indicates whether the spinner is currently showing. */
+  public boolean isSpinnerVisible() {
+    return spinnerVisible;
+  }
 
-	/**
-	 * @author Nicholas Read
-	 */
-	private class ClearMessageTask extends TimerTask
-	{
-		private final int level;
+  /** @author Nicholas Read */
+  private class ClearMessageTask extends TimerTask {
+    private final int level;
 
-		/**
-		 * Constructs a new ClearMessageTask.
-		 * 
-		 * @param level the highest level to clear a message at.
-		 */
-		public ClearMessageTask(int level)
-		{
-			this.level = level;
-		}
+    /**
+     * Constructs a new ClearMessageTask.
+     *
+     * @param level the highest level to clear a message at.
+     */
+    public ClearMessageTask(int level) {
+      this.level = level;
+    }
 
-		@Override
-		public void run()
-		{
-			SwingUtilities.invokeLater(new Runnable()
-			{
-				/*
-				 * (non-Javadoc)
-				 * @see java.lang.Runnable#run()
-				 */
-				@Override
-				public void run()
-				{
-					clearMessage(level);
-				}
-			});
-		}
-	}
+    @Override
+    public void run() {
+      SwingUtilities.invokeLater(
+          new Runnable() {
+            /*
+             * (non-Javadoc)
+             * @see java.lang.Runnable#run()
+             */
+            @Override
+            public void run() {
+              clearMessage(level);
+            }
+          });
+    }
+  }
 }

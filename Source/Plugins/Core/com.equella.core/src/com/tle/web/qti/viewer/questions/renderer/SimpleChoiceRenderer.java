@@ -32,94 +32,79 @@ import com.tle.web.sections.standard.renderers.DivRenderer;
 import com.tle.web.sections.standard.renderers.toggle.CheckboxRenderer;
 import com.tle.web.sections.standard.renderers.toggle.RadioButtonRenderer;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
-public class SimpleChoiceRenderer extends QtiNodeRenderer
-{
-	private final SimpleChoice model;
-	private final boolean multiple;
-	private final String name;
+public class SimpleChoiceRenderer extends QtiNodeRenderer {
+  private final SimpleChoice model;
+  private final boolean multiple;
+  private final String name;
 
-	private boolean checked;
+  private boolean checked;
 
-	@AssistedInject
-	public SimpleChoiceRenderer(@Assisted SimpleChoice model, @Assisted QtiViewerContext context)
-	{
-		this(model, context, null, false);
-	}
+  @AssistedInject
+  public SimpleChoiceRenderer(@Assisted SimpleChoice model, @Assisted QtiViewerContext context) {
+    this(model, context, null, false);
+  }
 
-	@AssistedInject
-	public SimpleChoiceRenderer(@Assisted SimpleChoice model, @Assisted QtiViewerContext context,
-		@Assisted String name, @Assisted boolean multiple)
-	{
-		super(model, context);
-		this.model = model;
-		this.multiple = multiple;
-		this.name = name;
-	}
+  @AssistedInject
+  public SimpleChoiceRenderer(
+      @Assisted SimpleChoice model,
+      @Assisted QtiViewerContext context,
+      @Assisted String name,
+      @Assisted boolean multiple) {
+    super(model, context);
+    this.model = model;
+    this.multiple = multiple;
+    this.name = name;
+  }
 
-	@Override
-	protected SectionRenderable createTopRenderable()
-	{
-		final String type;
-		if( multiple )
-		{
-			type = "checkbox";
-		}
-		else
-		{
-			type = "radio";
-		}
-		return new DivRenderer("input " + type, null);
-	}
+  @Override
+  protected SectionRenderable createTopRenderable() {
+    final String type;
+    if (multiple) {
+      type = "checkbox";
+    } else {
+      type = "radio";
+    }
+    return new DivRenderer("input " + type, null);
+  }
 
-	@Override
-	protected SectionRenderable createNestedRenderable()
-	{
-		final QtiViewerContext context = getContext();
-		final HtmlBooleanState b = new HtmlBooleanState();
+  @Override
+  protected SectionRenderable createNestedRenderable() {
+    final QtiViewerContext context = getContext();
+    final HtmlBooleanState b = new HtmlBooleanState();
 
-		final String id = id(model.getIdentifier());
-		b.setId("opt" + id);
-		b.setValue(id);
-		b.setName(name);
-		b.setChecked(checked);
-		final ItemSessionController itemSessionController = context.getItemSessionController();
-		final ItemSessionState itemSessionState = itemSessionController.getItemSessionState();
-		if( itemSessionState.isEnded() )
-		{
-			b.setDisabled(true);
-		}
-		else
-		{
-			b.setClickHandler(new StatementHandler(context.getValueChangedFunction()));
-		}
+    final String id = id(model.getIdentifier());
+    b.setId("opt" + id);
+    b.setValue(id);
+    b.setName(name);
+    b.setChecked(checked);
+    final ItemSessionController itemSessionController = context.getItemSessionController();
+    final ItemSessionState itemSessionState = itemSessionController.getItemSessionState();
+    if (itemSessionState.isEnded()) {
+      b.setDisabled(true);
+    } else {
+      b.setClickHandler(new StatementHandler(context.getValueChangedFunction()));
+    }
 
-		final NestedRenderable boxRenderer;
-		if( multiple )
-		{
-			final CheckboxRenderer checkboxRenderer = new CheckboxRenderer(b);
-			boxRenderer = checkboxRenderer;
-		}
-		else
-		{
-			RadioButtonRenderer radioRenderer = new RadioButtonRenderer(b);
-			boxRenderer = radioRenderer;
-		}
-		boxRenderer.setNestedRenderable(super.createNestedRenderable());
-		return boxRenderer;
-	}
+    final NestedRenderable boxRenderer;
+    if (multiple) {
+      final CheckboxRenderer checkboxRenderer = new CheckboxRenderer(b);
+      boxRenderer = checkboxRenderer;
+    } else {
+      RadioButtonRenderer radioRenderer = new RadioButtonRenderer(b);
+      boxRenderer = radioRenderer;
+    }
+    boxRenderer.setNestedRenderable(super.createNestedRenderable());
+    return boxRenderer;
+  }
 
-	public boolean isChecked()
-	{
-		return checked;
-	}
+  public boolean isChecked() {
+    return checked;
+  }
 
-	public void setChecked(boolean checked)
-	{
-		this.checked = checked;
-	}
+  public void setChecked(boolean checked) {
+    this.checked = checked;
+  }
 }

@@ -34,48 +34,41 @@ import com.tle.web.sections.standard.js.modules.JSONModule;
 import com.tle.web.sections.standard.js.modules.SelectModule;
 import com.tle.web.sections.standard.js.modules.StandardModule;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class StandardJavascriptLibrary implements JavascriptLibrary
-{
-	private static final long serialVersionUID = 1L;
-	public static final PluginResourceHelper r = ResourcesService.getResourceHelper(StandardJavascriptLibrary.class);
+public class StandardJavascriptLibrary implements JavascriptLibrary {
+  private static final long serialVersionUID = 1L;
+  public static final PluginResourceHelper r =
+      ResourcesService.getResourceHelper(StandardJavascriptLibrary.class);
 
-	private final Map<String, JavascriptModule> moduleMap;
+  private final Map<String, JavascriptModule> moduleMap;
 
-	public StandardJavascriptLibrary()
-	{
-		List<JavascriptModule> modules = new ArrayList<JavascriptModule>();
-		modules.add(new StandardModule());
-		modules.add(new JSONModule());
-		modules.add(new SelectModule());
+  public StandardJavascriptLibrary() {
+    List<JavascriptModule> modules = new ArrayList<JavascriptModule>();
+    modules.add(new StandardModule());
+    modules.add(new JSONModule());
+    modules.add(new SelectModule());
 
-		Map<String, JavascriptModule> tempModuleMap = new HashMap<String, JavascriptModule>();
-		for( JavascriptModule module : modules )
-		{
-			tempModuleMap.put(module.getId(), module);
-		}
-		moduleMap = Collections.unmodifiableMap(tempModuleMap);
-	}
+    Map<String, JavascriptModule> tempModuleMap = new HashMap<String, JavascriptModule>();
+    for (JavascriptModule module : modules) {
+      tempModuleMap.put(module.getId(), module);
+    }
+    moduleMap = Collections.unmodifiableMap(tempModuleMap);
+  }
 
-	@Override
-	public String getDisplayName()
-	{
-		return r.getString("js.standardlibrary.name"); //$NON-NLS-1$
-	}
+  @Override
+  public String getDisplayName() {
+    return r.getString("js.standardlibrary.name"); // $NON-NLS-1$
+  }
 
-	@Override
-	public String getId()
-	{
-		return "standard"; //$NON-NLS-1$
-	}
+  @Override
+  public String getId() {
+    return "standard"; //$NON-NLS-1$
+  }
 
-	@Override
-	public Map<String, JavascriptModule> getModules()
-	{
-		return moduleMap;
-	}
+  @Override
+  public Map<String, JavascriptModule> getModules() {
+    return moduleMap;
+  }
 }

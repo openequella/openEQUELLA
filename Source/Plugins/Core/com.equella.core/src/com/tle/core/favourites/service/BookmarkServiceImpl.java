@@ -48,98 +48,85 @@ import com.tle.common.usermanagement.user.CurrentUser;
 @SuppressWarnings("nls")
 @Bind(BookmarkService.class)
 @Singleton
-public class BookmarkServiceImpl implements BookmarkService, UserChangeListener
-{
-	@Inject
-	private BookmarkDao dao;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private ItemOperationFactory workflowFactory;
+public class BookmarkServiceImpl implements BookmarkService, UserChangeListener {
+  @Inject private BookmarkDao dao;
+  @Inject private ItemService itemService;
+  @Inject private ItemOperationFactory workflowFactory;
 
-	@Override
-	public Bookmark getByItem(ItemKey itemId)
-	{
-		return dao.getByItemAndUserId(CurrentUser.getUserID(), itemId);
-	}
+  @Override
+  public Bookmark getByItem(ItemKey itemId) {
+    return dao.getByItemAndUserId(CurrentUser.getUserID(), itemId);
+  }
 
-	@Override
-	@Transactional
-	public void add(Item item, String tagString, boolean latest)
-	{
-		Set<String> keywords = new HashSet<String>();
+  @Override
+  @Transactional
+  public void add(Item item, String tagString, boolean latest) {
+    Set<String> keywords = new HashSet<String>();
 
-		if( !Check.isEmpty(tagString) )
-		{
-			String tags[] = tagString.split("\\s|,|;");
-			for( int i = 0; i < tags.length; i++ )
-			{
-				if( !Check.isEmpty(tags[i]) )
-				{
-					keywords.add(tags[i].toLowerCase());
-				}
-			}
-		}
+    if (!Check.isEmpty(tagString)) {
+      String tags[] = tagString.split("\\s|,|;");
+      for (int i = 0; i < tags.length; i++) {
+        if (!Check.isEmpty(tags[i])) {
+          keywords.add(tags[i].toLowerCase());
+        }
+      }
+    }
 
-		Bookmark bookmark = new Bookmark();
-		bookmark.setItem(item);
-		bookmark.setKeywords(keywords);
-		bookmark.setOwner(CurrentUser.getUserID());
-		bookmark.setInstitution(CurrentInstitution.get());
-		bookmark.setDateModified(new Date());
-		bookmark.setAlwaysLatest(latest);
-		dao.save(bookmark);
+    Bookmark bookmark = new Bookmark();
+    bookmark.setItem(item);
+    bookmark.setKeywords(keywords);
+    bookmark.setOwner(CurrentUser.getUserID());
+    bookmark.setInstitution(CurrentInstitution.get());
+    bookmark.setDateModified(new Date());
+    bookmark.setAlwaysLatest(latest);
+    dao.save(bookmark);
 
-		itemService.operation(bookmark.getItem().getItemId(), workflowFactory.reindexOnly(true));
-	}
+    itemService.operation(bookmark.getItem().getItemId(), workflowFactory.reindexOnly(true));
+  }
 
-	@Override
-	@Transactional
-	public void delete(long id)
-	{
-		Bookmark bookmark = dao.findById(id);
-		dao.delete(bookmark);
-		itemService.operation(bookmark.getItem().getItemId(), workflowFactory.reindexOnly(true));
-	}
+  @Override
+  @Transactional
+  public void delete(long id) {
+    Bookmark bookmark = dao.findById(id);
+    dao.delete(bookmark);
+    itemService.operation(bookmark.getItem().getItemId(), workflowFactory.reindexOnly(true));
+  }
 
-	@Override
-	@Transactional
-	public List<Item> filterNonBookmarkedItems(Collection<Item> items)
-	{
-		return dao.filterNonBookmarkedItems(items);
-	}
+  @Override
+  @Transactional
+  public List<Item> filterNonBookmarkedItems(Collection<Item> items) {
+    return dao.filterNonBookmarkedItems(items);
+  }
 
-	@Override
-	@Transactional
-	public Map<Item, Bookmark> getBookmarksForItems(Collection<Item> items)
-	{
-		return dao.getBookmarksForItems(items, CurrentUser.getUserID());
-	}
+  @Override
+  @Transactional
+  public Map<Item, Bookmark> getBookmarksForItems(Collection<Item> items) {
+    return dao.getBookmarksForItems(items, CurrentUser.getUserID());
+  }
 
-	@Override
-	public List<Bookmark> getBookmarksForOwner(String ownerUuid, int maxResults)
-	{
-		return dao.findAllByCriteria(Order.desc("dateModified"), maxResults, Restrictions.eq("owner", ownerUuid),
-			Restrictions.eq("institution", CurrentInstitution.get()));
-	}
+  @Override
+  public List<Bookmark> getBookmarksForOwner(String ownerUuid, int maxResults) {
+    return dao.findAllByCriteria(
+        Order.desc("dateModified"),
+        maxResults,
+        Restrictions.eq("owner", ownerUuid),
+        Restrictions.eq("institution", CurrentInstitution.get()));
+  }
 
-	@Override
-	@Transactional
-	public void userDeletedEvent(UserDeletedEvent event)
-	{
-		dao.deleteAllForUser(event.getUserID());
-	}
+  @Override
+  @Transactional
+  public void userDeletedEvent(UserDeletedEvent event) {
+    dao.deleteAllForUser(event.getUserID());
+  }
 
-	@Override
-	@Transactional
-	public void userIdChangedEvent(UserIdChangedEvent event)
-	{
-		dao.changeOwnership(event.getFromUserId(), event.getToUserId());
-	}
+  @Override
+  @Transactional
+  public void userIdChangedEvent(UserIdChangedEvent event) {
+    dao.changeOwnership(event.getFromUserId(), event.getToUserId());
+  }
 
-	@Override
-	public void userEditedEvent(UserEditEvent event)
-	{
-		// Nothing to do here
-	}
+  @Override
+  public void userEditedEvent(UserEditEvent event) {
+    // Nothing to do here
+  }
 }

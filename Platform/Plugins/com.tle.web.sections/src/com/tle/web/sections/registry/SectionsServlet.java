@@ -34,69 +34,63 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.SectionsController;
 
 @Bind
-public class SectionsServlet extends HttpServlet
-{
-	private static final long serialVersionUID = 1L;
+public class SectionsServlet extends HttpServlet {
+  private static final long serialVersionUID = 1L;
 
-	@Inject
-	private TreeRegistry treeRegistry;
-	@Inject
-	private SectionsController sectionsController;
+  @Inject private TreeRegistry treeRegistry;
+  @Inject private SectionsController sectionsController;
 
-	private String treepath;
+  private String treepath;
 
-	@Override
-	public void init(ServletConfig config) throws ServletException
-	{
-		super.init(config);
-		treepath = config.getInitParameter("treepath"); //$NON-NLS-1$
-	}
+  @Override
+  public void init(ServletConfig config) throws ServletException {
+    super.init(config);
+    treepath = config.getInitParameter("treepath"); // $NON-NLS-1$
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-		IOException
-	{
-		MutableSectionInfo sectionInfo = null;
-		String servletPath = getServletPath(request);
-		SectionTree tree = lookupTree(request);
-		if( tree == null )
-		{
-			response.sendError(404);
-		}
-		else
-		{
-			sectionInfo = sectionsController.createInfo(tree, servletPath, request, response, null,
-				request.getParameterMap(), defaultAttributes());
-			if( !sectionInfo.isRendered() )
-			{
-				sectionsController.execute(sectionInfo);
-			}
-		}
-	}
+  @SuppressWarnings("unchecked")
+  @Override
+  protected void service(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    MutableSectionInfo sectionInfo = null;
+    String servletPath = getServletPath(request);
+    SectionTree tree = lookupTree(request);
+    if (tree == null) {
+      response.sendError(404);
+    } else {
+      sectionInfo =
+          sectionsController.createInfo(
+              tree,
+              servletPath,
+              request,
+              response,
+              null,
+              request.getParameterMap(),
+              defaultAttributes());
+      if (!sectionInfo.isRendered()) {
+        sectionsController.execute(sectionInfo);
+      }
+    }
+  }
 
-	protected String getServletPath(HttpServletRequest request)
-	{
-		return request.getServletPath();
-	}
+  protected String getServletPath(HttpServletRequest request) {
+    return request.getServletPath();
+  }
 
-	protected SectionTree lookupTree(HttpServletRequest request)
-	{
-		String path = treepath;
-		String servletPath = request.getServletPath();
-		if( request.getParameter("$RESET$") != null ) //$NON-NLS-1$
-		{
-			treeRegistry.clearAll();
-		}
-		if( path == null )
-		{
-			path = servletPath;
-		}
-		return treeRegistry.getTreeForPath(path, true);
-	}
+  protected SectionTree lookupTree(HttpServletRequest request) {
+    String path = treepath;
+    String servletPath = request.getServletPath();
+    if (request.getParameter("$RESET$") != null) // $NON-NLS-1$
+    {
+      treeRegistry.clearAll();
+    }
+    if (path == null) {
+      path = servletPath;
+    }
+    return treeRegistry.getTreeForPath(path, true);
+  }
 
-	protected Map<Object, Object> defaultAttributes()
-	{
-		return Collections.singletonMap(SectionInfo.KEY_FROM_REQUEST, true);
-	}
+  protected Map<Object, Object> defaultAttributes() {
+    return Collections.singletonMap(SectionInfo.KEY_FROM_REQUEST, true);
+  }
 }

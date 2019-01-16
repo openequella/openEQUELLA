@@ -22,23 +22,21 @@ import java.util.List;
 import com.tle.common.htmleditor.beans.HtmlEditorPlugin;
 import com.tle.core.entity.service.AbstractEntityService;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
-public interface HtmlEditorPluginService extends AbstractEntityService<HtmlEditorPluginEditingBean, HtmlEditorPlugin>
-{
-	String ENTITY_TYPE = "HTMLEDITOR_PLUGIN";
+public interface HtmlEditorPluginService
+    extends AbstractEntityService<HtmlEditorPluginEditingBean, HtmlEditorPlugin> {
+  String ENTITY_TYPE = "HTMLEDITOR_PLUGIN";
 
-	HtmlEditorPlugin getByPluginId(String pluginId);
+  HtmlEditorPlugin getByPluginId(String pluginId);
 
-	/**
-	 * Closes the zipStream when it's done
-	 * 
-	 * @param zipStream
-	 * @throws InvalidHtmlEditorPluginException
-	 */
-	void uploadPlugin(InputStream zipStream) throws InvalidHtmlEditorPluginException;
+  /**
+   * Closes the zipStream when it's done
+   *
+   * @param zipStream
+   * @throws InvalidHtmlEditorPluginException
+   */
+  void uploadPlugin(InputStream zipStream) throws InvalidHtmlEditorPluginException;
 
-	List<HtmlEditorPlugin> enumerateForType(String type);
+  List<HtmlEditorPlugin> enumerateForType(String type);
 }

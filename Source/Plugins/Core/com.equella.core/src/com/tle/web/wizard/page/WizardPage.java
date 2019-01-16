@@ -29,48 +29,47 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.JSCallable;
 
-public interface WizardPage
-{
-	List<String> getCriteriaList();
+public interface WizardPage {
+  List<String> getCriteriaList();
 
-	void setState(WebWizardPageState webWizardPageState);
+  void setState(WebWizardPageState webWizardPageState);
 
-	void createPage() throws WizardPageException;
+  void createPage() throws WizardPageException;
 
-	void ensureTreeAdded(SectionInfo info, boolean submitWizard);
+  void ensureTreeAdded(SectionInfo info, boolean submitWizard);
 
-	void loadFromDocument(SectionInfo info);
+  void loadFromDocument(SectionInfo info);
 
-	void saveToDocument(SectionInfo info) throws Exception;
+  void saveToDocument(SectionInfo info) throws Exception;
 
-	PropBagEx getDocBag();
+  PropBagEx getDocBag();
 
-	void setWizardPage(DefaultWizardPage wizard);
+  void setWizardPage(DefaultWizardPage wizard);
 
-	void setReloadFunction(JSCallable reloadFunction);
+  void setReloadFunction(JSCallable reloadFunction);
 
-	FreeTextQuery getPowerSearchQuery();
+  FreeTextQuery getPowerSearchQuery();
 
-	void setRepository(LERepository repos);
+  void setRepository(LERepository repos);
 
-	List<ControlResult> renderPage(RenderContext context);
+  List<ControlResult> renderPage(RenderContext context);
 
-	Map<String, List<ControlResult>> renderPage(RenderContext context, AjaxUpdateData data, String rootId);
+  Map<String, List<ControlResult>> renderPage(
+      RenderContext context, AjaxUpdateData data, String rootId);
 
-	void setPageNumber(int i);
+  void setPageNumber(int i);
 
-	void init();
+  void init();
 
-	void ensureTreeAdded(SectionInfo info);
+  void ensureTreeAdded(SectionInfo info);
 
-	void setSubmitted(boolean submitted);
+  void setSubmitted(boolean submitted);
 
-	void setShowMandatory(boolean showMandatory);
+  void setShowMandatory(boolean showMandatory);
 
-	boolean isValid();
+  boolean isValid();
 
-	void saveDefaults() throws Exception;
+  void saveDefaults() throws Exception;
 
-	List<? extends SectionId> getRootIds();
-
+  List<? extends SectionId> getRootIds();
 }

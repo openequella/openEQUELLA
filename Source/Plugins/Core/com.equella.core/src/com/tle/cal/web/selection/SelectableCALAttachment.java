@@ -29,15 +29,12 @@ import com.tle.web.copyright.AbstractSelectableCopyrightAttachment;
 
 @Bind
 @Singleton
-public class SelectableCALAttachment extends AbstractSelectableCopyrightAttachment<CALHolding, CALPortion, CALSection>
-{
-	@Inject
-	private CALService calService;
+public class SelectableCALAttachment
+    extends AbstractSelectableCopyrightAttachment<CALHolding, CALPortion, CALSection> {
+  @Inject private CALService calService;
 
-	@Override
-	protected CopyrightService getCopyrightServiceImpl()
-	{
-		return calService;
-	}
-
+  @Override
+  protected CopyrightService getCopyrightServiceImpl() {
+    return calService;
+  }
 }

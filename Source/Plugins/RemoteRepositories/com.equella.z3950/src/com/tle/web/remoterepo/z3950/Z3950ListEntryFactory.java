@@ -26,22 +26,17 @@ import com.tle.web.remoterepo.RemoteRepoListEntry;
 import com.tle.web.remoterepo.RemoteRepoListEntryFactory;
 import com.tle.web.sections.SectionInfo;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class Z3950ListEntryFactory implements RemoteRepoListEntryFactory<Z3950SearchResult>
-{
-	@Inject
-	private Provider<Z3950ListEntry> entryProvider;
+public class Z3950ListEntryFactory implements RemoteRepoListEntryFactory<Z3950SearchResult> {
+  @Inject private Provider<Z3950ListEntry> entryProvider;
 
-	@Override
-	public RemoteRepoListEntry<Z3950SearchResult> createListEntry(SectionInfo info, Z3950SearchResult result)
-	{
-		Z3950ListEntry entry = entryProvider.get();
-		entry.setResult(result);
-		return entry;
-	}
-
+  @Override
+  public RemoteRepoListEntry<Z3950SearchResult> createListEntry(
+      SectionInfo info, Z3950SearchResult result) {
+    Z3950ListEntry entry = entryProvider.get();
+    entry.setResult(result);
+    return entry;
+  }
 }

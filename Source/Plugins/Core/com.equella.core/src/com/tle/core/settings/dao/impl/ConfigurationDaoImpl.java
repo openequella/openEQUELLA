@@ -34,50 +34,46 @@ import com.tle.common.institution.CurrentInstitution;
 @SuppressWarnings("nls")
 @Bind(ConfigurationDao.class)
 public class ConfigurationDaoImpl extends GenericDaoImpl<ConfigurationProperty, PropertyKey>
-	implements
-		ConfigurationDao
-{
-	public ConfigurationDaoImpl()
-	{
-		super(ConfigurationProperty.class);
-	}
+    implements ConfigurationDao {
+  public ConfigurationDaoImpl() {
+    super(ConfigurationProperty.class);
+  }
 
-	@Override
-	@Transactional(propagation = Propagation.MANDATORY)
-	public void deleteAll()
-	{
-		getHibernateTemplate().deleteAll(
-			getHibernateTemplate().findByNamedParam(
-				"from ConfigurationProperty where key.institutionId = :institution", "institution",
-				CurrentInstitution.get().getDatabaseId()));
-	}
+  @Override
+  @Transactional(propagation = Propagation.MANDATORY)
+  public void deleteAll() {
+    getHibernateTemplate()
+        .deleteAll(
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "from ConfigurationProperty where key.institutionId = :institution",
+                    "institution",
+                    CurrentInstitution.get().getDatabaseId()));
+  }
 
-	@Override
-	@Transactional(propagation = Propagation.MANDATORY)
-	public synchronized void deletePropertiesLike(Collection<String> select)
-	{
-		final StringBuilder buffer = new StringBuilder();
-		buffer.append("from ConfigurationProperty where (");
-		int length = select.size();
-		Object[] values = select.toArray(new Object[length + 1]);
-		for( int i = 0; i < length; i++ )
-		{
-			if( i > 0 )
-			{
-				buffer.append(" or ");
-			}
-			values[i] = values[i].toString() + '%';
-			buffer.append("key.property like ?");
-		}
-		buffer.append(")");
+  @Override
+  @Transactional(propagation = Propagation.MANDATORY)
+  public synchronized void deletePropertiesLike(Collection<String> select) {
+    final StringBuilder buffer = new StringBuilder();
+    buffer.append("from ConfigurationProperty where (");
+    int length = select.size();
+    Object[] values = select.toArray(new Object[length + 1]);
+    for (int i = 0; i < length; i++) {
+      if (i > 0) {
+        buffer.append(" or ");
+      }
+      values[i] = values[i].toString() + '%';
+      buffer.append("key.property like ?");
+    }
+    buffer.append(")");
 
-		buffer.append(" and key.institutionId = ?");
-		values[length] = CurrentInstitution.get().getDatabaseId();
+    buffer.append(" and key.institutionId = ?");
+    values[length] = CurrentInstitution.get().getDatabaseId();
 
-		Collection<?> col = getHibernateTemplate().find(buffer.toString(), values);
-		getHibernateTemplate().deleteAll(col);
+    Collection<?> col = getHibernateTemplate().find(buffer.toString(), values);
+    getHibernateTemplate().deleteAll(col);
 
-		// If you don't flush then you get a NonUniqueObjectException
-		getHibernateTemplate().flush();
-	}
+    // If you don't flush then you get a NonUniqueObjectException
+    getHibernateTemplate().flush();
+  }
 }

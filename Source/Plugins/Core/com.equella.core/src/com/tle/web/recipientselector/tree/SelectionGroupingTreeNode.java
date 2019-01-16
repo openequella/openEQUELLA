@@ -23,158 +23,130 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 
-public class SelectionGroupingTreeNode extends SelectionTreeNode
-{
-	private static PluginResourceHelper r = ResourcesService.getResourceHelper(SelectionGroupingTreeNode.class);
-	@SuppressWarnings("nls")
-	public enum Grouping
-	{
-		MATCH_ALL(r.getString("expressiontreenode.all")), MATCH_ANY(r.getString("expressiontreenode.any")),
-		MATCH_NONE(r.getString("expressiontreenode.none")), TEMPORARY_NOT(r.getString("expressiontreenode.not"));
-		
-		private final String display;
+public class SelectionGroupingTreeNode extends SelectionTreeNode {
+  private static PluginResourceHelper r =
+      ResourcesService.getResourceHelper(SelectionGroupingTreeNode.class);
 
-		private Grouping(String display)
-		{
-			this.display = display;
-		}
+  @SuppressWarnings("nls")
+  public enum Grouping {
+    MATCH_ALL(r.getString("expressiontreenode.all")),
+    MATCH_ANY(r.getString("expressiontreenode.any")),
+    MATCH_NONE(r.getString("expressiontreenode.none")),
+    TEMPORARY_NOT(r.getString("expressiontreenode.not"));
 
-		@Override
-		public String toString()
-		{
-			return display;
-		}
-	}
+    private final String display;
 
-	private Grouping grouping;
+    private Grouping(String display) {
+      this.display = display;
+    }
 
-	private String id;
-	private boolean newGrouping;
-	private List<SelectionExpressionTreeNode> selection = Lists.newArrayList();
-	private List<SelectionGroupingTreeNode> children = Lists.newArrayList();
-	private SelectionGroupingTreeNode parent;
+    @Override
+    public String toString() {
+      return display;
+    }
+  }
 
-	public SelectionGroupingTreeNode(Grouping grouping)
-	{
-		this.grouping = grouping;
-	}
+  private Grouping grouping;
 
-	public SelectionGroupingTreeNode getParent()
-	{
-		return parent;
-	}
+  private String id;
+  private boolean newGrouping;
+  private List<SelectionExpressionTreeNode> selection = Lists.newArrayList();
+  private List<SelectionGroupingTreeNode> children = Lists.newArrayList();
+  private SelectionGroupingTreeNode parent;
 
-	public void setParent(SelectionGroupingTreeNode parent)
-	{
-		this.parent = parent;
-	}
+  public SelectionGroupingTreeNode(Grouping grouping) {
+    this.grouping = grouping;
+  }
 
-	public Grouping getGrouping()
-	{
-		return grouping;
-	}
+  public SelectionGroupingTreeNode getParent() {
+    return parent;
+  }
 
-	public void setGrouping(Grouping grouping)
-	{
-		this.grouping = grouping;
-	}
+  public void setParent(SelectionGroupingTreeNode parent) {
+    this.parent = parent;
+  }
 
-	public String getId()
-	{
-		return id;
-	}
+  public Grouping getGrouping() {
+    return grouping;
+  }
 
-	public void setId(String id)
-	{
-		this.id = id;
-	}
+  public void setGrouping(Grouping grouping) {
+    this.grouping = grouping;
+  }
 
-	public List<SelectionExpressionTreeNode> getSelection()
-	{
-		return selection;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public List<SelectionGroupingTreeNode> getChildren()
-	{
-		return children;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public void add(SelectionTreeNode node)
-	{
-		if( node instanceof SelectionExpressionTreeNode )
-		{
-			add((SelectionExpressionTreeNode) node);
-		}
-		else
-		{
-			add((SelectionGroupingTreeNode) node);
-		}
-	}
+  public List<SelectionExpressionTreeNode> getSelection() {
+    return selection;
+  }
 
-	public void add(SelectionExpressionTreeNode expression)
-	{
-		selection.add(expression);
-	}
+  public List<SelectionGroupingTreeNode> getChildren() {
+    return children;
+  }
 
-	public void add(SelectionGroupingTreeNode grouping)
-	{
-		children.add(grouping);
-	}
+  public void add(SelectionTreeNode node) {
+    if (node instanceof SelectionExpressionTreeNode) {
+      add((SelectionExpressionTreeNode) node);
+    } else {
+      add((SelectionGroupingTreeNode) node);
+    }
+  }
 
-	public void insertSelectionGroupingTree(List<SelectionGroupingTreeNode> nodes, int index)
-	{
-		children.addAll(index, nodes);
-	}
+  public void add(SelectionExpressionTreeNode expression) {
+    selection.add(expression);
+  }
 
-	public void insert(SelectionTreeNode node, int index)
-	{
-		if( node instanceof SelectionExpressionTreeNode )
-		{
-			insert((SelectionExpressionTreeNode) node, index);
-		}
-		else
-		{
-			insert((SelectionGroupingTreeNode) node, index);
-		}
-	}
+  public void add(SelectionGroupingTreeNode grouping) {
+    children.add(grouping);
+  }
 
-	public void insert(SelectionExpressionTreeNode node, int index)
-	{
-		selection.add(index, node);
-	}
+  public void insertSelectionGroupingTree(List<SelectionGroupingTreeNode> nodes, int index) {
+    children.addAll(index, nodes);
+  }
 
-	public void insert(SelectionGroupingTreeNode node, int index)
-	{
-		children.add(index, node);
-	}
+  public void insert(SelectionTreeNode node, int index) {
+    if (node instanceof SelectionExpressionTreeNode) {
+      insert((SelectionExpressionTreeNode) node, index);
+    } else {
+      insert((SelectionGroupingTreeNode) node, index);
+    }
+  }
 
-	public SelectionGroupingTreeNode getChildAt(int index)
-	{
-		return children.get(index);
-	}
+  public void insert(SelectionExpressionTreeNode node, int index) {
+    selection.add(index, node);
+  }
 
-	public boolean remove(SelectionGroupingTreeNode child)
-	{
-		return children.remove(child);
-	}
+  public void insert(SelectionGroupingTreeNode node, int index) {
+    children.add(index, node);
+  }
 
-	public boolean remove(SelectionExpressionTreeNode child)
-	{
-		return selection.remove(child);
-	}
+  public SelectionGroupingTreeNode getChildAt(int index) {
+    return children.get(index);
+  }
 
-	public int getChildCount()
-	{
-		return children.size();
-	}
+  public boolean remove(SelectionGroupingTreeNode child) {
+    return children.remove(child);
+  }
 
-	public boolean isNewGrouping()
-	{
-		return newGrouping;
-	}
+  public boolean remove(SelectionExpressionTreeNode child) {
+    return selection.remove(child);
+  }
 
-	public void setNewGrouping(boolean newGrouping)
-	{
-		this.newGrouping = newGrouping;
-	}
+  public int getChildCount() {
+    return children.size();
+  }
+
+  public boolean isNewGrouping() {
+    return newGrouping;
+  }
+
+  public void setNewGrouping(boolean newGrouping) {
+    this.newGrouping = newGrouping;
+  }
 }

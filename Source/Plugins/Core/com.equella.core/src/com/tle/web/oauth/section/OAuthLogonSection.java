@@ -75,483 +75,422 @@ import hurl.build.UriBuilder;
 @Bind
 @SuppressWarnings("nls")
 public class OAuthLogonSection extends AbstractPrototypeSection<OAuthLogonSection.OAuthLogonModel>
-	implements
-		HtmlRenderer,
-		AfterParametersListener,
-		BookmarkEventListener
-{
-	//private static final Logger LOGGER = Logger.getLogger(OAuthLogonSection.class);
+    implements HtmlRenderer, AfterParametersListener, BookmarkEventListener {
+  // private static final Logger LOGGER = Logger.getLogger(OAuthLogonSection.class);
 
-	@PlugKey("oauth.error.clientnotfound")
-	private static String KEY_CLIENT_NOT_FOUND;
+  @PlugKey("oauth.error.clientnotfound")
+  private static String KEY_CLIENT_NOT_FOUND;
 
-	@Inject
-	private BundleCache bundleCache;
-	@Inject
-	private OAuthService oauthService;
-	@Inject
-	private OAuthWebService oauthWebService;
-	@Inject
-	private UserService userService;
-	@Inject
-	private InstitutionService institutionService;
+  @Inject private BundleCache bundleCache;
+  @Inject private OAuthService oauthService;
+  @Inject private OAuthWebService oauthWebService;
+  @Inject private UserService userService;
+  @Inject private InstitutionService institutionService;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
 
-	@Component(stateful = false, parameter = "username")
-	@PlugKey("logon.username")
-	private TextField username;
-	@Component(stateful = false, parameter = "password")
-	@PlugKey("logon.password")
-	private TextField password;
-	@PlugKey("logon.deny")
-	@Component
-	private Button denyButton;
-	@PlugKey("logon.allow")
-	@Component
-	private Button allowButton;
-	@Component
-	@PlugKey("logon.authorise")
-	private Button authButton;
-	@Component
-	@PlugKey("logon.button.logout")
-	private Button logoutButton;
+  @Component(stateful = false, parameter = "username")
+  @PlugKey("logon.username")
+  private TextField username;
 
-	@PlugKey("oauth.error.accessdenied")
-	private static Label LABEL_ERROR_DENIED;
-	@PlugKey("oauth.error.invalidresponsetype")
-	private static String KEY_ERROR_INVALIDRESPONSETYPE;
-	@PlugKey("oauth.error.parammandatory")
-	private static String KEY_ERROR_MANDATORY;
-	@PlugKey("logon.error.badcredentials")
-	private static Label LABEL_ERROR_CREDENTIALS;
-	@PlugKey("oauth.logon.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("oauth.error.defaultredirectnotapplicable")
-	private static Label LABEL_DEFAULTREDIRECT;
+  @Component(stateful = false, parameter = "password")
+  @PlugKey("logon.password")
+  private TextField password;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		Decorations decorations = Decorations.getDecorations(context);
-		decorations.clearAllDecorations();
-		decorations.setTitle(LABEL_TITLE);
-		OAuthLogonModel model = getModel(context);
-		context.getBody().addClass("oauth");
-		TagState container = new TagState();
-		container.setId("oauthdialog");
-		container.addClass("oauth" + model.getDisplay());
-		model.setContainerDiv(new DivRenderer(container));
+  @PlugKey("logon.deny")
+  @Component
+  private Button denyButton;
 
-		if( !CurrentUser.isGuest() && !CurrentUser.getUserState().wasAutoLoggedIn() )
-		{
-			model.setAlreadyLoggedIn(true);
-			model.setUsername(CurrentUser.getUsername());
-			String fixedUserId = model.getFixedUserId();
-			model.setCannotUse(fixedUserId != null && !fixedUserId.equals(CurrentUser.getUserID()));
-		}
-		return viewFactory.createResult("oauthlogon.ftl", this);
-	}
+  @PlugKey("logon.allow")
+  @Component
+  private Button allowButton;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		denyButton.setClickHandler(events.getNamedHandler("denyAccess"));
-		allowButton.setClickHandler(events.getNamedHandler("allowAccess"));
-		authButton.setClickHandler(events.getNamedHandler("authorise"));
-		logoutButton.setClickHandler(events.getNamedHandler("logout"));
-	}
+  @Component
+  @PlugKey("logon.authorise")
+  private Button authButton;
 
-	@EventHandlerMethod(preventXsrf = false)
-	public void denyAccess(SectionInfo info)
-	{
-		sendError(info, OAuthConstants.ERROR_ACCESS_DENIED, LABEL_ERROR_DENIED);
-	}
+  @Component
+  @PlugKey("logon.button.logout")
+  private Button logoutButton;
 
-	@EventHandlerMethod(preventXsrf = false)
-	public void allowAccess(SectionInfo info)
-	{
-		if( CurrentUser.isGuest() )
-		{
-			throw new AccessDeniedException("No user in session must authorise");
-		}
-		OAuthLogonModel model = getModel(info);
-		OAuthClient oAuthClient = model.getOAuthClient();
-		AuthorisationDetails details = oauthWebService.getAuthorisationDetailsByUserState(oAuthClient,
-			CurrentUser.getUserState());
-		sendSucess(info, oAuthClient, details);
-	}
+  @PlugKey("oauth.error.accessdenied")
+  private static Label LABEL_ERROR_DENIED;
 
-	@EventHandlerMethod(preventXsrf = false)
-	public void logout(SectionInfo info)
-	{
-		URI loggedOutUri = URI.create(info.getPublicBookmark().getHref());
-		loggedOutUri = userService.logoutURI(CurrentUser.getUserState(), loggedOutUri);
-		HttpServletRequest request = info.getRequest();
-		userService.logoutToGuest(userService.getWebAuthenticationDetails(request), false);
-		info.forwardToUrl(userService.logoutRedirect(loggedOutUri).toString());
-	}
+  @PlugKey("oauth.error.invalidresponsetype")
+  private static String KEY_ERROR_INVALIDRESPONSETYPE;
 
-	private void sendError(SectionInfo info, String error, Label errorDescription)
-	{
-		OAuthLogonModel model = getModel(info);
-		model.getOAuthClient();
-		String redirectUri = model.getRedirectUri();
-		String responseType = model.getResponseType();
-		UriBuilder uri = UriBuilder.create(getActualRedirect(responseType, redirectUri));
-		QueryBuilder qbuilder = getQueryBuilder(responseType, uri);
-		qbuilder.setParam(OAuthWebConstants.PARAM_ERROR, error);
-		if( errorDescription != null )
-		{
-			qbuilder.setParam(OAuthWebConstants.PARAM_ERROR_DESCRIPTION, errorDescription.getText());
-		}
-		addStateParam(model, qbuilder);
-		if( OAuthWebConstants.RESPONSE_TYPE_TOKEN.equals(responseType) )
-		{
-			uri.setFragment(qbuilder);
-		}
-		else
-		{
-			uri.setQuery(qbuilder);
-		}
-		info.forwardToUrl(uri.toString());
-	}
+  @PlugKey("oauth.error.parammandatory")
+  private static String KEY_ERROR_MANDATORY;
 
-	private QueryBuilder getQueryBuilder(String responseType, UriBuilder uri)
-	{
-		QueryBuilder qbuilder = QueryBuilder.create();
-		if( responseType == null || !responseType.equals(OAuthWebConstants.RESPONSE_TYPE_TOKEN) )
-		{
-			if( uri.getQuery() != null )
-			{
-				qbuilder.parse(uri.getQuery());
-			}
-		}
-		return qbuilder;
-	}
+  @PlugKey("logon.error.badcredentials")
+  private static Label LABEL_ERROR_CREDENTIALS;
 
-	private void sendSucess(SectionInfo info, OAuthClient oAuthClient, AuthorisationDetails details)
-	{
-		OAuthLogonModel model = getModel(info);
-		String redirectUri = model.getRedirectUri();
-		String responseType = model.getResponseType();
-		UriBuilder uri = UriBuilder.create(getActualRedirect(responseType, redirectUri));
-		QueryBuilder qbuilder = getQueryBuilder(responseType, uri);
-		addStateParam(model, qbuilder);
-		if( responseType.equals(OAuthWebConstants.RESPONSE_TYPE_TOKEN) )
-		{
-			OAuthToken token = oauthService.getOrCreateToken(details.getUserId(), details.getUsername(), oAuthClient,
-				null);
-			qbuilder.addParam(OAuthWebConstants.PARAM_ACCESS_TOKEN, token.getToken());
-			qbuilder.addParam(OAuthWebConstants.PARAM_TOKEN_TYPE, OAuthWebConstants.TOKEN_TYPE_EQUELLA_API);
-			uri.setFragment(qbuilder);
-		}
-		else if( responseType.equals(OAuthWebConstants.RESPONSE_TYPE_CODE) )
-		{
-			String code = oauthWebService.createCode(oAuthClient, details);
-			qbuilder.addParam(OAuthWebConstants.PARAM_CODE, code);
-			uri.setQuery(qbuilder);
-		}
-		info.forwardToUrl(uri.toString());
-	}
+  @PlugKey("oauth.logon.title")
+  private static Label LABEL_TITLE;
 
-	private void addStateParam(OAuthLogonModel model, QueryBuilder qbuilder)
-	{
-		String state = model.getState();
-		if( state != null )
-		{
-			qbuilder.addParam(OAuthWebConstants.PARAM_STATE, state);
-		}
-	}
+  @PlugKey("oauth.error.defaultredirectnotapplicable")
+  private static Label LABEL_DEFAULTREDIRECT;
 
-	private String getActualRedirect(String responseType, String redirectUri)
-	{
-		if( redirectUri.equals(OAuthWebConstants.OAUTH_DEFAULT_REDIRECT_URL_NAME) )
-		{
-			if( responseType == null || !responseType.equals(OAuthWebConstants.RESPONSE_TYPE_TOKEN) )
-			{
-				throw new OAuthException(400, OAuthConstants.ERROR_INVALID_CLIENT, LABEL_DEFAULTREDIRECT.getText());
-			}
-			return institutionService.institutionalise(OAuthWebConstants.OAUTH_DEFAULT_REDIRECT_URL);
-		}
-		return redirectUri;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    Decorations decorations = Decorations.getDecorations(context);
+    decorations.clearAllDecorations();
+    decorations.setTitle(LABEL_TITLE);
+    OAuthLogonModel model = getModel(context);
+    context.getBody().addClass("oauth");
+    TagState container = new TagState();
+    container.setId("oauthdialog");
+    container.addClass("oauth" + model.getDisplay());
+    model.setContainerDiv(new DivRenderer(container));
 
-	@EventHandlerMethod(preventXsrf = false)
-	public void authorise(SectionInfo info)
-	{
-		OAuthLogonModel model = getModel(info);
-		try
-		{
-			String logonUsername = model.getFixedUsername();
-			if( logonUsername == null )
-			{
-				logonUsername = username.getValue(info);
-			}
-			UserState userState = userService.authenticate(logonUsername, password.getValue(info),
-				userService.getWebAuthenticationDetails(info.getRequest()));
-			OAuthClient oAuthClient = model.getOAuthClient();
-			AuthorisationDetails details = oauthWebService.getAuthorisationDetailsByUserState(oAuthClient, userState);
-			sendSucess(info, oAuthClient, details);
-		}
-		catch( BadCredentialsException bce )
-		{
-			info.preventGET();
-			model.setAuthError(LABEL_ERROR_CREDENTIALS);
-		}
-	}
+    if (!CurrentUser.isGuest() && !CurrentUser.getUserState().wasAutoLoggedIn()) {
+      model.setAlreadyLoggedIn(true);
+      model.setUsername(CurrentUser.getUsername());
+      String fixedUserId = model.getFixedUserId();
+      model.setCannotUse(fixedUserId != null && !fixedUserId.equals(CurrentUser.getUserID()));
+    }
+    return viewFactory.createResult("oauthlogon.ftl", this);
+  }
 
-	@Override
-	public void afterParameters(SectionInfo info, ParametersEvent event)
-	{
-		OAuthLogonModel model = getModel(info);
-		model.getOAuthClient();
-		String responseType = model.getResponseType();
-		if( responseType == null )
-		{
-			sendMissingParameter(info, OAuthWebConstants.PARAM_RESPONSE_TYPE);
-			return;
-		}
-		if( !OAuthWebConstants.RESPONSE_TYPES_ALL.contains(responseType) )
-		{
-			sendError(info, OAuthConstants.ERROR_UNSUPPORTED_RESPONSE_TYPE,
-				new KeyLabel(KEY_ERROR_INVALIDRESPONSETYPE, responseType));
-		}
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    denyButton.setClickHandler(events.getNamedHandler("denyAccess"));
+    allowButton.setClickHandler(events.getNamedHandler("allowAccess"));
+    authButton.setClickHandler(events.getNamedHandler("authorise"));
+    logoutButton.setClickHandler(events.getNamedHandler("logout"));
+  }
 
-	private void sendMissingParameter(SectionInfo info, String param)
-	{
-		sendError(info, OAuthConstants.ERROR_INVALID_REQUEST, new KeyLabel(KEY_ERROR_MANDATORY, param));
-	}
+  @EventHandlerMethod(preventXsrf = false)
+  public void denyAccess(SectionInfo info) {
+    sendError(info, OAuthConstants.ERROR_ACCESS_DENIED, LABEL_ERROR_DENIED);
+  }
 
-	@Override
-	public void bookmark(SectionInfo info, BookmarkEvent event)
-	{
-		HttpServletRequest request = info.getRequest();
-		if( request != null )
-		{
-			Map<String, String[]> state = userService.getAdditionalLogonState(request);
-			for( Entry<String, String[]> entry : state.entrySet() )
-			{
-				event.setParams(entry.getKey(), entry.getValue());
-			}
-		}
+  @EventHandlerMethod(preventXsrf = false)
+  public void allowAccess(SectionInfo info) {
+    if (CurrentUser.isGuest()) {
+      throw new AccessDeniedException("No user in session must authorise");
+    }
+    OAuthLogonModel model = getModel(info);
+    OAuthClient oAuthClient = model.getOAuthClient();
+    AuthorisationDetails details =
+        oauthWebService.getAuthorisationDetailsByUserState(oAuthClient, CurrentUser.getUserState());
+    sendSucess(info, oAuthClient, details);
+  }
 
-	}
+  @EventHandlerMethod(preventXsrf = false)
+  public void logout(SectionInfo info) {
+    URI loggedOutUri = URI.create(info.getPublicBookmark().getHref());
+    loggedOutUri = userService.logoutURI(CurrentUser.getUserState(), loggedOutUri);
+    HttpServletRequest request = info.getRequest();
+    userService.logoutToGuest(userService.getWebAuthenticationDetails(request), false);
+    info.forwardToUrl(userService.logoutRedirect(loggedOutUri).toString());
+  }
 
-	@Override
-	public void document(SectionInfo info, DocumentParamsEvent event)
-	{
-		// nothing
-	}
+  private void sendError(SectionInfo info, String error, Label errorDescription) {
+    OAuthLogonModel model = getModel(info);
+    model.getOAuthClient();
+    String redirectUri = model.getRedirectUri();
+    String responseType = model.getResponseType();
+    UriBuilder uri = UriBuilder.create(getActualRedirect(responseType, redirectUri));
+    QueryBuilder qbuilder = getQueryBuilder(responseType, uri);
+    qbuilder.setParam(OAuthWebConstants.PARAM_ERROR, error);
+    if (errorDescription != null) {
+      qbuilder.setParam(OAuthWebConstants.PARAM_ERROR_DESCRIPTION, errorDescription.getText());
+    }
+    addStateParam(model, qbuilder);
+    if (OAuthWebConstants.RESPONSE_TYPE_TOKEN.equals(responseType)) {
+      uri.setFragment(qbuilder);
+    } else {
+      uri.setQuery(qbuilder);
+    }
+    info.forwardToUrl(uri.toString());
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new OAuthLogonModel();
-	}
+  private QueryBuilder getQueryBuilder(String responseType, UriBuilder uri) {
+    QueryBuilder qbuilder = QueryBuilder.create();
+    if (responseType == null || !responseType.equals(OAuthWebConstants.RESPONSE_TYPE_TOKEN)) {
+      if (uri.getQuery() != null) {
+        qbuilder.parse(uri.getQuery());
+      }
+    }
+    return qbuilder;
+  }
 
-	public Button getDenyButton()
-	{
-		return denyButton;
-	}
+  private void sendSucess(SectionInfo info, OAuthClient oAuthClient, AuthorisationDetails details) {
+    OAuthLogonModel model = getModel(info);
+    String redirectUri = model.getRedirectUri();
+    String responseType = model.getResponseType();
+    UriBuilder uri = UriBuilder.create(getActualRedirect(responseType, redirectUri));
+    QueryBuilder qbuilder = getQueryBuilder(responseType, uri);
+    addStateParam(model, qbuilder);
+    if (responseType.equals(OAuthWebConstants.RESPONSE_TYPE_TOKEN)) {
+      OAuthToken token =
+          oauthService.getOrCreateToken(
+              details.getUserId(), details.getUsername(), oAuthClient, null);
+      qbuilder.addParam(OAuthWebConstants.PARAM_ACCESS_TOKEN, token.getToken());
+      qbuilder.addParam(
+          OAuthWebConstants.PARAM_TOKEN_TYPE, OAuthWebConstants.TOKEN_TYPE_EQUELLA_API);
+      uri.setFragment(qbuilder);
+    } else if (responseType.equals(OAuthWebConstants.RESPONSE_TYPE_CODE)) {
+      String code = oauthWebService.createCode(oAuthClient, details);
+      qbuilder.addParam(OAuthWebConstants.PARAM_CODE, code);
+      uri.setQuery(qbuilder);
+    }
+    info.forwardToUrl(uri.toString());
+  }
 
-	public Button getAllowButton()
-	{
-		return allowButton;
-	}
+  private void addStateParam(OAuthLogonModel model, QueryBuilder qbuilder) {
+    String state = model.getState();
+    if (state != null) {
+      qbuilder.addParam(OAuthWebConstants.PARAM_STATE, state);
+    }
+  }
 
-	public Button getAuthButton()
-	{
-		return authButton;
-	}
+  private String getActualRedirect(String responseType, String redirectUri) {
+    if (redirectUri.equals(OAuthWebConstants.OAUTH_DEFAULT_REDIRECT_URL_NAME)) {
+      if (responseType == null || !responseType.equals(OAuthWebConstants.RESPONSE_TYPE_TOKEN)) {
+        throw new OAuthException(
+            400, OAuthConstants.ERROR_INVALID_CLIENT, LABEL_DEFAULTREDIRECT.getText());
+      }
+      return institutionService.institutionalise(OAuthWebConstants.OAUTH_DEFAULT_REDIRECT_URL);
+    }
+    return redirectUri;
+  }
 
-	public Button getLogoutButton()
-	{
-		return logoutButton;
-	}
+  @EventHandlerMethod(preventXsrf = false)
+  public void authorise(SectionInfo info) {
+    OAuthLogonModel model = getModel(info);
+    try {
+      String logonUsername = model.getFixedUsername();
+      if (logonUsername == null) {
+        logonUsername = username.getValue(info);
+      }
+      UserState userState =
+          userService.authenticate(
+              logonUsername,
+              password.getValue(info),
+              userService.getWebAuthenticationDetails(info.getRequest()));
+      OAuthClient oAuthClient = model.getOAuthClient();
+      AuthorisationDetails details =
+          oauthWebService.getAuthorisationDetailsByUserState(oAuthClient, userState);
+      sendSucess(info, oAuthClient, details);
+    } catch (BadCredentialsException bce) {
+      info.preventGET();
+      model.setAuthError(LABEL_ERROR_CREDENTIALS);
+    }
+  }
 
-	public TextField getUsername()
-	{
-		return username;
-	}
+  @Override
+  public void afterParameters(SectionInfo info, ParametersEvent event) {
+    OAuthLogonModel model = getModel(info);
+    model.getOAuthClient();
+    String responseType = model.getResponseType();
+    if (responseType == null) {
+      sendMissingParameter(info, OAuthWebConstants.PARAM_RESPONSE_TYPE);
+      return;
+    }
+    if (!OAuthWebConstants.RESPONSE_TYPES_ALL.contains(responseType)) {
+      sendError(
+          info,
+          OAuthConstants.ERROR_UNSUPPORTED_RESPONSE_TYPE,
+          new KeyLabel(KEY_ERROR_INVALIDRESPONSETYPE, responseType));
+    }
+  }
 
-	public TextField getPassword()
-	{
-		return password;
-	}
+  private void sendMissingParameter(SectionInfo info, String param) {
+    sendError(info, OAuthConstants.ERROR_INVALID_REQUEST, new KeyLabel(KEY_ERROR_MANDATORY, param));
+  }
 
-	public class OAuthLogonModel
-	{
-		@Bookmarked(supported = true, parameter = OAuthWebConstants.PARAM_CLIENT_ID)
-		private String clientId;
-		@Bookmarked(supported = true, parameter = OAuthWebConstants.PARAM_REDIRECT_URI)
-		private String redirectUri;
-		@Bookmarked(supported = true, parameter = OAuthWebConstants.PARAM_RESPONSE_TYPE)
-		private String responseType;
-		@Bookmarked(supported = true, parameter = OAuthWebConstants.PARAM_STATE)
-		private String state;
-		@Bookmarked(supported = true, parameter = OAuthWebConstants.PARAM_DISPLAY)
-		private String display = OAuthWebConstants.DISPLAY_PAGE;
+  @Override
+  public void bookmark(SectionInfo info, BookmarkEvent event) {
+    HttpServletRequest request = info.getRequest();
+    if (request != null) {
+      Map<String, String[]> state = userService.getAdditionalLogonState(request);
+      for (Entry<String, String[]> entry : state.entrySet()) {
+        event.setParams(entry.getKey(), entry.getValue());
+      }
+    }
+  }
 
-		private DivRenderer containerDiv;
-		private boolean alreadyLoggedIn;
-		private boolean cannotUse;
-		private OAuthClient oauthClient;
-		private Label authError;
-		private String username;
-		private TemplateResult parts;
+  @Override
+  public void document(SectionInfo info, DocumentParamsEvent event) {
+    // nothing
+  }
 
-		public OAuthClient getOAuthClient()
-		{
-			if( oauthClient == null )
-			{
-				oauthClient = oauthService.getByClientIdAndRedirectUrl(clientId, redirectUri);
-				if( oauthClient == null )
-				{
-					throw new OAuthException(400, OAuthConstants.ERROR_INVALID_CLIENT,
-						new KeyLabel(KEY_CLIENT_NOT_FOUND, clientId, redirectUri).getText(), true);
-				}
-			}
-			return oauthClient;
-		}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new OAuthLogonModel();
+  }
 
-		public Label getClientName() throws OAuthException
-		{
-			return new BundleLabel(getOAuthClient().getName(), bundleCache);
-		}
+  public Button getDenyButton() {
+    return denyButton;
+  }
 
-		public String getFixedUserId()
-		{
-			return getOAuthClient().getUserId();
-		}
+  public Button getAllowButton() {
+    return allowButton;
+  }
 
-		public String getFixedUsername()
-		{
-			final String userId = getFixedUserId();
-			if( userId != null )
-			{
-				final UserBean ub = userService.getInformationForUser(userId);
-				if( ub != null )
-				{
-					return ub.getUsername();
-				}
-			}
-			return null;
-		}
+  public Button getAuthButton() {
+    return authButton;
+  }
 
-		public String getClientId()
-		{
-			return clientId;
-		}
+  public Button getLogoutButton() {
+    return logoutButton;
+  }
 
-		public void setClientId(String clientId)
-		{
-			this.clientId = clientId;
-		}
+  public TextField getUsername() {
+    return username;
+  }
 
-		public String getRedirectUri()
-		{
-			return redirectUri;
-		}
+  public TextField getPassword() {
+    return password;
+  }
 
-		public void setRedirectUri(String redirectUri)
-		{
-			this.redirectUri = redirectUri;
-		}
+  public class OAuthLogonModel {
+    @Bookmarked(supported = true, parameter = OAuthWebConstants.PARAM_CLIENT_ID)
+    private String clientId;
 
-		public String getResponseType()
-		{
-			return responseType;
-		}
+    @Bookmarked(supported = true, parameter = OAuthWebConstants.PARAM_REDIRECT_URI)
+    private String redirectUri;
 
-		public void setResponseType(String responseType)
-		{
-			this.responseType = responseType;
-		}
+    @Bookmarked(supported = true, parameter = OAuthWebConstants.PARAM_RESPONSE_TYPE)
+    private String responseType;
 
-		public String getState()
-		{
-			return state;
-		}
+    @Bookmarked(supported = true, parameter = OAuthWebConstants.PARAM_STATE)
+    private String state;
 
-		public void setState(String state)
-		{
-			this.state = state;
-		}
+    @Bookmarked(supported = true, parameter = OAuthWebConstants.PARAM_DISPLAY)
+    private String display = OAuthWebConstants.DISPLAY_PAGE;
 
-		public String getDisplay()
-		{
-			return display;
-		}
+    private DivRenderer containerDiv;
+    private boolean alreadyLoggedIn;
+    private boolean cannotUse;
+    private OAuthClient oauthClient;
+    private Label authError;
+    private String username;
+    private TemplateResult parts;
 
-		public void setDisplay(String display)
-		{
-			this.display = display;
-		}
+    public OAuthClient getOAuthClient() {
+      if (oauthClient == null) {
+        oauthClient = oauthService.getByClientIdAndRedirectUrl(clientId, redirectUri);
+        if (oauthClient == null) {
+          throw new OAuthException(
+              400,
+              OAuthConstants.ERROR_INVALID_CLIENT,
+              new KeyLabel(KEY_CLIENT_NOT_FOUND, clientId, redirectUri).getText(),
+              true);
+        }
+      }
+      return oauthClient;
+    }
 
-		public boolean isAlreadyLoggedIn()
-		{
-			return alreadyLoggedIn;
-		}
+    public Label getClientName() throws OAuthException {
+      return new BundleLabel(getOAuthClient().getName(), bundleCache);
+    }
 
-		public void setAlreadyLoggedIn(boolean alreadyLoggedIn)
-		{
-			this.alreadyLoggedIn = alreadyLoggedIn;
-		}
+    public String getFixedUserId() {
+      return getOAuthClient().getUserId();
+    }
 
-		public boolean isCannotUse()
-		{
-			return cannotUse;
-		}
+    public String getFixedUsername() {
+      final String userId = getFixedUserId();
+      if (userId != null) {
+        final UserBean ub = userService.getInformationForUser(userId);
+        if (ub != null) {
+          return ub.getUsername();
+        }
+      }
+      return null;
+    }
 
-		public void setCannotUse(boolean cannotUse)
-		{
-			this.cannotUse = cannotUse;
-		}
+    public String getClientId() {
+      return clientId;
+    }
 
-		public DivRenderer getContainerDiv()
-		{
-			return containerDiv;
-		}
+    public void setClientId(String clientId) {
+      this.clientId = clientId;
+    }
 
-		public void setContainerDiv(DivRenderer containerDiv)
-		{
-			this.containerDiv = containerDiv;
-		}
+    public String getRedirectUri() {
+      return redirectUri;
+    }
 
-		public Label getAuthError()
-		{
-			return authError;
-		}
+    public void setRedirectUri(String redirectUri) {
+      this.redirectUri = redirectUri;
+    }
 
-		public void setAuthError(Label authError)
-		{
-			this.authError = authError;
-		}
+    public String getResponseType() {
+      return responseType;
+    }
 
-		public String getUsername()
-		{
-			return username;
-		}
+    public void setResponseType(String responseType) {
+      this.responseType = responseType;
+    }
 
-		public void setUsername(String username)
-		{
-			this.username = username;
-		}
+    public String getState() {
+      return state;
+    }
 
-		public TemplateResult getParts()
-		{
-			return parts;
-		}
+    public void setState(String state) {
+      this.state = state;
+    }
 
-		public void setParts(TemplateResult parts)
-		{
-			this.parts = parts;
-		}
-	}
+    public String getDisplay() {
+      return display;
+    }
+
+    public void setDisplay(String display) {
+      this.display = display;
+    }
+
+    public boolean isAlreadyLoggedIn() {
+      return alreadyLoggedIn;
+    }
+
+    public void setAlreadyLoggedIn(boolean alreadyLoggedIn) {
+      this.alreadyLoggedIn = alreadyLoggedIn;
+    }
+
+    public boolean isCannotUse() {
+      return cannotUse;
+    }
+
+    public void setCannotUse(boolean cannotUse) {
+      this.cannotUse = cannotUse;
+    }
+
+    public DivRenderer getContainerDiv() {
+      return containerDiv;
+    }
+
+    public void setContainerDiv(DivRenderer containerDiv) {
+      this.containerDiv = containerDiv;
+    }
+
+    public Label getAuthError() {
+      return authError;
+    }
+
+    public void setAuthError(Label authError) {
+      this.authError = authError;
+    }
+
+    public String getUsername() {
+      return username;
+    }
+
+    public void setUsername(String username) {
+      this.username = username;
+    }
+
+    public TemplateResult getParts() {
+      return parts;
+    }
+
+    public void setParts(TemplateResult parts) {
+      this.parts = parts;
+    }
+  }
 }

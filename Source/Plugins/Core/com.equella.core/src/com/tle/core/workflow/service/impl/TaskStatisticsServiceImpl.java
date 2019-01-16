@@ -45,83 +45,79 @@ import com.tle.core.workflow.service.WorkflowService;
 @Bind(TaskStatisticsService.class)
 @Singleton
 @SuppressWarnings("nls")
-public class TaskStatisticsServiceImpl implements TaskStatisticsService
-{
-	@Inject
-	private TaskHistoryDao taskHistoryDao;
-	@Inject
-	private WorkflowService workflowService;
+public class TaskStatisticsServiceImpl implements TaskStatisticsService {
+  @Inject private TaskHistoryDao taskHistoryDao;
+  @Inject private WorkflowService workflowService;
 
-	@Override
-	public void enterTask(Item item, WorkflowItem task, Date entry)
-	{
-		TaskHistory old = taskHistoryDao.findByCriteria(Restrictions.eq("task.id", task.getId()),
-			Restrictions.eq("item.id", item.getId()), Restrictions.isNull("exitDate"));
-		if( old != null )
-		{
-			throw new Error("Task History never exited for this task: " + CurrentLocale.get(task.getName()) + "   ID="
-				+ task.getId());
-		}
-		taskHistoryDao.save(new TaskHistory(item, task, entry, null));
-	}
+  @Override
+  public void enterTask(Item item, WorkflowItem task, Date entry) {
+    TaskHistory old =
+        taskHistoryDao.findByCriteria(
+            Restrictions.eq("task.id", task.getId()),
+            Restrictions.eq("item.id", item.getId()),
+            Restrictions.isNull("exitDate"));
+    if (old != null) {
+      throw new Error(
+          "Task History never exited for this task: "
+              + CurrentLocale.get(task.getName())
+              + "   ID="
+              + task.getId());
+    }
+    taskHistoryDao.save(new TaskHistory(item, task, entry, null));
+  }
 
-	@Override
-	@Transactional
-	public void exitTask(Item item, WorkflowItem task, Date exit)
-	{
-		TaskHistory th = taskHistoryDao.findByCriteria(Restrictions.eq("task.id", task.getId()),
-			Restrictions.eq("item.id", item.getId()), Restrictions.isNull("exitDate"));
-		th.setExitDate(exit);
-		taskHistoryDao.update(th);
-	}
+  @Override
+  @Transactional
+  public void exitTask(Item item, WorkflowItem task, Date exit) {
+    TaskHistory th =
+        taskHistoryDao.findByCriteria(
+            Restrictions.eq("task.id", task.getId()),
+            Restrictions.eq("item.id", item.getId()),
+            Restrictions.isNull("exitDate"));
+    th.setExitDate(exit);
+    taskHistoryDao.update(th);
+  }
 
-	@Override
-	@Transactional
-	public void exitAllTasksForItem(Item item, Date end)
-	{
-		if( item.isModerating() )
-		{
-			taskHistoryDao.exitAllTasksForItem(item, end);
-		}
-	}
+  @Override
+  @Transactional
+  public void exitAllTasksForItem(Item item, Date end) {
+    if (item.isModerating()) {
+      taskHistoryDao.exitAllTasksForItem(item, end);
+    }
+  }
 
-	@Override
-	@Transactional
-	public void restoreTasksForItem(Item item)
-	{
-		taskHistoryDao.restoreTasksForItem(item);
-	}
+  @Override
+  @Transactional
+  public void restoreTasksForItem(Item item) {
+    taskHistoryDao.restoreTasksForItem(item);
+  }
 
-	@Override
-	@Transactional
-	public List<TaskTrend> getWaitingTasks(Trend trend)
-	{
-		// Get all tasks
-		Collection<BaseEntityLabel> listManagable = workflowService.listManagable();
-		Collection<String> manageableUuids = Collections2.transform(listManagable,
-			new Function<BaseEntityLabel, String>()
-			{
-				@Override
-				public String apply(BaseEntityLabel input)
-				{
-					return input.getUuid();
-				}
+  @Override
+  @Transactional
+  public List<TaskTrend> getWaitingTasks(Trend trend) {
+    // Get all tasks
+    Collection<BaseEntityLabel> listManagable = workflowService.listManagable();
+    Collection<String> manageableUuids =
+        Collections2.transform(
+            listManagable,
+            new Function<BaseEntityLabel, String>() {
+              @Override
+              public String apply(BaseEntityLabel input) {
+                return input.getUuid();
+              }
+            });
+    return taskHistoryDao.getTaskTrendsForWorkflows(manageableUuids, getTrendDate(trend));
+  }
 
-			});
-		return taskHistoryDao.getTaskTrendsForWorkflows(manageableUuids, getTrendDate(trend));
+  @Override
+  @Transactional
+  public List<TaskTrend> getWaitingTasksForWorkflow(String uuid, Trend trend) {
+    return taskHistoryDao.getTaskTrendsForWorkflows(
+        Collections.singleton(uuid), getTrendDate(trend));
+  }
 
-	}
-
-	@Override
-	@Transactional
-	public List<TaskTrend> getWaitingTasksForWorkflow(String uuid, Trend trend)
-	{
-		return taskHistoryDao.getTaskTrendsForWorkflows(Collections.singleton(uuid), getTrendDate(trend));
-	}
-
-	private Date getTrendDate(Trend trend)
-	{
-		final Date now = new Date();
-		return new Date(now.getTime() - TimeUnit.DAYS.toMillis(trend.getDays()));
-	}
+  private Date getTrendDate(Trend trend) {
+    final Date now = new Date();
+    return new Date(now.getTime() - TimeUnit.DAYS.toMillis(trend.getDays()));
+  }
 }

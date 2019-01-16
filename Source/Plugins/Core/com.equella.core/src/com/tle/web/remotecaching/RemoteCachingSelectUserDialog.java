@@ -23,21 +23,16 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.equella.utils.SelectUserDialog;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
-public class RemoteCachingSelectUserDialog extends SelectUserDialog
-{
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		setMultipleUsers(true);
-		super.registered(id, tree);
-	}
+public class RemoteCachingSelectUserDialog extends SelectUserDialog {
+  @Override
+  public void registered(String id, SectionTree tree) {
+    setMultipleUsers(true);
+    super.registered(id, tree);
+  }
 
-	public void setUserExclusions(SectionInfo info, Set<String> userExclusions)
-	{
-		section.setUserExclusions(info, userExclusions);
-	}
+  public void setUserExclusions(SectionInfo info, Set<String> userExclusions) {
+    section.setUserExclusions(info, userExclusions);
+  }
 }

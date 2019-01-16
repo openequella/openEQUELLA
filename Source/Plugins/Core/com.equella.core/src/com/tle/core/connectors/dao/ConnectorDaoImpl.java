@@ -26,35 +26,28 @@ import com.tle.common.connectors.entity.Connector;
 import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.guice.Bind;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind(ConnectorDao.class)
 @Singleton
-public class ConnectorDaoImpl extends AbstractEntityDaoImpl<Connector> implements ConnectorDao
-{
-	public ConnectorDaoImpl()
-	{
-		super(Connector.class);
-	}
+public class ConnectorDaoImpl extends AbstractEntityDaoImpl<Connector> implements ConnectorDao {
+  public ConnectorDaoImpl() {
+    super(Connector.class);
+  }
 
-	@Override
-	public List<Connector> enumerateForUrl(final String url)
-	{
-		return enumerateAll(new EnabledCallback(null, true)
-		{
-			@Override
-			public String createAdditionalWhere()
-			{
-				return super.createAdditionalWhere() + " AND be.serverUrl like :serverUrl";
-			}
+  @Override
+  public List<Connector> enumerateForUrl(final String url) {
+    return enumerateAll(
+        new EnabledCallback(null, true) {
+          @Override
+          public String createAdditionalWhere() {
+            return super.createAdditionalWhere() + " AND be.serverUrl like :serverUrl";
+          }
 
-			@Override
-			public void processQuery(Query query)
-			{
-				super.processQuery(query);
-				query.setParameter("serverUrl", "%" + url + "%");
-			}
-		});
-	}
+          @Override
+          public void processQuery(Query query) {
+            super.processQuery(query);
+            query.setParameter("serverUrl", "%" + url + "%");
+          }
+        });
+  }
 }

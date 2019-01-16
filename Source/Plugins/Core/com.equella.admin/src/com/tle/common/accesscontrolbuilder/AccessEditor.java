@@ -53,276 +53,246 @@ import com.tle.common.security.TargetListEntry;
 import com.tle.common.security.remoting.RemoteTLEAclManager;
 import com.tle.core.remoting.RemoteUserService;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @SuppressWarnings("nls")
-public class AccessEditor extends JPanel implements ActionListener, Changeable
-{
-	private static final long serialVersionUID = 1L;
-	private Map<String, PrivilegeList> privilegeToList;
-	private Map<AbstractButton, PrivilegeListEditor> editors;
-	private AbstractButton lastSelected;
-	private boolean ignoreActionEvents;
+public class AccessEditor extends JPanel implements ActionListener, Changeable {
+  private static final long serialVersionUID = 1L;
+  private Map<String, PrivilegeList> privilegeToList;
+  private Map<AbstractButton, PrivilegeListEditor> editors;
+  private AbstractButton lastSelected;
+  private boolean ignoreActionEvents;
 
-	private JComboBox<NameValue> actions;
-	private JRadioButton basic;
-	private JRadioButton advanced;
-	private JRadioButton inherited;
-	private JPanel container;
+  private JComboBox<NameValue> actions;
+  private JRadioButton basic;
+  private JRadioButton advanced;
+  private JRadioButton inherited;
+  private JPanel container;
 
-	private Object domainObj;
-	private Node privilegeNode;
-	private TargetList originaList;
+  private Object domainObj;
+  private Node privilegeNode;
+  private TargetList originaList;
 
-	public AccessEditor(RemoteTLEAclManager aclManager, RemoteUserService userService)
-	{
-		setupGUI();
+  public AccessEditor(RemoteTLEAclManager aclManager, RemoteUserService userService) {
+    setupGUI();
 
-		editors = new LinkedHashMap<AbstractButton, PrivilegeListEditor>();
-		editors.put(inherited, new InheritedEditor(aclManager, userService));
-		editors.put(basic, new BasicEditor(userService));
-		editors.put(advanced, new AdvancedEditor(aclManager, userService));
-	}
+    editors = new LinkedHashMap<AbstractButton, PrivilegeListEditor>();
+    editors.put(inherited, new InheritedEditor(aclManager, userService));
+    editors.put(basic, new BasicEditor(userService));
+    editors.put(advanced, new AdvancedEditor(aclManager, userService));
+  }
 
-	public void load(Object domainObj, TargetList targetList, Node privilegeNode)
-	{
-		this.domainObj = domainObj;
-		this.privilegeNode = privilegeNode;
-		this.originaList = targetList;
+  public void load(Object domainObj, TargetList targetList, Node privilegeNode) {
+    this.domainObj = domainObj;
+    this.privilegeNode = privilegeNode;
+    this.originaList = targetList;
 
-		privilegeToList = new HashMap<String, PrivilegeList>();
-		if( targetList != null )
-		{
-			for( TargetListEntry entry : targetList.getEntries() )
-			{
-				PrivilegeListEntry ple = new PrivilegeListEntry();
-				ple.setGranted(entry.isGranted());
-				ple.setOverride(entry.isOverride());
-				ple.setWho(entry.getWho());
+    privilegeToList = new HashMap<String, PrivilegeList>();
+    if (targetList != null) {
+      for (TargetListEntry entry : targetList.getEntries()) {
+        PrivilegeListEntry ple = new PrivilegeListEntry();
+        ple.setGranted(entry.isGranted());
+        ple.setOverride(entry.isOverride());
+        ple.setWho(entry.getWho());
 
-				String privilege = entry.getPrivilege();
-				PrivilegeList list = privilegeToList.get(privilege);
-				if( list == null )
-				{
-					list = new PrivilegeList(privilege);
-					privilegeToList.put(privilege, list);
-				}
-				list.getEntries().add(ple);
-			}
-		}
+        String privilege = entry.getPrivilege();
+        PrivilegeList list = privilegeToList.get(privilege);
+        if (list == null) {
+          list = new PrivilegeList(privilege);
+          privilegeToList.put(privilege, list);
+        }
+        list.getEntries().add(ple);
+      }
+    }
 
-		// Find the user-friendly message for each privilege
-		Set<NameValue> nameAndPrivilege = new TreeSet<NameValue>(new NumberStringComparator<NameValue>());
+    // Find the user-friendly message for each privilege
+    Set<NameValue> nameAndPrivilege =
+        new TreeSet<NameValue>(new NumberStringComparator<NameValue>());
 
-		Map<String, Integer> allPrivileges = PrivilegeTree.getAllPrivilegesForNode(privilegeNode);
-		for( String privilege : allPrivileges.keySet() )
-		{
-			String nodeText = privilegeNode.toString();
-			String text = CurrentLocale.get("security.privilege." + nodeText + '.' + privilege);
-			// PURGE_ITEM can only be used on deleted items
-			if( !(privilegeNode.equals(Node.ITEM_STATUS) && privilege.equals("PURGE_ITEM")) )
-			{
-				nameAndPrivilege.add(new NameValue(text, privilege));
-			}
-		}
+    Map<String, Integer> allPrivileges = PrivilegeTree.getAllPrivilegesForNode(privilegeNode);
+    for (String privilege : allPrivileges.keySet()) {
+      String nodeText = privilegeNode.toString();
+      String text = CurrentLocale.get("security.privilege." + nodeText + '.' + privilege);
+      // PURGE_ITEM can only be used on deleted items
+      if (!(privilegeNode.equals(Node.ITEM_STATUS) && privilege.equals("PURGE_ITEM"))) {
+        nameAndPrivilege.add(new NameValue(text, privilege));
+      }
+    }
 
-		try
-		{
-			ignoreActionEvents = true;
-			actions.removeAllItems();
-			for( NameValue nv : nameAndPrivilege )
-			{
-				actions.addItem(nv);
-			}
-		}
-		finally
-		{
-			ignoreActionEvents = false;
-		}
-		actions.setSelectedIndex(0);
-	}
+    try {
+      ignoreActionEvents = true;
+      actions.removeAllItems();
+      for (NameValue nv : nameAndPrivilege) {
+        actions.addItem(nv);
+      }
+    } finally {
+      ignoreActionEvents = false;
+    }
+    actions.setSelectedIndex(0);
+  }
 
-	public TargetList save()
-	{
-		List<TargetListEntry> entries = new ArrayList<TargetListEntry>();
+  public TargetList save() {
+    List<TargetListEntry> entries = new ArrayList<TargetListEntry>();
 
-		for( PrivilegeList list : privilegeToList.values() )
-		{
-			String privilege = list.getPrivilege();
-			for( PrivilegeListEntry entry : list.getEntries() )
-			{
-				TargetListEntry tle = new TargetListEntry();
-				tle.setGranted(entry.isGranted());
-				tle.setOverride(entry.isOverride());
-				tle.setWho(entry.getWho());
-				tle.setPrivilege(privilege);
+    for (PrivilegeList list : privilegeToList.values()) {
+      String privilege = list.getPrivilege();
+      for (PrivilegeListEntry entry : list.getEntries()) {
+        TargetListEntry tle = new TargetListEntry();
+        tle.setGranted(entry.isGranted());
+        tle.setOverride(entry.isOverride());
+        tle.setWho(entry.getWho());
+        tle.setPrivilege(privilege);
 
-				entries.add(tle);
-			}
-		}
+        entries.add(tle);
+      }
+    }
 
-		TargetList list = new TargetList();
-		list.setEntries(entries);
-		return list;
-	}
+    TargetList list = new TargetList();
+    list.setEntries(entries);
+    return list;
+  }
 
-	@Override
-	public void clearChanges()
-	{
-		this.originaList = save();
-	}
+  @Override
+  public void clearChanges() {
+    this.originaList = save();
+  }
 
-	@Override
-	public boolean hasDetectedChanges()
-	{
-		return !save().equals(originaList);
-	}
+  @Override
+  public boolean hasDetectedChanges() {
+    return !save().equals(originaList);
+  }
 
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		if( e.getSource() == actions )
-		{
-			if( !ignoreActionEvents )
-			{
-				switchPrivilegeLists();
-			}
-		}
-		else
-		{
-			switchModes((AbstractButton) e.getSource());
-		}
-	}
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    if (e.getSource() == actions) {
+      if (!ignoreActionEvents) {
+        switchPrivilegeLists();
+      }
+    } else {
+      switchModes((AbstractButton) e.getSource());
+    }
+  }
 
-	private void switchPrivilegeLists()
-	{
-		PrivilegeList privList = getCurrentPrivilegeList();
-		Entry<AbstractButton, PrivilegeListEditor> editor = getFirstSuitableEditor(privList);
+  private void switchPrivilegeLists() {
+    PrivilegeList privList = getCurrentPrivilegeList();
+    Entry<AbstractButton, PrivilegeListEditor> editor = getFirstSuitableEditor(privList);
 
-		lastSelected = editor.getKey();
-		lastSelected.setSelected(true);
+    lastSelected = editor.getKey();
+    lastSelected.setSelected(true);
 
-		JComponent component2 = editor.getValue().createView(domainObj, privilegeNode, privList);
-		setContainer(component2);
-	}
+    JComponent component2 = editor.getValue().createView(domainObj, privilegeNode, privList);
+    setContainer(component2);
+  }
 
-	private void switchModes(AbstractButton newSelection)
-	{
-		PrivilegeListEditor editor = editors.get(newSelection);
-		PrivilegeList privList = getCurrentPrivilegeList();
+  private void switchModes(AbstractButton newSelection) {
+    PrivilegeListEditor editor = editors.get(newSelection);
+    PrivilegeList privList = getCurrentPrivilegeList();
 
-		if( !editor.canHandle(privilegeNode, privList) )
-		{
-			String message = CurrentLocale.get("security.editor.mayLoseEntries");
-			int result = JOptionPane.showConfirmDialog(this, message, null, JOptionPane.YES_NO_OPTION,
-				JOptionPane.WARNING_MESSAGE);
-			if( result == JOptionPane.NO_OPTION )
-			{
-				lastSelected.setSelected(true);
-				return;
-			}
-		}
+    if (!editor.canHandle(privilegeNode, privList)) {
+      String message = CurrentLocale.get("security.editor.mayLoseEntries");
+      int result =
+          JOptionPane.showConfirmDialog(
+              this, message, null, JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+      if (result == JOptionPane.NO_OPTION) {
+        lastSelected.setSelected(true);
+        return;
+      }
+    }
 
-		lastSelected = newSelection;
-		setContainer(editor.createView(domainObj, privilegeNode, privList));
-	}
+    lastSelected = newSelection;
+    setContainer(editor.createView(domainObj, privilegeNode, privList));
+  }
 
-	private void setContainer(JComponent component)
-	{
-		container.removeAll();
-		if( component != null )
-		{
-			container.add(component);
-		}
-		container.updateUI();
-	}
+  private void setContainer(JComponent component) {
+    container.removeAll();
+    if (component != null) {
+      container.add(component);
+    }
+    container.updateUI();
+  }
 
-	private PrivilegeList getCurrentPrivilegeList()
-	{
-		NameValue namePrivilege = (NameValue) actions.getSelectedItem();
-		PrivilegeList list = privilegeToList.get(namePrivilege.getValue());
-		if( list == null )
-		{
-			list = new PrivilegeList(namePrivilege.getValue());
-			privilegeToList.put(namePrivilege.getValue(), list);
-		}
-		return list;
-	}
+  private PrivilegeList getCurrentPrivilegeList() {
+    NameValue namePrivilege = (NameValue) actions.getSelectedItem();
+    PrivilegeList list = privilegeToList.get(namePrivilege.getValue());
+    if (list == null) {
+      list = new PrivilegeList(namePrivilege.getValue());
+      privilegeToList.put(namePrivilege.getValue(), list);
+    }
+    return list;
+  }
 
-	private Map.Entry<AbstractButton, PrivilegeListEditor> getFirstSuitableEditor(PrivilegeList list)
-	{
-		for( Map.Entry<AbstractButton, PrivilegeListEditor> entry : editors.entrySet() )
-		{
-			if( entry.getValue().canHandle(privilegeNode, list) )
-			{
-				return entry;
-			}
-		}
+  private Map.Entry<AbstractButton, PrivilegeListEditor> getFirstSuitableEditor(
+      PrivilegeList list) {
+    for (Map.Entry<AbstractButton, PrivilegeListEditor> entry : editors.entrySet()) {
+      if (entry.getValue().canHandle(privilegeNode, list)) {
+        return entry;
+      }
+    }
 
-		throw new RuntimeException("We should always have at least one editor that can handle anything");
-	}
+    throw new RuntimeException(
+        "We should always have at least one editor that can handle anything");
+  }
 
-	// //// SETUP AND GUI CREATION ////////////////////////////////////////////
+  // //// SETUP AND GUI CREATION ////////////////////////////////////////////
 
-	private void setupGUI()
-	{
-		JComponent whoCanPanel = createWhoCanPanel();
-		JComponent modePanel = createModePanel();
+  private void setupGUI() {
+    JComponent whoCanPanel = createWhoCanPanel();
+    JComponent modePanel = createModePanel();
 
-		container = new JPanel(new GridLayout(1, 1));
+    container = new JPanel(new GridLayout(1, 1));
 
-		JSeparator separator = new JSeparator();
+    JSeparator separator = new JSeparator();
 
-		final int height1 = whoCanPanel.getPreferredSize().height;
-		final int height2 = modePanel.getMinimumSize().height;
-		final int height3 = separator.getPreferredSize().height;
-		final int[] rows = {height1, height2, height3, TableLayout.FILL,};
-		final int[] cols = {TableLayout.DOUBLE_FILL, TableLayout.FILL,};
+    final int height1 = whoCanPanel.getPreferredSize().height;
+    final int height2 = modePanel.getMinimumSize().height;
+    final int height3 = separator.getPreferredSize().height;
+    final int[] rows = {
+      height1, height2, height3, TableLayout.FILL,
+    };
+    final int[] cols = {
+      TableLayout.DOUBLE_FILL, TableLayout.FILL,
+    };
 
-		setLayout(new TableLayout(rows, cols));
-		add(whoCanPanel, new Rectangle(0, 0, 1, 1));
-		add(modePanel, new Rectangle(0, 1, 2, 1));
-		add(separator, new Rectangle(0, 2, 2, 1));
-		add(container, new Rectangle(0, 3, 2, 1));
-	}
+    setLayout(new TableLayout(rows, cols));
+    add(whoCanPanel, new Rectangle(0, 0, 1, 1));
+    add(modePanel, new Rectangle(0, 1, 2, 1));
+    add(separator, new Rectangle(0, 2, 2, 1));
+    add(container, new Rectangle(0, 3, 2, 1));
+  }
 
-	private JComponent createWhoCanPanel()
-	{
-		JLabel whocanStart = new JLabel(CurrentLocale.get("security.editor.whocan.before"));
-		JLabel whocanEnd = new JLabel(CurrentLocale.get("security.editor.whocan.after"));
+  private JComponent createWhoCanPanel() {
+    JLabel whocanStart = new JLabel(CurrentLocale.get("security.editor.whocan.before"));
+    JLabel whocanEnd = new JLabel(CurrentLocale.get("security.editor.whocan.after"));
 
-		actions = new JComboBox<>();
-		actions.addActionListener(this);
+    actions = new JComboBox<>();
+    actions.addActionListener(this);
 
-		JPanel panel = new JPanel(new BorderLayout(5, 5));
-		panel.add(whocanStart, BorderLayout.WEST);
-		panel.add(actions, BorderLayout.CENTER);
-		panel.add(whocanEnd, BorderLayout.EAST);
+    JPanel panel = new JPanel(new BorderLayout(5, 5));
+    panel.add(whocanStart, BorderLayout.WEST);
+    panel.add(actions, BorderLayout.CENTER);
+    panel.add(whocanEnd, BorderLayout.EAST);
 
-		return panel;
-	}
+    return panel;
+  }
 
-	private JComponent createModePanel()
-	{
-		basic = new JRadioButton(CurrentLocale.get("security.editor.mode.basic"));
-		advanced = new JRadioButton(CurrentLocale.get("security.editor.mode.advanced"));
-		inherited = new JRadioButton(CurrentLocale.get("security.editor.mode.inherited"));
+  private JComponent createModePanel() {
+    basic = new JRadioButton(CurrentLocale.get("security.editor.mode.basic"));
+    advanced = new JRadioButton(CurrentLocale.get("security.editor.mode.advanced"));
+    inherited = new JRadioButton(CurrentLocale.get("security.editor.mode.inherited"));
 
-		basic.addActionListener(this);
-		advanced.addActionListener(this);
-		inherited.addActionListener(this);
+    basic.addActionListener(this);
+    advanced.addActionListener(this);
+    inherited.addActionListener(this);
 
-		ButtonGroup radiogroup = new ButtonGroup();
-		radiogroup.add(basic);
-		radiogroup.add(advanced);
-		radiogroup.add(inherited);
+    ButtonGroup radiogroup = new ButtonGroup();
+    radiogroup.add(basic);
+    radiogroup.add(advanced);
+    radiogroup.add(inherited);
 
-		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(basic);
-		panel.add(advanced);
-		panel.add(inherited);
+    JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panel.add(basic);
+    panel.add(advanced);
+    panel.add(inherited);
 
-		return panel;
-	}
+    return panel;
+  }
 }

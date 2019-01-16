@@ -57,89 +57,75 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.workflow.servlet.WorkflowMessageServlet;
 
 @Bind
-public class ViewCommentsSection extends AbstractPrototypeSection<ViewCommentsSection.Model> implements HtmlRenderer
-{
-	@PlugKey("comments.existing")
-	private static String KEY_COMMENTS;
+public class ViewCommentsSection extends AbstractPrototypeSection<ViewCommentsSection.Model>
+    implements HtmlRenderer {
+  @PlugKey("comments.existing")
+  private static String KEY_COMMENTS;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Inject
-	private BundleCache bundleCache;
-	@Inject
-	private UserLinkService userLinkService;
-	private UserLinkSection userLinkSection;
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private InstitutionService instituionService;
+  @Inject private BundleCache bundleCache;
+  @Inject private UserLinkService userLinkService;
+  private UserLinkSection userLinkSection;
+  @Inject private FileSystemService fileSystemService;
+  @Inject private InstitutionService instituionService;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		userLinkSection = userLinkService.register(tree, id);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    userLinkSection = userLinkService.register(tree, id);
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model();
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws IOException
-	{
-		Model model = getModel(context);
-		Collection<WorkflowMessage> messages = model.getMessages();
-		int numComments = messages.size();
-		model.setCommentHeading(new PluralKeyLabel(KEY_COMMENTS, numComments));
-		model.setComments(ModCommentRender.render(context, viewFactory, userLinkSection, fileSystemService, messages));
+  @SuppressWarnings("nls")
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws IOException {
+    Model model = getModel(context);
+    Collection<WorkflowMessage> messages = model.getMessages();
+    int numComments = messages.size();
+    model.setCommentHeading(new PluralKeyLabel(KEY_COMMENTS, numComments));
+    model.setComments(
+        ModCommentRender.render(
+            context, viewFactory, userLinkSection, fileSystemService, messages));
 
-		return viewFactory.createResult("viewcomments.ftl", this);
-	}
+    return viewFactory.createResult("viewcomments.ftl", this);
+  }
 
-	public void setMessages(SectionInfo info, Collection<WorkflowMessage> messages)
-	{
-		getModel(info).setMessages(messages);
-	}
+  public void setMessages(SectionInfo info, Collection<WorkflowMessage> messages) {
+    getModel(info).setMessages(messages);
+  }
 
-	public static class Model
-	{
-		private Label commentHeading;
-		private Collection<WorkflowMessage> messages;
-		private SectionRenderable comments;
+  public static class Model {
+    private Label commentHeading;
+    private Collection<WorkflowMessage> messages;
+    private SectionRenderable comments;
 
-		public Label getCommentHeading()
-		{
-			return commentHeading;
-		}
+    public Label getCommentHeading() {
+      return commentHeading;
+    }
 
-		public void setCommentHeading(Label commentHeading)
-		{
-			this.commentHeading = commentHeading;
-		}
+    public void setCommentHeading(Label commentHeading) {
+      this.commentHeading = commentHeading;
+    }
 
-		public Collection<WorkflowMessage> getMessages()
-		{
-			return messages;
-		}
+    public Collection<WorkflowMessage> getMessages() {
+      return messages;
+    }
 
-		public void setMessages(Collection<WorkflowMessage> messages)
-		{
-			this.messages = messages;
-		}
+    public void setMessages(Collection<WorkflowMessage> messages) {
+      this.messages = messages;
+    }
 
-		public SectionRenderable getComments()
-		{
-			return comments;
-		}
+    public SectionRenderable getComments() {
+      return comments;
+    }
 
-		public void setComments(SectionRenderable comments)
-		{
-			this.comments = comments;
-		}
-	}
+    public void setComments(SectionRenderable comments) {
+      this.comments = comments;
+    }
+  }
 }

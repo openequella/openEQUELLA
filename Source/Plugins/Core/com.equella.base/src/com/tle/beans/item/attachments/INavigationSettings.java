@@ -16,12 +16,9 @@
 
 package com.tle.beans.item.attachments;
 
-/**
- * @author Aaron
- */
-public interface INavigationSettings
-{
-	boolean isShowSplitOption();
+/** @author Aaron */
+public interface INavigationSettings {
+  boolean isShowSplitOption();
 
-	boolean isManualNavigation();
+  boolean isManualNavigation();
 }

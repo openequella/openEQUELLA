@@ -24,17 +24,14 @@ import com.tle.core.guice.Bind;
 import com.tle.core.item.operations.AbstractWorkflowOperation;
 
 @Bind
-public class CALCollectOperation extends AbstractWorkflowOperation
-{
-	@Inject
-	private CALMetadataCollection metadataCollection;
+public class CALCollectOperation extends AbstractWorkflowOperation {
+  @Inject private CALMetadataCollection metadataCollection;
 
-	@Override
-	public boolean execute()
-	{
-		PropBagEx itemXml = getItemXml();
-		Item item = getItem();
-		metadataCollection.metadataChanged(item, itemXml);
-		return false;
-	}
+  @Override
+  public boolean execute() {
+    PropBagEx itemXml = getItemXml();
+    Item item = getItem();
+    metadataCollection.metadataChanged(item, itemXml);
+    return false;
+  }
 }

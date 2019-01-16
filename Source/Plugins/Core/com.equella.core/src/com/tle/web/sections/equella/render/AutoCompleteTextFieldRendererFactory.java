@@ -28,18 +28,15 @@ import com.tle.web.sections.standard.model.HtmlTextFieldState;
 
 /**
  * plugin defines the stateClassName as HtmlTextFieldState
- * 
+ *
  * @author Andrew Gibb
  */
-
 @Bind
 @Singleton
-public class AutoCompleteTextFieldRendererFactory implements RendererFactoryExtension
-{
-	@Override
-	public SectionRenderable getRenderer(RendererFactory factory, SectionInfo info, String renderer,
-		HtmlComponentState state)
-	{
-		return new AutoCompleteTextFieldRenderer((HtmlTextFieldState) state); // NOSONAR
-	}
+public class AutoCompleteTextFieldRendererFactory implements RendererFactoryExtension {
+  @Override
+  public SectionRenderable getRenderer(
+      RendererFactory factory, SectionInfo info, String renderer, HtmlComponentState state) {
+    return new AutoCompleteTextFieldRenderer((HtmlTextFieldState) state); // NOSONAR
+  }
 }

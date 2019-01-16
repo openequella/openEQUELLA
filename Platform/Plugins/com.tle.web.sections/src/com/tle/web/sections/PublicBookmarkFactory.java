@@ -17,7 +17,6 @@
 package com.tle.web.sections;
 
 @TreeIndexed
-public interface PublicBookmarkFactory extends SectionId
-{
-	Bookmark getPublicBookmark(SectionInfo info);
+public interface PublicBookmarkFactory extends SectionId {
+  Bookmark getPublicBookmark(SectionInfo info);
 }

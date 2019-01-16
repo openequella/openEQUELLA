@@ -42,106 +42,89 @@ import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.TargetStructure;
 
 @NonNullByDefault
-public abstract class AbstractSelectableCopyrightAttachment<H extends Holding, P extends Portion, S extends Section>
-	implements
-		SelectableAttachment
-{
+public abstract class AbstractSelectableCopyrightAttachment<
+        H extends Holding, P extends Portion, S extends Section>
+    implements SelectableAttachment {
 
-	private CopyrightService<H, P, S> copyrightService;
-	@Inject
-	private ActivationService activationService;
-	@Inject
-	private SelectionService selectionService;
-	@Inject
-	private IntegrationService integrationService;
+  private CopyrightService<H, P, S> copyrightService;
+  @Inject private ActivationService activationService;
+  @Inject private SelectionService selectionService;
+  @Inject private IntegrationService integrationService;
 
-	@PostConstruct
-	void setupService()
-	{
-		copyrightService = getCopyrightServiceImpl();
-	}
+  @PostConstruct
+  void setupService() {
+    copyrightService = getCopyrightServiceImpl();
+  }
 
-	protected abstract CopyrightService<H, P, S> getCopyrightServiceImpl();
+  protected abstract CopyrightService<H, P, S> getCopyrightServiceImpl();
 
-	@Override
-	public boolean isAttachmentSelectable(SectionInfo info, IItem<?> item, @Nullable String attachmentUuid)
-	{
-		if( isItemCopyrighted(item) )
-		{
-			final IntegrationInterface integ = integrationService.getIntegrationInterface(info);
-			// If not in a local selection session
-			if( integ != null )
-			{
-				final String activationType = copyrightService.getActivationType();
-				if( attachmentUuid != null )
-				{
-					if( activationService.isActiveOrPending(activationType, attachmentUuid)
-						&& activationService.attachmentIsSelectableForCourse(activationType, attachmentUuid,
-							getCourseCode(info)) )
-					{
-						return true;
-					}
-				}
-				else
-				{
-					// Are any active or pending for 'select all' purposes?
-					boolean anySelectable = false;
-					for( IAttachment att : ((Item) item).getAttachmentsUnmodifiable() )
-					{
-						if( activationService.isActiveOrPending(activationType, att.getUuid())
-							&& activationService.attachmentIsSelectableForCourse(activationType, att.getUuid(),
-								getCourseCode(info)) )
-						{
-							anySelectable = true;
-						}
-					}
-					if( anySelectable )
-					{
-						return true;
-					}
-				}
+  @Override
+  public boolean isAttachmentSelectable(
+      SectionInfo info, IItem<?> item, @Nullable String attachmentUuid) {
+    if (isItemCopyrighted(item)) {
+      final IntegrationInterface integ = integrationService.getIntegrationInterface(info);
+      // If not in a local selection session
+      if (integ != null) {
+        final String activationType = copyrightService.getActivationType();
+        if (attachmentUuid != null) {
+          if (activationService.isActiveOrPending(activationType, attachmentUuid)
+              && activationService.attachmentIsSelectableForCourse(
+                  activationType, attachmentUuid, getCourseCode(info))) {
+            return true;
+          }
+        } else {
+          // Are any active or pending for 'select all' purposes?
+          boolean anySelectable = false;
+          for (IAttachment att : ((Item) item).getAttachmentsUnmodifiable()) {
+            if (activationService.isActiveOrPending(activationType, att.getUuid())
+                && activationService.attachmentIsSelectableForCourse(
+                    activationType, att.getUuid(), getCourseCode(info))) {
+              anySelectable = true;
+            }
+          }
+          if (anySelectable) {
+            return true;
+          }
+        }
 
-				return false;
-			}
-		}
-		return true;
-	}
+        return false;
+      }
+    }
+    return true;
+  }
 
-	@Nullable
-	private String getCourseCode(SectionInfo info)
-	{
-		final SelectionSession session = selectionService.getCurrentSession(info);
-		final TargetStructure structure = session.getStructure();
-		String courseCode = structure.getAttribute(StructuredIntegrationSessionExtension.KEY_COURSE_CODE);
-		if( courseCode == null )
-		{
-			courseCode = integrationService.getIntegrationInterface(info).getCourseInfoCode();
-		}
-		return courseCode;
-	}
+  @Nullable
+  private String getCourseCode(SectionInfo info) {
+    final SelectionSession session = selectionService.getCurrentSession(info);
+    final TargetStructure structure = session.getStructure();
+    String courseCode =
+        structure.getAttribute(StructuredIntegrationSessionExtension.KEY_COURSE_CODE);
+    if (courseCode == null) {
+      courseCode = integrationService.getIntegrationInterface(info).getCourseInfoCode();
+    }
+    return courseCode;
+  }
 
-	@Override
-	public boolean canBePushed(String attachmentUuid)
-	{
-		return activationService.isActiveOrPending(copyrightService.getActivationType(), attachmentUuid);
-	}
+  @Override
+  public boolean canBePushed(String attachmentUuid) {
+    return activationService.isActiveOrPending(
+        copyrightService.getActivationType(), attachmentUuid);
+  }
 
-	@Override
-	public boolean isItemCopyrighted(IItem<?> item)
-	{
-		if( item instanceof Item )
-		{
-			return copyrightService.isCopyrightedItem((Item) item);
-		}
-		return false;
-	}
+  @Override
+  public boolean isItemCopyrighted(IItem<?> item) {
+    if (item instanceof Item) {
+      return copyrightService.isCopyrightedItem((Item) item);
+    }
+    return false;
+  }
 
-	@Override
-	public List<String> getApplicableCourseCodes(String attachmentUuid)
-	{
-		return activationService
-			.getAllCurrentAndPendingActivations(copyrightService.getActivationType(), attachmentUuid).stream()
-			.map(ar -> ar.getCourse().getCode()).collect(Collectors.toList());
-	}
-
+  @Override
+  public List<String> getApplicableCourseCodes(String attachmentUuid) {
+    return activationService
+        .getAllCurrentAndPendingActivations(copyrightService.getActivationType(), attachmentUuid)
+        .stream()
+        .map(ar -> ar.getCourse().getCode())
+        .collect(Collectors.toList());
+  }
 }

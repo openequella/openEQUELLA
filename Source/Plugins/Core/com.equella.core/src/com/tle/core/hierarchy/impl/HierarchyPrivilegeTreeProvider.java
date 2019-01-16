@@ -38,42 +38,38 @@ import com.tle.web.resources.ResourcesService;
 
 @Bind
 @Singleton
-public class HierarchyPrivilegeTreeProvider implements PrivilegeTreeProvider
-{
-	@Inject
-	private HierarchyService hierarchyService;
-	private static String KEY_PFX = AbstractPluginService.getMyPluginId(HierarchyPrivilegeTreeProvider.class)+".";
+public class HierarchyPrivilegeTreeProvider implements PrivilegeTreeProvider {
+  @Inject private HierarchyService hierarchyService;
+  private static String KEY_PFX =
+      AbstractPluginService.getMyPluginId(HierarchyPrivilegeTreeProvider.class) + ".";
 
-	@Override
-	public void mapTargetIdsToNames(Collection<TargetId> targetIds, Map<TargetId, String> results)
-	{
-		for( TargetId targetId : targetIds )
-		{
-			String target = targetId.getTarget();
-			if( target.startsWith(SecurityConstants.TARGET_HIERARCHY_TOPIC) )
-			{
-				long id = Long.parseLong(target.substring(2));
-				results.put(targetId, CurrentLocale.get(hierarchyService.getHierarchyTopicName(id)));
-			}
-		}
-	}
+  @Override
+  public void mapTargetIdsToNames(Collection<TargetId> targetIds, Map<TargetId, String> results) {
+    for (TargetId targetId : targetIds) {
+      String target = targetId.getTarget();
+      if (target.startsWith(SecurityConstants.TARGET_HIERARCHY_TOPIC)) {
+        long id = Long.parseLong(target.substring(2));
+        results.put(targetId, CurrentLocale.get(hierarchyService.getHierarchyTopicName(id)));
+      }
+    }
+  }
 
-	@Override
-	public void gatherChildTargets(List<SecurityTarget> childTargets, SecurityTarget target)
-	{
-		if( target == null )
-		{
-			childTargets.add(new SecurityTarget(CurrentLocale.get(KEY_PFX + "privilegetree.rootname"),
-				Node.HIERARCHY_TOPIC, null, true));
-		}
-		else if( target.getTargetType() == Node.HIERARCHY_TOPIC )
-		{
-			HierarchyTreeNode parent = (HierarchyTreeNode) target.getTarget();
-			List<HierarchyTreeNode> nodes = hierarchyService.listTreeNodes(parent == null ? -1 : parent.getId());
-			for( HierarchyTreeNode htn : nodes )
-			{
-				childTargets.add(new SecurityTarget(htn.getName(), Node.HIERARCHY_TOPIC, htn, true));
-			}
-		}
-	}
+  @Override
+  public void gatherChildTargets(List<SecurityTarget> childTargets, SecurityTarget target) {
+    if (target == null) {
+      childTargets.add(
+          new SecurityTarget(
+              CurrentLocale.get(KEY_PFX + "privilegetree.rootname"),
+              Node.HIERARCHY_TOPIC,
+              null,
+              true));
+    } else if (target.getTargetType() == Node.HIERARCHY_TOPIC) {
+      HierarchyTreeNode parent = (HierarchyTreeNode) target.getTarget();
+      List<HierarchyTreeNode> nodes =
+          hierarchyService.listTreeNodes(parent == null ? -1 : parent.getId());
+      for (HierarchyTreeNode htn : nodes) {
+        childTargets.add(new SecurityTarget(htn.getName(), Node.HIERARCHY_TOPIC, htn, true));
+      }
+    }
+  }
 }

@@ -24,40 +24,34 @@ import java.awt.RenderingHints;
 import javax.swing.JPanel;
 
 /**
- * A JPanel which makes all it's child components have smooth, anti-aliased
- * text.
- * 
+ * A JPanel which makes all it's child components have smooth, anti-aliased text.
+ *
  * @author Nicholas Read
  */
-public class JPanelAA extends JPanel
-{
-	public JPanelAA()
-	{
-		super();
-	}
+public class JPanelAA extends JPanel {
+  public JPanelAA() {
+    super();
+  }
 
-	public JPanelAA(boolean isDoubleBuffered)
-	{
-		super(isDoubleBuffered);
-	}
+  public JPanelAA(boolean isDoubleBuffered) {
+    super(isDoubleBuffered);
+  }
 
-	public JPanelAA(LayoutManager layout)
-	{
-		super(layout);
-	}
+  public JPanelAA(LayoutManager layout) {
+    super(layout);
+  }
 
-	public JPanelAA(LayoutManager layout, boolean isDoubleBuffered)
-	{
-		super(layout, isDoubleBuffered);
-	}
+  public JPanelAA(LayoutManager layout, boolean isDoubleBuffered) {
+    super(layout, isDoubleBuffered);
+  }
 
-	@Override
-	public void paint(Graphics g)
-	{
-		Graphics2D g2 = (Graphics2D) g;
+  @Override
+  public void paint(Graphics g) {
+    Graphics2D g2 = (Graphics2D) g;
 
-		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    g2.setRenderingHint(
+        RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-		super.paint(g2);
-	}
+    super.paint(g2);
+  }
 }

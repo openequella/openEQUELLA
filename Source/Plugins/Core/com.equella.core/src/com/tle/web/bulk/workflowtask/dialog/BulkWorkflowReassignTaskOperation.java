@@ -56,182 +56,163 @@ import com.tle.web.sections.standard.model.Option;
 
 @SuppressWarnings("nls")
 @Bind
-public class BulkWorkflowReassignTaskOperation extends AbstractSelectUserSection<AbstractSelectUserSection.Model>
-	implements
-		BulkOperationExtension
-{
-	private static final String BULK_VALUE = "reassignmoderator";
+public class BulkWorkflowReassignTaskOperation
+    extends AbstractSelectUserSection<AbstractSelectUserSection.Model>
+    implements BulkOperationExtension {
+  private static final String BULK_VALUE = "reassignmoderator";
 
-	@BindFactory
-	public interface ReassignModeratorExecutorFactory
-	{
-		ReassignModeratorExecutor reassign(@Assisted("toOwner") String toOwner);
-	}
+  @BindFactory
+  public interface ReassignModeratorExecutorFactory {
+    ReassignModeratorExecutor reassign(@Assisted("toOwner") String toOwner);
+  }
 
-	@Inject
-	private TLEAclManager aclService;
-	@PlugKey("bulkop.reassignmoderator")
-	private static String LABEL_EXECUTE;
-	@PlugKey("bulkop.reassignmoderator.title")
-	private static Label LABEL_EXECUTE_TITLE;
-	@PlugKey("bulkop.reassignmoderator.subtitle")
-	private static Label LABEL_EXECUTE_SUBTITLE;
-	@PlugKey("opresults.reassignmoderator.status")
-	private static String KEY_STATUS;
+  @Inject private TLEAclManager aclService;
 
-	public static class ReassignModeratorExecutor implements BulkOperationExecutor
-	{
-		private static final long serialVersionUID = 1L;
+  @PlugKey("bulkop.reassignmoderator")
+  private static String LABEL_EXECUTE;
 
-		private final String toOwner;
-		@Inject
-		private ItemOperationFactory workflowFactory;
-		@Inject
-		private BulkWorkflowTaskOperationFactory bulkWorkflowOpFactory;
+  @PlugKey("bulkop.reassignmoderator.title")
+  private static Label LABEL_EXECUTE_TITLE;
 
-		@Inject
-		public ReassignModeratorExecutor(@Assisted("toOwner") String toOwner)
-		{
-			this.toOwner = toOwner;
-		}
+  @PlugKey("bulkop.reassignmoderator.subtitle")
+  private static Label LABEL_EXECUTE_SUBTITLE;
 
-		@Override
-		public WorkflowOperation[] getOperations()
-		{
-			return new WorkflowOperation[]{bulkWorkflowOpFactory.changeModeratorAssign(toOwner),
-					workflowFactory.save()};
-		}
+  @PlugKey("opresults.reassignmoderator.status")
+  private static String KEY_STATUS;
 
-		@Override
-		public String getTitleKey()
-		{
-			return "com.tle.web.bulk.workflowtask.bulkop.reassignmoderator.title";
-		}
-	}
+  public static class ReassignModeratorExecutor implements BulkOperationExecutor {
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public Label getStatusTitleLabel(SectionInfo info, String operationId)
-	{
-		return new KeyLabel(KEY_STATUS, new KeyLabel(LABEL_EXECUTE + operationId + ".title"));
-	}
+    private final String toOwner;
+    @Inject private ItemOperationFactory workflowFactory;
+    @Inject private BulkWorkflowTaskOperationFactory bulkWorkflowOpFactory;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		getUserList().addEventStatements(JSHandler.EVENT_CHANGE,
-			new OverrideHandler(getResultUpdater(tree, events.getEventHandler("addUsers"))));
-	}
+    @Inject
+    public ReassignModeratorExecutor(@Assisted("toOwner") String toOwner) {
+      this.toOwner = toOwner;
+    }
 
-	@Override
-	public BeanLocator<ReassignModeratorExecutor> getExecutor(SectionInfo info, String operationId)
-	{
-		List<SelectedUser> selections = getSelections(info);
-		if( selections.size() == 1 )
-		{
-			return new FactoryMethodLocator<ReassignModeratorExecutor>(ReassignModeratorExecutorFactory.class,
-				"reassign", selections.get(0).getUuid());
-		}
-		throw new Error("No user selected"); // shouldn't get here
-	}
+    @Override
+    public WorkflowOperation[] getOperations() {
+      return new WorkflowOperation[] {
+        bulkWorkflowOpFactory.changeModeratorAssign(toOwner), workflowFactory.save()
+      };
+    }
 
-	@Override
-	public void addOptions(SectionInfo info, List<Option<OperationInfo>> options)
-	{
-		if (!aclService.filterNonGrantedPrivileges(Collections.singleton("MANAGE_WORKFLOW"), true).isEmpty())
-		{
-			options.add(new KeyOption<OperationInfo>(LABEL_EXECUTE, BULK_VALUE, new OperationInfo(this, BULK_VALUE)));
-		}
-	}
+    @Override
+    public String getTitleKey() {
+      return "com.tle.web.bulk.workflowtask.bulkop.reassignmoderator.title";
+    }
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model();
-	}
+  @Override
+  public Label getStatusTitleLabel(SectionInfo info, String operationId) {
+    return new KeyLabel(KEY_STATUS, new KeyLabel(LABEL_EXECUTE + operationId + ".title"));
+  }
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    getUserList()
+        .addEventStatements(
+            JSHandler.EVENT_CHANGE,
+            new OverrideHandler(getResultUpdater(tree, events.getEventHandler("addUsers"))));
+  }
 
-	@Override
-	public boolean hasExtraOptions(SectionInfo info, String operationId)
-	{
-		return true;
-	}
+  @Override
+  public BeanLocator<ReassignModeratorExecutor> getExecutor(SectionInfo info, String operationId) {
+    List<SelectedUser> selections = getSelections(info);
+    if (selections.size() == 1) {
+      return new FactoryMethodLocator<ReassignModeratorExecutor>(
+          ReassignModeratorExecutorFactory.class, "reassign", selections.get(0).getUuid());
+    }
+    throw new Error("No user selected"); // shouldn't get here
+  }
 
-	@Override
-	public boolean validateOptions(SectionInfo info, String operationId)
-	{
-		return !Check.isEmpty(getSelections(info));
-	}
+  @Override
+  public void addOptions(SectionInfo info, List<Option<OperationInfo>> options) {
+    if (!aclService
+        .filterNonGrantedPrivileges(Collections.singleton("MANAGE_WORKFLOW"), true)
+        .isEmpty()) {
+      options.add(
+          new KeyOption<OperationInfo>(
+              LABEL_EXECUTE, BULK_VALUE, new OperationInfo(this, BULK_VALUE)));
+    }
+  }
 
-	@Override
-	public boolean areOptionsFinished(SectionInfo info, String operationId)
-	{
-		return validateOptions(info, operationId);
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model();
+  }
 
-	@Override
-	public SectionRenderable renderOptions(RenderContext context, String operationId)
-	{
-		this.setTitle(LABEL_EXECUTE_TITLE);
-		this.setSubTitle(LABEL_EXECUTE_SUBTITLE);
-		return renderSection(context, this);
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+  }
 
-	@Override
-	protected JSCallable getResultUpdater(SectionTree tree, ParameterizedEvent eventHandler)
-	{
-		if( eventHandler == null )
-		{
-			return new ReloadFunction(true);
-		}
-		return new SubmitValuesFunction(eventHandler);
-	}
+  @Override
+  public boolean hasExtraOptions(SectionInfo info, String operationId) {
+    return true;
+  }
 
-	@Override
-	public void prepareDefaultOptions(SectionInfo info, String operationId)
-	{
-		// nothing
-	}
+  @Override
+  public boolean validateOptions(SectionInfo info, String operationId) {
+    return !Check.isEmpty(getSelections(info));
+  }
 
-	@Override
-	protected SelectedUser createSelectedUser(SectionInfo info, String uuid, String displayName)
-	{
-		return new SelectedUser(uuid, displayName);
-	}
+  @Override
+  public boolean areOptionsFinished(SectionInfo info, String operationId) {
+    return validateOptions(info, operationId);
+  }
 
-	@Override
-	public boolean hasExtraNavigation(SectionInfo info, String operationId)
-	{
+  @Override
+  public SectionRenderable renderOptions(RenderContext context, String operationId) {
+    this.setTitle(LABEL_EXECUTE_TITLE);
+    this.setSubTitle(LABEL_EXECUTE_SUBTITLE);
+    return renderSection(context, this);
+  }
 
-		return false;
-	}
+  @Override
+  protected JSCallable getResultUpdater(SectionTree tree, ParameterizedEvent eventHandler) {
+    if (eventHandler == null) {
+      return new ReloadFunction(true);
+    }
+    return new SubmitValuesFunction(eventHandler);
+  }
 
-	@Override
-	public Collection<Button> getExtraNavigation(SectionInfo info, String operationId)
-	{
-		return null;
-	}
+  @Override
+  public void prepareDefaultOptions(SectionInfo info, String operationId) {
+    // nothing
+  }
 
-	@Override
-	public boolean hasPreview(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+  @Override
+  protected SelectedUser createSelectedUser(SectionInfo info, String uuid, String displayName) {
+    return new SelectedUser(uuid, displayName);
+  }
 
-	@Override
-	public ItemPack runPreview(SectionInfo info, String operationId, long itemUuid)
-	{
-		return null;
-	}
+  @Override
+  public boolean hasExtraNavigation(SectionInfo info, String operationId) {
 
-	@Override
-	public boolean showPreviousButton(SectionInfo info, String opererationId)
-	{
-		return true;
-	}
+    return false;
+  }
+
+  @Override
+  public Collection<Button> getExtraNavigation(SectionInfo info, String operationId) {
+    return null;
+  }
+
+  @Override
+  public boolean hasPreview(SectionInfo info, String operationId) {
+    return false;
+  }
+
+  @Override
+  public ItemPack runPreview(SectionInfo info, String operationId, long itemUuid) {
+    return null;
+  }
+
+  @Override
+  public boolean showPreviousButton(SectionInfo info, String opererationId) {
+    return true;
+  }
 }

@@ -42,99 +42,95 @@ import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("nls")
-public class AutocompleteDropdownRenderer extends DropDownRenderer
-{
-	static
-	{
-		PluginResourceHandler.init(AutocompleteDropdownRenderer.class);
-	}
+public class AutocompleteDropdownRenderer extends DropDownRenderer {
+  static {
+    PluginResourceHandler.init(AutocompleteDropdownRenderer.class);
+  }
 
-	private static final PluginResourceHelper resHelper = ResourcesService.getResourceHelper(AutocompleteDropdownRenderer.class);
+  private static final PluginResourceHelper resHelper =
+      ResourcesService.getResourceHelper(AutocompleteDropdownRenderer.class);
 
-	public static final IncludeFile SELECT2_HELPER_LIB = new IncludeFile(
-			resHelper.url("scripts/component/select2helper.js"),
-			new IncludeFile(resHelper.url("js/select2.js")).hasMin(),
-			CssInclude.include(resHelper.url("css/select2.css")).hasMin().make());
+  public static final IncludeFile SELECT2_HELPER_LIB =
+      new IncludeFile(
+          resHelper.url("scripts/component/select2helper.js"),
+          new IncludeFile(resHelper.url("js/select2.js")).hasMin(),
+          CssInclude.include(resHelper.url("css/select2.css")).hasMin().make());
 
-	private static final JSCallable SETTER = new ExternallyDefinedFunction("select2helper.setValue", 2, SELECT2_HELPER_LIB);
-	private static final JSCallable GETTER = new ExternallyDefinedFunction("select2helper.getValue", 1, SELECT2_HELPER_LIB);
-	private static final JSCallable RESET = new ExternallyDefinedFunction("select2helper.reset", 1, SELECT2_HELPER_LIB);
+  private static final JSCallable SETTER =
+      new ExternallyDefinedFunction("select2helper.setValue", 2, SELECT2_HELPER_LIB);
+  private static final JSCallable GETTER =
+      new ExternallyDefinedFunction("select2helper.getValue", 1, SELECT2_HELPER_LIB);
+  private static final JSCallable RESET =
+      new ExternallyDefinedFunction("select2helper.reset", 1, SELECT2_HELPER_LIB);
 
-	private static final JSCallable SETUP = new ExternallyDefinedFunction("select2helper.setup", SELECT2_HELPER_LIB);
+  private static final JSCallable SETUP =
+      new ExternallyDefinedFunction("select2helper.setup", SELECT2_HELPER_LIB);
 
-	@PlugKey("renderer.autocompletedropdown.placeholder")
-	private static String PLACEHOLDER_KEY;
-	@PlugKey("renderer.autocompletedropdown.searching")
-	private static String SEARCHING_KEY;
+  @PlugKey("renderer.autocompletedropdown.placeholder")
+  private static String PLACEHOLDER_KEY;
 
-	public AutocompleteDropdownRenderer(HtmlListState state)
-	{
-		super(state);
-	}
+  @PlugKey("renderer.autocompletedropdown.searching")
+  private static String SEARCHING_KEY;
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		final ObjectExpression params = new ObjectExpression();
-		final HtmlComponentState selectState = getHtmlState();
+  public AutocompleteDropdownRenderer(HtmlListState state) {
+    super(state);
+  }
 
-		// inherit any classes put on the SELECT element
-		final Set<String> classes = selectState.getStyleClasses();
-		final StringBuilder classString = new StringBuilder();
-		boolean first = true;
-		if( !Check.isEmpty(classes) )
-		{
-			for( String clas : classes )
-			{
-				if( !first )
-				{
-					classString.append(' ');
-				}
-				classString.append(clas);
-				first = false;
-			}
-		}
-		params.put("class", classString.toString());
-		params.put("placeholderText", CurrentLocale.get(PLACEHOLDER_KEY));
-		params.put("searchingText", CurrentLocale.get(SEARCHING_KEY));
+  @Override
+  public void preRender(PreRenderContext info) {
+    final ObjectExpression params = new ObjectExpression();
+    final HtmlComponentState selectState = getHtmlState();
 
-		JSCallAndReference extension = null;
-		final AutocompleteDropdownRenderOptions options = selectState.getAttribute(AutocompleteDropdownRenderOptions.class);
-		if (options != null)
-		{
-			extension = options.getExtension(info);
-			for (Map.Entry<String, Object> kv : options.getParameters(info).entrySet())
-			{
-				params.put(kv.getKey(), kv.getValue());
-			}
-		}
+    // inherit any classes put on the SELECT element
+    final Set<String> classes = selectState.getStyleClasses();
+    final StringBuilder classString = new StringBuilder();
+    boolean first = true;
+    if (!Check.isEmpty(classes)) {
+      for (String clas : classes) {
+        if (!first) {
+          classString.append(' ');
+        }
+        classString.append(clas);
+        first = false;
+      }
+    }
+    params.put("class", classString.toString());
+    params.put("placeholderText", CurrentLocale.get(PLACEHOLDER_KEY));
+    params.put("searchingText", CurrentLocale.get(SEARCHING_KEY));
 
-		info.addReadyStatements(new FunctionCallStatement(SETUP, new JQuerySelector(this), params, extension));
-		super.preRender(info);
-	}
+    JSCallAndReference extension = null;
+    final AutocompleteDropdownRenderOptions options =
+        selectState.getAttribute(AutocompleteDropdownRenderOptions.class);
+    if (options != null) {
+      extension = options.getExtension(info);
+      for (Map.Entry<String, Object> kv : options.getParameters(info).entrySet()) {
+        params.put(kv.getKey(), kv.getValue());
+      }
+    }
 
-	@Override
-	public JSExpression createGetExpression()
-	{
-		return Js.call(GETTER, this);
-	}
+    info.addReadyStatements(
+        new FunctionCallStatement(SETUP, new JQuerySelector(this), params, extension));
+    super.preRender(info);
+  }
 
-	@Override
-	public JSCallable createSetFunction()
-	{
-		return new PrependedParameterFunction(SETTER, this);
-	}
+  @Override
+  public JSExpression createGetExpression() {
+    return Js.call(GETTER, this);
+  }
 
-	@Override
-	public JSCallable createResetFunction()
-	{
-		return new PrependedParameterFunction(RESET, this);
-	}
+  @Override
+  public JSCallable createSetFunction() {
+    return new PrependedParameterFunction(SETTER, this);
+  }
 
-	public interface AutocompleteDropdownRenderOptions
-	{
-		JSCallAndReference getExtension(PreRenderContext info);
+  @Override
+  public JSCallable createResetFunction() {
+    return new PrependedParameterFunction(RESET, this);
+  }
 
-		Map<String, Object> getParameters(PreRenderContext info);
-	}
+  public interface AutocompleteDropdownRenderOptions {
+    JSCallAndReference getExtension(PreRenderContext info);
+
+    Map<String, Object> getParameters(PreRenderContext info);
+  }
 }

@@ -21,33 +21,27 @@ import com.tle.core.javascript.JavascriptModule;
 import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.render.PreRenderable;
 
-/**
- * @author aholland
- */
-//Included in UI core now
+/** @author aholland */
+// Included in UI core now
 @Deprecated
 @SuppressWarnings("nls")
-public class JQueryDimensions implements JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
+public class JQueryDimensions implements JavascriptModule {
+  private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.dimensions.js");
+  public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.dimensions.js");
 
-	@Override
-	public String getDisplayName()
-	{
-		return CurrentLocale.get("com.tle.web.sections.jquery.modules.dimensions.name");
-	}
+  @Override
+  public String getDisplayName() {
+    return CurrentLocale.get("com.tle.web.sections.jquery.modules.dimensions.name");
+  }
 
-	@Override
-	public String getId()
-	{
-		return "dimensions";
-	}
+  @Override
+  public String getId() {
+    return "dimensions";
+  }
 
-	@Override
-	public Object getPreRenderer()
-	{
-		return PRERENDER;
-	}
+  @Override
+  public Object getPreRenderer() {
+    return PRERENDER;
+  }
 }

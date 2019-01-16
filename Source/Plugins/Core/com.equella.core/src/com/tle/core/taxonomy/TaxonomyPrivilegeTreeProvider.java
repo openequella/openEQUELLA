@@ -28,20 +28,21 @@ import com.tle.web.resources.ResourcesService;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class TaxonomyPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeProvider<Taxonomy>
-{
-	@Inject
-	public TaxonomyPrivilegeTreeProvider(TaxonomyService taxonomyService)
-	{
-		super(taxonomyService, Node.ALL_TAXONOMIES,
-			ResourcesService.getResourceHelper(TaxonomyPrivilegeTreeProvider.class).key("securitytree.alltaxonomies"),
-			Node.TAXONOMY, ResourcesService.getResourceHelper(TaxonomyPrivilegeTreeProvider.class)
-				.key("securitytree.targetalltaxonomies"));
-	}
+public class TaxonomyPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeProvider<Taxonomy> {
+  @Inject
+  public TaxonomyPrivilegeTreeProvider(TaxonomyService taxonomyService) {
+    super(
+        taxonomyService,
+        Node.ALL_TAXONOMIES,
+        ResourcesService.getResourceHelper(TaxonomyPrivilegeTreeProvider.class)
+            .key("securitytree.alltaxonomies"),
+        Node.TAXONOMY,
+        ResourcesService.getResourceHelper(TaxonomyPrivilegeTreeProvider.class)
+            .key("securitytree.targetalltaxonomies"));
+  }
 
-	@Override
-	protected Taxonomy createEntity()
-	{
-		return new Taxonomy();
-	}
+  @Override
+  protected Taxonomy createEntity() {
+    return new Taxonomy();
+  }
 }

@@ -24,13 +24,13 @@ import java.util.Collections;
 
 public class OldSingletonMapConverter extends ReflectionConverter {
 
-    private static final Class MAP = Collections.singletonMap(Boolean.TRUE, null).getClass();
+  private static final Class MAP = Collections.singletonMap(Boolean.TRUE, null).getClass();
 
-    public OldSingletonMapConverter(Mapper mapper, ReflectionProvider provider) {
-        super(mapper, provider);
-    }
+  public OldSingletonMapConverter(Mapper mapper, ReflectionProvider provider) {
+    super(mapper, provider);
+  }
 
-    public boolean canConvert(Class type) {
-        return MAP == type;
-    }
+  public boolean canConvert(Class type) {
+    return MAP == type;
+  }
 }

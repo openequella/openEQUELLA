@@ -27,34 +27,31 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.TagState;
 import com.tle.web.viewurl.ViewableResource;
 
-/**
- * @author Aaron
- */
-public interface ItemlikeListEntry<I extends IItem<?>> extends ListEntry
-{
-	// This can be null in the case that the item no longer exists
-	@Nullable
-	I getItem();
+/** @author Aaron */
+public interface ItemlikeListEntry<I extends IItem<?>> extends ListEntry {
+  // This can be null in the case that the item no longer exists
+  @Nullable
+  I getItem();
 
-	List<ViewableResource> getViewableResources();
+  List<ViewableResource> getViewableResources();
 
-	// Debateable...
+  // Debateable...
 
-	TagState getTag();
+  TagState getTag();
 
-	Label getSelectLabel();
+  Label getSelectLabel();
 
-	Label getUnselectLabel();
+  Label getUnselectLabel();
 
-	void setToggle(SectionRenderable toggle);
+  void setToggle(SectionRenderable toggle);
 
-	void addExtras(SectionRenderable extra);
+  void addExtras(SectionRenderable extra);
 
-	UnmodifiableAttachments getAttachments();
+  UnmodifiableAttachments getAttachments();
 
-	void setSelected(boolean selected);
+  void setSelected(boolean selected);
 
-	boolean isSelectable();
+  boolean isSelectable();
 
-	void setSelectable(boolean selectable);
+  void setSelectable(boolean selectable);
 }

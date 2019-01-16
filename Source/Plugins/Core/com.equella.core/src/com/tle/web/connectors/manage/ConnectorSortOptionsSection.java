@@ -53,127 +53,108 @@ import com.tle.web.sections.standard.model.DynamicHtmlListModel;
 import com.tle.web.sections.standard.model.Option;
 
 @TreeIndexed
-public class ConnectorSortOptionsSection extends AbstractPrototypeSection<ConnectorSortOptionsSection.SortOptionsModel>
-	implements
-		SearchEventListener<ConnectorManagementSearchEvent>,
-		HtmlRenderer
-{
-	@ViewFactory(fixed = true)
-	protected FreemarkerFactory viewFactory;
-	@EventFactory
-	protected EventGenerator events;
+public class ConnectorSortOptionsSection
+    extends AbstractPrototypeSection<ConnectorSortOptionsSection.SortOptionsModel>
+    implements SearchEventListener<ConnectorManagementSearchEvent>, HtmlRenderer {
+  @ViewFactory(fixed = true)
+  protected FreemarkerFactory viewFactory;
 
-	@TreeLookup
-	private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
-	@TreeLookup
-	private ConnectorManagementQuerySection querySection;
-	@Inject
-	private ConnectorRepositoryService repositoryService;
+  @EventFactory protected EventGenerator events;
 
-	@PlugKey("sortsection.results.reverse")
-	private static Label LABEL_REVERSE;
+  @TreeLookup private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
+  @TreeLookup private ConnectorManagementQuerySection querySection;
+  @Inject private ConnectorRepositoryService repositoryService;
 
-	@Component(name = "so", parameter = "sort", supported = true)
-	protected SingleSelectionList<ExternalContentSortType> sortOptions;
+  @PlugKey("sortsection.results.reverse")
+  private static Label LABEL_REVERSE;
 
-	@Component(name = "r", parameter = "reverse", supported = true)
-	protected Checkbox reverse;
+  @Component(name = "so", parameter = "sort", supported = true)
+  protected SingleSelectionList<ExternalContentSortType> sortOptions;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		sortOptions.setListModel(new ExternalContentSortTypeListModel());
-		sortOptions.setAlwaysSelect(true);
-		reverse.setLabel(LABEL_REVERSE);
-		tree.setLayout(id, SearchResultsActionsSection.AREA_SORT);
-	}
+  @Component(name = "r", parameter = "reverse", supported = true)
+  protected Checkbox reverse;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		sortOptions.addChangeEventHandler(searchResults.getRestartSearchHandler(tree));
-		reverse.setClickHandler(new StatementHandler(searchResults.getResultsUpdater(tree, null)));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    sortOptions.setListModel(new ExternalContentSortTypeListModel());
+    sortOptions.setAlwaysSelect(true);
+    reverse.setLabel(LABEL_REVERSE);
+    tree.setLayout(id, SearchResultsActionsSection.AREA_SORT);
+  }
 
-	@Override
-	public void prepareSearch(SectionInfo info, ConnectorManagementSearchEvent event) throws Exception
-	{
-		ExternalContentSortType sort = sortOptions.getSelectedValue(info);
-		if( sort != null )
-		{
-			ConnectorContentSearch search = event.getSearch();
-			search.setReverse(reverse.isChecked(info));
-			search.setSort(sort);
-		}
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    sortOptions.addChangeEventHandler(searchResults.getRestartSearchHandler(tree));
+    reverse.setClickHandler(new StatementHandler(searchResults.getResultsUpdater(tree, null)));
+  }
 
-	protected SortField[] createSortFromOption(SectionInfo info, SortOption selOpt)
-	{
-		return selOpt.createSort();
-	}
+  @Override
+  public void prepareSearch(SectionInfo info, ConnectorManagementSearchEvent event)
+      throws Exception {
+    ExternalContentSortType sort = sortOptions.getSelectedValue(info);
+    if (sort != null) {
+      ConnectorContentSearch search = event.getSearch();
+      search.setReverse(reverse.isChecked(info));
+      search.setSort(sort);
+    }
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final Connector connector = querySection.getConnector(context);
-		if( connector != null && !repositoryService.supportsReverseSort(connector.getLmsType()) )
-		{
-			reverse.setDisplayed(context, false);
-		}
-		return viewFactory.createResult("sort/connector-sortoptions.ftl", context);
-	}
+  protected SortField[] createSortFromOption(SectionInfo info, SortOption selOpt) {
+    return selOpt.createSort();
+  }
 
-	public Checkbox getReverse()
-	{
-		return reverse;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    final Connector connector = querySection.getConnector(context);
+    if (connector != null && !repositoryService.supportsReverseSort(connector.getLmsType())) {
+      reverse.setDisplayed(context, false);
+    }
+    return viewFactory.createResult("sort/connector-sortoptions.ftl", context);
+  }
 
-	protected void addSortOptions(SectionInfo info, List<ExternalContentSortType> sorts)
-	{
-		Connector connector = querySection.getConnector(info);
-		if( connector != null )
-		{
-			sorts.add(ExternalContentSortType.DATE_ADDED);
-			sorts.add(ExternalContentSortType.NAME);
-			if( repositoryService.supportsCourses(connector.getLmsType()) )
-			{
-				sorts.add(ExternalContentSortType.COURSE);
-			}
-		}
-	}
+  public Checkbox getReverse() {
+    return reverse;
+  }
 
-	public SingleSelectionList<ExternalContentSortType> getSortOptions()
-	{
-		return sortOptions;
-	}
+  protected void addSortOptions(SectionInfo info, List<ExternalContentSortType> sorts) {
+    Connector connector = querySection.getConnector(info);
+    if (connector != null) {
+      sorts.add(ExternalContentSortType.DATE_ADDED);
+      sorts.add(ExternalContentSortType.NAME);
+      if (repositoryService.supportsCourses(connector.getLmsType())) {
+        sorts.add(ExternalContentSortType.COURSE);
+      }
+    }
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new SortOptionsModel();
-	}
+  public SingleSelectionList<ExternalContentSortType> getSortOptions() {
+    return sortOptions;
+  }
 
-	public class ExternalContentSortTypeListModel extends DynamicHtmlListModel<ExternalContentSortType>
-	{
-		@Override
-		protected Option<ExternalContentSortType> convertToOption(SectionInfo info, ExternalContentSortType obj)
-		{
-			return new KeyOption<ExternalContentSortType>(ExternalContentSortTypeKeys.get(obj), obj.name()
-				.toLowerCase(), obj);
-		}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new SortOptionsModel();
+  }
 
-		@Override
-		protected Iterable<ExternalContentSortType> populateModel(SectionInfo info)
-		{
-			List<ExternalContentSortType> sorts = new ArrayList<ExternalContentSortType>();
-			addSortOptions(info, sorts);
-			return sorts;
-		}
-	}
+  public class ExternalContentSortTypeListModel
+      extends DynamicHtmlListModel<ExternalContentSortType> {
+    @Override
+    protected Option<ExternalContentSortType> convertToOption(
+        SectionInfo info, ExternalContentSortType obj) {
+      return new KeyOption<ExternalContentSortType>(
+          ExternalContentSortTypeKeys.get(obj), obj.name().toLowerCase(), obj);
+    }
 
-	public static class SortOptionsModel
-	{
-		//NA
-	}
+    @Override
+    protected Iterable<ExternalContentSortType> populateModel(SectionInfo info) {
+      List<ExternalContentSortType> sorts = new ArrayList<ExternalContentSortType>();
+      addSortOptions(info, sorts);
+      return sorts;
+    }
+  }
+
+  public static class SortOptionsModel {
+    // NA
+  }
 }

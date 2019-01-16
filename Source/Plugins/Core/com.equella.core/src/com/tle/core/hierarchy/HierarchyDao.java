@@ -29,45 +29,42 @@ import com.tle.beans.hierarchy.HierarchyTopicDynamicKeyResources;
 import com.tle.beans.item.Item;
 import com.tle.core.dao.AbstractTreeDao;
 
-/**
- * @author Nicholas Read
- */
-public interface HierarchyDao extends AbstractTreeDao<HierarchyTopic>
-{
-	List<HierarchyTopic> enumerateAll();
+/** @author Nicholas Read */
+public interface HierarchyDao extends AbstractTreeDao<HierarchyTopic> {
+  List<HierarchyTopic> enumerateAll();
 
-	LanguageBundle getHierarchyTopicName(long topicID);
+  LanguageBundle getHierarchyTopicName(long topicID);
 
-	Collection<HierarchyTopic> getTopicsReferencingItemDefinition(ItemDefinition itemDefinition);
+  Collection<HierarchyTopic> getTopicsReferencingItemDefinition(ItemDefinition itemDefinition);
 
-	Collection<HierarchyTopic> getTopicsReferencingSchema(Schema schema);
+  Collection<HierarchyTopic> getTopicsReferencingSchema(Schema schema);
 
-	List<HierarchyTopic> getTopicsReferencingPowerSearch(PowerSearch powerSearch);
+  List<HierarchyTopic> getTopicsReferencingPowerSearch(PowerSearch powerSearch);
 
-	HierarchyTopic findByUuid(String uuid, Institution institution);
+  HierarchyTopic findByUuid(String uuid, Institution institution);
 
-	void removeReferencesToItem(Item item);
+  void removeReferencesToItem(Item item);
 
-	void removeReferencesToItem(Item item, long id);
+  void removeReferencesToItem(Item item, long id);
 
-	void saveDynamicKeyResources(HierarchyTopicDynamicKeyResources entity);
+  void saveDynamicKeyResources(HierarchyTopicDynamicKeyResources entity);
 
-	List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(String dynamicHierarchyId, Institution institution);
+  List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(
+      String dynamicHierarchyId, Institution institution);
 
-	List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(String itemUuid, int itemVersion,
-		Institution institution);
+  List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(
+      String itemUuid, int itemVersion, Institution institution);
 
-	List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(String dynamicHierarchyId, String itemUuid,
-		int itemVersion, Institution institution);
+  List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(
+      String dynamicHierarchyId, String itemUuid, int itemVersion, Institution institution);
 
-	List<HierarchyTopicDynamicKeyResources> getAllDynamicKeyResources(Institution institution);
+  List<HierarchyTopicDynamicKeyResources> getAllDynamicKeyResources(Institution institution);
 
-	List<HierarchyTopic> findKeyResource(Item item);
+  List<HierarchyTopic> findKeyResource(Item item);
 
-	void removeDynamicKeyResource(String topicId, String itemUuid, int itemVersion);
+  void removeDynamicKeyResource(String topicId, String itemUuid, int itemVersion);
 
-	void deleteAllDynamicKeyResources(Institution institution);
+  void deleteAllDynamicKeyResources(Institution institution);
 
-	void removeDynamicKeyResource(String itemUuid, int itemVersion, Institution institution);
-
+  void removeDynamicKeyResource(String itemUuid, int itemVersion, Institution institution);
 }

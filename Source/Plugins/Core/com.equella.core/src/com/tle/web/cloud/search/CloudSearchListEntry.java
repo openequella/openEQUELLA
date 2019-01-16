@@ -47,238 +47,204 @@ import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
 import com.tle.web.viewable.ViewableItem;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class CloudSearchListEntry extends AbstractItemlikeListEntry<CloudItem>
-{
-	static
-	{
-		PluginResourceHandler.init(CloudSearchListEntry.class);
-	}
+public class CloudSearchListEntry extends AbstractItemlikeListEntry<CloudItem> {
+  static {
+    PluginResourceHandler.init(CloudSearchListEntry.class);
+  }
 
-	@PlugKey("search.result.label.datemodified")
-	private static Label LABEL_MODIFIED;
-	@PlugKey("search.result.label.subject")
-	private static Label LABEL_SUBJECT;
-	@PlugKey("search.result.label.license")
-	private static Label LABEL_LICENSE;
-	@PlugKey("search.result.label.educationlevel")
-	private static Label LABEL_EDUCATION_LEVEL;
-	@PlugKey("search.result.label.format")
-	private static Label LABEL_FORMAT;
+  @PlugKey("search.result.label.datemodified")
+  private static Label LABEL_MODIFIED;
 
-	@Inject
-	private CloudViewItemUrlFactory urlFactory;
+  @PlugKey("search.result.label.subject")
+  private static Label LABEL_SUBJECT;
 
-	@Override
-	protected Bookmark getTitleLink()
-	{
-		return urlFactory.createItemUrl(info, (CloudViewableItem) getViewableItem());
-	}
+  @PlugKey("search.result.label.license")
+  private static Label LABEL_LICENSE;
 
-	@Override
-	public UnmodifiableAttachments loadAttachments()
-	{
-		return new UnmodifiableAttachments(getItem());
-	}
+  @PlugKey("search.result.label.educationlevel")
+  private static Label LABEL_EDUCATION_LEVEL;
 
-	@Override
-	protected ViewableItem<CloudItem> createViewableItem()
-	{
-		return new CloudViewableItem(getItem());
-	}
+  @PlugKey("search.result.label.format")
+  private static Label LABEL_FORMAT;
 
-	@Override
-	protected void setupMetadata(RenderContext context)
-	{
-		CloudItem item = getItem();
-		final PropBagEx pmeta = new PropBagEx(item.getMetadata());
-		final String subject = pmeta.getNode("oer/dc/subject", null);
-		if( subject != null )
-		{
-			addMetadata(new StdMetadataEntry(LABEL_SUBJECT, new LabelRenderer(new TextLabel(subject))));
-		}
-		final String eduLevel = pmeta.getNode("oer/dc/terms/educationLevel", null);
-		if( eduLevel != null )
-		{
-			addMetadata(new StdMetadataEntry(LABEL_EDUCATION_LEVEL, new LabelRenderer(new TextLabel(eduLevel))));
-		}
-		final String license = pmeta.getNode("oer/eq/license_type", null);
-		if( license != null )
-		{
-			final String licenseUrl = pmeta.getNode("oer/dc/terms/license", null);
-			final SectionRenderable licRenderable;
-			if( licenseUrl != null )
-			{
-				final HtmlLinkState linkState = new HtmlLinkState(new TextLabel(license),
-					new SimpleBookmark(licenseUrl));
-				linkState.setTarget("_blank");
-				licRenderable = new LinkRenderer(linkState);
-			}
-			else
-			{
-				licRenderable = new LabelRenderer(new TextLabel(license));
-			}
-			addMetadata(new StdMetadataEntry(LABEL_LICENSE, licRenderable));
-		}
-		final String format = pmeta.getNode("oer/dc/format", null);
-		if( format != null )
-		{
-			addMetadata(new StdMetadataEntry(LABEL_FORMAT, new LabelRenderer(new TextLabel(format))));
-		}
-		if( item.getDateModified() != null )
-		{
-			addMetadata(new StdMetadataEntry(LABEL_MODIFIED, JQueryTimeAgo.timeAgoTag(item.getDateModified())));
-		}
-	}
+  @Inject private CloudViewItemUrlFactory urlFactory;
 
-	@NonNullByDefault(false)
-	public static class CloudAttachmentDisplay implements IAttachment
-	{
-		private String uuid;
-		private String url;
-		private String description;
-		private String thumbnail;
-		private Map<String, Object> data = Maps.newHashMap();
-		private String md5sum;
-		private String viewer;
-		private boolean preview;
-		private boolean restricted;
+  @Override
+  protected Bookmark getTitleLink() {
+    return urlFactory.createItemUrl(info, (CloudViewableItem) getViewableItem());
+  }
 
-		@Override
-		public String getUuid()
-		{
-			return uuid;
-		}
+  @Override
+  public UnmodifiableAttachments loadAttachments() {
+    return new UnmodifiableAttachments(getItem());
+  }
 
-		@Override
-		public void setUuid(String uuid)
-		{
-			this.uuid = uuid;
-		}
+  @Override
+  protected ViewableItem<CloudItem> createViewableItem() {
+    return new CloudViewableItem(getItem());
+  }
 
-		@Override
-		public String getUrl()
-		{
-			return url;
-		}
+  @Override
+  protected void setupMetadata(RenderContext context) {
+    CloudItem item = getItem();
+    final PropBagEx pmeta = new PropBagEx(item.getMetadata());
+    final String subject = pmeta.getNode("oer/dc/subject", null);
+    if (subject != null) {
+      addMetadata(new StdMetadataEntry(LABEL_SUBJECT, new LabelRenderer(new TextLabel(subject))));
+    }
+    final String eduLevel = pmeta.getNode("oer/dc/terms/educationLevel", null);
+    if (eduLevel != null) {
+      addMetadata(
+          new StdMetadataEntry(LABEL_EDUCATION_LEVEL, new LabelRenderer(new TextLabel(eduLevel))));
+    }
+    final String license = pmeta.getNode("oer/eq/license_type", null);
+    if (license != null) {
+      final String licenseUrl = pmeta.getNode("oer/dc/terms/license", null);
+      final SectionRenderable licRenderable;
+      if (licenseUrl != null) {
+        final HtmlLinkState linkState =
+            new HtmlLinkState(new TextLabel(license), new SimpleBookmark(licenseUrl));
+        linkState.setTarget("_blank");
+        licRenderable = new LinkRenderer(linkState);
+      } else {
+        licRenderable = new LabelRenderer(new TextLabel(license));
+      }
+      addMetadata(new StdMetadataEntry(LABEL_LICENSE, licRenderable));
+    }
+    final String format = pmeta.getNode("oer/dc/format", null);
+    if (format != null) {
+      addMetadata(new StdMetadataEntry(LABEL_FORMAT, new LabelRenderer(new TextLabel(format))));
+    }
+    if (item.getDateModified() != null) {
+      addMetadata(
+          new StdMetadataEntry(LABEL_MODIFIED, JQueryTimeAgo.timeAgoTag(item.getDateModified())));
+    }
+  }
 
-		@Override
-		public void setUrl(String url)
-		{
-			this.url = url;
-		}
+  @NonNullByDefault(false)
+  public static class CloudAttachmentDisplay implements IAttachment {
+    private String uuid;
+    private String url;
+    private String description;
+    private String thumbnail;
+    private Map<String, Object> data = Maps.newHashMap();
+    private String md5sum;
+    private String viewer;
+    private boolean preview;
+    private boolean restricted;
 
-		@Override
-		public String getDescription()
-		{
-			return description;
-		}
+    @Override
+    public String getUuid() {
+      return uuid;
+    }
 
-		@Override
-		public void setDescription(String description)
-		{
-			this.description = description;
-		}
+    @Override
+    public void setUuid(String uuid) {
+      this.uuid = uuid;
+    }
 
-		@Override
-		public String getThumbnail()
-		{
-			return thumbnail;
-		}
+    @Override
+    public String getUrl() {
+      return url;
+    }
 
-		@Override
-		public void setThumbnail(String thumbnail)
-		{
-			this.thumbnail = thumbnail;
-		}
+    @Override
+    public void setUrl(String url) {
+      this.url = url;
+    }
 
-		@Override
-		public String getMd5sum()
-		{
-			return md5sum;
-		}
+    @Override
+    public String getDescription() {
+      return description;
+    }
 
-		@Override
-		public void setMd5sum(String md5sum)
-		{
-			this.md5sum = md5sum;
-		}
+    @Override
+    public void setDescription(String description) {
+      this.description = description;
+    }
 
-		@Override
-		public String getViewer()
-		{
-			return viewer;
-		}
+    @Override
+    public String getThumbnail() {
+      return thumbnail;
+    }
 
-		@Override
-		public void setViewer(String viewer)
-		{
-			this.viewer = viewer;
-		}
+    @Override
+    public void setThumbnail(String thumbnail) {
+      this.thumbnail = thumbnail;
+    }
 
-		@Override
-		public boolean isPreview()
-		{
-			return preview;
-		}
+    @Override
+    public String getMd5sum() {
+      return md5sum;
+    }
 
-		@Override
-		public void setPreview(boolean preview)
-		{
-			this.preview = preview;
-		}
+    @Override
+    public void setMd5sum(String md5sum) {
+      this.md5sum = md5sum;
+    }
 
-		@Override
-		public void setData(String name, Object value)
-		{
-			data.put(name, value);
-		}
+    @Override
+    public String getViewer() {
+      return viewer;
+    }
 
-		@Override
-		public Object getData(String name)
-		{
-			return data.get(name);
-		}
+    @Override
+    public void setViewer(String viewer) {
+      this.viewer = viewer;
+    }
 
-		@Override
-		public Map<String, Object> getDataAttributesReadOnly()
-		{
-			return Collections.unmodifiableMap(data);
-		}
+    @Override
+    public boolean isPreview() {
+      return preview;
+    }
 
-		@Override
-		public Map<String, Object> getDataAttributes()
-		{
-			return data;
-		}
+    @Override
+    public void setPreview(boolean preview) {
+      this.preview = preview;
+    }
 
-		@Override
-		public void setDataAttributes(Map<String, Object> data)
-		{
-			this.data = data;
-		}
+    @Override
+    public void setData(String name, Object value) {
+      data.put(name, value);
+    }
 
-		@Override
-		public AttachmentType getAttachmentType()
-		{
-			return AttachmentType.CUSTOM;
-		}
+    @Override
+    public Object getData(String name) {
+      return data.get(name);
+    }
 
-		@Override
-		public void setRestricted(boolean restricted)
-		{
-			this.restricted = restricted;
-		}
+    @Override
+    public Map<String, Object> getDataAttributesReadOnly() {
+      return Collections.unmodifiableMap(data);
+    }
 
-		@Override
-		public boolean isRestricted()
-		{
-			return restricted;
-		}
-	}
+    @Override
+    public Map<String, Object> getDataAttributes() {
+      return data;
+    }
+
+    @Override
+    public void setDataAttributes(Map<String, Object> data) {
+      this.data = data;
+    }
+
+    @Override
+    public AttachmentType getAttachmentType() {
+      return AttachmentType.CUSTOM;
+    }
+
+    @Override
+    public void setRestricted(boolean restricted) {
+      this.restricted = restricted;
+    }
+
+    @Override
+    public boolean isRestricted() {
+      return restricted;
+    }
+  }
 }

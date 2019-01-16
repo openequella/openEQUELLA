@@ -29,24 +29,32 @@ import io.swagger.annotations.ApiOperation;
 @Produces({"application/json"})
 @Path("item/{uuid}/{version}/task/{taskUuid}/")
 @Api(value = "Moderaction actions", description = "item-task")
-public interface ItemTaskResource
-{
-	@POST
-	@Path("/accept")
-	@ApiOperation("Accept a task on an item")
-	public Response accept(@PathParam("uuid") final String uuid, @PathParam("version") final int version,
-		@PathParam("taskUuid") final String taskUuid, @QueryParam("message") final String message);
+public interface ItemTaskResource {
+  @POST
+  @Path("/accept")
+  @ApiOperation("Accept a task on an item")
+  public Response accept(
+      @PathParam("uuid") final String uuid,
+      @PathParam("version") final int version,
+      @PathParam("taskUuid") final String taskUuid,
+      @QueryParam("message") final String message);
 
-	@POST
-	@Path("/reject")
-	@ApiOperation("Reject a task on an item")
-	public Response reject(@PathParam("uuid") final String uuid, @PathParam("version") final int version,
-		@PathParam("taskUuid") final String taskUuid, @QueryParam("message") final String message,
-		@QueryParam("to") final String nodeUuid);
+  @POST
+  @Path("/reject")
+  @ApiOperation("Reject a task on an item")
+  public Response reject(
+      @PathParam("uuid") final String uuid,
+      @PathParam("version") final int version,
+      @PathParam("taskUuid") final String taskUuid,
+      @QueryParam("message") final String message,
+      @QueryParam("to") final String nodeUuid);
 
-	@POST
-	@Path("/comment")
-	@ApiOperation("Comment on a task for an item")
-	public Response comment(@PathParam("uuid") final String uuid, @PathParam("version") final int version,
-		@PathParam("taskUuid") final String taskUuid, @QueryParam("message") final String message);
+  @POST
+  @Path("/comment")
+  @ApiOperation("Comment on a task for an item")
+  public Response comment(
+      @PathParam("uuid") final String uuid,
+      @PathParam("version") final int version,
+      @PathParam("taskUuid") final String taskUuid,
+      @QueryParam("message") final String message);
 }

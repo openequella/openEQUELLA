@@ -48,143 +48,121 @@ import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
 import com.tle.core.xml.XmlDocument;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class ReplaceDeletedControlsDatabaseMigration extends AbstractHibernateDataMigration
-{
-	@Inject
-	private XmlHelper xmlHelper;
+public class ReplaceDeletedControlsDatabaseMigration extends AbstractHibernateDataMigration {
+  @Inject private XmlHelper xmlHelper;
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return count(session, "FROM ItemDefinition");
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return count(session, "FROM ItemDefinition");
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-		throws Exception
-	{
-		final List<FakeItemDefinition> itemDefs = session.createQuery("FROM ItemDefinition").list();
-		final XStream x = ReplaceDeletedControlsXmlMigration.createXStream(xmlHelper);
-		for( FakeItemDefinition itemDef : itemDefs )
-		{
-			final FakeItemdefBlobs blob = itemDef.getSlow();
-			final String wizXml = blob.getWizard();
+  @SuppressWarnings("unchecked")
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception {
+    final List<FakeItemDefinition> itemDefs = session.createQuery("FROM ItemDefinition").list();
+    final XStream x = ReplaceDeletedControlsXmlMigration.createXStream(xmlHelper);
+    for (FakeItemDefinition itemDef : itemDefs) {
+      final FakeItemdefBlobs blob = itemDef.getSlow();
+      final String wizXml = blob.getWizard();
 
-			final XmlDocument xml = new XmlDocument(wizXml);
-			final Node wizardNode = xml.node("//slow/wizard");
+      final XmlDocument xml = new XmlDocument(wizXml);
+      final Node wizardNode = xml.node("//slow/wizard");
 
-			if( ReplaceDeletedControlsXmlMigration.replaceAllObsoleteControls(xml, wizardNode, x) )
-			{
-				blob.setWizard(xml.toString());
-				session.save(blob);
-			}
-			result.incrementStatus();
-		}
-	}
+      if (ReplaceDeletedControlsXmlMigration.replaceAllObsoleteControls(xml, wizardNode, x)) {
+        blob.setWizard(xml.toString());
+        session.save(blob);
+      }
+      result.incrementStatus();
+    }
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{Institution.class, FakeItemDefinition.class, FakeBaseEntity.class,
-				FakeItemdefBlobs.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {
+      Institution.class, FakeItemDefinition.class, FakeBaseEntity.class, FakeItemdefBlobs.class
+    };
+  }
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo("com.tle.core.wizard.controls.universal.migration.replacecontrols.title",
-			Constants.BLANK);
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(
+        "com.tle.core.wizard.controls.universal.migration.replacecontrols.title", Constants.BLANK);
+  }
 
-	@Entity(name = "ItemDefinition")
-	@AccessType("field")
-	public static class FakeItemDefinition extends FakeBaseEntity
-	{
-		@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-		@Index(name = "collectionBlobs")
-		private FakeItemdefBlobs slow;
+  @Entity(name = "ItemDefinition")
+  @AccessType("field")
+  public static class FakeItemDefinition extends FakeBaseEntity {
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Index(name = "collectionBlobs")
+    private FakeItemdefBlobs slow;
 
-		public FakeItemdefBlobs getSlow()
-		{
-			return slow;
-		}
+    public FakeItemdefBlobs getSlow() {
+      return slow;
+    }
 
-		public void setSlow(FakeItemdefBlobs slow)
-		{
-			this.slow = slow;
-		}
-	}
+    public void setSlow(FakeItemdefBlobs slow) {
+      this.slow = slow;
+    }
+  }
 
-	@Entity(name = "BaseEntity")
-	@AccessType("field")
-	@Inheritance(strategy = InheritanceType.JOINED)
-	public static class FakeBaseEntity
-	{
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		private long id;
+  @Entity(name = "BaseEntity")
+  @AccessType("field")
+  @Inheritance(strategy = InheritanceType.JOINED)
+  public static class FakeBaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
 
-		@JoinColumn(nullable = false)
-		@ManyToOne(fetch = FetchType.LAZY)
-		@Index(name = "institutionIndex")
-		private Institution institution;
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Index(name = "institutionIndex")
+    private Institution institution;
 
-		public Institution getInstitution()
-		{
-			return institution;
-		}
+    public Institution getInstitution() {
+      return institution;
+    }
 
-		public void setInstitution(Institution institution)
-		{
-			this.institution = institution;
-		}
+    public void setInstitution(Institution institution) {
+      this.institution = institution;
+    }
 
-		public long getId()
-		{
-			return id;
-		}
+    public long getId() {
+      return id;
+    }
 
-		public void setId(long id)
-		{
-			this.id = id;
-		}
-	}
+    public void setId(long id) {
+      this.id = id;
+    }
+  }
 
-	@Entity(name = "ItemdefBlobs")
-	@AccessType("field")
-	public static class FakeItemdefBlobs
-	{
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		private long id;
+  @Entity(name = "ItemdefBlobs")
+  @AccessType("field")
+  public static class FakeItemdefBlobs {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
 
-		private String wizard;
+    private String wizard;
 
-		public long getId()
-		{
-			return id;
-		}
+    public long getId() {
+      return id;
+    }
 
-		public void setId(long id)
-		{
-			this.id = id;
-		}
+    public void setId(long id) {
+      this.id = id;
+    }
 
-		public String getWizard()
-		{
-			return wizard;
-		}
+    public String getWizard() {
+      return wizard;
+    }
 
-		public void setWizard(String wizard)
-		{
-			this.wizard = wizard;
-		}
-	}
+    public void setWizard(String wizard) {
+      this.wizard = wizard;
+    }
+  }
 }

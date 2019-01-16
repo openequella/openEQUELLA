@@ -35,101 +35,89 @@ import com.tle.web.sections.standard.renderers.list.DropDownRenderer;
 
 import java.util.Set;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public class StylishDropDownRenderer extends DropDownRenderer
-{
-	static
-	{
-		PluginResourceHandler.init(StylishDropDownRenderer.class);
-	}
+public class StylishDropDownRenderer extends DropDownRenderer {
+  static {
+    PluginResourceHandler.init(StylishDropDownRenderer.class);
+  }
 
-	/**
-	 * integer pixel heights only
-	 */
-	public static final String KEY_MAX_HEIGHT = "StylishMaxHeight";
-	/**
-	 * boolean
-	 */
-	public static final String KEY_ALWAYS_DISPLAY_UP = "StylishAlwaysDisplayUp";
+  /** integer pixel heights only */
+  public static final String KEY_MAX_HEIGHT = "StylishMaxHeight";
+  /** boolean */
+  public static final String KEY_ALWAYS_DISPLAY_UP = "StylishAlwaysDisplayUp";
 
-	// these are attributes passed into the stylishselect javascript
-	private static final String KEY_JS_MAX_HEIGHT = "ddMaxHeight";
-	private static final String KEY_JS_CLASSES = "containerClass";
-	private static final String KEY_JS_ALWAYS_DISPLAY_UP = "alwaysDisplayUp";
+  // these are attributes passed into the stylishselect javascript
+  private static final String KEY_JS_MAX_HEIGHT = "ddMaxHeight";
+  private static final String KEY_JS_CLASSES = "containerClass";
+  private static final String KEY_JS_ALWAYS_DISPLAY_UP = "alwaysDisplayUp";
 
-	private static final IncludeFile STYLISH_HELPER_LIB = new IncludeFile(ResourcesService.getResourceHelper(
-		StylishDropDownRenderer.class).url("scripts/component/stylishhelper.js"));
-	private static final JSCallable SETTER = new ExternallyDefinedFunction("setValue", 2, STYLISH_HELPER_LIB);
-	private static final JSCallable GETTER = new ExternallyDefinedFunction("getValue", 1, STYLISH_HELPER_LIB);
+  private static final IncludeFile STYLISH_HELPER_LIB =
+      new IncludeFile(
+          ResourcesService.getResourceHelper(StylishDropDownRenderer.class)
+              .url("scripts/component/stylishhelper.js"));
+  private static final JSCallable SETTER =
+      new ExternallyDefinedFunction("setValue", 2, STYLISH_HELPER_LIB);
+  private static final JSCallable GETTER =
+      new ExternallyDefinedFunction("getValue", 1, STYLISH_HELPER_LIB);
 
-	private static final JSCallable RESET = new ExternallyDefinedFunction("reset", 1, STYLISH_HELPER_LIB);
+  private static final JSCallable RESET =
+      new ExternallyDefinedFunction("reset", 1, STYLISH_HELPER_LIB);
 
-	public StylishDropDownRenderer(HtmlListState state)
-	{
-		super(state);
-	}
+  public StylishDropDownRenderer(HtmlListState state) {
+    super(state);
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		final ObjectExpression params = new ObjectExpression();
-		final HtmlComponentState selectState = getHtmlState();
+  @Override
+  public void preRender(PreRenderContext info) {
+    final ObjectExpression params = new ObjectExpression();
+    final HtmlComponentState selectState = getHtmlState();
 
-		Integer maxHeight = selectState.getAttribute(KEY_MAX_HEIGHT);
-		if( maxHeight == null )
-		{
-			maxHeight = 300;
-		}
-		params.put(KEY_JS_MAX_HEIGHT, maxHeight);
+    Integer maxHeight = selectState.getAttribute(KEY_MAX_HEIGHT);
+    if (maxHeight == null) {
+      maxHeight = 300;
+    }
+    params.put(KEY_JS_MAX_HEIGHT, maxHeight);
 
-		// inherit any classes put on the SELECT element
-		final Set<String> classes = selectState.getStyleClasses();
-		final StringBuilder classString = new StringBuilder();
-		boolean first = true;
-		if( !Check.isEmpty(classes) )
-		{
-			for( String clas : classes )
-			{
-				if( !first )
-				{
-					classString.append(' ');
-				}
-				classString.append(clas);
-				first = false;
-			}
-		}
-		params.put(KEY_JS_CLASSES, classString.toString());
+    // inherit any classes put on the SELECT element
+    final Set<String> classes = selectState.getStyleClasses();
+    final StringBuilder classString = new StringBuilder();
+    boolean first = true;
+    if (!Check.isEmpty(classes)) {
+      for (String clas : classes) {
+        if (!first) {
+          classString.append(' ');
+        }
+        classString.append(clas);
+        first = false;
+      }
+    }
+    params.put(KEY_JS_CLASSES, classString.toString());
 
-		Boolean alwaysDisplayUp = selectState.getAttribute(KEY_ALWAYS_DISPLAY_UP);
-		if( alwaysDisplayUp != null && alwaysDisplayUp.booleanValue() )
-		{
-			params.put(KEY_JS_ALWAYS_DISPLAY_UP, true);
-		}
+    Boolean alwaysDisplayUp = selectState.getAttribute(KEY_ALWAYS_DISPLAY_UP);
+    if (alwaysDisplayUp != null && alwaysDisplayUp.booleanValue()) {
+      params.put(KEY_JS_ALWAYS_DISPLAY_UP, true);
+    }
 
-		info.addReadyStatements(JQueryStylishSelect.setupStylishSelect(new JQuerySelector(this), params));
-		super.preRender(info);
-	}
+    info.addReadyStatements(
+        JQueryStylishSelect.setupStylishSelect(new JQuerySelector(this), params));
+    super.preRender(info);
+  }
 
-	@Override
-	public JSExpression createGetExpression()
-	{
-		return Js.call(GETTER, this);
-	}
+  @Override
+  public JSExpression createGetExpression() {
+    return Js.call(GETTER, this);
+  }
 
-	@Override
-	public JSCallable createSetFunction()
-	{
-		return new PrependedParameterFunction(SETTER, this);
-	}
+  @Override
+  public JSCallable createSetFunction() {
+    return new PrependedParameterFunction(SETTER, this);
+  }
 
-	@Override
-	public JSCallable createResetFunction()
-	{
-		return new PrependedParameterFunction(RESET, this);
-	}
+  @Override
+  public JSCallable createResetFunction() {
+    return new PrependedParameterFunction(RESET, this);
+  }
 
-	// TODO: other JS methods
+  // TODO: other JS methods
 }

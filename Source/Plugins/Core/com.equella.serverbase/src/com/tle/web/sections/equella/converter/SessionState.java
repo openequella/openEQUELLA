@@ -18,19 +18,18 @@ package com.tle.web.sections.equella.converter;
 
 import java.io.Serializable;
 
-public interface SessionState extends Serializable
-{
-	boolean isRemoved();
+public interface SessionState extends Serializable {
+  boolean isRemoved();
 
-	boolean isModified();
+  boolean isModified();
 
-	String getSessionId();
+  String getSessionId();
 
-	String getBookmarkString();
+  String getBookmarkString();
 
-	void setBookmarkString(String id);
+  void setBookmarkString(String id);
 
-	boolean isNew();
+  boolean isNew();
 
-	void synced();
+  void synced();
 }

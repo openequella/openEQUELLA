@@ -16,26 +16,21 @@
 
 package com.tle.core.institution.convert;
 
-public abstract class AbstractConverter<T> extends AbstractMigratableConverter<T>
-{
-	@Override
-	public String getStringId()
-	{
-		return null;
-	}
+public abstract class AbstractConverter<T> extends AbstractMigratableConverter<T> {
+  @Override
+  public String getStringId() {
+    return null;
+  }
 
-	public static class FormatFile
-	{
-		private boolean bucketed;
+  public static class FormatFile {
+    private boolean bucketed;
 
-		public boolean isBucketed()
-		{
-			return bucketed;
-		}
+    public boolean isBucketed() {
+      return bucketed;
+    }
 
-		public void setBucketed(boolean bucketed)
-		{
-			this.bucketed = bucketed;
-		}
-	}
+    public void setBucketed(boolean bucketed) {
+      this.bucketed = bucketed;
+    }
+  }
 }

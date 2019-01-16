@@ -18,33 +18,31 @@ package com.tle.core.migration;
 
 import com.tle.beans.DatabaseSchema;
 
-public interface SchemaInfo
-{
+public interface SchemaInfo {
 
-	DatabaseSchema getDatabaseSchema();
+  DatabaseSchema getDatabaseSchema();
 
-	String getTaskId();
+  String getTaskId();
 
-	DatabaseSchema getDuplicateWith();
+  DatabaseSchema getDuplicateWith();
 
-	String getErrorMessage();
+  String getErrorMessage();
 
-	String getFinishedTaskId();
+  String getFinishedTaskId();
 
-	boolean isChecking();
+  boolean isChecking();
 
-	boolean isInitial();
+  boolean isInitial();
 
-	long getUpdateTime();
+  long getUpdateTime();
 
-	boolean isCanRetry();
+  boolean isCanRetry();
 
-	boolean isHasErrors();
+  boolean isHasErrors();
 
-	boolean isMigrationRequired();
+  boolean isMigrationRequired();
 
-	boolean isSystem();
+  boolean isSystem();
 
-	boolean isUp();
-
+  boolean isUp();
 }

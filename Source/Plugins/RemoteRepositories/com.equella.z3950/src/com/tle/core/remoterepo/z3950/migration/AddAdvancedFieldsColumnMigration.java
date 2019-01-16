@@ -36,61 +36,49 @@ import com.tle.core.migration.MigrationResult;
 
 @Bind
 @Singleton
-public class AddAdvancedFieldsColumnMigration extends AbstractHibernateSchemaMigration
-{
+public class AddAdvancedFieldsColumnMigration extends AbstractHibernateSchemaMigration {
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo("com.tle.core.remoterepo.z3950.migration.addcolumn");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo("com.tle.core.remoterepo.z3950.migration.addcolumn");
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-		throws Exception
-	{
-		// no data
-	}
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception {
+    // no data
+  }
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return 0;
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return 0;
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		return null;
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    return null;
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		return helper.getAddColumnsSQL("federated_search", "advanced_search_fields");
-	}
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    return helper.getAddColumnsSQL("federated_search", "advanced_search_fields");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{FakeBaseEntity.class, FakeFederatedSearch.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {FakeBaseEntity.class, FakeFederatedSearch.class};
+  }
 
-	@Entity(name = "BaseEntity")
-	@AccessType("field")
-	@Inheritance(strategy = InheritanceType.JOINED)
-	public static class FakeBaseEntity
-	{
-		@Id
-		long id;
-	}
+  @Entity(name = "BaseEntity")
+  @AccessType("field")
+  @Inheritance(strategy = InheritanceType.JOINED)
+  public static class FakeBaseEntity {
+    @Id long id;
+  }
 
-	@Entity(name = "FederatedSearch")
-	@AccessType("field")
-	public static class FakeFederatedSearch extends FakeBaseEntity
-	{
-		@Lob
-		String advancedSearchFields;
-	}
-
+  @Entity(name = "FederatedSearch")
+  @AccessType("field")
+  public static class FakeFederatedSearch extends FakeBaseEntity {
+    @Lob String advancedSearchFields;
+  }
 }

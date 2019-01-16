@@ -23,11 +23,13 @@ import com.tle.core.guice.BindFactory;
 import com.tle.mycontent.service.MyContentFields;
 
 @BindFactory
-public interface OperationFactory
-{
-	EditMyContentOperation create(MyContentFields fields, String filename,
-		@Assisted("staginguuid") String stagingUuid, @Assisted("remove") boolean removeExistingAttachments,
-		@Assisted("use") boolean useExistingAttachment);
+public interface OperationFactory {
+  EditMyContentOperation create(
+      MyContentFields fields,
+      String filename,
+      @Assisted("staginguuid") String stagingUuid,
+      @Assisted("remove") boolean removeExistingAttachments,
+      @Assisted("use") boolean useExistingAttachment);
 
-	MyContentStatusOperation status();
+  MyContentStatusOperation status();
 }

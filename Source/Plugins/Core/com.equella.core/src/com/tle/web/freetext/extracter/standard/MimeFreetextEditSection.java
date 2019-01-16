@@ -54,156 +54,131 @@ import com.tle.web.sections.standard.model.HtmlBooleanState;
 import com.tle.web.sections.standard.model.TableState;
 import com.tle.web.sections.standard.renderers.toggle.CheckboxRenderer;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
-public class MimeFreetextEditSection extends AbstractPrototypeSection<MimeFreetextEditSection.MimeFreetextEditModel>
-	implements
-		MimeEditExtension,
-		HtmlRenderer,
-		AfterTreeLookup
-{
-	private static final PluginResourceHelper resources = ResourcesService
-		.getResourceHelper(MimeFreetextEditSection.class);
-	private static final NameValue TAB_FREETEXT = new BundleNameValue(resources.key("mimefreetextedit.title"),
-		"FreetextExtracters");
+public class MimeFreetextEditSection
+    extends AbstractPrototypeSection<MimeFreetextEditSection.MimeFreetextEditModel>
+    implements MimeEditExtension, HtmlRenderer, AfterTreeLookup {
+  private static final PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(MimeFreetextEditSection.class);
+  private static final NameValue TAB_FREETEXT =
+      new BundleNameValue(resources.key("mimefreetextedit.title"), "FreetextExtracters");
 
-	@PlugKey("head.enabled")
-	private static Label LABEL_ENABLED;
-	@PlugKey("head.name")
-	private static Label LABEL_NAME;
+  @PlugKey("head.enabled")
+  private static Label LABEL_ENABLED;
 
-	@Inject
-	private MimeTypeService mimeTypeService;
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @PlugKey("head.name")
+  private static Label LABEL_NAME;
 
-	@TreeLookup
-	private MimeDetailsSection detailsSection;
+  @Inject private MimeTypeService mimeTypeService;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Component(name = "ee")
-	private MappedBooleans enabledExtracters;
-	@Component(name = "e")
-	private Table extractorsTable;
+  @TreeLookup private MimeDetailsSection detailsSection;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final String mimeType = detailsSection.getType().getValue(context);
-		final TableState extractorsTableState = extractorsTable.getState(context);
-		final MimeFreetextEditModel model = getModel(context);
+  @Component(name = "ee")
+  private MappedBooleans enabledExtracters;
 
-		if( !Check.isEmpty(mimeType) )
-		{
-			List<TextExtracterExtension> extractors = mimeTypeService.getAllTextExtracters();
-			for( TextExtracterExtension extractor : extractors )
-			{
-				if( extractor.isMimeTypeSupported(mimeType) )
-				{
-					model.setExtractors(true);
-					HtmlBooleanState enabledState = enabledExtracters.getBooleanState(context,
-						getKeyForExtracter(extractor));
-					CheckboxRenderer enabledCheckbox = new CheckboxRenderer(enabledState);
+  @Component(name = "e")
+  private Table extractorsTable;
 
-					extractorsTableState.addRow(enabledCheckbox, new KeyLabel(extractor.getNameKey()));
-				}
-			}
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    final String mimeType = detailsSection.getType().getValue(context);
+    final TableState extractorsTableState = extractorsTable.getState(context);
+    final MimeFreetextEditModel model = getModel(context);
 
-		return viewFactory.createResult("extractors.ftl", context);
-	}
+    if (!Check.isEmpty(mimeType)) {
+      List<TextExtracterExtension> extractors = mimeTypeService.getAllTextExtracters();
+      for (TextExtracterExtension extractor : extractors) {
+        if (extractor.isMimeTypeSupported(mimeType)) {
+          model.setExtractors(true);
+          HtmlBooleanState enabledState =
+              enabledExtracters.getBooleanState(context, getKeyForExtracter(extractor));
+          CheckboxRenderer enabledCheckbox = new CheckboxRenderer(enabledState);
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		extractorsTable.setColumnHeadings(LABEL_ENABLED, LABEL_NAME);
-		extractorsTable.setColumnSorts(Sort.NONE, Sort.PRIMARY_ASC);
-	}
+          extractorsTableState.addRow(enabledCheckbox, new KeyLabel(extractor.getNameKey()));
+        }
+      }
+    }
 
-	@Override
-	public Class<MimeFreetextEditModel> getModelClass()
-	{
-		return MimeFreetextEditModel.class;
-	}
+    return viewFactory.createResult("extractors.ftl", context);
+  }
 
-	@Override
-	public void loadEntry(SectionInfo info, MimeEntry entry)
-	{
-		if( entry != null )
-		{
-			// list all enabled viewers
-			List<TextExtracterExtension> extractors = mimeTypeService.getTextExtractersForMimeEntry(entry);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    extractorsTable.setColumnHeadings(LABEL_ENABLED, LABEL_NAME);
+    extractorsTable.setColumnSorts(Sort.NONE, Sort.PRIMARY_ASC);
+  }
 
-			List<String> enabled = new ArrayList<String>();
-			for( TextExtracterExtension extractor : extractors )
-			{
-				enabled.add(getKeyForExtracter(extractor));
-			}
-			enabledExtracters.setCheckedSet(info, enabled);
-		}
-	}
+  @Override
+  public Class<MimeFreetextEditModel> getModelClass() {
+    return MimeFreetextEditModel.class;
+  }
 
-	@Override
-	public void saveEntry(SectionInfo info, MimeEntry entry)
-	{
-		List<TextExtracterExtension> extractors = mimeTypeService.getAllTextExtracters();
+  @Override
+  public void loadEntry(SectionInfo info, MimeEntry entry) {
+    if (entry != null) {
+      // list all enabled viewers
+      List<TextExtracterExtension> extractors =
+          mimeTypeService.getTextExtractersForMimeEntry(entry);
 
-		Set<String> enabled = enabledExtracters.getCheckedSet(info);
-		for( TextExtracterExtension extractor : extractors )
-		{
-			extractor.setEnabledForMimeEntry(entry, enabled.contains(getKeyForExtracter(extractor)));
-		}
-	}
+      List<String> enabled = new ArrayList<String>();
+      for (TextExtracterExtension extractor : extractors) {
+        enabled.add(getKeyForExtracter(extractor));
+      }
+      enabledExtracters.setCheckedSet(info, enabled);
+    }
+  }
 
-	private String getKeyForExtracter(TextExtracterExtension extractor)
-	{
-		return extractor.getClass().getSimpleName();
-	}
+  @Override
+  public void saveEntry(SectionInfo info, MimeEntry entry) {
+    List<TextExtracterExtension> extractors = mimeTypeService.getAllTextExtracters();
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "ftm";
-	}
+    Set<String> enabled = enabledExtracters.getCheckedSet(info);
+    for (TextExtracterExtension extractor : extractors) {
+      extractor.setEnabledForMimeEntry(entry, enabled.contains(getKeyForExtracter(extractor)));
+    }
+  }
 
-	@Override
-	public NameValue getTabToAppearOn()
-	{
-		return TAB_FREETEXT;
-	}
+  private String getKeyForExtracter(TextExtracterExtension extractor) {
+    return extractor.getClass().getSimpleName();
+  }
 
-	@Override
-	public boolean isVisible(SectionInfo info)
-	{
-		return true;
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "ftm";
+  }
 
-	public Table getExtractorsTable()
-	{
-		return extractorsTable;
-	}
+  @Override
+  public NameValue getTabToAppearOn() {
+    return TAB_FREETEXT;
+  }
 
-	public static class MimeFreetextEditModel
-	{
-		private boolean extractors;
+  @Override
+  public boolean isVisible(SectionInfo info) {
+    return true;
+  }
 
-		public boolean hasExtractors()
-		{
-			return extractors;
-		}
+  public Table getExtractorsTable() {
+    return extractorsTable;
+  }
 
-		public void setExtractors(boolean extractors)
-		{
-			this.extractors = extractors;
-		}
-	}
+  public static class MimeFreetextEditModel {
+    private boolean extractors;
 
-	@Override
-	public void afterTreeLookup(SectionTree tree)
-	{
-		detailsSection.addAjaxId("extractors");
-	}
+    public boolean hasExtractors() {
+      return extractors;
+    }
+
+    public void setExtractors(boolean extractors) {
+      this.extractors = extractors;
+    }
+  }
+
+  @Override
+  public void afterTreeLookup(SectionTree tree) {
+    detailsSection.addAjaxId("extractors");
+  }
 }

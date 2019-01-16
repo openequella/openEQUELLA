@@ -46,142 +46,123 @@ import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.template.RenderTemplate;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 public class ShowcasePortletEditorSection
-	extends
-		AbstractPortletEditorSection<ShowcasePortletEditorSection.ShowcasePortletEditorModel>
-{
-	private static final String TYPE = "showcase";
+    extends AbstractPortletEditorSection<ShowcasePortletEditorSection.ShowcasePortletEditorModel> {
+  private static final String TYPE = "showcase";
 
-	@Inject
-	private SelectionService selectionService;
+  @Inject private SelectionService selectionService;
 
-	@ViewFactory
-	private FreemarkerFactory thisView;
-	@EventFactory
-	private EventGenerator events;
+  @ViewFactory private FreemarkerFactory thisView;
+  @EventFactory private EventGenerator events;
 
-	@Component(name = "s")
-	private Button searchButton;
+  @Component(name = "s")
+  private Button searchButton;
 
-	private PassThroughFunction resultsCallback;
+  private PassThroughFunction resultsCallback;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		searchButton.setClickHandler(events.getNamedHandler("select"));
-		resultsCallback = new PassThroughFunction("results" + id, events.getSubmitValuesFunction("results"));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    searchButton.setClickHandler(events.getNamedHandler("select"));
+    resultsCallback =
+        new PassThroughFunction("results" + id, events.getSubmitValuesFunction("results"));
+  }
 
-	@EventHandlerMethod
-	@SuppressWarnings("unchecked")
-	public void results(SectionInfo info, String results)
-	{
-		JSONArray array = JSONArray.fromObject(results);
-		Collection<SelectedResourceDetails> selectedResources = JSONArray.toCollection(array,
-			SelectedResourceDetails.class);
-		getModel(info).setSelectedResources(selectedResources);
-	}
+  @EventHandlerMethod
+  @SuppressWarnings("unchecked")
+  public void results(SectionInfo info, String results) {
+    JSONArray array = JSONArray.fromObject(results);
+    Collection<SelectedResourceDetails> selectedResources =
+        JSONArray.toCollection(array, SelectedResourceDetails.class);
+    getModel(info).setSelectedResources(selectedResources);
+  }
 
-	@EventHandlerMethod
-	public void select(SectionInfo info)
-	{
-		SelectionSession session = new SelectionSession(new ParentFrameSelectionCallback(resultsCallback, true));
-		session.setSelectAttachments(true);
-		session.setSelectItem(true);
-		session.setSelectPackage(true);
-		session.setSelectMultiple(false);
-		session.setAllCollections(true);
+  @EventHandlerMethod
+  public void select(SectionInfo info) {
+    SelectionSession session =
+        new SelectionSession(new ParentFrameSelectionCallback(resultsCallback, true));
+    session.setSelectAttachments(true);
+    session.setSelectItem(true);
+    session.setSelectPackage(true);
+    session.setSelectMultiple(false);
+    session.setAllCollections(true);
 
-		RenderTemplate renderTemplate = info.lookupSection(RenderTemplate.class);
-		renderTemplate.setHideBanner(info, true);
-		renderTemplate.setHideNavigation(info, true);
-		selectionService.forwardToNewSession(info, session, null);
-	}
+    RenderTemplate renderTemplate = info.lookupSection(RenderTemplate.class);
+    renderTemplate.setHideBanner(info, true);
+    renderTemplate.setHideNavigation(info, true);
+    selectionService.forwardToNewSession(info, session, null);
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "scs";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "scs";
+  }
 
-	@Override
-	protected Portlet createNewPortlet()
-	{
-		return new Portlet(TYPE);
-	}
+  @Override
+  protected Portlet createNewPortlet() {
+    return new Portlet(TYPE);
+  }
 
-	@Override
-	protected void customClear(SectionInfo info)
-	{
-		// Nothing by default
-	}
+  @Override
+  protected void customClear(SectionInfo info) {
+    // Nothing by default
+  }
 
-	@Override
-	protected void customLoad(SectionInfo info, PortletEditingBean portlet)
-	{
-		// Nothing by default
-	}
+  @Override
+  protected void customLoad(SectionInfo info, PortletEditingBean portlet) {
+    // Nothing by default
+  }
 
-	@Override
-	protected SectionRenderable customRender(RenderEventContext context, ShowcasePortletEditorModel model,
-		PortletEditingBean portlet) throws Exception
-	{
-		return thisView.createResult("edit/editshowcaseportlet.ftl", context);
-	}
+  @Override
+  protected SectionRenderable customRender(
+      RenderEventContext context, ShowcasePortletEditorModel model, PortletEditingBean portlet)
+      throws Exception {
+    return thisView.createResult("edit/editshowcaseportlet.ftl", context);
+  }
 
-	@Override
-	protected void customSave(SectionInfo info, PortletEditingBean portletPack)
-	{
-		// Nothing by default
-	}
+  @Override
+  protected void customSave(SectionInfo info, PortletEditingBean portletPack) {
+    // Nothing by default
+  }
 
-	@Override
-	protected void customValidate(SectionInfo info, PortletEditingBean portlet, Map<String, Object> errors)
-	{
-		// Nothing by default
-	}
+  @Override
+  protected void customValidate(
+      SectionInfo info, PortletEditingBean portlet, Map<String, Object> errors) {
+    // Nothing by default
+  }
 
-	@Override
-	public Class<ShowcasePortletEditorModel> getModelClass()
-	{
-		return ShowcasePortletEditorModel.class;
-	}
+  @Override
+  public Class<ShowcasePortletEditorModel> getModelClass() {
+    return ShowcasePortletEditorModel.class;
+  }
 
-	public Button getSearchButton()
-	{
-		return searchButton;
-	}
+  public Button getSearchButton() {
+    return searchButton;
+  }
 
-	public PassThroughFunction getResultsCallback()
-	{
-		return resultsCallback;
-	}
+  public PassThroughFunction getResultsCallback() {
+    return resultsCallback;
+  }
 
-	public static class ShowcasePortletEditorModel extends AbstractPortletEditorSection.AbstractPortletEditorModel
-	{
-		private Collection<SelectedResourceDetails> selectedResources;
+  public static class ShowcasePortletEditorModel
+      extends AbstractPortletEditorSection.AbstractPortletEditorModel {
+    private Collection<SelectedResourceDetails> selectedResources;
 
-		public Collection<SelectedResourceDetails> getSelectedResources()
-		{
-			return selectedResources;
-		}
+    public Collection<SelectedResourceDetails> getSelectedResources() {
+      return selectedResources;
+    }
 
-		public void setSelectedResources(Collection<SelectedResourceDetails> selectedResources)
-		{
-			this.selectedResources = selectedResources;
-		}
-	}
+    public void setSelectedResources(Collection<SelectedResourceDetails> selectedResources) {
+      this.selectedResources = selectedResources;
+    }
+  }
 
-	@Override
-	public SectionRenderable renderHelp(RenderContext context)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+  @Override
+  public SectionRenderable renderHelp(RenderContext context) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

@@ -16,11 +16,10 @@
 
 package com.dytech.installer;
 
-public interface TaskListener
-{
-	public void taskStarted(int subtasks);
+public interface TaskListener {
+  public void taskStarted(int subtasks);
 
-	public void taskCompleted();
+  public void taskCompleted();
 
-	public void subtaskCompleted();
+  public void subtaskCompleted();
 }

@@ -26,18 +26,18 @@ import com.tle.core.institution.convert.ConverterParams;
 
 @Bind
 @Singleton
-public class RemoveExistingThumbnailsXml extends AbstractItemXmlMigrator
-{
+public class RemoveExistingThumbnailsXml extends AbstractItemXmlMigrator {
 
-	@Override
-	public boolean migrate(ConverterParams params, PropBagEx xml, SubTemporaryFile file, String filename)
-		throws Exception
-	{
-		boolean changed = false;
-		for( PropBagEx fileAttXml : xml.iterateAll("attachments/com.tle.beans.item.attachments.FileAttachment") ) //$NON-NLS-1$
-		{
-			changed |= fileAttXml.deleteNode("thumbnail"); //$NON-NLS-1$
-		}
-		return changed;
-	}
+  @Override
+  public boolean migrate(
+      ConverterParams params, PropBagEx xml, SubTemporaryFile file, String filename)
+      throws Exception {
+    boolean changed = false;
+    for (PropBagEx fileAttXml :
+        xml.iterateAll("attachments/com.tle.beans.item.attachments.FileAttachment")) // $NON-NLS-1$
+    {
+      changed |= fileAttXml.deleteNode("thumbnail"); // $NON-NLS-1$
+    }
+    return changed;
+  }
 }

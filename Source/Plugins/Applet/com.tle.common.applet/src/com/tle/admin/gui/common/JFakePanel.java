@@ -23,37 +23,30 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 @Deprecated
-public class JFakePanel
-{
-	protected JChangeDetectorPanel panel;
+public class JFakePanel {
+  protected JChangeDetectorPanel panel;
 
-	public JFakePanel()
-	{
-		this.panel = new JChangeDetectorPanel();
-	}
+  public JFakePanel() {
+    this.panel = new JChangeDetectorPanel();
+  }
 
-	public void add(Component comp)
-	{
-		panel.add(comp);
-	}
+  public void add(Component comp) {
+    panel.add(comp);
+  }
 
-	public void add(Component comp, Object constaint)
-	{
-		panel.add(comp, constaint);
-	}
+  public void add(Component comp, Object constaint) {
+    panel.add(comp, constaint);
+  }
 
-	public void setLayout(LayoutManager layout)
-	{
-		panel.setLayout(layout);
-	}
+  public void setLayout(LayoutManager layout) {
+    panel.setLayout(layout);
+  }
 
-	public void setBorder(Border border)
-	{
-		panel.setBorder(border);
-	}
+  public void setBorder(Border border) {
+    panel.setBorder(border);
+  }
 
-	public JPanel getComponent()
-	{
-		return panel;
-	}
+  public JPanel getComponent() {
+    return panel;
+  }
 }

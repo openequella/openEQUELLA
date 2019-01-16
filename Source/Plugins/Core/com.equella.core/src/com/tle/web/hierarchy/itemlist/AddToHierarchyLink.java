@@ -53,91 +53,80 @@ import com.tle.web.viewurl.ViewItemUrlFactory;
 @Bind
 @SuppressWarnings("nls")
 public class AddToHierarchyLink extends AbstractPrototypeSection<Object>
-	implements
-		ItemlikeListEntryExtension<Item, ItemListEntry>
-{
-	@PlugKey("itemlist.addtolink")
-	private static Label ADD_TO_HIERARCHY_LABEL;
+    implements ItemlikeListEntryExtension<Item, ItemListEntry> {
+  @PlugKey("itemlist.addtolink")
+  private static Label ADD_TO_HIERARCHY_LABEL;
 
-	@EventFactory
-	private EventGenerator events;
+  @EventFactory private EventGenerator events;
 
-	@Inject
-	private TLEAclManager aclManager;
+  @Inject private TLEAclManager aclManager;
 
-	@Inject
-	private ViewItemUrlFactory urlFactory;
+  @Inject private ViewItemUrlFactory urlFactory;
 
-	@Override
-	public ProcessEntryCallback<Item, ItemListEntry> processEntries(RenderContext context, List<ItemListEntry> entries,
-		final ListSettings<ItemListEntry> listSettings)
-	{
-		if( CurrentUser.wasAutoLoggedIn() )
-		{
-			return null;
-		}
-		return new ProcessEntryCallback<Item, ItemListEntry>()
-		{
-			@Override
-			public void processEntry(ItemListEntry entry)
-			{
-				if( entry.isFlagSet("com.tle.web.hierarchy.DontShow") )
-				{
-					return;
-				}
+  @Override
+  public ProcessEntryCallback<Item, ItemListEntry> processEntries(
+      RenderContext context,
+      List<ItemListEntry> entries,
+      final ListSettings<ItemListEntry> listSettings) {
+    if (CurrentUser.wasAutoLoggedIn()) {
+      return null;
+    }
+    return new ProcessEntryCallback<Item, ItemListEntry>() {
+      @Override
+      public void processEntry(ItemListEntry entry) {
+        if (entry.isFlagSet("com.tle.web.hierarchy.DontShow")) {
+          return;
+        }
 
-				final Set<String> privilege = aclManager.filterNonGrantedPrivileges(Collections
-					.singleton("MODIFY_KEY_RESOURCE"));
-				if( !privilege.isEmpty() )
-				{
-					attachHierarchyLink(entry, listSettings.getAttribute(GalleryItemList.GALLERY_FLAG) != null
-						|| listSettings.getAttribute(VideoItemList.VIDEO_FLAG) != null);
-				}
+        final Set<String> privilege =
+            aclManager.filterNonGrantedPrivileges(Collections.singleton("MODIFY_KEY_RESOURCE"));
+        if (!privilege.isEmpty()) {
+          attachHierarchyLink(
+              entry,
+              listSettings.getAttribute(GalleryItemList.GALLERY_FLAG) != null
+                  || listSettings.getAttribute(VideoItemList.VIDEO_FLAG) != null);
+        }
+      }
+    };
+  }
 
-			}
-		};
-	}
+  private HtmlLinkState attachHierarchyLink(ItemListEntry entry, boolean gallery) {
+    HtmlLinkState link;
+    final Item item = entry.getItem();
+    if (gallery) {
+      link =
+          new HtmlLinkState(
+              new IconLabel(Icon.HIERACHY, null, true),
+              events.getNamedHandler("goToHierarchyPage", item.getItemId()));
+      link.setTitle(ADD_TO_HIERARCHY_LABEL);
+      link.addClass("gallery-action");
+      entry.addRatingMetadataWithOrder(200, new LinkRenderer(link));
+    } else {
+      link =
+          new HtmlLinkState(
+              ADD_TO_HIERARCHY_LABEL,
+              events.getNamedHandler("goToHierarchyPage", item.getItemId()));
+      entry.addRatingMetadata(link);
+    }
+    return link;
+  }
 
-	private HtmlLinkState attachHierarchyLink(ItemListEntry entry, boolean gallery)
-	{
-		HtmlLinkState link;
-		final Item item = entry.getItem();
-		if( gallery )
-		{
-			link = new HtmlLinkState(new IconLabel(Icon.HIERACHY, null, true), events.getNamedHandler(
-				"goToHierarchyPage", item.getItemId()));
-			link.setTitle(ADD_TO_HIERARCHY_LABEL);
-			link.addClass("gallery-action");
-			entry.addRatingMetadataWithOrder(200, new LinkRenderer(link));
-		}
-		else
-		{
-			link = new HtmlLinkState(ADD_TO_HIERARCHY_LABEL, events.getNamedHandler("goToHierarchyPage",
-				item.getItemId()));
-			entry.addRatingMetadata(link);
-		}
-		return link;
-	}
+  @EventHandlerMethod
+  public void goToHierarchyPage(SectionInfo info, String itemId) {
+    ViewItemUrl hierarchyPageUrl = urlFactory.createItemUrl(info, new ItemId(itemId));
+    SectionInfo viewInfo = hierarchyPageUrl.getSectionInfo();
+    ItemSummaryContentSection summary = viewInfo.lookupSection(ItemSummaryContentSection.class);
+    summary.setSummaryId(viewInfo, viewInfo.lookupSection(HierarchyTreeSection.class));
+    hierarchyPageUrl.forward(info);
+  }
 
-	@EventHandlerMethod
-	public void goToHierarchyPage(SectionInfo info, String itemId)
-	{
-		ViewItemUrl hierarchyPageUrl = urlFactory.createItemUrl(info, new ItemId(itemId));
-		SectionInfo viewInfo = hierarchyPageUrl.getSectionInfo();
-		ItemSummaryContentSection summary = viewInfo.lookupSection(ItemSummaryContentSection.class);
-		summary.setSummaryId(viewInfo, viewInfo.lookupSection(HierarchyTreeSection.class));
-		hierarchyPageUrl.forward(info);
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+  }
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-	}
-
-	@Override
-	public String getItemExtensionType()
-	{
-		return null;
-	}
+  @Override
+  public String getItemExtensionType() {
+    return null;
+  }
 }

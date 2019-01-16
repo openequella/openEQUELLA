@@ -48,106 +48,91 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
-public class SearchPortletRenderer extends PortletContentRenderer<Object>
-{
-	protected static final PluginResourceHelper RESOURCES = ResourcesService
-		.getResourceHelper(SearchPortletRenderer.class);
+public class SearchPortletRenderer extends PortletContentRenderer<Object> {
+  protected static final PluginResourceHelper RESOURCES =
+      ResourcesService.getResourceHelper(SearchPortletRenderer.class);
 
-	@PlugKey("search.textfield.hint")
-	private static Label TEXTFIELD_HINT;
+  @PlugKey("search.textfield.hint")
+  private static Label TEXTFIELD_HINT;
 
-	@ViewFactory
-	private FreemarkerFactory view;
-	@EventFactory
-	private EventGenerator events;
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @ViewFactory private FreemarkerFactory view;
+  @EventFactory private EventGenerator events;
+  @AjaxFactory private AjaxGenerator ajax;
 
-	@Inject
-	private AutoCompleteService autoCompleteService;
-	@Inject
-	private SelectionService selectionService;
+  @Inject private AutoCompleteService autoCompleteService;
+  @Inject private SelectionService selectionService;
 
-	@Component(name = "q", stateful = false)
-	private TextField query;
-	@Component(name = "s")
-	private Button search;
+  @Component(name = "q", stateful = false)
+  private TextField query;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		search.setClickHandler(events.getNamedHandler("doSearch"));
-		query.setAutoCompleteCallback(ajax.getAjaxFunction("updateSearchTerms"));
-		query.addTagProcessor(new JQueryTextFieldHint(TEXTFIELD_HINT, query));
-	}
+  @Component(name = "s")
+  private Button search;
 
-	@Override
-	public SectionRenderable renderHtml(RenderEventContext context)
-	{
-		return view.createResult("searchportlet.ftl", context);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    search.setClickHandler(events.getNamedHandler("doSearch"));
+    query.setAutoCompleteCallback(ajax.getAjaxFunction("updateSearchTerms"));
+    query.addTagProcessor(new JQueryTextFieldHint(TEXTFIELD_HINT, query));
+  }
 
-	@AjaxMethod
-	public AutoCompleteResult[] updateSearchTerms(SectionInfo info)
-	{
-		// Restrict to collection in selection session if set
-		LiveItemSearch searchRequest = new LiveItemSearch();
-		SelectionSession session = selectionService.getCurrentSession(info);
-		if( session != null )
-		{
-			searchRequest.setCollectionUuids(session.getCollectionUuids());
-		}
-		return autoCompleteService.getAutoCompleteResults(searchRequest, query.getValue(info));
-	}
+  @Override
+  public SectionRenderable renderHtml(RenderEventContext context) {
+    return view.createResult("searchportlet.ftl", context);
+  }
 
-	/**
-	 * When in a session, viewable if all or any collections, or if any
-	 * powerSearches or any RemoteRepositorySearches
-	 */
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		final SelectionSession session = selectionService.getCurrentSession(info);
-		if( session == null )
-		{
-			return true;
-		}
-		return session.isAllCollections() || !Check.isEmpty(session.getCollectionUuids())
-			|| session.isAllPowerSearches() || !Check.isEmpty(session.getPowerSearchIds())
-			|| session.isAllRemoteRepositories() || !Check.isEmpty(session.getRemoteRepositoryIds());
-	}
+  @AjaxMethod
+  public AutoCompleteResult[] updateSearchTerms(SectionInfo info) {
+    // Restrict to collection in selection session if set
+    LiveItemSearch searchRequest = new LiveItemSearch();
+    SelectionSession session = selectionService.getCurrentSession(info);
+    if (session != null) {
+      searchRequest.setCollectionUuids(session.getCollectionUuids());
+    }
+    return autoCompleteService.getAutoCompleteResults(searchRequest, query.getValue(info));
+  }
 
-	@EventHandlerMethod
-	public void doSearch(SectionInfo info)
-	{
-		SearchQuerySection.basicSearch(info, query.getValue(info));
-	}
+  /**
+   * When in a session, viewable if all or any collections, or if any powerSearches or any
+   * RemoteRepositorySearches
+   */
+  @Override
+  public boolean canView(SectionInfo info) {
+    final SelectionSession session = selectionService.getCurrentSession(info);
+    if (session == null) {
+      return true;
+    }
+    return session.isAllCollections()
+        || !Check.isEmpty(session.getCollectionUuids())
+        || session.isAllPowerSearches()
+        || !Check.isEmpty(session.getPowerSearchIds())
+        || session.isAllRemoteRepositories()
+        || !Check.isEmpty(session.getRemoteRepositoryIds());
+  }
 
-	public TextField getQuery()
-	{
-		return query;
-	}
+  @EventHandlerMethod
+  public void doSearch(SectionInfo info) {
+    SearchQuerySection.basicSearch(info, query.getValue(info));
+  }
 
-	public Button getSearchButton()
-	{
-		return search;
-	}
+  public TextField getQuery() {
+    return query;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "psp";
-	}
+  public Button getSearchButton() {
+    return search;
+  }
 
-	@Override
-	public Class<Object> getModelClass()
-	{
-		return Object.class;
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "psp";
+  }
+
+  @Override
+  public Class<Object> getModelClass() {
+    return Object.class;
+  }
 }

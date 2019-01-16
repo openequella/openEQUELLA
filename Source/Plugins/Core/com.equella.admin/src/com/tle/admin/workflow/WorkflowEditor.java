@@ -28,43 +28,36 @@ import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.workflow.Workflow;
 
 @SuppressWarnings("nls")
-public class WorkflowEditor extends BaseEntityEditor<Workflow>
-{
-	public WorkflowEditor(BaseEntityTool<Workflow> tool, boolean readonly)
-	{
-		super(tool, readonly);
-	}
+public class WorkflowEditor extends BaseEntityEditor<Workflow> {
+  public WorkflowEditor(BaseEntityTool<Workflow> tool, boolean readonly) {
+    super(tool, readonly);
+  }
 
-	@Override
-	protected AbstractDetailsTab<Workflow> constructDetailsTab()
-	{
-		return new StepsTab();
-	}
+  @Override
+  protected AbstractDetailsTab<Workflow> constructDetailsTab() {
+    return new StepsTab();
+  }
 
-	@Override
-	protected List<BaseEntityTab<Workflow>> getTabs()
-	{
-		ArrayList<BaseEntityTab<Workflow>> tabs = new ArrayList<BaseEntityTab<Workflow>>();
-		tabs.add((StepsTab) detailsTab);
-		tabs.add(new AccessControlTab<Workflow>(Node.WORKFLOW));
-		return tabs;
-	}
+  @Override
+  protected List<BaseEntityTab<Workflow>> getTabs() {
+    ArrayList<BaseEntityTab<Workflow>> tabs = new ArrayList<BaseEntityTab<Workflow>>();
+    tabs.add((StepsTab) detailsTab);
+    tabs.add(new AccessControlTab<Workflow>(Node.WORKFLOW));
+    return tabs;
+  }
 
-	@Override
-	protected String getEntityName()
-	{
-		return CurrentLocale.get("com.tle.admin.workflow.workfloweditor.entname");
-	}
+  @Override
+  protected String getEntityName() {
+    return CurrentLocale.get("com.tle.admin.workflow.workfloweditor.entname");
+  }
 
-	@Override
-	protected String getWindowTitle()
-	{
-		return CurrentLocale.get("com.tle.admin.workflow.workfloweditor.title");
-	}
+  @Override
+  protected String getWindowTitle() {
+    return CurrentLocale.get("com.tle.admin.workflow.workfloweditor.title");
+  }
 
-	@Override
-	public String getDocumentName()
-	{
-		return CurrentLocale.get("com.tle.admin.workflow.workfloweditor.docname");
-	}
+  @Override
+  public String getDocumentName() {
+    return CurrentLocale.get("com.tle.admin.workflow.workfloweditor.docname");
+  }
 }

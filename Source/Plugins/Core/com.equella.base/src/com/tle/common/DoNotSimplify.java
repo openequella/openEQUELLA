@@ -21,12 +21,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DoNotSimplify
-{
-	// Nothing to declare
+public @interface DoNotSimplify {
+  // Nothing to declare
 }

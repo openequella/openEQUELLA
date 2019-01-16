@@ -54,100 +54,98 @@ import com.tle.web.sections.standard.model.Option;
 
 @Bind
 @NonNullByDefault
-public class ActivationResultsDialog extends AbstractBulkResultsDialog<ItemActivationId>
-{
-	@PlugKey("activations.opresults.count")
-	private static String OPRESULTS_COUNT_KEY;
+public class ActivationResultsDialog extends AbstractBulkResultsDialog<ItemActivationId> {
+  @PlugKey("activations.opresults.count")
+  private static String OPRESULTS_COUNT_KEY;
 
-	@Inject
-	private ItemService itemService;
+  @Inject private ItemService itemService;
 
-	@Inject
-	private BulkRolloverOperation rolloverOp;
-	@Inject
-	private BulkDeactivateOperation deactivateOp;
-	@Inject
-	private BulkDeleteOperation deleteOp;
-	@Inject
-	private ActivationService activationService;
+  @Inject private BulkRolloverOperation rolloverOp;
+  @Inject private BulkDeactivateOperation deactivateOp;
+  @Inject private BulkDeleteOperation deleteOp;
+  @Inject private ActivationService activationService;
 
-	@TreeLookup
-	private AbstractBulkSelectionSection<ItemActivationId> selectionSection;
+  @TreeLookup private AbstractBulkSelectionSection<ItemActivationId> selectionSection;
 
-	@EventHandlerMethod
-	public void removeSelection(SectionInfo info, String uuid, int version, String activationId)
-	{
-		selectionSection.removeSelection(info, new ItemActivationId(uuid, version, activationId));
-	}
+  @EventHandlerMethod
+  public void removeSelection(SectionInfo info, String uuid, int version, String activationId) {
+    selectionSection.removeSelection(info, new ItemActivationId(uuid, version, activationId));
+  }
 
-	public class BulkOperationList extends DynamicHtmlListModel<OperationInfo>
-	{
-		private final List<BulkOperationExtension> bulkOps = new ArrayList<BulkOperationExtension>();
+  public class BulkOperationList extends DynamicHtmlListModel<OperationInfo> {
+    private final List<BulkOperationExtension> bulkOps = new ArrayList<BulkOperationExtension>();
 
-		public BulkOperationList(SectionTree tree, String parentId)
-		{
-			bulkOps.add(deactivateOp);
-			bulkOps.add(deleteOp);
-			bulkOps.add(rolloverOp);
-			for( BulkOperationExtension operation : bulkOps )
-			{
-				operation.register(tree, parentId);
-			}
-		}
+    public BulkOperationList(SectionTree tree, String parentId) {
+      bulkOps.add(deactivateOp);
+      bulkOps.add(deleteOp);
+      bulkOps.add(rolloverOp);
+      for (BulkOperationExtension operation : bulkOps) {
+        operation.register(tree, parentId);
+      }
+    }
 
-		@Override
-		protected Iterable<Option<OperationInfo>> populateOptions(SectionInfo info)
-		{
-			List<Option<OperationInfo>> ops = new ArrayList<Option<OperationInfo>>();
-			for( BulkOperationExtension operation : bulkOps )
-			{
-				operation.addOptions(info, ops);
-			}
-			return ops;
-		}
+    @Override
+    protected Iterable<Option<OperationInfo>> populateOptions(SectionInfo info) {
+      List<Option<OperationInfo>> ops = new ArrayList<Option<OperationInfo>>();
+      for (BulkOperationExtension operation : bulkOps) {
+        operation.addOptions(info, ops);
+      }
+      return ops;
+    }
 
-		@Nullable
-		@Override
-		protected Iterable<OperationInfo> populateModel(SectionInfo info)
-		{
-			return null;
-		}
-	}
+    @Nullable
+    @Override
+    protected Iterable<OperationInfo> populateModel(SectionInfo info) {
+      return null;
+    }
+  }
 
-	@Override
-	protected DynamicHtmlListModel<OperationInfo> getBulkOperationList(SectionTree tree, String parentId)
-	{
-		return new BulkOperationList(tree, parentId);
-	}
+  @Override
+  protected DynamicHtmlListModel<OperationInfo> getBulkOperationList(
+      SectionTree tree, String parentId) {
+    return new BulkOperationList(tree, parentId);
+  }
 
-	@Override
-	protected List<SelectionRow> getRows(List<ItemActivationId> pageOfIds)
-	{
-		List<SelectionRow> rows = new ArrayList<SelectionRow>();
-		for( ItemActivationId itemId : pageOfIds )
-		{
-			ActivateRequest request = activationService.getRequest(Long.parseLong(itemId.getActivationId()));
-			Item item = itemService.get(itemId);
-			CourseInfo course = request.getCourse();
+  @Override
+  protected List<SelectionRow> getRows(List<ItemActivationId> pageOfIds) {
+    List<SelectionRow> rows = new ArrayList<SelectionRow>();
+    for (ItemActivationId itemId : pageOfIds) {
+      ActivateRequest request =
+          activationService.getRequest(Long.parseLong(itemId.getActivationId()));
+      Item item = itemService.get(itemId);
+      CourseInfo course = request.getCourse();
 
-			String itemName = CurrentLocale.get(item.getName(), item.getUuid());
-			String attachmentName = UnmodifiableAttachments.convertToMapUuid(item.getAttachments())
-				.get(request.getAttachment()).getDescription();
-			String courseName = CurrentLocale.get(course.getName(), course.getUuid());
+      String itemName = CurrentLocale.get(item.getName(), item.getUuid());
+      String attachmentName =
+          UnmodifiableAttachments.convertToMapUuid(item.getAttachments())
+              .get(request.getAttachment())
+              .getDescription();
+      String courseName = CurrentLocale.get(course.getName(), course.getUuid());
 
-			Label description = new TextLabel(String.format("%s - %s - %s", itemName, //$NON-NLS-1$
-				attachmentName, courseName));
+      Label description =
+          new TextLabel(
+              String.format(
+                  "%s - %s - %s",
+                  itemName, //$NON-NLS-1$
+                  attachmentName,
+                  courseName));
 
-			rows.add(new SelectionRow(description, new HtmlComponentState(RendererConstants.LINK, events
-				.getNamedHandler("removeSelection", itemId.getUuid(), //$NON-NLS-1$
-					itemId.getVersion(), itemId.getActivationId()))));
-		}
-		return rows;
-	}
+      rows.add(
+          new SelectionRow(
+              description,
+              new HtmlComponentState(
+                  RendererConstants.LINK,
+                  events.getNamedHandler(
+                      "removeSelection",
+                      itemId.getUuid(), // $NON-NLS-1$
+                      itemId.getVersion(),
+                      itemId.getActivationId()))));
+    }
+    return rows;
+  }
 
-	@Override
-	protected Label getOpResultCountLabel(int totalSelections)
-	{
-		return new PluralKeyLabel(OPRESULTS_COUNT_KEY, totalSelections);
-	}
+  @Override
+  protected Label getOpResultCountLabel(int totalSelections) {
+    return new PluralKeyLabel(OPRESULTS_COUNT_KEY, totalSelections);
+  }
 }

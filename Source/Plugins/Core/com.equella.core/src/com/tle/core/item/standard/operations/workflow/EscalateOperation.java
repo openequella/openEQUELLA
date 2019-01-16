@@ -37,100 +37,90 @@ import com.tle.core.notification.beans.Notification;
 import com.tle.core.plugins.impl.PluginServiceImpl;
 import com.tle.core.security.impl.SecureInModeration;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @SecureInModeration
 @Bind
-public class EscalateOperation extends TaskOperation
-{
-	private static final String PREFIX = PluginServiceImpl.getMyPluginId(EscalateOperation.class) + '.';
+public class EscalateOperation extends TaskOperation {
+  private static final String PREFIX =
+      PluginServiceImpl.getMyPluginId(EscalateOperation.class) + '.';
 
-	@SuppressWarnings("nls")
-	@Override
-	public boolean execute()
-	{
-		ModerationStatus status = getModerationStatus();
+  @SuppressWarnings("nls")
+  @Override
+  public boolean execute() {
+    ModerationStatus status = getModerationStatus();
 
-		Date datenow = getParams().getDateNow();
-		for( WorkflowNodeStatus beanstatus : status.getStatuses() )
-		{
-			if( beanstatus.getNode().getType() == WorkflowNode.ITEM_TYPE
-				&& beanstatus.getStatus() == WorkflowNodeStatus.INCOMPLETE )
-			{
-				WorkflowItemStatus bean = (WorkflowItemStatus) beanstatus;
-				TaskStatus task = (TaskStatus) getNodeStatus(beanstatus.getNode().getUuid());
+    Date datenow = getParams().getDateNow();
+    for (WorkflowNodeStatus beanstatus : status.getStatuses()) {
+      if (beanstatus.getNode().getType() == WorkflowNode.ITEM_TYPE
+          && beanstatus.getStatus() == WorkflowNodeStatus.INCOMPLETE) {
+        WorkflowItemStatus bean = (WorkflowItemStatus) beanstatus;
+        TaskStatus task = (TaskStatus) getNodeStatus(beanstatus.getNode().getUuid());
 
-				Date itemesc = bean.getDateDue();
-				if( itemesc != null && datenow.compareTo(itemesc) >= 0 )
-				{
-					boolean overdue = bean.isOverdue();
-					if( !overdue )
-					{
-						bean.setOverdue(true);
-						
-						Collection<String> users = task.getUsersLeft(this);
-						if( !users.isEmpty() )
-						{
-							addModerationNotifications(new ItemTaskId(getItemKey(), task.getId()), users,
-								Notification.REASON_OVERDUE, true);
-						}
-					}
-					WorkflowItem node = (WorkflowItem) bean.getNode();
-					AutoAction action = node.getAutoAction();
-					if( action != AutoAction.NONE )
-					{
-						Date actionDate = new Date(itemesc.getTime() + TimeUnit.DAYS.toMillis(node.getActionDays()));
-						if( datenow.compareTo(actionDate) >= 0 )
-						{
-							String dateFormatted = new LocalDate(datenow, CurrentTimeZone.get())
-								.format(Dates.DATE_ONLY);
-							if( action == AutoAction.REJECT )
-							{
-								params.addOperation(operationFactory.reject(task.getId(),
-									CurrentLocale.get(PREFIX + "autorejectmsg", dateFormatted),
-									findRejectPoint(node.getParent(), node), null));
-							}
-							else
-							{
-								params.addOperation(operationFactory.accept(task.getId(),
-									CurrentLocale.get(PREFIX + "autoacceptmsg", dateFormatted), null));
-							}
-						}
-					}
+        Date itemesc = bean.getDateDue();
+        if (itemesc != null && datenow.compareTo(itemesc) >= 0) {
+          boolean overdue = bean.isOverdue();
+          if (!overdue) {
+            bean.setOverdue(true);
 
-				}
-			}
-		}
-		return false;
-	}
+            Collection<String> users = task.getUsersLeft(this);
+            if (!users.isEmpty()) {
+              addModerationNotifications(
+                  new ItemTaskId(getItemKey(), task.getId()),
+                  users,
+                  Notification.REASON_OVERDUE,
+                  true);
+            }
+          }
+          WorkflowItem node = (WorkflowItem) bean.getNode();
+          AutoAction action = node.getAutoAction();
+          if (action != AutoAction.NONE) {
+            Date actionDate =
+                new Date(itemesc.getTime() + TimeUnit.DAYS.toMillis(node.getActionDays()));
+            if (datenow.compareTo(actionDate) >= 0) {
+              String dateFormatted =
+                  new LocalDate(datenow, CurrentTimeZone.get()).format(Dates.DATE_ONLY);
+              if (action == AutoAction.REJECT) {
+                params.addOperation(
+                    operationFactory.reject(
+                        task.getId(),
+                        CurrentLocale.get(PREFIX + "autorejectmsg", dateFormatted),
+                        findRejectPoint(node.getParent(), node),
+                        null));
+              } else {
+                params.addOperation(
+                    operationFactory.accept(
+                        task.getId(),
+                        CurrentLocale.get(PREFIX + "autoacceptmsg", dateFormatted),
+                        null));
+              }
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
 
-	private String findRejectPoint(WorkflowNode parent, WorkflowNode node)
-	{
-		if( parent.canHaveSiblingRejectPoints() )
-		{
-			int i = parent.indexOfChild(node) - 1;
-			while( i >= 0 )
-			{
-				WorkflowNode child = parent.getChild(i);
-				if( child.isRejectPoint() )
-				{
-					return child.getUuid();
-				}
-				i--;
-			}
-		}
+  private String findRejectPoint(WorkflowNode parent, WorkflowNode node) {
+    if (parent.canHaveSiblingRejectPoints()) {
+      int i = parent.indexOfChild(node) - 1;
+      while (i >= 0) {
+        WorkflowNode child = parent.getChild(i);
+        if (child.isRejectPoint()) {
+          return child.getUuid();
+        }
+        i--;
+      }
+    }
 
-		if( parent.isRejectPoint() )
-		{
-			return parent.getUuid();
-		}
+    if (parent.isRejectPoint()) {
+      return parent.getUuid();
+    }
 
-		WorkflowNode newparent = parent.getParent();
-		if( newparent != null )
-		{
-			return findRejectPoint(newparent, parent);
-		}
-		return null;
-	}
+    WorkflowNode newparent = parent.getParent();
+    if (newparent != null) {
+      return findRejectPoint(newparent, parent);
+    }
+    return null;
+  }
 }

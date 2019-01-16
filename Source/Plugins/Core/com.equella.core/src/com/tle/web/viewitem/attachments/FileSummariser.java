@@ -63,171 +63,157 @@ import com.tle.web.viewurl.resource.AbstractRealFileResource;
 @Bind
 @Singleton
 public class FileSummariser
-	implements
-		AttachmentResourceExtension<Attachment>,
-		RegisterMimeTypeExtension<Attachment>,
-		SupportedVideoMimeTypeExtension
-{
-	static
-	{
-		PluginResourceHandler.init(FileSummariser.class);
-	}
+    implements AttachmentResourceExtension<Attachment>,
+        RegisterMimeTypeExtension<Attachment>,
+        SupportedVideoMimeTypeExtension {
+  static {
+    PluginResourceHandler.init(FileSummariser.class);
+  }
 
-	@PlugKey("fileresource.details.type")
-	private static Label TYPE;
-	@PlugKey("fileresource.details.filename")
-	private static Label FILENAME;
-	@PlugKey("fileresource.details.filesize")
-	private static Label SIZE;
-	@PlugKey("fileresource.details.views")
-	private static Label VIEWS;
+  @PlugKey("fileresource.details.type")
+  private static Label TYPE;
 
-	@PlugKey("file.msoffice.details.author")
-	private static Label AUTHOR;
-	@PlugKey("file.msoffice.details.publisher")
-	private static Label PUBLISHER;
-	@PlugKey("file.msoffice.details.lastmodified")
-	private static Label LAST_MODIFIED;
+  @PlugKey("fileresource.details.filename")
+  private static Label FILENAME;
 
-	@PlugKey("file.msoffice.word.details.pages")
-	private static Label PAGES;
-	@PlugKey("file.msoffice.word.details.words")
-	private static Label WORDS;
+  @PlugKey("fileresource.details.filesize")
+  private static Label SIZE;
 
-	@Inject
-	private MimeTypeService mimeService;
-	@Inject
-	private ViewItemUrlFactory urlFactory;
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private TLEAclManager aclService;
+  @PlugKey("fileresource.details.views")
+  private static Label VIEWS;
 
-	@Override
-	public ViewableResource process(SectionInfo info, ViewableResource resource, Attachment attachment)
-	{
-		final String filename = attachment.getUrl();
-		if( attachment instanceof ZipAttachment )
-		{
-			ZipAttachment zipAttachment = (ZipAttachment) attachment;
-			resource.setAttribute(ViewableResource.KEY_HIDDEN, !zipAttachment.isAttachZip());
-		}
-		return new FileResource(resource, filename, mimeService.getMimeTypeForFilename(filename));
-	}
+  @PlugKey("file.msoffice.details.author")
+  private static Label AUTHOR;
 
-	public class FileResource extends AbstractRealFileResource
-	{
-		public FileResource(ViewableResource inner, String filePath, String mimeType)
-		{
-			super(inner, filePath, mimeType, urlFactory, fileSystemService);
-		}
+  @PlugKey("file.msoffice.details.publisher")
+  private static Label PUBLISHER;
 
-		@Override
-		@SuppressWarnings("nls")
-		public List<AttachmentDetail> getCommonAttachmentDetails()
-		{
-			List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
+  @PlugKey("file.msoffice.details.lastmodified")
+  private static Label LAST_MODIFIED;
 
-			String mimetype = getMimeType();
-			final MimeEntry mimeEntry = mimeService.getEntryForMimeType(mimetype);
-			TextLabel mimeLabel = new TextLabel(mimeEntry == null || Check.isEmpty(mimeEntry.getDescription())
-				? mimetype : mimeEntry.getDescription());
-			// Have to render a span, td elements don't have title or alt attr.
-			// otherwise it would just be done in the wrapped label constructor
-			if( mimeLabel.getText().length() > 30 )
-			{
-				String longText = mimeLabel.getText();
-				TagState spanState = new TagState();
-				spanState.addTagProcessor(new ExtraAttributes("title", longText, "alt", longText));
-				SpanRenderer span = new SpanRenderer(spanState, longText.substring(0, 30) + "...");
-				commonDetails.add(makeDetail(TYPE, span));
-			}
-			else
-			{
-				commonDetails.add(makeDetail(TYPE, new WrappedLabel(mimeLabel, -1, true, false)));
-			}
-			// Name (Filename) and Size
-			if( hasContentStream() )
-			{
-				final ContentStream stream = getContentStream();
+  @PlugKey("file.msoffice.word.details.pages")
+  private static Label PAGES;
 
-				if( stream.exists() )
-				{
-					final long length = stream.getEstimatedContentLength();
-					String readableFileSize = length >= 0 ? FileSizeUtils.humanReadableFileSize(length) : "0";
-					// makeDetail throws a nullPointerException if 2nd Label is
-					// null, so ensure it isn't
-					commonDetails.add(makeDetail(FILENAME, new TextLabel(stream.getFilenameWithoutPath())));
-					commonDetails.add(makeDetail(SIZE, new TextLabel(readableFileSize)));
-				}
-			}
+  @PlugKey("file.msoffice.word.details.words")
+  private static Label WORDS;
 
-			// TODO More file info... TIKA?
-			// Use attachment for details...? Setup fake attachment
-			IAttachment attachment = getAttachment();
+  @Inject private MimeTypeService mimeService;
+  @Inject private ViewItemUrlFactory urlFactory;
+  @Inject private FileSystemService fileSystemService;
+  @Inject private TLEAclManager aclService;
 
-			String author = (String) attachment.getData("author");
-			if( !Check.isEmpty(author) )
-			{
-				commonDetails.add(makeDetail(AUTHOR, new TextLabel(author)));
-			}
+  @Override
+  public ViewableResource process(
+      SectionInfo info, ViewableResource resource, Attachment attachment) {
+    final String filename = attachment.getUrl();
+    if (attachment instanceof ZipAttachment) {
+      ZipAttachment zipAttachment = (ZipAttachment) attachment;
+      resource.setAttribute(ViewableResource.KEY_HIDDEN, !zipAttachment.isAttachZip());
+    }
+    return new FileResource(resource, filename, mimeService.getMimeTypeForFilename(filename));
+  }
 
-			String publisher = (String) attachment.getData("publisher");
-			if( !Check.isEmpty(publisher) )
-			{
-				commonDetails.add(makeDetail(PUBLISHER, new TextLabel(publisher)));
-			}
+  public class FileResource extends AbstractRealFileResource {
+    public FileResource(ViewableResource inner, String filePath, String mimeType) {
+      super(inner, filePath, mimeType, urlFactory, fileSystemService);
+    }
 
-			Date lastmod = (Date) attachment.getData("lastmodified");
-			if( lastmod != null )
-			{
-				TagRenderer lastedit = JQueryTimeAgo.timeAgoTag(lastmod);
-				commonDetails.add(makeDetail(LAST_MODIFIED, lastedit));
-			}
+    @Override
+    @SuppressWarnings("nls")
+    public List<AttachmentDetail> getCommonAttachmentDetails() {
+      List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
 
-			String pcount = (String) attachment.getData("pagecount");
-			if( !Check.isEmpty(pcount) )
-			{
-				commonDetails.add(makeDetail(PAGES, new TextLabel(pcount)));
-			}
+      String mimetype = getMimeType();
+      final MimeEntry mimeEntry = mimeService.getEntryForMimeType(mimetype);
+      TextLabel mimeLabel =
+          new TextLabel(
+              mimeEntry == null || Check.isEmpty(mimeEntry.getDescription())
+                  ? mimetype
+                  : mimeEntry.getDescription());
+      // Have to render a span, td elements don't have title or alt attr.
+      // otherwise it would just be done in the wrapped label constructor
+      if (mimeLabel.getText().length() > 30) {
+        String longText = mimeLabel.getText();
+        TagState spanState = new TagState();
+        spanState.addTagProcessor(new ExtraAttributes("title", longText, "alt", longText));
+        SpanRenderer span = new SpanRenderer(spanState, longText.substring(0, 30) + "...");
+        commonDetails.add(makeDetail(TYPE, span));
+      } else {
+        commonDetails.add(makeDetail(TYPE, new WrappedLabel(mimeLabel, -1, true, false)));
+      }
+      // Name (Filename) and Size
+      if (hasContentStream()) {
+        final ContentStream stream = getContentStream();
 
-			String wcount = (String) attachment.getData("wordcount");
-			if( !Check.isEmpty(wcount) )
-			{
-				commonDetails.add(makeDetail(WORDS, new TextLabel(wcount)));
-			}
+        if (stream.exists()) {
+          final long length = stream.getEstimatedContentLength();
+          String readableFileSize = length >= 0 ? FileSizeUtils.humanReadableFileSize(length) : "0";
+          // makeDetail throws a nullPointerException if 2nd Label is
+          // null, so ensure it isn't
+          commonDetails.add(makeDetail(FILENAME, new TextLabel(stream.getFilenameWithoutPath())));
+          commonDetails.add(makeDetail(SIZE, new TextLabel(readableFileSize)));
+        }
+      }
 
-			if (attachment instanceof Attachment)
-			{
-				final Attachment att = (Attachment)attachment;
-				if (!aclService.filterNonGrantedPrivileges(att.getItem(), Collections.singleton(SecurityConstants.VIEW_VIEWCOUNT)).isEmpty())
-				{
-					Integer views = ViewCountJavaDao.getAttachmentViewCount(getViewableItem().getItemId(), att.getUuid());
-					if (views != null)
-					{
-						commonDetails.add(makeDetail(VIEWS, new CountLabel(views)));
-					}
-				}
-			}
+      // TODO More file info... TIKA?
+      // Use attachment for details...? Setup fake attachment
+      IAttachment attachment = getAttachment();
 
-			return commonDetails;
-		}
-	}
+      String author = (String) attachment.getData("author");
+      if (!Check.isEmpty(author)) {
+        commonDetails.add(makeDetail(AUTHOR, new TextLabel(author)));
+      }
 
-	@Override
-	public String getMimeType(Attachment attachment)
-	{
-		final String filename = attachment.getUrl();
-		return mimeService.getMimeTypeForFilename(filename);
-	}
+      String publisher = (String) attachment.getData("publisher");
+      if (!Check.isEmpty(publisher)) {
+        commonDetails.add(makeDetail(PUBLISHER, new TextLabel(publisher)));
+      }
 
-	@Override
-	public boolean isSupportedMimeType(@Nullable String mimeType)
-	{
-		if( mimeType != null && mimeType.startsWith("video") )
-		{
-			return true;
-		}
-		return false;
-	}
+      Date lastmod = (Date) attachment.getData("lastmodified");
+      if (lastmod != null) {
+        TagRenderer lastedit = JQueryTimeAgo.timeAgoTag(lastmod);
+        commonDetails.add(makeDetail(LAST_MODIFIED, lastedit));
+      }
+
+      String pcount = (String) attachment.getData("pagecount");
+      if (!Check.isEmpty(pcount)) {
+        commonDetails.add(makeDetail(PAGES, new TextLabel(pcount)));
+      }
+
+      String wcount = (String) attachment.getData("wordcount");
+      if (!Check.isEmpty(wcount)) {
+        commonDetails.add(makeDetail(WORDS, new TextLabel(wcount)));
+      }
+
+      if (attachment instanceof Attachment) {
+        final Attachment att = (Attachment) attachment;
+        if (!aclService
+            .filterNonGrantedPrivileges(
+                att.getItem(), Collections.singleton(SecurityConstants.VIEW_VIEWCOUNT))
+            .isEmpty()) {
+          Integer views =
+              ViewCountJavaDao.getAttachmentViewCount(getViewableItem().getItemId(), att.getUuid());
+          if (views != null) {
+            commonDetails.add(makeDetail(VIEWS, new CountLabel(views)));
+          }
+        }
+      }
+
+      return commonDetails;
+    }
+  }
+
+  @Override
+  public String getMimeType(Attachment attachment) {
+    final String filename = attachment.getUrl();
+    return mimeService.getMimeTypeForFilename(filename);
+  }
+
+  @Override
+  public boolean isSupportedMimeType(@Nullable String mimeType) {
+    if (mimeType != null && mimeType.startsWith("video")) {
+      return true;
+    }
+    return false;
+  }
 }

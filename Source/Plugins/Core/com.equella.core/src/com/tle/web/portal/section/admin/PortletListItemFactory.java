@@ -28,32 +28,25 @@ import com.tle.web.sections.equella.utils.UserLinkSection;
 import com.tle.web.sections.equella.utils.UserLinkService;
 import com.tle.web.sections.events.js.JSHandler;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class PortletListItemFactory
-{
-	@Inject
-	private Provider<PortletListItem> itemFactory;
-	@Inject
-	private UserLinkService userLinkService;
-	private UserLinkSection userLinkSection;
+public class PortletListItemFactory {
+  @Inject private Provider<PortletListItem> itemFactory;
+  @Inject private UserLinkService userLinkService;
+  private UserLinkSection userLinkSection;
 
-	public void register(String id, SectionTree tree)
-	{
-		userLinkSection = userLinkService.register(tree, id);
-	}
+  public void register(String id, SectionTree tree) {
+    userLinkSection = userLinkService.register(tree, id);
+  }
 
-	public PortletListItem createPortletListItem(SectionInfo info, Portlet portlet, JSHandler editHandler,
-		JSHandler deleteHandler)
-	{
-		PortletListItem listItem = itemFactory.get();
-		listItem.setEditHandler(editHandler);
-		listItem.setDeleteHandler(deleteHandler);
-		listItem.setPortlet(portlet);
-		listItem.setOwnerLabel(userLinkSection.createLink(info, portlet.getOwner()));
-		return listItem;
-	}
+  public PortletListItem createPortletListItem(
+      SectionInfo info, Portlet portlet, JSHandler editHandler, JSHandler deleteHandler) {
+    PortletListItem listItem = itemFactory.get();
+    listItem.setEditHandler(editHandler);
+    listItem.setDeleteHandler(deleteHandler);
+    listItem.setPortlet(portlet);
+    listItem.setOwnerLabel(userLinkSection.createLink(info, portlet.getOwner()));
+    return listItem;
+  }
 }

@@ -27,33 +27,29 @@ import com.tle.web.sections.render.LabelRenderer;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.TextLabel;
 
-public class PrintedVariableRenderer extends QtiNodeRenderer
-{
-	private final PrintedVariable model;
+public class PrintedVariableRenderer extends QtiNodeRenderer {
+  private final PrintedVariable model;
 
-	@AssistedInject
-	public PrintedVariableRenderer(@Assisted PrintedVariable model, @Assisted QtiViewerContext context)
-	{
-		super(model, context);
-		this.model = model;
-	}
+  @AssistedInject
+  public PrintedVariableRenderer(
+      @Assisted PrintedVariable model, @Assisted QtiViewerContext context) {
+    super(model, context);
+    this.model = model;
+  }
 
-	@Override
-	protected SectionRenderable createTopRenderable()
-	{
-		final Identifier varId = model.getIdentifier();
-		final Value value = getContext().evaluateVariable(model, varId);
-		if( value.isNull() )
-		{
-			return null;
-		}
-		// TODO: various different formats based on Value type
-		return new LabelRenderer(new TextLabel(value.toQtiString()));
-	}
+  @Override
+  protected SectionRenderable createTopRenderable() {
+    final Identifier varId = model.getIdentifier();
+    final Value value = getContext().evaluateVariable(model, varId);
+    if (value.isNull()) {
+      return null;
+    }
+    // TODO: various different formats based on Value type
+    return new LabelRenderer(new TextLabel(value.toQtiString()));
+  }
 
-	@Override
-	protected boolean isNestedTop()
-	{
-		return false;
-	}
+  @Override
+  protected boolean isNestedTop() {
+    return false;
+  }
 }

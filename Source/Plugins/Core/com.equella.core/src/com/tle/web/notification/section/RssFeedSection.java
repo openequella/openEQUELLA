@@ -38,58 +38,54 @@ import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.annotations.Component;
 
 /**
- * Re-purposed RssFeedDialog. This class should probably disappear in the future
- * and the StandardShareSearchQuerySection or similar be refactored and used
- * instead
+ * Re-purposed RssFeedDialog. This class should probably disappear in the future and the
+ * StandardShareSearchQuerySection or similar be refactored and used instead
  */
 @NonNullByDefault
 @Bind
 @SuppressWarnings("nls")
-public class RssFeedSection extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+public class RssFeedSection extends AbstractPrototypeSection<Object> implements HtmlRenderer {
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Inject
-	private FeedServlet feedServlet;
+  @Inject private FeedServlet feedServlet;
 
-	@Component(name = "r")
-	private Link rssLink;
-	@Component(name = "a")
-	private Link atomLink;
-	@TreeLookup
-	private AbstractRootSearchSection<?> rootSearch;
+  @Component(name = "r")
+  private Link rssLink;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.setLayout(id, SearchResultsActionsSection.AREA_SHARE);
-	}
+  @Component(name = "a")
+  private Link atomLink;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		InfoBookmark bookmark = rootSearch.getPermanentUrl(context);
-		setupFeeds(bookmark, context);
-		return viewFactory.createResult("rss.ftl", this);
-	}
+  @TreeLookup private AbstractRootSearchSection<?> rootSearch;
 
-	private void setupFeeds(InfoBookmark bookmark, RenderContext context)
-	{
-		rssLink.setBookmark(context,
-			new BookmarkAndModify(bookmark, feedServlet.getModifier(context, "rss_2.0", FeedServlet.AUTH_BASIC)));
-		atomLink.setBookmark(context,
-			new BookmarkAndModify(bookmark, feedServlet.getModifier(context, "atom_1.0", FeedServlet.AUTH_BASIC)));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.setLayout(id, SearchResultsActionsSection.AREA_SHARE);
+  }
 
-	public Link getRssLink()
-	{
-		return rssLink;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    InfoBookmark bookmark = rootSearch.getPermanentUrl(context);
+    setupFeeds(bookmark, context);
+    return viewFactory.createResult("rss.ftl", this);
+  }
 
-	public Link getAtomLink()
-	{
-		return atomLink;
-	}
+  private void setupFeeds(InfoBookmark bookmark, RenderContext context) {
+    rssLink.setBookmark(
+        context,
+        new BookmarkAndModify(
+            bookmark, feedServlet.getModifier(context, "rss_2.0", FeedServlet.AUTH_BASIC)));
+    atomLink.setBookmark(
+        context,
+        new BookmarkAndModify(
+            bookmark, feedServlet.getModifier(context, "atom_1.0", FeedServlet.AUTH_BASIC)));
+  }
+
+  public Link getRssLink() {
+    return rssLink;
+  }
+
+  public Link getAtomLink() {
+    return atomLink;
+  }
 }

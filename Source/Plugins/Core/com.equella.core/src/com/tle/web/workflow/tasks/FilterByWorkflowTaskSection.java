@@ -60,182 +60,147 @@ import java.util.Set;
 
 @NonNullByDefault
 @Bind
-public class FilterByWorkflowTaskSection extends AbstractPrototypeSection<FilterByWorkflowTaskSection.Model>
-	implements
-		HtmlRenderer,
-		SearchEventListener<FreetextSearchEvent>,
-		ResetFiltersListener
-{
-	@Inject
-	private BundleCache bundleCache;
+public class FilterByWorkflowTaskSection
+    extends AbstractPrototypeSection<FilterByWorkflowTaskSection.Model>
+    implements HtmlRenderer, SearchEventListener<FreetextSearchEvent>, ResetFiltersListener {
+  @Inject private BundleCache bundleCache;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
-	@TreeLookup
-	private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
-	@TreeLookup
-	private WorkflowSelection workflowSelection;
-	@PlugKey("filter.byworkflowtask.all")
-	private static Label LABEL_ALL;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
+  @TreeLookup private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
+  @TreeLookup private WorkflowSelection workflowSelection;
 
-	@Component(name = "s", parameter = "task", supported = true)
-	private SingleSelectionList<WorkflowNode> taskList;
-	@Nullable
-	private JSHandler changeHandler;
+  @PlugKey("filter.byworkflowtask.all")
+  private static Label LABEL_ALL;
 
-	private boolean isMyTasks;
+  @Component(name = "s", parameter = "task", supported = true)
+  private SingleSelectionList<WorkflowNode> taskList;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		taskList.setListModel(new TaskListModel());
-		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
-	}
+  @Nullable private JSHandler changeHandler;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		if( changeHandler == null )
-		{
-			changeHandler = searchResults.getRestartSearchHandler(tree);
-		}
-		taskList.addChangeEventHandler(changeHandler);
-	}
+  private boolean isMyTasks;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( hasWorkflowTasks(context) )
-		{
-			return viewFactory.createResult("filterbyworkflowtask.ftl", context); //$NON-NLS-1$
-		}
-		return null;
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    taskList.setListModel(new TaskListModel());
+    tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
+  }
 
-	@Override
-	public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception
-	{
-		if( hasWorkflowTasks(info) )
-		{
-			WorkflowNode value = taskList.getSelectedValue(info);
-			if( value != null && !Check.isEmpty(value.getUuid()) )
-			{
-				event.filterByTerm(false, FreeTextQuery.FIELD_WORKFLOW_TASKID, value.getUuid());
-			}
-		}
-		else
-		{
-			taskList.setSelectedStringValue(info, Constants.BLANK);
-		}
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    if (changeHandler == null) {
+      changeHandler = searchResults.getRestartSearchHandler(tree);
+    }
+    taskList.addChangeEventHandler(changeHandler);
+  }
 
-	public class TaskListModel extends DynamicHtmlListModel<WorkflowNode>
-	{
-		public TaskListModel()
-		{
-			setSort(true);
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (hasWorkflowTasks(context)) {
+      return viewFactory.createResult("filterbyworkflowtask.ftl", context); // $NON-NLS-1$
+    }
+    return null;
+  }
 
-		@Override
-		protected Iterable<WorkflowNode> populateModel(SectionInfo info)
-		{
-			Workflow workflow = getWorkflow(info);
-			if (workflow != null)
-			{
-				Set<WorkflowNode> nodes = workflow.getNodes();
-				List<WorkflowNode> interestingNodes = new ArrayList<>();
-				for (WorkflowNode node : nodes)
-				{
-					if (node.getType() == WorkflowNode.ITEM_TYPE || (!isMyTasks && node.getType() == WorkflowNode.SCRIPT_TYPE))
-					{
-						interestingNodes.add(node);
-					}
-				}
-				return interestingNodes;
-			}
-			return null;
-		}
+  @Override
+  public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception {
+    if (hasWorkflowTasks(info)) {
+      WorkflowNode value = taskList.getSelectedValue(info);
+      if (value != null && !Check.isEmpty(value.getUuid())) {
+        event.filterByTerm(false, FreeTextQuery.FIELD_WORKFLOW_TASKID, value.getUuid());
+      }
+    } else {
+      taskList.setSelectedStringValue(info, Constants.BLANK);
+    }
+  }
 
-		@Override
-		protected Option<WorkflowNode> convertToOption(SectionInfo info, WorkflowNode obj)
-		{
-			return new LabelOption<WorkflowNode>(new BundleLabel(obj.getName(), bundleCache), obj.getUuid(), obj);
-		}
+  public class TaskListModel extends DynamicHtmlListModel<WorkflowNode> {
+    public TaskListModel() {
+      setSort(true);
+    }
 
-		@Override
-		protected Option<WorkflowNode> getTopOption()
-		{
-			return new LabelOption<WorkflowNode>(LABEL_ALL, Constants.BLANK, null);
-		}
-	}
+    @Override
+    protected Iterable<WorkflowNode> populateModel(SectionInfo info) {
+      Workflow workflow = getWorkflow(info);
+      if (workflow != null) {
+        Set<WorkflowNode> nodes = workflow.getNodes();
+        List<WorkflowNode> interestingNodes = new ArrayList<>();
+        for (WorkflowNode node : nodes) {
+          if (node.getType() == WorkflowNode.ITEM_TYPE
+              || (!isMyTasks && node.getType() == WorkflowNode.SCRIPT_TYPE)) {
+            interestingNodes.add(node);
+          }
+        }
+        return interestingNodes;
+      }
+      return null;
+    }
 
-	@Nullable
-	private Workflow getWorkflow(SectionInfo info)
-	{
-		Model model = getModel(info);
-		Workflow workflow = model.getWorkflow();
-		if( workflow == null )
-		{
-			workflow = workflowSelection.getWorkflow(info);
-			model.setWorkflow(workflow);
-		}
-		return workflow;
-	}
+    @Override
+    protected Option<WorkflowNode> convertToOption(SectionInfo info, WorkflowNode obj) {
+      return new LabelOption<WorkflowNode>(
+          new BundleLabel(obj.getName(), bundleCache), obj.getUuid(), obj);
+    }
 
-	private boolean hasWorkflowTasks(SectionInfo info)
-	{
-		Workflow workflow = getWorkflow(info);
-		if( workflow != null )
-		{
-			return !workflow.getAllWorkflowItems().values().isEmpty();
-		}
-		return false;
-	}
+    @Override
+    protected Option<WorkflowNode> getTopOption() {
+      return new LabelOption<WorkflowNode>(LABEL_ALL, Constants.BLANK, null);
+    }
+  }
 
-	public SingleSelectionList<WorkflowNode> getTaskList()
-	{
-		return taskList;
-	}
+  @Nullable
+  private Workflow getWorkflow(SectionInfo info) {
+    Model model = getModel(info);
+    Workflow workflow = model.getWorkflow();
+    if (workflow == null) {
+      workflow = workflowSelection.getWorkflow(info);
+      model.setWorkflow(workflow);
+    }
+    return workflow;
+  }
 
-	@Override
-	public void reset(SectionInfo info)
-	{
-		taskList.setSelectedStringValue(info, null);
-	}
+  private boolean hasWorkflowTasks(SectionInfo info) {
+    Workflow workflow = getWorkflow(info);
+    if (workflow != null) {
+      return !workflow.getAllWorkflowItems().values().isEmpty();
+    }
+    return false;
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model();
-	}
+  public SingleSelectionList<WorkflowNode> getTaskList() {
+    return taskList;
+  }
 
-	@NonNullByDefault(false)
-	public static class Model
-	{
-		private Workflow workflow;
+  @Override
+  public void reset(SectionInfo info) {
+    taskList.setSelectedStringValue(info, null);
+  }
 
-		public Workflow getWorkflow()
-		{
-			return workflow;
-		}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model();
+  }
 
-		public void setWorkflow(Workflow workflow)
-		{
-			this.workflow = workflow;
-		}
-	}
+  @NonNullByDefault(false)
+  public static class Model {
+    private Workflow workflow;
 
-	public void setWorkflowTask(SectionInfo info, WorkflowItem task)
-	{
-		workflowSelection.setWorkflow(info, task.getWorkflow());
-		taskList.setSelectedStringValue(info, task.getUuid());
-	}
+    public Workflow getWorkflow() {
+      return workflow;
+    }
 
-	public void setIsMyTasks(boolean isMyTasks)
-	{
-		this.isMyTasks = isMyTasks;
-	}
+    public void setWorkflow(Workflow workflow) {
+      this.workflow = workflow;
+    }
+  }
+
+  public void setWorkflowTask(SectionInfo info, WorkflowItem task) {
+    workflowSelection.setWorkflow(info, task.getWorkflow());
+    taskList.setSelectedStringValue(info, task.getUuid());
+  }
+
+  public void setIsMyTasks(boolean isMyTasks) {
+    this.isMyTasks = isMyTasks;
+  }
 }

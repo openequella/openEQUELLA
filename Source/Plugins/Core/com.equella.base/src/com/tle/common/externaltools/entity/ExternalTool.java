@@ -30,80 +30,69 @@ import com.tle.common.NameValue;
 
 @Entity
 @AccessType("field")
-public class ExternalTool extends BaseEntity
-{
-	public static final String ENTITY_TYPE = "EXTERNAL_TOOL";
+public class ExternalTool extends BaseEntity {
+  public static final String ENTITY_TYPE = "EXTERNAL_TOOL";
 
-	@Lob
-	private String baseURL;
-	@Column(length = 64, nullable = true)
-	private String consumerKey;
-	@Column(length = 64, nullable = true)
-	private String sharedSecret;
+  @Lob private String baseURL;
 
-	@Type(type = "xstream_immutable")
-	@Column(length = 8192)
-	private List<NameValue> customParams;
-	private Boolean shareName;
-	private Boolean shareEmail;
+  @Column(length = 64, nullable = true)
+  private String consumerKey;
 
-	public List<NameValue> getCustomParams()
-	{
-		return customParams;
-	}
+  @Column(length = 64, nullable = true)
+  private String sharedSecret;
 
-	public void setCustomParams(List<NameValue> customParams)
-	{
-		this.customParams = customParams;
-	}
+  @Type(type = "xstream_immutable")
+  @Column(length = 8192)
+  private List<NameValue> customParams;
 
-	public String getBaseURL()
-	{
-		return baseURL;
-	}
+  private Boolean shareName;
+  private Boolean shareEmail;
 
-	public void setBaseURL(String baseURL)
-	{
-		this.baseURL = baseURL;
-	}
+  public List<NameValue> getCustomParams() {
+    return customParams;
+  }
 
-	public String getConsumerKey()
-	{
-		return consumerKey;
-	}
+  public void setCustomParams(List<NameValue> customParams) {
+    this.customParams = customParams;
+  }
 
-	public void setConsumerKey(String consumerKey)
-	{
-		this.consumerKey = consumerKey;
-	}
+  public String getBaseURL() {
+    return baseURL;
+  }
 
-	public String getSharedSecret()
-	{
-		return sharedSecret;
-	}
+  public void setBaseURL(String baseURL) {
+    this.baseURL = baseURL;
+  }
 
-	public void setSharedSecret(String sharedSecret)
-	{
-		this.sharedSecret = sharedSecret;
-	}
+  public String getConsumerKey() {
+    return consumerKey;
+  }
 
-	public Boolean getShareName()
-	{
-		return shareName;
-	}
+  public void setConsumerKey(String consumerKey) {
+    this.consumerKey = consumerKey;
+  }
 
-	public void setShareName(Boolean shareName)
-	{
-		this.shareName = shareName;
-	}
+  public String getSharedSecret() {
+    return sharedSecret;
+  }
 
-	public Boolean getShareEmail()
-	{
-		return shareEmail;
-	}
+  public void setSharedSecret(String sharedSecret) {
+    this.sharedSecret = sharedSecret;
+  }
 
-	public void setShareEmail(Boolean shareEmail)
-	{
-		this.shareEmail = shareEmail;
-	}
+  public Boolean getShareName() {
+    return shareName;
+  }
+
+  public void setShareName(Boolean shareName) {
+    this.shareName = shareName;
+  }
+
+  public Boolean getShareEmail() {
+    return shareEmail;
+  }
+
+  public void setShareEmail(Boolean shareEmail) {
+    this.shareEmail = shareEmail;
+  }
 }

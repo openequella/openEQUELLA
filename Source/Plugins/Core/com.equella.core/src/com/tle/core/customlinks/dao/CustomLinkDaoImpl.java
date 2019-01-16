@@ -30,19 +30,15 @@ import com.tle.core.security.impl.SecureOnReturn;
 
 @Bind(CustomLinkDao.class)
 @Singleton
-public class CustomLinkDaoImpl extends AbstractEntityDaoImpl<CustomLink> implements CustomLinkDao
-{
-	public CustomLinkDaoImpl()
-	{
-		super(CustomLink.class);
-	}
+public class CustomLinkDaoImpl extends AbstractEntityDaoImpl<CustomLink> implements CustomLinkDao {
+  public CustomLinkDaoImpl() {
+    super(CustomLink.class);
+  }
 
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
-	@SecureOnReturn(priv = "VIEW_CUSTOM_LINK")
-	public List<CustomLink> listLinksForUser()
-	{
-		return enumerateAll();
-	}
-
+  @Override
+  @Transactional(propagation = Propagation.REQUIRED)
+  @SecureOnReturn(priv = "VIEW_CUSTOM_LINK")
+  public List<CustomLink> listLinksForUser() {
+    return enumerateAll();
+  }
 }

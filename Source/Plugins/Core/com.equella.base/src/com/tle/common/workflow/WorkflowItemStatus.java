@@ -36,100 +36,90 @@ import com.tle.common.workflow.node.WorkflowNode;
 @Entity
 @AccessType("field")
 @DiscriminatorValue("task")
-public class WorkflowItemStatus extends WorkflowNodeStatus
-{
-	private static final long serialVersionUID = 1L;
+public class WorkflowItemStatus extends WorkflowNodeStatus {
+  private static final long serialVersionUID = 1L;
 
-	@Index(name = "datedue_idx")
-	private Date dateDue;
-	private Date started;
-	private boolean overdue;
-	@Column(length = 40)
-	private String assignedTo;
-	@ElementCollection
-	@JoinTable(name = "WorkflowNodeStatusAccepted", joinColumns = @JoinColumn(name = "workflow_node_status_id") )
-	@Column(name = "`user`", length = 255)
-	private Set<String> acceptedUsers = new HashSet<String>();
-	@ManyToOne
-	@Index(name = "cause_idx")
-	private WorkflowNodeStatus cause;
+  @Index(name = "datedue_idx")
+  private Date dateDue;
 
-	public WorkflowItemStatus()
-	{
-		super();
-	}
+  private Date started;
+  private boolean overdue;
 
-	public WorkflowItemStatus(WorkflowNode node, WorkflowNodeStatus cause)
-	{
-		super(node);
-		this.cause = cause;
-	}
+  @Column(length = 40)
+  private String assignedTo;
 
-	public Set<String> getAcceptedUsers()
-	{
-		return acceptedUsers;
-	}
+  @ElementCollection
+  @JoinTable(
+      name = "WorkflowNodeStatusAccepted",
+      joinColumns = @JoinColumn(name = "workflow_node_status_id"))
+  @Column(name = "`user`", length = 255)
+  private Set<String> acceptedUsers = new HashSet<String>();
 
-	public void addAccepted(String userId)
-	{
-		acceptedUsers.add(userId);
-	}
+  @ManyToOne
+  @Index(name = "cause_idx")
+  private WorkflowNodeStatus cause;
 
-	public String getAssignedTo()
-	{
-		return assignedTo;
-	}
+  public WorkflowItemStatus() {
+    super();
+  }
 
-	public void setAssignedTo(String assignedTo)
-	{
-		this.assignedTo = assignedTo;
-	}
+  public WorkflowItemStatus(WorkflowNode node, WorkflowNodeStatus cause) {
+    super(node);
+    this.cause = cause;
+  }
 
-	public Date getDateDue()
-	{
-		return dateDue;
-	}
+  public Set<String> getAcceptedUsers() {
+    return acceptedUsers;
+  }
 
-	public void setDateDue(Date dateDue)
-	{
-		this.dateDue = dateDue;
-	}
+  public void addAccepted(String userId) {
+    acceptedUsers.add(userId);
+  }
 
-	public WorkflowNodeStatus getCause()
-	{
-		return cause;
-	}
+  public String getAssignedTo() {
+    return assignedTo;
+  }
 
-	public void setCause(WorkflowNodeStatus cause)
-	{
-		this.cause = cause;
-	}
+  public void setAssignedTo(String assignedTo) {
+    this.assignedTo = assignedTo;
+  }
 
-	@Override
-	public void archive()
-	{
-		super.archive();
-		acceptedUsers.clear();
-		dateDue = null;
-	}
+  public Date getDateDue() {
+    return dateDue;
+  }
 
-	public boolean isOverdue()
-	{
-		return overdue;
-	}
+  public void setDateDue(Date dateDue) {
+    this.dateDue = dateDue;
+  }
 
-	public void setOverdue(boolean overdue)
-	{
-		this.overdue = overdue;
-	}
+  public WorkflowNodeStatus getCause() {
+    return cause;
+  }
 
-	public Date getStarted()
-	{
-		return started;
-	}
+  public void setCause(WorkflowNodeStatus cause) {
+    this.cause = cause;
+  }
 
-	public void setStarted(Date started)
-	{
-		this.started = started;
-	}
+  @Override
+  public void archive() {
+    super.archive();
+    acceptedUsers.clear();
+    dateDue = null;
+  }
+
+  public boolean isOverdue() {
+    return overdue;
+  }
+
+  public void setOverdue(boolean overdue) {
+    this.overdue = overdue;
+  }
+
+  public Date getStarted() {
+    return started;
+  }
+
+  public void setStarted(Date started) {
+    this.started = started;
+  }
 }

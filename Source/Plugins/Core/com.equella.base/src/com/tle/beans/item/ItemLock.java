@@ -37,77 +37,67 @@ import com.tle.beans.Institution;
 @Entity
 @AccessType("field")
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"item_id"})})
-public class ItemLock implements Serializable
-{
-	private static final long serialVersionUID = 1L;
+public class ItemLock implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-	// Primary key and foreign key to base entity table.
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-	@OneToOne(fetch = FetchType.LAZY)
-	private Item item;
+  // Primary key and foreign key to base entity table.
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	@Column(length = 40)
-	private String userSession;
-	private String userID;
+  @OneToOne(fetch = FetchType.LAZY)
+  private Item item;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@Index(name = "itemLockInstIndex")
-	private Institution institution;
+  @Column(length = 40)
+  private String userSession;
 
-	public ItemLock()
-	{
-		super();
-	}
+  private String userID;
 
-	public String getUserSession()
-	{
-		return userSession;
-	}
+  @ManyToOne(fetch = FetchType.LAZY)
+  @Index(name = "itemLockInstIndex")
+  private Institution institution;
 
-	public String getUserID()
-	{
-		return userID;
-	}
+  public ItemLock() {
+    super();
+  }
 
-	public void setUserID(String userID)
-	{
-		this.userID = userID;
-	}
+  public String getUserSession() {
+    return userSession;
+  }
 
-	public void setUserSession(String userSession)
-	{
-		this.userSession = userSession;
-	}
+  public String getUserID() {
+    return userID;
+  }
 
-	public long getId()
-	{
-		return id;
-	}
+  public void setUserID(String userID) {
+    this.userID = userID;
+  }
 
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  public void setUserSession(String userSession) {
+    this.userSession = userSession;
+  }
 
-	public Item getItem()
-	{
-		return item;
-	}
+  public long getId() {
+    return id;
+  }
 
-	public void setItem(Item item)
-	{
-		this.item = item;
-	}
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public Institution getInstitution()
-	{
-		return institution;
-	}
+  public Item getItem() {
+    return item;
+  }
 
-	public void setInstitution(Institution institution)
-	{
-		this.institution = institution;
-	}
+  public void setItem(Item item) {
+    this.item = item;
+  }
+
+  public Institution getInstitution() {
+    return institution;
+  }
+
+  public void setInstitution(Institution institution) {
+    this.institution = institution;
+  }
 }

@@ -30,23 +30,19 @@ import com.tle.core.replicatedcache.dao.CachedValue;
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class CreateCachedValueEntity extends AbstractCreateMigration
-{
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo("com.tle.core.replicatedcache.migration.info.create");
-	}
+public class CreateCachedValueEntity extends AbstractCreateMigration {
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo("com.tle.core.replicatedcache.migration.info.create");
+  }
 
-	@Override
-	protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper)
-	{
-		return new TablesOnlyFilter("cached_value");
-	}
+  @Override
+  protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
+    return new TablesOnlyFilter("cached_value");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class[]{CachedValue.class, Institution.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class[] {CachedValue.class, Institution.class};
+  }
 }

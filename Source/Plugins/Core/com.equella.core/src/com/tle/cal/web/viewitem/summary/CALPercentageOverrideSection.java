@@ -65,226 +65,194 @@ import com.tle.web.viewitem.summary.content.AbstractContentSection;
 import com.tle.web.viewitem.summary.section.ItemSummaryContentSection;
 
 @Bind
-public class CALPercentageOverrideSection extends AbstractContentSection<CALPercentageOverrideSection.Model>
-	implements
-		CopyrightOverrideSection
-{
-	@PlugKey("override.message")
-	private static String KEY_OVERRIDE_MESSAGE;
-	@PlugKey("override.timeout")
-	private static String KEY_ERROR_TIMEOUT;
+public class CALPercentageOverrideSection
+    extends AbstractContentSection<CALPercentageOverrideSection.Model>
+    implements CopyrightOverrideSection {
+  @PlugKey("override.message")
+  private static String KEY_OVERRIDE_MESSAGE;
 
-	@Component
-	private Button continueButton;
-	@Component(stateful = false)
-	private TextField reasonTextField;
-	@Component
-	private Button cancelButton;
+  @PlugKey("override.timeout")
+  private static String KEY_ERROR_TIMEOUT;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@Inject
-	private ActivationService activationService;
-	@AjaxFactory
-	private AjaxGenerator ajax;
-	@Inject
-	private CALService calService;
+  @Component private Button continueButton;
 
-	@TreeLookup
-	private ItemSummaryContentSection summarySection;
-	@TreeLookup
-	private CALActivateSection calActivateSection;
+  @Component(stateful = false)
+  private TextField reasonTextField;
 
-	private final Cache<String, Map<Long, List<ActivateRequest>>> requestCache = CacheBuilder.newBuilder()
-		.expireAfterWrite(30, TimeUnit.MINUTES).softValues().build();
+  @Component private Button cancelButton;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		Model model = getModel(context);
-		if( model.getException() != null )
-		{
-			return calActivateSection.fatalError(this);
-		}
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @Inject private ActivationService activationService;
+  @AjaxFactory private AjaxGenerator ajax;
+  @Inject private CALService calService;
 
-		if( model.getActivePercent() == 0 )
-		{
-			model.setActivePercent(calculatePercentage(context));
-		}
-		model.setOverrideMessage(new KeyLabel(KEY_OVERRIDE_MESSAGE, model.getActivePercent()));
-		continueButton.setDisabled(context, Check.isEmpty(reasonTextField.getValue(context)));
-		return viewFactory.createResult("overridereason.ftl", this);
-	}
+  @TreeLookup private ItemSummaryContentSection summarySection;
+  @TreeLookup private CALActivateSection calActivateSection;
 
-	private double calculatePercentage(SectionInfo info)
-	{
-		CALHolding holding = calService.getHoldingForItem(ParentViewItemSectionUtils.getItemInfo(info).getItem());
-		int totalPages = PageCounter.countTotalPages(holding.getLength());
-		RangeCounter counter = new RangeCounter();
-		for( CALPortion portion : holding.getCALPortions() )
-		{
-			for( CALSection section : portion.getCALSections() )
-			{
-				String copyrightStatus = section.getCopyrightStatus();
-				if( (copyrightStatus == null || copyrightStatus.equals(CALConstants.CAL_COPYRIGHTSTATUS))
-					&& isActiveOrCurrent(info, portion, section) )
-				{
-					PageCounter.processRange(section.getRange(), counter);
-				}
-			}
-		}
-		return (counter.getTotal() / (double) totalPages) * 100;
-	}
+  private final Cache<String, Map<Long, List<ActivateRequest>>> requestCache =
+      CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.MINUTES).softValues().build();
 
-	private boolean isActiveOrCurrent(SectionInfo info, CALPortion portion, CALSection section)
-	{
-		if( activationService.isActive(CALConstants.ACTIVATION_TYPE, portion.getItem(), section.getAttachment()) )
-		{
-			return true;
-		}
-		Map<Long, List<ActivateRequest>> requestMap = requestCache.getIfPresent(getCacheKey(info));
-		return requestMap.containsKey(portion.getItem().getId());
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    Model model = getModel(context);
+    if (model.getException() != null) {
+      return calActivateSection.fatalError(this);
+    }
 
-	@Override
-	@SuppressWarnings("nls")
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		continueButton.setClickHandler(events.getNamedHandler("activate"));
-		cancelButton.setClickHandler(events.getNamedHandler("cancel"));
-		StatementHandler reasonTextFieldKeyupHandler = new StatementHandler(ajax.getAjaxUpdateDomFunction(tree, this,
-			null, ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), "button-ajax"));
-		reasonTextField.setEventHandler(JSHandler.EVENT_KEYUP, reasonTextFieldKeyupHandler);
-	}
+    if (model.getActivePercent() == 0) {
+      model.setActivePercent(calculatePercentage(context));
+    }
+    model.setOverrideMessage(new KeyLabel(KEY_OVERRIDE_MESSAGE, model.getActivePercent()));
+    continueButton.setDisabled(context, Check.isEmpty(reasonTextField.getValue(context)));
+    return viewFactory.createResult("overridereason.ftl", this);
+  }
 
-	@EventHandlerMethod
-	public void activate(SectionInfo info)
-	{
-		Map<Long, List<ActivateRequest>> requestMap = requestCache.getIfPresent(getCacheKey(info));
-		if( requestMap == null )
-		{
-			throw new CopyrightViolationException(LangUtils.createTempLangugageBundle(KEY_ERROR_TIMEOUT));
-		}
-		for( Map.Entry<Long, List<ActivateRequest>> entry : requestMap.entrySet() )
-		{
-			for( ActivateRequest ar : entry.getValue() )
-			{
-				ar.setOverrideReason(reasonTextField.getValue(info));
-			}
-		}
-		try
-		{
-			activationService.activateAll(CALConstants.ACTIVATION_TYPE, requestMap, true);
-			if( calActivateSection.updateSelectionSession(info, requestMap) )
-			{
-				return;
-			}
-		}
-		catch( CopyrightViolationException we )
-		{
-			getModel(info).setException(we);
-			info.preventGET();
-			return;
-		}
-		summarySection.setSummaryId(info, null);
-		ParentViewItemSectionUtils.getItemInfo(info).refreshItem(true);
-	}
+  private double calculatePercentage(SectionInfo info) {
+    CALHolding holding =
+        calService.getHoldingForItem(ParentViewItemSectionUtils.getItemInfo(info).getItem());
+    int totalPages = PageCounter.countTotalPages(holding.getLength());
+    RangeCounter counter = new RangeCounter();
+    for (CALPortion portion : holding.getCALPortions()) {
+      for (CALSection section : portion.getCALSections()) {
+        String copyrightStatus = section.getCopyrightStatus();
+        if ((copyrightStatus == null || copyrightStatus.equals(CALConstants.CAL_COPYRIGHTSTATUS))
+            && isActiveOrCurrent(info, portion, section)) {
+          PageCounter.processRange(section.getRange(), counter);
+        }
+      }
+    }
+    return (counter.getTotal() / (double) totalPages) * 100;
+  }
 
-	@EventHandlerMethod
-	public void cancel(SectionInfo info)
-	{
-		requestCache.invalidate(getCacheKey(info));
-		calActivateSection.cancel(info);
-	}
+  private boolean isActiveOrCurrent(SectionInfo info, CALPortion portion, CALSection section) {
+    if (activationService.isActive(
+        CALConstants.ACTIVATION_TYPE, portion.getItem(), section.getAttachment())) {
+      return true;
+    }
+    Map<Long, List<ActivateRequest>> requestMap = requestCache.getIfPresent(getCacheKey(info));
+    return requestMap.containsKey(portion.getItem().getId());
+  }
 
-	@Override
-	public void doOverride(SectionInfo info, Map<Long, List<ActivateRequest>> requestMap)
-	{
-		requestCache.put(getCacheKey(info), requestMap);
-		summarySection.setSummaryId(info, this);
-	}
-	
-	private String getCacheKey(SectionInfo info)
-	{
-		Model model = getModel(info);
-		if( model.getCollisionAvoidance() == null )
-		{
-			// random uuid to avoid single user collisions on same session
-			model.setCollisionAvoidance(UUID.randomUUID().toString());
-		}
-		return CurrentUser.getSessionID() + model.getCollisionAvoidance();
-	}
+  @Override
+  @SuppressWarnings("nls")
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    continueButton.setClickHandler(events.getNamedHandler("activate"));
+    cancelButton.setClickHandler(events.getNamedHandler("cancel"));
+    StatementHandler reasonTextFieldKeyupHandler =
+        new StatementHandler(
+            ajax.getAjaxUpdateDomFunction(
+                tree,
+                this,
+                null,
+                ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
+                "button-ajax"));
+    reasonTextField.setEventHandler(JSHandler.EVENT_KEYUP, reasonTextFieldKeyupHandler);
+  }
 
-	@Override
-	public Class<Model> getModelClass()
-	{
-		return Model.class;
-	}
+  @EventHandlerMethod
+  public void activate(SectionInfo info) {
+    Map<Long, List<ActivateRequest>> requestMap = requestCache.getIfPresent(getCacheKey(info));
+    if (requestMap == null) {
+      throw new CopyrightViolationException(LangUtils.createTempLangugageBundle(KEY_ERROR_TIMEOUT));
+    }
+    for (Map.Entry<Long, List<ActivateRequest>> entry : requestMap.entrySet()) {
+      for (ActivateRequest ar : entry.getValue()) {
+        ar.setOverrideReason(reasonTextField.getValue(info));
+      }
+    }
+    try {
+      activationService.activateAll(CALConstants.ACTIVATION_TYPE, requestMap, true);
+      if (calActivateSection.updateSelectionSession(info, requestMap)) {
+        return;
+      }
+    } catch (CopyrightViolationException we) {
+      getModel(info).setException(we);
+      info.preventGET();
+      return;
+    }
+    summarySection.setSummaryId(info, null);
+    ParentViewItemSectionUtils.getItemInfo(info).refreshItem(true);
+  }
 
-	public Button getContinueButton()
-	{
-		return continueButton;
-	}
+  @EventHandlerMethod
+  public void cancel(SectionInfo info) {
+    requestCache.invalidate(getCacheKey(info));
+    calActivateSection.cancel(info);
+  }
 
-	public TextField getReasonTextField()
-	{
-		return reasonTextField;
-	}
+  @Override
+  public void doOverride(SectionInfo info, Map<Long, List<ActivateRequest>> requestMap) {
+    requestCache.put(getCacheKey(info), requestMap);
+    summarySection.setSummaryId(info, this);
+  }
 
-	public Button getCancelButton()
-	{
-		return cancelButton;
-	}
+  private String getCacheKey(SectionInfo info) {
+    Model model = getModel(info);
+    if (model.getCollisionAvoidance() == null) {
+      // random uuid to avoid single user collisions on same session
+      model.setCollisionAvoidance(UUID.randomUUID().toString());
+    }
+    return CurrentUser.getSessionID() + model.getCollisionAvoidance();
+  }
 
-	public static class Model
-	{
-		private CopyrightViolationException exception;
-		private Label overrideMessage;
-		@Bookmarked(stateful = true, name = "cad")
-		private String collisionAvoidance;
-		@Bookmarked(stateful = false)
-		private double activePercent;
+  @Override
+  public Class<Model> getModelClass() {
+    return Model.class;
+  }
 
-		public Label getOverrideMessage()
-		{
-			return overrideMessage;
-		}
+  public Button getContinueButton() {
+    return continueButton;
+  }
 
-		public void setOverrideMessage(Label overrideMessage)
-		{
-			this.overrideMessage = overrideMessage;
-		}
+  public TextField getReasonTextField() {
+    return reasonTextField;
+  }
 
-		public CopyrightViolationException getException()
-		{
-			return exception;
-		}
+  public Button getCancelButton() {
+    return cancelButton;
+  }
 
-		public void setException(CopyrightViolationException exception)
-		{
-			this.exception = exception;
-		}
+  public static class Model {
+    private CopyrightViolationException exception;
+    private Label overrideMessage;
 
-		public double getActivePercent()
-		{
-			return activePercent;
-		}
+    @Bookmarked(stateful = true, name = "cad")
+    private String collisionAvoidance;
 
-		public void setActivePercent(double activePercent)
-		{
-			this.activePercent = activePercent;
-		}
+    @Bookmarked(stateful = false)
+    private double activePercent;
 
-		public String getCollisionAvoidance()
-		{
-			return collisionAvoidance;
-		}
+    public Label getOverrideMessage() {
+      return overrideMessage;
+    }
 
-		public void setCollisionAvoidance(String collisionAvoidance)
-		{
-			this.collisionAvoidance = collisionAvoidance;
-		}
+    public void setOverrideMessage(Label overrideMessage) {
+      this.overrideMessage = overrideMessage;
+    }
 
-	}
+    public CopyrightViolationException getException() {
+      return exception;
+    }
+
+    public void setException(CopyrightViolationException exception) {
+      this.exception = exception;
+    }
+
+    public double getActivePercent() {
+      return activePercent;
+    }
+
+    public void setActivePercent(double activePercent) {
+      this.activePercent = activePercent;
+    }
+
+    public String getCollisionAvoidance() {
+      return collisionAvoidance;
+    }
+
+    public void setCollisionAvoidance(String collisionAvoidance) {
+      this.collisionAvoidance = collisionAvoidance;
+    }
+  }
 }

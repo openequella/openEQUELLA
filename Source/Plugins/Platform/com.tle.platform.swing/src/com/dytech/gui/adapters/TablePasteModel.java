@@ -18,16 +18,13 @@ package com.dytech.gui.adapters;
 
 import java.util.List;
 
-/**
- * @author Nicholas Read
- */
-public interface TablePasteModel
-{
-	int getRowCount();
+/** @author Nicholas Read */
+public interface TablePasteModel {
+  int getRowCount();
 
-	int getColumnCount();
+  int getColumnCount();
 
-	void insertRow(int row, List<?> data);
+  void insertRow(int row, List<?> data);
 
-	Class<?> getColumnClass(int column);
+  Class<?> getColumnClass(int column);
 }

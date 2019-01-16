@@ -36,52 +36,47 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class RemoveCoursesMigration extends AbstractHibernateSchemaMigration
-{
-	private static final String TITLE_KEY = PluginServiceImpl.getMyPluginId(RemoveCoursesMigration.class)
-		+ ".migration.removecourses.title";
+public class RemoveCoursesMigration extends AbstractHibernateSchemaMigration {
+  private static final String TITLE_KEY =
+      PluginServiceImpl.getMyPluginId(RemoveCoursesMigration.class)
+          + ".migration.removecourses.title";
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(TITLE_KEY);
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(TITLE_KEY);
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class[]{FakeHierarchyTopicCourses.class,};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class[] {
+      FakeHierarchyTopicCourses.class,
+    };
+  }
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return 0;
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return 0;
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		return Collections.emptyList();
-	}
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    return Collections.emptyList();
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		return helper.getDropTableSql("hierarchy_topic_courses");
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    return helper.getDropTableSql("hierarchy_topic_courses");
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-	{
-		// Nothing to do!
-	}
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) {
+    // Nothing to do!
+  }
 
-	@Entity(name = "HierarchyTopicCourses")
-	@AccessType("field")
-	public static class FakeHierarchyTopicCourses
-	{
-		@Id
-		long hierarchyTopicId;
-	}
+  @Entity(name = "HierarchyTopicCourses")
+  @AccessType("field")
+  public static class FakeHierarchyTopicCourses {
+    @Id long hierarchyTopicId;
+  }
 }

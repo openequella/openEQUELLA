@@ -39,75 +39,65 @@ import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
 import com.tle.common.usermanagement.user.CurrentUser;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind(PortletStandardWebService.class)
 @Singleton
-public class PortletStandardWebServiceImpl implements PortletStandardWebService
-{
-	private static final int RECENT_MAX_RESULTS = 10;
+public class PortletStandardWebServiceImpl implements PortletStandardWebService {
+  private static final int RECENT_MAX_RESULTS = 10;
 
-	private final Cache<String, List<Item>> recentCache = CacheBuilder.newBuilder().softValues()
-		.expireAfterAccess(30, TimeUnit.MINUTES).build();
+  private final Cache<String, List<Item>> recentCache =
+      CacheBuilder.newBuilder().softValues().expireAfterAccess(30, TimeUnit.MINUTES).build();
 
-	@Inject
-	private ItemDefinitionService collectionService;
-	@Inject
-	private FreeTextService freetextService;
+  @Inject private ItemDefinitionService collectionService;
+  @Inject private FreeTextService freetextService;
 
-	@Override
-	public List<Item> getRecentContributions(PortletRecentContrib portlet)
-	{
-		final String cacheKey = getRecentContribCacheKey(portlet);
-		List<Item> results = recentCache.getIfPresent(cacheKey);
-		if( results == null )
-		{
-			final DefaultSearch search = new DefaultSearch();
-			final Collection<ItemDefinition> collections = portlet.getCollections();
-			if( !Check.isEmpty(collections) )
-			{
-				search.setCollectionUuids(
-					collectionService.convertToUuids(collectionService.filterSearchable(collections)));
-			}
-			search.setQuery(portlet.getQuery());
-			search.setOwner(portlet.getUserId());
-			search.setSortType(SortType.DATEMODIFIED);
+  @Override
+  public List<Item> getRecentContributions(PortletRecentContrib portlet) {
+    final String cacheKey = getRecentContribCacheKey(portlet);
+    List<Item> results = recentCache.getIfPresent(cacheKey);
+    if (results == null) {
+      final DefaultSearch search = new DefaultSearch();
+      final Collection<ItemDefinition> collections = portlet.getCollections();
+      if (!Check.isEmpty(collections)) {
+        search.setCollectionUuids(
+            collectionService.convertToUuids(collectionService.filterSearchable(collections)));
+      }
+      search.setQuery(portlet.getQuery());
+      search.setOwner(portlet.getUserId());
+      search.setSortType(SortType.DATEMODIFIED);
 
-			String status = portlet.getPortlet().getAttribute("status"); //$NON-NLS-1$
-			if( !Check.isEmpty(status) )
-			{
-				search.setItemStatuses(ItemStatus.valueOf(status.toUpperCase()));
-			}
-			search.setNotItemStatuses(ItemStatus.PERSONAL);
+      String status = portlet.getPortlet().getAttribute("status"); // $NON-NLS-1$
+      if (!Check.isEmpty(status)) {
+        search.setItemStatuses(ItemStatus.valueOf(status.toUpperCase()));
+      }
+      search.setNotItemStatuses(ItemStatus.PERSONAL);
 
-			final int age = portlet.getAgeDays();
-			if( age > 0 )
-			{
-				final Date now = new Date();
-				final Date start = new Date(now.getTime() - TimeUnit.DAYS.toMillis(age));
-				search.setDateRange(new Date[]{start, now});
-			}
+      final int age = portlet.getAgeDays();
+      if (age > 0) {
+        final Date now = new Date();
+        final Date start = new Date(now.getTime() - TimeUnit.DAYS.toMillis(age));
+        search.setDateRange(new Date[] {start, now});
+      }
 
-			final SearchResults<Item> searchResults = freetextService.search(search, 0, RECENT_MAX_RESULTS);
-			results = searchResults.getResults();
+      final SearchResults<Item> searchResults =
+          freetextService.search(search, 0, RECENT_MAX_RESULTS);
+      results = searchResults.getResults();
 
-			// TODO: use the cache? this will mean new items will be missed
-			// until next login
-			// perhaps have a refresh/update button on the portlet?
-			// recentCache.put(cacheKey, results);
-		}
-		return results;
-	}
+      // TODO: use the cache? this will mean new items will be missed
+      // until next login
+      // perhaps have a refresh/update button on the portlet?
+      // recentCache.put(cacheKey, results);
+    }
+    return results;
+  }
 
-	/**
-	 * This needs to be a composite of user and portlet, i.e. different users
-	 * may see different results
-	 * 
-	 * @return
-	 */
-	private String getRecentContribCacheKey(PortletRecentContrib portlet)
-	{
-		return CurrentUser.getUserID() + ':' + portlet.getPortlet().getUuid();
-	}
+  /**
+   * This needs to be a composite of user and portlet, i.e. different users may see different
+   * results
+   *
+   * @return
+   */
+  private String getRecentContribCacheKey(PortletRecentContrib portlet) {
+    return CurrentUser.getUserID() + ':' + portlet.getPortlet().getUuid();
+  }
 }

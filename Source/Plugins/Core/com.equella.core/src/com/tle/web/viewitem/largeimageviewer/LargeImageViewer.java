@@ -46,130 +46,110 @@ import com.tle.web.viewurl.ViewableResource;
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class LargeImageViewer extends AbstractResourceViewer
-{
-	private static final Logger LOGGER = Logger.getLogger(LargeImageViewer.class);
-	private static final String TILES_FOLDER = "_TILES";
+public class LargeImageViewer extends AbstractResourceViewer {
+  private static final Logger LOGGER = Logger.getLogger(LargeImageViewer.class);
+  private static final String TILES_FOLDER = "_TILES";
 
-	@Inject
-	private ComponentFactory componentFactory;
-	@Inject
-	private ImageTiler imageTiler;
+  @Inject private ComponentFactory componentFactory;
+  @Inject private ImageTiler imageTiler;
 
-	@Override
-	public String getViewerId()
-	{
-		return LargeImageViewerConstants.VIEWER_ID;
-	}
+  @Override
+  public String getViewerId() {
+    return LargeImageViewerConstants.VIEWER_ID;
+  }
 
-	@Override
-	public Class<? extends SectionId> getViewerSectionClass()
-	{
-		return LargeImageViewerSection.class;
-	}
+  @Override
+  public Class<? extends SectionId> getViewerSectionClass() {
+    return LargeImageViewerSection.class;
+  }
 
-	@Override
-	public boolean supports(SectionInfo info, ViewableResource resource)
-	{
-		if( resource.isExternalResource() )
-		{
-			return false;
-		}
-		String mimeType = resource.getMimeType();
-		return mimeType.startsWith(LargeImageViewerConstants.SUPPORTED_MIME_MATCH);
-	}
+  @Override
+  public boolean supports(SectionInfo info, ViewableResource resource) {
+    if (resource.isExternalResource()) {
+      return false;
+    }
+    String mimeType = resource.getMimeType();
+    return mimeType.startsWith(LargeImageViewerConstants.SUPPORTED_MIME_MATCH);
+  }
 
-	public void startTileProcessor(final Collection<Pair<File, File>> images)
-	{
-		new Thread()
-		{
-			@Override
-			public void run()
-			{
-				try
-				{
-					imageTiler.tile(images);
-				}
-				catch( Exception e )
-				{
-					LOGGER.error("Error while tiling images", e);
-				}
-			}
-		}.start();
-	}
+  public void startTileProcessor(final Collection<Pair<File, File>> images) {
+    new Thread() {
+      @Override
+      public void run() {
+        try {
+          imageTiler.tile(images);
+        } catch (Exception e) {
+          LOGGER.error("Error while tiling images", e);
+        }
+      }
+    }.start();
+  }
 
-	public void rotateImage(final File srcImage, final File destImage, final int angle) throws Exception
-	{
-		imageTiler.rotate(srcImage, destImage, angle);
-	}
+  public void rotateImage(final File srcImage, final File destImage, final int angle)
+      throws Exception {
+    imageTiler.rotate(srcImage, destImage, angle);
+  }
 
-	/**
-	 * @param tilesFolder
-	 * @return Can return null if the previous tiling never finised without
-	 *         error (or no tiling has ever occurred)
-	 */
-	public Properties getTileProperties(File tilesFolder)
-	{
-		return imageTiler.readTilePropertiesFile(tilesFolder);
-	}
+  /**
+   * @param tilesFolder
+   * @return Can return null if the previous tiling never finised without error (or no tiling has
+   *     ever occurred)
+   */
+  public Properties getTileProperties(File tilesFolder) {
+    return imageTiler.readTilePropertiesFile(tilesFolder);
+  }
 
-	/**
-	 * If a tiling fails it gets written to a text file. if this file exists the
-	 * contents of the file are returned, otherwise null is returned.
-	 * 
-	 * @param tilesFolder
-	 * @return
-	 */
-	public String getError(File tilesFolder)
-	{
-		return imageTiler.getError(tilesFolder);
-	}
+  /**
+   * If a tiling fails it gets written to a text file. if this file exists the contents of the file
+   * are returned, otherwise null is returned.
+   *
+   * @param tilesFolder
+   * @return
+   */
+  public String getError(File tilesFolder) {
+    return imageTiler.getError(tilesFolder);
+  }
 
-	public FileHandle getTileBaseHandle(FileHandle base, String filepath)
-	{
-		if( base instanceof StagingFile )
-		{
-			return new SubTemporaryFile((StagingFile) base, getTileBasePath(filepath));
-		}
-		return new SubItemFile((ItemFile) base, getTileBasePath(filepath));
-	}
+  public FileHandle getTileBaseHandle(FileHandle base, String filepath) {
+    if (base instanceof StagingFile) {
+      return new SubTemporaryFile((StagingFile) base, getTileBasePath(filepath));
+    }
+    return new SubItemFile((ItemFile) base, getTileBasePath(filepath));
+  }
 
-	public FileHandle getTileBaseHandle(ViewableItem resource, String filepath)
-	{
-		return getTileBaseHandle(resource.getFileHandle(), filepath);
-	}
+  public FileHandle getTileBaseHandle(ViewableItem resource, String filepath) {
+    return getTileBaseHandle(resource.getFileHandle(), filepath);
+  }
 
-	/**
-	 * Package protected
-	 * 
-	 * @param filename
-	 * @return
-	 */
-	String getTileBasePath(String filename)
-	{
-		return PathUtils.filePath(TILES_FOLDER, filename);
-	}
+  /**
+   * Package protected
+   *
+   * @param filename
+   * @return
+   */
+  String getTileBasePath(String filename) {
+    return PathUtils.filePath(TILES_FOLDER, filename);
+  }
 
-	@Override
-	public ViewItemUrl createViewItemUrl(SectionInfo info, ViewableResource resource)
-	{
-		ViewItemUrl viewerUrl = resource.createDefaultViewerUrl();
-		viewerUrl.setViewer(getViewerId());
+  @Override
+  public ViewItemUrl createViewItemUrl(SectionInfo info, ViewableResource resource) {
+    ViewItemUrl viewerUrl = resource.createDefaultViewerUrl();
+    viewerUrl.setViewer(getViewerId());
 
-		// need to include selection session info (see Redmine #4290)
-		viewerUrl.addFlag(ViewItemUrl.FLAG_IGNORE_SESSION_TEMPLATE);
-		viewerUrl.removeFlag(ViewItemUrl.FLAG_IS_RESOURCE);
+    // need to include selection session info (see Redmine #4290)
+    viewerUrl.addFlag(ViewItemUrl.FLAG_IGNORE_SESSION_TEMPLATE);
+    viewerUrl.removeFlag(ViewItemUrl.FLAG_IS_RESOURCE);
 
-		return viewerUrl;
-	}
+    return viewerUrl;
+  }
 
-	@Override
-	public ResourceViewerConfigDialog createConfigDialog(String parentId, SectionTree tree,
-		ResourceViewerConfigDialog defaultDialog)
-	{
-		LargeImageViewerConfigDialog cd = componentFactory.createComponent(parentId, "livcd", tree,
-			LargeImageViewerConfigDialog.class, true);
-		cd.setTemplate(dialogTemplate);
-		return cd;
-	}
+  @Override
+  public ResourceViewerConfigDialog createConfigDialog(
+      String parentId, SectionTree tree, ResourceViewerConfigDialog defaultDialog) {
+    LargeImageViewerConfigDialog cd =
+        componentFactory.createComponent(
+            parentId, "livcd", tree, LargeImageViewerConfigDialog.class, true);
+    cd.setTemplate(dialogTemplate);
+    return cd;
+  }
 }

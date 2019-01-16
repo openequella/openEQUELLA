@@ -45,190 +45,151 @@ import com.tle.core.item.service.ItemService;
 import com.tle.core.services.FileSystemService;
 import com.tle.common.usermanagement.user.CurrentUser;
 
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @NonNullByDefault
-public abstract class AbstractWorkflowOperation implements WorkflowOperation
-{
-	@Inject
-	protected ItemDefinitionService itemdefService;
-	@Inject
-	protected ItemService itemService;
-	@Inject
-	protected FileSystemService fileSystemService;
-	@Inject
-	protected ItemFileService itemFileService;
+public abstract class AbstractWorkflowOperation implements WorkflowOperation {
+  @Inject protected ItemDefinitionService itemdefService;
+  @Inject protected ItemService itemService;
+  @Inject protected FileSystemService fileSystemService;
+  @Inject protected ItemFileService itemFileService;
 
-	protected ItemOperationParams params;
+  protected ItemOperationParams params;
 
-	private boolean injected;
+  private boolean injected;
 
-	@Override
-	public void setParams(ItemOperationParams params)
-	{
-		this.params = params;
-	}
+  @Override
+  public void setParams(ItemOperationParams params) {
+    this.params = params;
+  }
 
-	@Nullable
-	@Override
-	public Item getItem()
-	{
-		final ItemPack<Item> pack = params.getItemPack();
-		if( pack != null )
-		{
-			return pack.getItem();
-		}
-		return null;
-	}
+  @Nullable
+  @Override
+  public Item getItem() {
+    final ItemPack<Item> pack = params.getItemPack();
+    if (pack != null) {
+      return pack.getItem();
+    }
+    return null;
+  }
 
-	@Nullable
-	@Override
-	public ItemPack<Item> getItemPack()
-	{
-		return params.getItemPack();
-	}
+  @Nullable
+  @Override
+  public ItemPack<Item> getItemPack() {
+    return params.getItemPack();
+  }
 
-	@Override
-	public boolean isReadOnly()
-	{
-		return true;
-	}
+  @Override
+  public boolean isReadOnly() {
+    return true;
+  }
 
-	@Override
-	public boolean failedToAutowire()
-	{
-		return !injected;
-	}
+  @Override
+  public boolean failedToAutowire() {
+    return !injected;
+  }
 
-	@Override
-	public boolean isDeleteLike()
-	{
-		return false;
-	}
+  @Override
+  public boolean isDeleteLike() {
+    return false;
+  }
 
-	protected String getUuid()
-	{
-		return getItem().getUuid();
-	}
+  protected String getUuid() {
+    return getItem().getUuid();
+  }
 
-	protected int getVersion()
-	{
-		return getItem().getVersion();
-	}
+  protected int getVersion() {
+    return getItem().getVersion();
+  }
 
-	protected ItemStatus getItemStatus()
-	{
-		return getItem().getStatus();
-	}
+  protected ItemStatus getItemStatus() {
+    return getItem().getStatus();
+  }
 
-	protected ItemDefinition getCollection()
-	{
-		return getItem().getItemDefinition();
-	}
+  protected ItemDefinition getCollection() {
+    return getItem().getItemDefinition();
+  }
 
-	protected Schema getSchema()
-	{
-		return getCollection().getSchema();
-	}
+  protected Schema getSchema() {
+    return getCollection().getSchema();
+  }
 
-	protected String getItemOwnerId()
-	{
-		return getItem().getOwner();
-	}
+  protected String getItemOwnerId() {
+    return getItem().getOwner();
+  }
 
-	protected Collection<String> getAllOwnerIds()
-	{
-		Set<String> owners = Sets.newHashSet();
-		owners.add(getItemOwnerId());
-		owners.addAll(getItem().getCollaborators());
-		return owners;
-	}
+  protected Collection<String> getAllOwnerIds() {
+    Set<String> owners = Sets.newHashSet();
+    owners.add(getItemOwnerId());
+    owners.addAll(getItem().getCollaborators());
+    return owners;
+  }
 
-	public Attachments getAttachments()
-	{
-		return new UnmodifiableAttachments(getItem());
-	}
+  public Attachments getAttachments() {
+    return new UnmodifiableAttachments(getItem());
+  }
 
-	protected boolean isOwner(String userid)
-	{
-		return getItem().getOwner().equals(userid);
-	}
+  protected boolean isOwner(String userid) {
+    return getItem().getOwner().equals(userid);
+  }
 
-	protected void setOwner(String userid)
-	{
-		getItem().setOwner(userid);
-	}
+  protected void setOwner(String userid) {
+    getItem().setOwner(userid);
+  }
 
-	protected String getUserId()
-	{
-		return CurrentUser.getUserID();
-	}
+  protected String getUserId() {
+    return CurrentUser.getUserID();
+  }
 
-	protected ItemKey getItemKey()
-	{
-		return params.getItemKey();
-	}
+  protected ItemKey getItemKey() {
+    return params.getItemKey();
+  }
 
-	protected void setStopImmediately(boolean stop)
-	{
-		params.setStopImmediately(stop);
-	}
+  protected void setStopImmediately(boolean stop) {
+    params.setStopImmediately(stop);
+  }
 
-	@Nullable
-	protected StagingFile getStaging()
-	{
-		ItemPack<Item> itemPack = getItemPack();
-		if( itemPack != null )
-		{
-			String s = itemPack.getStagingID();
-			if( !Check.isEmpty(s) )
-			{
-				return new StagingFile(s);
-			}
-		}
-		return null;
-	}
+  @Nullable
+  protected StagingFile getStaging() {
+    ItemPack<Item> itemPack = getItemPack();
+    if (itemPack != null) {
+      String s = itemPack.getStagingID();
+      if (!Check.isEmpty(s)) {
+        return new StagingFile(s);
+      }
+    }
+    return null;
+  }
 
-	protected Date getDateModified()
-	{
-		Item item = getItem();
-		if( item == null || item.getDateModified() == null )
-		{
-			return params.getDateNow();
-		}
-		return item.getDateModified();
-	}
+  protected Date getDateModified() {
+    Item item = getItem();
+    if (item == null || item.getDateModified() == null) {
+      return params.getDateNow();
+    }
+    return item.getDateModified();
+  }
 
-	protected void setVersion(int version)
-	{
-		getItem().setVersion(version);
-	}
+  protected void setVersion(int version) {
+    getItem().setVersion(version);
+  }
 
-	protected void addAfterCommitEvent(ApplicationEvent<?> event)
-	{
-		params.getAfterCommitEvents().add(event);
-	}
+  protected void addAfterCommitEvent(ApplicationEvent<?> event) {
+    params.getAfterCommitEvents().add(event);
+  }
 
-	protected ItemId getItemId()
-	{
-		return getItem().getItemId();
-	}
+  protected ItemId getItemId() {
+    return getItem().getItemId();
+  }
 
-	protected PropBagEx getItemXml()
-	{
-		return getItemPack().getXml();
-	}
+  protected PropBagEx getItemXml() {
+    return getItemPack().getXml();
+  }
 
-	protected ItemOperationParams getParams()
-	{
-		return params;
-	}
+  protected ItemOperationParams getParams() {
+    return params;
+  }
 
-	@PostConstruct
-	protected void injected()
-	{
-		this.injected = true;
-	}
+  @PostConstruct
+  protected void injected() {
+    this.injected = true;
+  }
 }

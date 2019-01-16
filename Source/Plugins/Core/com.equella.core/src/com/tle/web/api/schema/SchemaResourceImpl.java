@@ -34,53 +34,42 @@ import com.tle.web.api.schema.interfaces.beans.SchemaBean;
 
 import java.util.List;
 
-/**
- * @author larry
- */
+/** @author larry */
 @Bind(SchemaResource.class)
 @Singleton
-public class SchemaResourceImpl extends AbstractBaseEntityResource<Schema, BaseEntitySecurityBean, SchemaBean>
-	implements
-		SchemaResource
-{
-	@Inject
-	private SchemaService schemaService;
-	@Inject
-	private SchemaBeanSerializer serializer;
+public class SchemaResourceImpl
+    extends AbstractBaseEntityResource<Schema, BaseEntitySecurityBean, SchemaBean>
+    implements SchemaResource {
+  @Inject private SchemaService schemaService;
+  @Inject private SchemaBeanSerializer serializer;
 
-	@Override
-	protected Node[] getAllNodes()
-	{
-		return new Node[]{Node.ALL_SCHEMAS};
-	}
+  @Override
+  protected Node[] getAllNodes() {
+    return new Node[] {Node.ALL_SCHEMAS};
+  }
 
-	@Override
-	protected BaseEntitySecurityBean createAllSecurityBean()
-	{
-		return new BaseEntitySecurityBean();
-	}
+  @Override
+  protected BaseEntitySecurityBean createAllSecurityBean() {
+    return new BaseEntitySecurityBean();
+  }
 
-	@Override
-	public AbstractEntityService<?, Schema> getEntityService()
-	{
-		return schemaService;
-	}
+  @Override
+  public AbstractEntityService<?, Schema> getEntityService() {
+    return schemaService;
+  }
 
-	@Override
-	protected BaseEntitySerializer<Schema, SchemaBean> getSerializer()
-	{
-		return serializer;
-	}
+  @Override
+  protected BaseEntitySerializer<Schema, SchemaBean> getSerializer() {
+    return serializer;
+  }
 
-	@Override
-	protected Class<?> getResourceClass()
-	{
-		return SchemaResource.class;
-	}
+  @Override
+  protected Class<?> getResourceClass() {
+    return SchemaResource.class;
+  }
 
-	@Override
-	public List<String> citation(UriInfo uriInfo)
-	{
-		return schemaService.getAllCitations();
-	}
+  @Override
+  public List<String> citation(UriInfo uriInfo) {
+    return schemaService.getAllCitations();
+  }
 }

@@ -26,29 +26,24 @@ import com.tle.beans.entity.LanguageBundle;
 @Entity(name = "WorkflowParallel")
 @AccessType("field")
 @DiscriminatorValue("p")
-public class ParallelNode extends WorkflowNode
-{
-	private static final long serialVersionUID = 1;
+public class ParallelNode extends WorkflowNode {
+  private static final long serialVersionUID = 1;
 
-	public ParallelNode(LanguageBundle name)
-	{
-		super(name);
-	}
+  public ParallelNode(LanguageBundle name) {
+    super(name);
+  }
 
-	public ParallelNode()
-	{
-		super();
-	}
+  public ParallelNode() {
+    super();
+  }
 
-	@Override
-	public char getType()
-	{
-		return 'p';
-	}
+  @Override
+  public char getType() {
+    return 'p';
+  }
 
-	@Override
-	public boolean canHaveSiblingRejectPoints()
-	{
-		return false;
-	}
+  @Override
+  public boolean canHaveSiblingRejectPoints() {
+    return false;
+  }
 }

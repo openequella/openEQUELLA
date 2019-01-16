@@ -58,183 +58,180 @@ import com.tle.core.xml.service.XmlService;
 
 @Bind
 @Singleton
-public class CreateWorkflowTables extends AbstractHibernateSchemaMigration
-{
-	private static final String keyPrefix = PluginServiceImpl.getMyPluginId(CreateWorkflowTables.class) + "."; //$NON-NLS-1$
+public class CreateWorkflowTables extends AbstractHibernateSchemaMigration {
+  private static final String keyPrefix =
+      PluginServiceImpl.getMyPluginId(CreateWorkflowTables.class) + "."; // $NON-NLS-1$
 
-	private static final Log LOGGER = LogFactory.getLog(CreateWorkflowTables.class);
+  private static final Log LOGGER = LogFactory.getLog(CreateWorkflowTables.class);
 
-	@Inject
-	private XmlService xmlService;
+  @Inject private XmlService xmlService;
 
-	@Override
-	@SuppressWarnings("nls")
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return count(session, "FROM Workflow") + count(session, "FROM WorkflowNodeStatus");
-	}
+  @Override
+  @SuppressWarnings("nls")
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return count(session, "FROM Workflow") + count(session, "FROM WorkflowNodeStatus");
+  }
 
-	@Override
-	@SuppressWarnings({"unchecked", "nls"})
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-	{
-		ClassLoader classLoader = getClass().getClassLoader();
-		XStream xstream = xmlService.createDefault(classLoader);
-		xstream.aliasPackage("com.tle.beans.entity.workflow", "com.tle.common.old.workflow");
+  @Override
+  @SuppressWarnings({"unchecked", "nls"})
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) {
+    ClassLoader classLoader = getClass().getClassLoader();
+    XStream xstream = xmlService.createDefault(classLoader);
+    xstream.aliasPackage("com.tle.beans.entity.workflow", "com.tle.common.old.workflow");
 
-		MigrateWorkflow migrator = new MigrateWorkflow();
-		Map<Long, Map<String, WorkflowNode>> workflowMap = new HashMap<Long, Map<String, WorkflowNode>>();
-		Query allWorkflows = session.createQuery("from Workflow");
-		List<Workflow> workflows = allWorkflows.list();
-		for( Workflow workflow : workflows )
-		{
+    MigrateWorkflow migrator = new MigrateWorkflow();
+    Map<Long, Map<String, WorkflowNode>> workflowMap =
+        new HashMap<Long, Map<String, WorkflowNode>>();
+    Query allWorkflows = session.createQuery("from Workflow");
+    List<Workflow> workflows = allWorkflows.list();
+    for (Workflow workflow : workflows) {
 
-			List<WorkflowNode> newNodes = migrator.convertNodes((WorkflowTreeNode) xstream.fromXML(workflow.root));
-			for( WorkflowNode newNode : newNodes )
-			{
-				newNode.setWorkflow(workflow);
-				session.save(newNode);
-				session.flush();
-			}
-			result.incrementStatus();
-			workflowMap.put(workflow.id, workflow.getAllTasksAsMap());
-		}
-		session.clear();
+      List<WorkflowNode> newNodes =
+          migrator.convertNodes((WorkflowTreeNode) xstream.fromXML(workflow.root));
+      for (WorkflowNode newNode : newNodes) {
+        newNode.setWorkflow(workflow);
+        session.save(newNode);
+        session.flush();
+      }
+      result.incrementStatus();
+      workflowMap.put(workflow.id, workflow.getAllTasksAsMap());
+    }
+    session.clear();
 
-		int badModStatus = 0;
-		Query allStatuses = session.createQuery("from WorkflowNodeStatus");
-		List<WorkflowNodeStatus> statuses = allStatuses.list();
-		for( WorkflowNodeStatus status : statuses )
-		{
-			String nodeId = status.nodeId;
-			Query statusQuery = session.createQuery("select s from ModerationStatus s join s.statuses st where st = ?");
-			statusQuery.setParameter(0, status);
-			ModerationStatus modStatus = (ModerationStatus) statusQuery.uniqueResult();
-			if( modStatus != null )
-			{
-				FakeItem item = modStatus.item;
-				if( item != null )
-				{
-					Map<String, WorkflowNode> map = workflowMap.get(item.itemDefinition.workflowId);
-					WorkflowNode linkedNode = map != null ? map.get(nodeId) : null;
-					if( linkedNode != null )
-					{
-						status.setNode(linkedNode);
-						status.setModStatus(modStatus);
-						if( status instanceof WorkflowItemStatus)
-						{
-							WorkflowItemStatus itemStatus = (WorkflowItemStatus) status;
-							itemStatus.setAcceptedUsers((Set<String>) xstream.fromXML(itemStatus.oldAccepted));
-						}
-						session.save(status);
-					}
-					else
-					{
-						modStatus.statuses.remove(status);
-						session.save(modStatus);
-					}
-				}
-				else
-				{
-					badModStatus++;
-					session.delete(modStatus);
-				}
-			}
-			result.incrementStatus();
-			session.flush();
-		}
-		session.clear();
-		int numDeleted = session.createQuery("delete from WorkflowNodeStatus where node is null").executeUpdate();
-		if( numDeleted > 0 )
-		{
-			LOGGER.warn("Found " + numDeleted + " orphaned WorkflowNodeStatus objects");
-		}
-		if( badModStatus > 0 )
-		{
-			LOGGER.warn("Found " + badModStatus + " orphaned ModerationStatus objects");
-		}
-		session.createQuery("update ModerationStatus set needsReset = false").executeUpdate();
-	}
+    int badModStatus = 0;
+    Query allStatuses = session.createQuery("from WorkflowNodeStatus");
+    List<WorkflowNodeStatus> statuses = allStatuses.list();
+    for (WorkflowNodeStatus status : statuses) {
+      String nodeId = status.nodeId;
+      Query statusQuery =
+          session.createQuery("select s from ModerationStatus s join s.statuses st where st = ?");
+      statusQuery.setParameter(0, status);
+      ModerationStatus modStatus = (ModerationStatus) statusQuery.uniqueResult();
+      if (modStatus != null) {
+        FakeItem item = modStatus.item;
+        if (item != null) {
+          Map<String, WorkflowNode> map = workflowMap.get(item.itemDefinition.workflowId);
+          WorkflowNode linkedNode = map != null ? map.get(nodeId) : null;
+          if (linkedNode != null) {
+            status.setNode(linkedNode);
+            status.setModStatus(modStatus);
+            if (status instanceof WorkflowItemStatus) {
+              WorkflowItemStatus itemStatus = (WorkflowItemStatus) status;
+              itemStatus.setAcceptedUsers((Set<String>) xstream.fromXML(itemStatus.oldAccepted));
+            }
+            session.save(status);
+          } else {
+            modStatus.statuses.remove(status);
+            session.save(modStatus);
+          }
+        } else {
+          badModStatus++;
+          session.delete(modStatus);
+        }
+      }
+      result.incrementStatus();
+      session.flush();
+    }
+    session.clear();
+    int numDeleted =
+        session.createQuery("delete from WorkflowNodeStatus where node is null").executeUpdate();
+    if (numDeleted > 0) {
+      LOGGER.warn("Found " + numDeleted + " orphaned WorkflowNodeStatus objects");
+    }
+    if (badModStatus > 0) {
+      LOGGER.warn("Found " + badModStatus + " orphaned ModerationStatus objects");
+    }
+    session.createQuery("update ModerationStatus set needsReset = false").executeUpdate();
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		List<String> creationSql = helper
-			.getCreationSql(new TablesOnlyFilter("workflow_node", "workflow_node_auto_assigns", "workflow_node_groups",
-				"workflow_node_roles", "workflow_node_users", "workflow_node_status_accepted"));
-		creationSql.addAll(helper.getAddColumnsSQL("workflow_node_status", "mod_status_id"));
-		creationSql.addAll(helper.getAddColumnsSQL("workflow_node_status", "wnode_id"));
-		creationSql.addAll(helper.getAddColumnsSQL("moderation_status", "needs_reset"));
-		return creationSql;
-	}
+  @Override
+  @SuppressWarnings("nls")
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    List<String> creationSql =
+        helper.getCreationSql(
+            new TablesOnlyFilter(
+                "workflow_node",
+                "workflow_node_auto_assigns",
+                "workflow_node_groups",
+                "workflow_node_roles",
+                "workflow_node_users",
+                "workflow_node_status_accepted"));
+    creationSql.addAll(helper.getAddColumnsSQL("workflow_node_status", "mod_status_id"));
+    creationSql.addAll(helper.getAddColumnsSQL("workflow_node_status", "wnode_id"));
+    creationSql.addAll(helper.getAddColumnsSQL("moderation_status", "needs_reset"));
+    return creationSql;
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		List<String> sqlDrops = helper.getDropColumnSQL("workflow", "root");
-		sqlDrops.addAll(helper.getDropTableSql("workflow_all_groups"));
-		sqlDrops.addAll(helper.getDropTableSql("moderation_status_statuses"));
-		sqlDrops.addAll(helper.getDropColumnSQL("workflow_node_status", "type", "node_id", "accepted_users"));
-		sqlDrops.addAll(helper.getAddNotNullSQL("workflow_node_status", "wnode_id"));
-		sqlDrops.addAll(helper.getAddNotNullSQL("workflow_node_status", "mod_status_id"));
-		sqlDrops.addAll(helper.getAddNotNullSQL("moderation_status", "needs_reset"));
-		sqlDrops.addAll(helper.getAddIndexesAndConstraintsForColumns("workflow_node_status", "wnode_id"));
-		sqlDrops.addAll(helper.getAddIndexesAndConstraintsForColumns("workflow_node_status", "mod_status_id"));
-		return sqlDrops;
-	}
+  @Override
+  @SuppressWarnings("nls")
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    List<String> sqlDrops = helper.getDropColumnSQL("workflow", "root");
+    sqlDrops.addAll(helper.getDropTableSql("workflow_all_groups"));
+    sqlDrops.addAll(helper.getDropTableSql("moderation_status_statuses"));
+    sqlDrops.addAll(
+        helper.getDropColumnSQL("workflow_node_status", "type", "node_id", "accepted_users"));
+    sqlDrops.addAll(helper.getAddNotNullSQL("workflow_node_status", "wnode_id"));
+    sqlDrops.addAll(helper.getAddNotNullSQL("workflow_node_status", "mod_status_id"));
+    sqlDrops.addAll(helper.getAddNotNullSQL("moderation_status", "needs_reset"));
+    sqlDrops.addAll(
+        helper.getAddIndexesAndConstraintsForColumns("workflow_node_status", "wnode_id"));
+    sqlDrops.addAll(
+        helper.getAddIndexesAndConstraintsForColumns("workflow_node_status", "mod_status_id"));
+    return sqlDrops;
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{Workflow.class, WorkflowNodeStatus.class, WorkflowItemStatus.class,
-				Institution.class, LanguageBundle.class, LanguageString.class, WorkflowItem.class,
-				DecisionNode.class, SerialNode.class, ParallelNode.class, OldWorkflowGroups.class,
-				FakeItem.class, ModerationStatus.class, FakeItemDefinition.class, WorkflowNode.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {
+      Workflow.class,
+      WorkflowNodeStatus.class,
+      WorkflowItemStatus.class,
+      Institution.class,
+      LanguageBundle.class,
+      LanguageString.class,
+      WorkflowItem.class,
+      DecisionNode.class,
+      SerialNode.class,
+      ParallelNode.class,
+      OldWorkflowGroups.class,
+      FakeItem.class,
+      ModerationStatus.class,
+      FakeItemDefinition.class,
+      WorkflowNode.class
+    };
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(keyPrefix + "migrate.title", keyPrefix + "migrate.description");
-	}
+  @Override
+  @SuppressWarnings("nls")
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(keyPrefix + "migrate.title", keyPrefix + "migrate.description");
+  }
 
-	@AccessType("field")
-	@Entity(name = "WorkflowAllGroups")
-	public static class OldWorkflowGroups
-	{
-		@Id
-		long id;
-	}
+  @AccessType("field")
+  @Entity(name = "WorkflowAllGroups")
+  public static class OldWorkflowGroups {
+    @Id long id;
+  }
 
-	@AccessType("field")
-	@Entity(name = "ModerationStatusStatuses")
-	public static class OldModStatuses
-	{
-		@Id
-		long id;
-	}
+  @AccessType("field")
+  @Entity(name = "ModerationStatusStatuses")
+  public static class OldModStatuses {
+    @Id long id;
+  }
 
-	@AccessType("field")
-	@Entity(name = "Item")
-	public static class FakeItem
-	{
-		@Id
-		long id;
-		@OneToOne
-		ModerationStatus moderation;
-		@ManyToOne
-		FakeItemDefinition itemDefinition;
-	}
+  @AccessType("field")
+  @Entity(name = "Item")
+  public static class FakeItem {
+    @Id long id;
+    @OneToOne ModerationStatus moderation;
+    @ManyToOne FakeItemDefinition itemDefinition;
+  }
 
-	@AccessType("field")
-	@Entity(name = "ItemDefinition")
-	public static class FakeItemDefinition
-	{
-		@Id
-		long id;
-		Long workflowId;
-	}
+  @AccessType("field")
+  @Entity(name = "ItemDefinition")
+  public static class FakeItemDefinition {
+    @Id long id;
+    Long workflowId;
+  }
 }

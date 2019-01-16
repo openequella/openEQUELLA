@@ -28,31 +28,25 @@ import com.tle.core.migration.MigrationInfo;
 import com.tle.core.plugins.impl.PluginServiceImpl;
 import com.tle.core.workflow.thumbnail.entity.ThumbnailRequest;
 
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class CreateThumbnailRequestSchema extends AbstractCreateMigration
-{
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(PluginServiceImpl.getMyPluginId(CreateThumbnailRequestSchema.class)
-			+ ".migration.createthumbrequest.title");
-	}
+public class CreateThumbnailRequestSchema extends AbstractCreateMigration {
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(
+        PluginServiceImpl.getMyPluginId(CreateThumbnailRequestSchema.class)
+            + ".migration.createthumbrequest.title");
+  }
 
-	@Override
-	protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper)
-	{
-		return new TablesOnlyFilter("thumbnail_request");
-	}
+  @Override
+  protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
+    return new TablesOnlyFilter("thumbnail_request");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class[]{ThumbnailRequest.class, Institution.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class[] {ThumbnailRequest.class, Institution.class};
+  }
 }

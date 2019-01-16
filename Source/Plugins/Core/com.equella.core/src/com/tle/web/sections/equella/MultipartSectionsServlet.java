@@ -33,29 +33,24 @@ import com.tle.web.sections.registry.SectionsServlet;
 
 @Bind
 @MultipartConfig
-public class MultipartSectionsServlet extends SectionsServlet
-{
-	private final Map<Object,Object> attribs;
+public class MultipartSectionsServlet extends SectionsServlet {
+  private final Map<Object, Object> attribs;
 
-	public MultipartSectionsServlet()
-	{
-		super();
-		attribs = new HashMap<>();
-		attribs.putAll(super.defaultAttributes());
-		attribs.put(SectionInfo.KEY_MINIFIED, !DebugSettings.isDebuggingMode());
-	}
+  public MultipartSectionsServlet() {
+    super();
+    attribs = new HashMap<>();
+    attribs.putAll(super.defaultAttributes());
+    attribs.put(SectionInfo.KEY_MINIFIED, !DebugSettings.isDebuggingMode());
+  }
 
+  @Override
+  protected void service(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    super.service(request, response);
+  }
 
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-		IOException
-	{
-		super.service(request, response);
-	}
-
-	@Override
-	protected Map<Object, Object> defaultAttributes()
-	{
-		return attribs;
-	}
+  @Override
+  protected Map<Object, Object> defaultAttributes() {
+    return attribs;
+  }
 }

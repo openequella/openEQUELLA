@@ -21,83 +21,69 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @XmlRootElement
-public class UserBean extends AbstractExtendableBean
-{
-	private String id;
-	private String username;
-	private String firstName;
-	private String lastName;
-	private String emailAddress;
-	@JsonProperty("_export")
-	private UserExportBean exportDetails;
+public class UserBean extends AbstractExtendableBean {
+  private String id;
+  private String username;
+  private String firstName;
+  private String lastName;
+  private String emailAddress;
 
-	public UserBean(String id)
-	{
-		this.id = id;
-	}
+  @JsonProperty("_export")
+  private UserExportBean exportDetails;
 
-	public UserBean()
-	{
-		// nothing
-	}
+  public UserBean(String id) {
+    this.id = id;
+  }
 
-	public String getId()
-	{
-		return id;
-	}
+  public UserBean() {
+    // nothing
+  }
 
-	public String getUsername()
-	{
-		return username;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public String getFirstName()
-	{
-		return firstName;
-	}
+  public String getUsername() {
+    return username;
+  }
 
-	public String getLastName()
-	{
-		return lastName;
-	}
+  public String getFirstName() {
+    return firstName;
+  }
 
-	public String getEmailAddress()
-	{
-		return emailAddress;
-	}
+  public String getLastName() {
+    return lastName;
+  }
 
-	public void setId(String id)
-	{
-		this.id = id;
-	}
+  public String getEmailAddress() {
+    return emailAddress;
+  }
 
-	public void setUsername(String username)
-	{
-		this.username = username;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public void setFirstName(String firstName)
-	{
-		this.firstName = firstName;
-	}
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-	public void setLastName(String lastName)
-	{
-		this.lastName = lastName;
-	}
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
 
-	public void setEmailAddress(String emailAddress)
-	{
-		this.emailAddress = emailAddress;
-	}
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
 
-	public UserExportBean getExportDetails()
-	{
-		return exportDetails;
-	}
+  public void setEmailAddress(String emailAddress) {
+    this.emailAddress = emailAddress;
+  }
 
-	public void setExportDetails(UserExportBean exportDetails)
-	{
-		this.exportDetails = exportDetails;
-	}
+  public UserExportBean getExportDetails() {
+    return exportDetails;
+  }
+
+  public void setExportDetails(UserExportBean exportDetails) {
+    this.exportDetails = exportDetails;
+  }
 }

@@ -28,24 +28,28 @@ import com.tle.core.entity.EntityEditingBean;
 import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.web.sections.SectionInfo;
 
-/**
- * @author Nicholas Read
- */
-public interface ReportingService extends AbstractEntityService<EntityEditingBean, Report>, RemoteReportingService
-{
-	public static final String DIR_DESIGN = "reportFiles";
+/** @author Nicholas Read */
+public interface ReportingService
+    extends AbstractEntityService<EntityEditingBean, Report>, RemoteReportingService {
+  public static final String DIR_DESIGN = "reportFiles";
 
-	// @SecureOnReturn(priv = ReportPrivileges.EXECUTE_REPORT)
-	List<Report> enumerateExecutable();
+  // @SecureOnReturn(priv = ReportPrivileges.EXECUTE_REPORT)
+  List<Report> enumerateExecutable();
 
-	// @SecureOnCall(priv = ReportPrivileges.EXECUTE_REPORT)
-	String executeReport(SectionInfo info, Report report, String designFile, String format,
-		IHTMLActionHandler actionHandler, Map<String, String[]> parameters, Map<String, String[]> parameterDisplayText,
-		boolean forceExecution);
+  // @SecureOnCall(priv = ReportPrivileges.EXECUTE_REPORT)
+  String executeReport(
+      SectionInfo info,
+      Report report,
+      String designFile,
+      String format,
+      IHTMLActionHandler actionHandler,
+      Map<String, String[]> parameters,
+      Map<String, String[]> parameterDisplayText,
+      boolean forceExecution);
 
-	String findDesignFile(Report report, String filename);
+  String findDesignFile(Report report, String filename);
 
-	Report getReportForFilename(String filename);
+  Report getReportForFilename(String filename);
 
-	IGetParameterDefinitionTask createReportParametersTask(Report report, String designFile);
+  IGetParameterDefinitionTask createReportParametersTask(Report report, String designFile);
 }

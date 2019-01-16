@@ -31,91 +31,87 @@ import com.tle.web.api.item.tasks.interfaces.ItemTaskResource;
 
 /**
  * This class deals with tasks performed directly upon an item.
- * 
+ *
  * @see TaskResourceImpl for the search for tasks API method
  * @author Larry
  */
 @Bind(ItemTaskResource.class)
 @Singleton
-public class ItemTasksResourceImpl implements ItemTaskResource
-{
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private ItemOperationFactory operationFactory;
+public class ItemTasksResourceImpl implements ItemTaskResource {
+  @Inject private ItemService itemService;
+  @Inject private ItemOperationFactory operationFactory;
 
-	/**
-	 * accept equates to 'Approving' a task ...<br>
-	 * NB: Same as EPS endpoint.
-	 * 
-	 * @param uuid
-	 * @param version
-	 * @param taskUuid
-	 * @param message optional, in query string
-	 * @return
-	 */
-	@Override
-	public Response accept(
-// @formatter:off
-		final String uuid, 
-		final int version,
-		final String taskUuid, 
-		final String message
-		// @formatter:on
-	)
-	{
-		ItemTaskId itemTaskIdObj = new ItemTaskId(uuid, version, taskUuid);
-		AcceptOperation acceptance = operationFactory.accept(itemTaskIdObj.getTaskId(), message, null);
-		itemService.operation(itemTaskIdObj, acceptance, operationFactory.save());
-		return Response.ok().build();
-	}
+  /**
+   * accept equates to 'Approving' a task ...<br>
+   * NB: Same as EPS endpoint.
+   *
+   * @param uuid
+   * @param version
+   * @param taskUuid
+   * @param message optional, in query string
+   * @return
+   */
+  @Override
+  public Response accept(
+      // @formatter:off
+      final String uuid,
+      final int version,
+      final String taskUuid,
+      final String message
+      // @formatter:on
+      ) {
+    ItemTaskId itemTaskIdObj = new ItemTaskId(uuid, version, taskUuid);
+    AcceptOperation acceptance = operationFactory.accept(itemTaskIdObj.getTaskId(), message, null);
+    itemService.operation(itemTaskIdObj, acceptance, operationFactory.save());
+    return Response.ok().build();
+  }
 
-	/**
-	 * NB: Same as EPS endpoint.
-	 * 
-	 * @param uuid
-	 * @param version
-	 * @param taskUuid
-	 * @param message optional, in query string
-	 * @param to optional, in query string
-	 * @return
-	 */
-	@Override
-	public Response reject(
-// @formatter:off
-		final String uuid, 
-		final int version,
-		final String taskUuid, 
-		final String message,
-		final String toNodeUuid
-		// @formatter:on
-	)
-	{
-		ItemTaskId itemTaskIdObj = new ItemTaskId(uuid, version, taskUuid);
-		RejectOperation rejection = operationFactory.reject(itemTaskIdObj.getTaskId(), message, toNodeUuid, null);
-		itemService.operation(itemTaskIdObj, rejection, operationFactory.save());
-		return Response.ok().build();
-	}
+  /**
+   * NB: Same as EPS endpoint.
+   *
+   * @param uuid
+   * @param version
+   * @param taskUuid
+   * @param message optional, in query string
+   * @param to optional, in query string
+   * @return
+   */
+  @Override
+  public Response reject(
+      // @formatter:off
+      final String uuid,
+      final int version,
+      final String taskUuid,
+      final String message,
+      final String toNodeUuid
+      // @formatter:on
+      ) {
+    ItemTaskId itemTaskIdObj = new ItemTaskId(uuid, version, taskUuid);
+    RejectOperation rejection =
+        operationFactory.reject(itemTaskIdObj.getTaskId(), message, toNodeUuid, null);
+    itemService.operation(itemTaskIdObj, rejection, operationFactory.save());
+    return Response.ok().build();
+  }
 
-	/**
-	 * Post a moderation comment, isolated from any actual moderation action.
-	 * 
-	 * @param user
-	 * @return
-	 */
-	@Override
-	public Response comment(
-// @formatter:off
-		final String uuid, 
-		final int version,
-		final String taskUuid, 
-		final String message
-		// @formatter:on
-	)
-	{
-		ItemTaskId itemTaskIdObj = new ItemTaskId(uuid, version, taskUuid);
-		WorkflowCommentOperation commentary = operationFactory.comment(itemTaskIdObj.getTaskId(), message, null);
-		itemService.operation(itemTaskIdObj, commentary, operationFactory.save());
-		return Response.ok().build();
-	}
+  /**
+   * Post a moderation comment, isolated from any actual moderation action.
+   *
+   * @param user
+   * @return
+   */
+  @Override
+  public Response comment(
+      // @formatter:off
+      final String uuid,
+      final int version,
+      final String taskUuid,
+      final String message
+      // @formatter:on
+      ) {
+    ItemTaskId itemTaskIdObj = new ItemTaskId(uuid, version, taskUuid);
+    WorkflowCommentOperation commentary =
+        operationFactory.comment(itemTaskIdObj.getTaskId(), message, null);
+    itemService.operation(itemTaskIdObj, commentary, operationFactory.save());
+    return Response.ok().build();
+  }
 }

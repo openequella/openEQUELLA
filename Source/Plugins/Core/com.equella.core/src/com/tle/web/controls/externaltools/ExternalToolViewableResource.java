@@ -36,94 +36,79 @@ import com.tle.web.viewurl.AttachmentDetail;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.resource.AbstractWrappedResource;
 
-public class ExternalToolViewableResource extends AbstractWrappedResource
-{
-	public ExternalToolViewableResource(ViewableResource resource, String thumbUrl)
-	{
-		super(resource);
-		this.thumbUrl = thumbUrl;
-	}
+public class ExternalToolViewableResource extends AbstractWrappedResource {
+  public ExternalToolViewableResource(ViewableResource resource, String thumbUrl) {
+    super(resource);
+    this.thumbUrl = thumbUrl;
+  }
 
-	static
-	{
-		PluginResourceHandler.init(ExternalToolViewableResource.class);
-	}
+  static {
+    PluginResourceHandler.init(ExternalToolViewableResource.class);
+  }
 
-	@PlugKey("externaltoolviewer.unsupported.msg")
-	private static String UNSUPPORTED_MSG;
+  @PlugKey("externaltoolviewer.unsupported.msg")
+  private static String UNSUPPORTED_MSG;
 
-	@PlugKey("externaltoolresource.details.type")
-	private static Label TYPE_LABEL;
-	@PlugKey("externaltoolresource.details.mimetype")
-	private static Label MIMETYPE_LABEL;
+  @PlugKey("externaltoolresource.details.type")
+  private static Label TYPE_LABEL;
 
-	private String thumbUrl;
+  @PlugKey("externaltoolresource.details.mimetype")
+  private static Label MIMETYPE_LABEL;
 
-	@Override
-	public List<AttachmentDetail> getCommonAttachmentDetails()
-	{
-		List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
-		commonDetails.add(makeDetail(TYPE_LABEL, MIMETYPE_LABEL));
+  private String thumbUrl;
 
-		return commonDetails;
-	}
+  @Override
+  public List<AttachmentDetail> getCommonAttachmentDetails() {
+    List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
+    commonDetails.add(makeDetail(TYPE_LABEL, MIMETYPE_LABEL));
 
-	@Override
-	public boolean isExternalResource()
-	{
-		return true;
-	}
+    return commonDetails;
+  }
 
-	@Override
-	public boolean hasContentStream()
-	{
-		return false;
-	}
+  @Override
+  public boolean isExternalResource() {
+    return true;
+  }
 
-	@Override
-	public String getMimeType()
-	{
-		return ExternalToolConstants.MIME_TYPE;
-	}
+  @Override
+  public boolean hasContentStream() {
+    return false;
+  }
 
-	@Override
-	public boolean isCustomThumb()
-	{
-		return !Check.isEmpty(getThumbUrl());
-	}
+  @Override
+  public String getMimeType() {
+    return ExternalToolConstants.MIME_TYPE;
+  }
 
-	/**
-	 * We can't afford to return null here, so we're assuming an ImageRenderer
-	 * with a null String Source is safe, noting that attachments when created
-	 * should default to the mimetype icon URL.
-	 */
-	@Override
-	public ImageRenderer createStandardThumbnailRenderer(Label alt)
-	{
-		return new ImageRenderer(getThumbUrl(), alt);
-	}
+  @Override
+  public boolean isCustomThumb() {
+    return !Check.isEmpty(getThumbUrl());
+  }
 
-	private String getThumbUrl()
-	{
-		return thumbUrl;
-	}
+  /**
+   * We can't afford to return null here, so we're assuming an ImageRenderer with a null String
+   * Source is safe, noting that attachments when created should default to the mimetype icon URL.
+   */
+  @Override
+  public ImageRenderer createStandardThumbnailRenderer(Label alt) {
+    return new ImageRenderer(getThumbUrl(), alt);
+  }
 
-	@Override
-	public ThumbRef getThumbnailReference(SectionInfo info, GalleryParameter gallery)
-	{
-		try
-		{
-			return new ThumbRef(new URL(getThumbUrl()));
-		}
-		catch( MalformedURLException e )
-		{
-			throw Throwables.propagate(e);
-		}
-	}
+  private String getThumbUrl() {
+    return thumbUrl;
+  }
 
-	@Override
-	public Bookmark createCanonicalUrl()
-	{
-		throw new UnsupportedOperationException(CurrentLocale.get(UNSUPPORTED_MSG));
-	}
+  @Override
+  public ThumbRef getThumbnailReference(SectionInfo info, GalleryParameter gallery) {
+    try {
+      return new ThumbRef(new URL(getThumbUrl()));
+    } catch (MalformedURLException e) {
+      throw Throwables.propagate(e);
+    }
+  }
+
+  @Override
+  public Bookmark createCanonicalUrl() {
+    throw new UnsupportedOperationException(CurrentLocale.get(UNSUPPORTED_MSG));
+  }
 }

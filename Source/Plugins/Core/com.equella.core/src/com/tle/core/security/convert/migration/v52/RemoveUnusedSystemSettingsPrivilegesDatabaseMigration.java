@@ -29,57 +29,50 @@ import com.tle.core.migration.AbstractHibernateDataMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class RemoveUnusedSystemSettingsPrivilegesDatabaseMigration extends AbstractHibernateDataMigration
-{
-	@Override
-	public boolean isBackwardsCompatible()
-	{
-		return true;
-	}
+public class RemoveUnusedSystemSettingsPrivilegesDatabaseMigration
+    extends AbstractHibernateDataMigration {
+  @Override
+  public boolean isBackwardsCompatible() {
+    return true;
+  }
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo("com.tle.core.entity.services.migration.unusedsystemsettingsprivs");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo("com.tle.core.entity.services.migration.unusedsystemsettingsprivs");
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-		throws Exception
-	{
-		session
-			.createQuery(
-				"DELETE FROM AccessEntry a WHERE a.targetObject IN ('C:attachmentFileTypes', 'C:proxy', 'C:sif')")
-			.executeUpdate();
-	}
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception {
+    session
+        .createQuery(
+            "DELETE FROM AccessEntry a WHERE a.targetObject IN ('C:attachmentFileTypes', 'C:proxy', 'C:sif')")
+        .executeUpdate();
+  }
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		int ct = count(session.createQuery(
-			"SELECT COUNT(*) FROM AccessEntry a WHERE a.targetObject IN ('C:attachmentFileTypes', 'C:proxy', 'C:sif')"));
-		return ct;
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    int ct =
+        count(
+            session.createQuery(
+                "SELECT COUNT(*) FROM AccessEntry a WHERE a.targetObject IN ('C:attachmentFileTypes', 'C:proxy', 'C:sif')"));
+    return ct;
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class[]{FakeAccessEntry.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class[] {FakeAccessEntry.class};
+  }
 
-	@Entity(name = "AccessEntry")
-	@AccessType("field")
-	public static class FakeAccessEntry
-	{
-		@Id
-		long id;
+  @Entity(name = "AccessEntry")
+  @AccessType("field")
+  public static class FakeAccessEntry {
+    @Id long id;
 
-		String targetObject;
-	}
+    String targetObject;
+  }
 }

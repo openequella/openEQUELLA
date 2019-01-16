@@ -35,51 +35,42 @@ import com.tle.core.migration.MigrationResult;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class AddTimestampToBadUrl extends AbstractHibernateSchemaMigration
-{
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return 0;
-	}
+public class AddTimestampToBadUrl extends AbstractHibernateSchemaMigration {
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return 0;
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-	{
-		// Do Nothing
-	}
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) {
+    // Do Nothing
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		return helper.getAddColumnsSQL("badurl", "lastchecked");
-	}
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    return helper.getAddColumnsSQL("badurl", "lastchecked");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{FakeBadURL.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {FakeBadURL.class};
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		return null;
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    return null;
+  }
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo("com.tle.core.entity.services.badurl.addtimestamp.title");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo("com.tle.core.entity.services.badurl.addtimestamp.title");
+  }
 
-	@Entity(name = "BadURL")
-	@AccessType("field")
-	public static class FakeBadURL
-	{
-		@Id
-		long id;
-		Date lastchecked;
-	}
-
+  @Entity(name = "BadURL")
+  @AccessType("field")
+  public static class FakeBadURL {
+    @Id long id;
+    Date lastchecked;
+  }
 }

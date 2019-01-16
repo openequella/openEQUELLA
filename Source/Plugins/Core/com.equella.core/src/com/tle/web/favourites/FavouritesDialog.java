@@ -50,153 +50,135 @@ import com.tle.web.sections.standard.model.SimpleHtmlListModel;
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class FavouritesDialog extends AbstractOkayableDialog<FavouritesDialog.MyFavouritesModel>
-{
-	@PlugKey("dialog.title")
-	private static Label TITLE_LABEL;
-	@PlugKey("add")
-	private static Label ADD_LABEL;
-	@PlugKey("latest")
-	private static String LATEST;
-	@PlugKey("current")
-	private static String CURRENT;
+public class FavouritesDialog extends AbstractOkayableDialog<FavouritesDialog.MyFavouritesModel> {
+  @PlugKey("dialog.title")
+  private static Label TITLE_LABEL;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@Inject
-	private ItemService itemService;
+  @PlugKey("add")
+  private static Label ADD_LABEL;
 
-	@Component(name = "tf")
-	private TextField tagsField;
-	@Component(name = "v")
-	private SingleSelectionList<VoidKeyOption> version;
+  @PlugKey("latest")
+  private static String LATEST;
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return TITLE_LABEL;
-	}
+  @PlugKey("current")
+  private static String CURRENT;
 
-	@Override
-	protected String getContentBodyClass(RenderContext context)
-	{
-		return "favouritesdialog";
-	}
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @Inject private ItemService itemService;
 
-	@Override
-	protected ParameterizedEvent getAjaxShowEvent()
-	{
-		return events.getEventHandler("showItem");
-	}
+  @Component(name = "tf")
+  private TextField tagsField;
 
-	@EventHandlerMethod
-	public void showItem(SectionInfo info, String itemId)
-	{
-		MyFavouritesModel model = getModel(info);
-		model.setItemId(itemId);
-		super.showDialog(info);
-	}
+  @Component(name = "v")
+  private SingleSelectionList<VoidKeyOption> version;
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		MyFavouritesModel model = getModel(context);
-		model.setShowVersion(true);
-		version.setSelectedStringValue(context, "true");
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return TITLE_LABEL;
+  }
 
-		// Check if viewing latest version
-		if( isNotLatest(getItemId(context)) )
-		{
-			model.setShowVersion(false);
-			version.setDisplayed(context, false);
-		}
+  @Override
+  protected String getContentBodyClass(RenderContext context) {
+    return "favouritesdialog";
+  }
 
-		return viewFactory.createResult("favouritesdialog.ftl", this);
-	}
+  @Override
+  protected ParameterizedEvent getAjaxShowEvent() {
+    return events.getEventHandler("showItem");
+  }
 
-	@Override
-	protected JSStatements createOkCallStatement(SectionTree tree)
-	{
-		return new RuntimeStatement()
-		{
-			@Override
-			protected JSStatements createStatements(RenderContext context)
-			{
-				ItemId itemId = getItemId(context);
-				return new FunctionCallStatement(getOkCallback(), tagsField.createGetExpression(), isNotLatest(itemId)
-					? false : version.createGetExpression(), itemId);
-			}
-		};
-	}
+  @EventHandlerMethod
+  public void showItem(SectionInfo info, String itemId) {
+    MyFavouritesModel model = getModel(info);
+    model.setItemId(itemId);
+    super.showDialog(info);
+  }
 
-	private ItemId getItemId(SectionInfo info)
-	{
-		return new ItemId(getModel(info).getItemId());
-	}
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    MyFavouritesModel model = getModel(context);
+    model.setShowVersion(true);
+    version.setSelectedStringValue(context, "true");
 
-	@Override
-	public MyFavouritesModel instantiateDialogModel(SectionInfo info)
-	{
-		return new MyFavouritesModel();
-	}
+    // Check if viewing latest version
+    if (isNotLatest(getItemId(context))) {
+      model.setShowVersion(false);
+      version.setDisplayed(context, false);
+    }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+    return viewFactory.createResult("favouritesdialog.ftl", this);
+  }
 
-		List<VoidKeyOption> opts = new ArrayList<VoidKeyOption>();
-		opts.add(new VoidKeyOption(LATEST, "true"));
-		opts.add(new VoidKeyOption(CURRENT, "false"));
-		version.setListModel(new SimpleHtmlListModel<VoidKeyOption>(opts));
-		setAjax(true);
-	}
+  @Override
+  protected JSStatements createOkCallStatement(SectionTree tree) {
+    return new RuntimeStatement() {
+      @Override
+      protected JSStatements createStatements(RenderContext context) {
+        ItemId itemId = getItemId(context);
+        return new FunctionCallStatement(
+            getOkCallback(),
+            tagsField.createGetExpression(),
+            isNotLatest(itemId) ? false : version.createGetExpression(),
+            itemId);
+      }
+    };
+  }
 
-	private boolean isNotLatest(ItemId itemId)
-	{
-		return (itemId.getVersion() < itemService.getLatestVersion(itemId.getUuid()));
-	}
+  private ItemId getItemId(SectionInfo info) {
+    return new ItemId(getModel(info).getItemId());
+  }
 
-	public static class MyFavouritesModel extends DialogModel
-	{
-		private boolean showVersion;
-		@Bookmarked
-		private String itemId;
+  @Override
+  public MyFavouritesModel instantiateDialogModel(SectionInfo info) {
+    return new MyFavouritesModel();
+  }
 
-		public boolean isShowVersion()
-		{
-			return showVersion;
-		}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		public void setShowVersion(boolean showVersion)
-		{
-			this.showVersion = showVersion;
-		}
+    List<VoidKeyOption> opts = new ArrayList<VoidKeyOption>();
+    opts.add(new VoidKeyOption(LATEST, "true"));
+    opts.add(new VoidKeyOption(CURRENT, "false"));
+    version.setListModel(new SimpleHtmlListModel<VoidKeyOption>(opts));
+    setAjax(true);
+  }
 
-		public String getItemId()
-		{
-			return itemId;
-		}
+  private boolean isNotLatest(ItemId itemId) {
+    return (itemId.getVersion() < itemService.getLatestVersion(itemId.getUuid()));
+  }
 
-		public void setItemId(String itemId)
-		{
-			this.itemId = itemId;
-		}
-	}
+  public static class MyFavouritesModel extends DialogModel {
+    private boolean showVersion;
+    @Bookmarked private String itemId;
 
-	public TextField getTagsField()
-	{
-		return tagsField;
-	}
+    public boolean isShowVersion() {
+      return showVersion;
+    }
 
-	@Override
-	protected Label getOkLabel()
-	{
-		return ADD_LABEL;
-	}
+    public void setShowVersion(boolean showVersion) {
+      this.showVersion = showVersion;
+    }
 
-	public SingleSelectionList<VoidKeyOption> getVersion()
-	{
-		return version;
-	}
+    public String getItemId() {
+      return itemId;
+    }
+
+    public void setItemId(String itemId) {
+      this.itemId = itemId;
+    }
+  }
+
+  public TextField getTagsField() {
+    return tagsField;
+  }
+
+  @Override
+  protected Label getOkLabel() {
+    return ADD_LABEL;
+  }
+
+  public SingleSelectionList<VoidKeyOption> getVersion() {
+    return version;
+  }
 }

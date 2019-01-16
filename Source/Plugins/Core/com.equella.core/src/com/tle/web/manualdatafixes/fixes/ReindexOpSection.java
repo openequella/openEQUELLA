@@ -39,74 +39,63 @@ import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
 
-/**
- * @author larry
- */
+/** @author larry */
 @Bind
 @SuppressWarnings("nls")
-public class ReindexOpSection extends AbstractPrototypeSection<ReindexOpSection.ReindexModel> implements HtmlRenderer
-{
-	@Component
-	@PlugKey("reindex.button")
-	private Button execute;
+public class ReindexOpSection extends AbstractPrototypeSection<ReindexOpSection.ReindexModel>
+    implements HtmlRenderer {
+  @Component
+  @PlugKey("reindex.button")
+  private Button execute;
 
-	@AjaxFactory
-	protected AjaxGenerator ajax;
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
+  @AjaxFactory protected AjaxGenerator ajax;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
 
-	@Inject
-	private FreeTextService freeTextService;
+  @Inject private FreeTextService freeTextService;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		execute.setClickHandler(events.getNamedHandler("reindex"));
-		ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("reindex"),
-			ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), "reindex");
-	}
+    execute.setClickHandler(events.getNamedHandler("reindex"));
+    ajax.getAjaxUpdateDomFunction(
+        tree,
+        this,
+        events.getEventHandler("reindex"),
+        ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
+        "reindex");
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		return viewFactory.createResult("reindex.ftl", context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    return viewFactory.createResult("reindex.ftl", context);
+  }
 
-	@EventHandlerMethod
-	public void reindex(SectionInfo info)
-	{
-		freeTextService.indexAll();
-		getModel(info).setFired(true);
-	}
+  @EventHandlerMethod
+  public void reindex(SectionInfo info) {
+    freeTextService.indexAll();
+    getModel(info).setFired(true);
+  }
 
-	public Button getExecute()
-	{
-		return execute;
-	}
+  public Button getExecute() {
+    return execute;
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new ReindexModel();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new ReindexModel();
+  }
 
-	public static class ReindexModel
-	{
-		@Bookmarked
-		private boolean fired;
+  public static class ReindexModel {
+    @Bookmarked private boolean fired;
 
-		public boolean isFired()
-		{
-			return fired;
-		}
+    public boolean isFired() {
+      return fired;
+    }
 
-		public void setFired(boolean fired)
-		{
-			this.fired = fired;
-		}
-	}
+    public void setFired(boolean fired) {
+      this.fired = fired;
+    }
+  }
 }

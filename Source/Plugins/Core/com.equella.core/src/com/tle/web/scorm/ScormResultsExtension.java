@@ -47,76 +47,71 @@ import com.tle.web.selection.SelectionSession;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class ScormResultsExtension implements IntegrationSessionExtension
-{
-	private static final Logger LOGGER = Logger.getLogger(ScormResultsExtension.class);
+public class ScormResultsExtension implements IntegrationSessionExtension {
+  private static final Logger LOGGER = Logger.getLogger(ScormResultsExtension.class);
 
-	@Inject
-	private ItemResolver itemResolver;
-	@Inject
-	private ItemFileService itemFileService;
-	@Inject
-	private IMSService imsService;
+  @Inject private ItemResolver itemResolver;
+  @Inject private ItemFileService itemFileService;
+  @Inject private IMSService imsService;
 
-	@Override
-	public void setupSession(SectionInfo info, SelectionSession session, SingleSignonForm form)
-	{
-		// Nah
-	}
+  @Override
+  public void setupSession(SectionInfo info, SelectionSession session, SingleSignonForm form) {
+    // Nah
+  }
 
-	@Override
-	public void processResultForSingle(SectionInfo info, SelectionSession session, Map<String, String> params,
-		String prefix, IItem<?> item, SelectedResource resource)
-	{
-		// not supported
-	}
+  @Override
+  public void processResultForSingle(
+      SectionInfo info,
+      SelectionSession session,
+      Map<String, String> params,
+      String prefix,
+      IItem<?> item,
+      SelectedResource resource) {
+    // not supported
+  }
 
-	@Override
-	public void processResultForMultiple(SectionInfo info, SelectionSession session, ObjectNode link, IItem<?> item,
-		SelectedResource resource)
-	{
-		String attachmentUuid = resource.getAttachmentUuid();
-		if( !Check.isEmpty(attachmentUuid) )
-		{
-			ItemId itemId = getItemIdForResource(resource);
+  @Override
+  public void processResultForMultiple(
+      SectionInfo info,
+      SelectionSession session,
+      ObjectNode link,
+      IItem<?> item,
+      SelectedResource resource) {
+    String attachmentUuid = resource.getAttachmentUuid();
+    if (!Check.isEmpty(attachmentUuid)) {
+      ItemId itemId = getItemIdForResource(resource);
 
-			IAttachment attachment = itemResolver.getAttachmentForUuid(itemId, attachmentUuid,
-				resource.getKey().getExtensionType());
-			AttachmentType type = attachment.getAttachmentType();
-			if( type.equals(AttachmentType.CUSTOM) )
-			{
-				final CustomAttachment custom = (CustomAttachment) attachment;
-				if( custom.getType().equalsIgnoreCase(ScormUtils.ATTACHMENT_TYPE) )
-				{
-					link.put("uuid", itemId.getUuid());
-					link.put("version", itemId.getVersion());
-					link.put("filename", custom.getUrl());
+      IAttachment attachment =
+          itemResolver.getAttachmentForUuid(
+              itemId, attachmentUuid, resource.getKey().getExtensionType());
+      AttachmentType type = attachment.getAttachmentType();
+      if (type.equals(AttachmentType.CUSTOM)) {
+        final CustomAttachment custom = (CustomAttachment) attachment;
+        if (custom.getType().equalsIgnoreCase(ScormUtils.ATTACHMENT_TYPE)) {
+          link.put("uuid", itemId.getUuid());
+          link.put("version", itemId.getVersion());
+          link.put("filename", custom.getUrl());
 
-					ItemFile itemFile = itemFileService.getItemFile(itemId, null);
-					try( InputStream in = imsService.getImsManifestAsStream(itemFile, custom.getUrl(), true) )
-					{
-						link.put("scorm", IOUtils.toString(in));
-					}
-					catch( IOException ex )
-					{
-						LOGGER.error("Error reading manifest file", ex);
-					}
-				}
-			}
-		}
-	}
+          ItemFile itemFile = itemFileService.getItemFile(itemId, null);
+          try (InputStream in =
+              imsService.getImsManifestAsStream(itemFile, custom.getUrl(), true)) {
+            link.put("scorm", IOUtils.toString(in));
+          } catch (IOException ex) {
+            LOGGER.error("Error reading manifest file", ex);
+          }
+        }
+      }
+    }
+  }
 
-	private ItemId getItemIdForResource(SelectedResource resource)
-	{
-		String uuid = resource.getUuid();
-		if( resource.isLatest() )
-		{
-			int latestVersion = itemResolver.getLiveItemVersion(uuid, resource.getKey().getExtensionType());
-			return new ItemId(uuid, latestVersion);
-		}
-		else
-		{
-			return new ItemId(uuid, resource.getVersion());
-		}
-	}
+  private ItemId getItemIdForResource(SelectedResource resource) {
+    String uuid = resource.getUuid();
+    if (resource.isLatest()) {
+      int latestVersion =
+          itemResolver.getLiveItemVersion(uuid, resource.getKey().getExtensionType());
+      return new ItemId(uuid, latestVersion);
+    } else {
+      return new ItemId(uuid, resource.getVersion());
+    }
+  }
 }

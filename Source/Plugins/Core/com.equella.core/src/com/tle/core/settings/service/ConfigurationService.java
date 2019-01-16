@@ -22,49 +22,40 @@ import java.util.Map;
 import com.tle.common.settings.ConfigurationProperties;
 import com.tle.core.services.impl.ProxyDetails;
 
-/**
- * @author Nicholas Read
- */
-public interface ConfigurationService
-{
-	boolean isAutoTestMode();
+/** @author Nicholas Read */
+public interface ConfigurationService {
+  boolean isAutoTestMode();
 
-	boolean isDebuggingMode();
+  boolean isDebuggingMode();
 
-	// GETTERS ///////////////////////////////////////////////////////////////
+  // GETTERS ///////////////////////////////////////////////////////////////
 
-	/**
-	 * The result of this will be cached for future invocations.
-	 */
-	<T extends ConfigurationProperties> T getProperties(T empty);
+  /** The result of this will be cached for future invocations. */
+  <T extends ConfigurationProperties> T getProperties(T empty);
 
-	/**
-	 * The result of this will be cached for future invocations.
-	 */
-	String getProperty(String property);
+  /** The result of this will be cached for future invocations. */
+  String getProperty(String property);
 
-	/**
-	 * The result of this will be cached for future invocations.
-	 */
-	<T> List<T> getPropertyList(String property);
+  /** The result of this will be cached for future invocations. */
+  <T> List<T> getPropertyList(String property);
 
-	// SETTERS ///////////////////////////////////////////////////////////////
+  // SETTERS ///////////////////////////////////////////////////////////////
 
-	void setProperties(ConfigurationProperties properties);
+  void setProperties(ConfigurationProperties properties);
 
-	void setProperty(String property, String value);
+  void setProperty(String property, String value);
 
-	void deleteProperty(String property);
+  void deleteProperty(String property);
 
-	// For institution import/export/deletion only ///////////////////////////
+  // For institution import/export/deletion only ///////////////////////////
 
-	Map<String, String> getAllProperties();
+  Map<String, String> getAllProperties();
 
-	void importInstitutionProperties(Map<String, String> map);
+  void importInstitutionProperties(Map<String, String> map);
 
-	void deleteAllInstitutionProperties();
+  void deleteAllInstitutionProperties();
 
-	// Other stuff //////////////////////////////////////////////////////////
+  // Other stuff //////////////////////////////////////////////////////////
 
-	ProxyDetails getProxyDetails();
+  ProxyDetails getProxyDetails();
 }

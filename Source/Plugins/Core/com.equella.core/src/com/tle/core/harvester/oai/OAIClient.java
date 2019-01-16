@@ -36,123 +36,104 @@ import com.tle.core.harvester.oai.verb.ListRecords;
 import com.tle.core.harvester.oai.verb.ListSets;
 import com.tle.core.harvester.oai.verb.Verb;
 
-/**
- * 
- */
-public class OAIClient
-{
-	private URL url;
+/** */
+public class OAIClient {
+  private URL url;
 
-	public OAIClient(URL url)
-	{
-		this.url = url;
-	}
+  public OAIClient(URL url) {
+    this.url = url;
+  }
 
-	public OAIClient(String host, int port, String path) throws MalformedURLException
-	{
-		url = new URL("http", host, port, path);
-	}
+  public OAIClient(String host, int port, String path) throws MalformedURLException {
+    url = new URL("http", host, port, path);
+  }
 
-	// *********************** METHODS ***********************//
+  // *********************** METHODS ***********************//
 
-	private void setup(Verb verb)
-	{
-		verb.setURL(url);
-	}
+  private void setup(Verb verb) {
+    verb.setURL(url);
+  }
 
-	public Repository identify()
-	{
-		Identify id = new Identify();
-		setup(id);
-		return id.getResult();
-	}
+  public Repository identify() {
+    Identify id = new Identify();
+    setup(id);
+    return id.getResult();
+  }
 
-	public List listMetadataFormats() throws IdDoesNotExistException, NoMetadataFormatsException
-	{
-		ListMetadataFormats verb = new ListMetadataFormats();
-		setup(verb);
-		return verb.getResult();
-	}
+  public List listMetadataFormats() throws IdDoesNotExistException, NoMetadataFormatsException {
+    ListMetadataFormats verb = new ListMetadataFormats();
+    setup(verb);
+    return verb.getResult();
+  }
 
-	public List listMetadataFormats(String identifier) throws IdDoesNotExistException, NoMetadataFormatsException
-	{
-		ListMetadataFormats verb = new ListMetadataFormats(identifier);
-		setup(verb);
-		return verb.getResult();
-	}
+  public List listMetadataFormats(String identifier)
+      throws IdDoesNotExistException, NoMetadataFormatsException {
+    ListMetadataFormats verb = new ListMetadataFormats(identifier);
+    setup(verb);
+    return verb.getResult();
+  }
 
-	public List listMetadataFormats(ResumptionToken token) throws IdDoesNotExistException, NoMetadataFormatsException
-	{
-		ListMetadataFormats verb = new ListMetadataFormats(token);
-		setup(verb);
-		return verb.getResult();
-	}
+  public List listMetadataFormats(ResumptionToken token)
+      throws IdDoesNotExistException, NoMetadataFormatsException {
+    ListMetadataFormats verb = new ListMetadataFormats(token);
+    setup(verb);
+    return verb.getResult();
+  }
 
-	public List listIdentifiers(String set, String from, String until, String prefix) throws NoRecordsMatchException,
-		NoSetHierarchyException, CannotDisseminateFormatException
-	{
-		ListIdentifiers verb = new ListIdentifiers(set, from, until, prefix);
-		setup(verb);
-		return verb.getResult();
-	}
+  public List listIdentifiers(String set, String from, String until, String prefix)
+      throws NoRecordsMatchException, NoSetHierarchyException, CannotDisseminateFormatException {
+    ListIdentifiers verb = new ListIdentifiers(set, from, until, prefix);
+    setup(verb);
+    return verb.getResult();
+  }
 
-	public List listIdentifiers(ResumptionToken token) throws NoRecordsMatchException, NoSetHierarchyException
-	{
-		ListIdentifiers verb = new ListIdentifiers(token);
-		setup(verb);
-		try
-		{
-			return verb.getResult();
-		}
-		catch( CannotDisseminateFormatException e )
-		{
-			// Never happen
-			throw new RuntimeException(e);
-		}
-	}
+  public List listIdentifiers(ResumptionToken token)
+      throws NoRecordsMatchException, NoSetHierarchyException {
+    ListIdentifiers verb = new ListIdentifiers(token);
+    setup(verb);
+    try {
+      return verb.getResult();
+    } catch (CannotDisseminateFormatException e) {
+      // Never happen
+      throw new RuntimeException(e);
+    }
+  }
 
-	public List listRecords(String set, String from, String until, String prefix) throws NoRecordsMatchException,
-		NoSetHierarchyException, CannotDisseminateFormatException
-	{
-		ListRecords verb = new ListRecords(set, from, until, prefix);
-		setup(verb);
-		return verb.getResult();
-	}
+  public List listRecords(String set, String from, String until, String prefix)
+      throws NoRecordsMatchException, NoSetHierarchyException, CannotDisseminateFormatException {
+    ListRecords verb = new ListRecords(set, from, until, prefix);
+    setup(verb);
+    return verb.getResult();
+  }
 
-	public List listRecords(ResumptionToken token) throws NoRecordsMatchException, NoSetHierarchyException
-	{
-		ListRecords verb = new ListRecords(token);
-		setup(verb);
-		try
-		{
-			return verb.getResult();
-		}
-		catch( CannotDisseminateFormatException e )
-		{
-			// Never happen
-			throw new RuntimeException(e);
-		}
-	}
+  public List listRecords(ResumptionToken token)
+      throws NoRecordsMatchException, NoSetHierarchyException {
+    ListRecords verb = new ListRecords(token);
+    setup(verb);
+    try {
+      return verb.getResult();
+    } catch (CannotDisseminateFormatException e) {
+      // Never happen
+      throw new RuntimeException(e);
+    }
+  }
 
-	public Record getRecord(String id, String metadataPrefix) throws IdDoesNotExistException,
-		CannotDisseminateFormatException
-	{
-		GetRecord verb = new GetRecord(id, metadataPrefix);
-		setup(verb);
-		return verb.getResult();
-	}
+  public Record getRecord(String id, String metadataPrefix)
+      throws IdDoesNotExistException, CannotDisseminateFormatException {
+    GetRecord verb = new GetRecord(id, metadataPrefix);
+    setup(verb);
+    return verb.getResult();
+  }
 
-	public List listSets()
-	{
-		ListSets verb = new ListSets();
-		setup(verb);
-		return verb.getResult();
-	}
+  public List listSets() {
+    ListSets verb = new ListSets();
+    setup(verb);
+    return verb.getResult();
+  }
 
-	public List listSets(ResumptionToken token)
-	{
-		ListSets verb = new ListSets(token);
-		setup(verb);
-		return verb.getResult();
-	}
+  public List listSets(ResumptionToken token) {
+    ListSets verb = new ListSets(token);
+    setup(verb);
+    return verb.getResult();
+  }
 }

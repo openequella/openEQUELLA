@@ -44,147 +44,132 @@ import com.tle.web.viewurl.ViewItemResource;
 
 @Bind
 @SuppressWarnings("nls")
-public class HtmlFiveViewerSection extends AbstractViewerSection<HtmlFiveViewerModel>
-{
-	@PlugURL("scripts/video.js")
-	private static String VIDEO_JS;
-	@PlugKey("fallback.key")
-	private static String FALLBACK_KEY;
-	@PlugKey("fallback.ie.key")
-	private static String FALLBACK_IE_KEY;
-	@PlugURL("scripts/resize.js")
-	private static String RESIZE_JS_URL;
+public class HtmlFiveViewerSection extends AbstractViewerSection<HtmlFiveViewerModel> {
+  @PlugURL("scripts/video.js")
+  private static String VIDEO_JS;
 
-	@Inject
-	private MimeTypeService mimeTypeService;
+  @PlugKey("fallback.key")
+  private static String FALLBACK_KEY;
 
-	@Override
-	public Collection<String> ensureOnePrivilege()
-	{
-		return VIEW_ITEM_AND_VIEW_ATTACHMENTS_PRIV;
-	}
+  @PlugKey("fallback.ie.key")
+  private static String FALLBACK_IE_KEY;
 
-	@Override
-	public Class<HtmlFiveViewerModel> getModelClass()
-	{
-		return HtmlFiveViewerModel.class;
-	}
+  @PlugURL("scripts/resize.js")
+  private static String RESIZE_JS_URL;
 
-	@Override
-	public SectionResult view(RenderContext info, ViewItemResource resource) throws IOException
-	{
-		Decorations.getDecorations(info).clearAllDecorations();
-		HtmlFiveViewerModel model = getModel(info);
-		String videoUrl = resource.createCanonicalURL().getHref();
-		String mimeType = resource.getMimeType();
-		model.setVideoUrl(videoUrl);
-		model.setVideoType(mimeType);
-		model.setFallback(new KeyLabel(FALLBACK_KEY, mimeType, videoUrl));
-		model.setFallbackIE(new KeyLabel(FALLBACK_IE_KEY, videoUrl));
-		String height = null;
-		String width = null;
+  @Inject private MimeTypeService mimeTypeService;
 
-		MimeEntry entry = mimeTypeService.getEntryForMimeType(resource.getMimeType());
-		if( entry != null )
-		{
-			ResourceViewerConfig config = getResourceViewerConfig(mimeTypeService, resource, "htmlFiveViewer");
+  @Override
+  public Collection<String> ensureOnePrivilege() {
+    return VIEW_ITEM_AND_VIEW_ATTACHMENTS_PRIV;
+  }
 
-			if( config != null )
-			{
-				Map<String, Object> attr = config.getAttr();
-				height = (String) attr.get("html5Height");
-				width = (String) attr.get("html5Width");
-			}
-		}
+  @Override
+  public Class<HtmlFiveViewerModel> getModelClass() {
+    return HtmlFiveViewerModel.class;
+  }
 
-		if( Check.isEmpty(height) || Objects.equals(height, "undefined") )
-		{
-			height = "264";
-		}
+  @Override
+  public SectionResult view(RenderContext info, ViewItemResource resource) throws IOException {
+    Decorations.getDecorations(info).clearAllDecorations();
+    HtmlFiveViewerModel model = getModel(info);
+    String videoUrl = resource.createCanonicalURL().getHref();
+    String mimeType = resource.getMimeType();
+    model.setVideoUrl(videoUrl);
+    model.setVideoType(mimeType);
+    model.setFallback(new KeyLabel(FALLBACK_KEY, mimeType, videoUrl));
+    model.setFallbackIE(new KeyLabel(FALLBACK_IE_KEY, videoUrl));
+    String height = null;
+    String width = null;
 
-		if( Check.isEmpty(width) || Objects.equals(height, "undefined") )
-		{
-			width = "640";
-		}
-		model.setHeight(height);
-		model.setWidth(width);
+    MimeEntry entry = mimeTypeService.getEntryForMimeType(resource.getMimeType());
+    if (entry != null) {
+      ResourceViewerConfig config =
+          getResourceViewerConfig(mimeTypeService, resource, "htmlFiveViewer");
 
-		info.getBody().addPreRenderable(new IncludeFile(VIDEO_JS));
-		info.getBody().addReadyStatements(
-			Js.statement(Js.call(new ExternallyDefinedFunction("resizeListeners", new IncludeFile(RESIZE_JS_URL)),
-				width, height)));
-		return viewFactory.createTemplateResult("fiveviewer.ftl", this);
-	}
+      if (config != null) {
+        Map<String, Object> attr = config.getAttr();
+        height = (String) attr.get("html5Height");
+        width = (String) attr.get("html5Width");
+      }
+    }
 
-	public static class HtmlFiveViewerModel
-	{
-		private String videoUrl;
-		private String videoType;
-		private String width;
-		private String height;
-		private Label fallback;
-		private Label fallbackIE;
+    if (Check.isEmpty(height) || Objects.equals(height, "undefined")) {
+      height = "264";
+    }
 
-		public Label getFallbackIE()
-		{
-			return fallbackIE;
-		}
+    if (Check.isEmpty(width) || Objects.equals(height, "undefined")) {
+      width = "640";
+    }
+    model.setHeight(height);
+    model.setWidth(width);
 
-		public void setFallbackIE(Label fallbackIE)
-		{
-			this.fallbackIE = fallbackIE;
-		}
+    info.getBody().addPreRenderable(new IncludeFile(VIDEO_JS));
+    info.getBody()
+        .addReadyStatements(
+            Js.statement(
+                Js.call(
+                    new ExternallyDefinedFunction(
+                        "resizeListeners", new IncludeFile(RESIZE_JS_URL)),
+                    width,
+                    height)));
+    return viewFactory.createTemplateResult("fiveviewer.ftl", this);
+  }
 
-		public String getVideoUrl()
-		{
-			return videoUrl;
-		}
+  public static class HtmlFiveViewerModel {
+    private String videoUrl;
+    private String videoType;
+    private String width;
+    private String height;
+    private Label fallback;
+    private Label fallbackIE;
 
-		public void setVideoUrl(String videoUrl)
-		{
-			this.videoUrl = videoUrl;
-		}
+    public Label getFallbackIE() {
+      return fallbackIE;
+    }
 
-		public String getVideoType()
-		{
-			return videoType;
-		}
+    public void setFallbackIE(Label fallbackIE) {
+      this.fallbackIE = fallbackIE;
+    }
 
-		public void setVideoType(String videoType)
-		{
-			this.videoType = videoType;
-		}
+    public String getVideoUrl() {
+      return videoUrl;
+    }
 
-		public String getWidth()
-		{
-			return width;
-		}
+    public void setVideoUrl(String videoUrl) {
+      this.videoUrl = videoUrl;
+    }
 
-		public void setWidth(String width)
-		{
-			this.width = width;
-		}
+    public String getVideoType() {
+      return videoType;
+    }
 
-		public String getHeight()
-		{
-			return height;
-		}
+    public void setVideoType(String videoType) {
+      this.videoType = videoType;
+    }
 
-		public void setHeight(String height)
-		{
-			this.height = height;
-		}
+    public String getWidth() {
+      return width;
+    }
 
-		public Label getFallback()
-		{
-			return fallback;
-		}
+    public void setWidth(String width) {
+      this.width = width;
+    }
 
-		public void setFallback(Label fallback)
-		{
-			this.fallback = fallback;
-		}
+    public String getHeight() {
+      return height;
+    }
 
-	}
+    public void setHeight(String height) {
+      this.height = height;
+    }
 
+    public Label getFallback() {
+      return fallback;
+    }
+
+    public void setFallback(Label fallback) {
+      this.fallback = fallback;
+    }
+  }
 }

@@ -46,106 +46,89 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.template.section.HelpAndScreenOptionsSection;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 public class RestoreInstitutionalPortletSection
-	extends
-		AbstractPrototypeSection<RestoreInstitutionalPortletSection.RestoreInstitutionalPortletModel>
-	implements
-		HtmlRenderer
-{
-	@Inject
-	private PortletService portletService;
-	@Inject
-	private PortletWebService portletWebService;
-	@Inject
-	private BundleCache bundleCache;
+    extends AbstractPrototypeSection<
+        RestoreInstitutionalPortletSection.RestoreInstitutionalPortletModel>
+    implements HtmlRenderer {
+  @Inject private PortletService portletService;
+  @Inject private PortletWebService portletWebService;
+  @Inject private BundleCache bundleCache;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
 
-	@Component
-	@PlugKey("enduser.restoreall.label")
-	private Button restoreAllButton;
+  @Component
+  @PlugKey("enduser.restoreall.label")
+  private Button restoreAllButton;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		List<Portlet> portlets = portletService.getViewableButClosedPortlets();
-		if( Check.isEmpty(portlets) || CurrentUser.wasAutoLoggedIn() )
-		{
-			return null;
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    List<Portlet> portlets = portletService.getViewableButClosedPortlets();
+    if (Check.isEmpty(portlets) || CurrentUser.wasAutoLoggedIn()) {
+      return null;
+    }
 
-		getModel(context).setRestorables(
-			Lists.newArrayList(Lists.transform(portlets, new Function<Portlet, HtmlLinkState>()
-			{
-				@Override
-				public HtmlLinkState apply(Portlet portlet)
-				{
-					return new HtmlLinkState(new BundleLabel(portlet.getName(), bundleCache), events.getNamedHandler(
-						"restore", portlet.getUuid()));
-				}
-			})));
+    getModel(context)
+        .setRestorables(
+            Lists.newArrayList(
+                Lists.transform(
+                    portlets,
+                    new Function<Portlet, HtmlLinkState>() {
+                      @Override
+                      public HtmlLinkState apply(Portlet portlet) {
+                        return new HtmlLinkState(
+                            new BundleLabel(portlet.getName(), bundleCache),
+                            events.getNamedHandler("restore", portlet.getUuid()));
+                      }
+                    })));
 
-		HelpAndScreenOptionsSection.addScreenOptions(context,
-			viewFactory.createResult("enduser/restore/screenoptions.ftl", this));
-		return null;
-	}
+    HelpAndScreenOptionsSection.addScreenOptions(
+        context, viewFactory.createResult("enduser/restore/screenoptions.ftl", this));
+    return null;
+  }
 
-	@EventHandlerMethod
-	public void restore(SectionInfo info, String portletUuid)
-	{
-		portletWebService.restore(info, portletUuid);
-	}
+  @EventHandlerMethod
+  public void restore(SectionInfo info, String portletUuid) {
+    portletWebService.restore(info, portletUuid);
+  }
 
-	@EventHandlerMethod
-	public void restoreAll(SectionInfo info)
-	{
-		portletWebService.restoreAll(info);
-	}
+  @EventHandlerMethod
+  public void restoreAll(SectionInfo info) {
+    portletWebService.restoreAll(info);
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "ri";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "ri";
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		restoreAllButton.setClickHandler(events.getNamedHandler("restoreAll"));
-	}
+    restoreAllButton.setClickHandler(events.getNamedHandler("restoreAll"));
+  }
 
-	@Override
-	public Class<RestoreInstitutionalPortletModel> getModelClass()
-	{
-		return RestoreInstitutionalPortletModel.class;
-	}
+  @Override
+  public Class<RestoreInstitutionalPortletModel> getModelClass() {
+    return RestoreInstitutionalPortletModel.class;
+  }
 
-	public Button getRestoreAllButton()
-	{
-		return restoreAllButton;
-	}
+  public Button getRestoreAllButton() {
+    return restoreAllButton;
+  }
 
-	public static class RestoreInstitutionalPortletModel
-	{
-		private List<HtmlLinkState> restorables;
+  public static class RestoreInstitutionalPortletModel {
+    private List<HtmlLinkState> restorables;
 
-		public List<HtmlLinkState> getRestorables()
-		{
-			return restorables;
-		}
+    public List<HtmlLinkState> getRestorables() {
+      return restorables;
+    }
 
-		public void setRestorables(List<HtmlLinkState> restorables)
-		{
-			this.restorables = restorables;
-		}
-	}
+    public void setRestorables(List<HtmlLinkState> restorables) {
+      this.restorables = restorables;
+    }
+  }
 }

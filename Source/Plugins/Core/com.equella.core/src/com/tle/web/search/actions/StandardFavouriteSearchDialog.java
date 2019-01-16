@@ -23,14 +23,11 @@ import com.tle.core.guice.Bind;
 
 @NonNullByDefault
 @Bind
-public class StandardFavouriteSearchDialog extends AbstractFavouriteSearchDialog
-{
-	@Inject
-	private StandardFavouriteSearchSection contentSection;
+public class StandardFavouriteSearchDialog extends AbstractFavouriteSearchDialog {
+  @Inject private StandardFavouriteSearchSection contentSection;
 
-	@Override
-	protected AbstractFavouriteSearchSection getContentSection()
-	{
-		return contentSection;
-	}
+  @Override
+  protected AbstractFavouriteSearchSection getContentSection() {
+    return contentSection;
+  }
 }

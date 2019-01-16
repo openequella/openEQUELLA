@@ -24,14 +24,13 @@ import com.tle.core.services.impl.ClusteredTask;
 
 import it.uniroma3.mat.extendedset.wrappers.LongSet;
 
-public interface BulkOperationService
-{
-	String KEY_OPERATION_TITLE = "operationTitle"; //$NON-NLS-1$
-	//Used (optionally) as an attribute in the item pack
-	String KEY_ITEM_RESULT_TITLE = "resultTitle";
+public interface BulkOperationService {
+  String KEY_OPERATION_TITLE = "operationTitle"; // $NON-NLS-1$
+  // Used (optionally) as an attribute in the item pack
+  String KEY_ITEM_RESULT_TITLE = "resultTitle";
 
-	ClusteredTask createTask(Collection<? extends ItemKey> items,
-		BeanLocator<? extends BulkOperationExecutor> executor);
+  ClusteredTask createTask(
+      Collection<? extends ItemKey> items, BeanLocator<? extends BulkOperationExecutor> executor);
 
-	ClusteredTask createTask(LongSet items, BeanLocator<? extends BulkOperationExecutor> executor);
+  ClusteredTask createTask(LongSet items, BeanLocator<? extends BulkOperationExecutor> executor);
 }

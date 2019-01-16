@@ -28,21 +28,17 @@ import com.tle.core.institution.convert.PostReadMigrator;
 
 @Bind
 @Singleton
-public class EnsureDefaultToolbarXmlMigration implements PostReadMigrator<Map<String, String>>
-{
-	@SuppressWarnings("nls")
-	@Override
-	public void migrate(Map<String, String> obj) throws IOException
-	{
-		// I don't think it likely that the toolbar is blank on purpose
-		if( !obj.containsKey("htmleditor.toolbar.rows.0.buttons.0")
-			&& !obj.containsKey("htmleditor.toolbar.rows.1.buttons.0")
-			&& !obj.containsKey("htmleditor.toolbar.rows.2.buttons.0") )
-		{
-			for( NameValue nv : EnsureDefaultToolbarMigration.DEFAULT_TOOLBAR )
-			{
-				obj.put(nv.getName(), nv.getValue());
-			}
-		}
-	}
+public class EnsureDefaultToolbarXmlMigration implements PostReadMigrator<Map<String, String>> {
+  @SuppressWarnings("nls")
+  @Override
+  public void migrate(Map<String, String> obj) throws IOException {
+    // I don't think it likely that the toolbar is blank on purpose
+    if (!obj.containsKey("htmleditor.toolbar.rows.0.buttons.0")
+        && !obj.containsKey("htmleditor.toolbar.rows.1.buttons.0")
+        && !obj.containsKey("htmleditor.toolbar.rows.2.buttons.0")) {
+      for (NameValue nv : EnsureDefaultToolbarMigration.DEFAULT_TOOLBAR) {
+        obj.put(nv.getName(), nv.getValue());
+      }
+    }
+  }
 }

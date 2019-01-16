@@ -27,30 +27,29 @@ import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.PreRenderable;
 
 @NonNullByDefault
-public interface PreRenderContext extends RenderContext
-{
-	@Override
-	void preRender(@Nullable Collection<? extends PreRenderable> preRenderers);
+public interface PreRenderContext extends RenderContext {
+  @Override
+  void preRender(@Nullable Collection<? extends PreRenderable> preRenderers);
 
-	@Override
-	void preRender(PreRenderable preRenderer);
+  @Override
+  void preRender(PreRenderable preRenderer);
 
-	@Override
-	void preRender(PreRenderable... preRenderers);
+  @Override
+  void preRender(PreRenderable... preRenderers);
 
-	void addJs(String src);
+  void addJs(String src);
 
-	void addCss(String src);
+  void addCss(String src);
 
-	void addCss(CssInclude css);
+  void addCss(CssInclude css);
 
-	void addStatements(JSStatements statements);
+  void addStatements(JSStatements statements);
 
-	void addFooterStatements(JSStatements statements);
+  void addFooterStatements(JSStatements statements);
 
-	void addReadyStatements(JSStatements statements);
+  void addReadyStatements(JSStatements statements);
 
-	void addHeaderMarkup(String head);
+  void addHeaderMarkup(String head);
 
-	void bindHandler(String event, Map<String, String> attrs, JSHandler handler);
+  void bindHandler(String event, Map<String, String> attrs, JSHandler handler);
 }

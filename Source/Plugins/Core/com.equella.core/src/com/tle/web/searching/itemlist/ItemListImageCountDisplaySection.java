@@ -38,50 +38,51 @@ import com.tle.web.sections.standard.renderers.LinkRenderer;
 
 @SuppressWarnings("nls")
 @Bind
-public class ItemListImageCountDisplaySection extends ItemListFileCountDisplaySection
-{
-	@PlugKey("images.count")
-	private static String COUNT_KEY;
+public class ItemListImageCountDisplaySection extends ItemListFileCountDisplaySection {
+  @PlugKey("images.count")
+  private static String COUNT_KEY;
 
-	@Inject
-	private MimeTypeService mimeTypeService;
+  @Inject private MimeTypeService mimeTypeService;
 
-	@Override
-	public ProcessEntryCallback<Item, StandardItemListEntry> processEntries(final RenderContext context,
-		List<StandardItemListEntry> entries, ListSettings<StandardItemListEntry> listSettings)
-	{
-		final boolean countDisabled = isFileCountDisabled();
+  @Override
+  public ProcessEntryCallback<Item, StandardItemListEntry> processEntries(
+      final RenderContext context,
+      List<StandardItemListEntry> entries,
+      ListSettings<StandardItemListEntry> listSettings) {
+    final boolean countDisabled = isFileCountDisabled();
 
-		return new ProcessEntryCallback<Item, StandardItemListEntry>()
-		{
-			@Override
-			public void processEntry(StandardItemListEntry entry)
-			{
-				if( !countDisabled )
-				{
-					final boolean canViewRestricted = canViewRestricted(entry.getItem());
+    return new ProcessEntryCallback<Item, StandardItemListEntry>() {
+      @Override
+      public void processEntry(StandardItemListEntry entry) {
+        if (!countDisabled) {
+          final boolean canViewRestricted = canViewRestricted(entry.getItem());
 
-					// Optimised?
-					final List<FileAttachment> fileatts = entry.getAttachments().getList(AttachmentType.FILE);
-					long count = fileatts.stream().filter(fa -> {
-						if( canViewRestricted || !fa.isRestricted() )
-						{
-							String mimeType = mimeTypeService.getMimeTypeForFilename(fa.getFilename());
-							return mimeType.startsWith("image");
-						}
-						return false;
-					}).count();
+          // Optimised?
+          final List<FileAttachment> fileatts = entry.getAttachments().getList(AttachmentType.FILE);
+          long count =
+              fileatts
+                  .stream()
+                  .filter(
+                      fa -> {
+                        if (canViewRestricted || !fa.isRestricted()) {
+                          String mimeType =
+                              mimeTypeService.getMimeTypeForFilename(fa.getFilename());
+                          return mimeType.startsWith("image");
+                        }
+                        return false;
+                      })
+                  .count();
 
-					if( count > 1 )
-					{
-						// disabled link renders as a span, deel wiv it
-						HtmlLinkState link = new HtmlLinkState(new IconLabel(Icon.IMAGE, new CountLabel(count), false));
-						link.setDisabled(true);
-						link.setTitle(new PluralKeyLabel(COUNT_KEY, count));
-						entry.setThumbnailCount(new DivRenderer("filecount", new LinkRenderer(link)));
-					}
-				}
-			}
-		};
-	}
+          if (count > 1) {
+            // disabled link renders as a span, deel wiv it
+            HtmlLinkState link =
+                new HtmlLinkState(new IconLabel(Icon.IMAGE, new CountLabel(count), false));
+            link.setDisabled(true);
+            link.setTitle(new PluralKeyLabel(COUNT_KEY, count));
+            entry.setThumbnailCount(new DivRenderer("filecount", new LinkRenderer(link)));
+          }
+        }
+      }
+    };
+  }
 }

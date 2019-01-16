@@ -29,39 +29,31 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.Label;
 
-/**
- * @author Aaron
- */
-public class MerlotDateRangeFilterSection extends RemoteRepoDateRangeFilterSection
-{
-	@PlugKey("filter.date.title")
-	private static Label TITLE;
+/** @author Aaron */
+public class MerlotDateRangeFilterSection extends RemoteRepoDateRangeFilterSection {
+  @PlugKey("filter.date.title")
+  private static Label TITLE;
 
-	@Inject
-	private MerlotWebService merlotWebService;
+  @Inject private MerlotWebService merlotWebService;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		if( !merlotWebService.getSettings(context).isAdvancedApi() )
-		{
-			return null;
-		}
-		return super.renderHtml(context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    if (!merlotWebService.getSettings(context).isAdvancedApi()) {
+      return null;
+    }
+    return super.renderHtml(context);
+  }
 
-	@Override
-	protected Label getTitle(SectionInfo info)
-	{
-		return TITLE;
-	}
+  @Override
+  protected Label getTitle(SectionInfo info) {
+    return TITLE;
+  }
 
-	@Override
-	protected void processDateRange(SectionInfo info, RemoteRepoSearchEvent event, TleDate[] dateRange)
-	{
-		final MerlotRemoteRepoSearchEvent merlot = (MerlotRemoteRepoSearchEvent) event;
-		merlot.setCreatedAfter(dateRange[0]);
-		merlot.setCreatedBefore(dateRange[1]);
-	}
-
+  @Override
+  protected void processDateRange(
+      SectionInfo info, RemoteRepoSearchEvent event, TleDate[] dateRange) {
+    final MerlotRemoteRepoSearchEvent merlot = (MerlotRemoteRepoSearchEvent) event;
+    merlot.setCreatedAfter(dateRange[0]);
+    merlot.setCreatedBefore(dateRange[1]);
+  }
 }

@@ -23,11 +23,12 @@ import com.tle.web.resources.ResourcesService;
 
 @Bind
 @SuppressWarnings("nls")
-public class ScheduledTasksPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider
-{
-	public ScheduledTasksPrivilegeTreeProvider()
-	{
-		super(Type.SYSTEM_SETTING, ResourcesService.getResourceHelper(ScheduledTasksPrivilegeTreeProvider.class).key(
-			"securitytree.scheduler"), new SettingsTarget("scheduledTasks"));
-	}
+public class ScheduledTasksPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider {
+  public ScheduledTasksPrivilegeTreeProvider() {
+    super(
+        Type.SYSTEM_SETTING,
+        ResourcesService.getResourceHelper(ScheduledTasksPrivilegeTreeProvider.class)
+            .key("securitytree.scheduler"),
+        new SettingsTarget("scheduledTasks"));
+  }
 }

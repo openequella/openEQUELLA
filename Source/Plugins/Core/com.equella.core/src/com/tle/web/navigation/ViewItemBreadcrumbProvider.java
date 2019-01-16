@@ -34,36 +34,34 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.viewurl.ViewItemUrlFactory;
 
 /**
- * I'm not sure com.tle.web.sections.equella should depend on
- * com.tle.web.viewurl... otherwise I would have put this class in that plugin.
- * 
+ * I'm not sure com.tle.web.sections.equella should depend on com.tle.web.viewurl... otherwise I
+ * would have put this class in that plugin.
+ *
  * @author aholland
  */
 @Bind
 @Singleton
-public class ViewItemBreadcrumbProvider implements BreadcrumbProvider
-{
-	@PlugKey("breadcrumb.title")
-	private static Label BREADCRUMB_TITLE;
-	@PlugKey("breadcrumb.item.untitled")
-	private static Label BREADCRUMB_UNTITLED;
+public class ViewItemBreadcrumbProvider implements BreadcrumbProvider {
+  @PlugKey("breadcrumb.title")
+  private static Label BREADCRUMB_TITLE;
 
-	@Inject
-	private ViewItemUrlFactory viewItemUrl;
-	@Inject
-	private BundleCache bundleCache;
+  @PlugKey("breadcrumb.item.untitled")
+  private static Label BREADCRUMB_UNTITLED;
 
-	@Override
-	@SuppressWarnings("nls")
-	public TagState getBreadcrumb(SectionInfo info, Map<String, ?> params)
-	{
-		final Item item = (Item) params.get("item");
+  @Inject private ViewItemUrlFactory viewItemUrl;
+  @Inject private BundleCache bundleCache;
 
-		HtmlLinkState itemLink = new HtmlLinkState(viewItemUrl.createItemUrl(info, item.getItemId()));
-		itemLink
-			.setLabel(new WrappedLabel(new BundleLabel(item.getName(), BREADCRUMB_UNTITLED, bundleCache), 35, true));
-		itemLink.setRel("parent");
-		itemLink.setTitle(BREADCRUMB_TITLE);
-		return itemLink;
-	}
+  @Override
+  @SuppressWarnings("nls")
+  public TagState getBreadcrumb(SectionInfo info, Map<String, ?> params) {
+    final Item item = (Item) params.get("item");
+
+    HtmlLinkState itemLink = new HtmlLinkState(viewItemUrl.createItemUrl(info, item.getItemId()));
+    itemLink.setLabel(
+        new WrappedLabel(
+            new BundleLabel(item.getName(), BREADCRUMB_UNTITLED, bundleCache), 35, true));
+    itemLink.setRel("parent");
+    itemLink.setTitle(BREADCRUMB_TITLE);
+    return itemLink;
+  }
 }

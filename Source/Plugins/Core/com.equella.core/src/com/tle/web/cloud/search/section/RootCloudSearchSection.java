@@ -39,70 +39,63 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.Label;
 import com.tle.web.viewitem.ItemFilestoreServlet;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class RootCloudSearchSection extends ContextableSearchSection<ContextableSearchSection.Model>
-{
-	public static final String SEARCH_SESSIONKEY = "cloudSearchContext";
+public class RootCloudSearchSection
+    extends ContextableSearchSection<ContextableSearchSection.Model> {
+  public static final String SEARCH_SESSIONKEY = "cloudSearchContext";
 
-	@PlugKey("search.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("search.error.clouddisabled")
-	private static Label LABEL_ERROR_CLOUD_DISABLED;
+  @PlugKey("search.title")
+  private static Label LABEL_TITLE;
 
-	@Inject
-	private CloudService cloudService;
-	@Inject
-	private TLEAclManager aclManager;
-	@Inject
-	private InstitutionService institutionService;
+  @PlugKey("search.error.clouddisabled")
+  private static Label LABEL_ERROR_CLOUD_DISABLED;
 
-	private static PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(RootCloudSearchSection.class);
+  @Inject private CloudService cloudService;
+  @Inject private TLEAclManager aclManager;
+  @Inject private InstitutionService institutionService;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !cloudService.isCloudy() )
-		{
-			throw new AccessDeniedException(LABEL_ERROR_CLOUD_DISABLED.getText());
-		}
+  private static PluginResourceHelper urlHelper =
+      ResourcesService.getResourceHelper(RootCloudSearchSection.class);
 
-		// Anonymous search privilege if it exists extends to cloud search
-		if( aclManager.filterNonGrantedPrivileges(WebConstants.SEARCH_PAGE_PRIVILEGE).isEmpty() )
-		{
-			if( CurrentUser.isGuest() )
-			{
-				LogonSection.forwardToLogon(context,
-					institutionService.removeInstitution(context.getPublicBookmark().getHref()),
-					LogonSection.STANDARD_LOGON_PATH);
-				return null;
-			}
-			throw new AccessDeniedException(urlHelper.getString("missingprivileges", WebConstants.SEARCH_PAGE_PRIVILEGE));
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (!cloudService.isCloudy()) {
+      throw new AccessDeniedException(LABEL_ERROR_CLOUD_DISABLED.getText());
+    }
 
-		return super.renderHtml(context);
-	}
+    // Anonymous search privilege if it exists extends to cloud search
+    if (aclManager.filterNonGrantedPrivileges(WebConstants.SEARCH_PAGE_PRIVILEGE).isEmpty()) {
+      if (CurrentUser.isGuest()) {
+        LogonSection.forwardToLogon(
+            context,
+            institutionService.removeInstitution(context.getPublicBookmark().getHref()),
+            LogonSection.STANDARD_LOGON_PATH);
+        return null;
+      }
+      throw new AccessDeniedException(
+          urlHelper.getString("missingprivileges", WebConstants.SEARCH_PAGE_PRIVILEGE));
+    }
 
-	@Override
-	protected String getSessionKey()
-	{
-		return SEARCH_SESSIONKEY;
-	}
+    return super.renderHtml(context);
+  }
 
-	@Override
-	public Label getTitle(SectionInfo info)
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  protected String getSessionKey() {
+    return SEARCH_SESSIONKEY;
+  }
 
-	@Override
-	protected ContentLayout getDefaultLayout(SectionInfo info)
-	{
-		return selectionService.getCurrentSession(info) != null ? super.getDefaultLayout(info)
-			: ContentLayout.ONE_COLUMN;
-	}
+  @Override
+  public Label getTitle(SectionInfo info) {
+    return LABEL_TITLE;
+  }
+
+  @Override
+  protected ContentLayout getDefaultLayout(SectionInfo info) {
+    return selectionService.getCurrentSession(info) != null
+        ? super.getDefaultLayout(info)
+        : ContentLayout.ONE_COLUMN;
+  }
 }

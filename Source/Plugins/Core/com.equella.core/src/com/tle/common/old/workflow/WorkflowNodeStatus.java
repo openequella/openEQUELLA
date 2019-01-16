@@ -39,72 +39,62 @@ import com.tle.common.old.workflow.node.WorkflowNode;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(discriminatorType = DiscriminatorType.STRING, name = "acttype")
 @DiscriminatorValue("node")
-public class WorkflowNodeStatus implements Serializable, IdCloneable
-{
-	private static final long serialVersionUID = 1L;
+public class WorkflowNodeStatus implements Serializable, IdCloneable {
+  private static final long serialVersionUID = 1L;
 
-	public static final char INCOMPLETE = 'i';
-	public static final char COMPLETE = 'c';
+  public static final char INCOMPLETE = 'i';
+  public static final char COMPLETE = 'c';
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-	@Column(length = 40)
-	private String nodeId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	private char status;
-	private int type;
+  @Column(length = 40)
+  private String nodeId;
 
-	public WorkflowNodeStatus()
-	{
-		super();
-	}
+  private char status;
+  private int type;
 
-	public WorkflowNodeStatus(WorkflowNode node)
-	{
-		this.type = node.getType();
-		nodeId = node.getId();
-	}
+  public WorkflowNodeStatus() {
+    super();
+  }
 
-	public String getNodeId()
-	{
-		return nodeId;
-	}
+  public WorkflowNodeStatus(WorkflowNode node) {
+    this.type = node.getType();
+    nodeId = node.getId();
+  }
 
-	public void setNodeId(String nodeId)
-	{
-		this.nodeId = nodeId;
-	}
+  public String getNodeId() {
+    return nodeId;
+  }
 
-	public char getStatus()
-	{
-		return status;
-	}
+  public void setNodeId(String nodeId) {
+    this.nodeId = nodeId;
+  }
 
-	public void setStatus(char status)
-	{
-		this.status = status;
-	}
+  public char getStatus() {
+    return status;
+  }
 
-	public int getType()
-	{
-		return type;
-	}
+  public void setStatus(char status) {
+    this.status = status;
+  }
 
-	public void setType(int type)
-	{
-		this.type = type;
-	}
+  public int getType() {
+    return type;
+  }
 
-	@Override
-	public long getId()
-	{
-		return id;
-	}
+  public void setType(int type) {
+    this.type = type;
+  }
 
-	@Override
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  @Override
+  public long getId() {
+    return id;
+  }
+
+  @Override
+  public void setId(long id) {
+    this.id = id;
+  }
 }

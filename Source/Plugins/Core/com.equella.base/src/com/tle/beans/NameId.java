@@ -20,47 +20,37 @@ import com.tle.common.Pair;
 
 import java.util.Objects;
 
-/**
- * @author Nicholas Read
- */
-public class NameId extends Pair<String, Long>
-{
-	private static final long serialVersionUID = 1;
+/** @author Nicholas Read */
+public class NameId extends Pair<String, Long> {
+  private static final long serialVersionUID = 1;
 
-	public NameId()
-	{
-		super();
-	}
+  public NameId() {
+    super();
+  }
 
-	public NameId(String name, long id)
-	{
-		super(name, id);
-	}
+  public NameId(String name, long id) {
+    super(name, id);
+  }
 
-	public String getName()
-	{
-		return getFirst();
-	}
+  public String getName() {
+    return getFirst();
+  }
 
-	public void setName(String name)
-	{
-		setFirst(name);
-	}
+  public void setName(String name) {
+    setFirst(name);
+  }
 
-	public long getId()
-	{
-		return getSecond();
-	}
+  public long getId() {
+    return getSecond();
+  }
 
-	public void setId(long id)
-	{
-		setSecond(id);
-	}
+  public void setId(long id) {
+    setSecond(id);
+  }
 
-	@Override
-	public boolean checkFields(Pair<String, Long> rhs)
-	{
-		// Only check the value of this object type
-		return Objects.equals(rhs.getSecond(), getSecond());
-	}
+  @Override
+  public boolean checkFields(Pair<String, Long> rhs) {
+    // Only check the value of this object type
+    return Objects.equals(rhs.getSecond(), getSecond());
+  }
 }

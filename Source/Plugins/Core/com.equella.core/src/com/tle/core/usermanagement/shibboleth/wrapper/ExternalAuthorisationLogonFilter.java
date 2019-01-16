@@ -39,100 +39,81 @@ import com.tle.web.dispatcher.FilterResult;
 import hurl.build.QueryBuilder;
 import hurl.build.UriBuilder;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @SuppressWarnings("nls")
-public class ExternalAuthorisationLogonFilter implements UserManagementLogonFilter
-{
-	private static final Logger LOGGER = Logger.getLogger(ExternalAuthorisationLogonFilter.class);
-	private static final String PARAM_NO_AUTO_LOGIN = "NO_AUTO_LOGIN";
+public class ExternalAuthorisationLogonFilter implements UserManagementLogonFilter {
+  private static final Logger LOGGER = Logger.getLogger(ExternalAuthorisationLogonFilter.class);
+  private static final String PARAM_NO_AUTO_LOGIN = "NO_AUTO_LOGIN";
 
-	@Inject
-	private UserService userService;
-	@Inject
-	private ConfigurationService configurationService;
+  @Inject private UserService userService;
+  @Inject private ConfigurationService configurationService;
 
-	private ExternalAuthorisationWrapperSettings settings;
+  private ExternalAuthorisationWrapperSettings settings;
 
-	@Override
-	public boolean init(Map<Object, Object> attributes)
-	{
-		settings = configurationService.getProperties(new ExternalAuthorisationWrapperSettings());
-		if( settings.isEnabled() && LOGGER.isDebugEnabled() )
-		{
-			LOGGER.debug("Usage type: " + settings.getUsageType());
-			LOGGER.debug("HTTP Header: " + settings.getHttpHeaderName());
-			LOGGER.debug("Env Var: " + settings.getEnvironmentVarName());
-			LOGGER.debug("Logout URL: " + settings.getLogoutUrl());
-		}
-		return settings.isEnabled();
-	}
+  @Override
+  public boolean init(Map<Object, Object> attributes) {
+    settings = configurationService.getProperties(new ExternalAuthorisationWrapperSettings());
+    if (settings.isEnabled() && LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Usage type: " + settings.getUsageType());
+      LOGGER.debug("HTTP Header: " + settings.getHttpHeaderName());
+      LOGGER.debug("Env Var: " + settings.getEnvironmentVarName());
+      LOGGER.debug("Logout URL: " + settings.getLogoutUrl());
+    }
+    return settings.isEnabled();
+  }
 
-	@Override
-	public void addStateParameters(HttpServletRequest request, Map<String, String[]> params)
-	{
-		if( request.getParameter(PARAM_NO_AUTO_LOGIN) != null )
-		{
-			params.put(PARAM_NO_AUTO_LOGIN, new String[]{"true"});
-		}
-	}
+  @Override
+  public void addStateParameters(HttpServletRequest request, Map<String, String[]> params) {
+    if (request.getParameter(PARAM_NO_AUTO_LOGIN) != null) {
+      params.put(PARAM_NO_AUTO_LOGIN, new String[] {"true"});
+    }
+  }
 
-	@Override
-	public FilterResult filter(HttpServletRequest request, HttpServletResponse response) throws IOException
-	{
-		if( !CurrentUser.isGuest() || request.getParameter(PARAM_NO_AUTO_LOGIN) != null )
-		{
-			return null;
-		}
-		String username = null;
-		if( settings.isRemoteUser() )
-		{
-			username = request.getRemoteUser();
-		}
-		else if( settings.isHTTPHeader() )
-		{
-			username = request.getHeader(settings.getHttpHeaderName());
-		}
-		else if( settings.isEnvironmentVar() )
-		{
-			username = (String) request.getAttribute(settings.getEnvironmentVarName());
-		}
+  @Override
+  public FilterResult filter(HttpServletRequest request, HttpServletResponse response)
+      throws IOException {
+    if (!CurrentUser.isGuest() || request.getParameter(PARAM_NO_AUTO_LOGIN) != null) {
+      return null;
+    }
+    String username = null;
+    if (settings.isRemoteUser()) {
+      username = request.getRemoteUser();
+    } else if (settings.isHTTPHeader()) {
+      username = request.getHeader(settings.getHttpHeaderName());
+    } else if (settings.isEnvironmentVar()) {
+      username = (String) request.getAttribute(settings.getEnvironmentVarName());
+    }
 
-		if( username != null )
-		{
-			UserState userState = userService.authenticateAsUser(username,
-				userService.getWebAuthenticationDetails(request));
-			userService.login(userState, false);
-			return FilterResult.FILTER_CONTINUE;
-		}
-		return null;
-	}
+    if (username != null) {
+      UserState userState =
+          userService.authenticateAsUser(
+              username, userService.getWebAuthenticationDetails(request));
+      userService.login(userState, false);
+      return FilterResult.FILTER_CONTINUE;
+    }
+    return null;
+  }
 
-	@Override
-	public URI logoutRedirect(URI loggedOutURI)
-	{
-		String logoutUrl = settings.getLogoutUrl();
-		if( !Check.isEmpty(logoutUrl) )
-		{
-			return URI.create(logoutUrl);
-		}
-		return null;
-	}
+  @Override
+  public URI logoutRedirect(URI loggedOutURI) {
+    String logoutUrl = settings.getLogoutUrl();
+    if (!Check.isEmpty(logoutUrl)) {
+      return URI.create(logoutUrl);
+    }
+    return null;
+  }
 
-	@Override
-	public URI logoutURI(UserState state, URI loggedOutURI)
-	{
-		QueryBuilder loggedOutQB = QueryBuilder.create();
-		String loggedOutQuery = loggedOutURI.getQuery();
-		if( loggedOutQuery != null )
-		{
-			loggedOutQB.parse(loggedOutQuery);
-		}
-		loggedOutQB.addParam(PARAM_NO_AUTO_LOGIN, "true");
-		UriBuilder builder = UriBuilder.create(loggedOutURI);
-		builder.setQuery(loggedOutQB);
-		return builder.build();
-	}
+  @Override
+  public URI logoutURI(UserState state, URI loggedOutURI) {
+    QueryBuilder loggedOutQB = QueryBuilder.create();
+    String loggedOutQuery = loggedOutURI.getQuery();
+    if (loggedOutQuery != null) {
+      loggedOutQB.parse(loggedOutQuery);
+    }
+    loggedOutQB.addParam(PARAM_NO_AUTO_LOGIN, "true");
+    UriBuilder builder = UriBuilder.create(loggedOutURI);
+    builder.setQuery(loggedOutQB);
+    return builder.build();
+  }
 }

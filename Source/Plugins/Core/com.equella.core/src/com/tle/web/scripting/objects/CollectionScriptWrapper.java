@@ -30,28 +30,24 @@ import java.util.List;
 
 @Bind(CollectionScriptObject.class)
 @Singleton
-public class CollectionScriptWrapper extends AbstractScriptWrapper implements CollectionScriptObject
-{
-	@Inject
-	private ScriptTypeFactory scriptTypeFactory;
+public class CollectionScriptWrapper extends AbstractScriptWrapper
+    implements CollectionScriptObject {
+  @Inject private ScriptTypeFactory scriptTypeFactory;
 
-	@Inject
-	private ItemDefinitionService collectionService;
+  @Inject private ItemDefinitionService collectionService;
 
-	@Override
-	public CollectionScriptType getFromUuid(String uuid)
-	{
-		ItemDefinition collection = collectionService.getByUuid(uuid);
-		if( collection != null )
-		{
-			return scriptTypeFactory.createCollection(collection);
-		}
-		return null;
-	}
+  @Override
+  public CollectionScriptType getFromUuid(String uuid) {
+    ItemDefinition collection = collectionService.getByUuid(uuid);
+    if (collection != null) {
+      return scriptTypeFactory.createCollection(collection);
+    }
+    return null;
+  }
 
-	@Override
-	public List<CollectionScriptType> listCollections()
-	{
-		return Lists.transform(collectionService.enumerateEnabled(), c -> scriptTypeFactory.createCollection(c));
-	}
+  @Override
+  public List<CollectionScriptType> listCollections() {
+    return Lists.transform(
+        collectionService.enumerateEnabled(), c -> scriptTypeFactory.createCollection(c));
+  }
 }

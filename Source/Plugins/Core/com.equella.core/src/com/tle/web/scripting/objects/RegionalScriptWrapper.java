@@ -25,30 +25,24 @@ import javax.inject.Singleton;
 import java.util.Locale;
 import java.util.TimeZone;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind(RegionalScriptObject.class)
 @Singleton
-public class RegionalScriptWrapper extends AbstractScriptWrapper implements RegionalScriptObject
-{
-	private static final long serialVersionUID = 1L;
+public class RegionalScriptWrapper extends AbstractScriptWrapper implements RegionalScriptObject {
+  private static final long serialVersionUID = 1L;
 
-	@Override
-	public Locale getLocale()
-	{
-		return CurrentLocale.getLocale();
-	}
+  @Override
+  public Locale getLocale() {
+    return CurrentLocale.getLocale();
+  }
 
-	@Override
-	public String getString(String key)
-	{
-		return CurrentLocale.get(key);
-	}
+  @Override
+  public String getString(String key) {
+    return CurrentLocale.get(key);
+  }
 
-	@Override
-	public TimeZone getTimeZone()
-	{
-		return CurrentTimeZone.get();
-	}
+  @Override
+  public TimeZone getTimeZone() {
+    return CurrentTimeZone.get();
+  }
 }

@@ -53,255 +53,209 @@ import com.tle.common.workflow.Workflow;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.CHAR)
 @DiscriminatorValue("n")
-public abstract class WorkflowNode implements IdCloneable, Serializable
-{
-	private static final long serialVersionUID = 1;
+public abstract class WorkflowNode implements IdCloneable, Serializable {
+  private static final long serialVersionUID = 1;
 
-	public static final char SERIAL_TYPE = 's';
-	public static final char PARALLEL_TYPE = 'p';
-	public static final char DECISION_TYPE = 'd';
-	public static final char ITEM_TYPE = 't';
-	public static final char SCRIPT_TYPE ='x';
+  public static final char SERIAL_TYPE = 's';
+  public static final char PARALLEL_TYPE = 'p';
+  public static final char DECISION_TYPE = 'd';
+  public static final char ITEM_TYPE = 't';
+  public static final char SCRIPT_TYPE = 'x';
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	@Column(length = 40, nullable = false)
-	private String uuid;
+  @Column(length = 40, nullable = false)
+  private String uuid;
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@Index(name = "workflowNodeName")
-	protected LanguageBundle name;
-	private boolean rejectPoint;
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @Index(name = "workflowNodeName")
+  protected LanguageBundle name;
 
-	@XStreamOmitField
-	@ManyToOne
-	@JoinColumn(name = "workflow_id", insertable = false, updatable = false, nullable = false)
-	@Index(name = "workflowNodeWorkflow")
-	protected Workflow workflow;
+  private boolean rejectPoint;
 
-	@ManyToOne
-	@DoNotSimplify
-	@Index(name = "workflowNodeParent")
-	protected WorkflowNode parent;
-	private int childIndex;
+  @XStreamOmitField
+  @ManyToOne
+  @JoinColumn(name = "workflow_id", insertable = false, updatable = false, nullable = false)
+  @Index(name = "workflowNodeWorkflow")
+  protected Workflow workflow;
 
-	@Transient
-	@XStreamOmitField
-	private transient List<WorkflowNode> children;
+  @ManyToOne
+  @DoNotSimplify
+  @Index(name = "workflowNodeParent")
+  protected WorkflowNode parent;
 
-	public WorkflowNode()
-	{
-	}
+  private int childIndex;
 
-	public void setChildren(List<WorkflowNode> children)
-	{
-		this.children = children;
-	}
+  @Transient @XStreamOmitField private transient List<WorkflowNode> children;
 
-	public WorkflowNode(LanguageBundle name)
-	{
-		this();
-		this.name = name;
-		this.uuid = UUID.randomUUID().toString();
-	}
+  public WorkflowNode() {}
 
-	public abstract char getType();
+  public void setChildren(List<WorkflowNode> children) {
+    this.children = children;
+  }
 
-	public void setParent(WorkflowNode parent)
-	{
-		this.parent = parent;
-	}
+  public WorkflowNode(LanguageBundle name) {
+    this();
+    this.name = name;
+    this.uuid = UUID.randomUUID().toString();
+  }
 
-	public WorkflowNode getParent()
-	{
-		return parent;
-	}
+  public abstract char getType();
 
-	public void setName(LanguageBundle name)
-	{
-		this.name = name;
-	}
+  public void setParent(WorkflowNode parent) {
+    this.parent = parent;
+  }
 
-	public LanguageBundle getName()
-	{
-		return name;
-	}
+  public WorkflowNode getParent() {
+    return parent;
+  }
 
-	public boolean canAddChildren()
-	{
-		return false;
-	}
+  public void setName(LanguageBundle name) {
+    this.name = name;
+  }
 
-	public boolean isLeafNode()
-	{
-		return true;
-	}
+  public LanguageBundle getName() {
+    return name;
+  }
 
-	@Override
-	public int hashCode()
-	{
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
-		return result;
-	}
+  public boolean canAddChildren() {
+    return false;
+  }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		if( this == obj )
-		{
-			return true;
-		}
-		if( obj == null )
-		{
-			return false;
-		}
-		if( getClass() != obj.getClass() )
-		{
-			return false;
-		}
-		final WorkflowNode other = (WorkflowNode) obj;
-		if( uuid == null )
-		{
-			if( other.uuid != null )
-			{
-				return false;
-			}
-		}
-		else if( !uuid.equals(other.uuid) )
-		{
-			return false;
-		}
-		return true;
-	}
+  public boolean isLeafNode() {
+    return true;
+  }
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+    return result;
+  }
 
-	public void setUuid(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final WorkflowNode other = (WorkflowNode) obj;
+    if (uuid == null) {
+      if (other.uuid != null) {
+        return false;
+      }
+    } else if (!uuid.equals(other.uuid)) {
+      return false;
+    }
+    return true;
+  }
 
-	@Override
-	public long getId()
-	{
-		return id;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	@Override
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-	public boolean isRejectPoint()
-	{
-		return rejectPoint;
-	}
+  @Override
+  public long getId() {
+    return id;
+  }
 
-	public void setRejectPoint(boolean rejectPoint)
-	{
-		this.rejectPoint = rejectPoint;
-	}
+  @Override
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public abstract boolean canHaveSiblingRejectPoints();
+  public boolean isRejectPoint() {
+    return rejectPoint;
+  }
 
-	public Workflow getWorkflow()
-	{
-		return workflow;
-	}
+  public void setRejectPoint(boolean rejectPoint) {
+    this.rejectPoint = rejectPoint;
+  }
 
-	public void setWorkflow(Workflow workflow)
-	{
-		this.workflow = workflow;
-	}
+  public abstract boolean canHaveSiblingRejectPoints();
 
-	public int getChildIndex()
-	{
-		return childIndex;
-	}
+  public Workflow getWorkflow() {
+    return workflow;
+  }
 
-	public WorkflowNode getChild(int index)
-	{
-		return getChildren().get(index);
-	}
+  public void setWorkflow(Workflow workflow) {
+    this.workflow = workflow;
+  }
 
-	public void addChild(WorkflowNode child)
-	{
-		List<WorkflowNode> childrenList = getChildren();
-		child.childIndex = childrenList.size();
-		childrenList.add(child);
-	}
+  public int getChildIndex() {
+    return childIndex;
+  }
 
-	public void addChild(int index, WorkflowNode child)
-	{
-		List<WorkflowNode> childrenList = getChildren();
-		childrenList.add(index, child);
-		while( index < childrenList.size() )
-		{
-			childrenList.get(index).childIndex = index;
-			index++;
-		}
+  public WorkflowNode getChild(int index) {
+    return getChildren().get(index);
+  }
 
-	}
+  public void addChild(WorkflowNode child) {
+    List<WorkflowNode> childrenList = getChildren();
+    child.childIndex = childrenList.size();
+    childrenList.add(child);
+  }
 
-	public void removeChild(WorkflowNode child)
-	{
-		int index = children.indexOf(child);
-		if( index >= 0 )
-		{
-			children.remove(child);
-			while( index < children.size() )
-			{
-				children.get(index).childIndex = index;
-				index++;
-			}
-		}
-	}
+  public void addChild(int index, WorkflowNode child) {
+    List<WorkflowNode> childrenList = getChildren();
+    childrenList.add(index, child);
+    while (index < childrenList.size()) {
+      childrenList.get(index).childIndex = index;
+      index++;
+    }
+  }
 
-	public int indexOfChild(WorkflowNode child)
-	{
-		return getChildren().indexOf(child);
-	}
+  public void removeChild(WorkflowNode child) {
+    int index = children.indexOf(child);
+    if (index >= 0) {
+      children.remove(child);
+      while (index < children.size()) {
+        children.get(index).childIndex = index;
+        index++;
+      }
+    }
+  }
 
-	public Iterator<WorkflowNode> iterateChildren()
-	{
-		return getChildren().iterator();
-	}
+  public int indexOfChild(WorkflowNode child) {
+    return getChildren().indexOf(child);
+  }
 
-	public int numberOfChildren()
-	{
-		return getChildren().size();
-	}
+  public Iterator<WorkflowNode> iterateChildren() {
+    return getChildren().iterator();
+  }
 
-	public void setChild(WorkflowNode node)
-	{
-		List<WorkflowNode> childrenList = getChildren();
-		while( childrenList.size() <= node.childIndex )
-		{
-			childrenList.add(null);
-		}
-		childrenList.set(node.childIndex, node);
-	}
+  public int numberOfChildren() {
+    return getChildren().size();
+  }
 
-	public void setChildIndex(int childIndex)
-	{
-		this.childIndex = childIndex;
-	}
+  public void setChild(WorkflowNode node) {
+    List<WorkflowNode> childrenList = getChildren();
+    while (childrenList.size() <= node.childIndex) {
+      childrenList.add(null);
+    }
+    childrenList.set(node.childIndex, node);
+  }
 
-	public List<WorkflowNode> getChildren()
-	{
-		if( children == null )
-		{
-			children = new ArrayList<WorkflowNode>();
-		}
-		return children;
-	}
+  public void setChildIndex(int childIndex) {
+    this.childIndex = childIndex;
+  }
 
+  public List<WorkflowNode> getChildren() {
+    if (children == null) {
+      children = new ArrayList<WorkflowNode>();
+    }
+    return children;
+  }
 }

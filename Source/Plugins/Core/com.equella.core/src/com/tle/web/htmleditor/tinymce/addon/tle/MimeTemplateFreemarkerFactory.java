@@ -21,12 +21,9 @@ import javax.inject.Singleton;
 import com.tle.core.guice.Bind;
 import com.tle.web.freemarker.BasicFreemarkerFactory;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
 @Singleton
-public class MimeTemplateFreemarkerFactory extends BasicFreemarkerFactory
-{
-	// nothing
+public class MimeTemplateFreemarkerFactory extends BasicFreemarkerFactory {
+  // nothing
 }

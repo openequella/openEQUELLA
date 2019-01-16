@@ -35,50 +35,44 @@ import com.tle.web.template.section.MenuContributor;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class ActivationsMenuContributor implements MenuContributor
-{
-	private static final Label LABEL_KEY = new KeyLabel(ResourcesService.getResourceHelper(
-		ActivationsMenuContributor.class).key("menu.activations"));
-	private static final String ICON_PATH = ResourcesService.getResourceHelper(ActivationsMenuContributor.class).url(
-		"images/menu-icon-activations.png");
+public class ActivationsMenuContributor implements MenuContributor {
+  private static final Label LABEL_KEY =
+      new KeyLabel(
+          ResourcesService.getResourceHelper(ActivationsMenuContributor.class)
+              .key("menu.activations"));
+  private static final String ICON_PATH =
+      ResourcesService.getResourceHelper(ActivationsMenuContributor.class)
+          .url("images/menu-icon-activations.png");
 
-	private static final String SESSION_KEY = "ACTIVATIONS-MENU";
+  private static final String SESSION_KEY = "ACTIVATIONS-MENU";
 
-	@Inject
-	private ActivationsPrivilegeTreeProvider securityProvider;
-	@Inject
-	private UserSessionService userSessionService;
+  @Inject private ActivationsPrivilegeTreeProvider securityProvider;
+  @Inject private UserSessionService userSessionService;
 
-	@Override
-	public void clearCachedData()
-	{
-		userSessionService.removeAttribute(SESSION_KEY);
-	}
+  @Override
+  public void clearCachedData() {
+    userSessionService.removeAttribute(SESSION_KEY);
+  }
 
-	@Override
-	public List<MenuContribution> getMenuContributions(SectionInfo info)
-	{
-		Boolean show = userSessionService.getAttribute(SESSION_KEY);
+  @Override
+  public List<MenuContribution> getMenuContributions(SectionInfo info) {
+    Boolean show = userSessionService.getAttribute(SESSION_KEY);
 
-		if( show == null )
-		{
-			show = securityProvider.isAuthorised();
-			userSessionService.setAttribute(SESSION_KEY, show);
-		}
+    if (show == null) {
+      show = securityProvider.isAuthorised();
+      userSessionService.setAttribute(SESSION_KEY, show);
+    }
 
-		if( show )
-		{
-			// TODO: We should be generating a bookmark to the section rather
-			// than hard-coding the URL
+    if (show) {
+      // TODO: We should be generating a bookmark to the section rather
+      // than hard-coding the URL
 
-			HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/activations.do"));
-			hls.setLabel(LABEL_KEY);
-			MenuContribution mc = new MenuContribution(hls, ICON_PATH, 30, 15, "copyright");
-			return Collections.singletonList(mc);
-		}
-		else
-		{
-			return Collections.emptyList();
-		}
-	}
+      HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/activations.do"));
+      hls.setLabel(LABEL_KEY);
+      MenuContribution mc = new MenuContribution(hls, ICON_PATH, 30, 15, "copyright");
+      return Collections.singletonList(mc);
+    } else {
+      return Collections.emptyList();
+    }
+  }
 }

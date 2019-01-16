@@ -26,25 +26,19 @@ import com.tle.core.guice.Bind;
 import com.tle.web.copyright.AbstractCopyrightResourceViewerFilter;
 import com.tle.web.copyright.section.AbstractCopyrightAgreementDialog;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
 @Singleton
-public class CLAResourceViewerFilter extends AbstractCopyrightResourceViewerFilter
-{
-	@Inject
-	private CLAService claService;
+public class CLAResourceViewerFilter extends AbstractCopyrightResourceViewerFilter {
+  @Inject private CLAService claService;
 
-	@Override
-	protected Class<? extends AbstractCopyrightAgreementDialog> getDialogClass()
-	{
-		return CLAAgreementDialog.class;
-	}
+  @Override
+  protected Class<? extends AbstractCopyrightAgreementDialog> getDialogClass() {
+    return CLAAgreementDialog.class;
+  }
 
-	@Override
-	protected CopyrightService<?, ?, ?> getCopyrightService()
-	{
-		return claService;
-	}
+  @Override
+  protected CopyrightService<?, ?, ?> getCopyrightService() {
+    return claService;
+  }
 }

@@ -35,35 +35,28 @@ import com.tle.web.viewurl.attachments.AttachmentResourceExtension;
 @Bind
 @Singleton
 public class YoutubeResource
-	implements
-		AttachmentResourceExtension<CustomAttachment>,
-		RegisterMimeTypeExtension<CustomAttachment>,
-		SupportedVideoMimeTypeExtension
-{
-	@Inject
-	private SelectionService selection;
-	@Inject
-	private DateRendererFactory dateRendererFactory;
+    implements AttachmentResourceExtension<CustomAttachment>,
+        RegisterMimeTypeExtension<CustomAttachment>,
+        SupportedVideoMimeTypeExtension {
+  @Inject private SelectionService selection;
+  @Inject private DateRendererFactory dateRendererFactory;
 
-	@Override
-	public ViewableResource process(SectionInfo info, ViewableResource resource, CustomAttachment attachment)
-	{
-		return new YoutubeViewableResource(resource, attachment, selection, info, dateRendererFactory);
-	}
+  @Override
+  public ViewableResource process(
+      SectionInfo info, ViewableResource resource, CustomAttachment attachment) {
+    return new YoutubeViewableResource(resource, attachment, selection, info, dateRendererFactory);
+  }
 
-	@Override
-	public String getMimeType(CustomAttachment attachment)
-	{
-		return YoutubeUtils.MIME_TYPE;
-	}
+  @Override
+  public String getMimeType(CustomAttachment attachment) {
+    return YoutubeUtils.MIME_TYPE;
+  }
 
-	@Override
-	public boolean isSupportedMimeType(@Nullable String mimeType)
-	{
-		if( mimeType != null && mimeType.contains(YoutubeUtils.MIME_TYPE) )
-		{
-			return true;
-		}
-		return false;
-	}
+  @Override
+  public boolean isSupportedMimeType(@Nullable String mimeType) {
+    if (mimeType != null && mimeType.contains(YoutubeUtils.MIME_TYPE)) {
+      return true;
+    }
+    return false;
+  }
 }

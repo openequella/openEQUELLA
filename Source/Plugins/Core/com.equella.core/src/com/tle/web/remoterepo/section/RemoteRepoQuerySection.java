@@ -37,94 +37,78 @@ import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.StatementHandler;
 import com.tle.web.sections.render.Label;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 public abstract class RemoteRepoQuerySection<E extends RemoteRepoSearchEvent<E>>
-	extends
-		AbstractQuerySection<RemoteRepoQuerySection.RemoteRepoQueryModel, E>
-{
-	@PlugKey("query.search")
-	private static Label SEARCH_LABEL;
-	@PlugKey("query.blank")
-	private static Label BLANK_QUERY_LABEL;
+    extends AbstractQuerySection<RemoteRepoQuerySection.RemoteRepoQueryModel, E> {
+  @PlugKey("query.search")
+  private static Label SEARCH_LABEL;
 
-	@SuppressWarnings("rawtypes")
-	@TreeLookup
-	private RemoteRepoResultsSection resultsSection;
+  @PlugKey("query.blank")
+  private static Label BLANK_QUERY_LABEL;
 
-	@Inject
-	private RemoteRepoWebService repoWebService;
+  @SuppressWarnings("rawtypes")
+  @TreeLookup
+  private RemoteRepoResultsSection resultsSection;
 
-	@ViewFactory
-	private FreemarkerFactory rrView;
+  @Inject private RemoteRepoWebService repoWebService;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		getModel(context).setTitle(CurrentLocale.get(repoWebService.getRemoteRepository(context).getName()));
-		return rrView.createResult("fedsearch-query.ftl", this);
-	}
+  @ViewFactory private FreemarkerFactory rrView;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		searchButton.setLabel(SEARCH_LABEL);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    getModel(context)
+        .setTitle(CurrentLocale.get(repoWebService.getRemoteRepository(context).getName()));
+    return rrView.createResult("fedsearch-query.ftl", this);
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		final JSValidator validator = createValidator();
-		final JSHandler restartSearch = new StatementHandler(resultsSection.getRestartSearchHandler(tree));
-		if( validator != null )
-		{
-			restartSearch.addValidator(validator);
-		}
-		searchButton.setClickHandler(restartSearch);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    searchButton.setLabel(SEARCH_LABEL);
+  }
 
-	@Override
-	public void prepareSearch(SectionInfo info, E event) throws Exception
-	{
-		String q = getParsedQuery(info);
-		if( Check.isEmpty(q) )
-		{
-			event.setInvalid(true);
-			event.stopProcessing();
-		}
-		else
-		{
-			super.prepareSearch(info, event);
-		}
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    final JSValidator validator = createValidator();
+    final JSHandler restartSearch =
+        new StatementHandler(resultsSection.getRestartSearchHandler(tree));
+    if (validator != null) {
+      restartSearch.addValidator(validator);
+    }
+    searchButton.setClickHandler(restartSearch);
+  }
 
-	protected JSValidator createValidator()
-	{
-		return queryField.createNotBlankValidator().setFailureStatements(Js.alert_s(BLANK_QUERY_LABEL));
-	}
+  @Override
+  public void prepareSearch(SectionInfo info, E event) throws Exception {
+    String q = getParsedQuery(info);
+    if (Check.isEmpty(q)) {
+      event.setInvalid(true);
+      event.stopProcessing();
+    } else {
+      super.prepareSearch(info, event);
+    }
+  }
 
-	@Override
-	public Class<RemoteRepoQueryModel> getModelClass()
-	{
-		return RemoteRepoQueryModel.class;
-	}
+  protected JSValidator createValidator() {
+    return queryField.createNotBlankValidator().setFailureStatements(Js.alert_s(BLANK_QUERY_LABEL));
+  }
 
-	public static class RemoteRepoQueryModel
-	{
-		private String title;
+  @Override
+  public Class<RemoteRepoQueryModel> getModelClass() {
+    return RemoteRepoQueryModel.class;
+  }
 
-		public String getTitle()
-		{
-			return title;
-		}
+  public static class RemoteRepoQueryModel {
+    private String title;
 
-		public void setTitle(String title)
-		{
-			this.title = title;
-		}
-	}
+    public String getTitle() {
+      return title;
+    }
+
+    public void setTitle(String title) {
+      this.title = title;
+    }
+  }
 }

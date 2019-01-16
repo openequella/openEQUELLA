@@ -25,14 +25,11 @@ import com.tle.web.template.section.HtmlStyleClass;
 
 @Bind
 @Singleton
-public class IntegrationStyleClass implements HtmlStyleClass
-{
-	@Inject
-	private IntegrationService integrationService;
+public class IntegrationStyleClass implements HtmlStyleClass {
+  @Inject private IntegrationService integrationService;
 
-	@Override
-	public String getStyleClass(SectionInfo info)
-	{
-		return integrationService.isInIntegrationSession(info) ? "integration" : null;
-	}
+  @Override
+  public String getStyleClass(SectionInfo info) {
+    return integrationService.isInIntegrationSession(info) ? "integration" : null;
+  }
 }

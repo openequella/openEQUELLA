@@ -21,18 +21,21 @@ import java.io.InputStream;
 
 import com.tle.beans.mime.MimeEntry;
 
-/**
- * @author aholland
- */
-public interface TextExtracterExtension
-{
-	void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDurationCap) throws IOException;
+/** @author aholland */
+public interface TextExtracterExtension {
+  void extractText(
+      String mimeType,
+      InputStream input,
+      StringBuilder outputText,
+      int maxSize,
+      long parseDurationCap)
+      throws IOException;
 
-	void setEnabledForMimeEntry(MimeEntry mimeType, boolean enabled);
+  void setEnabledForMimeEntry(MimeEntry mimeType, boolean enabled);
 
-	boolean isEnabledForMimeEntry(MimeEntry mimeEntry);
+  boolean isEnabledForMimeEntry(MimeEntry mimeEntry);
 
-	boolean isMimeTypeSupported(String mimeType);
+  boolean isMimeTypeSupported(String mimeType);
 
-	String getNameKey();
+  String getNameKey();
 }

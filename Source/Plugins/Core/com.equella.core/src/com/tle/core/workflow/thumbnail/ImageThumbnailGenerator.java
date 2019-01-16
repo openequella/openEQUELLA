@@ -29,38 +29,32 @@ import com.tle.core.imagemagick.ThumbnailOptions;
 
 @Bind
 @Singleton
-public class ImageThumbnailGenerator implements ThumbnailGenerator
-{
-	@Inject
-	private ImageMagickService imageMagickService;
+public class ImageThumbnailGenerator implements ThumbnailGenerator {
+  @Inject private ImageMagickService imageMagickService;
 
-	@Override
-	public void generateThumbnail(File src, File dest)
-	{
-		imageMagickService.generateStandardThumbnail(src, dest);
-	}
+  @Override
+  public void generateThumbnail(File src, File dest) {
+    imageMagickService.generateStandardThumbnail(src, dest);
+  }
 
-	@Override
-	public void generateThumbnailAdvanced(File srcFile, File dstFile, ThumbnailOptions options) throws Exception
-	{
-		imageMagickService.generateThumbnailAdvanced(srcFile, dstFile, options);
-	}
+  @Override
+  public void generateThumbnailAdvanced(File srcFile, File dstFile, ThumbnailOptions options)
+      throws Exception {
+    imageMagickService.generateThumbnailAdvanced(srcFile, dstFile, options);
+  }
 
-	@Override
-	public Dimension getImageDimensions(File srcFile) throws IOException
-	{
-		return imageMagickService.getImageDimensions(srcFile);
-	}
+  @Override
+  public Dimension getImageDimensions(File srcFile) throws IOException {
+    return imageMagickService.getImageDimensions(srcFile);
+  }
 
-	@Override
-	public boolean supportsThumbType(ThumbnailType type)
-	{
-		return true;
-	}
+  @Override
+  public boolean supportsThumbType(ThumbnailType type) {
+    return true;
+  }
 
-	@Override
-	public boolean isEnabled()
-	{
-		return true;
-	}
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
 }

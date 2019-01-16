@@ -41,81 +41,65 @@ import com.tle.core.item.service.ItemService;
 @Bind(AutoCompleteService.class)
 @Singleton
 @SuppressWarnings("nls")
-public class AutoCompleteServiceImpl implements AutoCompleteService
-{
-	@Inject
-	private BundleCache bundleCache;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private FreeTextService freeTextService;
+public class AutoCompleteServiceImpl implements AutoCompleteService {
+  @Inject private BundleCache bundleCache;
+  @Inject private ItemService itemService;
+  @Inject private FreeTextService freeTextService;
 
-	@Override
-	public AutoCompleteResult[] getAutoCompleteResults(DefaultSearch request, String queryText)
-	{
-		String query = queryText.replaceAll("[\\*\\~\\?\\\"\\']", "");
+  @Override
+  public AutoCompleteResult[] getAutoCompleteResults(DefaultSearch request, String queryText) {
+    String query = queryText.replaceAll("[\\*\\~\\?\\\"\\']", "");
 
-		FreeTextQuery existing = request.getFreeTextQuery();
-		FreeTextAutocompleteQuery autocomplete = new FreeTextAutocompleteQuery(query);
+    FreeTextQuery existing = request.getFreeTextQuery();
+    FreeTextAutocompleteQuery autocomplete = new FreeTextAutocompleteQuery(query);
 
-		if( existing == null )
-		{
-			request.setFreeTextQuery(autocomplete);
-		}
-		else
-		{
-			request.setFreeTextQuery(new FreeTextBooleanQuery(false, true, existing, autocomplete));
-		}
+    if (existing == null) {
+      request.setFreeTextQuery(autocomplete);
+    } else {
+      request.setFreeTextQuery(new FreeTextBooleanQuery(false, true, existing, autocomplete));
+    }
 
-		// Get AutoComplete title ids
-		try
-		{
-			List<ItemIdKey> acTitleIds = freeTextService.getAutoCompleteTitles(request);
+    // Get AutoComplete title ids
+    try {
+      List<ItemIdKey> acTitleIds = freeTextService.getAutoCompleteTitles(request);
 
-			Collection<Long> itemNameIds = itemService.getItemNameIds(acTitleIds).values();
-			bundleCache.addBundleIds(itemNameIds);
-			final Map<Long, String> bundleMap = bundleCache.getBundleMap();
+      Collection<Long> itemNameIds = itemService.getItemNameIds(acTitleIds).values();
+      bundleCache.addBundleIds(itemNameIds);
+      final Map<Long, String> bundleMap = bundleCache.getBundleMap();
 
-			Collection<AutoCompleteResult> results = null;
+      Collection<AutoCompleteResult> results = null;
 
-			// If empty get AutoComplete term
-			if( Check.isEmpty(acTitleIds) )
-			{
-				results = Lists.newArrayList();
-				int lastSpace = query.lastIndexOf(' ');
-				String prefix = query.substring(lastSpace + 1, query.length());
-				if( !prefix.isEmpty() )
-				{
-					request.setFreeTextQuery(existing);
-					if( lastSpace != -1 )
-					{
-						request.setQuery(query.substring(0, lastSpace));
-					}
-					String acTerm = freeTextService.getAutoCompleteTerm(request, prefix);
-					if( !Check.isEmpty(acTerm) )
-					{
-						results.add(buildAutoCompleteResult(acTerm, true));
-					}
-				}
-			}
-			else
-			{
-				results = itemNameIds.stream()
-					.map(id -> buildAutoCompleteResult(bundleMap.get(id).toLowerCase(), false))
-					.collect(Collectors.toList());
-			}
-			return results.toArray(new AutoCompleteResult[results.size()]);
-		}
-		catch( Exception e )
-		{
-			// We don't want auto complete to blow up ever...
-			// if there is an error just return nothing
-			return new AutoCompleteResult[0];
-		}
-	}
+      // If empty get AutoComplete term
+      if (Check.isEmpty(acTitleIds)) {
+        results = Lists.newArrayList();
+        int lastSpace = query.lastIndexOf(' ');
+        String prefix = query.substring(lastSpace + 1, query.length());
+        if (!prefix.isEmpty()) {
+          request.setFreeTextQuery(existing);
+          if (lastSpace != -1) {
+            request.setQuery(query.substring(0, lastSpace));
+          }
+          String acTerm = freeTextService.getAutoCompleteTerm(request, prefix);
+          if (!Check.isEmpty(acTerm)) {
+            results.add(buildAutoCompleteResult(acTerm, true));
+          }
+        }
+      } else {
+        results =
+            itemNameIds
+                .stream()
+                .map(id -> buildAutoCompleteResult(bundleMap.get(id).toLowerCase(), false))
+                .collect(Collectors.toList());
+      }
+      return results.toArray(new AutoCompleteResult[results.size()]);
+    } catch (Exception e) {
+      // We don't want auto complete to blow up ever...
+      // if there is an error just return nothing
+      return new AutoCompleteResult[0];
+    }
+  }
 
-	private AutoCompleteResult buildAutoCompleteResult(String value, boolean term)
-	{
-		return new AutoCompleteResult(value, QueryParser.escape(value), term);
-	}
+  private AutoCompleteResult buildAutoCompleteResult(String value, boolean term) {
+    return new AutoCompleteResult(value, QueryParser.escape(value), term);
+  }
 }

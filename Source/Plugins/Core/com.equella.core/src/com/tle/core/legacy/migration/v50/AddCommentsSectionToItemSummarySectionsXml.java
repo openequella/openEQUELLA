@@ -30,37 +30,33 @@ import com.tle.core.institution.convert.XmlMigrator;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class AddCommentsSectionToItemSummarySectionsXml extends XmlMigrator
-{
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
-	{
-		TemporaryFileHandle idefFolder = new SubTemporaryFile(staging, "itemdefinition");
-		for( String entry : xmlHelper.getXmlFileList(idefFolder) )
-		{
-			final PropBagEx xml = xmlHelper.readToPropBagEx(idefFolder, entry);
+public class AddCommentsSectionToItemSummarySectionsXml extends XmlMigrator {
+  @Override
+  public void execute(
+      TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) {
+    TemporaryFileHandle idefFolder = new SubTemporaryFile(staging, "itemdefinition");
+    for (String entry : xmlHelper.getXmlFileList(idefFolder)) {
+      final PropBagEx xml = xmlHelper.readToPropBagEx(idefFolder, entry);
 
-			// Add Comments Section
-			addSummarySection(xml.getSubtree("slow/itemSummarySections"));
+      // Add Comments Section
+      addSummarySection(xml.getSubtree("slow/itemSummarySections"));
 
-			xmlHelper.writeFromPropBagEx(idefFolder, entry, xml);
-		}
-	}
+      xmlHelper.writeFromPropBagEx(idefFolder, entry, xml);
+    }
+  }
 
-	private void addSummarySection(PropBagEx xml)
-	{
-		PropBagIterator iter = xml.iterator("configList/com.tle.beans.entity.itemdef.SummarySectionsConfig");
-		while( iter.hasNext() )
-		{
-			PropBagEx config = iter.next();
-			if( config.getNode("value").equals("commentsSection") )
-			{
-				return;
-			}
-		}
-		PropBagEx newSummaryConfig = xml.newSubtree("configList/com.tle.beans.entity.itemdef.SummarySectionsConfig");
-		newSummaryConfig.createNode("value", "commentsSection");
-		newSummaryConfig.createNode("title", "Comments");
-	}
-
+  private void addSummarySection(PropBagEx xml) {
+    PropBagIterator iter =
+        xml.iterator("configList/com.tle.beans.entity.itemdef.SummarySectionsConfig");
+    while (iter.hasNext()) {
+      PropBagEx config = iter.next();
+      if (config.getNode("value").equals("commentsSection")) {
+        return;
+      }
+    }
+    PropBagEx newSummaryConfig =
+        xml.newSubtree("configList/com.tle.beans.entity.itemdef.SummarySectionsConfig");
+    newSummaryConfig.createNode("value", "commentsSection");
+    newSummaryConfig.createNode("title", "Comments");
+  }
 }

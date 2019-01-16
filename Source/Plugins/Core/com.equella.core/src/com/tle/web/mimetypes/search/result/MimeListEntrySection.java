@@ -27,25 +27,21 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.SectionRenderable;
 
 @Bind
-public class MimeListEntrySection extends AbstractListSection<MimeListEntry, AbstractListSection.Model<MimeListEntry>>
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+public class MimeListEntrySection
+    extends AbstractListSection<MimeListEntry, AbstractListSection.Model<MimeListEntry>> {
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	protected SectionRenderable getRenderable(RenderEventContext context)
-	{
-		return viewFactory.createResult("mimelist.ftl", this); //$NON-NLS-1$
-	}
+  @Override
+  protected SectionRenderable getRenderable(RenderEventContext context) {
+    return viewFactory.createResult("mimelist.ftl", this); // $NON-NLS-1$
+  }
 
-	@Override
-	protected List<MimeListEntry> initEntries(RenderContext context)
-	{
-		List<MimeListEntry> entries = getModel(context).getItems();
-		for( MimeListEntry mimeListEntry : entries )
-		{
-			mimeListEntry.init();
-		}
-		return entries;
-	}
+  @Override
+  protected List<MimeListEntry> initEntries(RenderContext context) {
+    List<MimeListEntry> entries = getModel(context).getItems();
+    for (MimeListEntry mimeListEntry : entries) {
+      mimeListEntry.init();
+    }
+    return entries;
+  }
 }

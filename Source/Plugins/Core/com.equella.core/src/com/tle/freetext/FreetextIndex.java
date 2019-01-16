@@ -32,50 +32,45 @@ import com.tle.core.services.item.FreetextResult;
 
 import it.uniroma3.mat.extendedset.wrappers.LongSet;
 
-/**
- * @author Nicholas Read
- */
-public interface FreetextIndex
-{
-	void deleteIndexes();
+/** @author Nicholas Read */
+public interface FreetextIndex {
+  void deleteIndexes();
 
-	void indexBatch(List<IndexedItem> batch);
+  void indexBatch(List<IndexedItem> batch);
 
-	SearchSettings getSearchSettings();
+  SearchSettings getSearchSettings();
 
-	Collection<IndexingExtension> getIndexingExtensions();
+  Collection<IndexingExtension> getIndexingExtensions();
 
-	File getStopWordsFile();
+  File getStopWordsFile();
 
-	String getDefaultOperator();
+  String getDefaultOperator();
 
-	File getRootIndexPath();
+  File getRootIndexPath();
 
-	/**
-	 * @param <T>
-	 * @param searchReq
-	 * @param start
-	 * @param count Use -1 for all
-	 * @return
-	 */
-	<T extends FreetextResult> SearchResults<T> search(Search searchReq, int start, int count);
+  /**
+   * @param <T>
+   * @param searchReq
+   * @param start
+   * @param count Use -1 for all
+   * @return
+   */
+  <T extends FreetextResult> SearchResults<T> search(Search searchReq, int start, int count);
 
-	LongSet searchBitSet(Search searchReq);
+  LongSet searchBitSet(Search searchReq);
 
-	int count(Search searchReq);
+  int count(Search searchReq);
 
-	/**
-	 * @return Collection of value/count pairs
-	 */
-	Multimap<String, Pair<String, Integer>> facetCount(Search search, Collection<String> fields);
+  /** @return Collection of value/count pairs */
+  Multimap<String, Pair<String, Integer>> facetCount(Search search, Collection<String> fields);
 
-	MatrixResults matrixSearch(Search searchRequest, List<String> fields, boolean countOnly);
+  MatrixResults matrixSearch(Search searchRequest, List<String> fields, boolean countOnly);
 
-	ItemIndex<? extends FreetextResult> getIndexer(String indexItem);
+  ItemIndex<? extends FreetextResult> getIndexer(String indexItem);
 
-	int getSynchroniseMinutes();
+  int getSynchroniseMinutes();
 
-	void prepareItemsForIndexing(Collection<IndexedItem> inditems);
+  void prepareItemsForIndexing(Collection<IndexedItem> inditems);
 
-	String suggestTerm(Search request, String prefix);
+  String suggestTerm(Search request, String prefix);
 }

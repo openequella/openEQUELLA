@@ -30,56 +30,45 @@ import com.tle.core.guice.Bind;
 @Singleton
 @Bind(EncryptionService.class)
 @SuppressWarnings("nls")
-public class EncryptionServiceImpl implements EncryptionService
-{
-	private static final byte[] SHAREPASS = new byte[]{45, 123, -112, 2, 89, 124, 19, 74, 0, 24, -118, 98, 5, 100, 92,
-			7};
-	private static final IvParameterSpec INITVEC = new IvParameterSpec("thisis16byteslog".getBytes());
+public class EncryptionServiceImpl implements EncryptionService {
+  private static final byte[] SHAREPASS =
+      new byte[] {45, 123, -112, 2, 89, 124, 19, 74, 0, 24, -118, 98, 5, 100, 92, 7};
+  private static final IvParameterSpec INITVEC = new IvParameterSpec("thisis16byteslog".getBytes());
 
-	@Override
-	public String encrypt(String value)
-	{
-		if( !Check.isEmpty(value) )
-		{
-			try
-			{
-				SecretKey key = new SecretKeySpec(SHAREPASS, "AES");
-				Cipher ecipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-				ecipher.init(Cipher.ENCRYPT_MODE, key, INITVEC);
+  @Override
+  public String encrypt(String value) {
+    if (!Check.isEmpty(value)) {
+      try {
+        SecretKey key = new SecretKeySpec(SHAREPASS, "AES");
+        Cipher ecipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        ecipher.init(Cipher.ENCRYPT_MODE, key, INITVEC);
 
-				// Encrypt
-				byte[] enc = ecipher.doFinal(value.getBytes());
-				return new Base64().encode(enc);
+        // Encrypt
+        byte[] enc = ecipher.doFinal(value.getBytes());
+        return new Base64().encode(enc);
 
-			}
-			catch( Exception e )
-			{
-				throw new RuntimeException("Error encrypting", e);
-			}
-		}
+      } catch (Exception e) {
+        throw new RuntimeException("Error encrypting", e);
+      }
+    }
 
-		return value;
-	}
+    return value;
+  }
 
-	@Override
-	public String decrypt(String value)
-	{
-		if( !Check.isEmpty(value) )
-		{
-			try
-			{
-				byte[] bytes = new Base64().decode(value);
-				SecretKey key = new SecretKeySpec(SHAREPASS, "AES");
-				Cipher ecipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-				ecipher.init(Cipher.DECRYPT_MODE, key, INITVEC);
-				return new String(ecipher.doFinal(bytes));
-			}
-			catch( Exception e )
-			{
-				throw new RuntimeException("Error decrypting ", e);
-			}
-		}
+  @Override
+  public String decrypt(String value) {
+    if (!Check.isEmpty(value)) {
+      try {
+        byte[] bytes = new Base64().decode(value);
+        SecretKey key = new SecretKeySpec(SHAREPASS, "AES");
+        Cipher ecipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        ecipher.init(Cipher.DECRYPT_MODE, key, INITVEC);
+        return new String(ecipher.doFinal(bytes));
+      } catch (Exception e) {
+        throw new RuntimeException("Error decrypting ", e);
+      }
+    }
 
-		return value;
-	}
+    return value;
+  }
 }

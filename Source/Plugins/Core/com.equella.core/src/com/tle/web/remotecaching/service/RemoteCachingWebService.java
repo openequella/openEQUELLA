@@ -21,19 +21,16 @@ import java.util.Map;
 import com.tle.common.activecache.settings.CacheSettings;
 import com.tle.common.activecache.settings.CacheSettings.Node;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public interface RemoteCachingWebService
-{
-	String KEY_ROOT = "";
+public interface RemoteCachingWebService {
+  String KEY_ROOT = "";
 
-	void abandonCurrentChanges();
+  void abandonCurrentChanges();
 
-	void save(boolean enabled, Node rootNode);
+  void save(boolean enabled, Node rootNode);
 
-	CacheSettings getCacheSettings();
+  CacheSettings getCacheSettings();
 
-	Map<String, Node> getNodeCache();
+  Map<String, Node> getNodeCache();
 }

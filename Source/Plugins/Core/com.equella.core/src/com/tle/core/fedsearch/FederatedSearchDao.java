@@ -22,14 +22,11 @@ import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.FederatedSearch;
 import com.tle.core.entity.dao.AbstractEntityDao;
 
-/**
- * @author Nicholas Read
- */
-public interface FederatedSearchDao extends AbstractEntityDao<FederatedSearch>
-{
-	List<Long> findEngineNamesByType(String type);
+/** @author Nicholas Read */
+public interface FederatedSearchDao extends AbstractEntityDao<FederatedSearch> {
+  List<Long> findEngineNamesByType(String type);
 
-	List<FederatedSearch> enumerateAllZ3950();
+  List<FederatedSearch> enumerateAllZ3950();
 
-	List<BaseEntityLabel> listEnabled();
+  List<BaseEntityLabel> listEnabled();
 }

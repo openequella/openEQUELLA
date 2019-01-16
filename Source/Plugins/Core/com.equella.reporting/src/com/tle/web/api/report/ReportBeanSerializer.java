@@ -34,62 +34,58 @@ import java.util.List;
 @NonNullByDefault
 @Bind
 @Singleton
-public class ReportBeanSerializer extends AbstractEquellaBaseEntitySerializer<Report, ReportBean, ReportEditor>
-{
-    @Inject
-    private ReportingService reportService;
-    @Inject
-    private ReportEditorFactory editorFactory;
+public class ReportBeanSerializer
+    extends AbstractEquellaBaseEntitySerializer<Report, ReportBean, ReportEditor> {
+  @Inject private ReportingService reportService;
+  @Inject private ReportEditorFactory editorFactory;
 
-    @Override
-    protected AbstractEntityService<?, Report> getEntityService() {
-        return reportService;
-    }
+  @Override
+  protected AbstractEntityService<?, Report> getEntityService() {
+    return reportService;
+  }
 
-    @Override
-    protected ReportEditor createNewEditor(Report entity, String stagingUuid, boolean importing) {
-        return editorFactory.createNewEditor(entity, stagingUuid, importing);
-    }
+  @Override
+  protected ReportEditor createNewEditor(Report entity, String stagingUuid, boolean importing) {
+    return editorFactory.createNewEditor(entity, stagingUuid, importing);
+  }
 
-    @Override
-    protected ReportEditor createExistingEditor(Report entity, String stagingUuid, String lockId, boolean importing) {
-        return editorFactory.createExistingEditor(entity, stagingUuid, lockId, true, importing);
-    }
+  @Override
+  protected ReportEditor createExistingEditor(
+      Report entity, String stagingUuid, String lockId, boolean importing) {
+    return editorFactory.createExistingEditor(entity, stagingUuid, lockId, true, importing);
+  }
 
-    @Override
-    protected Report createEntity() {
-        return new Report();
-    }
+  @Override
+  protected Report createEntity() {
+    return new Report();
+  }
 
-    @Override
-    protected ReportBean createBean() {
-        return new ReportBean();
-    }
+  @Override
+  protected ReportBean createBean() {
+    return new ReportBean();
+  }
 
-    @Override
-    protected Node getNonVirtualNode() {
-        return Node.REPORT;
-    }
+  @Override
+  protected Node getNonVirtualNode() {
+    return Node.REPORT;
+  }
 
-    @Override
-    protected void validateCustom(ReportBean bean, boolean create, List<ValidationError> errors)
-    {
-        super.validateCustom(bean, create, errors);
-        if( Check.isEmpty(bean.getFilename()) )
-        {
-            errors.add(new ValidationError("filename", CurrentLocale.get("report.validation.filenameempty")));
-        }
+  @Override
+  protected void validateCustom(ReportBean bean, boolean create, List<ValidationError> errors) {
+    super.validateCustom(bean, create, errors);
+    if (Check.isEmpty(bean.getFilename())) {
+      errors.add(
+          new ValidationError("filename", CurrentLocale.get("report.validation.filenameempty")));
     }
+  }
 
-    @Override
-    protected void copyCustomFields(Report entity, ReportBean bean, Object data)
-    {
-        super.copyCustomFields(entity, bean, data);
-    }
+  @Override
+  protected void copyCustomFields(Report entity, ReportBean bean, Object data) {
+    super.copyCustomFields(entity, bean, data);
+  }
 
-    protected void copyCustomLightweightFields(Report entity, ReportBean bean, Object data)
-    {
-        bean.setHideReport(entity.isHideReport());
-        bean.setFilename(entity.getFilename());
-    }
+  protected void copyCustomLightweightFields(Report entity, ReportBean bean, Object data) {
+    bean.setHideReport(entity.isHideReport());
+    bean.setFilename(entity.getFilename());
+  }
 }

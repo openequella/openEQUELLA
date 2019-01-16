@@ -68,344 +68,304 @@ import com.tle.web.viewurl.attachments.AttachmentResourceService;
 @Bind
 @SuppressWarnings("nls")
 public class ConnectorManagementItemList
-	extends
-		StandardListSection<ConnectorManagementListEntry, StandardListSection.Model<ConnectorManagementListEntry>>
-{
-	public static final String DIV_PFX = "cm_";
+    extends StandardListSection<
+        ConnectorManagementListEntry, StandardListSection.Model<ConnectorManagementListEntry>> {
+  public static final String DIV_PFX = "cm_";
 
-	@PlugKey("manage.label.item")
-	private static Label LABEL_ITEM;
-	@PlugKey("manage.label.attachment")
-	private static Label LABEL_ATTACHMENT;
-	@PlugKey("finduses.dateadded")
-	private static Label LABEL_DATE_ADDED;
-	@PlugKey("finduses.datemodified")
-	private static Label LABEL_DATE_MODIFIED;
+  @PlugKey("manage.label.item")
+  private static Label LABEL_ITEM;
 
-	@PlugKey("manage.button.edit")
-	private static Label LABEL_BUTTON_EDIT;
-	@PlugKey("manage.button.remove")
-	private static Label LABEL_BUTTON_DELETE;
-	@PlugKey("manage.button.select")
-	private static Label LABEL_BUTTON_SELECT;
-	@PlugKey("manage.button.unselect")
-	private static Label LABEL_BUTTON_UNSELECT;
-	@PlugKey("manage.remove.confirm")
-	private static Label LABEL_DELETE_CONFIRM;
+  @PlugKey("manage.label.attachment")
+  private static Label LABEL_ATTACHMENT;
 
-	private JSCallable selectCall;
-	private JSCallable removeCall;
+  @PlugKey("finduses.dateadded")
+  private static Label LABEL_DATE_ADDED;
 
-	@TreeLookup
-	private ConnectorBulkSelectionSection selectionSection;
-	@TreeLookup
-	protected ConnectorManagementResultsSection resultsSection;
-	@TreeLookup
-	protected ConnectorManagementQuerySection querySection;
+  @PlugKey("finduses.datemodified")
+  private static Label LABEL_DATE_MODIFIED;
 
-	@Inject
-	private ConnectorService connectorService;
-	@Inject
-	private ConnectorRepositoryService repositoryService;
+  @PlugKey("manage.button.edit")
+  private static Label LABEL_BUTTON_EDIT;
 
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("manage.button.remove")
+  private static Label LABEL_BUTTON_DELETE;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-	}
+  @PlugKey("manage.button.select")
+  private static Label LABEL_BUTTON_SELECT;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		selectCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("selectItem"));
-		removeCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("removeItem"));
-	}
+  @PlugKey("manage.button.unselect")
+  private static Label LABEL_BUTTON_UNSELECT;
 
-	@Override
-	protected void customiseListEntries(RenderContext context, List<ConnectorManagementListEntry> entries)
-	{
-		super.customiseListEntries(context, entries);
-		for( ConnectorManagementListEntry entry : entries )
-		{
-			// only add the select button if EXPORT is enabled for this
-			// connector, otherwise
-			// it's pointless
-			Connector connector = querySection.getConnector(context);
-			if( connectorService.canExport(connector) && repositoryService.supportsExport(connector.getLmsType()) )
-			{
-				final ConnectorContent content = entry.getContent();
-				final String uuid = content.getUuid();
-				if( uuid != null )
-				{
-					final ConnectorItemKey itemId = new ConnectorItemKey(content,
-						querySection.getConnectorList().getSelectedValue(context).getId());
-					entry.getTag().setElementId(new SimpleElementId(DIV_PFX + itemId.toKeyString()));
+  @PlugKey("manage.remove.confirm")
+  private static Label LABEL_DELETE_CONFIRM;
 
-					if( !selectionSection.isSelected(context, itemId) )
-					{
-						final HtmlLinkState link = new HtmlLinkState(LABEL_BUTTON_SELECT,
-							new OverrideHandler(selectCall, itemId));
-						entry.addRatingAction(new ButtonRenderer(link).showAs(ButtonType.SELECT));
-					}
-					else
-					{
-						final HtmlLinkState link = new HtmlLinkState(LABEL_BUTTON_UNSELECT,
-							new OverrideHandler(removeCall, itemId));
-						entry.addRatingAction(new ButtonRenderer(link).showAs(ButtonType.UNSELECT));
-						entry.setSelected(true);
-					}
-				}
-			}
-		}
-	}
+  private JSCallable selectCall;
+  private JSCallable removeCall;
 
-	@EventHandlerMethod
-	public void selectItem(SectionInfo info, ConnectorItemKey itemId)
-	{
-		selectionSection.addSelection(info, itemId);
-		addAjaxDiv(info, itemId);
-	}
+  @TreeLookup private ConnectorBulkSelectionSection selectionSection;
+  @TreeLookup protected ConnectorManagementResultsSection resultsSection;
+  @TreeLookup protected ConnectorManagementQuerySection querySection;
 
-	@EventHandlerMethod
-	public void removeItem(SectionInfo info, ConnectorItemKey itemId)
-	{
-		selectionSection.removeSelection(info, itemId);
-		addAjaxDiv(info, itemId);
-	}
+  @Inject private ConnectorService connectorService;
+  @Inject private ConnectorRepositoryService repositoryService;
 
-	private void addAjaxDiv(SectionInfo info, ConnectorItemKey itemId)
-	{
-		AjaxRenderContext renderContext = info.getAttributeForClass(AjaxRenderContext.class);
-		if( renderContext != null )
-		{
-			renderContext.addAjaxDivs(DIV_PFX + itemId.toKeyString());
-		}
-	}
+  @EventFactory private EventGenerator events;
 
-	@Bind
-	public static class ConnectorManagementListEntry extends AbstractItemListEntry
-	{
-		@TreeLookup
-		protected ConnectorManagementItemList itemList;
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+  }
 
-		@Inject
-		private ConnectorService connectorService;
-		@Inject
-		private ConnectorRepositoryService repositoryService;
-		@Inject
-		private DateRendererFactory dateRendererFactory;
-		@Inject
-		private ViewItemUrlFactory itemUrls;
-		@Inject
-		private AttachmentResourceService attachmentResourceService;
-		@Inject
-		private ViewItemService viewItemService;
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    selectCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("selectItem"));
+    removeCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("removeItem"));
+  }
 
-		private ConnectorContent content;
-		private Connector connector;
-		private JSCallable deleteFunction;
-		private JSCallable editFunction;
+  @Override
+  protected void customiseListEntries(
+      RenderContext context, List<ConnectorManagementListEntry> entries) {
+    super.customiseListEntries(context, entries);
+    for (ConnectorManagementListEntry entry : entries) {
+      // only add the select button if EXPORT is enabled for this
+      // connector, otherwise
+      // it's pointless
+      Connector connector = querySection.getConnector(context);
+      if (connectorService.canExport(connector)
+          && repositoryService.supportsExport(connector.getLmsType())) {
+        final ConnectorContent content = entry.getContent();
+        final String uuid = content.getUuid();
+        if (uuid != null) {
+          final ConnectorItemKey itemId =
+              new ConnectorItemKey(
+                  content, querySection.getConnectorList().getSelectedValue(context).getId());
+          entry.getTag().setElementId(new SimpleElementId(DIV_PFX + itemId.toKeyString()));
 
-		@Override
-		protected void setupMetadata(RenderContext context)
-		{
-			// Target resource
-			final Item item = getItem();
-			if( item != null )
-			{
-				final HtmlLinkState equellaResourceLink = new HtmlLinkState(
-					new BundleLabel(item.getName(), item.getUuid(), bundleCache),
-					itemUrls.createItemUrl(context, item.getItemId()));
-				addDelimitedMetadata(LABEL_ITEM, equellaResourceLink);
+          if (!selectionSection.isSelected(context, itemId)) {
+            final HtmlLinkState link =
+                new HtmlLinkState(LABEL_BUTTON_SELECT, new OverrideHandler(selectCall, itemId));
+            entry.addRatingAction(new ButtonRenderer(link).showAs(ButtonType.SELECT));
+          } else {
+            final HtmlLinkState link =
+                new HtmlLinkState(LABEL_BUTTON_UNSELECT, new OverrideHandler(removeCall, itemId));
+            entry.addRatingAction(new ButtonRenderer(link).showAs(ButtonType.UNSELECT));
+            entry.setSelected(true);
+          }
+        }
+      }
+    }
+  }
 
-				// Target attachment (if any)
-				final String equellaAttachmentUuid = content.getAttachmentUuid();
-				if( !Check.isEmpty(equellaAttachmentUuid) )
-				{
-					final IAttachment attachment = new UnmodifiableAttachments(item)
-						.getAttachmentByUuid(equellaAttachmentUuid);
-					if( attachment != null )
-					{
-						final ViewableResource viewableResource = attachmentResourceService.getViewableResource(context,
-							getViewableItem(), attachment);
-						if( !viewableResource.getBooleanAttribute(ViewableResource.KEY_HIDDEN) )
-						{
-							String viewerId = Check.isEmpty(attachment.getViewer())
-								? viewItemService.getDefaultViewerId(viewableResource) : attachment.getViewer();
-							final LinkTagRenderer link = viewItemService.getViewableLink(context, viewableResource,
-								viewerId);
-							link.setLabel(new TextLabel(attachment.getDescription()));
-							addDelimitedMetadata(LABEL_ATTACHMENT, link);
-						}
-					}
-				}
-			}
+  @EventHandlerMethod
+  public void selectItem(SectionInfo info, ConnectorItemKey itemId) {
+    selectionSection.addSelection(info, itemId);
+    addAjaxDiv(info, itemId);
+  }
 
-			final ConnectorTerminology terminology = repositoryService.getConnectorTerminology(connector.getLmsType());
+  @EventHandlerMethod
+  public void removeItem(SectionInfo info, ConnectorItemKey itemId) {
+    selectionSection.removeSelection(info, itemId);
+    addAjaxDiv(info, itemId);
+  }
 
-			// Course (or linking item in EQUELLA connector)
-			final String course = content.getCourse();
-			if( !Check.isEmpty(course) )
-			{
-				final Object courseData;
-				if( !Check.isEmpty(content.getCourseUrl()) )
-				{
-					final HtmlLinkState courseLink = new HtmlLinkState(new TextLabel(course));
-					courseLink.setBookmark(new SimpleBookmark(content.getCourseUrl()));
-					courseLink.setTarget("_blank");
-					courseData = courseLink;
-				}
-				else
-				{
-					courseData = course;
-				}
-				addDelimitedMetadata(new KeyLabel(terminology.getCourseHeading()), courseData);
-			}
+  private void addAjaxDiv(SectionInfo info, ConnectorItemKey itemId) {
+    AjaxRenderContext renderContext = info.getAttributeForClass(AjaxRenderContext.class);
+    if (renderContext != null) {
+      renderContext.addAjaxDivs(DIV_PFX + itemId.toKeyString());
+    }
+  }
 
-			// Folder (or linking attachment for EQUELLA connector)
-			final String folder = content.getFolder();
-			if( !Check.isEmpty(folder) )
-			{
-				final Object folderData;
-				if( !Check.isEmpty(content.getFolderUrl()) )
-				{
-					final HtmlLinkState folderLink = new HtmlLinkState(new TextLabel(content.getFolder()));
-					folderLink.setBookmark(new SimpleBookmark(content.getFolderUrl()));
-					folderLink.setTarget("_blank");
-					folderData = folderLink;
-				}
-				else
-				{
-					folderData = folder;
-				}
-				addDelimitedMetadata(new KeyLabel(terminology.getLocationHeading()), folderData);
-			}
+  @Bind
+  public static class ConnectorManagementListEntry extends AbstractItemListEntry {
+    @TreeLookup protected ConnectorManagementItemList itemList;
 
-			final Date dateAdded = content.getDateAdded();
-			if( dateAdded != null )
-			{
-				addDelimitedMetadata(LABEL_DATE_ADDED, dateRendererFactory.createDateRenderer(dateAdded));
-			}
-			final Date dateModified = content.getDateModified();
-			if( dateModified != null )
-			{
-				addDelimitedMetadata(LABEL_DATE_MODIFIED, dateRendererFactory.createDateRenderer(dateModified));
-			}
+    @Inject private ConnectorService connectorService;
+    @Inject private ConnectorRepositoryService repositoryService;
+    @Inject private DateRendererFactory dateRendererFactory;
+    @Inject private ViewItemUrlFactory itemUrls;
+    @Inject private AttachmentResourceService attachmentResourceService;
+    @Inject private ViewItemService viewItemService;
 
-			final List<ConnectorContentAttribute> attributes = content.getAttributeList();
-			for( final ConnectorContentAttribute attribute : attributes )
-			{
-				if( attribute.isHide() )
-				{
-					break;
-				}
+    private ConnectorContent content;
+    private Connector connector;
+    private JSCallable deleteFunction;
+    private JSCallable editFunction;
 
-				// TODO: SectionUtils.convertToRenderer should be able to do
-				// this
+    @Override
+    protected void setupMetadata(RenderContext context) {
+      // Target resource
+      final Item item = getItem();
+      if (item != null) {
+        final HtmlLinkState equellaResourceLink =
+            new HtmlLinkState(
+                new BundleLabel(item.getName(), item.getUuid(), bundleCache),
+                itemUrls.createItemUrl(context, item.getItemId()));
+        addDelimitedMetadata(LABEL_ITEM, equellaResourceLink);
 
-				Object value = attribute.getValue();
-				if( value != null )
-				{
-					if( value instanceof Date )
-					{
-						addDelimitedMetadata(new KeyLabel(attribute.getLabelKey()),
-							dateRendererFactory.createDateRenderer((Date) value));
-					}
-					else
-					{
-						if( !(value instanceof String && Check.isEmpty((String) value)) )
-						{
-							addDelimitedMetadata(new KeyLabel(attribute.getLabelKey()), value);
-						}
-					}
-				}
-			}
+        // Target attachment (if any)
+        final String equellaAttachmentUuid = content.getAttachmentUuid();
+        if (!Check.isEmpty(equellaAttachmentUuid)) {
+          final IAttachment attachment =
+              new UnmodifiableAttachments(item).getAttachmentByUuid(equellaAttachmentUuid);
+          if (attachment != null) {
+            final ViewableResource viewableResource =
+                attachmentResourceService.getViewableResource(
+                    context, getViewableItem(), attachment);
+            if (!viewableResource.getBooleanAttribute(ViewableResource.KEY_HIDDEN)) {
+              String viewerId =
+                  Check.isEmpty(attachment.getViewer())
+                      ? viewItemService.getDefaultViewerId(viewableResource)
+                      : attachment.getViewer();
+              final LinkTagRenderer link =
+                  viewItemService.getViewableLink(context, viewableResource, viewerId);
+              link.setLabel(new TextLabel(attachment.getDescription()));
+              addDelimitedMetadata(LABEL_ATTACHMENT, link);
+            }
+          }
+        }
+      }
 
-			if( connectorService.canExport(connector) )
-			{
-				if( content.getUuid() != null )
-				{
-					if( repositoryService.supportsEdit(connector.getLmsType()) )
-					{
-						HtmlLinkState state = new HtmlLinkState(LABEL_BUTTON_EDIT,
-							new OverrideHandler(editFunction, new ConnectorItemKey(content, connector.getId()),
-								content.getExternalTitle(), getDescriptionText()));
-						addRatingAction(new ButtonRenderer(state).showAs(ButtonType.EDIT));
-					}
-					if( repositoryService.supportsDelete(connector.getLmsType()) )
-					{
-						HtmlLinkState state = new HtmlLinkState(LABEL_BUTTON_DELETE,
-							new OverrideHandler(deleteFunction, new ConnectorItemKey(content, connector.getId()))
-								.addValidator(new Confirm(LABEL_DELETE_CONFIRM)));
-						addRatingAction(new ButtonRenderer(state).showAs(ButtonType.DELETE));
-					}
-				}
-			}
+      final ConnectorTerminology terminology =
+          repositoryService.getConnectorTerminology(connector.getLmsType());
 
-			super.setupMetadata(context);
-		}
+      // Course (or linking item in EQUELLA connector)
+      final String course = content.getCourse();
+      if (!Check.isEmpty(course)) {
+        final Object courseData;
+        if (!Check.isEmpty(content.getCourseUrl())) {
+          final HtmlLinkState courseLink = new HtmlLinkState(new TextLabel(course));
+          courseLink.setBookmark(new SimpleBookmark(content.getCourseUrl()));
+          courseLink.setTarget("_blank");
+          courseData = courseLink;
+        } else {
+          courseData = course;
+        }
+        addDelimitedMetadata(new KeyLabel(terminology.getCourseHeading()), courseData);
+      }
 
-		@Override
-		public Label getTitleLabel()
-		{
-			return new HighlightableBundleLabel(null, content.getExternalTitle(), bundleCache,
-				listSettings.getHilightedWords(), false);
-		}
+      // Folder (or linking attachment for EQUELLA connector)
+      final String folder = content.getFolder();
+      if (!Check.isEmpty(folder)) {
+        final Object folderData;
+        if (!Check.isEmpty(content.getFolderUrl())) {
+          final HtmlLinkState folderLink = new HtmlLinkState(new TextLabel(content.getFolder()));
+          folderLink.setBookmark(new SimpleBookmark(content.getFolderUrl()));
+          folderLink.setTarget("_blank");
+          folderData = folderLink;
+        } else {
+          folderData = folder;
+        }
+        addDelimitedMetadata(new KeyLabel(terminology.getLocationHeading()), folderData);
+      }
 
-		private String getDescriptionText()
-		{
-			final String description = content.getExternalDescription();
-			if( description == null )
-			{
-				return "";
-			}
-			return description;
-		}
+      final Date dateAdded = content.getDateAdded();
+      if (dateAdded != null) {
+        addDelimitedMetadata(LABEL_DATE_ADDED, dateRendererFactory.createDateRenderer(dateAdded));
+      }
+      final Date dateModified = content.getDateModified();
+      if (dateModified != null) {
+        addDelimitedMetadata(
+            LABEL_DATE_MODIFIED, dateRendererFactory.createDateRenderer(dateModified));
+      }
 
-		@Override
-		public Label getDescription()
-		{
-			return new HighlightableBundleLabel(null, getDescriptionText(), bundleCache,
-				listSettings.getHilightedWords(), true);
-		}
+      final List<ConnectorContentAttribute> attributes = content.getAttributeList();
+      for (final ConnectorContentAttribute attribute : attributes) {
+        if (attribute.isHide()) {
+          break;
+        }
 
-		public ConnectorContent getContent()
-		{
-			return content;
-		}
+        // TODO: SectionUtils.convertToRenderer should be able to do
+        // this
 
-		public void setContent(ConnectorContent content)
-		{
-			this.content = content;
-		}
+        Object value = attribute.getValue();
+        if (value != null) {
+          if (value instanceof Date) {
+            addDelimitedMetadata(
+                new KeyLabel(attribute.getLabelKey()),
+                dateRendererFactory.createDateRenderer((Date) value));
+          } else {
+            if (!(value instanceof String && Check.isEmpty((String) value))) {
+              addDelimitedMetadata(new KeyLabel(attribute.getLabelKey()), value);
+            }
+          }
+        }
+      }
 
-		public Connector getConnector()
-		{
-			return connector;
-		}
+      if (connectorService.canExport(connector)) {
+        if (content.getUuid() != null) {
+          if (repositoryService.supportsEdit(connector.getLmsType())) {
+            HtmlLinkState state =
+                new HtmlLinkState(
+                    LABEL_BUTTON_EDIT,
+                    new OverrideHandler(
+                        editFunction,
+                        new ConnectorItemKey(content, connector.getId()),
+                        content.getExternalTitle(),
+                        getDescriptionText()));
+            addRatingAction(new ButtonRenderer(state).showAs(ButtonType.EDIT));
+          }
+          if (repositoryService.supportsDelete(connector.getLmsType())) {
+            HtmlLinkState state =
+                new HtmlLinkState(
+                    LABEL_BUTTON_DELETE,
+                    new OverrideHandler(
+                            deleteFunction, new ConnectorItemKey(content, connector.getId()))
+                        .addValidator(new Confirm(LABEL_DELETE_CONFIRM)));
+            addRatingAction(new ButtonRenderer(state).showAs(ButtonType.DELETE));
+          }
+        }
+      }
 
-		public void setConnector(Connector connector)
-		{
-			this.connector = connector;
-		}
+      super.setupMetadata(context);
+    }
 
-		public void setDeleteFunction(JSCallable deleteFunction)
-		{
-			this.deleteFunction = deleteFunction;
-		}
+    @Override
+    public Label getTitleLabel() {
+      return new HighlightableBundleLabel(
+          null, content.getExternalTitle(), bundleCache, listSettings.getHilightedWords(), false);
+    }
 
-		public JSCallable getEditFunction()
-		{
-			return editFunction;
-		}
+    private String getDescriptionText() {
+      final String description = content.getExternalDescription();
+      if (description == null) {
+        return "";
+      }
+      return description;
+    }
 
-		public void setEditFunction(JSCallable editFunction)
-		{
-			this.editFunction = editFunction;
-		}
-	}
+    @Override
+    public Label getDescription() {
+      return new HighlightableBundleLabel(
+          null, getDescriptionText(), bundleCache, listSettings.getHilightedWords(), true);
+    }
+
+    public ConnectorContent getContent() {
+      return content;
+    }
+
+    public void setContent(ConnectorContent content) {
+      this.content = content;
+    }
+
+    public Connector getConnector() {
+      return connector;
+    }
+
+    public void setConnector(Connector connector) {
+      this.connector = connector;
+    }
+
+    public void setDeleteFunction(JSCallable deleteFunction) {
+      this.deleteFunction = deleteFunction;
+    }
+
+    public JSCallable getEditFunction() {
+      return editFunction;
+    }
+
+    public void setEditFunction(JSCallable editFunction) {
+      this.editFunction = editFunction;
+    }
+  }
 }

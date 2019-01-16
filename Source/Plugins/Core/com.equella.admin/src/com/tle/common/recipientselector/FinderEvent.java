@@ -16,36 +16,28 @@
 
 package com.tle.common.recipientselector;
 
-/**
- * @author Nicholas Read
- */
-public class FinderEvent
-{
-	private UserGroupRoleFinder source;
-	private int selectionCount;
+/** @author Nicholas Read */
+public class FinderEvent {
+  private UserGroupRoleFinder source;
+  private int selectionCount;
 
-	public FinderEvent()
-	{
-		super();
-	}
+  public FinderEvent() {
+    super();
+  }
 
-	public UserGroupRoleFinder getSource()
-	{
-		return source;
-	}
+  public UserGroupRoleFinder getSource() {
+    return source;
+  }
 
-	public void setSource(UserGroupRoleFinder source)
-	{
-		this.source = source;
-	}
+  public void setSource(UserGroupRoleFinder source) {
+    this.source = source;
+  }
 
-	public int getSelectionCount()
-	{
-		return selectionCount;
-	}
+  public int getSelectionCount() {
+    return selectionCount;
+  }
 
-	public void setSelectionCount(int selectionCount)
-	{
-		this.selectionCount = selectionCount;
-	}
+  public void setSelectionCount(int selectionCount) {
+    this.selectionCount = selectionCount;
+  }
 }

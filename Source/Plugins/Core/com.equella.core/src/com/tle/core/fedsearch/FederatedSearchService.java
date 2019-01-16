@@ -25,21 +25,19 @@ import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.remoting.RemoteFederatedSearchService;
 
 public interface FederatedSearchService
-	extends
-		AbstractEntityService<EntityEditingBean, FederatedSearch>,
-		RemoteFederatedSearchService
-{
-	List<BaseEntityLabel> listSearchable();
+    extends AbstractEntityService<EntityEditingBean, FederatedSearch>,
+        RemoteFederatedSearchService {
+  List<BaseEntityLabel> listSearchable();
 
-	List<BaseEntityLabel> listEnabledSearchable();
+  List<BaseEntityLabel> listEnabledSearchable();
 
-	List<Long> findEngineNamesForType(String type);
+  List<Long> findEngineNamesForType(String type);
 
-	FederatedSearch getForSearching(String uuid);
+  FederatedSearch getForSearching(String uuid);
 
-	List<FederatedSearch> getForCollectionUuid(String uuid);
+  List<FederatedSearch> getForCollectionUuid(String uuid);
 
-	List<FederatedSearch> enumerateSearchable();
+  List<FederatedSearch> enumerateSearchable();
 
-	List<FederatedSearch> enumerateEnabledSearchable();
+  List<FederatedSearch> enumerateEnabledSearchable();
 }

@@ -27,16 +27,12 @@ import com.tle.core.guice.Bind;
 
 @Bind(JdbcTemplate.class)
 @Singleton
-public class TLEJdbcTemplate extends JdbcTemplate
-{
-	@Inject
-	private DataSource dataSource;
+public class TLEJdbcTemplate extends JdbcTemplate {
+  @Inject private DataSource dataSource;
 
-	@PostConstruct
-	@Override
-	public void afterPropertiesSet()
-	{
-		setDataSource(dataSource);
-	}
-
+  @PostConstruct
+  @Override
+  public void afterPropertiesSet() {
+    setDataSource(dataSource);
+  }
 }

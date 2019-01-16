@@ -29,19 +29,16 @@ import com.tle.web.viewurl.attachments.AttachmentResourceExtension;
 @Singleton
 @SuppressWarnings("nls")
 public class ITunesUResource
-	implements
-		AttachmentResourceExtension<CustomAttachment>,
-		RegisterMimeTypeExtension<CustomAttachment>
-{
-	@Override
-	public ViewableResource process(SectionInfo info, ViewableResource resource, CustomAttachment attachment)
-	{
-		return new ITunesUViewableResource(resource, attachment);
-	}
+    implements AttachmentResourceExtension<CustomAttachment>,
+        RegisterMimeTypeExtension<CustomAttachment> {
+  @Override
+  public ViewableResource process(
+      SectionInfo info, ViewableResource resource, CustomAttachment attachment) {
+    return new ITunesUViewableResource(resource, attachment);
+  }
 
-	@Override
-	public String getMimeType(CustomAttachment attachment)
-	{
-		return "equella/attachment-itunesu";
-	}
+  @Override
+  public String getMimeType(CustomAttachment attachment) {
+    return "equella/attachment-itunesu";
+  }
 }

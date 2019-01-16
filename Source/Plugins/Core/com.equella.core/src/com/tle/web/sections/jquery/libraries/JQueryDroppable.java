@@ -23,28 +23,30 @@ import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.render.PreRenderable;
 
 @SuppressWarnings("nls")
-public class JQueryDroppable implements JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
+public class JQueryDroppable implements JavascriptModule {
+  private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.ui.droppable.js" ,
-		JQueryUICore.PRERENDER, JQueryMouse.PRERENDER, JQueryUIWidget.PRERENDER, JQueryDraggable.PRERENDER).hasMin();
+  public static final PreRenderable PRERENDER =
+      new JQueryLibraryInclude(
+              "jquery.ui.droppable.js",
+              JQueryUICore.PRERENDER,
+              JQueryMouse.PRERENDER,
+              JQueryUIWidget.PRERENDER,
+              JQueryDraggable.PRERENDER)
+          .hasMin();
 
-	@Override
-	public String getDisplayName()
-	{
-		return CurrentLocale.get("com.tle.web.sections.jquery.modules.droppable.name");
-	}
+  @Override
+  public String getDisplayName() {
+    return CurrentLocale.get("com.tle.web.sections.jquery.modules.droppable.name");
+  }
 
-	@Override
-	public String getId()
-	{
-		return "droppable";
-	}
+  @Override
+  public String getId() {
+    return "droppable";
+  }
 
-	@Override
-	public Object getPreRenderer()
-	{
-		return PRERENDER;
-	}
+  @Override
+  public Object getPreRenderer() {
+    return PRERENDER;
+  }
 }

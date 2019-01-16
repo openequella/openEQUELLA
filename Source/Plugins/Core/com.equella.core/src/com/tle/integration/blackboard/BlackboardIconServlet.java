@@ -31,27 +31,22 @@ import com.tle.web.resources.AbstractResourcesServlet;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class BlackboardIconServlet extends AbstractResourcesServlet
-{
-	@Inject
-	private PluginService pluginService;
+public class BlackboardIconServlet extends AbstractResourcesServlet {
+  @Inject private PluginService pluginService;
 
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-		IOException
-	{
-		service(request, response, request.getPathInfo(), null);
-	}
+  @Override
+  protected void service(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    service(request, response, request.getPathInfo(), null);
+  }
 
-	@Override
-	public String getRootPath()
-	{
-		return "icons/";
-	}
+  @Override
+  public String getRootPath() {
+    return "icons/";
+  }
 
-	@Override
-	public String getPluginId(HttpServletRequest request)
-	{
-		return pluginService.getPluginIdForObject(BlackboardIconServlet.class);
-	}
+  @Override
+  public String getPluginId(HttpServletRequest request) {
+    return pluginService.getPluginIdForObject(BlackboardIconServlet.class);
+  }
 }

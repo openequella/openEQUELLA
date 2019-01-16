@@ -48,91 +48,77 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.DynamicHtmlListModel;
 
 public abstract class AbstractFilterByMimeTypeSection<SE extends AbstractSearchEvent<SE>>
-	extends
-		AbstractPrototypeSection<Object>
-	implements HtmlRenderer, SearchEventListener<SE>, ResetFiltersListener
-{
-	@Inject
-	protected ConfigurationService configService;
+    extends AbstractPrototypeSection<Object>
+    implements HtmlRenderer, SearchEventListener<SE>, ResetFiltersListener {
+  @Inject protected ConfigurationService configService;
 
-	@ViewFactory
-	protected FreemarkerFactory viewFactory;
+  @ViewFactory protected FreemarkerFactory viewFactory;
 
-	@TreeLookup
-	protected AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
+  @TreeLookup protected AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
 
-	@Component(name = "mt", parameter = "mt", supported = true)
-	protected MultiSelectionList<NameValue> mimeTypes;
+  @Component(name = "mt", parameter = "mt", supported = true)
+  protected MultiSelectionList<NameValue> mimeTypes;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		mimeTypes.setEventHandler(JSHandler.EVENT_CHANGE,
-			new StatementHandler(searchResults.getRestartSearchHandler(tree)));
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    mimeTypes.setEventHandler(
+        JSHandler.EVENT_CHANGE, new StatementHandler(searchResults.getRestartSearchHandler(tree)));
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( mimeTypes.getListModel().getOptions(context).size() > 0 )
-		{
-			return viewFactory.createResult("filter/filterbymimetype.ftl", context); //$NON-NLS-1$
-		}
-		return null;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (mimeTypes.getListModel().getOptions(context).size() > 0) {
+      return viewFactory.createResult("filter/filterbymimetype.ftl", context); // $NON-NLS-1$
+    }
+    return null;
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
-		mimeTypes.setListModel(new DynamicHtmlListModel<NameValue>()
-		{
-			@Override
-			protected Iterable<NameValue> populateModel(SectionInfo info)
-			{
-				List<SearchFilter> filters = Lists.newArrayList(getSearchSettings().getFilters());
-				Collections.sort(filters, new Comparator<SearchFilter>()
-				{
-					@Override
-					public int compare(SearchFilter sf1, SearchFilter sf2)
-					{
-						return sf1.getName().compareTo(sf2.getName());
-					}
-				});
+    tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
+    mimeTypes.setListModel(
+        new DynamicHtmlListModel<NameValue>() {
+          @Override
+          protected Iterable<NameValue> populateModel(SectionInfo info) {
+            List<SearchFilter> filters = Lists.newArrayList(getSearchSettings().getFilters());
+            Collections.sort(
+                filters,
+                new Comparator<SearchFilter>() {
+                  @Override
+                  public int compare(SearchFilter sf1, SearchFilter sf2) {
+                    return sf1.getName().compareTo(sf2.getName());
+                  }
+                });
 
-				return Lists.transform(filters, new Function<SearchFilter, NameValue>()
-				{
-					@Override
-					public NameValue apply(SearchFilter filter)
-					{
-						return new NameValue(filter.getName(), filter.getId());
-					}
-				});
-			}
-		});
-	}
+            return Lists.transform(
+                filters,
+                new Function<SearchFilter, NameValue>() {
+                  @Override
+                  public NameValue apply(SearchFilter filter) {
+                    return new NameValue(filter.getName(), filter.getId());
+                  }
+                });
+          }
+        });
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "fbmt"; //$NON-NLS-1$
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "fbmt"; //$NON-NLS-1$
+  }
 
-	public MultiSelectionList<NameValue> getMimeTypes()
-	{
-		return mimeTypes;
-	}
+  public MultiSelectionList<NameValue> getMimeTypes() {
+    return mimeTypes;
+  }
 
-	@Override
-	public void reset(SectionInfo info)
-	{
-		mimeTypes.setSelectedStringValue(info, null);
-	}
+  @Override
+  public void reset(SectionInfo info) {
+    mimeTypes.setSelectedStringValue(info, null);
+  }
 
-	protected SearchSettings getSearchSettings()
-	{
-		return configService.getProperties(new SearchSettings());
-	}
+  protected SearchSettings getSearchSettings() {
+    return configService.getProperties(new SearchSettings());
+  }
 }

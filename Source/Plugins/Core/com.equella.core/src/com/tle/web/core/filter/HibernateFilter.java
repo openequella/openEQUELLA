@@ -41,41 +41,38 @@ import com.tle.web.dispatcher.WebFilterCallback;
 
 @Bind
 @Singleton
-public class HibernateFilter extends AbstractWebFilter
-{
-	private Log LOGGER = LogFactory.getLog(HibernateFilter.class);
+public class HibernateFilter extends AbstractWebFilter {
+  private Log LOGGER = LogFactory.getLog(HibernateFilter.class);
 
-	@Inject
-	private HibernateService hibernateService;
+  @Inject private HibernateService hibernateService;
 
-	@Override
-	public FilterResult filterRequest(HttpServletRequest request, HttpServletResponse response)
-		throws ServletException, IOException
-	{
-		FilterResult result = new FilterResult();
-		if( CurrentInstitution.get() != null )
-		{
-			final SessionFactory sessionFactory = hibernateService.getTransactionAwareSessionFactory("main", false); //$NON-NLS-1$
+  @Override
+  public FilterResult filterRequest(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    FilterResult result = new FilterResult();
+    if (CurrentInstitution.get() != null) {
+      final SessionFactory sessionFactory =
+          hibernateService.getTransactionAwareSessionFactory("main", false); // $NON-NLS-1$
 
-			if( !TransactionSynchronizationManager.hasResource(sessionFactory) )
-			{
-				LOGGER.debug("Opening single Hibernate Session in OpenSessionInViewFilter"); //$NON-NLS-1$
-				Session session = SessionFactoryUtils.getSession(sessionFactory, true);
-				TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
-				result.setCallback(new WebFilterCallback()
-				{
-					@Override
-					public void afterServlet(HttpServletRequest request, HttpServletResponse response)
-					{
-						// single session mode
-						SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager
-							.unbindResource(sessionFactory);
-						LOGGER.debug("Closing single Hibernate Session in OpenSessionInViewFilter"); //$NON-NLS-1$
-						SessionFactoryUtils.closeSession(sessionHolder.getSession());
-					}
-				});
-			}
-		}
-		return result;
-	}
+      if (!TransactionSynchronizationManager.hasResource(sessionFactory)) {
+        LOGGER.debug("Opening single Hibernate Session in OpenSessionInViewFilter"); // $NON-NLS-1$
+        Session session = SessionFactoryUtils.getSession(sessionFactory, true);
+        TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
+        result.setCallback(
+            new WebFilterCallback() {
+              @Override
+              public void afterServlet(HttpServletRequest request, HttpServletResponse response) {
+                // single session mode
+                SessionHolder sessionHolder =
+                    (SessionHolder)
+                        TransactionSynchronizationManager.unbindResource(sessionFactory);
+                LOGGER.debug(
+                    "Closing single Hibernate Session in OpenSessionInViewFilter"); //$NON-NLS-1$
+                SessionFactoryUtils.closeSession(sessionHolder.getSession());
+              }
+            });
+      }
+    }
+    return result;
+  }
 }

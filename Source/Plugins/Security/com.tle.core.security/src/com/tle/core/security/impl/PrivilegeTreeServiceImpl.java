@@ -34,43 +34,37 @@ import com.tle.core.security.PrivilegeTreeService;
 @Bind(PrivilegeTreeService.class)
 @Singleton
 @SuppressWarnings("nls")
-public class PrivilegeTreeServiceImpl implements PrivilegeTreeService
-{
-	private PluginTracker<PrivilegeTreeProvider> providers;
+public class PrivilegeTreeServiceImpl implements PrivilegeTreeService {
+  private PluginTracker<PrivilegeTreeProvider> providers;
 
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		providers = new PluginTracker<PrivilegeTreeProvider>(pluginService, "com.tle.core.security",
-			"privilegeTreeProviders", null);
-		providers.setBeanKey("provider");
-	}
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    providers =
+        new PluginTracker<PrivilegeTreeProvider>(
+            pluginService, "com.tle.core.security", "privilegeTreeProviders", null);
+    providers.setBeanKey("provider");
+  }
 
-	@Override
-	public Map<TargetId, String> mapTargetIdsToNames(Collection<TargetId> targetIds)
-	{
-		Map<TargetId, String> rv = Maps.newHashMap();
-		for( PrivilegeTreeProvider provider : providers.getBeanList() )
-		{
-			provider.mapTargetIdsToNames(targetIds, rv);
+  @Override
+  public Map<TargetId, String> mapTargetIdsToNames(Collection<TargetId> targetIds) {
+    Map<TargetId, String> rv = Maps.newHashMap();
+    for (PrivilegeTreeProvider provider : providers.getBeanList()) {
+      provider.mapTargetIdsToNames(targetIds, rv);
 
-			targetIds.removeAll(rv.keySet());
-			if( targetIds.isEmpty() )
-			{
-				break;
-			}
-		}
-		return rv;
-	}
+      targetIds.removeAll(rv.keySet());
+      if (targetIds.isEmpty()) {
+        break;
+      }
+    }
+    return rv;
+  }
 
-	@Override
-	public List<SecurityTarget> getChildTargets(SecurityTarget target)
-	{
-		List<SecurityTarget> rv = new ArrayList<SecurityTarget>();
-		for( PrivilegeTreeProvider provider : providers.getBeanList() )
-		{
-			provider.gatherChildTargets(rv, target);
-		}
-		return rv;
-	}
+  @Override
+  public List<SecurityTarget> getChildTargets(SecurityTarget target) {
+    List<SecurityTarget> rv = new ArrayList<SecurityTarget>();
+    for (PrivilegeTreeProvider provider : providers.getBeanList()) {
+      provider.gatherChildTargets(rv, target);
+    }
+    return rv;
+  }
 }

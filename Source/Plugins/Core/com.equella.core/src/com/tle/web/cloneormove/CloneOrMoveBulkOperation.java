@@ -46,213 +46,191 @@ import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.model.Option;
 
 @Bind
-public class CloneOrMoveBulkOperation extends CloneOrMoveSection implements BulkOperationExtension
-{
-	private static final String CLONE_VAL = "clone"; //$NON-NLS-1$
-	private static final String MOVE_VAL = "move"; //$NON-NLS-1$
+public class CloneOrMoveBulkOperation extends CloneOrMoveSection implements BulkOperationExtension {
+  private static final String CLONE_VAL = "clone"; // $NON-NLS-1$
+  private static final String MOVE_VAL = "move"; // $NON-NLS-1$
 
-	@PlugKey("bulkop.title.")
-	private static String KEY_TITLE;
-	@PlugKey("bulkop.clone")
-	private static String KEY_CLONE;
-	@PlugKey("bulkop.move")
-	private static String KEY_MOVE;
-	@PlugKey("bulk.move.title")
-	private static String KEY_MOVE_TITLE;
-	@PlugKey("bulk.clone.title")
-	private static String KEY_CLONE_TITLE;
+  @PlugKey("bulkop.title.")
+  private static String KEY_TITLE;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		setForBulk(true);
-		super.registered(id, tree);
-		setCloneOptionsModel(new BulkCloneOptionsModel());
-	}
+  @PlugKey("bulkop.clone")
+  private static String KEY_CLONE;
 
-	private class BulkCloneOptionsModel extends CloneOptionsModel
-	{
-		public BulkCloneOptionsModel()
-		{
-			super(false, false, false);
-		}
+  @PlugKey("bulkop.move")
+  private static String KEY_MOVE;
 
-		@Override
-		protected boolean isCanClone(final SectionInfo info)
-		{
-			return !isHideClone(info);
-		}
+  @PlugKey("bulk.move.title")
+  private static String KEY_MOVE_TITLE;
 
-		@Override
-		protected boolean isCanCloneNoAttachments(final SectionInfo info)
-		{
-			return !isHideCloneNoAttachments(info);
-		}
+  @PlugKey("bulk.clone.title")
+  private static String KEY_CLONE_TITLE;
 
-		@Override
-		protected boolean isCanMove(final SectionInfo info)
-		{
-			return !isHideMove(info);
-		}
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    setForBulk(true);
+    super.registered(id, tree);
+    setCloneOptionsModel(new BulkCloneOptionsModel());
+  }
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-	}
+  private class BulkCloneOptionsModel extends CloneOptionsModel {
+    public BulkCloneOptionsModel() {
+      super(false, false, false);
+    }
 
-	@SuppressWarnings("nls")
-	@Override
-	public BeanLocator<CloneOrMoveExecutor> getExecutor(SectionInfo info, String operationId)
-	{
-		final CloneOption cloneOption = CloneOption.values()[Integer
-			.parseInt(getCloneOptions().getSelectedValueAsString(info))];
-		return new SerializedBeanLocator<CloneOrMoveExecutor>(new CloneOrMoveExecutor(
-			getCollections().getSelectedValueAsString(info), getSchemaImports().getSelectedValueAsString(info),
-			"submit".equals(getSubmitOptions().getSelectedValueAsString(info)), cloneOption));
-	}
+    @Override
+    protected boolean isCanClone(final SectionInfo info) {
+      return !isHideClone(info);
+    }
 
-	@Override
-	public Label getStatusTitleLabel(SectionInfo info, String operationId)
-	{
-		return new KeyLabel(StandardOperations.getStatusKey(), new KeyLabel(KEY_TITLE + operationId));
-	}
+    @Override
+    protected boolean isCanCloneNoAttachments(final SectionInfo info) {
+      return !isHideCloneNoAttachments(info);
+    }
 
-	@Override
-	public void addOptions(SectionInfo info, List<Option<OperationInfo>> options)
-	{
-		options.add(new KeyOption<OperationInfo>(KEY_CLONE, CLONE_VAL, new OperationInfo(this, CLONE_VAL)));
-		options.add(new KeyOption<OperationInfo>(KEY_MOVE, MOVE_VAL, new OperationInfo(this, MOVE_VAL)));
-	}
+    @Override
+    protected boolean isCanMove(final SectionInfo info) {
+      return !isHideMove(info);
+    }
+  }
 
-	@Override
-	public SectionRenderable renderOptions(RenderContext context, String operationId)
-	{
-		boolean clone = operationId.equals(CLONE_VAL);
-		setHideClone(context, !clone);
-		setHideCloneNoAttachments(context, !clone);
-		setHideMove(context, clone);
-		setAllowCollectionChange(context, true);
-		return renderSection(context, this);
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+  }
 
-	@SuppressWarnings("nls")
-	public static class CloneOrMoveExecutor extends FactoryMethodLocator<MetadataTransformingOperation>
-		implements
-			BulkOperationExecutor
-	{
-		private static final long serialVersionUID = 1L;
+  @SuppressWarnings("nls")
+  @Override
+  public BeanLocator<CloneOrMoveExecutor> getExecutor(SectionInfo info, String operationId) {
+    final CloneOption cloneOption =
+        CloneOption.values()[Integer.parseInt(getCloneOptions().getSelectedValueAsString(info))];
+    return new SerializedBeanLocator<CloneOrMoveExecutor>(
+        new CloneOrMoveExecutor(
+            getCollections().getSelectedValueAsString(info),
+            getSchemaImports().getSelectedValueAsString(info),
+            "submit".equals(getSubmitOptions().getSelectedValueAsString(info)),
+            cloneOption));
+  }
 
-		private final String transform;
-		private final String newCollectionUuid;
-		private final CloneOption cloneOption;
-		private final boolean submit;
+  @Override
+  public Label getStatusTitleLabel(SectionInfo info, String operationId) {
+    return new KeyLabel(StandardOperations.getStatusKey(), new KeyLabel(KEY_TITLE + operationId));
+  }
 
-		public CloneOrMoveExecutor(String newCollectionUuid, String transform, boolean submit, CloneOption cloneOption)
-		{
-			super(CloneFactory.class, null);
-			this.newCollectionUuid = newCollectionUuid;
-			this.transform = transform;
-			this.submit = submit;
-			this.cloneOption = cloneOption;
-		}
+  @Override
+  public void addOptions(SectionInfo info, List<Option<OperationInfo>> options) {
+    options.add(
+        new KeyOption<OperationInfo>(KEY_CLONE, CLONE_VAL, new OperationInfo(this, CLONE_VAL)));
+    options.add(
+        new KeyOption<OperationInfo>(KEY_MOVE, MOVE_VAL, new OperationInfo(this, MOVE_VAL)));
+  }
 
-		@Override
-		protected String getMethodName()
-		{
-			if( cloneOption == CloneOption.MOVE )
-			{
-				return "moveDirect";
-			}
-			return "clone";
-		}
+  @Override
+  public SectionRenderable renderOptions(RenderContext context, String operationId) {
+    boolean clone = operationId.equals(CLONE_VAL);
+    setHideClone(context, !clone);
+    setHideCloneNoAttachments(context, !clone);
+    setHideMove(context, clone);
+    setAllowCollectionChange(context, true);
+    return renderSection(context, this);
+  }
 
-		@Override
-		protected Object[] getArgs()
-		{
-			if( cloneOption == CloneOption.MOVE )
-			{
-				return new Object[]{newCollectionUuid, true};
-			}
-			return new Object[]{newCollectionUuid, cloneOption == CloneOption.CLONE, submit};
-		}
+  @SuppressWarnings("nls")
+  public static class CloneOrMoveExecutor
+      extends FactoryMethodLocator<MetadataTransformingOperation> implements BulkOperationExecutor {
+    private static final long serialVersionUID = 1L;
 
-		@Override
-		public WorkflowOperation[] getOperations()
-		{
-			CloneFactory factory = getFactory();
-			final MetadataTransformingOperation cloneOperation = invokeFactoryMethod(factory);
-			if( !Check.isEmpty(transform) )
-			{
-				cloneOperation.setTransform(transform);
-			}
+    private final String transform;
+    private final String newCollectionUuid;
+    private final CloneOption cloneOption;
+    private final boolean submit;
 
-			return new WorkflowOperation[]{cloneOperation, factory.save()};
-		}
+    public CloneOrMoveExecutor(
+        String newCollectionUuid, String transform, boolean submit, CloneOption cloneOption) {
+      super(CloneFactory.class, null);
+      this.newCollectionUuid = newCollectionUuid;
+      this.transform = transform;
+      this.submit = submit;
+      this.cloneOption = cloneOption;
+    }
 
-		@Override
-		public String getTitleKey()
-		{
-			if( cloneOption == CloneOption.MOVE )
-			{
-				return KEY_MOVE_TITLE;
-			}
-			return KEY_CLONE_TITLE;
-		}
-	}
+    @Override
+    protected String getMethodName() {
+      if (cloneOption == CloneOption.MOVE) {
+        return "moveDirect";
+      }
+      return "clone";
+    }
 
-	@Override
-	public boolean hasExtraOptions(SectionInfo info, String operationId)
-	{
-		return true;
-	}
+    @Override
+    protected Object[] getArgs() {
+      if (cloneOption == CloneOption.MOVE) {
+        return new Object[] {newCollectionUuid, true};
+      }
+      return new Object[] {newCollectionUuid, cloneOption == CloneOption.CLONE, submit};
+    }
 
-	@Override
-	public boolean validateOptions(SectionInfo info, String operationId)
-	{
-		return !Check.isEmpty(getCollections().getSelectedValueAsString(info));
-	}
+    @Override
+    public WorkflowOperation[] getOperations() {
+      CloneFactory factory = getFactory();
+      final MetadataTransformingOperation cloneOperation = invokeFactoryMethod(factory);
+      if (!Check.isEmpty(transform)) {
+        cloneOperation.setTransform(transform);
+      }
 
-	@Override
-	public boolean areOptionsFinished(SectionInfo info, String operationId)
-	{
-		return validateOptions(info, operationId);
-	}
+      return new WorkflowOperation[] {cloneOperation, factory.save()};
+    }
 
-	@Override
-	public void prepareDefaultOptions(SectionInfo info, String operationId)
-	{
-		// nothing
-	}
+    @Override
+    public String getTitleKey() {
+      if (cloneOption == CloneOption.MOVE) {
+        return KEY_MOVE_TITLE;
+      }
+      return KEY_CLONE_TITLE;
+    }
+  }
 
-	@Override
-	public boolean hasExtraNavigation(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+  @Override
+  public boolean hasExtraOptions(SectionInfo info, String operationId) {
+    return true;
+  }
 
-	@Override
-	public Collection<Button> getExtraNavigation(SectionInfo info, String operationId)
-	{
-		return null;
-	}
+  @Override
+  public boolean validateOptions(SectionInfo info, String operationId) {
+    return !Check.isEmpty(getCollections().getSelectedValueAsString(info));
+  }
 
-	@Override
-	public boolean hasPreview(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+  @Override
+  public boolean areOptionsFinished(SectionInfo info, String operationId) {
+    return validateOptions(info, operationId);
+  }
 
-	@Override
-	public ItemPack runPreview(SectionInfo info, String operationId, long itemUuid)
-	{
-		return null;
-	}
+  @Override
+  public void prepareDefaultOptions(SectionInfo info, String operationId) {
+    // nothing
+  }
 
-	@Override
-	public boolean showPreviousButton(SectionInfo info, String opererationId)
-	{
-		return true;
-	}
+  @Override
+  public boolean hasExtraNavigation(SectionInfo info, String operationId) {
+    return false;
+  }
+
+  @Override
+  public Collection<Button> getExtraNavigation(SectionInfo info, String operationId) {
+    return null;
+  }
+
+  @Override
+  public boolean hasPreview(SectionInfo info, String operationId) {
+    return false;
+  }
+
+  @Override
+  public ItemPack runPreview(SectionInfo info, String operationId, long itemUuid) {
+    return null;
+  }
+
+  @Override
+  public boolean showPreviousButton(SectionInfo info, String opererationId) {
+    return true;
+  }
 }

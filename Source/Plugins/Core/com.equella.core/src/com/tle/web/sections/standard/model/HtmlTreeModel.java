@@ -23,7 +23,6 @@ import com.tle.annotation.Nullable;
 import com.tle.web.sections.SectionInfo;
 
 @NonNullByDefault
-public interface HtmlTreeModel
-{
-	List<HtmlTreeNode> getChildNodes(SectionInfo info, @Nullable String xpath);
+public interface HtmlTreeModel {
+  List<HtmlTreeNode> getChildNodes(SectionInfo info, @Nullable String xpath);
 }

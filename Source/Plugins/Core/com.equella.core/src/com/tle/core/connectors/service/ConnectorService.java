@@ -26,29 +26,26 @@ import com.tle.common.connectors.entity.Connector;
 import com.tle.common.connectors.service.RemoteConnectorService;
 import com.tle.core.entity.service.AbstractEntityService;
 
-/**
- * @author aholland
- */
-public interface ConnectorService extends AbstractEntityService<ConnectorEditingBean, Connector>, RemoteConnectorService
-{
-	String ENTITY_TYPE = "CONNECTOR"; //$NON-NLS-1$
+/** @author aholland */
+public interface ConnectorService
+    extends AbstractEntityService<ConnectorEditingBean, Connector>, RemoteConnectorService {
+  String ENTITY_TYPE = "CONNECTOR"; // $NON-NLS-1$
 
-	Collection<ConnectorTypeDescriptor> listAllAvailableTypes();
+  Collection<ConnectorTypeDescriptor> listAllAvailableTypes();
 
-	List<BaseEntityLabel> listExportable();
+  List<BaseEntityLabel> listExportable();
 
-	List<BaseEntityLabel> listForViewing();
+  List<BaseEntityLabel> listForViewing();
 
-	Map<String, ConnectorTypeDescriptor> mapAllAvailableTypes();
+  Map<String, ConnectorTypeDescriptor> mapAllAvailableTypes();
 
-	Connector getForEdit(String connectorUuid);
+  Connector getForEdit(String connectorUuid);
 
-	boolean canViewContent(BaseEntityLabel connector);
+  boolean canViewContent(BaseEntityLabel connector);
 
-	boolean canViewContent(Connector connector);
+  boolean canViewContent(Connector connector);
 
-	boolean canExport(Connector connector);
+  boolean canExport(Connector connector);
 
-	List<Connector> enumerateForUrl(String url);
-
+  List<Connector> enumerateForUrl(String url);
 }

@@ -42,95 +42,107 @@ import java.util.Collections;
 @SuppressWarnings("nls")
 @Bind(ThemeSettingsService.class)
 public class ThemeSettingsServiceImpl implements ThemeSettingsService {
-	@Inject
-	TLEAclManager tleAclManager;
-	@Inject
-	ConfigurationService configurationService;
-	@Inject
-	FileSystemService fileSystemService;
-	@Inject
-	protected void setObjectMapperService(ObjectMapperService objectMapperService){
-		objectMapper = objectMapperService.createObjectMapper();
-	}
-	private ObjectMapper objectMapper;
+  @Inject TLEAclManager tleAclManager;
+  @Inject ConfigurationService configurationService;
+  @Inject FileSystemService fileSystemService;
 
-	private static final String PERMISSION_KEY = "EDIT_SYSTEM_SETTINGS";
-	private static final String LOGO_FILENAME = "newLogo.png";
-	private static final String THEME_KEY = "Theme";
+  @Inject
+  protected void setObjectMapperService(ObjectMapperService objectMapperService) {
+    objectMapper = objectMapperService.createObjectMapper();
+  }
 
-	@Override
-	public NewUITheme getTheme() throws IOException {
-		String themeString = configurationService.getProperty(THEME_KEY);
-		//use default theme if none exists in database
-		return Check.isEmpty(themeString) ? new NewUITheme() : objectMapper.readValue(themeString,NewUITheme.class);
-	}
+  private ObjectMapper objectMapper;
 
-	@Override
-	public InputStream getCustomLogo() throws IOException {
-		CustomisationFile customisationFile = new CustomisationFile();
-		if (fileSystemService.fileExists(customisationFile, LOGO_FILENAME)) {
-			return fileSystemService.read(customisationFile, LOGO_FILENAME);
-		}
-		return null;
-	}
+  private static final String PERMISSION_KEY = "EDIT_SYSTEM_SETTINGS";
+  private static final String LOGO_FILENAME = "newLogo.png";
+  private static final String THEME_KEY = "Theme";
 
-	@Override
-	public boolean isCustomLogo() {
-		CustomisationFile customisationFile = new CustomisationFile();
-		return fileSystemService.fileExists(customisationFile, LOGO_FILENAME);
-	}
+  @Override
+  public NewUITheme getTheme() throws IOException {
+    String themeString = configurationService.getProperty(THEME_KEY);
+    // use default theme if none exists in database
+    return Check.isEmpty(themeString)
+        ? new NewUITheme()
+        : objectMapper.readValue(themeString, NewUITheme.class);
+  }
 
-	@Override
-	public void setTheme(NewUITheme theme) throws JsonProcessingException {
-		checkPermissions();
-		String themeString = themeToJSONString(theme);
-		configurationService.setProperty(THEME_KEY, themeString);
-	}
+  @Override
+  public InputStream getCustomLogo() throws IOException {
+    CustomisationFile customisationFile = new CustomisationFile();
+    if (fileSystemService.fileExists(customisationFile, LOGO_FILENAME)) {
+      return fileSystemService.read(customisationFile, LOGO_FILENAME);
+    }
+    return null;
+  }
 
-	@Override
-	public void setLogo(File logoFile) throws IOException {
-		checkPermissions();
-		CustomisationFile customisationFile = new CustomisationFile();
-		//read in image file
-		BufferedImage bImage = null;
-		bImage = ImageIO.read(logoFile);
-		if (bImage == null) {
-			throw new IllegalArgumentException("Invalid image file");
-		}
+  @Override
+  public boolean isCustomLogo() {
+    CustomisationFile customisationFile = new CustomisationFile();
+    return fileSystemService.fileExists(customisationFile, LOGO_FILENAME);
+  }
 
-		//resize image to logo size (230px x 36px)
-		BufferedImage resizedImage = new BufferedImage(230, 36, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g2d = (Graphics2D) resizedImage.getGraphics();
-		g2d.drawImage(bImage, 0, 0, resizedImage.getWidth() - 1, resizedImage.getHeight() - 1, 0, 0,
-			bImage.getWidth() - 1, bImage.getHeight() - 1, null);
-		g2d.dispose();
-		RenderedImage rImage = resizedImage;
+  @Override
+  public void setTheme(NewUITheme theme) throws JsonProcessingException {
+    checkPermissions();
+    String themeString = themeToJSONString(theme);
+    configurationService.setProperty(THEME_KEY, themeString);
+  }
 
-		//write resized image to image file in the institution's filestore
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		ImageIO.write(rImage, "png", os);
-		InputStream fis = new ByteArrayInputStream(os.toByteArray());
-		fileSystemService.write(customisationFile, LOGO_FILENAME, fis, false);
-		os.close();
-		fis.close();
-	}
+  @Override
+  public void setLogo(File logoFile) throws IOException {
+    checkPermissions();
+    CustomisationFile customisationFile = new CustomisationFile();
+    // read in image file
+    BufferedImage bImage = null;
+    bImage = ImageIO.read(logoFile);
+    if (bImage == null) {
+      throw new IllegalArgumentException("Invalid image file");
+    }
 
-	@Override
-	public void deleteLogo() {
-		checkPermissions();
-		CustomisationFile customisationFile = new CustomisationFile();
-		fileSystemService.removeFile(customisationFile, LOGO_FILENAME);
-	}
+    // resize image to logo size (230px x 36px)
+    BufferedImage resizedImage = new BufferedImage(230, 36, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g2d = (Graphics2D) resizedImage.getGraphics();
+    g2d.drawImage(
+        bImage,
+        0,
+        0,
+        resizedImage.getWidth() - 1,
+        resizedImage.getHeight() - 1,
+        0,
+        0,
+        bImage.getWidth() - 1,
+        bImage.getHeight() - 1,
+        null);
+    g2d.dispose();
+    RenderedImage rImage = resizedImage;
 
-	private void checkPermissions() {
-		if (tleAclManager.filterNonGrantedPrivileges(Collections.singleton(PERMISSION_KEY), false).isEmpty()) {
-			throw new PrivilegeRequiredException(PERMISSION_KEY);
-		}
-	}
+    // write resized image to image file in the institution's filestore
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    ImageIO.write(rImage, "png", os);
+    InputStream fis = new ByteArrayInputStream(os.toByteArray());
+    fileSystemService.write(customisationFile, LOGO_FILENAME, fis, false);
+    os.close();
+    fis.close();
+  }
 
-	private String themeToJSONString(NewUITheme theme) throws JsonProcessingException {
-		String themeToString = "";
-		themeToString = objectMapper.writeValueAsString(theme);
-		return themeToString;
-	}
+  @Override
+  public void deleteLogo() {
+    checkPermissions();
+    CustomisationFile customisationFile = new CustomisationFile();
+    fileSystemService.removeFile(customisationFile, LOGO_FILENAME);
+  }
+
+  private void checkPermissions() {
+    if (tleAclManager
+        .filterNonGrantedPrivileges(Collections.singleton(PERMISSION_KEY), false)
+        .isEmpty()) {
+      throw new PrivilegeRequiredException(PERMISSION_KEY);
+    }
+  }
+
+  private String themeToJSONString(NewUITheme theme) throws JsonProcessingException {
+    String themeToString = "";
+    themeToString = objectMapper.writeValueAsString(theme);
+    return themeToString;
+  }
 }

@@ -34,31 +34,50 @@ import io.swagger.annotations.ApiParam;
 @Api(value = "Task searching", description = "task")
 @Produces(MediaType.APPLICATION_JSON)
 @SuppressWarnings("nls")
-public interface TaskResource
-{
-	static final String DEFAULT_FILTER = "all";
+public interface TaskResource {
+  static final String DEFAULT_FILTER = "all";
 
-	@GET
-	@Path("/")
-	@ApiOperation(value = "Search tasks")
-	public Response tasksSearch(
-		// @formatter:off
-		@Context UriInfo uriInfo,
-		@ApiParam(value="The filtering to apply to the task list", allowableValues = "all,assignedme,assignedothers,assignednone,mustmoderate", required = false, defaultValue=DEFAULT_FILTER) @QueryParam("filter")
-			String filtering,
-		@ApiParam(value="Query string", required = false) @QueryParam("q")
-			String q,
-		@ApiParam(value="The first record of the search results to return", required = false, defaultValue="0") @QueryParam("start")
-			int start,
-		@ApiParam(value="The number of results to return", required = false, defaultValue = "10", allowableValues = "range[1,100]") @QueryParam("length")
-			int length,
-		@ApiParam(value="List of collections", required = false) @QueryParam("collections")
-			CsvList collections,
-		@ApiParam(value="The order of the search results", allowableValues="priority,duedate,waiting, name", required = false) @QueryParam("order")
-			String order,
-		@ApiParam(value="Reverse the order of the search results", allowableValues = ",true,false", defaultValue = "false", required = false)
-		@QueryParam("reverse")
-			String reverse
-		);
-		// @formatter:on
+  @GET
+  @Path("/")
+  @ApiOperation(value = "Search tasks")
+  public Response tasksSearch(
+      // @formatter:off
+      @Context UriInfo uriInfo,
+      @ApiParam(
+              value = "The filtering to apply to the task list",
+              allowableValues = "all,assignedme,assignedothers,assignednone,mustmoderate",
+              required = false,
+              defaultValue = DEFAULT_FILTER)
+          @QueryParam("filter")
+          String filtering,
+      @ApiParam(value = "Query string", required = false) @QueryParam("q") String q,
+      @ApiParam(
+              value = "The first record of the search results to return",
+              required = false,
+              defaultValue = "0")
+          @QueryParam("start")
+          int start,
+      @ApiParam(
+              value = "The number of results to return",
+              required = false,
+              defaultValue = "10",
+              allowableValues = "range[1,100]")
+          @QueryParam("length")
+          int length,
+      @ApiParam(value = "List of collections", required = false) @QueryParam("collections")
+          CsvList collections,
+      @ApiParam(
+              value = "The order of the search results",
+              allowableValues = "priority,duedate,waiting, name",
+              required = false)
+          @QueryParam("order")
+          String order,
+      @ApiParam(
+              value = "Reverse the order of the search results",
+              allowableValues = ",true,false",
+              defaultValue = "false",
+              required = false)
+          @QueryParam("reverse")
+          String reverse);
+  // @formatter:on
 }

@@ -20,19 +20,18 @@ import java.net.URL;
 
 import com.tle.common.applet.SessionHolder;
 
-public interface ClientService
-{
-	void showDocument(URL url, String string);
+public interface ClientService {
+  void showDocument(URL url, String string);
 
-	void stop();
+  void stop();
 
-	String getParameter(String key);
+  String getParameter(String key);
 
-	URL getServerURL();
+  URL getServerURL();
 
-	SessionHolder getSession();
+  SessionHolder getSession();
 
-	/* SERVICES */
+  /* SERVICES */
 
-	<T> T getService(Class<T> clazz);
+  <T> T getService(Class<T> clazz);
 }

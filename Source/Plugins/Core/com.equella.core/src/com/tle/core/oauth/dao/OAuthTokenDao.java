@@ -22,18 +22,15 @@ import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.common.oauth.beans.OAuthToken;
 import com.tle.core.hibernate.dao.GenericInstitutionalDao;
 
-/**
- * @author Aaron
- */
-public interface OAuthTokenDao extends GenericInstitutionalDao<OAuthToken, Long>
-{
-	OAuthToken getToken(String userId, OAuthClient client);
+/** @author Aaron */
+public interface OAuthTokenDao extends GenericInstitutionalDao<OAuthToken, Long> {
+  OAuthToken getToken(String userId, OAuthClient client);
 
-	OAuthToken getToken(String tokenData);
+  OAuthToken getToken(String tokenData);
 
-	List<OAuthToken> findAllByClient(OAuthClient client);
+  List<OAuthToken> findAllByClient(OAuthClient client);
 
-	void deleteAllForUser(String userId);
+  void deleteAllForUser(String userId);
 
-	void changeUserId(String fromUserId, String toUserId);
+  void changeUserId(String fromUserId, String toUserId);
 }

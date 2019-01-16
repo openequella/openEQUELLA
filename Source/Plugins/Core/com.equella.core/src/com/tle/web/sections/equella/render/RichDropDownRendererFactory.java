@@ -28,12 +28,10 @@ import com.tle.web.sections.standard.model.HtmlListState;
 
 @Bind
 @Singleton
-public class RichDropDownRendererFactory implements RendererFactoryExtension
-{
-	@Override
-	public SectionRenderable getRenderer(RendererFactory factory, SectionInfo info, String renderer,
-		HtmlComponentState state)
-	{
-		return new RichDropDownRenderer((HtmlListState) state); // NOSONAR
-	}
+public class RichDropDownRendererFactory implements RendererFactoryExtension {
+  @Override
+  public SectionRenderable getRenderer(
+      RendererFactory factory, SectionInfo info, String renderer, HtmlComponentState state) {
+    return new RichDropDownRenderer((HtmlListState) state); // NOSONAR
+  }
 }

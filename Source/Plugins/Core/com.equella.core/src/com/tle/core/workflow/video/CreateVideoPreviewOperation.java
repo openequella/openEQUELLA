@@ -27,35 +27,29 @@ import com.tle.core.guice.Bind;
 import com.tle.core.item.operations.AbstractWorkflowOperation;
 
 @Bind
-public class CreateVideoPreviewOperation extends AbstractWorkflowOperation
-{
-	@Inject
-	private VideoService videoService;
+public class CreateVideoPreviewOperation extends AbstractWorkflowOperation {
+  @Inject private VideoService videoService;
 
-	@Override
-	public boolean execute()
-	{
-		StagingFile staging = getStaging();
-		if( staging == null )
-		{
-			return false;
-		}
+  @Override
+  public boolean execute() {
+    StagingFile staging = getStaging();
+    if (staging == null) {
+      return false;
+    }
 
-		boolean mod = false;
-		List<FileAttachment> files = getAttachments().getList(AttachmentType.FILE);
-		for( FileAttachment attachment : files )
-		{
-			//String thumbnail = attachment.getThumbnail();
-			final String filename = attachment.getFilename();
-			if( !"suppress".equals(attachment.getThumbnail()) )
-			{
-				if( videoService.canConvertVideo(filename) && !videoService.videoPreviewExists(staging, filename) )
-				{
-					videoService.makeGalleryVideoPreviews(staging, filename);
-					mod = true;
-				}
-			}
-		}
-		return mod;
-	}
+    boolean mod = false;
+    List<FileAttachment> files = getAttachments().getList(AttachmentType.FILE);
+    for (FileAttachment attachment : files) {
+      // String thumbnail = attachment.getThumbnail();
+      final String filename = attachment.getFilename();
+      if (!"suppress".equals(attachment.getThumbnail())) {
+        if (videoService.canConvertVideo(filename)
+            && !videoService.videoPreviewExists(staging, filename)) {
+          videoService.makeGalleryVideoPreviews(staging, filename);
+          mod = true;
+        }
+      }
+    }
+    return mod;
+  }
 }

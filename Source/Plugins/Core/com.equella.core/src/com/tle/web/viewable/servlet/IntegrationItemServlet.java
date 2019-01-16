@@ -25,65 +25,55 @@ import com.tle.web.viewable.ViewableItem;
 
 @Bind
 @Singleton
-public class IntegrationItemServlet extends ItemServlet
-{
-	private boolean requireDRM = true;
-	private boolean forceLatest;
+public class IntegrationItemServlet extends ItemServlet {
+  private boolean requireDRM = true;
+  private boolean forceLatest;
 
-	public boolean isForceLatest()
-	{
-		return forceLatest;
-	}
+  public boolean isForceLatest() {
+    return forceLatest;
+  }
 
-	public void setForceLatest(boolean forceLatest)
-	{
-		this.forceLatest = forceLatest;
-	}
+  public void setForceLatest(boolean forceLatest) {
+    this.forceLatest = forceLatest;
+  }
 
-	public void setRequireDRM(boolean requireDRM)
-	{
-		this.requireDRM = requireDRM;
-	}
+  public void setRequireDRM(boolean requireDRM) {
+    this.requireDRM = requireDRM;
+  }
 
-	@Override
-	protected ItemUrlParser getItemUrlParser()
-	{
-		return new IntegrationUrlParser();
-	}
+  @Override
+  protected ItemUrlParser getItemUrlParser() {
+    return new IntegrationUrlParser();
+  }
 
-	public class IntegrationUrlParser extends ItemServlet.NewItemUrlParser
-	{
-		private String extra;
+  public class IntegrationUrlParser extends ItemServlet.NewItemUrlParser {
+    private String extra;
 
-		@Override
-		public ViewableItem createViewableItem()
-		{
-			NewDefaultViewableItem viewableItem = (NewDefaultViewableItem) super.createViewableItem();
-			NewViewableItemState state = viewableItem.getState();
-			state.setRequireDRM(requireDRM);
-			state.setItemId(itemId);
-			state.setContext(context);
-			state.setIntegrationType(extra);
-			return viewableItem;
-		}
+    @Override
+    public ViewableItem createViewableItem() {
+      NewDefaultViewableItem viewableItem = (NewDefaultViewableItem) super.createViewableItem();
+      NewViewableItemState state = viewableItem.getState();
+      state.setRequireDRM(requireDRM);
+      state.setItemId(itemId);
+      state.setContext(context);
+      state.setIntegrationType(extra);
+      return viewableItem;
+    }
 
-		@Override
-		protected void setupContext()
-		{
-			extra = partList.get(0);
-			context = request.getServletPath().substring(1) + '/' + extra + '/';
-			partList = partList.subList(1, partList.size());
-		}
+    @Override
+    protected void setupContext() {
+      extra = partList.get(0);
+      context = request.getServletPath().substring(1) + '/' + extra + '/';
+      partList = partList.subList(1, partList.size());
+    }
 
-		@Override
-		protected void checkForRedirect()
-		{
-			if( forceLatest )
-			{
-				redirToLatest();
-				return;
-			}
-			super.checkForRedirect();
-		}
-	}
+    @Override
+    protected void checkForRedirect() {
+      if (forceLatest) {
+        redirToLatest();
+        return;
+      }
+      super.checkForRedirect();
+    }
+  }
 }

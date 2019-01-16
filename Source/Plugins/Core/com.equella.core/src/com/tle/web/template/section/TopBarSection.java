@@ -53,196 +53,166 @@ import com.tle.web.sections.standard.renderers.LinkRenderer;
 import com.tle.web.template.Decorations;
 
 @SuppressWarnings("nls")
-public class TopBarSection extends AbstractPrototypeSection<TopBarSection.TopBarModel> implements HtmlRenderer
-{
-	private static final CssInclude FONT = CssInclude.include("http://fonts.googleapis.com/css?family=PT+Sans").make();
+public class TopBarSection extends AbstractPrototypeSection<TopBarSection.TopBarModel>
+    implements HtmlRenderer {
+  private static final CssInclude FONT =
+      CssInclude.include("http://fonts.googleapis.com/css?family=PT+Sans").make();
 
-	@PlugKey("header.badge.title")
-	private static Label BADGE_TITLE_LABEL;
-	@PlugKey("topbar.link.logout")
-	private static Label LOGOUT_LABEL;
-	@PlugKey("topbar.link.edituser")
-	private static Label EDIT_USER_LABEL;
+  @PlugKey("header.badge.title")
+  private static Label BADGE_TITLE_LABEL;
 
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private ConfigurationService configService;
-	@Inject
-	private TopbarLinkService linkService;
+  @PlugKey("topbar.link.logout")
+  private static Label LOGOUT_LABEL;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @PlugKey("topbar.link.edituser")
+  private static Label EDIT_USER_LABEL;
 
-	@Component
-	private Link editUserLink;
-	@Component
-	private Link logoutLink;
+  @Inject private InstitutionService institutionService;
+  @Inject private ConfigurationService configService;
+  @Inject private TopbarLinkService linkService;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final Decorations decorations = Decorations.getDecorations(context);
-		if( !decorations.isBanner() )
-		{
-			return null;
-		}
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-		final TopBarModel model = getModel(context);
-		model.setBadgeLink(institutionService.institutionalise(WebConstants.DEFAULT_HOME_PAGE));
+  @Component private Link editUserLink;
+  @Component private Link logoutLink;
 
-		Label title = decorations.getBannerTitle();
-		if( title == null )
-		{
-			title = decorations.getTitle();
-		}
-		if( title == null )
-		{
-			if( DebugSettings.isAutoTestMode() || DebugSettings.isDebuggingMode() )
-			{
-				throw new RuntimeException("Page missing title");
-			}
-			title = new TextLabel("Untitled page");
-		}
-		model.setPageTitle(new LabelRenderer(title));
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    final Decorations decorations = Decorations.getDecorations(context);
+    if (!decorations.isBanner()) {
+      return null;
+    }
 
-		if( !CurrentUser.isGuest() )
-		{
-			SimpleBookmark logon = new SimpleBookmark(
-				CurrentInstitution.get() == null ? "institutions.do?method=logout" : "logon.do?logout=true");
-			logoutLink.setBookmark(context, logon);
-			logoutLink.setLabel(context, new IconLabel(Icon.OFF, LOGOUT_LABEL));
-		}
-		else
-		{
-			logoutLink.setDisplayed(context, false);
-		}
+    final TopBarModel model = getModel(context);
+    model.setBadgeLink(institutionService.institutionalise(WebConstants.DEFAULT_HOME_PAGE));
 
-		editUserLink.setBookmark(context, new SimpleBookmark("access/user.do"));
-		editUserLink.setDisabled(context, !isEditUserDetailsAvailable());
-		editUserLink.getState(context).setTitle(EDIT_USER_LABEL);
-		editUserLink.setLabel(context, new IconLabel(Icon.USER, new TextLabel(CurrentUser.getUsername())));
+    Label title = decorations.getBannerTitle();
+    if (title == null) {
+      title = decorations.getTitle();
+    }
+    if (title == null) {
+      if (DebugSettings.isAutoTestMode() || DebugSettings.isDebuggingMode()) {
+        throw new RuntimeException("Page missing title");
+      }
+      title = new TextLabel("Untitled page");
+    }
+    model.setPageTitle(new LabelRenderer(title));
 
-		PluginTracker<TopbarLink> topbarLinks = linkService.getTopbarLinks();
-		List<SectionRenderable> linkList = new ArrayList<SectionRenderable>();
-		for( TopbarLink link : topbarLinks.getBeanList() )
-		{
-			LinkRenderer renderer = link.getLink();
-			if( renderer != null )
-			{
-				linkList.add(renderer);
-			}
-		}
-		model.setLinks(linkList);
-		return new GenericNamedResult("topbar", viewFactory.createResult("topbar.ftl", context));
-	}
+    if (!CurrentUser.isGuest()) {
+      SimpleBookmark logon =
+          new SimpleBookmark(
+              CurrentInstitution.get() == null
+                  ? "institutions.do?method=logout"
+                  : "logon.do?logout=true");
+      logoutLink.setBookmark(context, logon);
+      logoutLink.setLabel(context, new IconLabel(Icon.OFF, LOGOUT_LABEL));
+    } else {
+      logoutLink.setDisplayed(context, false);
+    }
 
-	private boolean isEditUserDetailsAvailable()
-	{
-		UserState us = CurrentUser.getUserState();
-		if( us.isGuest() || us.isSystem() )
-		{
-			return false;
-		}
+    editUserLink.setBookmark(context, new SimpleBookmark("access/user.do"));
+    editUserLink.setDisabled(context, !isEditUserDetailsAvailable());
+    editUserLink.getState(context).setTitle(EDIT_USER_LABEL);
+    editUserLink.setLabel(
+        context, new IconLabel(Icon.USER, new TextLabel(CurrentUser.getUsername())));
 
-		if( us.wasAutoLoggedIn() )
-		{
-			AutoLogin autoLogin = configService.getProperties(new AutoLogin());
-			return !autoLogin.isEditDetailsDisallowed();
-		}
+    PluginTracker<TopbarLink> topbarLinks = linkService.getTopbarLinks();
+    List<SectionRenderable> linkList = new ArrayList<SectionRenderable>();
+    for (TopbarLink link : topbarLinks.getBeanList()) {
+      LinkRenderer renderer = link.getLink();
+      if (renderer != null) {
+        linkList.add(renderer);
+      }
+    }
+    model.setLinks(linkList);
+    return new GenericNamedResult("topbar", viewFactory.createResult("topbar.ftl", context));
+  }
 
-		return true;
-	}
+  private boolean isEditUserDetailsAvailable() {
+    UserState us = CurrentUser.getUserState();
+    if (us.isGuest() || us.isSystem()) {
+      return false;
+    }
 
-	public Link getEditUserLink()
-	{
-		return editUserLink;
-	}
+    if (us.wasAutoLoggedIn()) {
+      AutoLogin autoLogin = configService.getProperties(new AutoLogin());
+      return !autoLogin.isEditDetailsDisallowed();
+    }
 
-	public Link getLogoutLink()
-	{
-		return logoutLink;
-	}
+    return true;
+  }
 
-	public CssInclude getFont()
-	{
-		return FONT;
-	}
+  public Link getEditUserLink() {
+    return editUserLink;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "topbar";
-	}
+  public Link getLogoutLink() {
+    return logoutLink;
+  }
 
-	@Override
-	public Class<TopBarModel> getModelClass()
-	{
-		return TopBarModel.class;
-	}
+  public CssInclude getFont() {
+    return FONT;
+  }
 
-	public static class TopBarModel
-	{
-		private SectionRenderable pageTitle;
-		private String badgeLink;
-		private int taskCount;
-		private int notificationCount;
-		private List<SectionRenderable> links;
+  @Override
+  public String getDefaultPropertyName() {
+    return "topbar";
+  }
 
-		public int getTaskCount()
-		{
-			return taskCount;
-		}
+  @Override
+  public Class<TopBarModel> getModelClass() {
+    return TopBarModel.class;
+  }
 
-		public void setTaskCount(int taskCount)
-		{
-			this.taskCount = taskCount;
-		}
+  public static class TopBarModel {
+    private SectionRenderable pageTitle;
+    private String badgeLink;
+    private int taskCount;
+    private int notificationCount;
+    private List<SectionRenderable> links;
 
-		public int getNotificationCount()
-		{
-			return notificationCount;
-		}
+    public int getTaskCount() {
+      return taskCount;
+    }
 
-		public void setNotificationCount(int notificationCount)
-		{
-			this.notificationCount = notificationCount;
-		}
+    public void setTaskCount(int taskCount) {
+      this.taskCount = taskCount;
+    }
 
-		public SectionRenderable getPageTitle()
-		{
-			return pageTitle;
-		}
+    public int getNotificationCount() {
+      return notificationCount;
+    }
 
-		public void setPageTitle(SectionRenderable pageTitle)
-		{
-			this.pageTitle = pageTitle;
-		}
+    public void setNotificationCount(int notificationCount) {
+      this.notificationCount = notificationCount;
+    }
 
-		public String getBadgeLink()
-		{
-			return badgeLink;
-		}
+    public SectionRenderable getPageTitle() {
+      return pageTitle;
+    }
 
-		public void setBadgeLink(String badgeLink)
-		{
-			this.badgeLink = badgeLink;
-		}
+    public void setPageTitle(SectionRenderable pageTitle) {
+      this.pageTitle = pageTitle;
+    }
 
-		public List<SectionRenderable> getLinks()
-		{
-			return links;
-		}
+    public String getBadgeLink() {
+      return badgeLink;
+    }
 
-		public void setLinks(List<SectionRenderable> links)
-		{
-			this.links = links;
-		}
+    public void setBadgeLink(String badgeLink) {
+      this.badgeLink = badgeLink;
+    }
 
-	}
+    public List<SectionRenderable> getLinks() {
+      return links;
+    }
 
-	public Label getBadgeTitleLabel()
-	{
-		return BADGE_TITLE_LABEL;
-	}
+    public void setLinks(List<SectionRenderable> links) {
+      this.links = links;
+    }
+  }
+
+  public Label getBadgeTitleLabel() {
+    return BADGE_TITLE_LABEL;
+  }
 }

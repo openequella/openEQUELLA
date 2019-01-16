@@ -29,38 +29,31 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.annotations.TreeLookup;
 import com.tle.web.sections.events.RenderEventContext;
 
-public class BrowseSearchResults extends AbstractFreetextResultsSection<StandardItemListEntry, SearchResultsModel>
-{
-	@Inject
-	private StandardItemList itemList;
-	@TreeLookup
-	private BrowseSection browseSection;
+public class BrowseSearchResults
+    extends AbstractFreetextResultsSection<StandardItemListEntry, SearchResultsModel> {
+  @Inject private StandardItemList itemList;
+  @TreeLookup private BrowseSection browseSection;
 
-	@Override
-	public StandardItemList getItemList(SectionInfo info)
-	{
-		return itemList;
-	}
+  @Override
+  public StandardItemList getItemList(SectionInfo info) {
+    return itemList;
+  }
 
-	@Override
-	protected void registerItemList(SectionTree tree, String id)
-	{
-		tree.registerInnerSection(itemList, id);
-	}
+  @Override
+  protected void registerItemList(SectionTree tree, String id) {
+    tree.registerInnerSection(itemList, id);
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		if( !browseSection.isSearching(context) )
-		{
-			return null;
-		}
-		return super.renderHtml(context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    if (!browseSection.isSearching(context)) {
+      return null;
+    }
+    return super.renderHtml(context);
+  }
 
-	@Override
-	protected DefaultSearch createDefaultSearch(SectionInfo info)
-	{
-		return new BrowseSearch();
-	}
+  @Override
+  protected DefaultSearch createDefaultSearch(SectionInfo info) {
+    return new BrowseSearch();
+  }
 }

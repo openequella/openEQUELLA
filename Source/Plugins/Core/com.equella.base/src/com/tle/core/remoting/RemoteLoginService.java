@@ -16,14 +16,11 @@
 
 package com.tle.core.remoting;
 
-/**
- * @author Nicholas Read
- */
-public interface RemoteLoginService
-{
-	String getLoggedInUserId();
+/** @author Nicholas Read */
+public interface RemoteLoginService {
+  String getLoggedInUserId();
 
-	void logout();
+  void logout();
 
-	void keepAlive();
+  void keepAlive();
 }

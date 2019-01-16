@@ -24,12 +24,10 @@ package com.tle.freetext;
 
 // This exception is thrown when an upgrade method is
 // called on a lock that has this capability turned off
-public class UpgradeNotAllowed extends Exception
-{
-	private static final long serialVersionUID = 1L;
+public class UpgradeNotAllowed extends Exception {
+  private static final long serialVersionUID = 1L;
 
-	public UpgradeNotAllowed()
-	{
-		super();
-	}
+  public UpgradeNotAllowed() {
+    super();
+  }
 }

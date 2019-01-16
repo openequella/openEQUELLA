@@ -38,65 +38,57 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class AddLastAttempt extends AbstractHibernateSchemaMigration
-{
-	private static final String KEY_PREFIX = PluginServiceImpl.getMyPluginId(AddLastAttempt.class) + ".";
+public class AddLastAttempt extends AbstractHibernateSchemaMigration {
+  private static final String KEY_PREFIX =
+      PluginServiceImpl.getMyPluginId(AddLastAttempt.class) + ".";
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(new KeyString(KEY_PREFIX + "migrate.addlastattempt"));
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(new KeyString(KEY_PREFIX + "migrate.addlastattempt"));
+  }
 
-	@Override
-	public boolean isBackwardsCompatible()
-	{
-		return true;
-	}
+  @Override
+  public boolean isBackwardsCompatible() {
+    return true;
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-	{
-		// nothing
-	}
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) {
+    // nothing
+  }
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return 0;
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return 0;
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		return helper.getAddIndexesAndConstraintsForColumns("notification", "last_attempt", "attempt_id");
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    return helper.getAddIndexesAndConstraintsForColumns(
+        "notification", "last_attempt", "attempt_id");
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		return helper.getAddColumnsSQL("notification", "last_attempt", "attempt_id");
-	}
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    return helper.getAddColumnsSQL("notification", "last_attempt", "attempt_id");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{FakeNotification.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {FakeNotification.class};
+  }
 
-	@Entity(name = "Notification")
-	public static class FakeNotification
-	{
-		@Id
-		long id;
+  @Entity(name = "Notification")
+  public static class FakeNotification {
+    @Id long id;
 
-		@Column
-		@Index(name = "lastattempt_idx")
-		Date lastAttempt;
+    @Column
+    @Index(name = "lastattempt_idx")
+    Date lastAttempt;
 
-		@Column(length = 36)
-		@Index(name = "attempt_idx")
-		String attemptId;
-	}
-
+    @Column(length = 36)
+    @Index(name = "attempt_idx")
+    String attemptId;
+  }
 }

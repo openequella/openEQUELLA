@@ -56,157 +56,143 @@ import com.tle.web.wizard.impl.WebRepository;
 
 @SuppressWarnings("nls")
 @Bind
-public class FileManagerWebControl extends AbstractWebControl<WebControlModel>
-{
-	@ViewFactory(name = "wizardFreemarkerFactory")
-	private FreemarkerFactory factory;
+public class FileManagerWebControl extends AbstractWebControl<WebControlModel> {
+  @ViewFactory(name = "wizardFreemarkerFactory")
+  private FreemarkerFactory factory;
 
-	@Inject
-	@Component
-	private FileManagerDialog dialog;
+  @Inject @Component private FileManagerDialog dialog;
 
-	@Component
-	private Button openWebdav;
-	@Component
-	private Button refreshButton;
-	@Component(name = "f")
-	private SelectionsTable filesTable;
+  @Component private Button openWebdav;
+  @Component private Button refreshButton;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		addDisabler(context, dialog.getOpener());
-		setupWebdavUrl(context);
-		return factory.createResult("filemanager/filemanager.ftl", context);
-	}
+  @Component(name = "f")
+  private SelectionsTable filesTable;
 
-	private List<FileAttachment> getFiles()
-	{
-		return getRepository().getAttachments().getList(AttachmentType.FILE);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    addDisabler(context, dialog.getOpener());
+    setupWebdavUrl(context);
+    return factory.createResult("filemanager/filemanager.ftl", context);
+  }
 
-	@Override
-	public boolean isEmpty()
-	{
-		return getFiles().isEmpty();
-	}
+  private List<FileAttachment> getFiles() {
+    return getRepository().getAttachments().getList(AttachmentType.FILE);
+  }
 
-	@Override
-	public void doEdits(SectionInfo info)
-	{
-		if( isAutoMarkAsResource() && isWebdav() )
-		{
-			WebRepository repository = (WebRepository) control.getRepository();
-			repository.selectTopLevelFilesAsAttachments();
-		}
-	}
+  @Override
+  public boolean isEmpty() {
+    return getFiles().isEmpty();
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void doEdits(SectionInfo info) {
+    if (isAutoMarkAsResource() && isWebdav()) {
+      WebRepository repository = (WebRepository) control.getRepository();
+      repository.selectTopLevelFilesAsAttachments();
+    }
+  }
 
-		refreshButton.setClickHandler(getReloadFunction(true, null));
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		dialog.setFileManagerControl(this);
-		filesTable.setSelectionsModel(new FilesModel());
-	}
+    refreshButton.setClickHandler(getReloadFunction(true, null));
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
+    dialog.setFileManagerControl(this);
+    filesTable.setSelectionsModel(new FilesModel());
+  }
 
-		if( dialog.isAjax() )
-		{
-			SimpleFunction delayedReload = new SimpleFunction("reloadFileman",
-				new FunctionCallStatement(StandardModule.SET_TIMEOUT,
-					new AnonymousFunction(new FunctionCallStatement(getReloadFunction(true, null))), 800));
-			dialog.setDialogClosedCallback(new PassThroughFunction("fin" + id, delayedReload));
-		}
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
 
-	public boolean isAutoMarkAsResource()
-	{
-		CustomControl c = (CustomControl) getControlBean();
-		Boolean b = (Boolean) c.getAttributes().get("autoMarkAsResource");
-		return b == null || b.booleanValue();
-	}
+    if (dialog.isAjax()) {
+      SimpleFunction delayedReload =
+          new SimpleFunction(
+              "reloadFileman",
+              new FunctionCallStatement(
+                  StandardModule.SET_TIMEOUT,
+                  new AnonymousFunction(new FunctionCallStatement(getReloadFunction(true, null))),
+                  800));
+      dialog.setDialogClosedCallback(new PassThroughFunction("fin" + id, delayedReload));
+    }
+  }
 
-	private void setupWebdavUrl(SectionContext context)
-	{
-		if( isWebdav() )
-		{
-			WebRepository repository = (WebRepository) control.getRepository();
-			String webdav = repository.getWebUrl() + "wd/" + repository.getStagingid() + '/';
+  public boolean isAutoMarkAsResource() {
+    CustomControl c = (CustomControl) getControlBean();
+    Boolean b = (Boolean) c.getAttributes().get("autoMarkAsResource");
+    return b == null || b.booleanValue();
+  }
 
-			openWebdav.setClickHandler(context, new OverrideHandler(new ExternallyDefinedFunction("openWebDav"),
-				getSectionId(), CurrentLocale.get("wizard.controls.file.url", webdav), webdav));
-			addDisablers(context, openWebdav, refreshButton);
-		}
-		else
-		{
-			openWebdav.setDisplayed(context, false);
-		}
-	}
+  private void setupWebdavUrl(SectionContext context) {
+    if (isWebdav()) {
+      WebRepository repository = (WebRepository) control.getRepository();
+      String webdav = repository.getWebUrl() + "wd/" + repository.getStagingid() + '/';
 
-	public boolean isWebdav()
-	{
-		CustomControl c = (CustomControl) getControlBean();
-		Boolean b = (Boolean) c.getAttributes().get("allowWebDav");
-		return b == null || b.booleanValue();
-	}
+      openWebdav.setClickHandler(
+          context,
+          new OverrideHandler(
+              new ExternallyDefinedFunction("openWebDav"),
+              getSectionId(),
+              CurrentLocale.get("wizard.controls.file.url", webdav),
+              webdav));
+      addDisablers(context, openWebdav, refreshButton);
+    } else {
+      openWebdav.setDisplayed(context, false);
+    }
+  }
 
-	@Override
-	public Class<WebControlModel> getModelClass()
-	{
-		return WebControlModel.class;
-	}
+  public boolean isWebdav() {
+    CustomControl c = (CustomControl) getControlBean();
+    Boolean b = (Boolean) c.getAttributes().get("allowWebDav");
+    return b == null || b.booleanValue();
+  }
 
-	public FileManagerDialog getDialog()
-	{
-		return dialog;
-	}
+  @Override
+  public Class<WebControlModel> getModelClass() {
+    return WebControlModel.class;
+  }
 
-	public Button getOpenWebdav()
-	{
-		return openWebdav;
-	}
+  public FileManagerDialog getDialog() {
+    return dialog;
+  }
 
-	public Button getRefreshButton()
-	{
-		return refreshButton;
-	}
+  public Button getOpenWebdav() {
+    return openWebdav;
+  }
 
-	public SelectionsTable getFilesTable()
-	{
-		return filesTable;
-	}
+  public Button getRefreshButton() {
+    return refreshButton;
+  }
 
-	private class FilesModel extends DynamicSelectionsTableModel<FileAttachment>
-	{
-		@Override
-		protected List<FileAttachment> getSourceList(SectionInfo info)
-		{
-			return getFiles();
-		}
+  public SelectionsTable getFilesTable() {
+    return filesTable;
+  }
 
-		@Override
-		protected void transform(SectionInfo info, SelectionsTableSelection selection, FileAttachment attachment,
-			List<SectionRenderable> actions, int index)
-		{
-			final WebRepository repository = getWebRepository();
-			final HtmlLinkState view = new HtmlLinkState(repository.getFileURL(attachment.getFilename()));
-			final LinkRenderer viewLink = new LinkRenderer(view);
-			viewLink.setLabel(new TextLabel(attachment.getDescription()));
-			viewLink.setTarget("_blank");
-			selection.setViewAction(viewLink);
-		}
-	}
+  private class FilesModel extends DynamicSelectionsTableModel<FileAttachment> {
+    @Override
+    protected List<FileAttachment> getSourceList(SectionInfo info) {
+      return getFiles();
+    }
 
-	@Override
-	protected ElementId getIdForLabel()
-	{
-		return null;
-	}
+    @Override
+    protected void transform(
+        SectionInfo info,
+        SelectionsTableSelection selection,
+        FileAttachment attachment,
+        List<SectionRenderable> actions,
+        int index) {
+      final WebRepository repository = getWebRepository();
+      final HtmlLinkState view = new HtmlLinkState(repository.getFileURL(attachment.getFilename()));
+      final LinkRenderer viewLink = new LinkRenderer(view);
+      viewLink.setLabel(new TextLabel(attachment.getDescription()));
+      viewLink.setTarget("_blank");
+      selection.setViewAction(viewLink);
+    }
+  }
+
+  @Override
+  protected ElementId getIdForLabel() {
+    return null;
+  }
 }

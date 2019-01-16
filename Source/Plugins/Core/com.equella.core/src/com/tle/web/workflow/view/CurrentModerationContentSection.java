@@ -63,176 +63,171 @@ import com.tle.web.workflow.manage.ViewCommentsDialog;
 @SuppressWarnings("nls")
 @Bind
 public class CurrentModerationContentSection
-	extends
-		AbstractContentSection<CurrentModerationContentSection.CurrentModerationContentModel>
-{
-	@PlugKey("tasklist.comments")
-	private static String KEY_COMMENTS;
-	@PlugKey("summary.content.currentmoderation.pagetitle")
-	private static Label TITLE_LABEL;
-	@PlugKey("summary.content.currentmoderation.awaiting.taskname")
-	private static Label LABEL_TASK_NAME;
-	@PlugKey("summary.content.currentmoderation.awaiting.moderators")
-	private static Label LABEL_MODERATORS;
-	@PlugKey("summary.content.currentmoderation.awaiting.waiting")
-	private static Label LABEL_WAITING_FOR;
-	@PlugKey("summary.content.currentmoderation.awaiting.unanimous")
-	private static Label LABEL_UNANIMOUS;
-	@PlugKey("summary.content.currentmoderation.awaiting.onlyone")
-	private static Label LABEL_ONLYONE;
-	@PlugKey("summary.content.currentmoderation.thumbnail.alt")
-	private static Label LABEL_PROG_THUMB_ALT;
+    extends AbstractContentSection<CurrentModerationContentSection.CurrentModerationContentModel> {
+  @PlugKey("tasklist.comments")
+  private static String KEY_COMMENTS;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @PlugKey("summary.content.currentmoderation.pagetitle")
+  private static Label TITLE_LABEL;
 
-	@Component(name = "m")
-	private Table moderatorsTable;
-	@Component
-	private Link flowchartLink;
+  @PlugKey("summary.content.currentmoderation.awaiting.taskname")
+  private static Label LABEL_TASK_NAME;
 
-	@Inject
-	private ViewItemUrlFactory viewItemUrlFactory;
-	@Inject
-	private UserLinkService userLinkService;
-	private UserLinkSection userLinkSection;
-	@Inject
-	private CurrentModerationLinkSection linkSection;
-	@Inject
-	private ViewCommentsDialog commentsDialog;
-	@Inject
-	private WorkflowService workflowService;
-	@Inject
-	private DateRendererFactory dateRendererFactory;
+  @PlugKey("summary.content.currentmoderation.awaiting.moderators")
+  private static Label LABEL_MODERATORS;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @PlugKey("summary.content.currentmoderation.awaiting.waiting")
+  private static Label LABEL_WAITING_FOR;
 
-		flowchartLink.setStyleClass("flowchart-thumb");
+  @PlugKey("summary.content.currentmoderation.awaiting.unanimous")
+  private static Label LABEL_UNANIMOUS;
 
-		userLinkSection = userLinkService.register(tree, id);
-		tree.registerInnerSection(commentsDialog, id);
-		tree.addDelayedRegistration(new DelayedRegistration()
-		{
+  @PlugKey("summary.content.currentmoderation.awaiting.onlyone")
+  private static Label LABEL_ONLYONE;
 
-			@Override
-			public void register(SectionTree tree)
-			{
-				String placeHolder = tree.getPlaceHolder("com.tle.web.viewitem.summary.sidebar.DETAILS_GROUP");
-				tree.registerSections(linkSection, placeHolder, null, false);
-			}
-		});
+  @PlugKey("summary.content.currentmoderation.thumbnail.alt")
+  private static Label LABEL_PROG_THUMB_ALT;
 
-		moderatorsTable.setColumnHeadings(LABEL_TASK_NAME, LABEL_MODERATORS, LABEL_WAITING_FOR);
-		moderatorsTable.setColumnSorts(Sort.NONE, Sort.NONE, Sort.PRIMARY_ASC);
-	}
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	public HtmlLinkState getCommentLink(SectionInfo info, ItemTaskId itemTaskId, int comments)
-	{
-		return new HtmlLinkState(new PluralKeyLabel(KEY_COMMENTS, comments),
-			new OverrideHandler(commentsDialog.getOpenFunction(), itemTaskId));
-	}
+  @Component(name = "m")
+  private Table moderatorsTable;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(context);
-		final WorkflowStatus status = itemInfo.getWorkflowStatus();
-		final CurrentModerationContentModel model = getModel(context);
+  @Component private Link flowchartLink;
 
-		if( !status.isModerating() )
-		{
-			return null;
-		}
-		Date start = itemInfo.getItem().getModeration().getStart();
-		model.setTotalTime(dateRendererFactory.createDateRenderer(start, true));
+  @Inject private ViewItemUrlFactory viewItemUrlFactory;
+  @Inject private UserLinkService userLinkService;
+  private UserLinkSection userLinkSection;
+  @Inject private CurrentModerationLinkSection linkSection;
+  @Inject private ViewCommentsDialog commentsDialog;
+  @Inject private WorkflowService workflowService;
+  @Inject private DateRendererFactory dateRendererFactory;
 
-		final TableState moderatorsTableState = moderatorsTable.getState(context);
-		for( WorkflowStep step : status.getCurrentSteps() )
-		{
-			final ItemTaskId itemTaskId = new ItemTaskId(itemInfo.getItemId(), step.getUuid());
-			final List<WorkflowMessage> comments = workflowService.getCommentsForTask(itemTaskId);
-			HtmlLinkState commentLink = null;
-			if( !comments.isEmpty() )
-			{
-				commentLink = getCommentLink(context, itemTaskId, comments.size());
-			}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-			final Label moderatorsLabel = (step.isUnanimous() ? LABEL_UNANIMOUS : LABEL_ONLYONE);
-			final List<HtmlLinkState> moderatorList = convertUserList(context, step);
+    flowchartLink.setStyleClass("flowchart-thumb");
 
-			moderatorsTableState
-				.addRow(new BundleLabel(step.getDisplayName(), bundleCache),
-					viewFactory.createResultWithModelMap("moderatorscolumn.ftl", "moderatorsLabel", moderatorsLabel,
-						"moderatorList", moderatorList, "commentLink", commentLink),
-				dateRendererFactory.createDateRenderer(step.getStatus().getStarted(), true))
-				.setSortData(null, null, step.getStatus().getStarted());
-		}
+    userLinkSection = userLinkService.register(tree, id);
+    tree.registerInnerSection(commentsDialog, id);
+    tree.addDelayedRegistration(
+        new DelayedRegistration() {
 
-		final ViewItemUrl flowchartUrl = viewItemUrlFactory.createItemUrl(context, itemInfo.getViewableItem(),
-			UrlEncodedString.createFromFilePath("statusimage.png"), ViewItemUrl.FLAG_IS_RESOURCE);
+          @Override
+          public void register(SectionTree tree) {
+            String placeHolder =
+                tree.getPlaceHolder("com.tle.web.viewitem.summary.sidebar.DETAILS_GROUP");
+            tree.registerSections(linkSection, placeHolder, null, false);
+          }
+        });
 
-		flowchartLink.setBookmark(context, flowchartUrl);
-		flowchartLink.getState(context).setTitle(LABEL_PROG_THUMB_ALT);
+    moderatorsTable.setColumnHeadings(LABEL_TASK_NAME, LABEL_MODERATORS, LABEL_WAITING_FOR);
+    moderatorsTable.setColumnSorts(Sort.NONE, Sort.NONE, Sort.PRIMARY_ASC);
+  }
 
-		model.setFlowchartThumb(new ImageRenderer(flowchartUrl.getHref(), LABEL_PROG_THUMB_ALT));
+  public HtmlLinkState getCommentLink(SectionInfo info, ItemTaskId itemTaskId, int comments) {
+    return new HtmlLinkState(
+        new PluralKeyLabel(KEY_COMMENTS, comments),
+        new OverrideHandler(commentsDialog.getOpenFunction(), itemTaskId));
+  }
 
-		addDefaultBreadcrumbs(context, itemInfo, TITLE_LABEL);
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(context);
+    final WorkflowStatus status = itemInfo.getWorkflowStatus();
+    final CurrentModerationContentModel model = getModel(context);
 
-		return viewFactory.createResult("currentmoderators.ftl", context);
-	}
+    if (!status.isModerating()) {
+      return null;
+    }
+    Date start = itemInfo.getItem().getModeration().getStart();
+    model.setTotalTime(dateRendererFactory.createDateRenderer(start, true));
 
-	private List<HtmlLinkState> convertUserList(SectionInfo info, WorkflowStep step)
-	{
-		final List<HtmlLinkState> rv = new ArrayList<HtmlLinkState>();
+    final TableState moderatorsTableState = moderatorsTable.getState(context);
+    for (WorkflowStep step : status.getCurrentSteps()) {
+      final ItemTaskId itemTaskId = new ItemTaskId(itemInfo.getItemId(), step.getUuid());
+      final List<WorkflowMessage> comments = workflowService.getCommentsForTask(itemTaskId);
+      HtmlLinkState commentLink = null;
+      if (!comments.isEmpty()) {
+        commentLink = getCommentLink(context, itemTaskId, comments.size());
+      }
 
-		// All users
-		rv.addAll(userLinkSection.createLinks(info, step.getToModerate()));
-		rv.addAll(userLinkSection.createRoleLinks(info, step.getRolesToModerate()));
-		return rv;
-	}
+      final Label moderatorsLabel = (step.isUnanimous() ? LABEL_UNANIMOUS : LABEL_ONLYONE);
+      final List<HtmlLinkState> moderatorList = convertUserList(context, step);
 
-	public Table getModeratorsTable()
-	{
-		return moderatorsTable;
-	}
+      moderatorsTableState
+          .addRow(
+              new BundleLabel(step.getDisplayName(), bundleCache),
+              viewFactory.createResultWithModelMap(
+                  "moderatorscolumn.ftl",
+                  "moderatorsLabel",
+                  moderatorsLabel,
+                  "moderatorList",
+                  moderatorList,
+                  "commentLink",
+                  commentLink),
+              dateRendererFactory.createDateRenderer(step.getStatus().getStarted(), true))
+          .setSortData(null, null, step.getStatus().getStarted());
+    }
 
-	public Link getFlowchartLink()
-	{
-		return flowchartLink;
-	}
+    final ViewItemUrl flowchartUrl =
+        viewItemUrlFactory.createItemUrl(
+            context,
+            itemInfo.getViewableItem(),
+            UrlEncodedString.createFromFilePath("statusimage.png"),
+            ViewItemUrl.FLAG_IS_RESOURCE);
 
-	@Override
-	public Class<CurrentModerationContentModel> getModelClass()
-	{
-		return CurrentModerationContentModel.class;
-	}
+    flowchartLink.setBookmark(context, flowchartUrl);
+    flowchartLink.getState(context).setTitle(LABEL_PROG_THUMB_ALT);
 
-	public static class CurrentModerationContentModel
-	{
-		private DateRenderer totalTime;
-		private SectionRenderable flowchartThumb;
+    model.setFlowchartThumb(new ImageRenderer(flowchartUrl.getHref(), LABEL_PROG_THUMB_ALT));
 
-		public SectionRenderable getFlowchartThumb()
-		{
-			return flowchartThumb;
-		}
+    addDefaultBreadcrumbs(context, itemInfo, TITLE_LABEL);
 
-		public void setFlowchartThumb(SectionRenderable flowchartThumb)
-		{
-			this.flowchartThumb = flowchartThumb;
-		}
+    return viewFactory.createResult("currentmoderators.ftl", context);
+  }
 
-		public DateRenderer getTotalTime()
-		{
-			return totalTime;
-		}
+  private List<HtmlLinkState> convertUserList(SectionInfo info, WorkflowStep step) {
+    final List<HtmlLinkState> rv = new ArrayList<HtmlLinkState>();
 
-		public void setTotalTime(DateRenderer dateRenderer)
-		{
-			this.totalTime = dateRenderer;
-		}
-	}
+    // All users
+    rv.addAll(userLinkSection.createLinks(info, step.getToModerate()));
+    rv.addAll(userLinkSection.createRoleLinks(info, step.getRolesToModerate()));
+    return rv;
+  }
+
+  public Table getModeratorsTable() {
+    return moderatorsTable;
+  }
+
+  public Link getFlowchartLink() {
+    return flowchartLink;
+  }
+
+  @Override
+  public Class<CurrentModerationContentModel> getModelClass() {
+    return CurrentModerationContentModel.class;
+  }
+
+  public static class CurrentModerationContentModel {
+    private DateRenderer totalTime;
+    private SectionRenderable flowchartThumb;
+
+    public SectionRenderable getFlowchartThumb() {
+      return flowchartThumb;
+    }
+
+    public void setFlowchartThumb(SectionRenderable flowchartThumb) {
+      this.flowchartThumb = flowchartThumb;
+    }
+
+    public DateRenderer getTotalTime() {
+      return totalTime;
+    }
+
+    public void setTotalTime(DateRenderer dateRenderer) {
+      this.totalTime = dateRenderer;
+    }
+  }
 }

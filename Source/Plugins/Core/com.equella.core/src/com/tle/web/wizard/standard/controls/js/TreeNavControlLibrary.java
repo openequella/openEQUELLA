@@ -47,65 +47,107 @@ import com.tle.web.sections.standard.TextField;
 import com.tle.web.viewitem.treeviewer.js.TreeLibrary;
 
 @SuppressWarnings("nls")
-public final class TreeNavControlLibrary
-{
-	private static final IncludeFile INCLUDE = new IncludeFile(ResourcesService.getResourceHelper(
-		TreeNavControlLibrary.class).url("scripts/treenavctl.js"), JQueryEquellaUtils.PRERENDER,
-		JQueryDraggable.PRERENDER, JQueryDroppable.PRERENDER, TreeLibrary.INCLUDE, JQueryFancyBox.PRERENDER);
-	private static final JSCallable SETUP_TREE_FUNC = new ExternallyDefinedFunction("setupTree", INCLUDE);
-	private static final JSCallable SUBMIT_TREE_FUNC = new ExternallyDefinedFunction("submitTree", INCLUDE);
-	private static final JSCallable TREE_NAV_CONSTRUCTOR = new ExternallyDefinedFunction("TreeNavControl", INCLUDE);
+public final class TreeNavControlLibrary {
+  private static final IncludeFile INCLUDE =
+      new IncludeFile(
+          ResourcesService.getResourceHelper(TreeNavControlLibrary.class)
+              .url("scripts/treenavctl.js"),
+          JQueryEquellaUtils.PRERENDER,
+          JQueryDraggable.PRERENDER,
+          JQueryDroppable.PRERENDER,
+          TreeLibrary.INCLUDE,
+          JQueryFancyBox.PRERENDER);
+  private static final JSCallable SETUP_TREE_FUNC =
+      new ExternallyDefinedFunction("setupTree", INCLUDE);
+  private static final JSCallable SUBMIT_TREE_FUNC =
+      new ExternallyDefinedFunction("submitTree", INCLUDE);
+  private static final JSCallable TREE_NAV_CONSTRUCTOR =
+      new ExternallyDefinedFunction("TreeNavControl", INCLUDE);
 
-	public static final ScriptVariable THE_TREE = new ScriptVariable("tctl");
+  public static final ScriptVariable THE_TREE = new ScriptVariable("tctl");
 
-	public static final JSCallable CREATE_NODE = new ExternallyDefinedFunction("createTreeNode", INCLUDE);
-	public static final JSCallable REMOVE_NODE = new ExternallyDefinedFunction("removeTreeNode", INCLUDE);
-	public static final JSCallable MOVE_NODE_UP = new ExternallyDefinedFunction("moveTreeNodeUp", INCLUDE);
-	public static final JSCallable MOVE_NODE_DOWN = new ExternallyDefinedFunction("moveTreeNodeDown", INCLUDE);
+  public static final JSCallable CREATE_NODE =
+      new ExternallyDefinedFunction("createTreeNode", INCLUDE);
+  public static final JSCallable REMOVE_NODE =
+      new ExternallyDefinedFunction("removeTreeNode", INCLUDE);
+  public static final JSCallable MOVE_NODE_UP =
+      new ExternallyDefinedFunction("moveTreeNodeUp", INCLUDE);
+  public static final JSCallable MOVE_NODE_DOWN =
+      new ExternallyDefinedFunction("moveTreeNodeDown", INCLUDE);
 
-	/**
-	 * @param info
-	 * @param treeDef get from
-	 *            JSONArray.fromObject(AbstractTreeViewerSection.addChildNodes(
-	 *            etc...))
-	 */
-	public static void setupTree(RenderContext info, String treeDef, boolean disabled, TextField nodeDisplayName,
-		Button tabAddButton, TextField popupTabName, Button popupSaveButton, Button popupCancelButton,
-		ObjectExpression callbacks, ObjectExpression controls, Label tabRemoveConfirmMessage)
-	{
-		info.getPreRenderContext().addStatements(new DeclarationStatement(THE_TREE));
+  /**
+   * @param info
+   * @param treeDef get from JSONArray.fromObject(AbstractTreeViewerSection.addChildNodes( etc...))
+   */
+  public static void setupTree(
+      RenderContext info,
+      String treeDef,
+      boolean disabled,
+      TextField nodeDisplayName,
+      Button tabAddButton,
+      TextField popupTabName,
+      Button popupSaveButton,
+      Button popupCancelButton,
+      ObjectExpression callbacks,
+      ObjectExpression controls,
+      Label tabRemoveConfirmMessage) {
+    info.getPreRenderContext().addStatements(new DeclarationStatement(THE_TREE));
 
-		info.getBody().addEventStatements(JSHandler.EVENT_PRESUBMIT,
-			new FunctionCallStatement(SUBMIT_TREE_FUNC, THE_TREE));
-		JQueryCore.appendReady(
-			info,
-			getTreeCode(treeDef, disabled, sel(nodeDisplayName), sel(tabAddButton), sel(popupTabName),
-				sel(popupSaveButton), sel(popupCancelButton), callbacks, controls, tabRemoveConfirmMessage));
-	}
+    info.getBody()
+        .addEventStatements(
+            JSHandler.EVENT_PRESUBMIT, new FunctionCallStatement(SUBMIT_TREE_FUNC, THE_TREE));
+    JQueryCore.appendReady(
+        info,
+        getTreeCode(
+            treeDef,
+            disabled,
+            sel(nodeDisplayName),
+            sel(tabAddButton),
+            sel(popupTabName),
+            sel(popupSaveButton),
+            sel(popupCancelButton),
+            callbacks,
+            controls,
+            tabRemoveConfirmMessage));
+  }
 
-	private static JSExpression sel(final ElementId comp)
-	{
-		return new JQuerySelector(comp);
-	}
+  private static JSExpression sel(final ElementId comp) {
+    return new JQuerySelector(comp);
+  }
 
-	private static JSStatements getTreeCode(String treeDef, boolean disabled, JSExpression tabDisplayName,
-		JSExpression tabAddButtonExpr, JSExpression popupTabName, JSExpression popupSaveButtonExpr,
-		JSExpression popupCancelButtonExpr, ObjectExpression callbacks, ObjectExpression controls,
-		Label tabRemoveConfirmMessage)
-	{
-		final StatementBlock s = new StatementBlock();
-		s.addStatements(new AssignStatement(THE_TREE, new ConstructorCallExpression(TREE_NAV_CONSTRUCTOR,
-			tabRemoveConfirmMessage, tabDisplayName, tabAddButtonExpr, popupTabName, popupSaveButtonExpr,
-			popupCancelButtonExpr)));
-		s.addStatements(new AssignStatement(new CombinedExpression(THE_TREE, new PropertyExpression("disabled")),
-			disabled));
-		s.addStatements(new FunctionCallStatement(SETUP_TREE_FUNC, THE_TREE, new ScriptExpression(treeDef), callbacks,
-			controls));
-		return s;
-	}
+  private static JSStatements getTreeCode(
+      String treeDef,
+      boolean disabled,
+      JSExpression tabDisplayName,
+      JSExpression tabAddButtonExpr,
+      JSExpression popupTabName,
+      JSExpression popupSaveButtonExpr,
+      JSExpression popupCancelButtonExpr,
+      ObjectExpression callbacks,
+      ObjectExpression controls,
+      Label tabRemoveConfirmMessage) {
+    final StatementBlock s = new StatementBlock();
+    s.addStatements(
+        new AssignStatement(
+            THE_TREE,
+            new ConstructorCallExpression(
+                TREE_NAV_CONSTRUCTOR,
+                tabRemoveConfirmMessage,
+                tabDisplayName,
+                tabAddButtonExpr,
+                popupTabName,
+                popupSaveButtonExpr,
+                popupCancelButtonExpr)));
+    s.addStatements(
+        new AssignStatement(
+            new CombinedExpression(THE_TREE, new PropertyExpression("disabled")), disabled));
+    s.addStatements(
+        new FunctionCallStatement(
+            SETUP_TREE_FUNC, THE_TREE, new ScriptExpression(treeDef), callbacks, controls));
+    return s;
+  }
 
-	private TreeNavControlLibrary()
-	{
-		throw new Error();
-	}
+  private TreeNavControlLibrary() {
+    throw new Error();
+  }
 }

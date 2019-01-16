@@ -23,50 +23,42 @@ import com.dytech.gui.ChangeDetector;
 import com.dytech.gui.Changeable;
 import com.tle.beans.usermanagement.standard.LDAPSettings;
 
-public abstract class AbstractLDAPPanel extends JPanel implements Changeable
-{
-	protected ChangeDetector changeDetector;
-	protected LDAPSettings settings;
+public abstract class AbstractLDAPPanel extends JPanel implements Changeable {
+  protected ChangeDetector changeDetector;
+  protected LDAPSettings settings;
 
-	public AbstractLDAPPanel()
-	{
-		changeDetector = new ChangeDetector();
-	}
+  public AbstractLDAPPanel() {
+    changeDetector = new ChangeDetector();
+  }
 
-	@Override
-	public void clearChanges()
-	{
-		changeDetector.clearChanges();
-	}
+  @Override
+  public void clearChanges() {
+    changeDetector.clearChanges();
+  }
 
-	public boolean needsScrollPane()
-	{
-		return false;
-	}
+  public boolean needsScrollPane() {
+    return false;
+  }
 
-	public JComponent getComponent()
-	{
-		return this;
-	}
+  public JComponent getComponent() {
+    return this;
+  }
 
-	@Override
-	public boolean hasDetectedChanges()
-	{
-		return changeDetector.hasDetectedChanges();
-	}
+  @Override
+  public boolean hasDetectedChanges() {
+    return changeDetector.hasDetectedChanges();
+  }
 
-	protected abstract String getTabName();
+  protected abstract String getTabName();
 
-	public abstract void applySettings() throws Exception;
+  public abstract void applySettings() throws Exception;
 
-	public void showPanel() throws Exception
-	{
-		// Nothing to do here
-	}
+  public void showPanel() throws Exception {
+    // Nothing to do here
+  }
 
-	@Override
-	public String getName()
-	{
-		return getTabName();
-	}
+  @Override
+  public String getName() {
+    return getTabName();
+  }
 }

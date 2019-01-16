@@ -35,60 +35,63 @@ import com.tle.web.viewurl.AttachmentDetail;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.resource.SimpleUrlResource;
 
-public class DetailUrlResource extends SimpleUrlResource
-{
-	static
-	{
-		PluginResourceHandler.init(DetailUrlResource.class);
-	}
+public class DetailUrlResource extends SimpleUrlResource {
+  static {
+    PluginResourceHandler.init(DetailUrlResource.class);
+  }
 
-	@PlugKey("linkresource.details.type")
-	private static Label TYPE;
-	@PlugKey("linkresource.details.mimetype")
-	private static Label MIMETYPE;
-	@PlugKey("linkresource.details.url")
-	private static Label URL;
-	@PlugKey("linkresource.details.status")
-	private static Label STATUS;
-	@PlugKey("linkresource.details.status.bad")
-	private static Label STATUS_BAD;
-	@PlugKey("linkresource.details.status.unknown")
-	private static Label STATUS_UNKNOWN;
+  @PlugKey("linkresource.details.type")
+  private static Label TYPE;
 
-	private final URLCheckerService urlCheckerService;
+  @PlugKey("linkresource.details.mimetype")
+  private static Label MIMETYPE;
 
-	public DetailUrlResource(ViewableResource resource, String url, String description,
-		URLCheckerService urlCheckerService)
-	{
-		super(resource, url, description, urlCheckerService.isUrlDisabled(url));
-		this.urlCheckerService = urlCheckerService;
-	}
+  @PlugKey("linkresource.details.url")
+  private static Label URL;
 
-	@Override
-	public List<AttachmentDetail> getCommonAttachmentDetails()
-	{
-		List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
+  @PlugKey("linkresource.details.status")
+  private static Label STATUS;
 
-		// Type
-		commonDetails.add(makeDetail(TYPE, MIMETYPE));
+  @PlugKey("linkresource.details.status.bad")
+  private static Label STATUS_BAD;
 
-		// URL
-		String url = getAttachment().getUrl();
-		if( !Check.isEmpty(url))
-		{
-			HtmlLinkState link = new HtmlLinkState(new SimpleBookmark(url));
-			link.setLabel(new WrappedLabel(new TextLabel(url), -1, true, false));
-			link.setDisabled(isDisabled());
-			commonDetails.add(makeDetail(URL, new LinkRenderer(link)));
+  @PlugKey("linkresource.details.status.unknown")
+  private static Label STATUS_UNKNOWN;
 
-			// Bad Status
-			ReferencedURL urlStatus = urlCheckerService.getUrlStatus(url, URLCheckMode.RECORDS_FIRST);
-			if( !urlStatus.isSuccess() )
-			{
-				commonDetails.add(makeDetail(STATUS, urlStatus.getTries() == 0 ? STATUS_UNKNOWN : STATUS_BAD));
-			}
-		}
+  private final URLCheckerService urlCheckerService;
 
-		return commonDetails;
-	}
+  public DetailUrlResource(
+      ViewableResource resource,
+      String url,
+      String description,
+      URLCheckerService urlCheckerService) {
+    super(resource, url, description, urlCheckerService.isUrlDisabled(url));
+    this.urlCheckerService = urlCheckerService;
+  }
+
+  @Override
+  public List<AttachmentDetail> getCommonAttachmentDetails() {
+    List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
+
+    // Type
+    commonDetails.add(makeDetail(TYPE, MIMETYPE));
+
+    // URL
+    String url = getAttachment().getUrl();
+    if (!Check.isEmpty(url)) {
+      HtmlLinkState link = new HtmlLinkState(new SimpleBookmark(url));
+      link.setLabel(new WrappedLabel(new TextLabel(url), -1, true, false));
+      link.setDisabled(isDisabled());
+      commonDetails.add(makeDetail(URL, new LinkRenderer(link)));
+
+      // Bad Status
+      ReferencedURL urlStatus = urlCheckerService.getUrlStatus(url, URLCheckMode.RECORDS_FIRST);
+      if (!urlStatus.isSuccess()) {
+        commonDetails.add(
+            makeDetail(STATUS, urlStatus.getTries() == 0 ? STATUS_UNKNOWN : STATUS_BAD));
+      }
+    }
+
+    return commonDetails;
+  }
 }

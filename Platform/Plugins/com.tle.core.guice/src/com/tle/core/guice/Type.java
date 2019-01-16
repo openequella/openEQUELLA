@@ -23,9 +23,8 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Type
-{
-	Class<?> value();
+public @interface Type {
+  Class<?> value();
 
-	boolean unknown() default false;
+  boolean unknown() default false;
 }

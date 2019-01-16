@@ -37,67 +37,53 @@ import com.tle.core.services.user.UserSessionService;
 
 @Bind
 @Singleton
-public class UserSessionDestructionListener implements HttpSessionListener
-{
-	private static final Logger LOGGER = Logger.getLogger(UserSessionDestructionListener.class);
+public class UserSessionDestructionListener implements HttpSessionListener {
+  private static final Logger LOGGER = Logger.getLogger(UserSessionDestructionListener.class);
 
-	@Inject
-	private UserSessionService sessionService;
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private EventService eventService;
-	@Inject
-	private RunAsInstitution runAs;
+  @Inject private UserSessionService sessionService;
+  @Inject private InstitutionService institutionService;
+  @Inject private EventService eventService;
+  @Inject private RunAsInstitution runAs;
 
-	@Override
-	public void sessionCreated(HttpSessionEvent event)
-	{
-		// We don't care about these
-		if( LOGGER.isDebugEnabled() )
-		{
-			final String sessionId = event.getSession().getId();
-			LOGGER.debug(sessionId + " session created");
-		}
-	}
+  @Override
+  public void sessionCreated(HttpSessionEvent event) {
+    // We don't care about these
+    if (LOGGER.isDebugEnabled()) {
+      final String sessionId = event.getSession().getId();
+      LOGGER.debug(sessionId + " session created");
+    }
+  }
 
-	@Override
-	public void sessionDestroyed(HttpSessionEvent event)
-	{
-		final HttpSession session = event.getSession();
-		final String sessionId = session.getId();
-		if( LOGGER.isDebugEnabled() )
-		{
-			LOGGER.debug(sessionId + " session destroyed");
-		}
+  @Override
+  public void sessionDestroyed(HttpSessionEvent event) {
+    final HttpSession session = event.getSession();
+    final String sessionId = session.getId();
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug(sessionId + " session destroyed");
+    }
 
-		try
-		{
-			for( final Institution institution : institutionService.getAvailableMap().values() )
-			{
-				runAs.executeAsSystem(institution, new Runnable()
-				{
+    try {
+      for (final Institution institution : institutionService.getAvailableMap().values()) {
+        runAs.executeAsSystem(
+            institution,
+            new Runnable() {
 
-					@Override
-					public void run()
-					{
-						UserState userState = sessionService.getAttributeFromSession(session, institution,
-							WebConstants.KEY_USERSTATE);
-						if( userState != null )
-						{
-							if( LOGGER.isDebugEnabled() )
-							{
-								LOGGER.debug(sessionId + " firing logout event");
-							}
-							eventService.publishApplicationEvent(new UserSessionLogoutEvent(userState, true));
-						}
-					}
-				});
-			}
-		}
-		finally
-		{
-			CurrentInstitution.remove();
-		}
-	}
+              @Override
+              public void run() {
+                UserState userState =
+                    sessionService.getAttributeFromSession(
+                        session, institution, WebConstants.KEY_USERSTATE);
+                if (userState != null) {
+                  if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug(sessionId + " firing logout event");
+                  }
+                  eventService.publishApplicationEvent(new UserSessionLogoutEvent(userState, true));
+                }
+              }
+            });
+      }
+    } finally {
+      CurrentInstitution.remove();
+    }
+  }
 }

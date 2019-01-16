@@ -47,81 +47,71 @@ import com.tle.web.sections.render.SectionRenderable;
 
 @SuppressWarnings("nls")
 @Bind
-public class CloudShareSearchQuerySection extends AbstractShareSearchQuerySection implements HtmlRenderer
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+public class CloudShareSearchQuerySection extends AbstractShareSearchQuerySection
+    implements HtmlRenderer {
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Inject
-	private CloudService cloudService;
-	@Inject
-	private CloudViewItemLinkFactory cloudLinkFactory;
-	@PlugKey("cloud.share.search.email.")
-	private static String PREFIX;
+  @Inject private CloudService cloudService;
+  @Inject private CloudViewItemLinkFactory cloudLinkFactory;
 
-	@Override
-	public SectionRenderable renderHtml(RenderEventContext context)
-	{
-		getModel(context).setShowEmail(emailService.hasMailSettings());
-		InfoBookmark bookmark = rootSearch.getPermanentUrl(context);
-		setupUrl(bookmark, context);
-		return viewFactory.createResult("actions/dialog/sharecloudsearchquery.ftl", this);
-	}
+  @PlugKey("cloud.share.search.email.")
+  private static String PREFIX;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.setLayout(id, SearchResultsActionsSection.AREA_SHARE);
-	}
+  @Override
+  public SectionRenderable renderHtml(RenderEventContext context) {
+    getModel(context).setShowEmail(emailService.hasMailSettings());
+    InfoBookmark bookmark = rootSearch.getPermanentUrl(context);
+    setupUrl(bookmark, context);
+    return viewFactory.createResult("actions/dialog/sharecloudsearchquery.ftl", this);
+  }
 
-	@Override
-	public String createEmail(SectionInfo info)
-	{
-		CloudSearchEvent event = (CloudSearchEvent) getSearchResultsSection().createSearchEvent(info);
-		info.processEvent(event);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.setLayout(id, SearchResultsActionsSection.AREA_SHARE);
+  }
 
-		return buildEmail(event);
-	}
+  @Override
+  public String createEmail(SectionInfo info) {
+    CloudSearchEvent event = (CloudSearchEvent) getSearchResultsSection().createSearchEvent(info);
+    info.processEvent(event);
 
-	private String buildEmail(CloudSearchEvent event)
-	{
-		StringBuilder email = new StringBuilder();
+    return buildEmail(event);
+  }
 
-		email.append(s("intro", getUser(CurrentUser.getDetails())));
-		email.append(s("query", Strings.nullToEmpty(event.getCloudSearch().getQuery())));
-		for( Map<String, String> result : getResults(event) )
-		{
-			email.append(result.get("name"));
-			email.append(result.get("link"));
-			email.append(result.get("version"));
-			email.append("\n");
-		}
-		email.append(s("outro"));
+  private String buildEmail(CloudSearchEvent event) {
+    StringBuilder email = new StringBuilder();
 
-		return email.toString();
-	}
+    email.append(s("intro", getUser(CurrentUser.getDetails())));
+    email.append(s("query", Strings.nullToEmpty(event.getCloudSearch().getQuery())));
+    for (Map<String, String> result : getResults(event)) {
+      email.append(result.get("name"));
+      email.append(result.get("link"));
+      email.append(result.get("version"));
+      email.append("\n");
+    }
+    email.append(s("outro"));
 
-	private List<Map<String, String>> getResults(CloudSearchEvent event)
-	{
-		final CloudSearchResults results = cloudService.search(event.getCloudSearch(), 0, RESULTS_CAP);
-		final List<Map<String, String>> shareResults = Lists.newArrayList();
-		for( CloudItem cloudItem : results.getResults() )
-		{
-			final Map<String, String> res = Maps.newHashMap();
-			res.put("name", s("item.name", CurrentLocale.get(cloudItem.getName(), cloudItem.getUuid())));
-			final ItemId itemId = cloudItem.getItemId();
-			final String href = cloudLinkFactory.createCloudViewLink(itemId).getHref();
-			res.put("link", s("item.link", href));
-			res.put("version", s("item.version", Integer.toString(itemId.getVersion())));
-			shareResults.add(res);
-		}
-		return shareResults;
-	}
+    return email.toString();
+  }
 
-	@Override
-	protected String getKeyPrefix()
-	{
-		return PREFIX;
-	}
+  private List<Map<String, String>> getResults(CloudSearchEvent event) {
+    final CloudSearchResults results = cloudService.search(event.getCloudSearch(), 0, RESULTS_CAP);
+    final List<Map<String, String>> shareResults = Lists.newArrayList();
+    for (CloudItem cloudItem : results.getResults()) {
+      final Map<String, String> res = Maps.newHashMap();
+      res.put("name", s("item.name", CurrentLocale.get(cloudItem.getName(), cloudItem.getUuid())));
+      final ItemId itemId = cloudItem.getItemId();
+      final String href = cloudLinkFactory.createCloudViewLink(itemId).getHref();
+      res.put("link", s("item.link", href));
+      res.put("version", s("item.version", Integer.toString(itemId.getVersion())));
+      shareResults.add(res);
+    }
+    return shareResults;
+  }
+
+  @Override
+  protected String getKeyPrefix() {
+    return PREFIX;
+  }
 }

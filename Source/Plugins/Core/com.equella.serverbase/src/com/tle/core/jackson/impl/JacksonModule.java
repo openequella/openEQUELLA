@@ -20,17 +20,14 @@ import com.tle.core.guice.PluginTrackerModule;
 import com.tle.core.jackson.MapperExtension;
 
 @SuppressWarnings("nls")
-public class JacksonModule extends PluginTrackerModule
-{
-	@Override
-	protected String getPluginId()
-	{
-		return "com.tle.core.jackson";
-	}
+public class JacksonModule extends PluginTrackerModule {
+  @Override
+  protected String getPluginId() {
+    return "com.tle.core.jackson";
+  }
 
-	@Override
-	protected void configure()
-	{
-		bindTracker(MapperExtension.class, "mapperExtension", "bean");
-	}
+  @Override
+  protected void configure() {
+    bindTracker(MapperExtension.class, "mapperExtension", "bean");
+  }
 }

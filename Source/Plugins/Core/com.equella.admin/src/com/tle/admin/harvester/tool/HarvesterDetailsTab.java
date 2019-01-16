@@ -54,262 +54,229 @@ import com.tle.i18n.BundleCache;
 
 @SuppressWarnings("nls")
 public class HarvesterDetailsTab extends BaseEntityTab<HarvesterProfile>
-	implements
-		AbstractDetailsTab<HarvesterProfile>
-{
-	private String k(String key)
-	{
-		return getKey("harvestdetails."+key);
-	}
+    implements AbstractDetailsTab<HarvesterProfile> {
+  private String k(String key) {
+    return getKey("harvestdetails." + key);
+  }
 
-	private String getLocaleString(String key)
-	{
-		return getString("harvestdetails."+key);
-	}
+  private String getLocaleString(String key) {
+    return getString("harvestdetails." + key);
+  }
 
-	private HarvesterPlugin<?> plugin;
-	protected JNameValuePanel namePanel;
+  private HarvesterPlugin<?> plugin;
+  protected JNameValuePanel namePanel;
 
-	protected I18nTextField nameField;
-	private final JCheckBox enabled;
-	protected JSeparator separate1;
-	protected JSeparator separate2;
-	protected JComboBox<NameValue> collections;
-	protected JComboBox<String> transforms;
-	protected JRadioButton newVersionRadio;
-	protected JRadioButton updateVersionRadio;
+  protected I18nTextField nameField;
+  private final JCheckBox enabled;
+  protected JSeparator separate1;
+  protected JSeparator separate2;
+  protected JComboBox<NameValue> collections;
+  protected JComboBox<String> transforms;
+  protected JRadioButton newVersionRadio;
+  protected JRadioButton updateVersionRadio;
 
-	public HarvesterDetailsTab()
-	{
-		nameField = new I18nTextField(BundleCache.getLanguages());
-		enabled = new JCheckBox();
-		separate1 = new JSeparator();
-		separate2 = new JSeparator();
+  public HarvesterDetailsTab() {
+    nameField = new I18nTextField(BundleCache.getLanguages());
+    enabled = new JCheckBox();
+    separate1 = new JSeparator();
+    separate2 = new JSeparator();
 
-		namePanel = new JNameValuePanel();
-		collections = new JComboBox<>();
-		transforms = new JComboBox<>();
+    namePanel = new JNameValuePanel();
+    collections = new JComboBox<>();
+    transforms = new JComboBox<>();
 
-		ButtonGroup radioGroup = new ButtonGroup();
-		newVersionRadio = new JRadioButton(getLocaleString("createnew"));
-		updateVersionRadio = new JRadioButton(getLocaleString("updatecurrent"));
+    ButtonGroup radioGroup = new ButtonGroup();
+    newVersionRadio = new JRadioButton(getLocaleString("createnew"));
+    updateVersionRadio = new JRadioButton(getLocaleString("updatecurrent"));
 
-		radioGroup.add(newVersionRadio);
-		radioGroup.add(updateVersionRadio);
+    radioGroup.add(newVersionRadio);
+    radioGroup.add(updateVersionRadio);
 
-		namePanel.addTextAndComponent(k("namefield"),
-			nameField);
-		namePanel.addTextAndComponent(k("enabled"), enabled);
-		namePanel.addTextAndComponent(k("collections"),
-			collections);
-		namePanel.addTextAndComponent(k("import"), transforms);
+    namePanel.addTextAndComponent(k("namefield"), nameField);
+    namePanel.addTextAndComponent(k("enabled"), enabled);
+    namePanel.addTextAndComponent(k("collections"), collections);
+    namePanel.addTextAndComponent(k("import"), transforms);
 
-		namePanel.addComponent(separate1);
+    namePanel.addComponent(separate1);
 
-		namePanel.addComponent(new JLabel(getLocaleString("updates")));
-		namePanel.addTextAndComponent(k("emptyfiller"), new JLabel(getLocaleString("versioningdescriptor")));
+    namePanel.addComponent(new JLabel(getLocaleString("updates")));
+    namePanel.addTextAndComponent(
+        k("emptyfiller"), new JLabel(getLocaleString("versioningdescriptor")));
 
-		namePanel.addTextAndComponent(k("emptyfiller"), newVersionRadio);
-		namePanel.addTextAndComponent(k("emptyfiller"), updateVersionRadio);
+    namePanel.addTextAndComponent(k("emptyfiller"), newVersionRadio);
+    namePanel.addTextAndComponent(k("emptyfiller"), updateVersionRadio);
 
-		namePanel.addComponent(separate2);
+    namePanel.addComponent(separate2);
+  }
 
-	}
+  @Override
+  public void setDriver(Driver driver) {
+    super.setDriver(driver);
+    plugin.setDriver(driver);
+  }
 
-	@Override
-	public void setDriver(Driver driver)
-	{
-		super.setDriver(driver);
-		plugin.setDriver(driver);
-	}
+  @Override
+  public final void init(Component parent) {
+    TableLayout layout =
+        new TableLayout(
+            new int[] {TableLayout.FILL}, new int[] {TableLayout.DOUBLE_FILL, TableLayout.FILL});
+    layout.setColumnSize(1, 0);
+    setLayout(layout);
+    add(namePanel.getComponent(), new Rectangle(0, 0, 1, 1));
+  }
 
-	@Override
-	public final void init(Component parent)
-	{
-		TableLayout layout = new TableLayout(new int[]{TableLayout.FILL}, new int[]{TableLayout.DOUBLE_FILL,
-				TableLayout.FILL});
-		layout.setColumnSize(1, 0);
-		setLayout(layout);
-		add(namePanel.getComponent(), new Rectangle(0, 0, 1, 1));
-	}
+  @Override
+  public void addNameListener(KeyListener listener) {
+    nameField.addKeyListener(listener);
+  }
 
-	@Override
-	public void addNameListener(KeyListener listener)
-	{
-		nameField.addKeyListener(listener);
-	}
+  @Override
+  public void load() {
+    final HarvesterProfile havProfile = state.getEntity();
 
-	@Override
-	public void load()
-	{
-		final HarvesterProfile havProfile = state.getEntity();
+    final HarvesterProfileSettings settings = plugin.newInstance();
+    settings.load(havProfile);
 
-		final HarvesterProfileSettings settings = plugin.newInstance();
-		settings.load(havProfile);
+    nameField.load(havProfile.getName());
 
-		nameField.load(havProfile.getName());
+    Boolean enabled2 = havProfile.getEnabled();
+    if (enabled2 != null) {
+      enabled.setSelected(enabled2);
+    } else {
+      enabled.setSelected(true);
+    }
 
-		Boolean enabled2 = havProfile.getEnabled();
-		if( enabled2 != null )
-		{
-			enabled.setSelected(enabled2);
-		}
-		else
-		{
-			enabled.setSelected(true);
-		}
+    // NewVersionOnHarvest flag is true by default
+    Boolean newVersionOnHarvest = havProfile.getNewVersionOnHarvest();
+    if (newVersionOnHarvest != null) {
+      newVersionRadio.setSelected(newVersionOnHarvest);
+      updateVersionRadio.setSelected(!newVersionOnHarvest);
+    } else {
+      newVersionRadio.setSelected(true);
+      updateVersionRadio.setSelected(false);
+    }
 
-		// NewVersionOnHarvest flag is true by default
-		Boolean newVersionOnHarvest = havProfile.getNewVersionOnHarvest();
-		if( newVersionOnHarvest != null )
-		{
-			newVersionRadio.setSelected(newVersionOnHarvest);
-			updateVersionRadio.setSelected(!newVersionOnHarvest);
-		}
-		else
-		{
-			newVersionRadio.setSelected(true);
-			updateVersionRadio.setSelected(false);
-		}
+    GlassSwingWorker<?> worker =
+        new GlassSwingWorker<List<NameValue>>() {
+          @Override
+          public List<NameValue> construct() throws Exception {
+            List<BaseEntityLabel> cols =
+                clientService.getService(RemoteItemDefinitionService.class).listAll();
 
-		GlassSwingWorker<?> worker = new GlassSwingWorker<List<NameValue>>()
-		{
-			@Override
-			public List<NameValue> construct() throws Exception
-			{
-				List<BaseEntityLabel> cols = clientService.getService(RemoteItemDefinitionService.class).listAll();
+            List<NameValue> nvs = BundleCache.getNameUuidValues(cols);
+            Collections.sort(nvs, Format.NAME_VALUE_COMPARATOR);
+            return nvs;
+          }
 
-				List<NameValue> nvs = BundleCache.getNameUuidValues(cols);
-				Collections.sort(nvs, Format.NAME_VALUE_COMPARATOR);
-				return nvs;
-			}
+          @Override
+          public void finished() {
+            AppletGuiUtils.addItemsToJCombo(collections, get());
 
-			@Override
-			public void finished()
-			{
-				AppletGuiUtils.addItemsToJCombo(collections, get());
+            String collection = havProfile.getAttribute("itemDef");
+            if (!Check.isEmpty(collection)) {
+              AppletGuiUtils.selectInJCombo(collections, new NameValue(null, collection), 0);
+              namePanel.clearChanges();
+            }
+            updateTransforms(havProfile, true);
+            collections.addItemListener(
+                new ItemListener() {
+                  @Override
+                  public void itemStateChanged(ItemEvent e) {
+                    updateTransforms(havProfile, false);
+                  }
+                });
+          }
+        };
+    worker.setComponent(collections);
+    worker.start();
 
-				String collection = havProfile.getAttribute("itemDef");
-				if( !Check.isEmpty(collection) )
-				{
-					AppletGuiUtils.selectInJCombo(collections, new NameValue(null, collection), 0);
-					namePanel.clearChanges();
-				}
-				updateTransforms(havProfile, true);
-				collections.addItemListener(new ItemListener()
-				{
-					@Override
-					public void itemStateChanged(ItemEvent e)
-					{
-						updateTransforms(havProfile, false);
-					}
-				});
-			}
-		};
-		worker.setComponent(collections);
-		worker.start();
+    plugin.loadSettings(state.getEntityPack(), settings);
+  }
 
-		plugin.loadSettings(state.getEntityPack(), settings);
-	}
+  private void updateTransforms(final HarvesterProfile havProfile, final boolean clearChanges) {
+    Object selectedItem = collections.getSelectedItem();
+    final String uuid;
+    if (selectedItem instanceof NameValue) {
+      uuid = ((NameValue) selectedItem).getValue();
+    } else {
+      uuid = (String) selectedItem;
+    }
 
-	private void updateTransforms(final HarvesterProfile havProfile, final boolean clearChanges)
-	{
-		Object selectedItem = collections.getSelectedItem();
-		final String uuid;
-		if( selectedItem instanceof NameValue )
-		{
-			uuid = ((NameValue) selectedItem).getValue();
-		}
-		else
-		{
-			uuid = (String) selectedItem;
-		}
+    GlassSwingWorker<?> worker =
+        new GlassSwingWorker<List<String>>() {
+          @Override
+          public List<String> construct() throws Exception {
+            long schemaId =
+                clientService
+                    .getService(RemoteItemDefinitionService.class)
+                    .getSchemaIdForCollectionUuid(uuid);
+            List<String> importSchemaTypes =
+                clientService.getService(RemoteSchemaService.class).getImportSchemaTypes(schemaId);
 
-		GlassSwingWorker<?> worker = new GlassSwingWorker<List<String>>()
-		{
-			@Override
-			public List<String> construct() throws Exception
-			{
-				long schemaId = clientService.getService(RemoteItemDefinitionService.class)
-					.getSchemaIdForCollectionUuid(uuid);
-				List<String> importSchemaTypes = clientService.getService(RemoteSchemaService.class)
-					.getImportSchemaTypes(schemaId);
+            return importSchemaTypes;
+          }
 
-				return importSchemaTypes;
-			}
+          @Override
+          public void finished() {
+            String selectedTransform = (String) transforms.getSelectedItem();
+            transforms.removeAllItems();
+            if (selectedTransform == null) {
+              selectedTransform = havProfile.getAttribute("schemaInputTransform");
+            }
+            List<String> items = get();
+            items.add(0, null);
+            AppletGuiUtils.addItemsToJCombo(transforms, items);
+            AppletGuiUtils.selectInJCombo(transforms, selectedTransform, 0);
+            if (clearChanges) {
+              namePanel.clearChanges();
+            }
+          }
+        };
 
-			@Override
-			public void finished()
-			{
-				String selectedTransform = (String) transforms.getSelectedItem();
-				transforms.removeAllItems();
-				if( selectedTransform == null )
-				{
-					selectedTransform = havProfile.getAttribute("schemaInputTransform");
-				}
-				List<String> items = get();
-				items.add(0, null);
-				AppletGuiUtils.addItemsToJCombo(transforms, items);
-				AppletGuiUtils.selectInJCombo(transforms, selectedTransform, 0);
-				if( clearChanges )
-				{
-					namePanel.clearChanges();
-				}
+    worker.setComponent(transforms);
+    worker.start();
+  }
 
-			}
-		};
+  @Override
+  public void save() {
+    final HarvesterProfile havProfile = state.getEntity();
 
-		worker.setComponent(transforms);
-		worker.start();
+    final HarvesterProfileSettings settings = plugin.newInstance();
+    settings.setName(nameField.save());
+    havProfile.setEnabled(enabled.isSelected());
+    // At this stage, we're dealing with a either/or on the version on
+    // harvest flag/button,
+    // and hence RadioGroup semantics to guarantee mutual exclUsivity of
+    // newVersion/updateVersion
+    havProfile.setNewVersionOnHarvest(newVersionRadio.isSelected());
+    havProfile.setAttribute("itemDef", ((NameValue) collections.getSelectedItem()).getValue());
+    havProfile.setAttribute("schemaInputTransform", ((String) transforms.getSelectedItem()));
+    plugin.saveSettings(settings);
+    settings.save(havProfile);
+  }
 
-	}
+  @Override
+  public String getTitle() {
+    return getLocaleString("name");
+  }
 
-	@Override
-	public void save()
-	{
-		final HarvesterProfile havProfile = state.getEntity();
+  @Override
+  public void validation() throws EditorException {
+    if (nameField.isCompletelyEmpty()) {
+      throw new EditorException(getLocaleString("entername"));
+    }
+    if (collections.getSelectedItem() == null
+        || collections.getSelectedItem().toString().isEmpty()) {
+      throw new EditorException(getLocaleString("collection"));
+    }
 
-		final HarvesterProfileSettings settings = plugin.newInstance();
-		settings.setName(nameField.save());
-		havProfile.setEnabled(enabled.isSelected());
-		// At this stage, we're dealing with a either/or on the version on
-		// harvest flag/button,
-		// and hence RadioGroup semantics to guarantee mutual exclUsivity of
-		// newVersion/updateVersion
-		havProfile.setNewVersionOnHarvest(newVersionRadio.isSelected());
-		havProfile.setAttribute("itemDef", ((NameValue) collections.getSelectedItem()).getValue());
-		havProfile.setAttribute("schemaInputTransform", ((String) transforms.getSelectedItem()));
-		plugin.saveSettings(settings);
-		settings.save(havProfile);
-	}
+    plugin.validation();
+    plugin.validateSchema(collections);
+  }
 
-	@Override
-	public String getTitle()
-	{
-		return getLocaleString("name");
-	}
-
-	@Override
-	public void validation() throws EditorException
-	{
-		if( nameField.isCompletelyEmpty() )
-		{
-			throw new EditorException(getLocaleString("entername"));
-		}
-		if( collections.getSelectedItem() == null || collections.getSelectedItem().toString().isEmpty() )
-		{
-			throw new EditorException(getLocaleString("collection"));
-		}
-
-		plugin.validation();
-		plugin.validateSchema(collections);
-	}
-
-	public void setPlugin(HarvesterPlugin<?> plugin)
-	{
-		this.plugin = plugin;
-		plugin.setPanel(namePanel);
-		plugin.initGUI();
-	}
-
+  public void setPlugin(HarvesterPlugin<?> plugin) {
+    this.plugin = plugin;
+    plugin.setPanel(namePanel);
+    plugin.initGUI();
+  }
 }

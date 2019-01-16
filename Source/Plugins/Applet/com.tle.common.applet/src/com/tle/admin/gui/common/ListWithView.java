@@ -46,253 +46,227 @@ import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.gui.models.GenericListModel;
 import com.tle.common.i18n.CurrentLocale;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public abstract class ListWithView<LIST_TYPE, VIEW_TYPE extends ListWithViewInterface<LIST_TYPE>>
-	extends
-		AbstractListWithView<LIST_TYPE, ListWithViewInterface<LIST_TYPE>, GenericListModel<LIST_TYPE>>
-{
-	private final List<TLEAction> actions;
-	private final boolean enableAddRemove;
+    extends AbstractListWithView<
+        LIST_TYPE, ListWithViewInterface<LIST_TYPE>, GenericListModel<LIST_TYPE>> {
+  private final List<TLEAction> actions;
+  private final boolean enableAddRemove;
 
-	protected final JList<LIST_TYPE> list;
+  protected final JList<LIST_TYPE> list;
 
-	private ListPopupListener listPopupListener;
+  private ListPopupListener listPopupListener;
 
-	public ListWithView()
-	{
-		this(false);
-	}
+  public ListWithView() {
+    this(false);
+  }
 
-	public ListWithView(boolean enableUpDown)
-	{
-		this(enableUpDown, true);
-	}
+  public ListWithView(boolean enableUpDown) {
+    this(enableUpDown, true);
+  }
 
-	public ListWithView(boolean enableUpDown, boolean enableAddRemove, TLEAction... additionalActions)
-	{
-		this.enableAddRemove = enableAddRemove;
+  public ListWithView(
+      boolean enableUpDown, boolean enableAddRemove, TLEAction... additionalActions) {
+    this.enableAddRemove = enableAddRemove;
 
-		actions = new ArrayList<TLEAction>();
-		for( TLEAction additionalAction : additionalActions )
-		{
-			actions.add(additionalAction);
-		}
-		actions.add(upAction);
-		actions.add(downAction);
-		actions.add(addAction);
-		actions.add(removeAction);
+    actions = new ArrayList<TLEAction>();
+    for (TLEAction additionalAction : additionalActions) {
+      actions.add(additionalAction);
+    }
+    actions.add(upAction);
+    actions.add(downAction);
+    actions.add(addAction);
+    actions.add(removeAction);
 
-		final JTextlessButton upButton = new JTextlessButton(upAction);
-		final JTextlessButton downButton = new JTextlessButton(downAction);
-		final JButton addButton = new JButton(addAction);
-		final JButton removeButton = new JButton(removeAction);
+    final JTextlessButton upButton = new JTextlessButton(upAction);
+    final JTextlessButton downButton = new JTextlessButton(downAction);
+    final JButton addButton = new JButton(addAction);
+    final JButton removeButton = new JButton(removeAction);
 
-		list = new JList<>(model);
-		list.addMouseListener(new ListPopupListener(list, actions));
-		list.addListSelectionListener(new ListSelectionListener()
-		{
-			@Override
-			public void valueChanged(ListSelectionEvent e)
-			{
-				onListSelectionChange();
-				update();
-			}
-		});
+    list = new JList<>(model);
+    list.addMouseListener(new ListPopupListener(list, actions));
+    list.addListSelectionListener(
+        new ListSelectionListener() {
+          @Override
+          public void valueChanged(ListSelectionEvent e) {
+            onListSelectionChange();
+            update();
+          }
+        });
 
-		final JPanel left = new JPanel(new MigLayout("insets 0, fill, wrap 5, hidemode 2", "[][grow][][][grow]",
-			"[grow][][][grow][]"));
-		left.add(new JScrollPane(list), "skip, grow, span 4 4");
-		left.add(upButton);
-		left.add(downButton);
-		left.add(addButton, "skip 3, align right");
-		left.add(removeButton);
+    final JPanel left =
+        new JPanel(
+            new MigLayout(
+                "insets 0, fill, wrap 5, hidemode 2", "[][grow][][][grow]", "[grow][][][grow][]"));
+    left.add(new JScrollPane(list), "skip, grow, span 4 4");
+    left.add(upButton);
+    left.add(downButton);
+    left.add(addButton, "skip 3, align right");
+    left.add(removeButton);
 
-		if( !enableUpDown )
-		{
-			upButton.setVisible(false);
-			downButton.setVisible(false);
-		}
+    if (!enableUpDown) {
+      upButton.setVisible(false);
+      downButton.setVisible(false);
+    }
 
-		if( !enableAddRemove )
-		{
-			addButton.setVisible(false);
-			removeButton.setVisible(false);
-		}
+    if (!enableAddRemove) {
+      addButton.setVisible(false);
+      removeButton.setVisible(false);
+    }
 
-		// This makes the left-panel more "stable" and reliable in the splitter.
-		left.setMinimumSize(new Dimension(200, 0));
-		left.setPreferredSize(left.getMaximumSize());
+    // This makes the left-panel more "stable" and reliable in the splitter.
+    left.setMinimumSize(new Dimension(200, 0));
+    left.setPreferredSize(left.getMaximumSize());
 
-		JSplitPane split = AppletGuiUtils.createSplitPane();
-		split.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-		split.setContinuousLayout(true);
-		split.setResizeWeight(0.1);
+    JSplitPane split = AppletGuiUtils.createSplitPane();
+    split.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+    split.setContinuousLayout(true);
+    split.setResizeWeight(0.1);
 
-		split.add(left, JSplitPane.LEFT);
-		split.add(editorContainer, JSplitPane.RIGHT);
+    split.add(left, JSplitPane.LEFT);
+    split.add(editorContainer, JSplitPane.RIGHT);
 
-		setLayout(new GridLayout(1, 1));
-		add(split);
+    setLayout(new GridLayout(1, 1));
+    add(split);
 
-		update();
-	}
+    update();
+  }
 
-	protected void addAction(TLEAction action)
-	{
-		actions.add(action);
-		list.removeMouseListener(listPopupListener);
-		listPopupListener = new ListPopupListener(list, actions);
-		list.addMouseListener(listPopupListener);
-	}
+  protected void addAction(TLEAction action) {
+    actions.add(action);
+    list.removeMouseListener(listPopupListener);
+    listPopupListener = new ListPopupListener(list, actions);
+    list.addMouseListener(listPopupListener);
+  }
 
-	@Override
-	protected GenericListModel<LIST_TYPE> createModel()
-	{
-		return new GenericListModel<>();
-	}
+  @Override
+  protected GenericListModel<LIST_TYPE> createModel() {
+    return new GenericListModel<>();
+  }
 
-	@SuppressWarnings("unchecked")
-	public void setListCellRenderer(ListCellRenderer<?> renderer)
-	{
-		list.setCellRenderer((ListCellRenderer<? super LIST_TYPE>) renderer);
-	}
+  @SuppressWarnings("unchecked")
+  public void setListCellRenderer(ListCellRenderer<?> renderer) {
+    list.setCellRenderer((ListCellRenderer<? super LIST_TYPE>) renderer);
+  }
 
-	@Override
-	protected int getSelectedIndex()
-	{
-		return list.getSelectedIndex();
-	}
+  @Override
+  protected int getSelectedIndex() {
+    return list.getSelectedIndex();
+  }
 
-	@Override
-	protected String getNoSelectionText()
-	{
-		return CurrentLocale.get("com.tle.admin.gui.common.listwithview.choose"
-			+ (enableAddRemove ? Constants.BLANK : "NoAddRemove"));
-	}
+  @Override
+  protected String getNoSelectionText() {
+    return CurrentLocale.get(
+        "com.tle.admin.gui.common.listwithview.choose"
+            + (enableAddRemove ? Constants.BLANK : "NoAddRemove"));
+  }
 
-	@Override
-	public void setEnabled(boolean enabled)
-	{
-		super.setEnabled(enabled);
+  @Override
+  public void setEnabled(boolean enabled) {
+    super.setEnabled(enabled);
 
-		if( !enabled )
-		{
-			list.clearSelection();
-		}
+    if (!enabled) {
+      list.clearSelection();
+    }
 
-		list.setEnabled(enabled);
-		update();
-	}
+    list.setEnabled(enabled);
+    update();
+  }
 
-	private void update()
-	{
-		for( TLEAction action : actions )
-		{
-			action.update();
-		}
-	}
+  private void update() {
+    for (TLEAction action : actions) {
+      action.update();
+    }
+  }
 
-	protected void addEntry(LIST_TYPE entry)
-	{
-		model.add(entry);
-		list.setSelectedIndex(model.getSize() - 1);
-	}
+  protected void addEntry(LIST_TYPE entry) {
+    model.add(entry);
+    list.setSelectedIndex(model.getSize() - 1);
+  }
 
-	private final TLEAction addAction = new AddAction()
-	{
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			LIST_TYPE entry = createElement();
-			if( entry != null )
-			{
-				addEntry(entry);
-			}
-		}
+  private final TLEAction addAction =
+      new AddAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          LIST_TYPE entry = createElement();
+          if (entry != null) {
+            addEntry(entry);
+          }
+        }
 
-		@Override
-		public void update()
-		{
-			setEnabled(ListWithView.this.isEnabled());
-		}
-	};
+        @Override
+        public void update() {
+          setEnabled(ListWithView.this.isEnabled());
+        }
+      };
 
-	private final TLEAction removeAction = new RemoveAction()
-	{
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			int result = JOptionPane.showConfirmDialog(ListWithView.this,
-				CurrentLocale.get("com.tle.admin.gui.common.abstractlistwithview.confirm"),
-				CurrentLocale.get("com.tle.admin.gui.common.abstractlistwithview.delete"), JOptionPane.YES_NO_OPTION);
+  private final TLEAction removeAction =
+      new RemoveAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          int result =
+              JOptionPane.showConfirmDialog(
+                  ListWithView.this,
+                  CurrentLocale.get("com.tle.admin.gui.common.abstractlistwithview.confirm"),
+                  CurrentLocale.get("com.tle.admin.gui.common.abstractlistwithview.delete"),
+                  JOptionPane.YES_NO_OPTION);
 
-			if( result == JOptionPane.YES_OPTION )
-			{
-				int[] indices = list.getSelectedIndices();
-				for( int i = indices.length - 1; i > -1; i-- )
-				{
-					model.remove(indices[i]);
-				}
-			}
-		}
+          if (result == JOptionPane.YES_OPTION) {
+            int[] indices = list.getSelectedIndices();
+            for (int i = indices.length - 1; i > -1; i--) {
+              model.remove(indices[i]);
+            }
+          }
+        }
 
-		@Override
-		public void update()
-		{
-			setEnabled(!list.isSelectionEmpty());
-		}
-	};
+        @Override
+        public void update() {
+          setEnabled(!list.isSelectionEmpty());
+        }
+      };
 
-	private final TLEAction upAction = new UpAction()
-	{
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			int i = list.getSelectedIndex();
-			model.add(i - 1, model.remove(i));
-			list.setSelectedIndex(i - 1);
-		}
+  private final TLEAction upAction =
+      new UpAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          int i = list.getSelectedIndex();
+          model.add(i - 1, model.remove(i));
+          list.setSelectedIndex(i - 1);
+        }
 
-		@Override
-		public void update()
-		{
-			int[] i = list.getSelectedIndices();
-			setEnabled(i.length == 1 && i[0] >= 1);
-		}
-	};
+        @Override
+        public void update() {
+          int[] i = list.getSelectedIndices();
+          setEnabled(i.length == 1 && i[0] >= 1);
+        }
+      };
 
-	private final TLEAction downAction = new DownAction()
-	{
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			int i = list.getSelectedIndex();
-			model.add(i + 1, model.remove(i));
-			list.setSelectedIndex(i + 1);
-		}
+  private final TLEAction downAction =
+      new DownAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          int i = list.getSelectedIndex();
+          model.add(i + 1, model.remove(i));
+          list.setSelectedIndex(i + 1);
+        }
 
-		@Override
-		public void update()
-		{
-			int[] i = list.getSelectedIndices();
-			setEnabled(i.length == 1 && i[0] < model.size() - 1);
-		}
-	};
+        @Override
+        public void update() {
+          int[] i = list.getSelectedIndices();
+          setEnabled(i.length == 1 && i[0] < model.size() - 1);
+        }
+      };
 
-	public JList<LIST_TYPE> getList()
-	{
-		return list;
-	}
+  public JList<LIST_TYPE> getList() {
+    return list;
+  }
 
-	/**
-	 * This method is invoked from the EDT. For fast operations or modal dialog
-	 * displays, returning a LIST_TYPE object will immediate add it as the last
-	 * entry and select it. If a possibly long-running operation needs to occur
-	 * here, use a GlassSwing worker, invoke <code>addEntry(LIST_TYPE)</code> in
-	 * from <code>finished()</code>, and return null immediately.
-	 */
-	protected abstract LIST_TYPE createElement();
+  /**
+   * This method is invoked from the EDT. For fast operations or modal dialog displays, returning a
+   * LIST_TYPE object will immediate add it as the last entry and select it. If a possibly
+   * long-running operation needs to occur here, use a GlassSwing worker, invoke <code>
+   * addEntry(LIST_TYPE)</code> in from <code>finished()</code>, and return null immediately.
+   */
+  protected abstract LIST_TYPE createElement();
 }

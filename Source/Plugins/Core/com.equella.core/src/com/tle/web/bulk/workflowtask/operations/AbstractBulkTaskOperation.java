@@ -31,42 +31,36 @@ import com.tle.web.bulk.operation.BulkOperationService;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 
-/**
- * @author Aaron
- *
- */
-public abstract class AbstractBulkTaskOperation extends TaskOperation
-{
-	@Inject
-	private TLEAclManager aclService;
-	private static PluginResourceHelper helper = ResourcesService.getResourceHelper(TaskRejectOperation.class);
+/** @author Aaron */
+public abstract class AbstractBulkTaskOperation extends TaskOperation {
+  @Inject private TLEAclManager aclService;
+  private static PluginResourceHelper helper =
+      ResourcesService.getResourceHelper(TaskRejectOperation.class);
 
-	protected ItemTaskId getTaskId()
-	{
-		return new ItemTaskId(getItemKey().toString());
-	}
+  protected ItemTaskId getTaskId() {
+    return new ItemTaskId(getItemKey().toString());
+  }
 
-	protected TaskStatus init(String... privs)
-	{
-		ItemTaskId taskId = getTaskId();
-		Item item = getItem();
+  protected TaskStatus init(String... privs) {
+    ItemTaskId taskId = getTaskId();
+    Item item = getItem();
 
-		WorkflowNode workflowNode = getWorkflow().getAllNodesAsMap().get(taskId.getTaskId());
-		if( aclService.filterNonGrantedPrivileges(workflowNode.getWorkflow(), privs).isEmpty() )
-		{
-			throw new PrivilegeRequiredException(privs);
-		}
+    WorkflowNode workflowNode = getWorkflow().getAllNodesAsMap().get(taskId.getTaskId());
+    if (aclService.filterNonGrantedPrivileges(workflowNode.getWorkflow(), privs).isEmpty()) {
+      throw new PrivilegeRequiredException(privs);
+    }
 
-		//setup the result name for result reporting
-		String stepName = CurrentLocale.get(workflowNode.getName(), workflowNode.getUuid());
-		getItemPack().setAttribute(BulkOperationService.KEY_ITEM_RESULT_TITLE,
-			CurrentLocale.get(item.getName(), item.getUuid()) + " - " + stepName.toString());
+    // setup the result name for result reporting
+    String stepName = CurrentLocale.get(workflowNode.getName(), workflowNode.getUuid());
+    getItemPack()
+        .setAttribute(
+            BulkOperationService.KEY_ITEM_RESULT_TITLE,
+            CurrentLocale.get(item.getName(), item.getUuid()) + " - " + stepName.toString());
 
-		TaskStatus taskStatus = (TaskStatus) getNodeStatus(taskId.getTaskId());
-		if (taskStatus == null)
-		{
-			throw new WorkflowException(CurrentLocale.get(helper.key("bulkop.task.nolonger")));
-		}
-		return taskStatus;
-	}
+    TaskStatus taskStatus = (TaskStatus) getNodeStatus(taskId.getTaskId());
+    if (taskStatus == null) {
+      throw new WorkflowException(CurrentLocale.get(helper.key("bulkop.task.nolonger")));
+    }
+    return taskStatus;
+  }
 }

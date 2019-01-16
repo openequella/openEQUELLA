@@ -21,53 +21,52 @@ import java.util.List;
 import com.tle.beans.ItemDefinitionScript;
 import com.tle.beans.SchemaScript;
 
-public interface SearchSet
-{
-	String getFreetextQuery();
+public interface SearchSet {
+  String getFreetextQuery();
 
-	void setFreetextQuery(String query);
+  void setFreetextQuery(String query);
 
-	List<ItemDefinitionScript> getItemDefs();
+  List<ItemDefinitionScript> getItemDefs();
 
-	void setItemDefs(List<ItemDefinitionScript> itemDefs);
+  void setItemDefs(List<ItemDefinitionScript> itemDefs);
 
-	List<SchemaScript> getSchemas();
+  List<SchemaScript> getSchemas();
 
-	void setSchemas(List<SchemaScript> schemas);
+  void setSchemas(List<SchemaScript> schemas);
 
-	// // The following are for hierarchical SearchSets ///////////////////////
+  // // The following are for hierarchical SearchSets ///////////////////////
 
-	String getId();
+  String getId();
 
-	SearchSet getParent();
+  SearchSet getParent();
 
-	boolean isInheritFreetext();
+  boolean isInheritFreetext();
 
-	void setInheritFreetext(boolean inheritFreetext);
+  void setInheritFreetext(boolean inheritFreetext);
 
-	List<SchemaScript> getInheritedSchemas();
+  List<SchemaScript> getInheritedSchemas();
 
-	void setInheritedSchemas(List<SchemaScript> schemas);
+  void setInheritedSchemas(List<SchemaScript> schemas);
 
-	List<ItemDefinitionScript> getInheritedItemDefs();
+  List<ItemDefinitionScript> getInheritedItemDefs();
 
-	void setInheritedItemDefs(List<ItemDefinitionScript> itemDefs);
+  void setInheritedItemDefs(List<ItemDefinitionScript> itemDefs);
 
-	// // The following are for set virtualisation ////////////////////////////
+  // // The following are for set virtualisation ////////////////////////////
 
-	String getVirtualiserPluginId();
+  String getVirtualiserPluginId();
 
-	void setVirtualiserPluginId(String pluginId);
+  void setVirtualiserPluginId(String pluginId);
 
-	String getVirtualisationPath();
+  String getVirtualisationPath();
 
-	void setVirtualisationPath(String path);
+  void setVirtualisationPath(String path);
 
-	// // Generic config storage //////////////////////////////////////////////
+  // // Generic config storage //////////////////////////////////////////////
 
-	String getAttribute(String key);
+  String getAttribute(String key);
 
-	void setAttribute(String key, String value);
+  void setAttribute(String key, String value);
 
-	void removeAttribute(String key);
+  void removeAttribute(String key);
 }

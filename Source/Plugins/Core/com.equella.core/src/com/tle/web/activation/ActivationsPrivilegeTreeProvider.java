@@ -26,11 +26,12 @@ import com.tle.web.resources.ResourcesService;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class ActivationsPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider
-{
-	public ActivationsPrivilegeTreeProvider()
-	{
-		super(Type.MANAGEMENT_PAGE, ResourcesService.getResourceHelper(ActivationsPrivilegeTreeProvider.class).key(
-			"securitytree.manageactivations"), new SettingsTarget("activations"));
-	}
+public class ActivationsPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider {
+  public ActivationsPrivilegeTreeProvider() {
+    super(
+        Type.MANAGEMENT_PAGE,
+        ResourcesService.getResourceHelper(ActivationsPrivilegeTreeProvider.class)
+            .key("securitytree.manageactivations"),
+        new SettingsTarget("activations"));
+  }
 }

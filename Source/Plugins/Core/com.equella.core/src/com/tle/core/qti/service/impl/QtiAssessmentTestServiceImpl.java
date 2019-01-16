@@ -59,189 +59,161 @@ import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentItem;
 import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
 import uk.ac.ed.ph.jqtiplus.resolution.RootNodeLookup;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind(QtiAssessmentTestService.class)
 @Singleton
-public class QtiAssessmentTestServiceImpl implements QtiAssessmentTestService, ItemDeletedListener
-{
-	private static final String PREFIX = AbstractPluginService.getMyPluginId(OAuthTokenConverter.class)+".";
-	@Inject
-	private QtiAssessmentTestDao qtiTestDao;
-	@Inject
-	private QtiAssessmentItemRefDao qtiItemRefDao;
-	@Inject
-	private QtiAssessmentItemDao qtiItemDao;
-	@Inject
-	private QtiAssessmentResultDao qtiResultDao;
+public class QtiAssessmentTestServiceImpl implements QtiAssessmentTestService, ItemDeletedListener {
+  private static final String PREFIX =
+      AbstractPluginService.getMyPluginId(OAuthTokenConverter.class) + ".";
+  @Inject private QtiAssessmentTestDao qtiTestDao;
+  @Inject private QtiAssessmentItemRefDao qtiItemRefDao;
+  @Inject private QtiAssessmentItemDao qtiItemDao;
+  @Inject private QtiAssessmentResultDao qtiResultDao;
 
-	@Inject
-	private QtiAssessmentItemService questionService;
+  @Inject private QtiAssessmentItemService questionService;
 
-	@Override
-	public QtiAssessmentTest getByUuid(String uuid)
-	{
-		return qtiTestDao.getByUuid(uuid);
-	}
+  @Override
+  public QtiAssessmentTest getByUuid(String uuid) {
+    return qtiTestDao.getByUuid(uuid);
+  }
 
-	@Nullable
-	@Override
-	public QtiAssessmentTest findByUuid(String uuid)
-	{
-		return qtiTestDao.findByUuid(uuid);
-	}
+  @Nullable
+  @Override
+  public QtiAssessmentTest findByUuid(String uuid) {
+    return qtiTestDao.findByUuid(uuid);
+  }
 
-	@Nullable
-	@Override
-	public QtiAssessmentTest findByItem(Item item)
-	{
-		return qtiTestDao.findByItem(item);
-	}
+  @Nullable
+  @Override
+  public QtiAssessmentTest findByItem(Item item) {
+    return qtiTestDao.findByItem(item);
+  }
 
-	@Override
-	public QtiAssessmentTest convertTestToEntity(ResolvedAssessmentTest resQuiz, Item item, String xmlPath,
-		String testUuid)
-	{
-		final RootNodeLookup<AssessmentTest> testLookup = resQuiz.getTestLookup();
-		final AssessmentTest quiz = testLookup.extractIfSuccessful();
-		final QtiAssessmentTest testEntity = new QtiAssessmentTest();
-		testEntity.setUuid(testUuid);
-		testEntity.setIdentifier(quiz.getIdentifier());
-		testEntity.setTestPartIdentifier(getFirstTestPart(quiz).getIdentifier().toString());
-		testEntity.setInstitution(CurrentInstitution.get());
-		testEntity.setItem(item);
-		testEntity.setTitle(quiz.getTitle());
-		testEntity.setXmlPath(xmlPath);
+  @Override
+  public QtiAssessmentTest convertTestToEntity(
+      ResolvedAssessmentTest resQuiz, Item item, String xmlPath, String testUuid) {
+    final RootNodeLookup<AssessmentTest> testLookup = resQuiz.getTestLookup();
+    final AssessmentTest quiz = testLookup.extractIfSuccessful();
+    final QtiAssessmentTest testEntity = new QtiAssessmentTest();
+    testEntity.setUuid(testUuid);
+    testEntity.setIdentifier(quiz.getIdentifier());
+    testEntity.setTestPartIdentifier(getFirstTestPart(quiz).getIdentifier().toString());
+    testEntity.setInstitution(CurrentInstitution.get());
+    testEntity.setItem(item);
+    testEntity.setTitle(quiz.getTitle());
+    testEntity.setXmlPath(xmlPath);
 
-		final String testRootPath = PathUtils.getParentFolderFromFilepath(xmlPath);
-		final List<QtiAssessmentItemRef> questionRefEntities = Lists.newArrayList();
-		final List<AssessmentItemRef> assessmentItemRefs = resQuiz.getAssessmentItemRefs();
-		for( AssessmentItemRef itemRef : assessmentItemRefs )
-		{
-			final URI uri = itemRef.getHref();
-			// this is a path relative to the test XML
-			String relPath = uri.toString();
-			String fullItemPath = PathUtils.filePath(testRootPath, relPath);
-			final ResolvedAssessmentItem resolvedAssessmentItem = resQuiz.getResolvedAssessmentItemBySystemIdMap()
-				.get(URI.create(fullItemPath));
-			final QtiAssessmentItem assessmentItem = questionService.convertItemToEntity(resQuiz,
-				resolvedAssessmentItem);
+    final String testRootPath = PathUtils.getParentFolderFromFilepath(xmlPath);
+    final List<QtiAssessmentItemRef> questionRefEntities = Lists.newArrayList();
+    final List<AssessmentItemRef> assessmentItemRefs = resQuiz.getAssessmentItemRefs();
+    for (AssessmentItemRef itemRef : assessmentItemRefs) {
+      final URI uri = itemRef.getHref();
+      // this is a path relative to the test XML
+      String relPath = uri.toString();
+      String fullItemPath = PathUtils.filePath(testRootPath, relPath);
+      final ResolvedAssessmentItem resolvedAssessmentItem =
+          resQuiz.getResolvedAssessmentItemBySystemIdMap().get(URI.create(fullItemPath));
+      final QtiAssessmentItem assessmentItem =
+          questionService.convertItemToEntity(resQuiz, resolvedAssessmentItem);
 
-			// protect against shit packages
-			if( assessmentItem != null )
-			{
-				final QtiAssessmentItemRef questionRefEntity = new QtiAssessmentItemRef();
-				questionRefEntity.setTest(testEntity);
-				questionRefEntity.setUuid(UUID.randomUUID().toString());
-				questionRefEntity.setXmlPath(fullItemPath);
-				questionRefEntity.setIdentifier(itemRef.getIdentifier().toString());
-				// itemRef.getWeights();
-				questionRefEntity.setQuestion(assessmentItem);
+      // protect against shit packages
+      if (assessmentItem != null) {
+        final QtiAssessmentItemRef questionRefEntity = new QtiAssessmentItemRef();
+        questionRefEntity.setTest(testEntity);
+        questionRefEntity.setUuid(UUID.randomUUID().toString());
+        questionRefEntity.setXmlPath(fullItemPath);
+        questionRefEntity.setIdentifier(itemRef.getIdentifier().toString());
+        // itemRef.getWeights();
+        questionRefEntity.setQuestion(assessmentItem);
 
-				questionRefEntities.add(questionRefEntity);
-			}
-		}
+        questionRefEntities.add(questionRefEntity);
+      }
+    }
 
-		testEntity.getQuestionRefs().clear();
-		testEntity.getQuestionRefs().addAll(questionRefEntities);
+    testEntity.getQuestionRefs().clear();
+    testEntity.getQuestionRefs().addAll(questionRefEntities);
 
-		return testEntity;
-	}
+    return testEntity;
+  }
 
-	private TestPart getFirstTestPart(AssessmentTest quiz)
-	{
-		final List<TestPart> testParts = quiz.getTestParts();
-		if( testParts == null || testParts.size() == 0 )
-		{
-			throw new Error("No test parts in the this test");
-		}
-		return testParts.get(0);
-	}
+  private TestPart getFirstTestPart(AssessmentTest quiz) {
+    final List<TestPart> testParts = quiz.getTestParts();
+    if (testParts == null || testParts.size() == 0) {
+      throw new Error("No test parts in the this test");
+    }
+    return testParts.get(0);
+  }
 
-	@Transactional
-	@Override
-	public void save(QtiAssessmentTest test) throws InvalidDataException
-	{
-		final Institution institution = test.getInstitution();
-		if( institution == null )
-		{
-			test.setInstitution(CurrentInstitution.get());
-		}
-		validate(test);
+  @Transactional
+  @Override
+  public void save(QtiAssessmentTest test) throws InvalidDataException {
+    final Institution institution = test.getInstitution();
+    if (institution == null) {
+      test.setInstitution(CurrentInstitution.get());
+    }
+    validate(test);
 
-		List<QtiAssessmentItemRef> questions = test.getQuestionRefs();
-		for( QtiAssessmentItemRef itemRef : questions )
-		{
-			QtiAssessmentItem question = itemRef.getQuestion();
-			questionService.save(question);
-		}
-		qtiTestDao.save(test);
-	}
+    List<QtiAssessmentItemRef> questions = test.getQuestionRefs();
+    for (QtiAssessmentItemRef itemRef : questions) {
+      QtiAssessmentItem question = itemRef.getQuestion();
+      questionService.save(question);
+    }
+    qtiTestDao.save(test);
+  }
 
-	@Override
-	public void validate(QtiAssessmentTest test) throws InvalidDataException
-	{
-		final List<ValidationError> errors = Lists.newArrayList();
-		if( test.getItem() == null )
-		{
-			errors.add(new ValidationError("item", CurrentLocale.get(PREFIX + "test.validation.noitem")));
-		}
-		if( errors.size() > 0 )
-		{
-			throw new InvalidDataException(errors);
-		}
-	}
+  @Override
+  public void validate(QtiAssessmentTest test) throws InvalidDataException {
+    final List<ValidationError> errors = Lists.newArrayList();
+    if (test.getItem() == null) {
+      errors.add(new ValidationError("item", CurrentLocale.get(PREFIX + "test.validation.noitem")));
+    }
+    if (errors.size() > 0) {
+      throw new InvalidDataException(errors);
+    }
+  }
 
-	@Override
-	public void itemDeletedEvent(ItemDeletedEvent event)
-	{
-		deleteForItemId(event.getKey());
-	}
+  @Override
+  public void itemDeletedEvent(ItemDeletedEvent event) {
+    deleteForItemId(event.getKey());
+  }
 
-	@Transactional(propagation = Propagation.REQUIRED)
-	@Override
-	public void deleteForItemId(long itemId)
-	{
-		final QtiAssessmentTest test = qtiTestDao.findByItemId(itemId);
-		if( test != null )
-		{
-			delete(test);
-		}
-	}
+  @Transactional(propagation = Propagation.REQUIRED)
+  @Override
+  public void deleteForItemId(long itemId) {
+    final QtiAssessmentTest test = qtiTestDao.findByItemId(itemId);
+    if (test != null) {
+      delete(test);
+    }
+  }
 
-	@Transactional(propagation = Propagation.REQUIRED)
-	@Override
-	public void delete(QtiAssessmentTest test)
-	{
-		final List<QtiAssessmentItem> items = Lists.newArrayList();
+  @Transactional(propagation = Propagation.REQUIRED)
+  @Override
+  public void delete(QtiAssessmentTest test) {
+    final List<QtiAssessmentItem> items = Lists.newArrayList();
 
-		final List<QtiAssessmentItemRef> questionRefs = test.getQuestionRefs();
-		final List<QtiAssessmentResult> results = qtiResultDao.findByAssessmentTest(test);
-		for( QtiAssessmentResult result : results )
-		{
-			result.setTest(test);
-			qtiResultDao.delete(result);
-		}
+    final List<QtiAssessmentItemRef> questionRefs = test.getQuestionRefs();
+    final List<QtiAssessmentResult> results = qtiResultDao.findByAssessmentTest(test);
+    for (QtiAssessmentResult result : results) {
+      result.setTest(test);
+      qtiResultDao.delete(result);
+    }
 
-		// Note! Questions will not be deleted when they can be
-		// disassociated from the test item
-		for( QtiAssessmentItemRef itemRef : questionRefs )
-		{
-			items.add(itemRef.getQuestion());
-		}
-		qtiTestDao.delete(test);
+    // Note! Questions will not be deleted when they can be
+    // disassociated from the test item
+    for (QtiAssessmentItemRef itemRef : questionRefs) {
+      items.add(itemRef.getQuestion());
+    }
+    qtiTestDao.delete(test);
 
-		for( QtiAssessmentItem item : items )
-		{
-			qtiItemDao.delete(item);
-		}
+    for (QtiAssessmentItem item : items) {
+      qtiItemDao.delete(item);
+    }
 
-		qtiTestDao.flush();
-		qtiItemDao.flush();
-		qtiResultDao.flush();
-		qtiItemRefDao.flush();
-	}
+    qtiTestDao.flush();
+    qtiItemDao.flush();
+    qtiResultDao.flush();
+    qtiItemRefDao.flush();
+  }
 }

@@ -29,206 +29,173 @@ import com.tle.admin.controls.repository.ControlDefinition;
 import com.tle.admin.controls.repository.ControlRepository;
 import com.tle.common.i18n.CurrentLocale;
 
-/**
- * @author Nicholas Read
- */
-public class PowerSearchModel extends AbstractTableModel implements TreeModelListener
-{
-	private static final long serialVersionUID = 1L;
-	private WizardModel model;
+/** @author Nicholas Read */
+public class PowerSearchModel extends AbstractTableModel implements TreeModelListener {
+  private static final long serialVersionUID = 1L;
+  private WizardModel model;
 
-	public PowerSearchModel(ControlRepository repository)
-	{
-		model = new WizardModel(repository);
-		model.addTreeModelListener(this);
-	}
+  public PowerSearchModel(ControlRepository repository) {
+    model = new WizardModel(repository);
+    model.addTreeModelListener(this);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see javax.swing.table.TableModel#getColumnCount()
-	 */
-	@Override
-	public int getColumnCount()
-	{
-		return 2;
-	}
+  /*
+   * (non-Javadoc)
+   * @see javax.swing.table.TableModel#getColumnCount()
+   */
+  @Override
+  public int getColumnCount() {
+    return 2;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see javax.swing.table.TableModel#getRowCount()
-	 */
-	@Override
-	public int getRowCount()
-	{
-		return model.getChildCount(getRootControl());
-	}
+  /*
+   * (non-Javadoc)
+   * @see javax.swing.table.TableModel#getRowCount()
+   */
+  @Override
+  public int getRowCount() {
+    return model.getChildCount(getRootControl());
+  }
 
-	@Override
-	public Class<?> getColumnClass(int column)
-	{
-		if( column == 1 )
-		{
-			return Boolean.class;
-		}
-		else
-		{
-			return super.getColumnClass(column);
-		}
-	}
+  @Override
+  public Class<?> getColumnClass(int column) {
+    if (column == 1) {
+      return Boolean.class;
+    } else {
+      return super.getColumnClass(column);
+    }
+  }
 
-	@Override
-	public String getColumnName(int column)
-	{
-		return getColumnNames()[column];
-	}
+  @Override
+  public String getColumnName(int column) {
+    return getColumnNames()[column];
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see javax.swing.table.TableModel#getValueAt(int, int)
-	 */
-	@Override
-	public Object getValueAt(int row, int column)
-	{
-		Control control = (Control) model.getChild(getRootControl(), row);
-		if( column == 1 )
-		{
-			return control.isPowerSearchInclude();
-		}
-		else
-		{
-			return control.toString();
-		}
-	}
+  /*
+   * (non-Javadoc)
+   * @see javax.swing.table.TableModel#getValueAt(int, int)
+   */
+  @Override
+  public Object getValueAt(int row, int column) {
+    Control control = (Control) model.getChild(getRootControl(), row);
+    if (column == 1) {
+      return control.isPowerSearchInclude();
+    } else {
+      return control.toString();
+    }
+  }
 
-	@Override
-	public void setValueAt(Object value, int row, int column)
-	{
-		Control control = (Control) model.getChild(getRootControl(), row);
-		if( column == 0 )
-		{
-			control.setCustomName(value.toString());
-		}
-		else if( column == 1 )
-		{
-			boolean b = ((Boolean) value).booleanValue();
-			control.setPowerSearchInclude(b);
-		}
-	}
+  @Override
+  public void setValueAt(Object value, int row, int column) {
+    Control control = (Control) model.getChild(getRootControl(), row);
+    if (column == 0) {
+      control.setCustomName(value.toString());
+    } else if (column == 1) {
+      boolean b = ((Boolean) value).booleanValue();
+      control.setPowerSearchInclude(b);
+    }
+  }
 
-	public Control getRootControl()
-	{
-		return model.getRootControl();
-	}
+  public Control getRootControl() {
+    return model.getRootControl();
+  }
 
-	public void controlChanged(Control control)
-	{
-		model.controlChanged(control);
-	}
+  public void controlChanged(Control control) {
+    model.controlChanged(control);
+  }
 
-	public DefaultWizardPage getSearchPage()
-	{
-		return (DefaultWizardPage) model.getRootControl().save();
-	}
+  public DefaultWizardPage getSearchPage() {
+    return (DefaultWizardPage) model.getRootControl().save();
+  }
 
-	public void loadWizard(DefaultWizardPage page)
-	{
-		model.clearWizard();
-		model.loadWizard(page);
-	}
+  public void loadWizard(DefaultWizardPage page) {
+    model.clearWizard();
+    model.loadWizard(page);
+  }
 
-	public Control addControl(ControlDefinition definition)
-	{
-		return model.addControl(getRootControl(), definition);
-	}
+  public Control addControl(ControlDefinition definition) {
+    return model.addControl(getRootControl(), definition);
+  }
 
-	public void removeControl(Control control)
-	{
-		model.removeControl(control);
-	}
+  public void removeControl(Control control) {
+    model.removeControl(control);
+  }
 
-	public Control getControlAt(int row)
-	{
-		return (Control) model.getChild(getRootControl(), row);
-	}
+  public Control getControlAt(int row) {
+    return (Control) model.getChild(getRootControl(), row);
+  }
 
-	public int getRowOfControl(Control control)
-	{
-		return model.getIndexOfChild(getRootControl(), control);
-	}
+  public int getRowOfControl(Control control) {
+    return model.getIndexOfChild(getRootControl(), control);
+  }
 
-	public void raiseControl(Control control)
-	{
-		model.raiseControl(control);
-	}
+  public void raiseControl(Control control) {
+    model.raiseControl(control);
+  }
 
-	public void lowerControl(Control control)
-	{
-		model.lowerControl(control);
-	}
+  public void lowerControl(Control control) {
+    model.lowerControl(control);
+  }
 
-	@Override
-	public boolean isCellEditable(int row, int column)
-	{
-		return true;
-	}
+  @Override
+  public boolean isCellEditable(int row, int column) {
+    return true;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * javax.swing.event.TreeModelListener#treeNodesInserted(javax.swing.event
-	 * .TreeModelEvent)
-	 */
-	@Override
-	public void treeNodesInserted(TreeModelEvent e)
-	{
-		int[] indices = e.getChildIndices();
-		Arrays.sort(indices);
-		fireTableRowsInserted(indices[0], indices[indices.length - 1]);
-	}
+  /*
+   * (non-Javadoc)
+   * @see
+   * javax.swing.event.TreeModelListener#treeNodesInserted(javax.swing.event
+   * .TreeModelEvent)
+   */
+  @Override
+  public void treeNodesInserted(TreeModelEvent e) {
+    int[] indices = e.getChildIndices();
+    Arrays.sort(indices);
+    fireTableRowsInserted(indices[0], indices[indices.length - 1]);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * javax.swing.event.TreeModelListener#treeNodesRemoved(javax.swing.event
-	 * .TreeModelEvent)
-	 */
-	@Override
-	public void treeNodesRemoved(TreeModelEvent e)
-	{
-		int[] indices = e.getChildIndices();
-		Arrays.sort(indices);
-		fireTableRowsDeleted(indices[0], indices[indices.length - 1]);
-	}
+  /*
+   * (non-Javadoc)
+   * @see
+   * javax.swing.event.TreeModelListener#treeNodesRemoved(javax.swing.event
+   * .TreeModelEvent)
+   */
+  @Override
+  public void treeNodesRemoved(TreeModelEvent e) {
+    int[] indices = e.getChildIndices();
+    Arrays.sort(indices);
+    fireTableRowsDeleted(indices[0], indices[indices.length - 1]);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * javax.swing.event.TreeModelListener#treeNodesChanged(javax.swing.event
-	 * .TreeModelEvent)
-	 */
-	@Override
-	public void treeNodesChanged(TreeModelEvent e)
-	{
-		int[] indices = e.getChildIndices();
-		Arrays.sort(indices);
-		fireTableRowsUpdated(indices[0], indices[indices.length - 1]);
-	}
+  /*
+   * (non-Javadoc)
+   * @see
+   * javax.swing.event.TreeModelListener#treeNodesChanged(javax.swing.event
+   * .TreeModelEvent)
+   */
+  @Override
+  public void treeNodesChanged(TreeModelEvent e) {
+    int[] indices = e.getChildIndices();
+    Arrays.sort(indices);
+    fireTableRowsUpdated(indices[0], indices[indices.length - 1]);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * javax.swing.event.TreeModelListener#treeStructureChanged(javax.swing.
-	 * event.TreeModelEvent)
-	 */
-	@Override
-	public void treeStructureChanged(TreeModelEvent e)
-	{
-		fireTableDataChanged();
-	}
+  /*
+   * (non-Javadoc)
+   * @see
+   * javax.swing.event.TreeModelListener#treeStructureChanged(javax.swing.
+   * event.TreeModelEvent)
+   */
+  @Override
+  public void treeStructureChanged(TreeModelEvent e) {
+    fireTableDataChanged();
+  }
 
-	private static String[] getColumnNames()
-	{
-		return new String[]{CurrentLocale.get("com.dytech.edge.admin.wizard.powersearchmodel.control"),
-				CurrentLocale.get("com.dytech.edge.admin.wizard.powersearchmodel.search")};
-	}
+  private static String[] getColumnNames() {
+    return new String[] {
+      CurrentLocale.get("com.dytech.edge.admin.wizard.powersearchmodel.control"),
+      CurrentLocale.get("com.dytech.edge.admin.wizard.powersearchmodel.search")
+    };
+  }
 }

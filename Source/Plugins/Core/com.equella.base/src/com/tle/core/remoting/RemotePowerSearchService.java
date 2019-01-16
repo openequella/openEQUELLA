@@ -20,9 +20,8 @@ import java.util.List;
 
 import com.tle.beans.entity.PowerSearch;
 
-public interface RemotePowerSearchService extends RemoteAbstractEntityService<PowerSearch>
-{
-	String ENTITY_TYPE = "POWER_SEARCH"; //$NON-NLS-1$
+public interface RemotePowerSearchService extends RemoteAbstractEntityService<PowerSearch> {
+  String ENTITY_TYPE = "POWER_SEARCH"; // $NON-NLS-1$
 
-	List<Long> enumerateItemdefIds(long powerSearchId);
+  List<Long> enumerateItemdefIds(long powerSearchId);
 }

@@ -55,122 +55,110 @@ import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 
 @SuppressWarnings("nls")
-public abstract class AbstractFavouriteSearchSection extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	@PlugKey("actions.favourite.dialog.add")
-	private static Label LABEL_ADD;
-	@PlugKey("actions.favourite.dialog.validate")
-	private static Label LABEL_VALIDATE;
-	@PlugKey("actions.favourite.confirm")
-	private static Label LABEL_RECEIPT;
+public abstract class AbstractFavouriteSearchSection extends AbstractPrototypeSection<Object>
+    implements HtmlRenderer {
+  @PlugKey("actions.favourite.dialog.add")
+  private static Label LABEL_ADD;
 
-	@Inject
-	private FavouriteSearchService favouriteSearchService;
-	@Inject
-	private ReceiptService receiptService;
+  @PlugKey("actions.favourite.dialog.validate")
+  private static Label LABEL_VALIDATE;
 
-	@TreeLookup
-	private AbstractQuerySection<?, ?> querySection;
-	@TreeLookup
-	private AbstractRootSearchSection<?> rootSearchSection;
+  @PlugKey("actions.favourite.confirm")
+  private static Label LABEL_RECEIPT;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
+  @Inject private FavouriteSearchService favouriteSearchService;
+  @Inject private ReceiptService receiptService;
 
-	@Component(name = "nf")
-	private TextField nameField;
-	@Component
-	@PlugKey("actions.favourite.button.name")
-	private Button addButton;
-	private JSHandler addHandler;
+  @TreeLookup private AbstractQuerySection<?, ?> querySection;
+  @TreeLookup private AbstractRootSearchSection<?> rootSearchSection;
 
-	@Nullable
-	private AbstractFavouriteSearchDialog containerDialog;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
 
-	protected abstract String getWithin(SectionInfo info);
+  @Component(name = "nf")
+  private TextField nameField;
 
-	protected abstract String getCriteria(SectionInfo info);
+  @Component
+  @PlugKey("actions.favourite.button.name")
+  private Button addButton;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		return viewFactory.createResult("actions/dialog/favouritesearch.ftl", this);
-	}
+  private JSHandler addHandler;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		JSStatements alert = Js.alert_s(LABEL_VALIDATE);
-		addHandler = events.getNamedHandler("addToFavourites")
-			.addValidator(nameField.createNotBlankValidator().setFailureStatements(alert));
-		addButton.setClickHandler(addHandler);
-		tree.setLayout(id, AbstractSearchActionsSection.AREA_SAVE);
-	}
+  @Nullable private AbstractFavouriteSearchDialog containerDialog;
 
-	public void setContainerDialog(AbstractFavouriteSearchDialog containerDialog)
-	{
-		this.containerDialog = containerDialog;
-	}
+  protected abstract String getWithin(SectionInfo info);
 
-	@EventHandlerMethod
-	public void addToFavourites(SectionInfo info)
-	{
-		if( CurrentUser.isGuest() || CurrentUser.wasAutoLoggedIn() )
-		{
-			throw new AccessDeniedException(CurrentLocale.get("com.tle.web.search.savenotavailable"));
-		}
+  protected abstract String getCriteria(SectionInfo info);
 
-		final String name = nameField.getValue(info);
-		if( !Check.isEmpty(name) )
-		{
-			final FavouriteSearch fs = new FavouriteSearch();
-			fs.setName(name);
-			fs.setDateModified(new Date());
-			fs.setOwner(CurrentUser.getUserID());
-			final InfoBookmark bookmark = rootSearchSection.getPermanentUrl(info);
-			final String url = String.format("%s?%s", info.getAttribute(SectionInfo.KEY_PATH), bookmark.getQuery());
-			fs.setUrl(url);
-			fs.setWithin(getWithin(info));
-			fs.setInstitution(CurrentInstitution.get());
-			fs.setCriteria(getCriteria(info));
-			fs.setQuery(querySection.getQueryField().getValue(info));
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    return viewFactory.createResult("actions/dialog/favouritesearch.ftl", this);
+  }
 
-			favouriteSearchService.save(fs);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    JSStatements alert = Js.alert_s(LABEL_VALIDATE);
+    addHandler =
+        events
+            .getNamedHandler("addToFavourites")
+            .addValidator(nameField.createNotBlankValidator().setFailureStatements(alert));
+    addButton.setClickHandler(addHandler);
+    tree.setLayout(id, AbstractSearchActionsSection.AREA_SAVE);
+  }
 
-			receiptService.setReceipt(LABEL_RECEIPT);
+  public void setContainerDialog(AbstractFavouriteSearchDialog containerDialog) {
+    this.containerDialog = containerDialog;
+  }
 
-			if( containerDialog != null )
-			{
-				containerDialog.close(info);
-			}
-		}
-	}
+  @EventHandlerMethod
+  public void addToFavourites(SectionInfo info) {
+    if (CurrentUser.isGuest() || CurrentUser.wasAutoLoggedIn()) {
+      throw new AccessDeniedException(CurrentLocale.get("com.tle.web.search.savenotavailable"));
+    }
 
-	public JSHandler getAddHandler()
-	{
-		return addHandler;
-	}
+    final String name = nameField.getValue(info);
+    if (!Check.isEmpty(name)) {
+      final FavouriteSearch fs = new FavouriteSearch();
+      fs.setName(name);
+      fs.setDateModified(new Date());
+      fs.setOwner(CurrentUser.getUserID());
+      final InfoBookmark bookmark = rootSearchSection.getPermanentUrl(info);
+      final String url =
+          String.format("%s?%s", info.getAttribute(SectionInfo.KEY_PATH), bookmark.getQuery());
+      fs.setUrl(url);
+      fs.setWithin(getWithin(info));
+      fs.setInstitution(CurrentInstitution.get());
+      fs.setCriteria(getCriteria(info));
+      fs.setQuery(querySection.getQueryField().getValue(info));
 
-	public TextField getNameField()
-	{
-		return nameField;
-	}
+      favouriteSearchService.save(fs);
 
-	public Button getAddButton()
-	{
-		if( containerDialog != null )
-		{
-			return null;
-		}
-		return addButton;
-	}
+      receiptService.setReceipt(LABEL_RECEIPT);
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "afss";
-	}
+      if (containerDialog != null) {
+        containerDialog.close(info);
+      }
+    }
+  }
+
+  public JSHandler getAddHandler() {
+    return addHandler;
+  }
+
+  public TextField getNameField() {
+    return nameField;
+  }
+
+  public Button getAddButton() {
+    if (containerDialog != null) {
+      return null;
+    }
+    return addButton;
+  }
+
+  @Override
+  public String getDefaultPropertyName() {
+    return "afss";
+  }
 }

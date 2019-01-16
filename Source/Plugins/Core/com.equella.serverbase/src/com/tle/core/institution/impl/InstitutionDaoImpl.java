@@ -28,16 +28,14 @@ import com.tle.core.institution.InstitutionDao;
 @Singleton
 @SuppressWarnings("nls")
 @Bind(InstitutionDao.class)
-public class InstitutionDaoImpl extends GenericDaoImpl<Institution, Long> implements InstitutionDao
-{
-	public InstitutionDaoImpl()
-	{
-		super(Institution.class);
-	}
+public class InstitutionDaoImpl extends GenericDaoImpl<Institution, Long>
+    implements InstitutionDao {
+  public InstitutionDaoImpl() {
+    super(Institution.class);
+  }
 
-	@Override
-	public Institution findByUniqueId(long uniqueId)
-	{
-		return findByCriteria(Restrictions.eq("uniqueId", uniqueId));
-	}
+  @Override
+  public Institution findByUniqueId(long uniqueId) {
+    return findByCriteria(Restrictions.eq("uniqueId", uniqueId));
+  }
 }

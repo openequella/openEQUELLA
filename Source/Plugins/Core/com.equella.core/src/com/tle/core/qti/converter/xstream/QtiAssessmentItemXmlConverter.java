@@ -24,40 +24,32 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.tle.common.qti.entity.QtiAssessmentItem;
 import com.tle.core.qti.dao.QtiAssessmentItemDao;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public class QtiAssessmentItemXmlConverter implements Converter
-{
-	private final QtiAssessmentItemDao questionDao;
+public class QtiAssessmentItemXmlConverter implements Converter {
+  private final QtiAssessmentItemDao questionDao;
 
-	public QtiAssessmentItemXmlConverter(QtiAssessmentItemDao questionDao)
-	{
-		this.questionDao = questionDao;
-	}
+  public QtiAssessmentItemXmlConverter(QtiAssessmentItemDao questionDao) {
+    this.questionDao = questionDao;
+  }
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public boolean canConvert(Class clazz)
-	{
-		return clazz == QtiAssessmentItem.class;
-	}
+  @SuppressWarnings("rawtypes")
+  @Override
+  public boolean canConvert(Class clazz) {
+    return clazz == QtiAssessmentItem.class;
+  }
 
-	@Override
-	public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext context)
-	{
-		final QtiAssessmentItem question = (QtiAssessmentItem) obj;
-		if( question != null )
-		{
-			writer.addAttribute("uuid", question.getUuid());
-		}
-	}
+  @Override
+  public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext context) {
+    final QtiAssessmentItem question = (QtiAssessmentItem) obj;
+    if (question != null) {
+      writer.addAttribute("uuid", question.getUuid());
+    }
+  }
 
-	@Override
-	public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context)
-	{
-		final String uuidFromStream = reader.getAttribute("uuid");
-		return questionDao.getByUuid(uuidFromStream);
-	}
+  @Override
+  public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+    final String uuidFromStream = reader.getAttribute("uuid");
+    return questionDao.getByUuid(uuidFromStream);
+  }
 }

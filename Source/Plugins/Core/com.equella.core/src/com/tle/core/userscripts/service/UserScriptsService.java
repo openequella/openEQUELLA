@@ -23,16 +23,16 @@ import com.tle.common.userscripts.entity.UserScript;
 import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.userscripts.service.session.UserScriptEditingBean;
 
-public interface UserScriptsService extends AbstractEntityService<UserScriptEditingBean, UserScript>
-{
-	@SuppressWarnings("nls")
-	public static final String ENTITY_TYPE = "USER_SCRIPTS";
+public interface UserScriptsService
+    extends AbstractEntityService<UserScriptEditingBean, UserScript> {
+  @SuppressWarnings("nls")
+  public static final String ENTITY_TYPE = "USER_SCRIPTS";
 
-	List<UserScript> enumerateForType(ScriptTypes type);
+  List<UserScript> enumerateForType(ScriptTypes type);
 
-	boolean executableScriptsAvailable();
+  boolean executableScriptsAvailable();
 
-	boolean displayScriptsAvailable();
+  boolean displayScriptsAvailable();
 
-	boolean isModuleNameExist(String moduleName, long id);
+  boolean isModuleNameExist(String moduleName, long id);
 }

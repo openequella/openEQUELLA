@@ -47,68 +47,65 @@ import com.tle.web.sections.standard.model.HtmlComponentState;
 
 @NonNullByDefault
 @Bind
-public class NotificationResultsDialog extends AbstractBulkResultsDialog<ItemNotificationId>
-{
-	@PlugKey("opresults.count")
-	private static String OPRESULTS_COUNT_KEY;
+public class NotificationResultsDialog extends AbstractBulkResultsDialog<ItemNotificationId> {
+  @PlugKey("opresults.count")
+  private static String OPRESULTS_COUNT_KEY;
 
-	@Inject
-	private NotificationService notificationService;
-	@Inject
-	private ItemService itemService;
+  @Inject private NotificationService notificationService;
+  @Inject private ItemService itemService;
 
-	@TreeLookup
-	private AbstractBulkSelectionSection<ItemNotificationId> selectionSection;
+  @TreeLookup private AbstractBulkSelectionSection<ItemNotificationId> selectionSection;
 
-	@Override
-	protected DynamicHtmlListModel<OperationInfo> getBulkOperationList(SectionTree tree, String parentId)
-	{
-		// there are no bulk operations for notifications
-		return new DynamicHtmlListModel<OperationInfo>()
-		{
-			@Nullable
-			@Override
-			protected Iterable<OperationInfo> populateModel(SectionInfo info)
-			{
-				return null;
-			}
-		};
-	}
+  @Override
+  protected DynamicHtmlListModel<OperationInfo> getBulkOperationList(
+      SectionTree tree, String parentId) {
+    // there are no bulk operations for notifications
+    return new DynamicHtmlListModel<OperationInfo>() {
+      @Nullable
+      @Override
+      protected Iterable<OperationInfo> populateModel(SectionInfo info) {
+        return null;
+      }
+    };
+  }
 
-	@Override
-	protected Label getOpResultCountLabel(int totalSelections)
-	{
-		return new PluralKeyLabel(OPRESULTS_COUNT_KEY, totalSelections);
-	}
+  @Override
+  protected Label getOpResultCountLabel(int totalSelections) {
+    return new PluralKeyLabel(OPRESULTS_COUNT_KEY, totalSelections);
+  }
 
-	@Override
-	protected List<SelectionRow> getRows(List<ItemNotificationId> pageOfIds)
-	{
-		List<SelectionRow> rows = new ArrayList<SelectionRow>();
-		for( ItemNotificationId noteId : pageOfIds )
-		{
-			Notification itemNotification = notificationService.getNotification(noteId.getNotificationId());
-			Item item = itemService.get(noteId);
+  @Override
+  protected List<SelectionRow> getRows(List<ItemNotificationId> pageOfIds) {
+    List<SelectionRow> rows = new ArrayList<SelectionRow>();
+    for (ItemNotificationId noteId : pageOfIds) {
+      Notification itemNotification =
+          notificationService.getNotification(noteId.getNotificationId());
+      Item item = itemService.get(noteId);
 
-			String itemName = CurrentLocale.get(item.getName(), item.getUuid());
-			String reason = itemNotification.getReason();
-			WebNotificationExtension extension = (WebNotificationExtension) notificationService
-				.getExtensionForType(reason);
-			Label reasonLabel = extension.getReasonFilterLabel(reason);
-			Label description = new TextLabel(itemName + " - " + reasonLabel.getText()); //$NON-NLS-1$
-			// TODO: reason is different from dialog to item list
-			rows.add(new SelectionRow(description, new HtmlComponentState(RendererConstants.LINK, events
-				.getNamedHandler("removeSelection", noteId.getUuid(), //$NON-NLS-1$
-					noteId.getVersion(), noteId.getNotificationId()))));
-		}
+      String itemName = CurrentLocale.get(item.getName(), item.getUuid());
+      String reason = itemNotification.getReason();
+      WebNotificationExtension extension =
+          (WebNotificationExtension) notificationService.getExtensionForType(reason);
+      Label reasonLabel = extension.getReasonFilterLabel(reason);
+      Label description = new TextLabel(itemName + " - " + reasonLabel.getText()); // $NON-NLS-1$
+      // TODO: reason is different from dialog to item list
+      rows.add(
+          new SelectionRow(
+              description,
+              new HtmlComponentState(
+                  RendererConstants.LINK,
+                  events.getNamedHandler(
+                      "removeSelection",
+                      noteId.getUuid(), // $NON-NLS-1$
+                      noteId.getVersion(),
+                      noteId.getNotificationId()))));
+    }
 
-		return rows;
-	}
+    return rows;
+  }
 
-	@EventHandlerMethod
-	public void removeSelection(SectionInfo info, String uuid, int version, long activationId)
-	{
-		selectionSection.removeSelection(info, new ItemNotificationId(uuid, version, activationId));
-	}
-
+  @EventHandlerMethod
+  public void removeSelection(SectionInfo info, String uuid, int version, long activationId) {
+    selectionSection.removeSelection(info, new ItemNotificationId(uuid, version, activationId));
+  }
 }

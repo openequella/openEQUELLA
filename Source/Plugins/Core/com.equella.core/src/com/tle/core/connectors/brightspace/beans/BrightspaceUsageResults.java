@@ -20,59 +20,50 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @XmlRootElement
-public class BrightspaceUsageResults
-{
-	@JsonProperty("TotalEquellaLinkUsageCount")
-	private int totalEquellaLinkUsageCount;
-	@JsonProperty("ResultSetCount")
-	private int resultSetCount;
-	@JsonProperty("Next")
-	private String next;
-	@JsonProperty("Objects")
-	private BrightspaceEquellaLink[] objects;
+public class BrightspaceUsageResults {
+  @JsonProperty("TotalEquellaLinkUsageCount")
+  private int totalEquellaLinkUsageCount;
 
-	public int getTotalEquellaLinkUsageCount()
-	{
-		return totalEquellaLinkUsageCount;
-	}
+  @JsonProperty("ResultSetCount")
+  private int resultSetCount;
 
-	public void setTotalEquellaLinkUsageCount(int totalEquellaLinkUsageCount)
-	{
-		this.totalEquellaLinkUsageCount = totalEquellaLinkUsageCount;
-	}
+  @JsonProperty("Next")
+  private String next;
 
-	public int getResultSetCount()
-	{
-		return resultSetCount;
-	}
+  @JsonProperty("Objects")
+  private BrightspaceEquellaLink[] objects;
 
-	public void setResultSetCount(int resultSetCount)
-	{
-		this.resultSetCount = resultSetCount;
-	}
+  public int getTotalEquellaLinkUsageCount() {
+    return totalEquellaLinkUsageCount;
+  }
 
-	public String getNext()
-	{
-		return next;
-	}
+  public void setTotalEquellaLinkUsageCount(int totalEquellaLinkUsageCount) {
+    this.totalEquellaLinkUsageCount = totalEquellaLinkUsageCount;
+  }
 
-	public void setNext(String next)
-	{
-		this.next = next;
-	}
+  public int getResultSetCount() {
+    return resultSetCount;
+  }
 
-	public BrightspaceEquellaLink[] getObjects()
-	{
-		return objects;
-	}
+  public void setResultSetCount(int resultSetCount) {
+    this.resultSetCount = resultSetCount;
+  }
 
-	public void setObjects(BrightspaceEquellaLink[] objects)
-	{
-		this.objects = objects;
-	}
+  public String getNext() {
+    return next;
+  }
+
+  public void setNext(String next) {
+    this.next = next;
+  }
+
+  public BrightspaceEquellaLink[] getObjects() {
+    return objects;
+  }
+
+  public void setObjects(BrightspaceEquellaLink[] objects) {
+    this.objects = objects;
+  }
 }

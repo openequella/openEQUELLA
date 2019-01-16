@@ -70,363 +70,318 @@ import com.tle.web.userscripts.section.UserScriptEditorSection.UserScriptEditorM
 @Bind
 @SuppressWarnings("nls")
 public class UserScriptEditorSection
-	extends
-		AbstractEntityEditor<UserScriptEditingBean, UserScript, UserScriptEditorModel>
-{
-	@PlugKey("editor.scripttypes.")
-	private static String KEY_SCRIPT_TYPE_PFX;
-	@PlugKey("script.errormessage")
-	private static String ERROR_MESSAGE;
-	@PlugKey("syntax.ok")
-	private static Label SYNTAX_PASS;
-	@PlugKey("syntax.empty")
-	private static Label SYNTAX_EMPTY;
+    extends AbstractEntityEditor<UserScriptEditingBean, UserScript, UserScriptEditorModel> {
+  @PlugKey("editor.scripttypes.")
+  private static String KEY_SCRIPT_TYPE_PFX;
 
-	@PlugKey("script.errormessage.empty")
-	private static Label ERROR_MESSAGE_EMPTYSCRIPT;
-	@PlugKey("script.errormessage.mandatory")
-	private static Label LABEL_ERROR_MANDATORY;
-	@PlugKey("script.errormessage.unique")
-	private static Label LABEL_ERROR_UNIQUE;
+  @PlugKey("script.errormessage")
+  private static String ERROR_MESSAGE;
 
-	@Inject
-	private UserScriptsService userScriptService;
-	@ViewFactory
-	private FreemarkerFactory view;
-	@AjaxFactory
-	private AjaxGenerator ajax;
-	@EventFactory
-	protected EventGenerator events;
+  @PlugKey("syntax.ok")
+  private static Label SYNTAX_PASS;
 
-	@Component(stateful = false)
-	private SingleSelectionList<ScriptTypes> scriptTypeList;
-	@Component(stateful = false)
-	private TextField moduleNameField;
-	@Component
-	@PlugKey("editor.syntax")
-	private Button checkSyntaxButton;
+  @PlugKey("syntax.empty")
+  private static Label SYNTAX_EMPTY;
 
-	@Component(name = "javascript")
-	private CodeMirror javascriptEditor;
-	@Component(name = "freemarker")
-	private CodeMirror freemakerEditor;
+  @PlugKey("script.errormessage.empty")
+  private static Label ERROR_MESSAGE_EMPTYSCRIPT;
 
-	@Override
-	protected AbstractEntityService<UserScriptEditingBean, UserScript> getEntityService()
-	{
-		return userScriptService;
-	}
+  @PlugKey("script.errormessage.mandatory")
+  private static Label LABEL_ERROR_MANDATORY;
 
-	@Override
-	protected UserScript createNewEntity(SectionInfo info)
-	{
-		return new UserScript();
-	}
+  @PlugKey("script.errormessage.unique")
+  private static Label LABEL_ERROR_UNIQUE;
 
-	@Override
-	protected SectionRenderable renderFields(RenderEventContext context,
-		EntityEditingSession<UserScriptEditingBean, UserScript> session)
-	{
-		UserScriptEditorModel model = getModel(context);
+  @Inject private UserScriptsService userScriptService;
+  @ViewFactory private FreemarkerFactory view;
+  @AjaxFactory private AjaxGenerator ajax;
+  @EventFactory protected EventGenerator events;
 
-		if( model.isJavascript() )
-		{
-			moduleNameField.setValue(context, model.getModuleName());
-			javascriptEditor.setValue(context, model.getJavaScriptContents());
-			model.setErrors(session.getValidationErrors());
-		}
-		else
-		{
-			freemakerEditor.setValue(context, model.getFreeMarkerContents());
-		}
-		return view.createResult("editscript.ftl", context);
-	}
+  @Component(stateful = false)
+  private SingleSelectionList<ScriptTypes> scriptTypeList;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Component(stateful = false)
+  private TextField moduleNameField;
 
-		javascriptEditor.setEditorType(EditorType.JAVASCRIPT_EDITOR);
-		javascriptEditor.setAllowFullScreen(true);
-		javascriptEditor.setShowHelp(true);
-		freemakerEditor.setEditorType(EditorType.FREEMARKER_EDITOR);
-		freemakerEditor.setAllowFullScreen(true);
-		freemakerEditor.setShowHelp(true);
+  @Component
+  @PlugKey("editor.syntax")
+  private Button checkSyntaxButton;
 
-		scriptTypeList.setListModel(new EnumListModel<ScriptTypes>(KEY_SCRIPT_TYPE_PFX, true, ScriptTypes.values()));
-		StatementHandler listUpdate = new StatementHandler(
-			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("typeChanged"),
-				ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING), "script-field"));
-		scriptTypeList.setEventHandler(JSHandler.EVENT_CHANGE, listUpdate);
-		scriptTypeList.setAlwaysSelect(true);
+  @Component(name = "javascript")
+  private CodeMirror javascriptEditor;
 
-		checkSyntaxButton.setClickHandler(new StatementHandler(
-			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("checkSyntax"), "syntax-div")));
-		checkSyntaxButton.setStyleClass("validate-button");
-	}
+  @Component(name = "freemarker")
+  private CodeMirror freemakerEditor;
 
-	@EventHandlerMethod
-	public void checkSyntax(SectionInfo info)
-	{
-		UserScriptEditorModel model = getModel(info);
-		SpanRenderer message = javaScriptValidation(javascriptEditor.getValue(info));
-		model.setSyntaxMessage(message);
-	}
+  @Override
+  protected AbstractEntityService<UserScriptEditingBean, UserScript> getEntityService() {
+    return userScriptService;
+  }
 
-	private SpanRenderer javaScriptValidation(String script)
-	{
-		SpanRenderer msgRenderer;
-		if( Check.isEmpty(script) )
-		{
-			msgRenderer = new SpanRenderer(SYNTAX_EMPTY);
-			msgRenderer.addClass("empty");
-			return msgRenderer;
-		}
+  @Override
+  protected UserScript createNewEntity(SectionInfo info) {
+    return new UserScript();
+  }
 
-		CompilerEnvirons ce = new CompilerEnvirons();
-		ce.initFromContext(ContextFactory.getGlobal().enterContext());
-		ErrorReporter er = new ErrorReporter()
-		{
-			private Label errorMessage;
+  @Override
+  protected SectionRenderable renderFields(
+      RenderEventContext context, EntityEditingSession<UserScriptEditingBean, UserScript> session) {
+    UserScriptEditorModel model = getModel(context);
 
-			@Override
-			public void warning(String message, String sourceName, int line, String lineSource, int lineOffset)
-			{
-				// pfft warnings?
-			}
+    if (model.isJavascript()) {
+      moduleNameField.setValue(context, model.getModuleName());
+      javascriptEditor.setValue(context, model.getJavaScriptContents());
+      model.setErrors(session.getValidationErrors());
+    } else {
+      freemakerEditor.setValue(context, model.getFreeMarkerContents());
+    }
+    return view.createResult("editscript.ftl", context);
+  }
 
-			@Override
-			public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource,
-				int lineOffset)
-			{
-				return new EvaluatorException(errorMessage.getText());
-			}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-			@Override
-			public void error(String message, String sourceName, int line, String lineSource, int lineOffset)
-			{
-				// only log one error found. Helps with output
-				errorMessage = new KeyLabel(ERROR_MESSAGE, message, line + 1, lineOffset, lineSource);
-			}
+    javascriptEditor.setEditorType(EditorType.JAVASCRIPT_EDITOR);
+    javascriptEditor.setAllowFullScreen(true);
+    javascriptEditor.setShowHelp(true);
+    freemakerEditor.setEditorType(EditorType.FREEMARKER_EDITOR);
+    freemakerEditor.setAllowFullScreen(true);
+    freemakerEditor.setShowHelp(true);
 
-		};
-		Parser p = new Parser(ce, er);
-		try
-		{
-			p.parse(script, "userscript", 0); //$NON-NLS-1$
-		}
-		catch( EvaluatorException e )
-		{
-			msgRenderer = new SpanRenderer(e.getMessage());
-			msgRenderer.addClass("fail");
-			return msgRenderer;
-		}
-		msgRenderer = new SpanRenderer(SYNTAX_PASS);
-		msgRenderer.addClass("ok");
+    scriptTypeList.setListModel(
+        new EnumListModel<ScriptTypes>(KEY_SCRIPT_TYPE_PFX, true, ScriptTypes.values()));
+    StatementHandler listUpdate =
+        new StatementHandler(
+            ajax.getAjaxUpdateDomFunction(
+                tree,
+                this,
+                events.getEventHandler("typeChanged"),
+                ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING),
+                "script-field"));
+    scriptTypeList.setEventHandler(JSHandler.EVENT_CHANGE, listUpdate);
+    scriptTypeList.setAlwaysSelect(true);
 
-		return msgRenderer;
-	}
+    checkSyntaxButton.setClickHandler(
+        new StatementHandler(
+            ajax.getAjaxUpdateDomFunction(
+                tree, this, events.getEventHandler("checkSyntax"), "syntax-div")));
+    checkSyntaxButton.setStyleClass("validate-button");
+  }
 
-	@EventHandlerMethod
-	public void typeChanged(SectionInfo info)
-	{
-		boolean js = scriptTypeList.getSelectedValue(info).equals(ScriptTypes.EXECUTABLE);
-		getModel(info).setJavascript(js);
+  @EventHandlerMethod
+  public void checkSyntax(SectionInfo info) {
+    UserScriptEditorModel model = getModel(info);
+    SpanRenderer message = javaScriptValidation(javascriptEditor.getValue(info));
+    model.setSyntaxMessage(message);
+  }
 
-	}
+  private SpanRenderer javaScriptValidation(String script) {
+    SpanRenderer msgRenderer;
+    if (Check.isEmpty(script)) {
+      msgRenderer = new SpanRenderer(SYNTAX_EMPTY);
+      msgRenderer.addClass("empty");
+      return msgRenderer;
+    }
 
-	@Override
-	protected void loadFromSession(SectionInfo info, EntityEditingSession<UserScriptEditingBean, UserScript> session)
-	{
-		final UserScriptEditingBean bean = session.getBean();
-		UserScriptEditorModel model = getModel(info);
-		if( bean.getName() != null )
-		{
-			scriptTypeList.setSelectedValue(info, bean.getSelection());
-			model.setJavascript(bean.getSelection().equals(ScriptTypes.EXECUTABLE));
-			if( model.isJavascript() )
-			{
-				model.setModuleName(bean.getModuleName());
-				model.setJavaScriptContents(bean.getScript());
-				model.setFreeMarkerContents(Constants.BLANK);
-			}
-			else
-			{
-				model.setJavaScriptContents(Constants.BLANK);
-				model.setFreeMarkerContents(bean.getScript());
-			}
-		}
-		else
-		{
-			// new script -> default to freemarker
-			model.setJavascript(false);
-			model.setFreeMarkerContents(Constants.BLANK);
-		}
-	}
+    CompilerEnvirons ce = new CompilerEnvirons();
+    ce.initFromContext(ContextFactory.getGlobal().enterContext());
+    ErrorReporter er =
+        new ErrorReporter() {
+          private Label errorMessage;
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new UserScriptEditorModel();
-	}
+          @Override
+          public void warning(
+              String message, String sourceName, int line, String lineSource, int lineOffset) {
+            // pfft warnings?
+          }
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-	}
+          @Override
+          public EvaluatorException runtimeError(
+              String message, String sourceName, int line, String lineSource, int lineOffset) {
+            return new EvaluatorException(errorMessage.getText());
+          }
 
-	@Override
-	protected void validate(SectionInfo info, EntityEditingSession<UserScriptEditingBean, UserScript> session)
-	{
-		boolean isJavaScript = getModel(info).isJavascript();
-		Map<String, Object> validationErrors = session.getValidationErrors();
-		validationErrors.clear();
+          @Override
+          public void error(
+              String message, String sourceName, int line, String lineSource, int lineOffset) {
+            // only log one error found. Helps with output
+            errorMessage = new KeyLabel(ERROR_MESSAGE, message, line + 1, lineOffset, lineSource);
+          }
+        };
+    Parser p = new Parser(ce, er);
+    try {
+      p.parse(script, "userscript", 0); // $NON-NLS-1$
+    } catch (EvaluatorException e) {
+      msgRenderer = new SpanRenderer(e.getMessage());
+      msgRenderer.addClass("fail");
+      return msgRenderer;
+    }
+    msgRenderer = new SpanRenderer(SYNTAX_PASS);
+    msgRenderer.addClass("ok");
 
-		final LanguageBundleBean bundle = getTitle().getLanguageBundle(info);
-		if( LangUtils.isEmpty(bundle) )
-		{
-			validationErrors.put("title", getTitleMandatoryErrorLabel().getText());
-		}
+    return msgRenderer;
+  }
 
-		if( isJavaScript )
-		{
-			String moduleName = moduleNameField.getValue(info);
-			if( !Strings.isNullOrEmpty(moduleName) )
-			{
-				long id = session.getBean().getId();
-				boolean isModuleNameExist = userScriptService.isModuleNameExist(moduleName, id);
-				if( isModuleNameExist )
-				{
-					validationErrors.put("error", LABEL_ERROR_UNIQUE);
-				}
-			}
-			else
-			{
-				validationErrors.put("error", LABEL_ERROR_MANDATORY);
-			}
+  @EventHandlerMethod
+  public void typeChanged(SectionInfo info) {
+    boolean js = scriptTypeList.getSelectedValue(info).equals(ScriptTypes.EXECUTABLE);
+    getModel(info).setJavascript(js);
+  }
 
-			if( Strings.isNullOrEmpty(javascriptEditor.getValue(info)) )
-			{
-				validationErrors.put("errors.noscript", ERROR_MESSAGE_EMPTYSCRIPT);
-			}
-		}
-		else
-		{
-			if( Strings.isNullOrEmpty(freemakerEditor.getValue(info)) )
-			{
-				validationErrors.put("errors.noscript", ERROR_MESSAGE_EMPTYSCRIPT);
-			}
-		}
-	}
+  @Override
+  protected void loadFromSession(
+      SectionInfo info, EntityEditingSession<UserScriptEditingBean, UserScript> session) {
+    final UserScriptEditingBean bean = session.getBean();
+    UserScriptEditorModel model = getModel(info);
+    if (bean.getName() != null) {
+      scriptTypeList.setSelectedValue(info, bean.getSelection());
+      model.setJavascript(bean.getSelection().equals(ScriptTypes.EXECUTABLE));
+      if (model.isJavascript()) {
+        model.setModuleName(bean.getModuleName());
+        model.setJavaScriptContents(bean.getScript());
+        model.setFreeMarkerContents(Constants.BLANK);
+      } else {
+        model.setJavaScriptContents(Constants.BLANK);
+        model.setFreeMarkerContents(bean.getScript());
+      }
+    } else {
+      // new script -> default to freemarker
+      model.setJavascript(false);
+      model.setFreeMarkerContents(Constants.BLANK);
+    }
+  }
 
-	@Override
-	protected void saveToSession(SectionInfo info, EntityEditingSession<UserScriptEditingBean, UserScript> session,
-		boolean validate)
-	{
-		final UserScriptEditingBean bean = session.getBean();
-		UserScriptEditorModel model = getModel(info);
-		boolean isJavaScript = model.isJavascript();
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new UserScriptEditorModel();
+  }
 
-		if( isJavaScript )
-		{
-			bean.setSelection(scriptTypeList.getSelectedValue(info));
-			bean.setScript(javascriptEditor.getValue(info));
-			bean.setModuleName(moduleNameField.getValue(info));
-		}
-		else
-		{
-			bean.setSelection(scriptTypeList.getSelectedValue(info));
-			bean.setScript(freemakerEditor.getValue(info));
-		}
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+  }
 
-	public class UserScriptEditorModel
-		extends
-			AbstractEntityEditor<UserScriptEditingBean, UserScript, UserScriptEditorModel>.AbstractEntityEditorModel
-	{
-		@Bookmarked
-		private boolean javascript;
-		private SpanRenderer syntaxMessage;
-		private String moduleName;
-		private String javaScriptContents = Constants.BLANK;
-		private String freeMarkerContents = Constants.BLANK;
+  @Override
+  protected void validate(
+      SectionInfo info, EntityEditingSession<UserScriptEditingBean, UserScript> session) {
+    boolean isJavaScript = getModel(info).isJavascript();
+    Map<String, Object> validationErrors = session.getValidationErrors();
+    validationErrors.clear();
 
-		public String getJavaScriptContents()
-		{
-			return javaScriptContents;
-		}
+    final LanguageBundleBean bundle = getTitle().getLanguageBundle(info);
+    if (LangUtils.isEmpty(bundle)) {
+      validationErrors.put("title", getTitleMandatoryErrorLabel().getText());
+    }
 
-		public void setJavaScriptContents(String javaScriptContents)
-		{
-			this.javaScriptContents = javaScriptContents;
-		}
+    if (isJavaScript) {
+      String moduleName = moduleNameField.getValue(info);
+      if (!Strings.isNullOrEmpty(moduleName)) {
+        long id = session.getBean().getId();
+        boolean isModuleNameExist = userScriptService.isModuleNameExist(moduleName, id);
+        if (isModuleNameExist) {
+          validationErrors.put("error", LABEL_ERROR_UNIQUE);
+        }
+      } else {
+        validationErrors.put("error", LABEL_ERROR_MANDATORY);
+      }
 
-		public String getFreeMarkerContents()
-		{
-			return freeMarkerContents;
-		}
+      if (Strings.isNullOrEmpty(javascriptEditor.getValue(info))) {
+        validationErrors.put("errors.noscript", ERROR_MESSAGE_EMPTYSCRIPT);
+      }
+    } else {
+      if (Strings.isNullOrEmpty(freemakerEditor.getValue(info))) {
+        validationErrors.put("errors.noscript", ERROR_MESSAGE_EMPTYSCRIPT);
+      }
+    }
+  }
 
-		public void setFreeMarkerContents(String freeMarkerContents)
-		{
-			this.freeMarkerContents = freeMarkerContents;
-		}
+  @Override
+  protected void saveToSession(
+      SectionInfo info,
+      EntityEditingSession<UserScriptEditingBean, UserScript> session,
+      boolean validate) {
+    final UserScriptEditingBean bean = session.getBean();
+    UserScriptEditorModel model = getModel(info);
+    boolean isJavaScript = model.isJavascript();
 
-		public SpanRenderer getSyntaxMessage()
-		{
-			return syntaxMessage;
-		}
+    if (isJavaScript) {
+      bean.setSelection(scriptTypeList.getSelectedValue(info));
+      bean.setScript(javascriptEditor.getValue(info));
+      bean.setModuleName(moduleNameField.getValue(info));
+    } else {
+      bean.setSelection(scriptTypeList.getSelectedValue(info));
+      bean.setScript(freemakerEditor.getValue(info));
+    }
+  }
 
-		public void setSyntaxMessage(SpanRenderer syntaxMessage)
-		{
-			this.syntaxMessage = syntaxMessage;
-		}
+  public class UserScriptEditorModel
+      extends AbstractEntityEditor<UserScriptEditingBean, UserScript, UserScriptEditorModel>
+          .AbstractEntityEditorModel {
+    @Bookmarked private boolean javascript;
+    private SpanRenderer syntaxMessage;
+    private String moduleName;
+    private String javaScriptContents = Constants.BLANK;
+    private String freeMarkerContents = Constants.BLANK;
 
-		public boolean isJavascript()
-		{
-			return javascript;
-		}
+    public String getJavaScriptContents() {
+      return javaScriptContents;
+    }
 
-		public void setJavascript(boolean javascript)
-		{
-			this.javascript = javascript;
-		}
+    public void setJavaScriptContents(String javaScriptContents) {
+      this.javaScriptContents = javaScriptContents;
+    }
 
-		public String getModuleName()
-		{
-			return moduleName;
-		}
+    public String getFreeMarkerContents() {
+      return freeMarkerContents;
+    }
 
-		public void setModuleName(String moduleName)
-		{
-			this.moduleName = moduleName;
-		}
+    public void setFreeMarkerContents(String freeMarkerContents) {
+      this.freeMarkerContents = freeMarkerContents;
+    }
 
-	}
+    public SpanRenderer getSyntaxMessage() {
+      return syntaxMessage;
+    }
 
-	public SingleSelectionList<ScriptTypes> getScriptTypeList()
-	{
-		return scriptTypeList;
-	}
+    public void setSyntaxMessage(SpanRenderer syntaxMessage) {
+      this.syntaxMessage = syntaxMessage;
+    }
 
-	public TextField getModuleNameField()
-	{
-		return moduleNameField;
-	}
+    public boolean isJavascript() {
+      return javascript;
+    }
 
-	public Button getCheckSyntaxButton()
-	{
-		return checkSyntaxButton;
-	}
+    public void setJavascript(boolean javascript) {
+      this.javascript = javascript;
+    }
 
-	public CodeMirror getJavascriptEditor()
-	{
-		return javascriptEditor;
-	}
+    public String getModuleName() {
+      return moduleName;
+    }
 
-	public CodeMirror getFreemakerEditor()
-	{
-		return freemakerEditor;
-	}
+    public void setModuleName(String moduleName) {
+      this.moduleName = moduleName;
+    }
+  }
+
+  public SingleSelectionList<ScriptTypes> getScriptTypeList() {
+    return scriptTypeList;
+  }
+
+  public TextField getModuleNameField() {
+    return moduleNameField;
+  }
+
+  public Button getCheckSyntaxButton() {
+    return checkSyntaxButton;
+  }
+
+  public CodeMirror getJavascriptEditor() {
+    return javascriptEditor;
+  }
+
+  public CodeMirror getFreemakerEditor() {
+    return freemakerEditor;
+  }
 }

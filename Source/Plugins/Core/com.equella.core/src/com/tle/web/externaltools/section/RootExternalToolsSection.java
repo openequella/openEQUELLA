@@ -30,31 +30,27 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.settings.SettingsList;
 
 @Bind
-public class RootExternalToolsSection extends AbstractRootEntitySection<OneColumnLayoutModel>
-{
-	@PlugKey("tools.settings.title")
-	private static Label TITLE_LABEL;
+public class RootExternalToolsSection extends AbstractRootEntitySection<OneColumnLayoutModel> {
+  @PlugKey("tools.settings.title")
+  private static Label TITLE_LABEL;
 
-	@Inject
-	private TLEAclManager aclManager;
+  @Inject private TLEAclManager aclManager;
 
-	@Override
-	protected boolean canView(SectionInfo info)
-	{
-		return !aclManager.filterNonGrantedPrivileges(ExternalToolConstants.PRIV_CREATE_TOOL,
-			ExternalToolConstants.PRIV_EDIT_TOOL).isEmpty();
-	}
+  @Override
+  protected boolean canView(SectionInfo info) {
+    return !aclManager
+        .filterNonGrantedPrivileges(
+            ExternalToolConstants.PRIV_CREATE_TOOL, ExternalToolConstants.PRIV_EDIT_TOOL)
+        .isEmpty();
+  }
 
-	@Override
-	protected Label getTitleLabel(SectionInfo info)
-	{
-		return TITLE_LABEL;
-	}
+  @Override
+  protected Label getTitleLabel(SectionInfo info) {
+    return TITLE_LABEL;
+  }
 
-	@Override
-	protected HtmlLinkState getShowEntitiesLink(SectionInfo info)
-	{
-		return SettingsList.asLinkOrNull(SettingsList.externalToolsSettings());
-	}
+  @Override
+  protected HtmlLinkState getShowEntitiesLink(SectionInfo info) {
+    return SettingsList.asLinkOrNull(SettingsList.externalToolsSettings());
+  }
 }
-

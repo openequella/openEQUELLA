@@ -20,15 +20,16 @@ import com.tle.common.scripting.types.UserScriptType;
 import com.tle.common.usermanagement.user.valuebean.DefaultUserBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 
-/**
- * @author aholland
- */
-public class UserScriptTypeImpl extends DefaultUserBean implements UserScriptType
-{
-	private static final long serialVersionUID = 1L;
+/** @author aholland */
+public class UserScriptTypeImpl extends DefaultUserBean implements UserScriptType {
+  private static final long serialVersionUID = 1L;
 
-	public UserScriptTypeImpl(UserBean user)
-	{
-		super(user.getUniqueID(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress());
-	}
+  public UserScriptTypeImpl(UserBean user) {
+    super(
+        user.getUniqueID(),
+        user.getUsername(),
+        user.getFirstName(),
+        user.getLastName(),
+        user.getEmailAddress());
+  }
 }

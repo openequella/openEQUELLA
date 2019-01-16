@@ -26,51 +26,42 @@ import com.tle.web.sections.events.SectionEvent;
 import com.tle.web.sections.events.js.EventGeneratorListener;
 
 @SuppressWarnings("nls")
-public final class InnerBodyEvent extends UpdateDomEvent
-{
-	private static final String BODY_EVENT = "$UP$<BODY>";
-	private static InnerBodyEvent INSTANCE = new InnerBodyEvent();
+public final class InnerBodyEvent extends UpdateDomEvent {
+  private static final String BODY_EVENT = "$UP$<BODY>";
+  private static InnerBodyEvent INSTANCE = new InnerBodyEvent();
 
-	private InnerBodyEvent()
-	{
-		super(BODY_EVENT, new UpdateDomKey(null, ImmutableSet.of(AjaxGenerator.AJAXID_BODY), null));
-	}
+  private InnerBodyEvent() {
+    super(BODY_EVENT, new UpdateDomKey(null, ImmutableSet.of(AjaxGenerator.AJAXID_BODY), null));
+  }
 
-	@Override
-	public SectionEvent<?> createEvent(SectionInfo info, String[] params)
-	{
-		super.createEvent(info, params);
-		ParametersEvent event = null;
-		if( params.length > 0 )
-		{
-			MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
-			event = new ParametersEvent(EventGeneratorListener.convertToParamMap(params), false);
-			minfo.addParametersEvent(event);
-		}
-		return event;
-	}
+  @Override
+  public SectionEvent<?> createEvent(SectionInfo info, String[] params) {
+    super.createEvent(info, params);
+    ParametersEvent event = null;
+    if (params.length > 0) {
+      MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
+      event = new ParametersEvent(EventGeneratorListener.convertToParamMap(params), false);
+      minfo.addParametersEvent(event);
+    }
+    return event;
+  }
 
-	@Override
-	public int getParameterCount()
-	{
-		return -1;
-	}
+  @Override
+  public int getParameterCount() {
+    return -1;
+  }
 
-	public static void ensureRegistered(SectionTree tree)
-	{
-		EventGeneratorListener listener = EventGeneratorListener.getForTree(tree);
-		synchronized( listener )
-		{
-			if( listener.getRegisteredHandler(BODY_EVENT) == null )
-			{
-				listener.registerHandler(INSTANCE);
-			}
-		}
-	}
+  public static void ensureRegistered(SectionTree tree) {
+    EventGeneratorListener listener = EventGeneratorListener.getForTree(tree);
+    synchronized (listener) {
+      if (listener.getRegisteredHandler(BODY_EVENT) == null) {
+        listener.registerHandler(INSTANCE);
+      }
+    }
+  }
 
-	public static void ensureRegistered(SectionInfo info)
-	{
-		MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
-		ensureRegistered(minfo.getRootTree());
-	}
+  public static void ensureRegistered(SectionInfo info) {
+    MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
+    ensureRegistered(minfo.getRootTree());
+  }
 }

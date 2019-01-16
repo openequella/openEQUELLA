@@ -75,303 +75,283 @@ import com.tle.web.sections.standard.model.Option;
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class BulkRolloverOperation extends AbstractPrototypeSection<Object> implements BulkOperationExtension
-{
-	private static final String BULK_VALUE = "rollover";
+public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
+    implements BulkOperationExtension {
+  private static final String BULK_VALUE = "rollover";
 
-	@PlugKey("operation.rollover.current")
-	private static String KEY_CURRENT;
-	@PlugKey("operation.")
-	private static String KEY_NAME;
-	@PlugKey("opresults.status")
-	private static String KEY_STATUS;
+  @PlugKey("operation.rollover.current")
+  private static String KEY_CURRENT;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @PlugKey("operation.")
+  private static String KEY_NAME;
 
-	@Inject
-	private ActivationService activationService;
+  @PlugKey("opresults.status")
+  private static String KEY_STATUS;
 
-	@Inject
-	private CourseInfoService courseInfoService;
-	@Inject
-	private BundleCache bundleCache;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@EventFactory
-	private EventGenerator events;
+  @Inject private ActivationService activationService;
 
-	@Inject
-	@Component(name = "c")
-	private CourseSelectionList courses;
-	@Component(name = "ce")
-	private Checkbox cancelExisting;
-	@Component(name = "fd")
-	private Calendar fromDate;
-	@Component(name = "td")
-	private Calendar toDate;
-	@Component(name = "rd")
-	private Checkbox rolloverActivationDates;
+  @Inject private CourseInfoService courseInfoService;
+  @Inject private BundleCache bundleCache;
 
-	@BindFactory
-	public interface RolloverExecutorFactory
-	{
-		RolloverActivationExecutor create(long courseId, @Assisted("from") Date from, @Assisted("until") Date until,
-			@Assisted("cancel") boolean cancel, @Assisted("sameCourse") boolean sameCourse,
-			@Assisted("rolloverDates") boolean rolloverDates);
-	}
+  @EventFactory private EventGenerator events;
 
-	public static class RolloverActivationExecutor implements BulkOperationExecutor
-	{
-		private final long courseId;
-		private final Date from;
-		private final Date until;
-		private final boolean cancel;
-		private final boolean sameCourse;
-		private final boolean rolloverDates;
+  @Inject
+  @Component(name = "c")
+  private CourseSelectionList courses;
 
-		@Inject
-		private OperationFactory operationFactory;
-		@Inject
-		private ItemOperationFactory workflowFactory;
+  @Component(name = "ce")
+  private Checkbox cancelExisting;
 
-		@Inject
-		public RolloverActivationExecutor(@Assisted long courseId, @Assisted("from") Date from,
-			@Assisted("until") Date until, @Assisted("cancel") boolean cancel,
-			@Assisted("sameCourse") boolean sameCourse, @Assisted("rolloverDates") boolean rolloverDates)
-		{
-			this.courseId = courseId;
-			this.from = from;
-			this.until = until;
-			this.cancel = cancel;
-			this.sameCourse = sameCourse;
-			this.rolloverDates = rolloverDates;
-		}
+  @Component(name = "fd")
+  private Calendar fromDate;
 
-		@Override
-		public WorkflowOperation[] getOperations()
-		{
-			RolloverOperation rollover = operationFactory.createRollover(courseId, from, until);
-			rollover.setUseSameCourse(sameCourse);
-			rollover.setRolloverDates(rolloverDates);
-			rollover.setCancel(cancel);
-			return new WorkflowOperation[]{rollover, workflowFactory.reindexOnly(true)};
-		}
+  @Component(name = "td")
+  private Calendar toDate;
 
-		@Override
-		public String getTitleKey()
-		{
-			return "com.tle.web.activation.bulk.rollover.title";
-		}
-	}
+  @Component(name = "rd")
+  private Checkbox rolloverActivationDates;
 
-	@Override
-	public BeanLocator<BulkOperationExecutor> getExecutor(SectionInfo info, String operationId)
-	{
-		CourseInfo course = courses.getSelectedValue(info);
-		boolean sameCourse = course == null;
-		long courseId = sameCourse ? 0 : course.getId();
-		boolean cancel = cancelExisting.isChecked(info);
-		boolean rolloverDates = rolloverActivationDates.isChecked(info);
+  @BindFactory
+  public interface RolloverExecutorFactory {
+    RolloverActivationExecutor create(
+        long courseId,
+        @Assisted("from") Date from,
+        @Assisted("until") Date until,
+        @Assisted("cancel") boolean cancel,
+        @Assisted("sameCourse") boolean sameCourse,
+        @Assisted("rolloverDates") boolean rolloverDates);
+  }
 
-		Date from = toDate(fromDate.getDate(info));
-		Date until = toDate(toDate.getDate(info));
-		from = from == null ? new Date() : from;
-		until = until == null ? new Date() : until;
+  public static class RolloverActivationExecutor implements BulkOperationExecutor {
+    private final long courseId;
+    private final Date from;
+    private final Date until;
+    private final boolean cancel;
+    private final boolean sameCourse;
+    private final boolean rolloverDates;
 
-		return new FactoryMethodLocator<BulkOperationExecutor>(RolloverExecutorFactory.class, "create", courseId, from,
-			until, cancel, sameCourse, rolloverDates);
-	}
+    @Inject private OperationFactory operationFactory;
+    @Inject private ItemOperationFactory workflowFactory;
 
-	@Nullable
-	private Date toDate(@Nullable TleDate date)
-	{
-		if( date == null )
-		{
-			return null;
-		}
-		// treat user's midnight 'today' as right now
-		final LocalDate nowLocal = new LocalDate(new UtcDate(), CurrentTimeZone.get());
-		if( date.conceptualDate().equals(nowLocal.conceptualDate()) )
-		{
-			return nowLocal.toDate();
-		}
-		// treat user's midnight 'tomorrow' as right now +24hours
-		final LocalDate tomorrowLocal = nowLocal.addDays(1);
-		if( date.conceptualDate().equals(tomorrowLocal.conceptualDate()) )
-		{
-			return tomorrowLocal.toDate();
-		}
+    @Inject
+    public RolloverActivationExecutor(
+        @Assisted long courseId,
+        @Assisted("from") Date from,
+        @Assisted("until") Date until,
+        @Assisted("cancel") boolean cancel,
+        @Assisted("sameCourse") boolean sameCourse,
+        @Assisted("rolloverDates") boolean rolloverDates) {
+      this.courseId = courseId;
+      this.from = from;
+      this.until = until;
+      this.cancel = cancel;
+      this.sameCourse = sameCourse;
+      this.rolloverDates = rolloverDates;
+    }
 
-		return UtcDate.convertUtcMidnightToLocalMidnight(date, CurrentTimeZone.get()).toDate();
-	}
+    @Override
+    public WorkflowOperation[] getOperations() {
+      RolloverOperation rollover = operationFactory.createRollover(courseId, from, until);
+      rollover.setUseSameCourse(sameCourse);
+      rollover.setRolloverDates(rolloverDates);
+      rollover.setCancel(cancel);
+      return new WorkflowOperation[] {rollover, workflowFactory.reindexOnly(true)};
+    }
 
-	@Override
-	public void addOptions(SectionInfo info, List<Option<OperationInfo>> opsList)
-	{
-		opsList
-			.add(new KeyOption<OperationInfo>(KEY_NAME + BULK_VALUE, BULK_VALUE, new OperationInfo(this, BULK_VALUE)));
-	}
+    @Override
+    public String getTitleKey() {
+      return "com.tle.web.activation.bulk.rollover.title";
+    }
+  }
 
-	@Override
-	public Label getStatusTitleLabel(SectionInfo info, String operationId)
-	{
-		return new KeyLabel(KEY_STATUS, new KeyLabel(KEY_NAME + operationId + ".title"));
-	}
+  @Override
+  public BeanLocator<BulkOperationExecutor> getExecutor(SectionInfo info, String operationId) {
+    CourseInfo course = courses.getSelectedValue(info);
+    boolean sameCourse = course == null;
+    long courseId = sameCourse ? 0 : course.getId();
+    boolean cancel = cancelExisting.isChecked(info);
+    boolean rolloverDates = rolloverActivationDates.isChecked(info);
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		CourseListModel courseListModel = new CourseListModel();
-		courseListModel.setSort(true);
-		courses.setEventHandler(JSHandler.EVENT_CHANGE, events.getNamedHandler("updateDatesFromCourse"));
+    Date from = toDate(fromDate.getDate(info));
+    Date until = toDate(toDate.getDate(info));
+    from = from == null ? new Date() : from;
+    until = until == null ? new Date() : until;
 
-		fromDate.setEventHandler(JSHandler.EVENT_CHANGE, new ReloadHandler());
-		toDate.setEventHandler(JSHandler.EVENT_CHANGE, new ReloadHandler());
-		rolloverActivationDates.setClickHandler(events.getNamedHandler("useExistingDates"));
-	}
+    return new FactoryMethodLocator<BulkOperationExecutor>(
+        RolloverExecutorFactory.class,
+        "create",
+        courseId,
+        from,
+        until,
+        cancel,
+        sameCourse,
+        rolloverDates);
+  }
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-	}
+  @Nullable
+  private Date toDate(@Nullable TleDate date) {
+    if (date == null) {
+      return null;
+    }
+    // treat user's midnight 'today' as right now
+    final LocalDate nowLocal = new LocalDate(new UtcDate(), CurrentTimeZone.get());
+    if (date.conceptualDate().equals(nowLocal.conceptualDate())) {
+      return nowLocal.toDate();
+    }
+    // treat user's midnight 'tomorrow' as right now +24hours
+    final LocalDate tomorrowLocal = nowLocal.addDays(1);
+    if (date.conceptualDate().equals(tomorrowLocal.conceptualDate())) {
+      return tomorrowLocal.toDate();
+    }
 
-	@EventHandlerMethod
-	public void useExistingDates(SectionInfo info)
-	{
-		fromDate.setDisabled(info, rolloverActivationDates.isChecked(info));
-		toDate.setDisabled(info, rolloverActivationDates.isChecked(info));
-	}
+    return UtcDate.convertUtcMidnightToLocalMidnight(date, CurrentTimeZone.get()).toDate();
+  }
 
-	@Override
-	public boolean validateOptions(SectionInfo info, String operationId)
-	{
-		return (rolloverActivationDates.isChecked(info))
-			|| (fromDate.getDate(info) != null && toDate.getDate(info) != null);
-	}
+  @Override
+  public void addOptions(SectionInfo info, List<Option<OperationInfo>> opsList) {
+    opsList.add(
+        new KeyOption<OperationInfo>(
+            KEY_NAME + BULK_VALUE, BULK_VALUE, new OperationInfo(this, BULK_VALUE)));
+  }
 
-	@Override
-	public boolean areOptionsFinished(SectionInfo info, String operationId)
-	{
-		return validateOptions(info, operationId);
-	}
+  @Override
+  public Label getStatusTitleLabel(SectionInfo info, String operationId) {
+    return new KeyLabel(KEY_STATUS, new KeyLabel(KEY_NAME + operationId + ".title"));
+  }
 
-	@Override
-	public boolean hasExtraOptions(SectionInfo info, String operationId)
-	{
-		return true;
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    CourseListModel courseListModel = new CourseListModel();
+    courseListModel.setSort(true);
+    courses.setEventHandler(
+        JSHandler.EVENT_CHANGE, events.getNamedHandler("updateDatesFromCourse"));
 
-	@Override
-	public SectionRenderable renderOptions(RenderContext context, String operationId)
-	{
-		return viewFactory.createResult("rolloveractivations.ftl", this);
-	}
+    fromDate.setEventHandler(JSHandler.EVENT_CHANGE, new ReloadHandler());
+    toDate.setEventHandler(JSHandler.EVENT_CHANGE, new ReloadHandler());
+    rolloverActivationDates.setClickHandler(events.getNamedHandler("useExistingDates"));
+  }
 
-	@Nullable
-	protected List<CourseInfo> listCourses(SectionInfo info)
-	{
-		List<CourseInfo> courseList = courseInfoService.query(new EnumerateOptions().setIncludeDisabled(true));
-		if( courseList.isEmpty() )
-		{
-			return null; // fatalError(context, null,
-			// "activatecal.error.nocourses");
-		}
-		return courseList;
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+  }
 
-	public class CourseListModel extends DynamicHtmlListModel<CourseInfo>
-	{
-		@Nullable
-		@Override
-		protected Iterable<CourseInfo> populateModel(SectionInfo info)
-		{
-			return listCourses(info);
-		}
+  @EventHandlerMethod
+  public void useExistingDates(SectionInfo info) {
+    fromDate.setDisabled(info, rolloverActivationDates.isChecked(info));
+    toDate.setDisabled(info, rolloverActivationDates.isChecked(info));
+  }
 
-		@Override
-		protected Option<CourseInfo> getTopOption()
-		{
-			return new KeyOption<CourseInfo>(KEY_CURRENT, "", null);
-		}
+  @Override
+  public boolean validateOptions(SectionInfo info, String operationId) {
+    return (rolloverActivationDates.isChecked(info))
+        || (fromDate.getDate(info) != null && toDate.getDate(info) != null);
+  }
 
-		@Override
-		protected Option<CourseInfo> convertToOption(SectionInfo info, CourseInfo course)
-		{
-			return new NameValueOption<CourseInfo>(new BundleNameValue(course.getName(), course.getUuid(), bundleCache),
-				course);
-		}
-	}
+  @Override
+  public boolean areOptionsFinished(SectionInfo info, String operationId) {
+    return validateOptions(info, operationId);
+  }
 
-	public SingleSelectionList<CourseInfo> getCourses()
-	{
-		return courses;
-	}
+  @Override
+  public boolean hasExtraOptions(SectionInfo info, String operationId) {
+    return true;
+  }
 
-	public Checkbox getCancelExisting()
-	{
-		return cancelExisting;
-	}
+  @Override
+  public SectionRenderable renderOptions(RenderContext context, String operationId) {
+    return viewFactory.createResult("rolloveractivations.ftl", this);
+  }
 
-	public Calendar getFromDate()
-	{
-		return fromDate;
-	}
+  @Nullable
+  protected List<CourseInfo> listCourses(SectionInfo info) {
+    List<CourseInfo> courseList =
+        courseInfoService.query(new EnumerateOptions().setIncludeDisabled(true));
+    if (courseList.isEmpty()) {
+      return null; // fatalError(context, null,
+      // "activatecal.error.nocourses");
+    }
+    return courseList;
+  }
 
-	public Calendar getToDate()
-	{
-		return toDate;
-	}
+  public class CourseListModel extends DynamicHtmlListModel<CourseInfo> {
+    @Nullable
+    @Override
+    protected Iterable<CourseInfo> populateModel(SectionInfo info) {
+      return listCourses(info);
+    }
 
-	public Checkbox getrolloverActivationDates()
-	{
-		return rolloverActivationDates;
-	}
+    @Override
+    protected Option<CourseInfo> getTopOption() {
+      return new KeyOption<CourseInfo>(KEY_CURRENT, "", null);
+    }
 
-	@Override
-	public void prepareDefaultOptions(SectionInfo info, String operationId)
-	{
-		updateDatesFromCourse(info);
-	}
+    @Override
+    protected Option<CourseInfo> convertToOption(SectionInfo info, CourseInfo course) {
+      return new NameValueOption<CourseInfo>(
+          new BundleNameValue(course.getName(), course.getUuid(), bundleCache), course);
+    }
+  }
 
-	@EventHandlerMethod
-	public void updateDatesFromCourse(SectionInfo info)
-	{
-		CourseInfo course = courses.getSelectedValue(info);
-		UtcDate[] dates = activationService.getDefaultCourseDates(course);
-		// set the default control values
-		fromDate.setDate(info, dates[0]);
-		toDate.setDate(info, dates[1]);
-	}
+  public SingleSelectionList<CourseInfo> getCourses() {
+    return courses;
+  }
 
-	@Override
-	public boolean hasExtraNavigation(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+  public Checkbox getCancelExisting() {
+    return cancelExisting;
+  }
 
-	@Override
-	public Collection<Button> getExtraNavigation(SectionInfo info, String operationId)
-	{
-		return null;
-	}
+  public Calendar getFromDate() {
+    return fromDate;
+  }
 
-	@Override
-	public boolean hasPreview(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+  public Calendar getToDate() {
+    return toDate;
+  }
 
-	@Override
-	public ItemPack runPreview(SectionInfo info, String operationId, long itemUuid)
-	{
-		return null;
-	}
+  public Checkbox getrolloverActivationDates() {
+    return rolloverActivationDates;
+  }
 
-	@Override
-	public boolean showPreviousButton(SectionInfo info, String opererationId)
-	{
-		return true;
-	}
+  @Override
+  public void prepareDefaultOptions(SectionInfo info, String operationId) {
+    updateDatesFromCourse(info);
+  }
+
+  @EventHandlerMethod
+  public void updateDatesFromCourse(SectionInfo info) {
+    CourseInfo course = courses.getSelectedValue(info);
+    UtcDate[] dates = activationService.getDefaultCourseDates(course);
+    // set the default control values
+    fromDate.setDate(info, dates[0]);
+    toDate.setDate(info, dates[1]);
+  }
+
+  @Override
+  public boolean hasExtraNavigation(SectionInfo info, String operationId) {
+    return false;
+  }
+
+  @Override
+  public Collection<Button> getExtraNavigation(SectionInfo info, String operationId) {
+    return null;
+  }
+
+  @Override
+  public boolean hasPreview(SectionInfo info, String operationId) {
+    return false;
+  }
+
+  @Override
+  public ItemPack runPreview(SectionInfo info, String operationId, long itemUuid) {
+    return null;
+  }
+
+  @Override
+  public boolean showPreviousButton(SectionInfo info, String opererationId) {
+    return true;
+  }
 }

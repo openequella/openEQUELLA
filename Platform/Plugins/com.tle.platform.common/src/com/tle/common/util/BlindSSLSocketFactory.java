@@ -36,148 +36,123 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * BlindSSLSocketFactoryTest Simple test to show an Active Directory (LDAP) and
- * HTTPS connection without verifying the server's certificate.
- * http://blog.platinumsolutions.com/node/79
- * 
+ * BlindSSLSocketFactoryTest Simple test to show an Active Directory (LDAP) and HTTPS connection
+ * without verifying the server's certificate. http://blog.platinumsolutions.com/node/79
+ *
  * @author Mike McKinney, Platinum Solutions, Inc.
  */
 @SuppressWarnings("nls")
-public class BlindSSLSocketFactory extends SSLSocketFactory
-{
-	private static final Logger LOGGER = LoggerFactory.getLogger(BlindSSLSocketFactory.class);
-	private static SSLSocketFactory originalFactory;
-	private static HostnameVerifier originalHostnameVerifier;
+public class BlindSSLSocketFactory extends SSLSocketFactory {
+  private static final Logger LOGGER = LoggerFactory.getLogger(BlindSSLSocketFactory.class);
+  private static SSLSocketFactory originalFactory;
+  private static HostnameVerifier originalHostnameVerifier;
 
-	public static SSLContext createBlindSSLContext()
-	{
-		// Create a trust manager that will purposefully fall down on the job
-		TrustManager[] blindTrustMan = new TrustManager[]{new X509TrustManager()
-		{
-			@Override
-			public X509Certificate[] getAcceptedIssuers()
-			{
-				return null;
-			}
+  public static SSLContext createBlindSSLContext() {
+    // Create a trust manager that will purposefully fall down on the job
+    TrustManager[] blindTrustMan =
+        new TrustManager[] {
+          new X509TrustManager() {
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+              return null;
+            }
 
-			@Override
-			public void checkClientTrusted(X509Certificate[] c, String a)
-			{
-				// Ignore
-			}
+            @Override
+            public void checkClientTrusted(X509Certificate[] c, String a) {
+              // Ignore
+            }
 
-			@Override
-			public void checkServerTrusted(X509Certificate[] c, String a)
-			{
-				// IGNORE
-			}
-		}};
+            @Override
+            public void checkServerTrusted(X509Certificate[] c, String a) {
+              // IGNORE
+            }
+          }
+        };
 
-		// create our "blind" ssl socket factory with our lazy trust manager
-		try
-		{
-			SSLContext sc = SSLContext.getInstance("SSL");
-			sc.init(null, blindTrustMan, new SecureRandom());
-			return sc;
-		}
-		catch( GeneralSecurityException ex )
-		{
-			throw new RuntimeException("Error creating blind SSL context", ex);
-		}
-	}
+    // create our "blind" ssl socket factory with our lazy trust manager
+    try {
+      SSLContext sc = SSLContext.getInstance("SSL");
+      sc.init(null, blindTrustMan, new SecureRandom());
+      return sc;
+    } catch (GeneralSecurityException ex) {
+      throw new RuntimeException("Error creating blind SSL context", ex);
+    }
+  }
 
-	private static SSLSocketFactory blindFactory = createBlindSSLContext().getSocketFactory();
+  private static SSLSocketFactory blindFactory = createBlindSSLContext().getSocketFactory();
 
-	/**
-	 * @see javax.net.SocketFactory#getDefault()
-	 */
-	public static synchronized SocketFactory getDefault()
-	{
-		return new BlindSSLSocketFactory();
-	}
+  /** @see javax.net.SocketFactory#getDefault() */
+  public static synchronized SocketFactory getDefault() {
+    return new BlindSSLSocketFactory();
+  }
 
-	public static SSLSocketFactory getDefaultSSL()
-	{
-		return new BlindSSLSocketFactory();
-	}
+  public static SSLSocketFactory getDefaultSSL() {
+    return new BlindSSLSocketFactory();
+  }
 
-	/**
-	 * Easy way of not worrying about stupid SSL validation.
-	 */
-	public static void register()
-	{
-		if( !(HttpsURLConnection.getDefaultSSLSocketFactory() instanceof BlindSSLSocketFactory) )
-		{
-			originalFactory = HttpsURLConnection.getDefaultSSLSocketFactory();
-			originalHostnameVerifier = HttpsURLConnection.getDefaultHostnameVerifier();
-			LOGGER.info("Registering BlindSSLSocketFactory");
+  /** Easy way of not worrying about stupid SSL validation. */
+  public static void register() {
+    if (!(HttpsURLConnection.getDefaultSSLSocketFactory() instanceof BlindSSLSocketFactory)) {
+      originalFactory = HttpsURLConnection.getDefaultSSLSocketFactory();
+      originalHostnameVerifier = HttpsURLConnection.getDefaultHostnameVerifier();
+      LOGGER.info("Registering BlindSSLSocketFactory");
 
-			HttpsURLConnection.setDefaultSSLSocketFactory(getDefaultSSL());
-			// I'm not sure if you need this...
-			HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier()
-			{
-				@Override
-				public boolean verify(String hostname, SSLSession session)
-				{
-					return true;
-				}
-			});
-		}
-	}
+      HttpsURLConnection.setDefaultSSLSocketFactory(getDefaultSSL());
+      // I'm not sure if you need this...
+      HttpsURLConnection.setDefaultHostnameVerifier(
+          new HostnameVerifier() {
+            @Override
+            public boolean verify(String hostname, SSLSession session) {
+              return true;
+            }
+          });
+    }
+  }
 
-	@Override
-	protected void finalize() throws Throwable
-	{
-		if( originalFactory != null )
-		{
-			HttpsURLConnection.setDefaultSSLSocketFactory(originalFactory);
-		}
-		if( originalHostnameVerifier != null )
-		{
-			HttpsURLConnection.setDefaultHostnameVerifier(originalHostnameVerifier);
-		}
-		super.finalize();
-	}
+  @Override
+  protected void finalize() throws Throwable {
+    if (originalFactory != null) {
+      HttpsURLConnection.setDefaultSSLSocketFactory(originalFactory);
+    }
+    if (originalHostnameVerifier != null) {
+      HttpsURLConnection.setDefaultHostnameVerifier(originalHostnameVerifier);
+    }
+    super.finalize();
+  }
 
-	@Override
-	public Socket createSocket(String arg0, int arg1) throws IOException
-	{
-		return blindFactory.createSocket(arg0, arg1);
-	}
+  @Override
+  public Socket createSocket(String arg0, int arg1) throws IOException {
+    return blindFactory.createSocket(arg0, arg1);
+  }
 
-	@Override
-	public Socket createSocket(InetAddress arg0, int arg1) throws IOException
-	{
-		return blindFactory.createSocket(arg0, arg1);
-	}
+  @Override
+  public Socket createSocket(InetAddress arg0, int arg1) throws IOException {
+    return blindFactory.createSocket(arg0, arg1);
+  }
 
-	@Override
-	public Socket createSocket(String arg0, int arg1, InetAddress arg2, int arg3) throws IOException
-	{
-		return blindFactory.createSocket(arg0, arg1, arg2, arg3);
-	}
+  @Override
+  public Socket createSocket(String arg0, int arg1, InetAddress arg2, int arg3) throws IOException {
+    return blindFactory.createSocket(arg0, arg1, arg2, arg3);
+  }
 
-	@Override
-	public Socket createSocket(InetAddress arg0, int arg1, InetAddress arg2, int arg3) throws IOException
-	{
-		return blindFactory.createSocket(arg0, arg1, arg2, arg3);
-	}
+  @Override
+  public Socket createSocket(InetAddress arg0, int arg1, InetAddress arg2, int arg3)
+      throws IOException {
+    return blindFactory.createSocket(arg0, arg1, arg2, arg3);
+  }
 
-	@Override
-	public Socket createSocket(Socket socket, String s, int i, boolean flag) throws IOException
-	{
-		return blindFactory.createSocket(socket, s, i, flag);
-	}
+  @Override
+  public Socket createSocket(Socket socket, String s, int i, boolean flag) throws IOException {
+    return blindFactory.createSocket(socket, s, i, flag);
+  }
 
-	@Override
-	public String[] getDefaultCipherSuites()
-	{
-		return blindFactory.getDefaultCipherSuites();
-	}
+  @Override
+  public String[] getDefaultCipherSuites() {
+    return blindFactory.getDefaultCipherSuites();
+  }
 
-	@Override
-	public String[] getSupportedCipherSuites()
-	{
-		return blindFactory.getSupportedCipherSuites();
-	}
+  @Override
+  public String[] getSupportedCipherSuites() {
+    return blindFactory.getSupportedCipherSuites();
+  }
 }

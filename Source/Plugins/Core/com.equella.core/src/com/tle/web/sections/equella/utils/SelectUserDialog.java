@@ -46,191 +46,159 @@ import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
 
 /**
- * Note: the okCallback is event handler of signature: handler(SectionInfo info,
- * String usersJson) where usersJson is an array of
- * SelectUserDialog.SelectedUser objects in JSON format. Use
- * SelectUserDialog.userFromJsonString(String) or
- * SelectUserDialog.usersFromJsonString(String) to deserialise the string.
- * 
+ * Note: the okCallback is event handler of signature: handler(SectionInfo info, String usersJson)
+ * where usersJson is an array of SelectUserDialog.SelectedUser objects in JSON format. Use
+ * SelectUserDialog.userFromJsonString(String) or SelectUserDialog.usersFromJsonString(String) to
+ * deserialise the string.
+ *
  * @author aholland
  */
 @SuppressWarnings("nls")
 @Bind
 @NonNullByDefault
-public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Model>
-{
-	static
-	{
-		PluginResourceHandler.init(SelectUserDialog.class);
-	}
+public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Model> {
+  static {
+    PluginResourceHandler.init(SelectUserDialog.class);
+  }
 
-	private static final int WIDTH = 550;
+  private static final int WIDTH = 550;
 
-	private CurrentUsersCallback currentUsersCallback;
-	@Inject
-	protected SelectUserSection section;
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  private CurrentUsersCallback currentUsersCallback;
+  @Inject protected SelectUserSection section;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@PlugKey("utils.selectuserdialog.default.title")
-	private static Label LABEL_DEFAULT_TITLE;
+  @PlugKey("utils.selectuserdialog.default.title")
+  private static Label LABEL_DEFAULT_TITLE;
 
-	@PlugKey("utils.selectuserdialog.selecttheseusers")
-	private static String KEY_MULTIPLE_USERS;
+  @PlugKey("utils.selectuserdialog.selecttheseusers")
+  private static String KEY_MULTIPLE_USERS;
 
-	@PlugKey("utils.selectuserdialog.selectthisuser")
-	private static String KEY_SINGLE_USER;
+  @PlugKey("utils.selectuserdialog.selectthisuser")
+  private static String KEY_SINGLE_USER;
 
-	private Label title = LABEL_DEFAULT_TITLE;
+  private Label title = LABEL_DEFAULT_TITLE;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		setAjax(true);
-		tree.registerSubInnerSection(section, id);
-	}
+    setAjax(true);
+    tree.registerSubInnerSection(section, id);
+  }
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return title;
-	}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return title;
+  }
 
-	public static Label getTitleLabel()
-	{
-		return LABEL_DEFAULT_TITLE;
-	}
+  public static Label getTitleLabel() {
+    return LABEL_DEFAULT_TITLE;
+  }
 
-	@Override
-	public void showDialog(SectionInfo info)
-	{
-		super.showDialog(info);
-		if( currentUsersCallback != null )
-		{
-			section.setSelections(info, currentUsersCallback.getCurrentSelectedUsers(info));
-		}
-		else
-		{
-			section.setSelections(info, null);
-		}
-	}
+  @Override
+  public void showDialog(SectionInfo info) {
+    super.showDialog(info);
+    if (currentUsersCallback != null) {
+      section.setSelections(info, currentUsersCallback.getCurrentSelectedUsers(info));
+    } else {
+      section.setSelections(info, null);
+    }
+  }
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		getModel(context).setInnerContents(renderSection(context, section));
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    getModel(context).setInnerContents(renderSection(context, section));
 
-		return viewFactory.createResult("utils/selectuserdialog.ftl", this);
-	}
+    return viewFactory.createResult("utils/selectuserdialog.ftl", this);
+  }
 
-	@Override
-	public String getWidth()
-	{
-		return WIDTH + "px";
-	}
+  @Override
+  public String getWidth() {
+    return WIDTH + "px";
+  }
 
-	@Override
-	protected JSHandler createOkHandler(SectionTree tree)
-	{
-		return events.getNamedHandler("returnResults");
-	}
+  @Override
+  protected JSHandler createOkHandler(SectionTree tree) {
+    return events.getNamedHandler("returnResults");
+  }
 
-	@EventHandlerMethod
-	public void returnResults(SectionInfo info)
-	{
-		section.addUsers(info);
-		final List<SelectedUser> selections = section.getSelections(info);
-		Object[] array;
-		if( selections != null )
-		{
-			array = selections.toArray();
-		}
-		else
-		{
-			array = new SelectedUser[]{};
-		}
-		String users = JSONArray.fromObject(array).toString();
+  @EventHandlerMethod
+  public void returnResults(SectionInfo info) {
+    section.addUsers(info);
+    final List<SelectedUser> selections = section.getSelections(info);
+    Object[] array;
+    if (selections != null) {
+      array = selections.toArray();
+    } else {
+      array = new SelectedUser[] {};
+    }
+    String users = JSONArray.fromObject(array).toString();
 
-		info.getRootRenderContext().setRenderedBody(
-			new CloseWindowResult(jscall(getCloseFunction()), jscall(getOkCallback(), users)));
-	}
+    info.getRootRenderContext()
+        .setRenderedBody(
+            new CloseWindowResult(jscall(getCloseFunction()), jscall(getOkCallback(), users)));
+  }
 
-	@Override
-	public Model instantiateDialogModel(@Nullable SectionInfo info)
-	{
-		return new Model();
-	}
+  @Override
+  public Model instantiateDialogModel(@Nullable SectionInfo info) {
+    return new Model();
+  }
 
-	public interface CurrentUsersCallback
-	{
-		List<SelectedUser> getCurrentSelectedUsers(SectionInfo info);
-	}
+  public interface CurrentUsersCallback {
+    List<SelectedUser> getCurrentSelectedUsers(SectionInfo info);
+  }
 
-	public void setUsersCallback(CurrentUsersCallback usersCallback)
-	{
-		currentUsersCallback = usersCallback;
-	}
+  public void setUsersCallback(CurrentUsersCallback usersCallback) {
+    currentUsersCallback = usersCallback;
+  }
 
-	@SuppressWarnings({"unchecked", "deprecation"})
-	public static List<SelectedUser> usersFromJsonString(String usersJson)
-	{
-		return JSONArray.toList(JSONArray.fromObject(usersJson), SelectedUser.class);
-	}
+  @SuppressWarnings({"unchecked", "deprecation"})
+  public static List<SelectedUser> usersFromJsonString(String usersJson) {
+    return JSONArray.toList(JSONArray.fromObject(usersJson), SelectedUser.class);
+  }
 
-	@Nullable
-	public static SelectedUser userFromJsonString(String usersJson)
-	{
-		final List<SelectedUser> users = usersFromJsonString(usersJson);
-		if( Check.isEmpty(users) )
-		{
-			return null;
-		}
-		return users.get(0);
-	}
+  @Nullable
+  public static SelectedUser userFromJsonString(String usersJson) {
+    final List<SelectedUser> users = usersFromJsonString(usersJson);
+    if (Check.isEmpty(users)) {
+      return null;
+    }
+    return users.get(0);
+  }
 
-	@Override
-	protected Label getOkLabel()
-	{
-		final boolean multiple = section.isMultipleUsers();
-		final String okeyDokey = (multiple ? KEY_MULTIPLE_USERS : KEY_SINGLE_USER);
+  @Override
+  protected Label getOkLabel() {
+    final boolean multiple = section.isMultipleUsers();
+    final String okeyDokey = (multiple ? KEY_MULTIPLE_USERS : KEY_SINGLE_USER);
 
-		return new KeyLabel(okeyDokey);
-	}
+    return new KeyLabel(okeyDokey);
+  }
 
-	public void setMultipleUsers(boolean b)
-	{
-		section.setMultipleUsers(b);
-	}
+  public void setMultipleUsers(boolean b) {
+    section.setMultipleUsers(b);
+  }
 
-	public void setGroupFilter(Set<String> filter)
-	{
-		section.setGroupFilter(filter);
-	}
+  public void setGroupFilter(Set<String> filter) {
+    section.setGroupFilter(filter);
+  }
 
-	public static class Model extends DialogModel
-	{
-		private SectionRenderable innerContents;
+  public static class Model extends DialogModel {
+    private SectionRenderable innerContents;
 
-		public SectionRenderable getInnerContents()
-		{
-			return innerContents;
-		}
+    public SectionRenderable getInnerContents() {
+      return innerContents;
+    }
 
-		public void setInnerContents(SectionRenderable innerContents)
-		{
-			this.innerContents = innerContents;
-		}
-	}
+    public void setInnerContents(SectionRenderable innerContents) {
+      this.innerContents = innerContents;
+    }
+  }
 
-	public void setTitle(Label title)
-	{
-		this.title = title;
-	}
+  public void setTitle(Label title) {
+    this.title = title;
+  }
 
-	public void setPrompt(Label prompt)
-	{
-		section.setPrompt(prompt);
-	}
+  public void setPrompt(Label prompt) {
+    section.setPrompt(prompt);
+  }
 }

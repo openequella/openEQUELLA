@@ -27,14 +27,11 @@ import com.tle.core.guice.Bind;
 
 @Bind(StagingCleanupService.class)
 @Singleton
-public class StagingCleanupServiceImpl implements StagingCleanupService, UserSessionLogoutListener
-{
-	@Inject
-	private StagingService stagingService;
+public class StagingCleanupServiceImpl implements StagingCleanupService, UserSessionLogoutListener {
+  @Inject private StagingService stagingService;
 
-	@Override
-	public void userSessionDestroyedEvent(final UserSessionLogoutEvent event)
-	{
-		stagingService.removeAllStagingAreas(event.getSessionId());
-	}
+  @Override
+  public void userSessionDestroyedEvent(final UserSessionLogoutEvent event) {
+    stagingService.removeAllStagingAreas(event.getSessionId());
+  }
 }

@@ -45,78 +45,61 @@ import com.tle.core.services.user.UserService;
 @Deprecated
 @Bind
 @Singleton
-public class SearchScriptWrapper implements ScriptObject
-{
-	private static final long serialVersionUID = 1L;
+public class SearchScriptWrapper implements ScriptObject {
+  private static final long serialVersionUID = 1L;
 
-	@Inject
-	private FreeTextService freeTextService;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private ItemDefinitionService itemDefinitionService;
-	@Inject
-	private UserService userService;
+  @Inject private FreeTextService freeTextService;
+  @Inject private ItemService itemService;
+  @Inject private ItemDefinitionService itemDefinitionService;
+  @Inject private UserService userService;
 
-	public DefaultSearch createSearchObject()
-	{
-		return new DefaultSearch();
-	}
+  public DefaultSearch createSearchObject() {
+    return new DefaultSearch();
+  }
 
-	public SearchResults search(DefaultSearch search, int start, int offset)
-	{
-		return freeTextService.search(search, start, offset);
-	}
+  public SearchResults search(DefaultSearch search, int start, int offset) {
+    return freeTextService.search(search, start, offset);
+  }
 
-	public PropBagEx getXml(Item item)
-	{
-		return itemService.getItemXmlPropBag(item);
-	}
+  public PropBagEx getXml(Item item) {
+    return itemService.getItemXmlPropBag(item);
+  }
 
-	public ItemDefinition getItemdefFromUuid(String uuid)
-	{
-		return itemDefinitionService.getByUuid(uuid);
-	}
+  public ItemDefinition getItemdefFromUuid(String uuid) {
+    return itemDefinitionService.getByUuid(uuid);
+  }
 
-	public ItemStatus getItemStatus(String status)
-	{
-		return ItemStatus.valueOf(status.toUpperCase());
-	}
+  public ItemStatus getItemStatus(String status) {
+    return ItemStatus.valueOf(status.toUpperCase());
+  }
 
-	public SortType getSortType(String type)
-	{
-		return SortType.valueOf(type.toUpperCase());
-	}
+  public SortType getSortType(String type) {
+    return SortType.valueOf(type.toUpperCase());
+  }
 
-	public Date getDate(String date, String format) throws ParseException
-	{
-		return new SimpleDateFormat(format).parse(date);
-	}
+  public Date getDate(String date, String format) throws ParseException {
+    return new SimpleDateFormat(format).parse(date);
+  }
 
-	public FreeTextQuery getFreeTextQuery(String query)
-	{
-		return WhereParser.parse(query);
-	}
+  public FreeTextQuery getFreeTextQuery(String query) {
+    return WhereParser.parse(query);
+  }
 
-	public List<UserBean> searchUsers(String query)
-	{
-		return userService.searchUsers(query);
-	}
+  public List<UserBean> searchUsers(String query) {
+    return userService.searchUsers(query);
+  }
 
-	public List<GroupBean> searchGroups(String query)
-	{
-		return userService.searchGroups(query);
-	}
+  public List<GroupBean> searchGroups(String query) {
+    return userService.searchGroups(query);
+  }
 
-	@Override
-	public void scriptEnter()
-	{
-		// Nothing by default
-	}
+  @Override
+  public void scriptEnter() {
+    // Nothing by default
+  }
 
-	@Override
-	public void scriptExit()
-	{
-		// Nothing by default
-	}
+  @Override
+  public void scriptExit() {
+    // Nothing by default
+  }
 }

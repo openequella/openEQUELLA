@@ -32,25 +32,22 @@ import com.tle.core.xml.service.XmlService;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class AddScormMimeTypeXmlMigration extends XmlMigrator
-{
-	@Inject
-	private XmlService xmlService;
+public class AddScormMimeTypeXmlMigration extends XmlMigrator {
+  @Inject private XmlService xmlService;
 
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
-	{
-		SubTemporaryFile mimeFolder = MimeEntryConverter.getMimeFolder(staging);
-		MimeEntry mimeEntry = new MimeEntry();
-		mimeEntry.setDescription("SCORM Package");
-		mimeEntry.setType("equella/scorm-package");
-		mimeEntry.setAttribute("enabledViewers", "[\"downloadIms\"]");
-		mimeEntry.setAttribute("PluginIconPath", "icons/ims.png");
+  @Override
+  public void execute(
+      TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) {
+    SubTemporaryFile mimeFolder = MimeEntryConverter.getMimeFolder(staging);
+    MimeEntry mimeEntry = new MimeEntry();
+    mimeEntry.setDescription("SCORM Package");
+    mimeEntry.setType("equella/scorm-package");
+    mimeEntry.setAttribute("enabledViewers", "[\"downloadIms\"]");
+    mimeEntry.setAttribute("PluginIconPath", "icons/ims.png");
 
-		String filename = MimeEntryConverter.getFilenameForEntry(mimeEntry);
-		if( !fileExists(mimeFolder, filename) )
-		{
-			xmlHelper.writeFile(mimeFolder, filename, xmlService.serialiseToXml(mimeEntry));
-		}
-	}
+    String filename = MimeEntryConverter.getFilenameForEntry(mimeEntry);
+    if (!fileExists(mimeFolder, filename)) {
+      xmlHelper.writeFile(mimeFolder, filename, xmlService.serialiseToXml(mimeEntry));
+    }
+  }
 }

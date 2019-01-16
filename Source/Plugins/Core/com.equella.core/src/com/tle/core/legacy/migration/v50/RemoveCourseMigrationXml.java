@@ -30,28 +30,23 @@ import com.tle.core.institution.convert.XmlMigrator;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class RemoveCourseMigrationXml extends XmlMigrator
-{
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
-	{
-		if( fileSystemService.fileExists(staging, "acls/entries.xml") )
-		{
-			boolean changed = false;
-			PropBagEx xml = xmlHelper.readToPropBagEx(staging, "acls/entries.xml");
-			for( Iterator<PropBagEx> iter = xml.iterator(); iter.hasNext(); )
-			{
-				if( iter.next().getNode("privilege").equals("LAUNCH_ACTIVITY_MANAGER") )
-				{
-					iter.remove();
-					changed |= true;
-				}
-			}
+public class RemoveCourseMigrationXml extends XmlMigrator {
+  @Override
+  public void execute(
+      TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) {
+    if (fileSystemService.fileExists(staging, "acls/entries.xml")) {
+      boolean changed = false;
+      PropBagEx xml = xmlHelper.readToPropBagEx(staging, "acls/entries.xml");
+      for (Iterator<PropBagEx> iter = xml.iterator(); iter.hasNext(); ) {
+        if (iter.next().getNode("privilege").equals("LAUNCH_ACTIVITY_MANAGER")) {
+          iter.remove();
+          changed |= true;
+        }
+      }
 
-			if( changed )
-			{
-				xmlHelper.writeFromPropBagEx(staging, "acls/entries.xml", xml);
-			}
-		}
-	}
+      if (changed) {
+        xmlHelper.writeFromPropBagEx(staging, "acls/entries.xml", xml);
+      }
+    }
+  }
 }

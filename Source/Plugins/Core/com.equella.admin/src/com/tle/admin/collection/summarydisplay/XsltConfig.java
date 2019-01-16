@@ -19,18 +19,15 @@ package com.tle.admin.collection.summarydisplay;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 
 @SuppressWarnings("nls")
-public class XsltConfig extends AbstractTemplatingConfig
-{
-	@Override
-	public void setup()
-	{
-		super.setup();
-		editor.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
-	}
+public class XsltConfig extends AbstractTemplatingConfig {
+  @Override
+  public void setup() {
+    super.setup();
+    editor.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
+  }
 
-	@Override
-	public String getEditorLabelKey()
-	{
-		return getKey("summarysections.xslt.desc");
-	}
+  @Override
+  public String getEditorLabelKey() {
+    return getKey("summarysections.xslt.desc");
+  }
 }

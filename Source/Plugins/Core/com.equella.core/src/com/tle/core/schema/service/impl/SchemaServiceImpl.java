@@ -57,160 +57,140 @@ import com.tle.core.security.impl.SecureEntity;
 import com.tle.core.services.ValidationHelper;
 import com.tle.core.xslt.service.XsltService;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @Bind(SchemaService.class)
 @Singleton
 @SecureEntity(RemoteSchemaService.ENTITY_TYPE)
-public class SchemaServiceImpl extends AbstractEntityServiceImpl<EntityEditingBean, Schema, SchemaService>
-	implements
-		SchemaService
-{
-	private static final String INSTITUTION_URL_NODE = "institutionUrl"; //$NON-NLS-1$
-	private static final String[] BLANKS = {"name"}; //$NON-NLS-1$
+public class SchemaServiceImpl
+    extends AbstractEntityServiceImpl<EntityEditingBean, Schema, SchemaService>
+    implements SchemaService {
+  private static final String INSTITUTION_URL_NODE = "institutionUrl"; // $NON-NLS-1$
+  private static final String[] BLANKS = {"name"}; // $NON-NLS-1$
 
-	@Inject
-	private PluginTracker<SchemaReferences> referenceTracker;
-	@Inject
-	private PluginTracker<SchemaSaveExtension> saveExtensions;
-	@Inject
-	private XsltService xsltService;
+  @Inject private PluginTracker<SchemaReferences> referenceTracker;
+  @Inject private PluginTracker<SchemaSaveExtension> saveExtensions;
+  @Inject private XsltService xsltService;
 
-	private final SchemaDao schemaDao;
+  private final SchemaDao schemaDao;
 
-	@Inject
-	public SchemaServiceImpl(SchemaDao schemaDao)
-	{
-		super(Node.SCHEMA, schemaDao);
-		this.schemaDao = schemaDao;
-	}
+  @Inject
+  public SchemaServiceImpl(SchemaDao schemaDao) {
+    super(Node.SCHEMA, schemaDao);
+    this.schemaDao = schemaDao;
+  }
 
-	@Override
-	public List<Class<?>> getReferencingClasses(long id)
-	{
-		SchemaReferencesEvent event = new SchemaReferencesEvent(get(id));
-		publishEvent(event);
-		return event.getReferencingClasses();
-	}
+  @Override
+  public List<Class<?>> getReferencingClasses(long id) {
+    SchemaReferencesEvent event = new SchemaReferencesEvent(get(id));
+    publishEvent(event);
+    return event.getReferencingClasses();
+  }
 
-	@Override
-	@Transactional
-	public List<BaseEntityLabel> getSchemaUses(long id)
-	{
-		List<BaseEntityLabel> results = Lists.newArrayList();
-		for( SchemaReferences refs : referenceTracker.getBeanList() )
-		{
-			results.addAll(refs.getSchemaUses(id));
-		}
-		return results;
-	}
+  @Override
+  @Transactional
+  public List<BaseEntityLabel> getSchemaUses(long id) {
+    List<BaseEntityLabel> results = Lists.newArrayList();
+    for (SchemaReferences refs : referenceTracker.getBeanList()) {
+      results.addAll(refs.getSchemaUses(id));
+    }
+    return results;
+  }
 
-	@Override
-	protected void deleteReferences(Schema schema)
-	{
-		publishEvent(new SchemaDeletionEvent(schema));
-	}
+  @Override
+  protected void deleteReferences(Schema schema) {
+    publishEvent(new SchemaDeletionEvent(schema));
+  }
 
-	@Override
-	protected void doValidation(EntityEditingSession<EntityEditingBean, Schema> session, Schema entity,
-		List<ValidationError> errors)
-	{
-		ValidationHelper.checkBlankFields(entity, BLANKS, errors);
-	}
+  @Override
+  protected void doValidation(
+      EntityEditingSession<EntityEditingBean, Schema> session,
+      Schema entity,
+      List<ValidationError> errors) {
+    ValidationHelper.checkBlankFields(entity, BLANKS, errors);
+  }
 
-	@Override
-	public List<String> getExportSchemaTypes()
-	{
-		return schemaDao.getExportSchemaTypes();
-	}
+  @Override
+  public List<String> getExportSchemaTypes() {
+    return schemaDao.getExportSchemaTypes();
+  }
 
-	@Override
-	public List<String> getImportSchemaTypes(long id)
-	{
-		return schemaDao.getImportSchemaTypes(id);
-	}
+  @Override
+  public List<String> getImportSchemaTypes(long id) {
+    return schemaDao.getImportSchemaTypes(id);
+  }
 
-	@Override
-	public Set<Schema> getSchemasForExportSchemaType(String type)
-	{
-		return new HashSet<Schema>(schemaDao.getSchemasForExportSchemaType(type));
-	}
+  @Override
+  public Set<Schema> getSchemasForExportSchemaType(String type) {
+    return new HashSet<Schema>(schemaDao.getSchemasForExportSchemaType(type));
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	protected void afterStopEdit(EntityPack<Schema> pack, Schema oldSchema)
-	{
-		final Schema newSchema = pack.getEntity();
-		for( SchemaSaveExtension extension : saveExtensions.getBeanList() )
-		{
-			extension.schemaSaved(oldSchema, newSchema);
-		}
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected void afterStopEdit(EntityPack<Schema> pack, Schema oldSchema) {
+    final Schema newSchema = pack.getEntity();
+    for (SchemaSaveExtension extension : saveExtensions.getBeanList()) {
+      extension.schemaSaved(oldSchema, newSchema);
+    }
+  }
 
-	@Override
-	public String transformForExport(long schemaId, String type, PropBagEx itemxml, boolean omitXmlDeclaration)
-	{
-		itemxml.setNode(INSTITUTION_URL_NODE, CurrentInstitution.get().getUrl());
-		return transform(schemaId, type, itemxml, get(schemaId).getExportTransforms(), omitXmlDeclaration);
-	}
+  @Override
+  public String transformForExport(
+      long schemaId, String type, PropBagEx itemxml, boolean omitXmlDeclaration) {
+    itemxml.setNode(INSTITUTION_URL_NODE, CurrentInstitution.get().getUrl());
+    return transform(
+        schemaId, type, itemxml, get(schemaId).getExportTransforms(), omitXmlDeclaration);
+  }
 
-	@Override
-	public String transformForImport(long schemaId, String type, PropBagEx foreignXml)
-	{
-		return transform(schemaId, type, foreignXml, get(schemaId).getImportTransforms(), false);
-	}
+  @Override
+  public String transformForImport(long schemaId, String type, PropBagEx foreignXml) {
+    return transform(schemaId, type, foreignXml, get(schemaId).getImportTransforms(), false);
+  }
 
-	private String transform(long schemaId, String type, PropBagEx xml, List<SchemaTransform> transforms,
-		boolean omitXmlDeclaration)
-	{
-		String filename = null;
-		for( SchemaTransform transform : transforms )
-		{
-			if( transform.getType().equalsIgnoreCase(type) )
-			{
-				filename = transform.getFilename();
-				break;
-			}
-		}
+  private String transform(
+      long schemaId,
+      String type,
+      PropBagEx xml,
+      List<SchemaTransform> transforms,
+      boolean omitXmlDeclaration) {
+    String filename = null;
+    for (SchemaTransform transform : transforms) {
+      if (transform.getType().equalsIgnoreCase(type)) {
+        filename = transform.getFilename();
+        break;
+      }
+    }
 
-		if( filename == null )
-		{
-			return null;
-		}
-		else
-		{
-			EntityFile file = new EntityFile(schemaId);
-			return xsltService.transform(file, filename, xml, omitXmlDeclaration);
-		}
-	}
+    if (filename == null) {
+      return null;
+    } else {
+      EntityFile file = new EntityFile(schemaId);
+      return xsltService.transform(file, filename, xml, omitXmlDeclaration);
+    }
+  }
 
-	@Override
-	protected void preUnlinkForClone(Schema schema)
-	{
-		Hibernate.initialize(schema.getExportTransforms());
-		Hibernate.initialize(schema.getImportTransforms());
-		Hibernate.initialize(schema.getCitations());
-	}
+  @Override
+  protected void preUnlinkForClone(Schema schema) {
+    Hibernate.initialize(schema.getExportTransforms());
+    Hibernate.initialize(schema.getImportTransforms());
+    Hibernate.initialize(schema.getCitations());
+  }
 
-	@Override
-	protected void postUnlinkForClone(Schema schema)
-	{
-		schema.setExportTransforms(new ArrayList<SchemaTransform>(schema.getExportTransforms()));
-		schema.setImportTransforms(new ArrayList<SchemaTransform>(schema.getImportTransforms()));
-		schema.setCitations(new ArrayList<Citation>(schema.getCitations()));
-	}
+  @Override
+  protected void postUnlinkForClone(Schema schema) {
+    schema.setExportTransforms(new ArrayList<SchemaTransform>(schema.getExportTransforms()));
+    schema.setImportTransforms(new ArrayList<SchemaTransform>(schema.getImportTransforms()));
+    schema.setCitations(new ArrayList<Citation>(schema.getCitations()));
+  }
 
-	@Override
-	public void prepareImport(TemporaryFileHandle importFolder, Schema entity, ConverterParams params)
-	{
-		super.prepareImport(importFolder, entity, params);
-		entity.setDefinition(entity.withDefinition(new CloneDefinition()));
-	}
+  @Override
+  public void prepareImport(
+      TemporaryFileHandle importFolder, Schema entity, ConverterParams params) {
+    super.prepareImport(importFolder, entity, params);
+    entity.setDefinition(entity.withDefinition(new CloneDefinition()));
+  }
 
-	@Override
-	public List<String> getAllCitations()
-	{
-		return schemaDao.getAllCitations();
-	}
+  @Override
+  public List<String> getAllCitations() {
+    return schemaDao.getAllCitations();
+  }
 }

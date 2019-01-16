@@ -31,32 +31,25 @@ import com.tle.core.institution.convert.InstitutionInfo;
 import com.tle.core.institution.convert.XmlMigrator;
 import com.tle.core.lti.consumers.service.LtiConsumerService;
 
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @Bind
 @Singleton
-public class LtiConsumerSecurityXmlMigration extends XmlMigrator
-{
-	@Inject
-	private EncryptionService encryptionService;
-	@Inject
-	private LtiConsumerService ltiConsumerService;
+public class LtiConsumerSecurityXmlMigration extends XmlMigrator {
+  @Inject private EncryptionService encryptionService;
+  @Inject private LtiConsumerService ltiConsumerService;
 
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) throws Exception
-	{
-		// LtiConsumer secrets
-		final SubTemporaryFile ltifolder = new SubTemporaryFile(staging, "lticonsumer");
-		final List<String> ltientries = xmlHelper.getXmlFileList(ltifolder);
-		for( String entry : ltientries )
-		{
-			LtiConsumer consumer = (LtiConsumer) xmlHelper.readXmlFile(ltifolder, entry,
-				ltiConsumerService.getXStream());
-			String encpwd = encryptionService.encrypt(consumer.getConsumerSecret());
-			consumer.setConsumerSecret(encpwd);
-			xmlHelper.writeXmlFile(ltifolder, entry, consumer);
-		}
-	}
+  @Override
+  public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
+      throws Exception {
+    // LtiConsumer secrets
+    final SubTemporaryFile ltifolder = new SubTemporaryFile(staging, "lticonsumer");
+    final List<String> ltientries = xmlHelper.getXmlFileList(ltifolder);
+    for (String entry : ltientries) {
+      LtiConsumer consumer =
+          (LtiConsumer) xmlHelper.readXmlFile(ltifolder, entry, ltiConsumerService.getXStream());
+      String encpwd = encryptionService.encrypt(consumer.getConsumerSecret());
+      consumer.setConsumerSecret(encpwd);
+      xmlHelper.writeXmlFile(ltifolder, entry, consumer);
+    }
+  }
 }

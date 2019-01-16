@@ -37,76 +37,77 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
 
 @SuppressWarnings("nls")
-public class TaskSortSection extends AbstractSortOptionsSection<FreetextSearchEvent>
-{
-	private static final SortField DUEDATE_SORT = new SortField(TasksIndexer.FIELD_DUEDATE, false, Type.LONG);
-	private static final SortField ASSIGNEE_SORT = new SortField(FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO,
-			createCurrentUserFirstComparator());
-	private static final SortField WAITING_SORT = new SortField(TasksIndexer.FIELD_STARTED, true, Type.LONG);
-	private static final SortField WORKFLOW_SORT = new SortField(TasksIndexer.FIELD_WORKFLOW, false, Type.STRING);
+public class TaskSortSection extends AbstractSortOptionsSection<FreetextSearchEvent> {
+  private static final SortField DUEDATE_SORT =
+      new SortField(TasksIndexer.FIELD_DUEDATE, false, Type.LONG);
+  private static final SortField ASSIGNEE_SORT =
+      new SortField(FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, createCurrentUserFirstComparator());
+  private static final SortField WAITING_SORT =
+      new SortField(TasksIndexer.FIELD_STARTED, true, Type.LONG);
+  private static final SortField WORKFLOW_SORT =
+      new SortField(TasksIndexer.FIELD_WORKFLOW, false, Type.STRING);
 
-	private static final String VAL_PRIORITY = "priority";
-	@PlugKey("sort." + VAL_PRIORITY)
-	private static Label LABEL_PRIORITY;
+  private static final String VAL_PRIORITY = "priority";
 
-	private static final String VAL_DUEDATE = "duedate";
-	@PlugKey("sort." + VAL_DUEDATE)
-	private static Label LABEL_DUEDATE;
+  @PlugKey("sort." + VAL_PRIORITY)
+  private static Label LABEL_PRIORITY;
 
-	private static final String VAL_WAITING = "waiting";
-	@PlugKey("sort." + VAL_WAITING)
-	private static Label LABEL_WAITING;
+  private static final String VAL_DUEDATE = "duedate";
 
-	private static final String VAL_ASSIGNEE = "assignee";
-	@PlugKey("sort." + VAL_ASSIGNEE)
-	private static Label LABEL_ASSIGNEE;
+  @PlugKey("sort." + VAL_DUEDATE)
+  private static Label LABEL_DUEDATE;
 
-	private static final String VAL_WORKFLOW = "workflow";
-	@PlugKey("sort." + VAL_WORKFLOW)
-	private static Label LABEL_WORKFLOW;
+  private static final String VAL_WAITING = "waiting";
 
-	@Override
-	protected void addSortOptions(List<SortOption> sorts)
-	{
-		sorts.add(new SortOption(LABEL_PRIORITY, VAL_PRIORITY, TasksIndexer.FIELD_PRIORITY, true)
-		{
-			@Override
-			public SortField[] createSort()
-			{
-				return getDefaultSortFields();
-			}
-		});
-		sorts.add(new SortOption(LABEL_DUEDATE, VAL_DUEDATE, DUEDATE_SORT));
-		sorts.add(new SortOption(LABEL_ASSIGNEE, VAL_ASSIGNEE, ASSIGNEE_SORT));
-		sorts.add(new SortOption(LABEL_WAITING, VAL_WAITING, WAITING_SORT));
-		sorts.add(new SortOption(LABEL_WORKFLOW, VAL_WORKFLOW, WORKFLOW_SORT));
-		sorts.add(new SortOption(SortType.NAME));
-	}
+  @PlugKey("sort." + VAL_WAITING)
+  private static Label LABEL_WAITING;
 
-	@Override
-	protected String getDefaultSearch(SectionInfo info)
-	{
-		return getDefaultSortFields()[0].getField();
-	}
+  private static final String VAL_ASSIGNEE = "assignee";
 
-	private SortField[] getDefaultSortFields()
-	{
-		SortField prioritySortField = new SortField(TasksIndexer.FIELD_PRIORITY, true, Type.STRING);
-		SortField waitingSortField = new SortField(TasksIndexer.FIELD_STARTED, true, Type.LONG);
-		return new SortField[]{prioritySortField, ASSIGNEE_SORT, waitingSortField};
-	}
+  @PlugKey("sort." + VAL_ASSIGNEE)
+  private static Label LABEL_ASSIGNEE;
 
-	private static FieldComparatorSource createCurrentUserFirstComparator()
-	{
-		return new FieldComparatorSource()
-		{
+  private static final String VAL_WORKFLOW = "workflow";
 
-			@Override
-			public FieldComparator<Integer> newComparator(final String fieldName, final int numHits, final int sortPos,
-				boolean reversed) throws IOException
-			{
-				return new CustomLuceneSortComparator(numHits, fieldName, CurrentUser.getUserID());
-			}
-		};
-	}
+  @PlugKey("sort." + VAL_WORKFLOW)
+  private static Label LABEL_WORKFLOW;
+
+  @Override
+  protected void addSortOptions(List<SortOption> sorts) {
+    sorts.add(
+        new SortOption(LABEL_PRIORITY, VAL_PRIORITY, TasksIndexer.FIELD_PRIORITY, true) {
+          @Override
+          public SortField[] createSort() {
+            return getDefaultSortFields();
+          }
+        });
+    sorts.add(new SortOption(LABEL_DUEDATE, VAL_DUEDATE, DUEDATE_SORT));
+    sorts.add(new SortOption(LABEL_ASSIGNEE, VAL_ASSIGNEE, ASSIGNEE_SORT));
+    sorts.add(new SortOption(LABEL_WAITING, VAL_WAITING, WAITING_SORT));
+    sorts.add(new SortOption(LABEL_WORKFLOW, VAL_WORKFLOW, WORKFLOW_SORT));
+    sorts.add(new SortOption(SortType.NAME));
+  }
+
+  @Override
+  protected String getDefaultSearch(SectionInfo info) {
+    return getDefaultSortFields()[0].getField();
+  }
+
+  private SortField[] getDefaultSortFields() {
+    SortField prioritySortField = new SortField(TasksIndexer.FIELD_PRIORITY, true, Type.STRING);
+    SortField waitingSortField = new SortField(TasksIndexer.FIELD_STARTED, true, Type.LONG);
+    return new SortField[] {prioritySortField, ASSIGNEE_SORT, waitingSortField};
+  }
+
+  private static FieldComparatorSource createCurrentUserFirstComparator() {
+    return new FieldComparatorSource() {
+
+      @Override
+      public FieldComparator<Integer> newComparator(
+          final String fieldName, final int numHits, final int sortPos, boolean reversed)
+          throws IOException {
+        return new CustomLuceneSortComparator(numHits, fieldName, CurrentUser.getUserID());
+      }
+    };
+  }
 }

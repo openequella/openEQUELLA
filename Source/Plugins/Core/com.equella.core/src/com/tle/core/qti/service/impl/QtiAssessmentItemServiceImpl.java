@@ -42,60 +42,55 @@ import uk.ac.ed.ph.jqtiplus.node.item.AssessmentItem;
 import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentItem;
 import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
 @Bind(QtiAssessmentItemService.class)
 @Singleton
-public class QtiAssessmentItemServiceImpl implements QtiAssessmentItemService
-{
-	@Inject
-	private QtiAssessmentItemDao dao;
+public class QtiAssessmentItemServiceImpl implements QtiAssessmentItemService {
+  @Inject private QtiAssessmentItemDao dao;
 
-	@Nullable
-	@Override
-	public QtiAssessmentItem convertItemToEntity(ResolvedAssessmentTest test, ResolvedAssessmentItem question)
-	{
-		final AssessmentItem questionItem = question.getItemLookup().extractIfSuccessful();
-		// protect against shit packages
-		if( questionItem != null )
-		{
-			final QtiAssessmentItem questionEntity = new QtiAssessmentItem();
-			questionEntity.setUuid(UUID.randomUUID().toString());
-			questionEntity.setInstitution(CurrentInstitution.get());
+  @Nullable
+  @Override
+  public QtiAssessmentItem convertItemToEntity(
+      ResolvedAssessmentTest test, ResolvedAssessmentItem question) {
+    final AssessmentItem questionItem = question.getItemLookup().extractIfSuccessful();
+    // protect against shit packages
+    if (questionItem != null) {
+      final QtiAssessmentItem questionEntity = new QtiAssessmentItem();
+      questionEntity.setUuid(UUID.randomUUID().toString());
+      questionEntity.setInstitution(CurrentInstitution.get());
 
-			questionEntity.setIdentifier(questionItem.getIdentifier());
-			questionEntity.setTitle(questionItem.getTitle());
-			questionEntity.setAdaptive(questionItem.getAdaptive());
-			questionEntity.setLabel(questionItem.getLabel());
-			// getLang() has a bug where it doesn't use correct namespace
-			StringAttribute lang = (StringAttribute) questionItem.getAttributes().get(AssessmentItem.ATTR_LANG_NAME,
-				XMLConstants.XML_NS_URI);
-			questionEntity.setLang(lang.getComputedValue());
-			questionEntity.setTimeDependent(questionItem.getTimeDependent());
+      questionEntity.setIdentifier(questionItem.getIdentifier());
+      questionEntity.setTitle(questionItem.getTitle());
+      questionEntity.setAdaptive(questionItem.getAdaptive());
+      questionEntity.setLabel(questionItem.getLabel());
+      // getLang() has a bug where it doesn't use correct namespace
+      StringAttribute lang =
+          (StringAttribute)
+              questionItem
+                  .getAttributes()
+                  .get(AssessmentItem.ATTR_LANG_NAME, XMLConstants.XML_NS_URI);
+      questionEntity.setLang(lang.getComputedValue());
+      questionEntity.setTimeDependent(questionItem.getTimeDependent());
 
-			// FIXME: this is not very useful
-			ItemBody itemBody = questionItem.getItemBody();
-			if( itemBody != null )
-			{
-				questionEntity.setItemBody(ObjectDumper.dumpObject(itemBody, DumpMode.DEEP));
-			}
+      // FIXME: this is not very useful
+      ItemBody itemBody = questionItem.getItemBody();
+      if (itemBody != null) {
+        questionEntity.setItemBody(ObjectDumper.dumpObject(itemBody, DumpMode.DEEP));
+      }
 
-			return questionEntity;
-		}
-		return null;
-	}
+      return questionEntity;
+    }
+    return null;
+  }
 
-	@Transactional
-	@Override
-	public void save(QtiAssessmentItem question) throws InvalidDataException
-	{
-		final Institution institution = question.getInstitution();
-		if( institution == null )
-		{
-			question.setInstitution(CurrentInstitution.get());
-		}
-		dao.save(question);
-	}
+  @Transactional
+  @Override
+  public void save(QtiAssessmentItem question) throws InvalidDataException {
+    final Institution institution = question.getInstitution();
+    if (institution == null) {
+      question.setInstitution(CurrentInstitution.get());
+    }
+    dao.save(question);
+  }
 }

@@ -23,10 +23,8 @@ import com.tle.web.sections.equella.freemarker.ExtendedConfiguration;
 
 @Bind
 @Singleton
-public class QuestionFreemarkerConfiguration extends ExtendedConfiguration
-{
-	public QuestionFreemarkerConfiguration()
-	{
-		super();
-	}
+public class QuestionFreemarkerConfiguration extends ExtendedConfiguration {
+  public QuestionFreemarkerConfiguration() {
+    super();
+  }
 }

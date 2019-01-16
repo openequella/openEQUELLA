@@ -22,5 +22,5 @@ import com.tle.common.NameValue;
 
 public interface RemoteMimetypeService {
 
-	List<NameValue> listAll();
+  List<NameValue> listAll();
 }

@@ -37,167 +37,141 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemScriptTypeImpl implements ItemScriptType
-{
-	private static final long serialVersionUID = 1L;
+public class ItemScriptTypeImpl implements ItemScriptType {
+  private static final long serialVersionUID = 1L;
 
-	@Inject
-	private ItemService service;
-	@Inject
-	private TLEAclManager aclService;
-	@Inject
-	private ItemHelper itemHelper;
+  @Inject private ItemService service;
+  @Inject private TLEAclManager aclService;
+  @Inject private ItemHelper itemHelper;
 
-	private final ItemId itemId;
+  private final ItemId itemId;
 
-	// lazy
-	protected Item item;
-	protected PropBagWrapper xml;
-	protected Integer viewCount;
-	// because viewCount can legitimately be null,
-	// we need to set this to stop repeatedly trying to calculate it
-	protected boolean viewCountRetrieved;
+  // lazy
+  protected Item item;
+  protected PropBagWrapper xml;
+  protected Integer viewCount;
+  // because viewCount can legitimately be null,
+  // we need to set this to stop repeatedly trying to calculate it
+  protected boolean viewCountRetrieved;
 
-	@AssistedInject
-	protected ItemScriptTypeImpl(@Assisted("item") Item item)
-	{
-		this(item.getItemId());
-		this.item = item;
-	}
+  @AssistedInject
+  protected ItemScriptTypeImpl(@Assisted("item") Item item) {
+    this(item.getItemId());
+    this.item = item;
+  }
 
-	@AssistedInject
-	protected ItemScriptTypeImpl(@Assisted("itemId") ItemId itemId)
-	{
-		this.itemId = itemId;
-		this.item = null;
-		this.xml = null;
-	}
+  @AssistedInject
+  protected ItemScriptTypeImpl(@Assisted("itemId") ItemId itemId) {
+    this.itemId = itemId;
+    this.item = null;
+    this.xml = null;
+  }
 
-	@Override
-	public String getDescription()
-	{
-		return CurrentLocale.get(getItem().getDescription(), Constants.BLANK);
-	}
+  @Override
+  public String getDescription() {
+    return CurrentLocale.get(getItem().getDescription(), Constants.BLANK);
+  }
 
-	@Override
-	public String getName()
-	{
-		return CurrentLocale.get(getItem().getName(), getUuid());
-	}
+  @Override
+  public String getName() {
+    return CurrentLocale.get(getItem().getName(), getUuid());
+  }
 
-	@Override
-	public String getUuid()
-	{
-		return itemId.getUuid();
-	}
+  @Override
+  public String getUuid() {
+    return itemId.getUuid();
+  }
 
-	@Override
-	public int getVersion()
-	{
-		return itemId.getVersion();
-	}
+  @Override
+  public int getVersion() {
+    return itemId.getVersion();
+  }
 
-	@Override
-	public PropBagWrapper getXml()
-	{
-		if( xml == null )
-		{
-			ItemXml itemXml = getItem().getItemXml();
-			if( itemXml != null )
-			{
-				xml = new PropBagWrapper(
-						itemHelper.convertToXml(service.getItemPack(itemId), new ItemHelper.ItemHelperSettings(true)));
-			}
-		}
-		return xml;
-	}
+  @Override
+  public PropBagWrapper getXml() {
+    if (xml == null) {
+      ItemXml itemXml = getItem().getItemXml();
+      if (itemXml != null) {
+        xml =
+            new PropBagWrapper(
+                itemHelper.convertToXml(
+                    service.getItemPack(itemId), new ItemHelper.ItemHelperSettings(true)));
+      }
+    }
+    return xml;
+  }
 
-	@Override
-	public String getItemStatus()
-	{
-		ItemStatus status = getItem().getStatus();
-		if( status == null )
-		{
-			return null;
-		}
-		return status.toString();
-	}
+  @Override
+  public String getItemStatus() {
+    ItemStatus status = getItem().getStatus();
+    if (status == null) {
+      return null;
+    }
+    return status.toString();
+  }
 
-	@Override
-	public String getOwner()
-	{
-		return getItem().getOwner();
-	}
+  @Override
+  public String getOwner() {
+    return getItem().getOwner();
+  }
 
-	@Override
-	public void setOwner(String userUniqueId)
-	{
-		getItem().setOwner(userUniqueId);
-	}
+  @Override
+  public void setOwner(String userUniqueId) {
+    getItem().setOwner(userUniqueId);
+  }
 
-	@Override
-	public CollectionScriptType getCollection()
-	{
-		return new CollectionScriptTypeImpl(getItem().getItemDefinition());
-	}
+  @Override
+  public CollectionScriptType getCollection() {
+    return new CollectionScriptTypeImpl(getItem().getItemDefinition());
+  }
 
-	@Override
-	public void addSharedOwner(String userUniqueId)
-	{
-		getItem().getCollaborators().add(userUniqueId);
-	}
+  @Override
+  public void addSharedOwner(String userUniqueId) {
+    getItem().getCollaborators().add(userUniqueId);
+  }
 
-	@Override
-	public boolean removeSharedOwner(String userUniqueId)
-	{
-		return getItem().getCollaborators().remove(userUniqueId);
-	}
+  @Override
+  public boolean removeSharedOwner(String userUniqueId) {
+    return getItem().getCollaborators().remove(userUniqueId);
+  }
 
-	@Override
-	public List<String> listSharedOwners()
-	{
-		// return a COPY of the list
-		return new ArrayList<String>(getItem().getCollaborators());
-	}
+  @Override
+  public List<String> listSharedOwners() {
+    // return a COPY of the list
+    return new ArrayList<String>(getItem().getCollaborators());
+  }
 
-	@Override
-	public void setThumbnail(String thumbnail)
-	{
-		getItem().setThumb(thumbnail);
-	}
+  @Override
+  public void setThumbnail(String thumbnail) {
+    getItem().setThumb(thumbnail);
+  }
 
-	@Override
-	public String getThumbnail()
-	{
-		return getItem().getThumb();
-	}
+  @Override
+  public String getThumbnail() {
+    return getItem().getThumb();
+  }
 
-	@Override
-	public Integer getViewCount()
-	{
-		if (viewCountRetrieved)
-		{
-			return viewCount;
-		}
-		if (!aclService.filterNonGrantedPrivileges(item, SecurityConstants.VIEW_VIEWCOUNT).isEmpty())
-		{
-			viewCount = ViewCountJavaDao.getSummaryViewCount(itemId);
-		}
-		viewCountRetrieved = true;
-		return viewCount;
-	}
+  @Override
+  public Integer getViewCount() {
+    if (viewCountRetrieved) {
+      return viewCount;
+    }
+    if (!aclService.filterNonGrantedPrivileges(item, SecurityConstants.VIEW_VIEWCOUNT).isEmpty()) {
+      viewCount = ViewCountJavaDao.getSummaryViewCount(itemId);
+    }
+    viewCountRetrieved = true;
+    return viewCount;
+  }
 
-	/**
-	 * Internal use only! Do NOT use in scripts
-	 *
-	 * @return
-	 */
-	public Item getItem()
-	{
-		if( item == null )
-		{
-			item = service.get(itemId);
-		}
-		return item;
-	}
+  /**
+   * Internal use only! Do NOT use in scripts
+   *
+   * @return
+   */
+  public Item getItem() {
+    if (item == null) {
+      item = service.get(itemId);
+    }
+    return item;
+  }
 }

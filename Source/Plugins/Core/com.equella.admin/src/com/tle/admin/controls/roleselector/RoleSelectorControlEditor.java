@@ -38,81 +38,76 @@ import com.tle.common.wizard.controls.roleselector.RoleSelectorControl;
 import com.tle.i18n.BundleCache;
 
 @SuppressWarnings("nls")
-public class RoleSelectorControlEditor extends AbstractControlEditor<CustomControl>
-{
-	private static final long serialVersionUID = 1L;
+public class RoleSelectorControlEditor extends AbstractControlEditor<CustomControl> {
+  private static final long serialVersionUID = 1L;
 
-	private MultiTargetChooser picker;
-	private I18nTextField title;
-	private I18nTextField description;
-	private JCheckBox mandatory;
-	private JCheckBox selectMultiple;
+  private MultiTargetChooser picker;
+  private I18nTextField title;
+  private I18nTextField description;
+  private JCheckBox mandatory;
+  private JCheckBox selectMultiple;
 
-	public RoleSelectorControlEditor(Control control, int wizardType, SchemaModel schema)
-	{
-		super(control, wizardType, schema);
-	}
+  public RoleSelectorControlEditor(Control control, int wizardType, SchemaModel schema) {
+    super(control, wizardType, schema);
+  }
 
-	@Override
-	public void init()
-	{
-		setShowScripting(true);
+  @Override
+  public void init() {
+    setShowScripting(true);
 
-		addSection(createDetailsSection());
+    addSection(createDetailsSection());
 
-		picker = WizardHelper.createMultiTargetChooser(this);
-		addSection(WizardHelper.createMetaData(picker));
-	}
+    picker = WizardHelper.createMultiTargetChooser(this);
+    addSection(WizardHelper.createMetaData(picker));
+  }
 
-	@Override
-	protected void loadControl()
-	{
-		final RoleSelectorControl control = (RoleSelectorControl) getWizardControl();
+  @Override
+  protected void loadControl() {
+    final RoleSelectorControl control = (RoleSelectorControl) getWizardControl();
 
-		title.load(control.getTitle());
-		description.load(control.getDescription());
-		mandatory.setSelected(control.isMandatory());
-		selectMultiple.setSelected(control.isSelectMultiple());
+    title.load(control.getTitle());
+    description.load(control.getDescription());
+    mandatory.setSelected(control.isMandatory());
+    selectMultiple.setSelected(control.isSelectMultiple());
 
-		WizardHelper.loadSchemaChooser(picker, control);
-	}
+    WizardHelper.loadSchemaChooser(picker, control);
+  }
 
-	@Override
-	protected void saveControl()
-	{
-		final RoleSelectorControl control = (RoleSelectorControl) getWizardControl();
+  @Override
+  protected void saveControl() {
+    final RoleSelectorControl control = (RoleSelectorControl) getWizardControl();
 
-		control.setTitle(title.save());
-		control.setDescription(description.save());
-		control.setMandatory(mandatory.isSelected());
-		control.setSelectMultiple(selectMultiple.isSelected());
+    control.setTitle(title.save());
+    control.setDescription(description.save());
+    control.setMandatory(mandatory.isSelected());
+    control.setSelectMultiple(selectMultiple.isSelected());
 
-		WizardHelper.saveSchemaChooser(picker, control);
-	}
+    WizardHelper.saveSchemaChooser(picker, control);
+  }
 
-	private JComponent createDetailsSection()
-	{
-		final JLabel titleLabel = new JLabel(CurrentLocale.get("wizard.controls.title")); //$NON-NLS-1$
-		final JLabel descriptionLabel = new JLabel(CurrentLocale.get("wizard.controls.description")); //$NON-NLS-1$
+  private JComponent createDetailsSection() {
+    final JLabel titleLabel = new JLabel(CurrentLocale.get("wizard.controls.title")); // $NON-NLS-1$
+    final JLabel descriptionLabel =
+        new JLabel(CurrentLocale.get("wizard.controls.description")); // $NON-NLS-1$
 
-		final Set<Locale> langs = BundleCache.getLanguages();
-		title = new I18nTextField(langs);
-		description = new I18nTextField(langs);
-		mandatory = new JCheckBox(CurrentLocale.get("wizard.controls.mandatory")); //$NON-NLS-1$
-		selectMultiple = new JCheckBox(getString("rolesel.selectmultiple")); //$NON-NLS-1$
+    final Set<Locale> langs = BundleCache.getLanguages();
+    title = new I18nTextField(langs);
+    description = new I18nTextField(langs);
+    mandatory = new JCheckBox(CurrentLocale.get("wizard.controls.mandatory")); // $NON-NLS-1$
+    selectMultiple = new JCheckBox(getString("rolesel.selectmultiple")); // $NON-NLS-1$
 
-		final JPanel all = new JPanel(new MigLayout("wrap", "[][grow, fill]"));
+    final JPanel all = new JPanel(new MigLayout("wrap", "[][grow, fill]"));
 
-		all.add(titleLabel);
-		all.add(title);
+    all.add(titleLabel);
+    all.add(title);
 
-		all.add(descriptionLabel);
-		all.add(description);
+    all.add(descriptionLabel);
+    all.add(description);
 
-		all.add(mandatory, "span 2");
+    all.add(mandatory, "span 2");
 
-		all.add(selectMultiple, "span 2");
+    all.add(selectMultiple, "span 2");
 
-		return all;
-	}
+    return all;
+  }
 }

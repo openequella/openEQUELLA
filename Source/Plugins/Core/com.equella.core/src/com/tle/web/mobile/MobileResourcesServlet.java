@@ -32,18 +32,16 @@ import com.tle.web.resources.ResourcesService;
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class MobileResourcesServlet extends HttpServlet
-{
-	private static String URL = ResourcesService.getResourceHelper(MobileResourcesServlet.class).url("mobilev38.html");
-	private static final long serialVersionUID = 1L;
+public class MobileResourcesServlet extends HttpServlet {
+  private static String URL =
+      ResourcesService.getResourceHelper(MobileResourcesServlet.class).url("mobilev38.html");
+  private static final long serialVersionUID = 1L;
 
-	@Inject
-	private InstitutionService institutionService;
+  @Inject private InstitutionService institutionService;
 
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response)
-		throws ServletException, IOException
-	{
-		response.sendRedirect(institutionService.institutionalise(URL));
-	}
+  @Override
+  protected void service(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    response.sendRedirect(institutionService.institutionalise(URL));
+  }
 }

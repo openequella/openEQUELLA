@@ -36,52 +36,44 @@ import com.tle.core.services.FileSystemService;
 import com.tle.mypages.parse.ConvertHtmlService;
 import com.tle.mypages.parse.conversion.PrefixConversion;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
 @Singleton
-public class ChangedItemIdHtmlMunger implements CloneFileProcessingExtension
-{
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private ConvertHtmlService convertHtmlService;
+public class ChangedItemIdHtmlMunger implements CloneFileProcessingExtension {
+  @Inject private FileSystemService fileSystemService;
+  @Inject private ConvertHtmlService convertHtmlService;
 
-	private Reader getReader(FileHandle handle, String filename)
-	{
-		try
-		{
-			return new InputStreamReader(fileSystemService.read(handle, filename), Constants.UTF8);
-		}
-		catch( Exception e )
-		{
-			throw new RuntimeException(e);
-		}
-	}
+  private Reader getReader(FileHandle handle, String filename) {
+    try {
+      return new InputStreamReader(fileSystemService.read(handle, filename), Constants.UTF8);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-	@Override
-	public void processFiles(ItemId oldId, FileHandle oldHandle, Item newItem, FileHandle newHandle)
-	{
-		for( Attachment attachment : newItem.getAttachments() )
-		{
-			if( attachment instanceof HtmlAttachment )
-			{
-				HtmlAttachment html = (HtmlAttachment) attachment;
-				try( Reader reader = getReader(oldHandle, html.getFilename()) )
-				{
-					String newHtml = convertHtmlService.convert(reader, false,
-						new PrefixConversion("file/" + oldId, "file/" + newItem.getUuid() + "/" + newItem.getVersion()),
-						new PrefixConversion("item/" + oldId,
-							"item/" + newItem.getUuid() + "/" + newItem.getVersion()));
-					fileSystemService.write(newHandle, html.getFilename(),
-						new ByteArrayInputStream(newHtml.getBytes(Constants.UTF8)), false);
-				}
-				catch( Exception e )
-				{
-					throw Throwables.propagate(e);
-				}
-			}
-		}
-	}
+  @Override
+  public void processFiles(ItemId oldId, FileHandle oldHandle, Item newItem, FileHandle newHandle) {
+    for (Attachment attachment : newItem.getAttachments()) {
+      if (attachment instanceof HtmlAttachment) {
+        HtmlAttachment html = (HtmlAttachment) attachment;
+        try (Reader reader = getReader(oldHandle, html.getFilename())) {
+          String newHtml =
+              convertHtmlService.convert(
+                  reader,
+                  false,
+                  new PrefixConversion(
+                      "file/" + oldId, "file/" + newItem.getUuid() + "/" + newItem.getVersion()),
+                  new PrefixConversion(
+                      "item/" + oldId, "item/" + newItem.getUuid() + "/" + newItem.getVersion()));
+          fileSystemService.write(
+              newHandle,
+              html.getFilename(),
+              new ByteArrayInputStream(newHtml.getBytes(Constants.UTF8)),
+              false);
+        } catch (Exception e) {
+          throw Throwables.propagate(e);
+        }
+      }
+    }
+  }
 }

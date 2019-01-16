@@ -48,152 +48,139 @@ import com.tle.web.sections.result.util.PluralKeyLabel;
 import com.tle.web.sections.standard.annotations.Component;
 
 @NonNullByDefault
-public class ConnectorBulkSelectionSection extends AbstractBulkSelectionSection<ConnectorItemKey>
-{
-	private static final String KEY_SELECTIONS = "connectorSelections"; //$NON-NLS-1$
+public class ConnectorBulkSelectionSection extends AbstractBulkSelectionSection<ConnectorItemKey> {
+  private static final String KEY_SELECTIONS = "connectorSelections"; // $NON-NLS-1$
 
-	@PlugKey("connector.selectionsbox.selectall")
-	private static Label LABEL_SELECTALL;
-	@PlugKey("connector.selectionsbox.unselect")
-	private static Label LABEL_UNSELECTALL;
-	@PlugKey("connector.selectionsbox.viewselected")
-	private static Label LABEL_VIEWSELECTED;
-	@PlugKey("connector.selectionsbox.pleaseselect")
-	private static Label LABEL_PLEASE;
-	@PlugKey("connector.selectionsbox.count")
-	private static String LABEL_COUNT;
+  @PlugKey("connector.selectionsbox.selectall")
+  private static Label LABEL_SELECTALL;
 
-	@TreeLookup
-	private ConnectorManagementResultsSection resultsSection;
-	@TreeLookup
-	private ConnectorManagementQuerySection querySection;
+  @PlugKey("connector.selectionsbox.unselect")
+  private static Label LABEL_UNSELECTALL;
 
-	@Inject
-	@Component
-	private ConnectorBulkResultsDialog bulkDialog;
-	@Inject
-	private ConnectorRepositoryService repositoryService;
-	@Inject
-	private ConnectorService connectorService;
-	@Inject
-	private ConnectorBulkOperationService connectorBulkService;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private TaskService taskService;
+  @PlugKey("connector.selectionsbox.viewselected")
+  private static Label LABEL_VIEWSELECTED;
 
-	@Override
-	protected boolean showSelections(SectionInfo info)
-	{
-		Connector connector = querySection.getConnector(info);
-		if( connector == null || !connectorService.canExport(connector)
-			|| !repositoryService.supportsExport(connector.getLmsType()) )
-		{
-			return false;
-		}
-		return true;
-	}
+  @PlugKey("connector.selectionsbox.pleaseselect")
+  private static Label LABEL_PLEASE;
 
-	@Override
-	protected Label getLabelSelectAll()
-	{
-		return LABEL_SELECTALL;
-	}
+  @PlugKey("connector.selectionsbox.count")
+  private static String LABEL_COUNT;
 
-	@Override
-	protected Label getLabelUnselectAll()
-	{
-		return LABEL_UNSELECTALL;
-	}
+  @TreeLookup private ConnectorManagementResultsSection resultsSection;
+  @TreeLookup private ConnectorManagementQuerySection querySection;
 
-	@Override
-	protected Label getLabelViewSelected()
-	{
-		return LABEL_VIEWSELECTED;
-	}
+  @Inject @Component private ConnectorBulkResultsDialog bulkDialog;
+  @Inject private ConnectorRepositoryService repositoryService;
+  @Inject private ConnectorService connectorService;
+  @Inject private ConnectorBulkOperationService connectorBulkService;
+  @Inject private ItemService itemService;
+  @Inject private TaskService taskService;
 
-	@Override
-	protected AbstractBulkResultsDialog<ConnectorItemKey> getBulkDialog()
-	{
-		return bulkDialog;
-	}
+  @Override
+  protected boolean showSelections(SectionInfo info) {
+    Connector connector = querySection.getConnector(info);
+    if (connector == null
+        || !connectorService.canExport(connector)
+        || !repositoryService.supportsExport(connector.getLmsType())) {
+      return false;
+    }
+    return true;
+  }
 
-	@Override
-	protected Label getPleaseSelectLabel()
-	{
-		return LABEL_PLEASE;
-	}
+  @Override
+  protected Label getLabelSelectAll() {
+    return LABEL_SELECTALL;
+  }
 
-	@Override
-	protected Label getSelectionBoxCountLabel(int selectionCount)
-	{
-		return new PluralKeyLabel(LABEL_COUNT, selectionCount);
-	}
+  @Override
+  protected Label getLabelUnselectAll() {
+    return LABEL_UNSELECTALL;
+  }
 
-	@Override
-	public void selectAll(SectionInfo info)
-	{
-		ConnectorManagementSearchEvent searchEvent = resultsSection.createSearchEvent(info);
-		info.processEvent(searchEvent);
+  @Override
+  protected Label getLabelViewSelected() {
+    return LABEL_VIEWSELECTED;
+  }
 
-		Connector connector = searchEvent.getConnector();
-		ConnectorContentSearch search = searchEvent.getSearch();
-		ExternalContentSortType sort = search.getSort();
-		Model<ConnectorItemKey> model = getModel(info);
+  @Override
+  protected AbstractBulkResultsDialog<ConnectorItemKey> getBulkDialog() {
+    return bulkDialog;
+  }
 
-		try
-		{
-			SearchResults<ConnectorContent> findAllUsages = repositoryService.findAllUsages(connector,
-				CurrentUser.getUsername(), searchEvent.getQuery(), search.getCourse(), search.getFolder(),
-				search.isArchived(), 0, Integer.MAX_VALUE, sort, search.isReverse());
+  @Override
+  protected Label getPleaseSelectLabel() {
+    return LABEL_PLEASE;
+  }
 
-			Set<ConnectorItemKey> selections = model.getSelections();
+  @Override
+  protected Label getSelectionBoxCountLabel(int selectionCount) {
+    return new PluralKeyLabel(LABEL_COUNT, selectionCount);
+  }
 
-			for( ConnectorContent content : findAllUsages.getResults() )
-			{
-				final String uuid = content.getUuid();
-				if( uuid != null )
-				{
-					int version = content.getVersion();
-					if( version == 0 )
-					{
-						// FIXME perhaps not very efficient...
-						version = itemService.getLatestVersion(content.getUuid());
-						content.setVersion(version);
-					}
-					selections.add(new ConnectorItemKey(content, connector.getId()));
-				}
-			}
-		}
-		catch( LmsUserNotFoundException e )
-		{
-			throw new RuntimeException(e);
-		}
+  @Override
+  public void selectAll(SectionInfo info) {
+    ConnectorManagementSearchEvent searchEvent = resultsSection.createSearchEvent(info);
+    info.processEvent(searchEvent);
 
-		model.setModifiedSelection(true);
-	}
+    Connector connector = searchEvent.getConnector();
+    ConnectorContentSearch search = searchEvent.getSearch();
+    ExternalContentSortType sort = search.getSort();
+    Model<ConnectorItemKey> model = getModel(info);
 
-	@Override
-	protected String getKeySelections()
-	{
-		return KEY_SELECTIONS;
-	}
+    try {
+      SearchResults<ConnectorContent> findAllUsages =
+          repositoryService.findAllUsages(
+              connector,
+              CurrentUser.getUsername(),
+              searchEvent.getQuery(),
+              search.getCourse(),
+              search.getFolder(),
+              search.isArchived(),
+              0,
+              Integer.MAX_VALUE,
+              sort,
+              search.isReverse());
 
-	@Override
-	public String executeWithExecutor(SectionInfo info, BeanLocator<? extends BulkOperationExecutor> executor)
-	{
-		Model<ConnectorItemKey> model = getModel(info);
-		Set<ConnectorItemKey> selections = model.getSelections();
-		List<ConnectorItemKey> items = new ArrayList<ConnectorItemKey>(selections);
-		selections.clear();
-		model.setModifiedSelection(true);
-		ClusteredTask task = connectorBulkService.createTask(items, executor);
-		return taskService.startTask(task);
-	}
+      Set<ConnectorItemKey> selections = model.getSelections();
 
-	@Override
-	protected boolean useBitSet()
-	{
-		return false;
-	}
+      for (ConnectorContent content : findAllUsages.getResults()) {
+        final String uuid = content.getUuid();
+        if (uuid != null) {
+          int version = content.getVersion();
+          if (version == 0) {
+            // FIXME perhaps not very efficient...
+            version = itemService.getLatestVersion(content.getUuid());
+            content.setVersion(version);
+          }
+          selections.add(new ConnectorItemKey(content, connector.getId()));
+        }
+      }
+    } catch (LmsUserNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+
+    model.setModifiedSelection(true);
+  }
+
+  @Override
+  protected String getKeySelections() {
+    return KEY_SELECTIONS;
+  }
+
+  @Override
+  public String executeWithExecutor(
+      SectionInfo info, BeanLocator<? extends BulkOperationExecutor> executor) {
+    Model<ConnectorItemKey> model = getModel(info);
+    Set<ConnectorItemKey> selections = model.getSelections();
+    List<ConnectorItemKey> items = new ArrayList<ConnectorItemKey>(selections);
+    selections.clear();
+    model.setModifiedSelection(true);
+    ClusteredTask task = connectorBulkService.createTask(items, executor);
+    return taskService.startTask(task);
+  }
+
+  @Override
+  protected boolean useBitSet() {
+    return false;
+  }
 }

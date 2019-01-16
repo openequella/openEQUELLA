@@ -26,29 +26,23 @@ import com.rometools.rome.feed.module.Module;
 import com.rometools.rome.io.ModuleGenerator;
 import com.tle.core.remoterepo.merlot.syndication.MerlotTopLevelModule;
 
-/**
- * @author aholland
- */
-public class MerlotTopLevelModuleGenerator implements ModuleGenerator
-{
-	private static final Set<Namespace> NAMESPACES = Collections.unmodifiableSet(Collections
-		.singleton(MerlotTopLevelModule.NAMESPACE));
+/** @author aholland */
+public class MerlotTopLevelModuleGenerator implements ModuleGenerator {
+  private static final Set<Namespace> NAMESPACES =
+      Collections.unmodifiableSet(Collections.singleton(MerlotTopLevelModule.NAMESPACE));
 
-	@Override
-	public void generate(Module module, Element element)
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public void generate(Module module, Element element) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public String getNamespaceUri()
-	{
-		return MerlotTopLevelModule.URI;
-	}
+  @Override
+  public String getNamespaceUri() {
+    return MerlotTopLevelModule.URI;
+  }
 
-	@Override
-	public Set<Namespace> getNamespaces()
-	{
-		return NAMESPACES;
-	}
+  @Override
+  public Set<Namespace> getNamespaces() {
+    return NAMESPACES;
+  }
 }

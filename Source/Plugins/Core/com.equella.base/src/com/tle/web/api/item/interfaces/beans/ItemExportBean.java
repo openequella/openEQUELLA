@@ -24,210 +24,178 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
 
-public class ItemExportBean extends AbstractExtendableBean
-{
-	@SuppressWarnings("nls")
-	private String exportVersion = "1.0";
-	private List<HistoryEventBean> history;
-	private List<ItemNodeStatusExportBean> statuses = new ArrayList<>();
-	private boolean moderating;
-	private Date liveApprovalDate;
-	private Date reviewDate;
-	private Date start;
-	private Date lastAction;
-	private String resumeStatus;
-	private String deletedStatus;
-	private String rejectedMessage;
-	private String rejectedBy;
-	private String rejectedStep;
-	@JsonInclude(Include.NON_DEFAULT)
-	private boolean resumeModerating;
-	@JsonInclude(Include.NON_DEFAULT)
-	private boolean unarchiveModerating;
-	@JsonInclude(Include.NON_DEFAULT)
-	private boolean deletedModerating;
-	@JsonInclude(Include.NON_DEFAULT)
-	private boolean needsReset;
-	private ItemLockBean lock;
+public class ItemExportBean extends AbstractExtendableBean {
+  @SuppressWarnings("nls")
+  private String exportVersion = "1.0";
 
-	public void setHistory(List<HistoryEventBean> history)
-	{
-		this.history = history;
-	}
+  private List<HistoryEventBean> history;
+  private List<ItemNodeStatusExportBean> statuses = new ArrayList<>();
+  private boolean moderating;
+  private Date liveApprovalDate;
+  private Date reviewDate;
+  private Date start;
+  private Date lastAction;
+  private String resumeStatus;
+  private String deletedStatus;
+  private String rejectedMessage;
+  private String rejectedBy;
+  private String rejectedStep;
 
-	public List<HistoryEventBean> getHistory()
-	{
-		return history;
-	}
+  @JsonInclude(Include.NON_DEFAULT)
+  private boolean resumeModerating;
 
-	public List<ItemNodeStatusExportBean> getStatuses()
-	{
-		return statuses;
-	}
+  @JsonInclude(Include.NON_DEFAULT)
+  private boolean unarchiveModerating;
 
-	public void setStatuses(List<ItemNodeStatusExportBean> statuses)
-	{
-		this.statuses = statuses;
-	}
+  @JsonInclude(Include.NON_DEFAULT)
+  private boolean deletedModerating;
 
-	public String getExportVersion()
-	{
-		return exportVersion;
-	}
+  @JsonInclude(Include.NON_DEFAULT)
+  private boolean needsReset;
 
-	public void setExportVersion(String exportVersion)
-	{
-		this.exportVersion = exportVersion;
-	}
+  private ItemLockBean lock;
 
-	public boolean isModerating()
-	{
-		return moderating;
-	}
+  public void setHistory(List<HistoryEventBean> history) {
+    this.history = history;
+  }
 
-	public void setModerating(boolean moderating)
-	{
-		this.moderating = moderating;
-	}
+  public List<HistoryEventBean> getHistory() {
+    return history;
+  }
 
-	public Date getLiveApprovalDate()
-	{
-		return liveApprovalDate;
-	}
+  public List<ItemNodeStatusExportBean> getStatuses() {
+    return statuses;
+  }
 
-	public void setLiveApprovalDate(Date liveApprovalDate)
-	{
-		this.liveApprovalDate = liveApprovalDate;
-	}
+  public void setStatuses(List<ItemNodeStatusExportBean> statuses) {
+    this.statuses = statuses;
+  }
 
-	public Date getReviewDate()
-	{
-		return reviewDate;
-	}
+  public String getExportVersion() {
+    return exportVersion;
+  }
 
-	public void setReviewDate(Date reviewDate)
-	{
-		this.reviewDate = reviewDate;
-	}
+  public void setExportVersion(String exportVersion) {
+    this.exportVersion = exportVersion;
+  }
 
-	public Date getStart()
-	{
-		return start;
-	}
+  public boolean isModerating() {
+    return moderating;
+  }
 
-	public void setStart(Date start)
-	{
-		this.start = start;
-	}
+  public void setModerating(boolean moderating) {
+    this.moderating = moderating;
+  }
 
-	public Date getLastAction()
-	{
-		return lastAction;
-	}
+  public Date getLiveApprovalDate() {
+    return liveApprovalDate;
+  }
 
-	public void setLastAction(Date lastAction)
-	{
-		this.lastAction = lastAction;
-	}
+  public void setLiveApprovalDate(Date liveApprovalDate) {
+    this.liveApprovalDate = liveApprovalDate;
+  }
 
-	public String getResumeStatus()
-	{
-		return resumeStatus;
-	}
+  public Date getReviewDate() {
+    return reviewDate;
+  }
 
-	public void setResumeStatus(String resumeStatus)
-	{
-		this.resumeStatus = resumeStatus;
-	}
+  public void setReviewDate(Date reviewDate) {
+    this.reviewDate = reviewDate;
+  }
 
-	public String getDeletedStatus()
-	{
-		return deletedStatus;
-	}
+  public Date getStart() {
+    return start;
+  }
 
-	public void setDeletedStatus(String deletedStatus)
-	{
-		this.deletedStatus = deletedStatus;
-	}
+  public void setStart(Date start) {
+    this.start = start;
+  }
 
-	public String getRejectedMessage()
-	{
-		return rejectedMessage;
-	}
+  public Date getLastAction() {
+    return lastAction;
+  }
 
-	public void setRejectedMessage(String rejectedMessage)
-	{
-		this.rejectedMessage = rejectedMessage;
-	}
+  public void setLastAction(Date lastAction) {
+    this.lastAction = lastAction;
+  }
 
-	public String getRejectedBy()
-	{
-		return rejectedBy;
-	}
+  public String getResumeStatus() {
+    return resumeStatus;
+  }
 
-	public void setRejectedBy(String rejectedBy)
-	{
-		this.rejectedBy = rejectedBy;
-	}
+  public void setResumeStatus(String resumeStatus) {
+    this.resumeStatus = resumeStatus;
+  }
 
-	public String getRejectedStep()
-	{
-		return rejectedStep;
-	}
+  public String getDeletedStatus() {
+    return deletedStatus;
+  }
 
-	public void setRejectedStep(String rejectedStep)
-	{
-		this.rejectedStep = rejectedStep;
-	}
+  public void setDeletedStatus(String deletedStatus) {
+    this.deletedStatus = deletedStatus;
+  }
 
-	public boolean isResumeModerating()
-	{
-		return resumeModerating;
-	}
+  public String getRejectedMessage() {
+    return rejectedMessage;
+  }
 
-	public void setResumeModerating(boolean resumeModerating)
-	{
-		this.resumeModerating = resumeModerating;
-	}
+  public void setRejectedMessage(String rejectedMessage) {
+    this.rejectedMessage = rejectedMessage;
+  }
 
-	public boolean isUnarchiveModerating()
-	{
-		return unarchiveModerating;
-	}
+  public String getRejectedBy() {
+    return rejectedBy;
+  }
 
-	public void setUnarchiveModerating(boolean unarchiveModerating)
-	{
-		this.unarchiveModerating = unarchiveModerating;
-	}
+  public void setRejectedBy(String rejectedBy) {
+    this.rejectedBy = rejectedBy;
+  }
 
-	public boolean isDeletedModerating()
-	{
-		return deletedModerating;
-	}
+  public String getRejectedStep() {
+    return rejectedStep;
+  }
 
-	public void setDeletedModerating(boolean deletedModerating)
-	{
-		this.deletedModerating = deletedModerating;
-	}
+  public void setRejectedStep(String rejectedStep) {
+    this.rejectedStep = rejectedStep;
+  }
 
-	public boolean isNeedsReset()
-	{
-		return needsReset;
-	}
+  public boolean isResumeModerating() {
+    return resumeModerating;
+  }
 
-	public void setNeedsReset(boolean needsReset)
-	{
-		this.needsReset = needsReset;
-	}
+  public void setResumeModerating(boolean resumeModerating) {
+    this.resumeModerating = resumeModerating;
+  }
 
-	public ItemLockBean getLock()
-	{
-		return lock;
-	}
+  public boolean isUnarchiveModerating() {
+    return unarchiveModerating;
+  }
 
-	public void setLock(ItemLockBean lock)
-	{
-		this.lock = lock;
-	}
+  public void setUnarchiveModerating(boolean unarchiveModerating) {
+    this.unarchiveModerating = unarchiveModerating;
+  }
 
+  public boolean isDeletedModerating() {
+    return deletedModerating;
+  }
+
+  public void setDeletedModerating(boolean deletedModerating) {
+    this.deletedModerating = deletedModerating;
+  }
+
+  public boolean isNeedsReset() {
+    return needsReset;
+  }
+
+  public void setNeedsReset(boolean needsReset) {
+    this.needsReset = needsReset;
+  }
+
+  public ItemLockBean getLock() {
+    return lock;
+  }
+
+  public void setLock(ItemLockBean lock) {
+    this.lock = lock;
+  }
 }

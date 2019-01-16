@@ -38,61 +38,58 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 
 @Bind
 @Singleton
-public class TaxonomyTermAttributeMigration extends AbstractHibernateSchemaMigration
-{
-	private static final String keyPrefix = PluginServiceImpl.getMyPluginId(TaxonomyTermAttributeMigration.class) + ".taxonomy.termattribute."; //$NON-NLS-1$
+public class TaxonomyTermAttributeMigration extends AbstractHibernateSchemaMigration {
+  private static final String keyPrefix =
+      PluginServiceImpl.getMyPluginId(TaxonomyTermAttributeMigration.class)
+          + ".taxonomy.termattribute."; //$NON-NLS-1$
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return 1;
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return 1;
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		return helper.getAddColumnsSQL("term_attributes", "value2"); //$NON-NLS-1$ //$NON-NLS-2$
-	}
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    return helper.getAddColumnsSQL("term_attributes", "value2"); // $NON-NLS-1$ //$NON-NLS-2$
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-	{
-		session.createQuery("UPDATE TermAttributes SET value2 = value").executeUpdate(); //$NON-NLS-1$
-	}
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) {
+    session.createQuery("UPDATE TermAttributes SET value2 = value").executeUpdate(); // $NON-NLS-1$
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		List<String> sql = helper.getDropColumnSQL("term_attributes", "value"); //$NON-NLS-1$ //$NON-NLS-2$
-		sql.addAll(helper.getRenameColumnSQL("term_attributes", "value2", "value")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		return sql;
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    List<String> sql =
+        helper.getDropColumnSQL("term_attributes", "value"); // $NON-NLS-1$ //$NON-NLS-2$
+    sql.addAll(
+        helper.getRenameColumnSQL(
+            "term_attributes", "value2", "value")); // $NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    return sql;
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class[]{FakeTermAttribute.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class[] {FakeTermAttribute.class};
+  }
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(keyPrefix + "title", keyPrefix + "description"); //$NON-NLS-1$ //$NON-NLS-2$
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(
+        keyPrefix + "title", keyPrefix + "description"); // $NON-NLS-1$ //$NON-NLS-2$
+  }
 
-	@Entity(name = "TermAttributes")
-	@AccessType("field")
-	public static class FakeTermAttribute
-	{
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		@XStreamOmitField
-		long id;
+  @Entity(name = "TermAttributes")
+  @AccessType("field")
+  public static class FakeTermAttribute {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @XStreamOmitField
+    long id;
 
-		@Lob
-		public String value;
+    @Lob public String value;
 
-		@Lob
-		public String value2;
-	}
+    @Lob public String value2;
+  }
 }

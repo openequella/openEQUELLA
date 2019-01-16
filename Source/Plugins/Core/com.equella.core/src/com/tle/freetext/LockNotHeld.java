@@ -24,12 +24,10 @@ package com.tle.freetext;
 
 // This exception is thrown when a thread that
 // does not hold a lock tries to release, upgrade, or downgrade a lock.
-public class LockNotHeld extends Exception
-{
-	private static final long serialVersionUID = 1L;
+public class LockNotHeld extends Exception {
+  private static final long serialVersionUID = 1L;
 
-	public LockNotHeld()
-	{
-		super();
-	}
+  public LockNotHeld() {
+    super();
+  }
 }

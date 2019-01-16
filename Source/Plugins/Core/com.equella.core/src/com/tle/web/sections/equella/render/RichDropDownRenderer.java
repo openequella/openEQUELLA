@@ -33,42 +33,42 @@ import com.tle.web.sections.standard.model.HtmlListState;
 import com.tle.web.sections.standard.renderers.list.DropDownRenderer;
 
 @SuppressWarnings("nls")
-public class RichDropDownRenderer extends DropDownRenderer
-{
-	static
-	{
-		PluginResourceHandler.init(RichDropDownRenderer.class);
-	}
+public class RichDropDownRenderer extends DropDownRenderer {
+  static {
+    PluginResourceHandler.init(RichDropDownRenderer.class);
+  }
 
-	@PlugURL("scripts/component/richdropdown.js")
-	private static String RICHDROPDOWN_URL;
+  @PlugURL("scripts/component/richdropdown.js")
+  private static String RICHDROPDOWN_URL;
 
-	@PlugURL("css/component/richdropdown.css")
-	private static String RICHDROPDOWN_STYLE;
+  @PlugURL("css/component/richdropdown.css")
+  private static String RICHDROPDOWN_STYLE;
 
-	private static JSCallable SETUP_RICHDROPDOWN = new ExternallyDefinedFunction(
-		"setupRichDropDown", new IncludeFile(RICHDROPDOWN_URL), JQueryUIAutocomplete.PRERENDER, //$NON-NLS-1$
-		JQueryCore.PRERENDER, JQueryUIPosition.PRERENDER);
+  private static JSCallable SETUP_RICHDROPDOWN =
+      new ExternallyDefinedFunction(
+          "setupRichDropDown",
+          new IncludeFile(RICHDROPDOWN_URL),
+          JQueryUIAutocomplete.PRERENDER, // $NON-NLS-1$
+          JQueryCore.PRERENDER,
+          JQueryUIPosition.PRERENDER);
 
-	private static final CssInclude CSS = CssInclude.include(RICHDROPDOWN_STYLE).hasRtl().make();
+  private static final CssInclude CSS = CssInclude.include(RICHDROPDOWN_STYLE).hasRtl().make();
 
-	public RichDropDownRenderer(HtmlListState state)
-	{
-		super(state);
-		state.setDisabled(false);
-	}
+  public RichDropDownRenderer(HtmlListState state) {
+    super(state);
+    state.setDisabled(false);
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(CSS);
-		info.addReadyStatements(new JQueryStatement(new JQuerySelector(this), new FunctionCallExpression(
-			SETUP_RICHDROPDOWN)));
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(CSS);
+    info.addReadyStatements(
+        new JQueryStatement(
+            new JQuerySelector(this), new FunctionCallExpression(SETUP_RICHDROPDOWN)));
+  }
 
-	@Override
-	protected String getTag()
-	{
-		return "select";
-	}
+  @Override
+  protected String getTag() {
+    return "select";
+  }
 }

@@ -29,35 +29,30 @@ import com.tle.core.institution.convert.XmlMigrator;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class RemoveCoursesMigrationXml extends XmlMigrator
-{
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
-	{
-		TemporaryFileHandle hierFolder = new SubTemporaryFile(staging, "hierarchy");
-		for( String entry : xmlHelper.getXmlFileList(hierFolder) )
-		{
-			final PropBagEx xml = xmlHelper.readToPropBagEx(hierFolder, entry);
+public class RemoveCoursesMigrationXml extends XmlMigrator {
+  @Override
+  public void execute(
+      TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) {
+    TemporaryFileHandle hierFolder = new SubTemporaryFile(staging, "hierarchy");
+    for (String entry : xmlHelper.getXmlFileList(hierFolder)) {
+      final PropBagEx xml = xmlHelper.readToPropBagEx(hierFolder, entry);
 
-			// This works if there is one topic per file (new format)
-			removeObsoleteXml(xml);
+      // This works if there is one topic per file (new format)
+      removeObsoleteXml(xml);
 
-			// This works if there are many topics per file (old format)
-			if( xml.nodeExists("com.tle.beans.hierarchy.HierarchyTopic") )
-			{
-				for( PropBagEx subxml : xml.iterator("com.tle.beans.hierarchy.HierarchyTopic") )
-				{
-					removeObsoleteXml(subxml);
-				}
-			}
+      // This works if there are many topics per file (old format)
+      if (xml.nodeExists("com.tle.beans.hierarchy.HierarchyTopic")) {
+        for (PropBagEx subxml : xml.iterator("com.tle.beans.hierarchy.HierarchyTopic")) {
+          removeObsoleteXml(subxml);
+        }
+      }
 
-			xmlHelper.writeFromPropBagEx(hierFolder, entry, xml);
-		}
-	}
+      xmlHelper.writeFromPropBagEx(hierFolder, entry, xml);
+    }
+  }
 
-	private void removeObsoleteXml(PropBagEx xml)
-	{
-		xml.deleteNode("courses");
-		xml.deleteNode("parent/courses");
-	}
+  private void removeObsoleteXml(PropBagEx xml) {
+    xml.deleteNode("courses");
+    xml.deleteNode("parent/courses");
+  }
 }

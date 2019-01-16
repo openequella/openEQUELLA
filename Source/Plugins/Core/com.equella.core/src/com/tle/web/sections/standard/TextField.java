@@ -30,109 +30,94 @@ import com.tle.web.sections.standard.renderers.TextFieldRenderer;
 
 /**
  * A text field component.
- * <p>
- * It provides methods to get and set a String value. <br>
+ *
+ * <p>It provides methods to get and set a String value. <br>
  * The default renderer is usually {@link TextFieldRenderer}.
- * 
+ *
  * @author jmaginnis
  */
-public class TextField extends AbstractValueStateComponent<HtmlTextFieldState, JSValueComponent>
-{
-	private boolean dontBookmarkBlank = true;
-	private boolean autocompleteDisabled;
-	private boolean password;
-	private JSCallable callback;
+public class TextField extends AbstractValueStateComponent<HtmlTextFieldState, JSValueComponent> {
+  private boolean dontBookmarkBlank = true;
+  private boolean autocompleteDisabled;
+  private boolean password;
+  private JSCallable callback;
 
-	public TextField()
-	{
-		super(RendererConstants.TEXTFIELD);
-	}
+  public TextField() {
+    super(RendererConstants.TEXTFIELD);
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return setupState(info, new HtmlTextFieldState());
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return setupState(info, new HtmlTextFieldState());
+  }
 
-	public String getValue(SectionInfo info)
-	{
-		return getStringValue(info);
-	}
+  public String getValue(SectionInfo info) {
+    return getStringValue(info);
+  }
 
-	public void setValue(SectionInfo info, String value)
-	{
-		HtmlValueState state = getState(info);
-		state.setValue(value);
-	}
+  public void setValue(SectionInfo info, String value) {
+    HtmlValueState state = getState(info);
+    state.setValue(value);
+  }
 
-	@Override
-	protected HtmlTextFieldState setupState(SectionInfo info, HtmlTextFieldState state)
-	{
-		super.setupState(info, state);
-		state.setPassword(isPassword());
-		state.setAutocompleteDisabled(autocompleteDisabled);
-		state.setAutoCompleteCallback(callback);
-		return state;
-	}
+  @Override
+  protected HtmlTextFieldState setupState(SectionInfo info, HtmlTextFieldState state) {
+    super.setupState(info, state);
+    state.setPassword(isPassword());
+    state.setAutocompleteDisabled(autocompleteDisabled);
+    state.setAutoCompleteCallback(callback);
+    return state;
+  }
 
-	@Override
-	protected String getBookmarkStringValue(HtmlTextFieldState state)
-	{
-		String value = state.getValue();
-		if( value != null && dontBookmarkBlank && value.isEmpty() )
-		{
-			return null;
-		}
-		return value;
-	}
+  @Override
+  protected String getBookmarkStringValue(HtmlTextFieldState state) {
+    String value = state.getValue();
+    if (value != null && dontBookmarkBlank && value.isEmpty()) {
+      return null;
+    }
+    return value;
+  }
 
-	@Override
-	public void document(SectionInfo info, DocumentParamsEvent event)
-	{
-		addDocumentedParam(event, getParameterId(), String.class.getName());
-	}
+  @Override
+  public void document(SectionInfo info, DocumentParamsEvent event) {
+    addDocumentedParam(event, getParameterId(), String.class.getName());
+  }
 
-	public void setDontBookmarkBlank(boolean b)
-	{
-		this.dontBookmarkBlank = b;
-	}
+  public void setDontBookmarkBlank(boolean b) {
+    this.dontBookmarkBlank = b;
+  }
 
-	public JSValidator createNotBlankValidator()
-	{
-		return new SimpleValidator(new NotEqualsExpression(createGetExpression(), new StringExpression(""))); //$NON-NLS-1$
-	}
+  public JSValidator createNotBlankValidator() {
+    return new SimpleValidator(
+        new NotEqualsExpression(createGetExpression(), new StringExpression(""))); // $NON-NLS-1$
+  }
 
-	public boolean isAutocompleteDisabled()
-	{
-		return autocompleteDisabled;
-	}
+  public boolean isAutocompleteDisabled() {
+    return autocompleteDisabled;
+  }
 
-	public void setAutocompleteDisabled(boolean autocompleteDisabled)
-	{
-		this.autocompleteDisabled = autocompleteDisabled;
-	}
+  public void setAutocompleteDisabled(boolean autocompleteDisabled) {
+    this.autocompleteDisabled = autocompleteDisabled;
+  }
 
-	public boolean isPassword()
-	{
-		return password;
-	}
+  public boolean isPassword() {
+    return password;
+  }
 
-	public void setPassword(boolean password)
-	{
-		this.password = password;
-	}
+  public void setPassword(boolean password) {
+    this.password = password;
+  }
 
-	/***
-	 * Used to provide the call back to obtain the Auto complete source. The
-	 * call back should return either Json or a String array
-	 * 
-	 * @param JSCallable function that returns a Json array or String Array of
-	 *            Json objects that take the form of {{label, value}}
-	 */
-	@SuppressWarnings("nls")
-	public void setAutoCompleteCallback(JSCallable callback)
-	{
-		this.callback = callback;
-		setDefaultRenderer("autocompletetextfield");
-	}
+  /**
+   * * Used to provide the call back to obtain the Auto complete source. The call back should return
+   * either Json or a String array
+   *
+   * @param JSCallable function that returns a Json array or String Array of Json objects that take
+   *     the form of {{label, value}}
+   */
+  @SuppressWarnings("nls")
+  public void setAutoCompleteCallback(JSCallable callback) {
+    this.callback = callback;
+    setDefaultRenderer("autocompletetextfield");
+  }
 }

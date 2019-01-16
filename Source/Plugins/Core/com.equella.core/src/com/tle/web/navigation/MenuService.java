@@ -24,34 +24,31 @@ import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.web.template.section.MenuContributor;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class MenuService
-{
-	private PluginTracker<MenuContributor> contributors;
+public class MenuService {
+  private PluginTracker<MenuContributor> contributors;
 
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		contributors = new PluginTracker<MenuContributor>(pluginService, "com.tle.web.sections.equella", "menuContributor",
-			"menuContributorClass");
-		contributors.setBeanKey("menuContributorClass");
-	}
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    contributors =
+        new PluginTracker<MenuContributor>(
+            pluginService,
+            "com.tle.web.sections.equella",
+            "menuContributor",
+            "menuContributorClass");
+    contributors.setBeanKey("menuContributorClass");
+  }
 
-	public void clearCachedData()
-	{
-		for( MenuContributor contributor : contributors.getBeanList() )
-		{
-			contributor.clearCachedData();
-		}
-	}
+  public void clearCachedData() {
+    for (MenuContributor contributor : contributors.getBeanList()) {
+      contributor.clearCachedData();
+    }
+  }
 
-	public PluginTracker<MenuContributor> getContributors()
-	{
-		return contributors;
-	}
+  public PluginTracker<MenuContributor> getContributors() {
+    return contributors;
+  }
 }

@@ -28,21 +28,23 @@ import com.tle.web.resources.ResourcesService;
 
 @Bind
 @SuppressWarnings("nls")
-public class EchoSettingsPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeProvider<EchoServer>
-{
-	private static final PluginResourceHelper resources = ResourcesService
-		.getResourceHelper(EchoSettingsPrivilegeTreeProvider.class);
+public class EchoSettingsPrivilegeTreeProvider
+    extends AbstractEntityPrivilegeTreeProvider<EchoServer> {
+  private static final PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(EchoSettingsPrivilegeTreeProvider.class);
 
-	@Inject
-	protected EchoSettingsPrivilegeTreeProvider(EchoService echoService)
-	{
-		super(echoService, Node.ALL_ECHOS, resources.key("securitytree.echoservers"), Node.ECHO,
-			resources.key("securitytree.targetallechoservers"));
-	}
+  @Inject
+  protected EchoSettingsPrivilegeTreeProvider(EchoService echoService) {
+    super(
+        echoService,
+        Node.ALL_ECHOS,
+        resources.key("securitytree.echoservers"),
+        Node.ECHO,
+        resources.key("securitytree.targetallechoservers"));
+  }
 
-	@Override
-	protected EchoServer createEntity()
-	{
-		return new EchoServer();
-	}
+  @Override
+  protected EchoServer createEntity() {
+    return new EchoServer();
+  }
 }

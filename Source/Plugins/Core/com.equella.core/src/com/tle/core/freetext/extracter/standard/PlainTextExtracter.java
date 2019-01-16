@@ -27,48 +27,40 @@ import org.slf4j.LoggerFactory;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.core.guice.Bind;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class PlainTextExtracter extends AbstractTextExtracterExtension
-{
-	private static final Logger LOGGER = LoggerFactory.getLogger(MsExcelExtracter.class);
+public class PlainTextExtracter extends AbstractTextExtracterExtension {
+  private static final Logger LOGGER = LoggerFactory.getLogger(MsExcelExtracter.class);
 
-	@Override
-	public boolean isSupportedByDefault(MimeEntry mimeEntry)
-	{
-		return mimeEntry.getType().equals("text/plain"); //$NON-NLS-1$
-	}
+  @Override
+  public boolean isSupportedByDefault(MimeEntry mimeEntry) {
+    return mimeEntry.getType().equals("text/plain"); // $NON-NLS-1$
+  }
 
-	@Override
-	public void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration)
-		throws IOException
-	{
-		// Ignore parseDuration for now.
-		int done = 0;
-		byte[] filebytes = new byte[maxSize];
-		while( done < maxSize )
-		{
-			int amount = input.read(filebytes, done, maxSize - done);
-			if( amount == -1 )
-			{
-				break;
-			}
-			done += amount;
-		}
-		String s = new String(filebytes, 0, done, "UTF-8");
-		outputText.append(s);
-		if( LOGGER.isDebugEnabled() )
-		{
-			LOGGER.debug("Text Summary:" + s); //$NON-NLS-1$
-		}
-	}
+  @Override
+  public void extractText(
+      String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration)
+      throws IOException {
+    // Ignore parseDuration for now.
+    int done = 0;
+    byte[] filebytes = new byte[maxSize];
+    while (done < maxSize) {
+      int amount = input.read(filebytes, done, maxSize - done);
+      if (amount == -1) {
+        break;
+      }
+      done += amount;
+    }
+    String s = new String(filebytes, 0, done, "UTF-8");
+    outputText.append(s);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Text Summary:" + s); // $NON-NLS-1$
+    }
+  }
 
-	@Override
-	public boolean isMimeTypeSupported(String mimeType)
-	{
-		return mimeType.toLowerCase().startsWith("text"); //$NON-NLS-1$
-	}
+  @Override
+  public boolean isMimeTypeSupported(String mimeType) {
+    return mimeType.toLowerCase().startsWith("text"); // $NON-NLS-1$
+  }
 }

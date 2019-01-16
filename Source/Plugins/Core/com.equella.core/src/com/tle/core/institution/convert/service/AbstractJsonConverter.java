@@ -21,8 +21,6 @@ import com.tle.core.institution.convert.JsonHelper;
 
 import javax.inject.Inject;
 
-public abstract class AbstractJsonConverter<T> extends AbstractConverter<T>
-{
-	@Inject
-	protected JsonHelper json;
+public abstract class AbstractJsonConverter<T> extends AbstractConverter<T> {
+  @Inject protected JsonHelper json;
 }

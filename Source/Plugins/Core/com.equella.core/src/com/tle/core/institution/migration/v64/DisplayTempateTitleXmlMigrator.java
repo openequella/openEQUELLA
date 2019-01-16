@@ -37,68 +37,62 @@ import com.tle.web.resources.ResourcesService;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class DisplayTempateTitleXmlMigrator extends XmlMigrator
-{
-	private static PluginResourceHelper r = ResourcesService.getResourceHelper(DisplayTempateTitleXmlMigrator.class);
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) throws Exception
-	{
-		TemporaryFileHandle idefFolder = new SubTemporaryFile(staging, "itemdefinition");
-		for( String entry : xmlHelper.getXmlFileList(idefFolder) )
-		{
-			final PropBagEx xml = xmlHelper.readToPropBagEx(idefFolder, entry);
+public class DisplayTempateTitleXmlMigrator extends XmlMigrator {
+  private static PluginResourceHelper r =
+      ResourcesService.getResourceHelper(DisplayTempateTitleXmlMigrator.class);
 
-			// Add uuid and bundleTitle to all Sections
-			addSummarySection(xml.getSubtree("slow/itemSummarySections"));
+  @Override
+  public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
+      throws Exception {
+    TemporaryFileHandle idefFolder = new SubTemporaryFile(staging, "itemdefinition");
+    for (String entry : xmlHelper.getXmlFileList(idefFolder)) {
+      final PropBagEx xml = xmlHelper.readToPropBagEx(idefFolder, entry);
 
-			xmlHelper.writeFromPropBagEx(idefFolder, entry, xml);
-		}
-	}
+      // Add uuid and bundleTitle to all Sections
+      addSummarySection(xml.getSubtree("slow/itemSummarySections"));
 
-	private void addSummarySection(PropBagEx xml)
-	{
-		PropBagIterator iter = xml.iterator("configList/com.tle.beans.entity.itemdef.SummarySectionsConfig");
-		while( iter.hasNext() )
-		{
-			PropBagEx config = iter.next();
-			if( Check.isEmpty(config.getNode("uuid")) )
-			{
-				config.createNode("uuid", UUID.randomUUID().toString());
-			}
+      xmlHelper.writeFromPropBagEx(idefFolder, entry, xml);
+    }
+  }
 
-			if( config.getSubtree("bundleTitle") != null )
-			{
-				continue;
-			}
+  private void addSummarySection(PropBagEx xml) {
+    PropBagIterator iter =
+        xml.iterator("configList/com.tle.beans.entity.itemdef.SummarySectionsConfig");
+    while (iter.hasNext()) {
+      PropBagEx config = iter.next();
+      if (Check.isEmpty(config.getNode("uuid"))) {
+        config.createNode("uuid", UUID.randomUUID().toString());
+      }
 
-			String configValue = config.getNode("value");
-			String title = config.getNode("bundleTitle");
-			switch( configValue )
-			{
-				case "attachmentsSection":
-					InternalI18NString attachmentTitle = new KeyString(
-						r.key("summary.content.attachments.title"));
-					DisplayTempateTitleMigration.addNewBundleTitle(attachmentTitle.toString(), config);
-					break;
-				case "commentsSection":
-					InternalI18NString commentTitle = new KeyString(r.key("comments.addnew"));
-					DisplayTempateTitleMigration.addNewBundleTitle(commentTitle.toString(), config);
-					break;
-				case "citationSummarySection":
-					InternalI18NString citationTitle = new KeyString("com.equella.core.citation.summary.title");
-					DisplayTempateTitleMigration.addNewBundleTitle(citationTitle.toString(), config);
-					break;
-				default:
-					if( !Check.isEmpty(title) )
-					{
-						DisplayTempateTitleMigration.addNewBundleTitle(title, config);
-					}
-					else
-					{
-						DisplayTempateTitleMigration.addOtherSectionNames(configValue, config);
-					}
-					break;
-			}
-		}
-	}
+      if (config.getSubtree("bundleTitle") != null) {
+        continue;
+      }
+
+      String configValue = config.getNode("value");
+      String title = config.getNode("bundleTitle");
+      switch (configValue) {
+        case "attachmentsSection":
+          InternalI18NString attachmentTitle =
+              new KeyString(r.key("summary.content.attachments.title"));
+          DisplayTempateTitleMigration.addNewBundleTitle(attachmentTitle.toString(), config);
+          break;
+        case "commentsSection":
+          InternalI18NString commentTitle = new KeyString(r.key("comments.addnew"));
+          DisplayTempateTitleMigration.addNewBundleTitle(commentTitle.toString(), config);
+          break;
+        case "citationSummarySection":
+          InternalI18NString citationTitle =
+              new KeyString("com.equella.core.citation.summary.title");
+          DisplayTempateTitleMigration.addNewBundleTitle(citationTitle.toString(), config);
+          break;
+        default:
+          if (!Check.isEmpty(title)) {
+            DisplayTempateTitleMigration.addNewBundleTitle(title, config);
+          } else {
+            DisplayTempateTitleMigration.addOtherSectionNames(configValue, config);
+          }
+          break;
+      }
+    }
+  }
 }

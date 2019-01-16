@@ -18,20 +18,13 @@ package com.tle.common.scripting.types;
 
 import com.tle.common.usermanagement.user.valuebean.GroupBean;
 
-/**
- * Group object for usage in scripts.
- */
-public interface GroupScriptType extends GroupBean
-{
-	/**
-	 * @return A unique, unchanging ID for the group
-	 */
-	@Override
-	String getUniqueID();
+/** Group object for usage in scripts. */
+public interface GroupScriptType extends GroupBean {
+  /** @return A unique, unchanging ID for the group */
+  @Override
+  String getUniqueID();
 
-	/**
-	 * @return The name of the group
-	 */
-	@Override
-	String getName();
+  /** @return The name of the group */
+  @Override
+  String getName();
 }

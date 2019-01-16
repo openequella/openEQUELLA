@@ -40,90 +40,82 @@ import com.tle.core.services.item.relation.RelationOperation.RelationOperationFa
 
 @Bind
 @Singleton
-public class RelationHelper extends AbstractHelper
-{
-	@Inject
-	private RelationService relationService;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private RelationOperationFactory relationOperationFactory;
+public class RelationHelper extends AbstractHelper {
+  @Inject private RelationService relationService;
+  @Inject private ItemService itemService;
+  @Inject private RelationOperationFactory relationOperationFactory;
 
-	@Override
-	public void load(PropBagEx item, Item bean)
-	{
-		if( !bean.isNewItem() )
-		{
-			loadRelations(item, relationService.getAllByFromItem(bean), true);
-			loadRelations(item, relationService.getAllByToItem(bean), false);
-		}
-	}
+  @Override
+  public void load(PropBagEx item, Item bean) {
+    if (!bean.isNewItem()) {
+      loadRelations(item, relationService.getAllByFromItem(bean), true);
+      loadRelations(item, relationService.getAllByToItem(bean), false);
+    }
+  }
 
-	private void loadRelations(PropBagEx itemXml, Collection<Relation> relations, boolean from)
-	{
-		if( Check.isEmpty(relations) )
-		{
-			return;
-		}
+  private void loadRelations(PropBagEx itemXml, Collection<Relation> relations, boolean from) {
+    if (Check.isEmpty(relations)) {
+      return;
+    }
 
-		PropBagEx relsXml = itemXml.aquireSubtree("relations").newSubtree( //$NON-NLS-1$
-			from ? "targets" : "sources"); //$NON-NLS-1$//$NON-NLS-2$
+    PropBagEx relsXml =
+        itemXml
+            .aquireSubtree("relations")
+            .newSubtree( //$NON-NLS-1$
+                from ? "targets" : "sources"); // $NON-NLS-1$//$NON-NLS-2$
 
-		for( Relation relation : relations )
-		{
-			String myRes = from ? relation.getFirstResource() : relation.getSecondResource();
-			Item otherItem = from ? relation.getSecondItem() : relation.getFirstItem();
-			String otherRes = from ? relation.getSecondResource() : relation.getFirstResource();
+    for (Relation relation : relations) {
+      String myRes = from ? relation.getFirstResource() : relation.getSecondResource();
+      Item otherItem = from ? relation.getSecondItem() : relation.getFirstItem();
+      String otherRes = from ? relation.getSecondResource() : relation.getFirstResource();
 
-			PropBagEx relXml = relsXml.newSubtree("relation"); //$NON-NLS-1$
-			relXml.setNode("@type", relation.getRelationType()); //$NON-NLS-1$
-			relXml.setIfNotEmpty("@resource", myRes); //$NON-NLS-1$
+      PropBagEx relXml = relsXml.newSubtree("relation"); // $NON-NLS-1$
+      relXml.setNode("@type", relation.getRelationType()); // $NON-NLS-1$
+      relXml.setIfNotEmpty("@resource", myRes); // $NON-NLS-1$
 
-			PropBagEx otherItemXml = relXml.newSubtree("item"); //$NON-NLS-1$
-			otherItemXml.setNode("@uuid", otherItem.getUuid()); //$NON-NLS-1$
-			otherItemXml.setNode("@version", otherItem.getVersion()); //$NON-NLS-1$
-			otherItemXml.setIfNotEmpty("@resource", otherRes); //$NON-NLS-1$
-			otherItemXml.setIfNotEmpty("name", CurrentLocale.get(otherItem.getName(), null)); //$NON-NLS-1$
-			otherItemXml.setIfNotEmpty("description", CurrentLocale.get(otherItem.getDescription(), null)); //$NON-NLS-1$
-		}
-	}
+      PropBagEx otherItemXml = relXml.newSubtree("item"); // $NON-NLS-1$
+      otherItemXml.setNode("@uuid", otherItem.getUuid()); // $NON-NLS-1$
+      otherItemXml.setNode("@version", otherItem.getVersion()); // $NON-NLS-1$
+      otherItemXml.setIfNotEmpty("@resource", otherRes); // $NON-NLS-1$
+      otherItemXml.setIfNotEmpty(
+          "name", CurrentLocale.get(otherItem.getName(), null)); // $NON-NLS-1$
+      otherItemXml.setIfNotEmpty(
+          "description", CurrentLocale.get(otherItem.getDescription(), null)); // $NON-NLS-1$
+    }
+  }
 
-	@Override
-	public void save(PropBagEx xml, ItemPack<Item> pack, Set<String> handled)
-	{
-		Item item = pack.getItem();
-		RelationOperationState state = new RelationOperationState();
-		if( !item.isNewItem() )
-		{
-			Item realItem = itemService.get(item.getItemId());
-			Collection<Relation> allCurrent = relationService.getAllByFromItem(realItem);
-			state.initForCurrent(allCurrent);
-		}
-		state.deleteAll();
+  @Override
+  public void save(PropBagEx xml, ItemPack<Item> pack, Set<String> handled) {
+    Item item = pack.getItem();
+    RelationOperationState state = new RelationOperationState();
+    if (!item.isNewItem()) {
+      Item realItem = itemService.get(item.getItemId());
+      Collection<Relation> allCurrent = relationService.getAllByFromItem(realItem);
+      state.initForCurrent(allCurrent);
+    }
+    state.deleteAll();
 
-		for( PropBagEx relationXml : xml.iterateAll("relations/targets/relation") ) //$NON-NLS-1$
-		{
-			String type = relationXml.getNode("@type"); //$NON-NLS-1$
-			String resourceId = relationXml.getNode("@resource"); //$NON-NLS-1$
-			String uuid = relationXml.getNode("item/@uuid"); //$NON-NLS-1$
-			int version = relationXml.getIntNode("item/@version"); //$NON-NLS-1$
-			state.add(new ItemId(uuid, version), type, resourceId);
-		}
+    for (PropBagEx relationXml : xml.iterateAll("relations/targets/relation")) // $NON-NLS-1$
+    {
+      String type = relationXml.getNode("@type"); // $NON-NLS-1$
+      String resourceId = relationXml.getNode("@resource"); // $NON-NLS-1$
+      String uuid = relationXml.getNode("item/@uuid"); // $NON-NLS-1$
+      int version = relationXml.getIntNode("item/@version"); // $NON-NLS-1$
+      state.add(new ItemId(uuid, version), type, resourceId);
+    }
 
-		List<WorkflowOperation> preSave = pack.getAttribute(SaveOperation.KEY_PRESAVE);
-		if( preSave == null )
-		{
-			preSave = new ArrayList<>();
-			pack.setAttribute(SaveOperation.KEY_PRESAVE, preSave);
-		}
-		preSave.add(relationOperationFactory.create(state));
+    List<WorkflowOperation> preSave = pack.getAttribute(SaveOperation.KEY_PRESAVE);
+    if (preSave == null) {
+      preSave = new ArrayList<>();
+      pack.setAttribute(SaveOperation.KEY_PRESAVE, preSave);
+    }
+    preSave.add(relationOperationFactory.create(state));
 
-		handled.add("relations"); //$NON-NLS-1$
-	}
+    handled.add("relations"); // $NON-NLS-1$
+  }
 
-	@Override
-	public void save(PropBagEx xml, Item item, Set<String> handled)
-	{
-		throw new Error();
-	}
+  @Override
+  public void save(PropBagEx xml, Item item, Set<String> handled) {
+    throw new Error();
+  }
 }

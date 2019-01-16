@@ -43,149 +43,141 @@ import com.tle.i18n.BundleCache;
 
 /**
  * Created on Dec 4, 2003
- * 
+ *
  * @author Nicholas Read
  */
 @SuppressWarnings("nls")
-public class DisplayNodePanel extends JPanel implements ListWithViewInterface<DisplayNode>
-{
-	private static final long serialVersionUID = 1L;
-	private final SchemaModel model;
-	private final boolean extrasVisible;
+public class DisplayNodePanel extends JPanel implements ListWithViewInterface<DisplayNode> {
+  private static final long serialVersionUID = 1L;
+  private final SchemaModel model;
+  private final boolean extrasVisible;
 
-	private SingleTargetChooser picker;
-	private I18nTextField title;
-	private JTextField splitter;
-	private JComboBox type;
-	private JComboBox mode;
-	private ChangeDetector changeDetector;
-	private JAdminSpinner truncateLength;
+  private SingleTargetChooser picker;
+  private I18nTextField title;
+  private JTextField splitter;
+  private JComboBox type;
+  private JComboBox mode;
+  private ChangeDetector changeDetector;
+  private JAdminSpinner truncateLength;
 
-	public DisplayNodePanel(final SchemaModel model, final boolean extrasVisible)
-	{
-		this.model = model;
-		this.extrasVisible = extrasVisible;
-	}
+  public DisplayNodePanel(final SchemaModel model, final boolean extrasVisible) {
+    this.model = model;
+    this.extrasVisible = extrasVisible;
+  }
 
-	@Override
-	public boolean hasDetectedChanges()
-	{
-		return changeDetector.hasDetectedChanges();
-	}
+  @Override
+  public boolean hasDetectedChanges() {
+    return changeDetector.hasDetectedChanges();
+  }
 
-	@Override
-	public void clearChanges()
-	{
-		changeDetector.clearChanges();
-	}
+  @Override
+  public void clearChanges() {
+    changeDetector.clearChanges();
+  }
 
-	@Override
-	public Component getComponent()
-	{
-		return this;
-	}
+  @Override
+  public Component getComponent() {
+    return this;
+  }
 
-	@Override
-	public void addNameListener(final KeyListener listener)
-	{
-		title.addKeyListener(listener);
-	}
+  @Override
+  public void addNameListener(final KeyListener listener) {
+    title.addKeyListener(listener);
+  }
 
-	@Override
-	public void save(final DisplayNode element)
-	{
-		LanguageBundle titleBundle = title.save();
-		String pickerTarget = picker.getTarget();
-		String typeValue = type.getSelectedItem() != null ? ((NameValue) type.getSelectedItem()).getValue() : null;
+  @Override
+  public void save(final DisplayNode element) {
+    LanguageBundle titleBundle = title.save();
+    String pickerTarget = picker.getTarget();
+    String typeValue =
+        type.getSelectedItem() != null ? ((NameValue) type.getSelectedItem()).getValue() : null;
 
-		element.setTitle(titleBundle);
-		element.setNode(pickerTarget);
-		element.setSplitter(splitter.getText());
-		element.setTruncateLength(truncateLength.getIntValue());
-		element.setType(typeValue);
-		if( mode.isVisible() && mode.getSelectedItem() != null )
-		{
-			element.setMode(((NameValue) mode.getSelectedItem()).getValue());
-		}
-	}
+    element.setTitle(titleBundle);
+    element.setNode(pickerTarget);
+    element.setSplitter(splitter.getText());
+    element.setTruncateLength(truncateLength.getIntValue());
+    element.setType(typeValue);
+    if (mode.isVisible() && mode.getSelectedItem() != null) {
+      element.setMode(((NameValue) mode.getSelectedItem()).getValue());
+    }
+  }
 
-	@Override
-	public void load(final DisplayNode element)
-	{
-		title.load(element.getTitle());
-		picker.setTarget(element.getNode());
-		splitter.setText(element.getSplitter());
-		final Integer trunc = element.getTruncateLength();
-		truncateLength.set((trunc == null ? 355 : trunc), 0);
-		if( mode.isVisible() )
-		{
-			AppletGuiUtils.selectInJCombo(mode, new NameValue(null, element.getMode()));
-		}
-		AppletGuiUtils.selectInJCombo(type, new NameValue(null, element.getType()));
-	}
+  @Override
+  public void load(final DisplayNode element) {
+    title.load(element.getTitle());
+    picker.setTarget(element.getNode());
+    splitter.setText(element.getSplitter());
+    final Integer trunc = element.getTruncateLength();
+    truncateLength.set((trunc == null ? 355 : trunc), 0);
+    if (mode.isVisible()) {
+      AppletGuiUtils.selectInJCombo(mode, new NameValue(null, element.getMode()));
+    }
+    AppletGuiUtils.selectInJCombo(type, new NameValue(null, element.getType()));
+  }
 
-	@Override
-	public void setup()
-	{
-		final JLabel titleLabel = new JLabel(CurrentLocale.get("com.tle.admin.itemdefinition.displaynodepanel.title"));
-		final JLabel displayLabel = new JLabel(CurrentLocale.get("com.tle.admin.itemdefinition.displaynodepanel.mode"));
-		final JLabel targetLabel = new JLabel(CurrentLocale.get("com.tle.admin.itemdefinition.displaynodepanel.target"));
-		final JLabel typeLabel = new JLabel(CurrentLocale.get("com.tle.admin.itemdefinition.displaynodepanel.type"));
-		final JLabel splitterLabel = new JLabel(
-			CurrentLocale.get("com.tle.admin.itemdefinition.displaynodepanel.splitter"));
-		final JLabel truncateLabel = new JLabel(
-			CurrentLocale.get("com.tle.admin.itemdefinition.displaynodepanel.truncate"));
+  @Override
+  public void setup() {
+    final JLabel titleLabel =
+        new JLabel(CurrentLocale.get("com.tle.admin.itemdefinition.displaynodepanel.title"));
+    final JLabel displayLabel =
+        new JLabel(CurrentLocale.get("com.tle.admin.itemdefinition.displaynodepanel.mode"));
+    final JLabel targetLabel =
+        new JLabel(CurrentLocale.get("com.tle.admin.itemdefinition.displaynodepanel.target"));
+    final JLabel typeLabel =
+        new JLabel(CurrentLocale.get("com.tle.admin.itemdefinition.displaynodepanel.type"));
+    final JLabel splitterLabel =
+        new JLabel(CurrentLocale.get("com.tle.admin.itemdefinition.displaynodepanel.splitter"));
+    final JLabel truncateLabel =
+        new JLabel(CurrentLocale.get("com.tle.admin.itemdefinition.displaynodepanel.truncate"));
 
-		title = new I18nTextField(BundleCache.getLanguages());
-		splitter = new JTextField();
-		mode = new JComboBox(getNameList("single", "double"));
-		type = new JComboBox(getNameList("text", "date", "html", "url"));
-		picker = new SingleTargetChooser(model, null);
-		truncateLength = new JAdminSpinner(0, 0, Integer.MAX_VALUE, 1);
+    title = new I18nTextField(BundleCache.getLanguages());
+    splitter = new JTextField();
+    mode = new JComboBox(getNameList("single", "double"));
+    type = new JComboBox(getNameList("text", "date", "html", "url"));
+    picker = new SingleTargetChooser(model, null);
+    truncateLength = new JAdminSpinner(0, 0, Integer.MAX_VALUE, 1);
 
+    setLayout(new MigLayout("wrap 2", "[fill][fill,grow]"));
 
-		setLayout(new MigLayout("wrap 2", "[fill][fill,grow]"));
+    add(titleLabel);
+    add(title);
 
-		add(titleLabel);
-		add(title);
+    add(splitterLabel);
+    add(splitter);
 
-		add(splitterLabel);
-		add(splitter);
+    add(targetLabel);
+    add(picker);
 
-		add(targetLabel);
-		add(picker);
+    add(typeLabel);
+    add(type);
 
-		add(typeLabel);
-		add(type);
+    add(displayLabel);
+    add(mode);
 
-		add(displayLabel);
-		add(mode);
+    add(truncateLabel);
+    add(truncateLength);
 
-		add(truncateLabel);
-		add(truncateLength);
+    changeDetector = new ChangeDetector();
+    changeDetector.watch(title);
+    changeDetector.watch(splitter);
+    changeDetector.watch(mode);
+    changeDetector.watch(type);
+    changeDetector.watch(picker);
+    changeDetector.watch(truncateLength);
 
-		changeDetector = new ChangeDetector();
-		changeDetector.watch(title);
-		changeDetector.watch(splitter);
-		changeDetector.watch(mode);
-		changeDetector.watch(type);
-		changeDetector.watch(picker);
-		changeDetector.watch(truncateLength);
+    if (!extrasVisible) {
+      displayLabel.setVisible(false);
+      mode.setVisible(false);
+    }
+  }
 
-		if( !extrasVisible )
-		{
-			displayLabel.setVisible(false);
-			mode.setVisible(false);
-		}
-	}
-
-	private static NameValue[] getNameList(final String... values)
-	{
-		final List<NameValue> nvs = new ArrayList<NameValue>(values.length);
-		for( final String value : values )
-		{
-			nvs.add(new NameValue(CurrentLocale.get("com.tle.admin.itemdefinition.displaynodepanel." + value), value));
-		}
-		return nvs.toArray(new NameValue[nvs.size()]);
-	}
+  private static NameValue[] getNameList(final String... values) {
+    final List<NameValue> nvs = new ArrayList<NameValue>(values.length);
+    for (final String value : values) {
+      nvs.add(
+          new NameValue(
+              CurrentLocale.get("com.tle.admin.itemdefinition.displaynodepanel." + value), value));
+    }
+    return nvs.toArray(new NameValue[nvs.size()]);
+  }
 }

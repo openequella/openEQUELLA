@@ -30,20 +30,16 @@ import com.tle.core.hibernate.dao.GenericDaoImpl;
 @NonNullByDefault
 @Bind(StagingDao.class)
 @Singleton
-public class StagingDaoImpl extends GenericDaoImpl<Staging, String> implements StagingDao
-{
-	public StagingDaoImpl()
-	{
-		super(Staging.class);
-	}
+public class StagingDaoImpl extends GenericDaoImpl<Staging, String> implements StagingDao {
+  public StagingDaoImpl() {
+    super(Staging.class);
+  }
 
-	@Override
-	public void deleteAllForUserSession(String userSession)
-	{
-		Criterion[] cs = {Restrictions.eq("userSession", userSession)};
-		for( Staging s : findAllByCriteria(cs) )
-		{
-			getHibernateTemplate().delete(s);
-		}
-	}
+  @Override
+  public void deleteAllForUserSession(String userSession) {
+    Criterion[] cs = {Restrictions.eq("userSession", userSession)};
+    for (Staging s : findAllByCriteria(cs)) {
+      getHibernateTemplate().delete(s);
+    }
+  }
 }

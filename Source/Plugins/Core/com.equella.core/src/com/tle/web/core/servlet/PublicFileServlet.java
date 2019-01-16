@@ -33,22 +33,18 @@ import com.tle.web.stream.FileContentStream;
 
 @Bind
 @Singleton
-public class PublicFileServlet extends AbstractIdPathServlet
-{
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private MimeTypeService mimeService;
-	@Inject
-	private ContentStreamWriter contentStreamWriter;
+public class PublicFileServlet extends AbstractIdPathServlet {
+  @Inject private FileSystemService fileSystemService;
+  @Inject private MimeTypeService mimeService;
+  @Inject private ContentStreamWriter contentStreamWriter;
 
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response, String uuid, String path)
-		throws ServletException, IOException
-	{
-		PublicFile pubFile = new PublicFile(uuid);
-		FileContentStream stream = fileSystemService.getContentStream(pubFile, path,
-			mimeService.getMimeTypeForFilename(path));
-		contentStreamWriter.outputStream(request, response, stream);
-	}
+  @Override
+  protected void service(
+      HttpServletRequest request, HttpServletResponse response, String uuid, String path)
+      throws ServletException, IOException {
+    PublicFile pubFile = new PublicFile(uuid);
+    FileContentStream stream =
+        fileSystemService.getContentStream(pubFile, path, mimeService.getMimeTypeForFilename(path));
+    contentStreamWriter.outputStream(request, response, stream);
+  }
 }

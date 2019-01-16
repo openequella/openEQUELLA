@@ -27,54 +27,45 @@ import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.xstream.ReflectionProvider;
 
-/**
- * @author nread
- */
-public final class ValidationHelper
-{
-	private static final ReflectionProvider REFLECTION = new ReflectionProvider();
-	private static final Logger LOGGER = LoggerFactory.getLogger(ValidationHelper.class);
+/** @author nread */
+public final class ValidationHelper {
+  private static final ReflectionProvider REFLECTION = new ReflectionProvider();
+  private static final Logger LOGGER = LoggerFactory.getLogger(ValidationHelper.class);
 
-	private ValidationHelper()
-	{
-		throw new Error("Do not invoke");
-	}
+  private ValidationHelper() {
+    throw new Error("Do not invoke");
+  }
 
-	public static boolean checkBlankFields(Object entity, String[] blanks, List<ValidationError> errors)
-	{
-		boolean foundErrors = false;
-		for( String field : blanks )
-		{
-			Object value = null;
-			try
-			{
-				value = REFLECTION.getField(entity, field);
-			}
-			catch( Exception ex )
-			{
-				String getter = "get" + Character.toUpperCase(field.charAt(0)) + field.substring(1);
-				try
-				{
-					Method method = entity.getClass().getMethod(getter, new Class[]{});
-					value = method.invoke(entity, new Object[0]);
-				}
-				catch( Exception ex2 )
-				{
-					LOGGER.error("Could not access field '" + field + "'", ex);
-					LOGGER.error("Could not invoke getter method '" + getter + "()'", ex2);
+  public static boolean checkBlankFields(
+      Object entity, String[] blanks, List<ValidationError> errors) {
+    boolean foundErrors = false;
+    for (String field : blanks) {
+      Object value = null;
+      try {
+        value = REFLECTION.getField(entity, field);
+      } catch (Exception ex) {
+        String getter = "get" + Character.toUpperCase(field.charAt(0)) + field.substring(1);
+        try {
+          Method method = entity.getClass().getMethod(getter, new Class[] {});
+          value = method.invoke(entity, new Object[0]);
+        } catch (Exception ex2) {
+          LOGGER.error("Could not access field '" + field + "'", ex);
+          LOGGER.error("Could not invoke getter method '" + getter + "()'", ex2);
 
-					throw new RuntimeApplicationException(
-						"Error validating entity for field/getter method '" + field + "'");
-				}
-			}
+          throw new RuntimeApplicationException(
+              "Error validating entity for field/getter method '" + field + "'");
+        }
+      }
 
-			if( value == null || value.toString().trim().length() == 0 )
-			{
-				foundErrors = true;
-				errors.add(new ValidationError(field,
-					CurrentLocale.get("com.tle.core.services.entity.generic.validation.fillallmandatory")));
-			}
-		}
-		return foundErrors;
-	}
+      if (value == null || value.toString().trim().length() == 0) {
+        foundErrors = true;
+        errors.add(
+            new ValidationError(
+                field,
+                CurrentLocale.get(
+                    "com.tle.core.services.entity.generic.validation.fillallmandatory")));
+      }
+    }
+    return foundErrors;
+  }
 }

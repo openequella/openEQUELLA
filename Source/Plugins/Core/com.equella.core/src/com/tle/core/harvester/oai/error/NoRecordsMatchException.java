@@ -18,24 +18,18 @@ package com.tle.core.harvester.oai.error;
 
 import com.tle.core.harvester.oai.data.OAIError;
 
-/**
- * 
- */
-public class NoRecordsMatchException extends OAIException
-{
+/** */
+public class NoRecordsMatchException extends OAIException {
 
-	public NoRecordsMatchException(OAIError error)
-	{
-		super(error);
-	}
+  public NoRecordsMatchException(OAIError error) {
+    super(error);
+  }
 
-	public NoRecordsMatchException()
-	{
-		super("noRecordsMatch", "No records match");
-	}
+  public NoRecordsMatchException() {
+    super("noRecordsMatch", "No records match");
+  }
 
-	public NoRecordsMatchException(Throwable t)
-	{
-		super("noRecordsMatch", t);
-	}
+  public NoRecordsMatchException(Throwable t) {
+    super("noRecordsMatch", t);
+  }
 }

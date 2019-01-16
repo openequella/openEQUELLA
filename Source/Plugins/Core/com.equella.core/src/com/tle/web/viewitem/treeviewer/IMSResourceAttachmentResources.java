@@ -46,90 +46,74 @@ import com.tle.web.viewurl.resource.SimpleUrlResource;
 @Bind
 @Singleton
 public class IMSResourceAttachmentResources
-	implements
-		AttachmentResourceExtension<Attachment>,
-		RegisterMimeTypeExtension<Attachment>
-{
-	static
-	{
-		PluginResourceHandler.init(IMSResourceAttachmentResources.class);
-	}
+    implements AttachmentResourceExtension<Attachment>, RegisterMimeTypeExtension<Attachment> {
+  static {
+    PluginResourceHandler.init(IMSResourceAttachmentResources.class);
+  }
 
-	@PlugKey("details.type")
-	private static Label TYPE;
-	@PlugKey("details.name")
-	private static Label NAME;
-	@PlugKey("details.size")
-	private static Label SIZE;
+  @PlugKey("details.type")
+  private static Label TYPE;
 
-	@Inject
-	private MimeTypeService mimeService;
-	@Inject
-	private ViewItemUrlFactory urlFactory;
-	@Inject
-	private FileSystemService fileSystemService;
+  @PlugKey("details.name")
+  private static Label NAME;
 
-	@Override
-	public ViewableResource process(SectionInfo info, ViewableResource resource, Attachment attachment)
-	{
-		String filename = attachment.getUrl();
-		if( URLUtils.isAbsoluteUrl(filename) )
-		{
-			return new SimpleUrlResource(resource, filename, attachment.getDescription(), false);
-		}
-		return new IMSResourceAttachmentResource(resource, filename, mimeService.getMimeTypeForFilename(filename));
-	}
+  @PlugKey("details.size")
+  private static Label SIZE;
 
-	/**
-	 * Exactly the same as FileResource (Used in item summary)
-	 */
-	public class IMSResourceAttachmentResource extends AbstractRealFileResource
-	{
-		public IMSResourceAttachmentResource(ViewableResource inner, String filePath, String mimeType)
-		{
-			super(inner, filePath, mimeType, urlFactory, fileSystemService);
-		}
+  @Inject private MimeTypeService mimeService;
+  @Inject private ViewItemUrlFactory urlFactory;
+  @Inject private FileSystemService fileSystemService;
 
-		@Override
-		public List<AttachmentDetail> getCommonAttachmentDetails()
-		{
-			List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
+  @Override
+  public ViewableResource process(
+      SectionInfo info, ViewableResource resource, Attachment attachment) {
+    String filename = attachment.getUrl();
+    if (URLUtils.isAbsoluteUrl(filename)) {
+      return new SimpleUrlResource(resource, filename, attachment.getDescription(), false);
+    }
+    return new IMSResourceAttachmentResource(
+        resource, filename, mimeService.getMimeTypeForFilename(filename));
+  }
 
-			// Type
-			commonDetails.add(makeDetail(TYPE, new TextLabel(getMimeType())));
+  /** Exactly the same as FileResource (Used in item summary) */
+  public class IMSResourceAttachmentResource extends AbstractRealFileResource {
+    public IMSResourceAttachmentResource(ViewableResource inner, String filePath, String mimeType) {
+      super(inner, filePath, mimeType, urlFactory, fileSystemService);
+    }
 
-			// Name
-			commonDetails.add(makeDetail(NAME, new TextLabel(getDescription())));
+    @Override
+    public List<AttachmentDetail> getCommonAttachmentDetails() {
+      List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
 
-			// Size
-			if( hasContentStream() )
-			{
-				final ContentStream stream = getContentStream();
-				if( stream.exists() )
-				{
-					final long length = stream.getEstimatedContentLength();
-					String readableFileSize = length >= 0 ? FileSizeUtils.humanReadableFileSize(length) : "0";
-					// makeDetail throws a nullPointerException if 2nd Label is
-					// null, so ensure it isn't
-					commonDetails.add(makeDetail(SIZE, new TextLabel(readableFileSize)));
-				}
-			}
+      // Type
+      commonDetails.add(makeDetail(TYPE, new TextLabel(getMimeType())));
 
-			return commonDetails;
-		}
-	}
+      // Name
+      commonDetails.add(makeDetail(NAME, new TextLabel(getDescription())));
 
-	@Override
-	public String getMimeType(Attachment attachment)
-	{
-		String filename = attachment.getUrl();
-		if( URLUtils.isAbsoluteUrl(filename) )
-		{
-			return MimeTypeConstants.MIME_LINK;
-		}
-		else
-		{
-			return mimeService.getMimeTypeForFilename(filename);
-		}
-	}
+      // Size
+      if (hasContentStream()) {
+        final ContentStream stream = getContentStream();
+        if (stream.exists()) {
+          final long length = stream.getEstimatedContentLength();
+          String readableFileSize = length >= 0 ? FileSizeUtils.humanReadableFileSize(length) : "0";
+          // makeDetail throws a nullPointerException if 2nd Label is
+          // null, so ensure it isn't
+          commonDetails.add(makeDetail(SIZE, new TextLabel(readableFileSize)));
+        }
+      }
+
+      return commonDetails;
+    }
+  }
+
+  @Override
+  public String getMimeType(Attachment attachment) {
+    String filename = attachment.getUrl();
+    if (URLUtils.isAbsoluteUrl(filename)) {
+      return MimeTypeConstants.MIME_LINK;
+    } else {
+      return mimeService.getMimeTypeForFilename(filename);
+    }
+  }
 }

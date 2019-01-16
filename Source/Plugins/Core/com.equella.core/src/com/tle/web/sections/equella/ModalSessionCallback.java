@@ -20,10 +20,7 @@ import java.io.Serializable;
 
 import com.tle.web.sections.SectionInfo;
 
-/**
- * @author aholland
- */
-public interface ModalSessionCallback extends Serializable
-{
-	void executeModalFinished(SectionInfo info, ModalSession session);
+/** @author aholland */
+public interface ModalSessionCallback extends Serializable {
+  void executeModalFinished(SectionInfo info, ModalSession session);
 }

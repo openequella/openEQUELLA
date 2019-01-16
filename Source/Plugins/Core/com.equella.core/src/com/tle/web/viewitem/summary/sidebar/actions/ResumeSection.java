@@ -28,39 +28,35 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.viewurl.ItemSectionInfo;
 
 @Bind
-public class ResumeSection extends GenericMinorActionSection
-{
-	@PlugKey("summary.sidebar.actions.resume.title")
-	private static Label LINK_LABEL;
-	@PlugKey("summary.sidebar.actions.resume.receipt")
-	private static Label RECEIPT_LABEL;
+public class ResumeSection extends GenericMinorActionSection {
+  @PlugKey("summary.sidebar.actions.resume.title")
+  private static Label LINK_LABEL;
 
-	@Inject
-	private ItemOperationFactory workflowFactory;
+  @PlugKey("summary.sidebar.actions.resume.receipt")
+  private static Label RECEIPT_LABEL;
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return LINK_LABEL;
-	}
+  @Inject private ItemOperationFactory workflowFactory;
 
-	@Override
-	@SuppressWarnings("nls")
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		return itemInfo.hasPrivilege("SUSPEND_ITEM") && status.getStatusName().equals(ItemStatus.SUSPENDED);
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return LINK_LABEL;
+  }
 
-	@Override
-	protected void execute(SectionInfo info)
-	{
-		getItemInfo(info).modify(workflowFactory.resume());
-		setReceipt(RECEIPT_LABEL);
-	}
+  @Override
+  @SuppressWarnings("nls")
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    return itemInfo.hasPrivilege("SUSPEND_ITEM")
+        && status.getStatusName().equals(ItemStatus.SUSPENDED);
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return LINK_LABEL.getText();
-	}
+  @Override
+  protected void execute(SectionInfo info) {
+    getItemInfo(info).modify(workflowFactory.resume());
+    setReceipt(RECEIPT_LABEL);
+  }
+
+  @Override
+  public String getLinkText() {
+    return LINK_LABEL.getText();
+  }
 }

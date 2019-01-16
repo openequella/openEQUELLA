@@ -22,22 +22,19 @@ import com.tle.common.security.SecurityConstants;
 import com.tle.core.security.impl.SecureOnCall;
 
 @SecureOnCall(priv = SecurityConstants.EDIT_ITEM)
-public class StartEditForSaveAndContinueOperation extends StartLockOperation
-{
-	private String stagingUuid;
+public class StartEditForSaveAndContinueOperation extends StartLockOperation {
+  private String stagingUuid;
 
-	@AssistedInject
-	protected StartEditForSaveAndContinueOperation(@Assisted String stagingUuid)
-	{
-		super(true);
-		this.stagingUuid = stagingUuid;
-	}
+  @AssistedInject
+  protected StartEditForSaveAndContinueOperation(@Assisted String stagingUuid) {
+    super(true);
+    this.stagingUuid = stagingUuid;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		boolean mod = super.execute();
-		getItemPack().setStagingID(stagingUuid);
-		return mod;
-	}
+  @Override
+  public boolean execute() {
+    boolean mod = super.execute();
+    getItemPack().setStagingID(stagingUuid);
+    return mod;
+  }
 }

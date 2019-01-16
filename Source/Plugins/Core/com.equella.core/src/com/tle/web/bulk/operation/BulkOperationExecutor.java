@@ -20,9 +20,8 @@ import java.io.Serializable;
 
 import com.tle.core.item.operations.WorkflowOperation;
 
-public interface BulkOperationExecutor extends Serializable
-{
-	WorkflowOperation[] getOperations();
+public interface BulkOperationExecutor extends Serializable {
+  WorkflowOperation[] getOperations();
 
-	String getTitleKey();
+  String getTitleKey();
 }

@@ -34,100 +34,84 @@ import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class BasicItemSerializerProvider implements ItemSerializerProvider
-{
-	// Aliases can't be same as property name because of bug in hibernate 3.5:
-	//
-	// http://opensource.atlassian.com/projects/hibernate/browse/HHH-817
-	//
-	private static final String NAME_ALIAS = "name";
-	private static final String DESC_ALIAS = "desc";
-	private static final String METADATA_ALIAS = "metadata";
+public class BasicItemSerializerProvider implements ItemSerializerProvider {
+  // Aliases can't be same as property name because of bug in hibernate 3.5:
+  //
+  // http://opensource.atlassian.com/projects/hibernate/browse/HHH-817
+  //
+  private static final String NAME_ALIAS = "name";
+  private static final String DESC_ALIAS = "desc";
+  private static final String METADATA_ALIAS = "metadata";
 
-	@Override
-	public void prepareItemQuery(ItemSerializerState state)
-	{
-		final DetachedCriteria criteria = state.getItemQuery();
-		final ProjectionList projection = state.getItemProjection();
+  @Override
+  public void prepareItemQuery(ItemSerializerState state) {
+    final DetachedCriteria criteria = state.getItemQuery();
+    final ProjectionList projection = state.getItemProjection();
 
-		if( state.hasCategory(ItemSerializerService.CATEGORY_BASIC) )
-		{
-			projection.add(Projections.property("name.id"), NAME_ALIAS);
-			projection.add(Projections.property("description.id"), DESC_ALIAS);
-		}
+    if (state.hasCategory(ItemSerializerService.CATEGORY_BASIC)) {
+      projection.add(Projections.property("name.id"), NAME_ALIAS);
+      projection.add(Projections.property("description.id"), DESC_ALIAS);
+    }
 
-		if( state.hasCategory(ItemSerializerService.CATEGORY_METADATA) )
-		{
-			criteria.createAlias("itemXml", "itemXml");
-			projection.add(Projections.property("itemXml.xml"), METADATA_ALIAS);
-		}
-	}
+    if (state.hasCategory(ItemSerializerService.CATEGORY_METADATA)) {
+      criteria.createAlias("itemXml", "itemXml");
+      projection.add(Projections.property("itemXml.xml"), METADATA_ALIAS);
+    }
+  }
 
-	@Override
-	public void performAdditionalQueries(ItemSerializerState state)
-	{
-		if( state.hasCategory(ItemSerializerService.CATEGORY_BASIC) )
-		{
-			for( Long itemKey : state.getItemKeys() )
-			{
-				state.addBundleToResolve(itemKey, NAME_ALIAS);
-				state.addBundleToResolve(itemKey, DESC_ALIAS);
-			}
-		}
-	}
+  @Override
+  public void performAdditionalQueries(ItemSerializerState state) {
+    if (state.hasCategory(ItemSerializerService.CATEGORY_BASIC)) {
+      for (Long itemKey : state.getItemKeys()) {
+        state.addBundleToResolve(itemKey, NAME_ALIAS);
+        state.addBundleToResolve(itemKey, DESC_ALIAS);
+      }
+    }
+  }
 
-	@Override
-	public void writeItemBeanResult(EquellaItemBean equellaItemBean, ItemSerializerState state, long itemId)
-	{
-		if( state.hasCategory(ItemSerializerService.CATEGORY_BASIC) )
-		{
-			String name = state.getResolvedBundle(itemId, NAME_ALIAS);
-			if( !Check.isEmpty(name) )
-			{
-				equellaItemBean.setName(new SimpleI18NString(name));
-			}
+  @Override
+  public void writeItemBeanResult(
+      EquellaItemBean equellaItemBean, ItemSerializerState state, long itemId) {
+    if (state.hasCategory(ItemSerializerService.CATEGORY_BASIC)) {
+      String name = state.getResolvedBundle(itemId, NAME_ALIAS);
+      if (!Check.isEmpty(name)) {
+        equellaItemBean.setName(new SimpleI18NString(name));
+      }
 
-			String desc = state.getResolvedBundle(itemId, DESC_ALIAS);
+      String desc = state.getResolvedBundle(itemId, DESC_ALIAS);
 
-			if( !Check.isEmpty(desc) )
-			{
-				equellaItemBean.setDescription(new SimpleI18NString(desc));
-			}
-		}
+      if (!Check.isEmpty(desc)) {
+        equellaItemBean.setDescription(new SimpleI18NString(desc));
+      }
+    }
 
-		if( state.hasCategory(ItemSerializerService.CATEGORY_METADATA) )
-		{
-			equellaItemBean.setMetadata((String) state.getData(itemId, METADATA_ALIAS));
-		}
-	}
+    if (state.hasCategory(ItemSerializerService.CATEGORY_METADATA)) {
+      equellaItemBean.setMetadata((String) state.getData(itemId, METADATA_ALIAS));
+    }
+  }
 
-	@Override
-	public void writeXmlResult(XMLStreamer xml, ItemSerializerState state, long itemId)
-	{
-		if( state.hasCategory(ItemSerializerService.CATEGORY_BASIC) )
-		{
-			String name = state.getResolvedBundle(itemId, NAME_ALIAS);
-			if( !Check.isEmpty(name) )
-			{
-				xml.startElement("name");
-				xml.writeData(name);
-				xml.endElement();
-			}
+  @Override
+  public void writeXmlResult(XMLStreamer xml, ItemSerializerState state, long itemId) {
+    if (state.hasCategory(ItemSerializerService.CATEGORY_BASIC)) {
+      String name = state.getResolvedBundle(itemId, NAME_ALIAS);
+      if (!Check.isEmpty(name)) {
+        xml.startElement("name");
+        xml.writeData(name);
+        xml.endElement();
+      }
 
-			String desc = state.getResolvedBundle(itemId, DESC_ALIAS);
-			if( !Check.isEmpty(desc) )
-			{
-				xml.startElement("description");
-				xml.writeData(desc);
-				xml.endElement();
-			}
-		}
+      String desc = state.getResolvedBundle(itemId, DESC_ALIAS);
+      if (!Check.isEmpty(desc)) {
+        xml.startElement("description");
+        xml.writeData(desc);
+        xml.endElement();
+      }
+    }
 
-		if( state.hasCategory(ItemSerializerService.CATEGORY_METADATA) )
-		{
-			xml.startElement("metadata");
-			xml.writeRawXmlString((String) state.getData(itemId, METADATA_ALIAS));
-			xml.endElement();
-		}
-	}
+    if (state.hasCategory(ItemSerializerService.CATEGORY_METADATA)) {
+      xml.startElement("metadata");
+      xml.writeRawXmlString((String) state.getData(itemId, METADATA_ALIAS));
+      xml.endElement();
+    }
+  }
 }

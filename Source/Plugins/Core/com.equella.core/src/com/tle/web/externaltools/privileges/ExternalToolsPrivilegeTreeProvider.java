@@ -27,22 +27,24 @@ import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 
 @Bind
-public class ExternalToolsPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeProvider<ExternalTool>
-{
-	private static PluginResourceHelper resources = ResourcesService
-		.getResourceHelper(ExternalToolsPrivilegeTreeProvider.class);
+public class ExternalToolsPrivilegeTreeProvider
+    extends AbstractEntityPrivilegeTreeProvider<ExternalTool> {
+  private static PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(ExternalToolsPrivilegeTreeProvider.class);
 
-	@SuppressWarnings("nls")
-	@Inject
-	protected ExternalToolsPrivilegeTreeProvider(ExternalToolsService service)
-	{
-		super(service, Node.ALL_EXTERNAL_TOOLS, resources.key("securitytree.alltools"), Node.EXTERNAL_TOOL,
-			resources.key("securitytree.targetalltools"));
-	}
+  @SuppressWarnings("nls")
+  @Inject
+  protected ExternalToolsPrivilegeTreeProvider(ExternalToolsService service) {
+    super(
+        service,
+        Node.ALL_EXTERNAL_TOOLS,
+        resources.key("securitytree.alltools"),
+        Node.EXTERNAL_TOOL,
+        resources.key("securitytree.targetalltools"));
+  }
 
-	@Override
-	protected ExternalTool createEntity()
-	{
-		return new ExternalTool();
-	}
+  @Override
+  protected ExternalTool createEntity() {
+    return new ExternalTool();
+  }
 }

@@ -22,8 +22,7 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.BroadcastEventListener;
 
 @NonNullByDefault
-public interface SortOptionsListener extends BroadcastEventListener
-{
-	@Nullable
-	Iterable<SortOption> addSortOptions(SectionInfo info, AbstractSortOptionsSection<?> sortSection);
+public interface SortOptionsListener extends BroadcastEventListener {
+  @Nullable
+  Iterable<SortOption> addSortOptions(SectionInfo info, AbstractSortOptionsSection<?> sortSection);
 }

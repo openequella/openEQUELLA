@@ -30,29 +30,24 @@ import com.tle.web.sections.registry.handler.CachedScannerHandler;
 
 @Bind
 @Singleton
-public class AjaxMethodHandler extends CachedScannerHandler<AnnotatedAjaxMethodScanner>
-{
-	@Inject
-	private Conversion conversion;
+public class AjaxMethodHandler extends CachedScannerHandler<AnnotatedAjaxMethodScanner> {
+  @Inject private Conversion conversion;
 
-	@Override
-	public void registered(String id, SectionTree tree, Section section)
-	{
-		AnnotatedAjaxMethodScanner eventFactoryHandler = getForClass(section.getClass());
-		Collection<AjaxGeneratorImpl> generators = eventFactoryHandler.registerAjaxFactories(section, id, tree);
-		if( !generators.isEmpty() )
-		{
-			EventGeneratorListener listener = EventGeneratorListener.getForTree(tree);
-			for( AjaxGeneratorImpl generator : generators )
-			{
-				generator.registerWithListener(listener);
-			}
-		}
-	}
+  @Override
+  public void registered(String id, SectionTree tree, Section section) {
+    AnnotatedAjaxMethodScanner eventFactoryHandler = getForClass(section.getClass());
+    Collection<AjaxGeneratorImpl> generators =
+        eventFactoryHandler.registerAjaxFactories(section, id, tree);
+    if (!generators.isEmpty()) {
+      EventGeneratorListener listener = EventGeneratorListener.getForTree(tree);
+      for (AjaxGeneratorImpl generator : generators) {
+        generator.registerWithListener(listener);
+      }
+    }
+  }
 
-	@Override
-	protected AnnotatedAjaxMethodScanner newEntry(Class<?> clazz)
-	{
-		return new AnnotatedAjaxMethodScanner(clazz, this, conversion);
-	}
+  @Override
+  protected AnnotatedAjaxMethodScanner newEntry(Class<?> clazz) {
+    return new AnnotatedAjaxMethodScanner(clazz, this, conversion);
+  }
 }

@@ -24,35 +24,30 @@ import com.tle.beans.ump.UserManagementSettings;
 import com.tle.common.settings.annotation.Property;
 import com.tle.common.settings.annotation.PropertyDataList;
 
-public class RoleWrapperSettings extends UserManagementSettings
-{
-	private static final long serialVersionUID = 1L;
+public class RoleWrapperSettings extends UserManagementSettings {
+  private static final long serialVersionUID = 1L;
 
-	@PropertyDataList(key = "wrapper.role.roles", type = RoleMapping.class)
-	private List<RoleMapping> roles = new ArrayList<RoleMapping>();
+  @PropertyDataList(key = "wrapper.role.roles", type = RoleMapping.class)
+  private List<RoleMapping> roles = new ArrayList<RoleMapping>();
 
-	@Property(key = "wrapper.role.enabled")
-	private boolean enabled;
+  @Property(key = "wrapper.role.enabled")
+  private boolean enabled;
 
-	@Override
-	public boolean isEnabled()
-	{
-		return enabled;
-	}
+  @Override
+  public boolean isEnabled() {
+    return enabled;
+  }
 
-	@Override
-	public void setEnabled(boolean enabled)
-	{
-		this.enabled = enabled;
-	}
+  @Override
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
 
-	public List<RoleMapping> getRoles()
-	{
-		return roles;
-	}
+  public List<RoleMapping> getRoles() {
+    return roles;
+  }
 
-	public void setRoles(List<RoleMapping> roles)
-	{
-		this.roles = roles;
-	}
+  public void setRoles(List<RoleMapping> roles) {
+    this.roles = roles;
+  }
 }

@@ -49,109 +49,93 @@ import com.tle.web.workflow.tasks.ModerationService;
 
 @Bind
 public class AddToFavouritesSection extends AbstractParentViewItemSection<AddToFavouritesModel>
-	implements
-		HideableFromDRMSection
-{
-	@PlugKey("viewitem.receipt.add")
-	private static Label LABEL_RECEIPT;
-	@PlugURL("css/favourites.css")
-	private static String CSS;
+    implements HideableFromDRMSection {
+  @PlugKey("viewitem.receipt.add")
+  private static Label LABEL_RECEIPT;
 
-	@EventFactory
-	protected EventGenerator events;
+  @PlugURL("css/favourites.css")
+  private static String CSS;
 
-	@Inject
-	private BookmarkService bookmarkService;
-	@Inject
-	private ReceiptService receiptService;
-	@Inject
-	private ModerationService moderationService;
+  @EventFactory protected EventGenerator events;
 
-	@Component
-	@PlugKey("viewitem.button.add")
-	private Button ourOpener;
+  @Inject private BookmarkService bookmarkService;
+  @Inject private ReceiptService receiptService;
+  @Inject private ModerationService moderationService;
 
-	@Inject
-	@Component(name = "fid")
-	private FavouritesDialog myFavourites;
+  @Component
+  @PlugKey("viewitem.button.add")
+  private Button ourOpener;
 
-	@Override
-	@SuppressWarnings("nls")
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Inject
+  @Component(name = "fid")
+  private FavouritesDialog myFavourites;
 
-		ourOpener.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
-		ourOpener.setStyleClass("addToFavourites");
-		ourOpener.addPrerenderables(CssInclude.include(CSS).hasRtl().make());
+  @Override
+  @SuppressWarnings("nls")
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		myFavourites.setOkCallback(events.getSubmitValuesFunction("addBookmarkClicked"));
-	}
+    ourOpener.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
+    ourOpener.setStyleClass("addToFavourites");
+    ourOpener.addPrerenderables(CssInclude.include(CSS).hasRtl().make());
 
-	@EventHandlerMethod
-	public void addBookmarkClicked(SectionInfo info, String tagString, boolean alwaysLatest)
-	{
-		Item item = getItemInfo(info).getItem();
-		bookmarkService.add(item, tagString, alwaysLatest);
-		receiptService.setReceipt(LABEL_RECEIPT);
-	}
+    myFavourites.setOkCallback(events.getSubmitValuesFunction("addBookmarkClicked"));
+  }
 
-	@Override
-	public final boolean canView(SectionInfo info)
-	{
-		boolean hide = getModel(info).isHide();
+  @EventHandlerMethod
+  public void addBookmarkClicked(SectionInfo info, String tagString, boolean alwaysLatest) {
+    Item item = getItemInfo(info).getItem();
+    bookmarkService.add(item, tagString, alwaysLatest);
+    receiptService.setReceipt(LABEL_RECEIPT);
+  }
 
-		if( hide )
-		{
-			return false;
-		}
-		else
-		{
-			final ItemSectionInfo itemInfo = getItemInfo(info);
+  @Override
+  public final boolean canView(SectionInfo info) {
+    boolean hide = getModel(info).isHide();
 
-			return !CurrentUser.isGuest() && !CurrentUser.wasAutoLoggedIn()
-				&& itemInfo.getViewableItem().isItemForReal() && !moderationService.isModerating(info)
-				&& bookmarkService.getByItem(itemInfo.getItemId()) == null;
-		}
-	}
+    if (hide) {
+      return false;
+    } else {
+      final ItemSectionInfo itemInfo = getItemInfo(info);
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !canView(context) )
-		{
-			return null;
-		}
+      return !CurrentUser.isGuest()
+          && !CurrentUser.wasAutoLoggedIn()
+          && itemInfo.getViewableItem().isItemForReal()
+          && !moderationService.isModerating(info)
+          && bookmarkService.getByItem(itemInfo.getItemId()) == null;
+    }
+  }
 
-		ItemKey itemId = getItemInfo(context).getItemId();
-		ourOpener.setClickHandler(context, new OverrideHandler(myFavourites.getOpenFunction(), itemId));
-		return SectionUtils.renderSectionResult(context, ourOpener);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (!canView(context)) {
+      return null;
+    }
 
-	@Override
-	public void showSection(SectionInfo info, boolean show)
-	{
-		getModel(info).setHide(!show);
-	}
+    ItemKey itemId = getItemInfo(context).getItemId();
+    ourOpener.setClickHandler(context, new OverrideHandler(myFavourites.getOpenFunction(), itemId));
+    return SectionUtils.renderSectionResult(context, ourOpener);
+  }
 
-	@Override
-	public Class<AddToFavouritesModel> getModelClass()
-	{
-		return AddToFavouritesModel.class;
-	}
+  @Override
+  public void showSection(SectionInfo info, boolean show) {
+    getModel(info).setHide(!show);
+  }
 
-	public static class AddToFavouritesModel
-	{
-		private boolean hide;
+  @Override
+  public Class<AddToFavouritesModel> getModelClass() {
+    return AddToFavouritesModel.class;
+  }
 
-		public boolean isHide()
-		{
-			return hide;
-		}
+  public static class AddToFavouritesModel {
+    private boolean hide;
 
-		public void setHide(boolean hide)
-		{
-			this.hide = hide;
-		}
-	}
+    public boolean isHide() {
+      return hide;
+    }
+
+    public void setHide(boolean hide) {
+      this.hide = hide;
+    }
+  }
 }

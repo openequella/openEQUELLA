@@ -32,24 +32,20 @@ import com.tle.core.scheduler.ScheduledTask;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class RunHarvestersTask implements ScheduledTask
-{
-	private static final Logger LOGGER = Logger.getLogger(RunHarvestersTask.class);
-	protected static final String KEY_PFX = AbstractPluginService.getMyPluginId(RunHarvestersTask.class)+".";
+public class RunHarvestersTask implements ScheduledTask {
+  private static final Logger LOGGER = Logger.getLogger(RunHarvestersTask.class);
+  protected static final String KEY_PFX =
+      AbstractPluginService.getMyPluginId(RunHarvestersTask.class) + ".";
 
-	@Inject
-	private HarvesterProfileService harvesterProfileService;
-	@Inject
-	private HarvesterProfileService harvesterService;
+  @Inject private HarvesterProfileService harvesterProfileService;
+  @Inject private HarvesterProfileService harvesterService;
 
-	@Override
-	public void execute()
-	{
-		LOGGER.info(CurrentLocale.get(KEY_PFX + "log.runtask"));
-		LOGGER.info("------------------");
-		for( HarvesterProfile profile : harvesterProfileService.enumerateEnabledProfiles() )
-		{
-			harvesterService.startHarvesterTask(profile.getUuid(), false);
-		}
-	}
+  @Override
+  public void execute() {
+    LOGGER.info(CurrentLocale.get(KEY_PFX + "log.runtask"));
+    LOGGER.info("------------------");
+    for (HarvesterProfile profile : harvesterProfileService.enumerateEnabledProfiles()) {
+      harvesterService.startHarvesterTask(profile.getUuid(), false);
+    }
+  }
 }

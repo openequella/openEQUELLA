@@ -28,140 +28,114 @@ import com.dytech.gui.Changeable;
 import com.dytech.gui.TableLayout;
 import com.tle.common.i18n.CurrentLocale;
 
-public class JNameValuePanel implements Changeable
-{
-	private static final int FILL = 1;
-	public JChangeDetectorPanel panel;
-	private List<Comp> components;
+public class JNameValuePanel implements Changeable {
+  private static final int FILL = 1;
+  public JChangeDetectorPanel panel;
+  private List<Comp> components;
 
-	public JNameValuePanel()
-	{
-		panel = new JChangeDetectorPanel();
-		components = new ArrayList<Comp>();
-	}
+  public JNameValuePanel() {
+    panel = new JChangeDetectorPanel();
+    components = new ArrayList<Comp>();
+  }
 
-	public void addComponent(JComponent comp)
-	{
-		components.add(new Comp(comp));
-	}
+  public void addComponent(JComponent comp) {
+    components.add(new Comp(comp));
+  }
 
-	public void setBorder(Border border)
-	{
-		panel.setBorder(border);
-	}
+  public void setBorder(Border border) {
+    panel.setBorder(border);
+  }
 
-	public void addFillComponent(JComponent comp)
-	{
-		components.add(new Comp(comp, FILL));
-	}
+  public void addFillComponent(JComponent comp) {
+    components.add(new Comp(comp, FILL));
+  }
 
-	public void addNameAndComponent(String name, JComponent comp)
-	{
-		if( name == null )
-		{
-			throw new NullPointerException();
-		}
-		components.add(new Comp(name, comp));
-	}
+  public void addNameAndComponent(String name, JComponent comp) {
+    if (name == null) {
+      throw new NullPointerException();
+    }
+    components.add(new Comp(name, comp));
+  }
 
-	/**
-	 * Automatically gets language bundle version of 'name'.
-	 */
-	public void addTextAndComponent(String name, JComponent comp)
-	{
-		if( name == null )
-		{
-			throw new NullPointerException();
-		}
-		name = CurrentLocale.get(name);
-		components.add(new Comp(name, comp));
-	}
+  /** Automatically gets language bundle version of 'name'. */
+  public void addTextAndComponent(String name, JComponent comp) {
+    if (name == null) {
+      throw new NullPointerException();
+    }
+    name = CurrentLocale.get(name);
+    components.add(new Comp(name, comp));
+  }
 
-	public void setupGUI()
-	{
-		int size = components.size();
-		int[] rows = new int[size];
-		int[] cols = new int[]{0, TableLayout.FILL};
+  public void setupGUI() {
+    int size = components.size();
+    int[] rows = new int[size];
+    int[] cols = new int[] {0, TableLayout.FILL};
 
-		TableLayout layout = new TableLayout(rows, cols, 5, 5);
-		panel.setLayout(layout);
+    TableLayout layout = new TableLayout(rows, cols, 5, 5);
+    panel.setLayout(layout);
 
-		int maxWidth = 0;
-		int i = 0;
-		for( Comp comp : components )
-		{
-			boolean hasName = comp.name != null;
-			boolean hasComp = comp.comp != null;
-			if( hasName )
-			{
-				JLabel label = new JLabel(comp.name);
-				if( hasComp )
-				{
-					maxWidth = Math.max(label.getPreferredSize().width, maxWidth);
-					label.setLabelFor(comp.comp);
-				}
-				panel.add(label, new Rectangle(0, i, hasComp ? 1 : 2, 1));
-			}
+    int maxWidth = 0;
+    int i = 0;
+    for (Comp comp : components) {
+      boolean hasName = comp.name != null;
+      boolean hasComp = comp.comp != null;
+      if (hasName) {
+        JLabel label = new JLabel(comp.name);
+        if (hasComp) {
+          maxWidth = Math.max(label.getPreferredSize().width, maxWidth);
+          label.setLabelFor(comp.comp);
+        }
+        panel.add(label, new Rectangle(0, i, hasComp ? 1 : 2, 1));
+      }
 
-			if( hasComp )
-			{
-				panel.add(comp.comp, new Rectangle(hasName ? 1 : 0, i, hasName ? 1 : 2, 1));
-			}
+      if (hasComp) {
+        panel.add(comp.comp, new Rectangle(hasName ? 1 : 0, i, hasName ? 1 : 2, 1));
+      }
 
-			if( comp.constraint == FILL )
-			{
-				layout.setRowSize(i, TableLayout.FILL);
-			}
-			else
-			{
-				layout.setRowSize(i, TableLayout.PREFERRED);
-			}
+      if (comp.constraint == FILL) {
+        layout.setRowSize(i, TableLayout.FILL);
+      } else {
+        layout.setRowSize(i, TableLayout.PREFERRED);
+      }
 
-			i++;
-		}
+      i++;
+    }
 
-		layout.setColumnSize(0, maxWidth);
-	}
+    layout.setColumnSize(0, maxWidth);
+  }
 
-	public JChangeDetectorPanel getComponent()
-	{
-		setupGUI();
-		return panel;
-	}
+  public JChangeDetectorPanel getComponent() {
+    setupGUI();
+    return panel;
+  }
 
-	@Override
-	public boolean hasDetectedChanges()
-	{
-		return getComponent().hasDetectedChanges();
-	}
+  @Override
+  public boolean hasDetectedChanges() {
+    return getComponent().hasDetectedChanges();
+  }
 
-	@Override
-	public void clearChanges()
-	{
-		getComponent().clearChanges();
-	}
+  @Override
+  public void clearChanges() {
+    getComponent().clearChanges();
+  }
 
-	private static class Comp
-	{
-		JComponent comp;
-		int constraint;
-		String name;
+  private static class Comp {
+    JComponent comp;
+    int constraint;
+    String name;
 
-		public Comp(JComponent comp)
-		{
-			this.comp = comp;
-		}
+    public Comp(JComponent comp) {
+      this.comp = comp;
+    }
 
-		public Comp(JComponent comp, int constraint)
-		{
-			this.comp = comp;
-			this.constraint = constraint;
-		}
+    public Comp(JComponent comp, int constraint) {
+      this.comp = comp;
+      this.constraint = constraint;
+    }
 
-		public Comp(String name, JComponent comp)
-		{
-			this.name = name;
-			this.comp = comp;
-		}
-	}
+    public Comp(String name, JComponent comp) {
+      this.name = name;
+      this.comp = comp;
+    }
+  }
 }

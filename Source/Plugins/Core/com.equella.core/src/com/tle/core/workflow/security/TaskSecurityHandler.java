@@ -33,44 +33,36 @@ import com.tle.core.security.SecurityTargetHandler;
 
 @Bind
 @Singleton
-public class TaskSecurityHandler implements SecurityTargetHandler
-{
-	@Inject
-	private ItemSecurityTargetHandler itemSecurityHandler;
+public class TaskSecurityHandler implements SecurityTargetHandler {
+  @Inject private ItemSecurityTargetHandler itemSecurityHandler;
 
-	@SuppressWarnings("nls")
-	@Override
-	public void gatherAllLabels(Set<String> labels, Object target)
-	{
-		ItemTask itemTask = (ItemTask) target;
+  @SuppressWarnings("nls")
+  @Override
+  public void gatherAllLabels(Set<String> labels, Object target) {
+    ItemTask itemTask = (ItemTask) target;
 
-		Item item = itemTask.getItem();
-		Workflow workflow = item.getItemDefinition().getWorkflow();
-		if( workflow != null )
-		{
-			String taskId = itemTask.getTaskId();
-			labels.add(TARGET_WORKFLOW_TASK + ":" + workflow.getId() + ":" + taskId);
-			labels.add(TARGET_WORKFLOW_DYNAMIC_TASK + ":" + item.getId() + ":" + taskId);
-		}
-		itemSecurityHandler.gatherAllLabels(labels, item);
-	}
+    Item item = itemTask.getItem();
+    Workflow workflow = item.getItemDefinition().getWorkflow();
+    if (workflow != null) {
+      String taskId = itemTask.getTaskId();
+      labels.add(TARGET_WORKFLOW_TASK + ":" + workflow.getId() + ":" + taskId);
+      labels.add(TARGET_WORKFLOW_DYNAMIC_TASK + ":" + item.getId() + ":" + taskId);
+    }
+    itemSecurityHandler.gatherAllLabels(labels, item);
+  }
 
-	@Override
-	public String getPrimaryLabel(Object target)
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public String getPrimaryLabel(Object target) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public Object transform(Object target)
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public Object transform(Object target) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public boolean isOwner(Object target, String userId)
-	{
-		throw new UnsupportedOperationException();
-	}
-
+  @Override
+  public boolean isOwner(Object target, String userId) {
+    throw new UnsupportedOperationException();
+  }
 }

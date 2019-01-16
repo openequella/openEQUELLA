@@ -32,22 +32,18 @@ import com.tle.web.sections.SectionInfo;
 
 @Bind
 public class HierarchyItemList
-	extends
-		AbstractItemList<StandardItemListEntry, AbstractItemList.Model<StandardItemListEntry>>
-{
-	@Inject
-	private StandardItemListEntryFactory factory;
+    extends AbstractItemList<StandardItemListEntry, AbstractItemList.Model<StandardItemListEntry>> {
+  @Inject private StandardItemListEntryFactory factory;
 
-	@SuppressWarnings("nls")
-	@Override
-	protected Set<String> getExtensionTypes()
-	{
-		return ImmutableSet.of(ItemlikeListEntryExtension.TYPE_STANDARD, "hierarchy");
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected Set<String> getExtensionTypes() {
+    return ImmutableSet.of(ItemlikeListEntryExtension.TYPE_STANDARD, "hierarchy");
+  }
 
-	@Override
-	protected StandardItemListEntry createItemListEntry(SectionInfo info, Item item, FreetextResult result)
-	{
-		return factory.createItemListItem(info, item, result);
-	}
+  @Override
+  protected StandardItemListEntry createItemListEntry(
+      SectionInfo info, Item item, FreetextResult result) {
+    return factory.createItemListItem(info, item, result);
+  }
 }

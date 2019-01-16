@@ -28,53 +28,42 @@ import com.tle.core.security.impl.SecureItemStatus;
 import com.tle.core.security.impl.SecureOnCall;
 import com.tle.exceptions.AccessDeniedException;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @SecureItemStatus({ItemStatus.LIVE, ItemStatus.ARCHIVED})
 @SecureOnCall(priv = "REVIEW_ITEM")
-public class ReviewOperation extends TaskOperation
-{
-	private final boolean force;
+public class ReviewOperation extends TaskOperation {
+  private final boolean force;
 
-	@AssistedInject
-	protected ReviewOperation()
-	{
-		this(true);
-	}
+  @AssistedInject
+  protected ReviewOperation() {
+    this(true);
+  }
 
-	@AssistedInject
-	protected ReviewOperation(@Assisted boolean force)
-	{
-		this.force = force;
-	}
+  @AssistedInject
+  protected ReviewOperation(@Assisted boolean force) {
+    this.force = force;
+  }
 
-	/**
-	 * @throws WorkflowException
-	 */
-	@SuppressWarnings("nls")
-	@Override
-	public boolean execute()
-	{
-		if( getWorkflow() == null )
-		{
-			throw new AccessDeniedException(CurrentLocale.get("com.tle.web.itemadmin.error.noworkflow"));
-		}
+  /** @throws WorkflowException */
+  @SuppressWarnings("nls")
+  @Override
+  public boolean execute() {
+    if (getWorkflow() == null) {
+      throw new AccessDeniedException(CurrentLocale.get("com.tle.web.itemadmin.error.noworkflow"));
+    }
 
-		ModerationStatus status = getModerationStatus();
-		Date reviewdate = status.getReviewDate();
-		Date datenow = getParams().getDateNow();
-		boolean needsReview = reviewdate != null && (datenow.compareTo(reviewdate) > 0);
+    ModerationStatus status = getModerationStatus();
+    Date reviewdate = status.getReviewDate();
+    Date datenow = getParams().getDateNow();
+    boolean needsReview = reviewdate != null && (datenow.compareTo(reviewdate) > 0);
 
-		if( force || needsReview )
-		{
-			// Item requires review
-			setState(ItemStatus.REVIEW);
-			resetWorkflow();
-			updateModeration();
-			return true;
-		}
-		return false;
-
-	}
+    if (force || needsReview) {
+      // Item requires review
+      setState(ItemStatus.REVIEW);
+      resetWorkflow();
+      updateModeration();
+      return true;
+    }
+    return false;
+  }
 }

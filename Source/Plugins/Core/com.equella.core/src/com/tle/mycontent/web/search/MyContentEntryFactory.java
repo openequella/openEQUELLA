@@ -28,20 +28,15 @@ import com.tle.web.itemlist.item.ItemListEntryFactoryExtension;
 
 @Bind
 @Singleton
-public class MyContentEntryFactory implements ItemListEntryFactoryExtension
-{
-	@Inject
-	private MyContentService myContentService;
-	@Inject
-	private Provider<MyContentItemListEntry> entryProvider;
+public class MyContentEntryFactory implements ItemListEntryFactoryExtension {
+  @Inject private MyContentService myContentService;
+  @Inject private Provider<MyContentItemListEntry> entryProvider;
 
-	@Override
-	public StandardItemListEntry createItemListEntry(Item item)
-	{
-		if( myContentService.isMyContentItem(item) )
-		{
-			return entryProvider.get();
-		}
-		return null;
-	}
+  @Override
+  public StandardItemListEntry createItemListEntry(Item item) {
+    if (myContentService.isMyContentItem(item)) {
+      return entryProvider.get();
+    }
+    return null;
+  }
 }

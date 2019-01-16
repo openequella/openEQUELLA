@@ -47,142 +47,119 @@ import com.tle.core.metadata.MetadataHandler;
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class ExifTool implements MetadataHandler
-{
-	private List<String> removeTags = Lists.newArrayList("Directory", "FilePermissions", "ExifToolVersion", "Error",
-		"ThumbnailImage", "PhotoshopThumbnail");
+public class ExifTool implements MetadataHandler {
+  private List<String> removeTags =
+      Lists.newArrayList(
+          "Directory",
+          "FilePermissions",
+          "ExifToolVersion",
+          "Error",
+          "ThumbnailImage",
+          "PhotoshopThumbnail");
 
-	@Inject
-	@Named("exiftool.path")
-	private String exifToolPath;
+  @Inject
+  @Named("exiftool.path")
+  private String exifToolPath;
 
-	@Override
-	public void getMetadata(LoadingCache<String, Map<String, String>> metadata, Attachment a)
-	{
-		if( Objects.equal(a.getAttachmentType(), AttachmentType.FILE) )
-		{
-			String filename = a.getUrl();
-			getMetadata(metadata, new File(filename));
-		}
-	}
+  @Override
+  public void getMetadata(LoadingCache<String, Map<String, String>> metadata, Attachment a) {
+    if (Objects.equal(a.getAttachmentType(), AttachmentType.FILE)) {
+      String filename = a.getUrl();
+      getMetadata(metadata, new File(filename));
+    }
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void getMetadata(LoadingCache<String, Map<String, String>> metadata, File f)
-	{
-		// You don't even need to touch power lines to die. DON'T DIE!
-		if( Check.isEmpty(exifToolPath) || !Files.exists(Paths.get(exifToolPath)) || !f.exists() )
-		{
-			return;
-		}
+  @SuppressWarnings("unchecked")
+  @Override
+  public void getMetadata(LoadingCache<String, Map<String, String>> metadata, File f) {
+    // You don't even need to touch power lines to die. DON'T DIE!
+    if (Check.isEmpty(exifToolPath) || !Files.exists(Paths.get(exifToolPath)) || !f.exists()) {
+      return;
+    }
 
-		List<String> commandOpts = Lists.newArrayList();
-		commandOpts.add(exifToolPath);
-		commandOpts.add("-g"); // Group (EXIF, XMP etc)
-		commandOpts.add("-j"); // JSON output
-		commandOpts.add("-q"); // Quiet processing
-		commandOpts.add("-sort"); // Alphabetical sort
-		commandOpts.add("-struct"); // Expand structs (ewww)
-		commandOpts.add("-u"); // Unsupported tags
+    List<String> commandOpts = Lists.newArrayList();
+    commandOpts.add(exifToolPath);
+    commandOpts.add("-g"); // Group (EXIF, XMP etc)
+    commandOpts.add("-j"); // JSON output
+    commandOpts.add("-q"); // Quiet processing
+    commandOpts.add("-sort"); // Alphabetical sort
+    commandOpts.add("-struct"); // Expand structs (ewww)
+    commandOpts.add("-u"); // Unsupported tags
 
-		// Remove unsafe tags e.g Directory/Permissions etc
-		for( String tag : removeTags )
-		{
-			commandOpts.add("-x");
-			commandOpts.add(tag);
-		}
+    // Remove unsafe tags e.g Directory/Permissions etc
+    for (String tag : removeTags) {
+      commandOpts.add("-x");
+      commandOpts.add(tag);
+    }
 
-		// File to process
-		commandOpts.add(f.getAbsolutePath());
+    // File to process
+    commandOpts.add(f.getAbsolutePath());
 
-		ObjectMapper om = new ObjectMapper();
-		List<Map<String, Object>> outputList = Lists.newArrayList();
+    ObjectMapper om = new ObjectMapper();
+    List<Map<String, Object>> outputList = Lists.newArrayList();
 
-		try
-		{
-			ExecResult exec = ExecUtils.exec(commandOpts);
-			String stdout = exec.getStdout();
-			Map<String, Object> jsonMap = Maps.newHashMap();
-			flatten(om.readTree(stdout).get(0), jsonMap, false);
-			outputList.add(jsonMap);
-		}
-		catch( IOException e )
-		{
-			throw Throwables.propagate(e);
-		}
+    try {
+      ExecResult exec = ExecUtils.exec(commandOpts);
+      String stdout = exec.getStdout();
+      Map<String, Object> jsonMap = Maps.newHashMap();
+      flatten(om.readTree(stdout).get(0), jsonMap, false);
+      outputList.add(jsonMap);
+    } catch (IOException e) {
+      throw Throwables.propagate(e);
+    }
 
-		// This is a bit dodgical... but seems to be a necessary evil
-		for( final Entry<String, Object> objectMap : outputList.get(0).entrySet() )
-		{
-			if( objectMap.getValue() instanceof Map )
-			{
-				metadata.put(objectMap.getKey(),
-					Maps.transformValues(((Map<String, Object>) objectMap.getValue()), Functions.toStringFunction()));
-			}
-		}
-	}
+    // This is a bit dodgical... but seems to be a necessary evil
+    for (final Entry<String, Object> objectMap : outputList.get(0).entrySet()) {
+      if (objectMap.getValue() instanceof Map) {
+        metadata.put(
+            objectMap.getKey(),
+            Maps.transformValues(
+                ((Map<String, Object>) objectMap.getValue()), Functions.toStringFunction()));
+      }
+    }
+  }
 
-	@SuppressWarnings("unchecked")
-	private void flatten(JsonNode rootNode, Map<String, Object> map, boolean tooDeep)
-	{
-		for( Entry<String, JsonNode> child : Lists.newArrayList(rootNode.fields()) )
-		{
-			String key = child.getKey();
-			JsonNode value = child.getValue();
-			if( value.isValueNode() )
-			{
-				map.put(key, value.asText());
-			}
-			else if( value.isArray() )
-			{
-				for( int i = 0; i < value.size(); i++ )
-				{
-					JsonNode arrVal = value.get(i);
-					// Normal array
-					if( !arrVal.fields().hasNext() )
-					{
-						addToMap(map, key, arrVal);
-					}
-					else
-					{
-						addNodesToMap(map, key, arrVal);
-					}
-				}
-			}
-			else if( value.isObject() )
-			{
-				if( tooDeep )
-				{
-					addNodesToMap(map, key, value);
-				}
-				else
-				{
-					map.put(key, Maps.newLinkedHashMap());
-					flatten(value, (Map<String, Object>) map.get(key), true);
-				}
-			}
-		}
-	}
+  @SuppressWarnings("unchecked")
+  private void flatten(JsonNode rootNode, Map<String, Object> map, boolean tooDeep) {
+    for (Entry<String, JsonNode> child : Lists.newArrayList(rootNode.fields())) {
+      String key = child.getKey();
+      JsonNode value = child.getValue();
+      if (value.isValueNode()) {
+        map.put(key, value.asText());
+      } else if (value.isArray()) {
+        for (int i = 0; i < value.size(); i++) {
+          JsonNode arrVal = value.get(i);
+          // Normal array
+          if (!arrVal.fields().hasNext()) {
+            addToMap(map, key, arrVal);
+          } else {
+            addNodesToMap(map, key, arrVal);
+          }
+        }
+      } else if (value.isObject()) {
+        if (tooDeep) {
+          addNodesToMap(map, key, value);
+        } else {
+          map.put(key, Maps.newLinkedHashMap());
+          flatten(value, (Map<String, Object>) map.get(key), true);
+        }
+      }
+    }
+  }
 
-	private void addNodesToMap(Map<String, Object> map, String key, JsonNode parent)
-	{
-		for( Entry<String, JsonNode> child : Lists.newArrayList(parent.fields()) )
-		{
-			addToMap(map, key + child.getKey(), child.getValue());
-		}
-	}
+  private void addNodesToMap(Map<String, Object> map, String key, JsonNode parent) {
+    for (Entry<String, JsonNode> child : Lists.newArrayList(parent.fields())) {
+      addToMap(map, key + child.getKey(), child.getValue());
+    }
+  }
 
-	private void addToMap(Map<String, Object> map, String key, JsonNode node)
-	{
-		String existing = (String) map.get(key);
-		if( existing != null )
-		{
-			existing = Joiner.on(", ").join(existing, node.asText());
-			map.put(key, existing);
-		}
-		else
-		{
-			map.put(key, node.asText());
-		}
-	}
+  private void addToMap(Map<String, Object> map, String key, JsonNode node) {
+    String existing = (String) map.get(key);
+    if (existing != null) {
+      existing = Joiner.on(", ").join(existing, node.asText());
+      map.put(key, existing);
+    } else {
+      map.put(key, node.asText());
+    }
+  }
 }

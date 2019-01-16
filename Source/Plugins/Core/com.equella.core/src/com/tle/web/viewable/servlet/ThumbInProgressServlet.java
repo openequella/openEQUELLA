@@ -38,68 +38,57 @@ import com.tle.web.stream.FileContentStream;
 import com.tle.web.stream.URLContentStream;
 
 /**
- * This servlet serves up placeholder thumbnails for when a thumbnail request is
- * queued up and hasn't completed yet. The standard thumbs servlet will redirect
- * here if appropriate. The URL format is /thumbprogress/{type}. Where type =
- * standard OR gallery_thumbnail. Anything else is a 404.
- * 
+ * This servlet serves up placeholder thumbnails for when a thumbnail request is queued up and
+ * hasn't completed yet. The standard thumbs servlet will redirect here if appropriate. The URL
+ * format is /thumbprogress/{type}. Where type = standard OR gallery_thumbnail. Anything else is a
+ * 404.
+ *
  * @author aholland
  */
 @NonNullByDefault
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class ThumbInProgressServlet extends HttpServlet
-{
-	public static final String STANDARD = "standard";
-	public static final String GALLERY_THUMBNAIL = "gallery_thumbnail";
+public class ThumbInProgressServlet extends HttpServlet {
+  public static final String STANDARD = "standard";
+  public static final String GALLERY_THUMBNAIL = "gallery_thumbnail";
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	private static final String[] PLACEHOLDERS = {"nothumb.jpeg", "nothumb_135.jpeg"};
+  private static final String[] PLACEHOLDERS = {"nothumb.jpeg", "nothumb_135.jpeg"};
 
-	@Inject
-	private ContentStreamWriter contentStreamWriter;
+  @Inject private ContentStreamWriter contentStreamWriter;
 
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-		IOException
-	{
-		String path = request.getPathInfo();
-		if( path.startsWith("/") )
-		{
-			path = Utils.safeSubstring(path, 1);
-		}
+  @Override
+  protected void service(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    String path = request.getPathInfo();
+    if (path.startsWith("/")) {
+      path = Utils.safeSubstring(path, 1);
+    }
 
-		final int i;
-		if( STANDARD.equals(path) )
-		{
-			i = 0;
-		}
-		else if( GALLERY_THUMBNAIL.equals(path) )
-		{
-			i = 1;
-		}
-		else
-		{
-			response.sendError(404);
-			return;
-		}
+    final int i;
+    if (STANDARD.equals(path)) {
+      i = 0;
+    } else if (GALLERY_THUMBNAIL.equals(path)) {
+      i = 1;
+    } else {
+      response.sendError(404);
+      return;
+    }
 
-		final String filename = PLACEHOLDERS[i];
-		final URL res = new URL(ThumbInProgressServlet.class.getClassLoader().getResource("web/images/"), filename);
-		final File file = IoUtil.url2file(res);
+    final String filename = PLACEHOLDERS[i];
+    final URL res =
+        new URL(ThumbInProgressServlet.class.getClassLoader().getResource("web/images/"), filename);
+    final File file = IoUtil.url2file(res);
 
-		ContentStream stream;
-		if( file != null )
-		{
-			stream = new FileContentStream(file, filename, "image/jpeg");
-		}
-		else
-		{
-			stream = new URLContentStream(res, filename, "image/jpeg");
-		}
-		stream.setCacheControl("max-age=31556926");
-		contentStreamWriter.outputStream(request, response, stream);
-	}
+    ContentStream stream;
+    if (file != null) {
+      stream = new FileContentStream(file, filename, "image/jpeg");
+    } else {
+      stream = new URLContentStream(res, filename, "image/jpeg");
+    }
+    stream.setCacheControl("max-age=31556926");
+    contentStreamWriter.outputStream(request, response, stream);
+  }
 }

@@ -20,20 +20,17 @@ import org.jdom2.Namespace;
 
 import com.rometools.rome.feed.module.Module;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
-public interface MerlotModule extends Module
-{
-	String URI = "http://www.merlot.org/merlot/materials-rest";
-	Namespace NAMESPACE = Namespace.getNamespace(URI);
+public interface MerlotModule extends Module {
+  String URI = "http://www.merlot.org/merlot/materials-rest";
+  Namespace NAMESPACE = Namespace.getNamespace(URI);
 
-	String getTitle();
+  String getTitle();
 
-	void setTitle(String title);
+  void setTitle(String title);
 
-	String getUrl();
+  String getUrl();
 
-	void setUrl(String url);
+  void setUrl(String url);
 }

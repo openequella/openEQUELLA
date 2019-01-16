@@ -28,38 +28,36 @@ import com.tle.core.security.impl.SecureInModeration;
 import com.tle.exceptions.AccessDeniedException;
 
 @SecureInModeration
-public final class TaskReassignModeratorOperation extends AbstractBulkTaskOperation
-{
-	private final String toUser;
+public final class TaskReassignModeratorOperation extends AbstractBulkTaskOperation {
+  private final String toUser;
 
-	@AssistedInject
-	private TaskReassignModeratorOperation(@Assisted("toUser") String toUser)
-	{
-		this.toUser = toUser;
-	}
+  @AssistedInject
+  private TaskReassignModeratorOperation(@Assisted("toUser") String toUser) {
+    this.toUser = toUser;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		TaskStatus status = init("MANAGE_WORKFLOW");
-		Set<String> usersToModerate = status.getUsersToModerate(this);
-		if( usersToModerate.contains(toUser) )
-		{
-			String oldUser = status.getAssignedTo();
-			if (toUser.equals(oldUser))
-			{
-				return false;
-			}
-			status.setAssignedTo(toUser);
-			if (oldUser != null)
-			{
-				removeNotificationForUserAndKey(getTaskId(), oldUser, Notification.REASON_REASSIGN);
-			}
-			addModerationNotifications(getTaskId(), Collections.singleton(toUser), Notification.REASON_REASSIGN, false);
-			return true;
-		}
+  @Override
+  public boolean execute() {
+    TaskStatus status = init("MANAGE_WORKFLOW");
+    Set<String> usersToModerate = status.getUsersToModerate(this);
+    if (usersToModerate.contains(toUser)) {
+      String oldUser = status.getAssignedTo();
+      if (toUser.equals(oldUser)) {
+        return false;
+      }
+      status.setAssignedTo(toUser);
+      if (oldUser != null) {
+        removeNotificationForUserAndKey(getTaskId(), oldUser, Notification.REASON_REASSIGN);
+      }
+      addModerationNotifications(
+          getTaskId(), Collections.singleton(toUser), Notification.REASON_REASSIGN, false);
+      return true;
+    }
 
-		throw new AccessDeniedException(CurrentLocale.get("com.tle.core.services.item.error.notmoderatingtask",
-			CurrentLocale.get(getItem().getName()), CurrentLocale.get(status.getWorkflowNode().getName())));
-	}
+    throw new AccessDeniedException(
+        CurrentLocale.get(
+            "com.tle.core.services.item.error.notmoderatingtask",
+            CurrentLocale.get(getItem().getName()),
+            CurrentLocale.get(status.getWorkflowNode().getName())));
+  }
 }

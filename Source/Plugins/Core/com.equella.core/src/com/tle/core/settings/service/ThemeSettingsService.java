@@ -25,13 +25,15 @@ import java.io.InputStream;
 
 public interface ThemeSettingsService {
 
-	NewUITheme getTheme() throws IOException;
-	InputStream getCustomLogo() throws IOException;
+  NewUITheme getTheme() throws IOException;
 
-	void setTheme(NewUITheme theme) throws JsonProcessingException;
-	void setLogo(File logoFile) throws IOException;
+  InputStream getCustomLogo() throws IOException;
 
-	boolean isCustomLogo();
+  void setTheme(NewUITheme theme) throws JsonProcessingException;
 
-	void deleteLogo();
+  void setLogo(File logoFile) throws IOException;
+
+  boolean isCustomLogo();
+
+  void deleteLogo();
 }

@@ -39,92 +39,81 @@ import com.tle.web.sections.standard.annotations.Component;
 @SuppressWarnings("nls")
 @Bind
 public class TaskStatisticsPortletEditor
-	extends
-		AbstractPortletEditorSection<TaskStatisticsPortletEditor.TaskStatisticsPortletEditorModel>
-{
-	private static final String TYPE = "taskstatistics";
-	private static final String KEY_DEFAULT_TREND = "trend";
+    extends AbstractPortletEditorSection<
+        TaskStatisticsPortletEditor.TaskStatisticsPortletEditorModel> {
+  private static final String TYPE = "taskstatistics";
+  private static final String KEY_DEFAULT_TREND = "trend";
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@PlugKey("portal.taskstats.trend.")
-	private static String PREFIX;
+  @PlugKey("portal.taskstats.trend.")
+  private static String PREFIX;
 
-	@Component(name = "tr", stateful = false)
-	private SingleSelectionList<Trend> trend;
+  @Component(name = "tr", stateful = false)
+  private SingleSelectionList<Trend> trend;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		trend.setListModel(new EnumListModel<Trend>(PREFIX, Trend.values()));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    trend.setListModel(new EnumListModel<Trend>(PREFIX, Trend.values()));
+  }
 
-	@Override
-	protected Portlet createNewPortlet()
-	{
-		return new Portlet(TYPE);
-	}
+  @Override
+  protected Portlet createNewPortlet() {
+    return new Portlet(TYPE);
+  }
 
-	@Override
-	protected SectionRenderable customRender(RenderEventContext context, TaskStatisticsPortletEditorModel model,
-		PortletEditingBean portlet) throws Exception
-	{
-		return viewFactory.createResult("portal/edit/edittaskstatistics.ftl", context);
-	}
+  @Override
+  protected SectionRenderable customRender(
+      RenderEventContext context,
+      TaskStatisticsPortletEditorModel model,
+      PortletEditingBean portlet)
+      throws Exception {
+    return viewFactory.createResult("portal/edit/edittaskstatistics.ftl", context);
+  }
 
-	@Override
-	protected void customValidate(SectionInfo info, PortletEditingBean portlet, Map<String, Object> errors)
-	{
-		// Nothing
-	}
+  @Override
+  protected void customValidate(
+      SectionInfo info, PortletEditingBean portlet, Map<String, Object> errors) {
+    // Nothing
+  }
 
-	@Override
-	protected void customLoad(SectionInfo info, PortletEditingBean portlet)
-	{
-		String defaultTrend = portlet.getAttribute(KEY_DEFAULT_TREND);
-		if( !Check.isEmpty(defaultTrend) )
-		{
-			trend.setSelectedValue(info, Trend.valueOf(defaultTrend));
-		}
-		else
-		{
-			trend.setSelectedValue(info, Trend.WEEK);
-		}
-	}
+  @Override
+  protected void customLoad(SectionInfo info, PortletEditingBean portlet) {
+    String defaultTrend = portlet.getAttribute(KEY_DEFAULT_TREND);
+    if (!Check.isEmpty(defaultTrend)) {
+      trend.setSelectedValue(info, Trend.valueOf(defaultTrend));
+    } else {
+      trend.setSelectedValue(info, Trend.WEEK);
+    }
+  }
 
-	@Override
-	protected void customSave(SectionInfo info, PortletEditingBean portlet)
-	{
-		portlet.setAttribute(KEY_DEFAULT_TREND, trend.getSelectedValueAsString(info));
-	}
+  @Override
+  protected void customSave(SectionInfo info, PortletEditingBean portlet) {
+    portlet.setAttribute(KEY_DEFAULT_TREND, trend.getSelectedValueAsString(info));
+  }
 
-	@Override
-	protected void customClear(SectionInfo info)
-	{
-		trend.setSelectedValue(info, Trend.WEEK);
-	}
+  @Override
+  protected void customClear(SectionInfo info) {
+    trend.setSelectedValue(info, Trend.WEEK);
+  }
 
-	@Override
-	public Class<TaskStatisticsPortletEditorModel> getModelClass()
-	{
-		return TaskStatisticsPortletEditorModel.class;
-	}
+  @Override
+  public Class<TaskStatisticsPortletEditorModel> getModelClass() {
+    return TaskStatisticsPortletEditorModel.class;
+  }
 
-	public static class TaskStatisticsPortletEditorModel extends AbstractPortletEditorSection.AbstractPortletEditorModel
-	{
-		// Here there be dragons...
-	}
+  public static class TaskStatisticsPortletEditorModel
+      extends AbstractPortletEditorSection.AbstractPortletEditorModel {
+    // Here there be dragons...
+  }
 
-	@Override
-	public SectionRenderable renderHelp(RenderContext context)
-	{
-		return null;
-	}
+  @Override
+  public SectionRenderable renderHelp(RenderContext context) {
+    return null;
+  }
 
-	public SingleSelectionList<Trend> getTrend()
-	{
-		return trend;
-	}
+  public SingleSelectionList<Trend> getTrend() {
+    return trend;
+  }
 }

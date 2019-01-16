@@ -33,171 +33,160 @@ import com.tle.common.i18n.CurrentLocale;
 
 @SuppressWarnings("nls")
 public abstract class AbstractTreeEditor<NodeType extends LazyTreeNode> extends JSplitPane
-	implements
-		TreeSelectionListener
-{
-	protected final JPanel editArea;
-	protected final AbstractTreeEditorTree<NodeType> tree;
+    implements TreeSelectionListener {
+  protected final JPanel editArea;
+  protected final AbstractTreeEditorTree<NodeType> tree;
 
-	protected AbstractTreeNodeEditor currentEditor;
-	protected BasicMessageEditor noSelectionEditor;
+  protected AbstractTreeNodeEditor currentEditor;
+  protected BasicMessageEditor noSelectionEditor;
 
-	protected abstract AbstractTreeEditorTree<NodeType> createTree();
+  protected abstract AbstractTreeEditorTree<NodeType> createTree();
 
-	protected abstract AbstractTreeNodeEditor createEditor(NodeType node);
+  protected abstract AbstractTreeNodeEditor createEditor(NodeType node);
 
-	public AbstractTreeEditor()
-	{
-		tree = createTree();
-		tree.addTreeSelectionListener(this);
-		tree.setPreferredSize(new Dimension(325, 0));
-		tree.setMinimumSize(new Dimension(325, 0));
+  public AbstractTreeEditor() {
+    tree = createTree();
+    tree.addTreeSelectionListener(this);
+    tree.setPreferredSize(new Dimension(325, 0));
+    tree.setMinimumSize(new Dimension(325, 0));
 
-		// Ensure the root nodes start loading
-		tree.loadChildren(tree.getRootNode());
+    // Ensure the root nodes start loading
+    tree.loadChildren(tree.getRootNode());
 
-		editArea = new JPanel(new GridLayout(1, 1));
+    editArea = new JPanel(new GridLayout(1, 1));
 
-		AppletGuiUtils.removeBordersFromSplitPane(this);
-		setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-		setContinuousLayout(true);
-		setResizeWeight(0.05);
+    AppletGuiUtils.removeBordersFromSplitPane(this);
+    setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+    setContinuousLayout(true);
+    setResizeWeight(0.05);
 
-		add(tree, JSplitPane.LEFT);
-		add(editArea, JSplitPane.RIGHT);
+    add(tree, JSplitPane.LEFT);
+    add(editArea, JSplitPane.RIGHT);
 
-		noSelectionEditor = new BasicMessageEditor(
-			CurrentLocale.get("com.tle.admin.gui.common.tree.nodeeditor.nonodeselected"));
+    noSelectionEditor =
+        new BasicMessageEditor(
+            CurrentLocale.get("com.tle.admin.gui.common.tree.nodeeditor.nonodeselected"));
 
-		showTreeNodeEditor(noSelectionEditor);
-	}
+    showTreeNodeEditor(noSelectionEditor);
+  }
 
-	/**
-	 * Changes the editor pane to show the topic editor, or the blank editor,
-	 * depending on the given value.
-	 * 
-	 * @param b true if the topic editor should be shown.
-	 */
-	protected void showTreeNodeEditor(AbstractTreeNodeEditor newEditor)
-	{
-		// Change
-		if( currentEditor != null )
-		{
-			currentEditor.removeNodeChangeListener(tree);
-		}
+  /**
+   * Changes the editor pane to show the topic editor, or the blank editor, depending on the given
+   * value.
+   *
+   * @param b true if the topic editor should be shown.
+   */
+  protected void showTreeNodeEditor(AbstractTreeNodeEditor newEditor) {
+    // Change
+    if (currentEditor != null) {
+      currentEditor.removeNodeChangeListener(tree);
+    }
 
-		currentEditor = newEditor;
+    currentEditor = newEditor;
 
-		if( currentEditor != null )
-		{
-			currentEditor.addNodeChangeListener(tree);
-		}
+    if (currentEditor != null) {
+      currentEditor.addNodeChangeListener(tree);
+    }
 
-		editArea.removeAll();
-		editArea.add(currentEditor);
-		editArea.updateUI();
-	}
+    editArea.removeAll();
+    editArea.add(currentEditor);
+    editArea.updateUI();
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * javax.swing.event.TreeSelectionListener#valueChanged(javax.swing.event
-	 * .TreeSelectionEvent)
-	 */
-	@Override
-	public void valueChanged(final TreeSelectionEvent e)
-	{
-		final TreePath newPath = e.getNewLeadSelectionPath();
-		saveChanges(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				GlassSwingWorker<?> worker = new GlassSwingWorker<AbstractTreeNodeEditor>()
-				{
-					@Override
-					@SuppressWarnings("unchecked")
-					public AbstractTreeNodeEditor construct()
-					{
-						if( newPath == null )
-						{
-							return noSelectionEditor;
-						}
-						else
-						{
-							return createEditor((NodeType) newPath.getLastPathComponent());
-						}
-					}
+  /*
+   * (non-Javadoc)
+   * @see
+   * javax.swing.event.TreeSelectionListener#valueChanged(javax.swing.event
+   * .TreeSelectionEvent)
+   */
+  @Override
+  public void valueChanged(final TreeSelectionEvent e) {
+    final TreePath newPath = e.getNewLeadSelectionPath();
+    saveChanges(
+        new Runnable() {
+          @Override
+          public void run() {
+            GlassSwingWorker<?> worker =
+                new GlassSwingWorker<AbstractTreeNodeEditor>() {
+                  @Override
+                  @SuppressWarnings("unchecked")
+                  public AbstractTreeNodeEditor construct() {
+                    if (newPath == null) {
+                      return noSelectionEditor;
+                    } else {
+                      return createEditor((NodeType) newPath.getLastPathComponent());
+                    }
+                  }
 
-					@Override
-					public void finished()
-					{
-						showTreeNodeEditor(get());
-					}
+                  @Override
+                  public void finished() {
+                    showTreeNodeEditor(get());
+                  }
 
-					@Override
-					public void exception()
-					{
-						getException().printStackTrace();
-					}
-				};
-				worker.setComponent(AbstractTreeEditor.this);
-				worker.start();
-			}
-		});
-	}
+                  @Override
+                  public void exception() {
+                    getException().printStackTrace();
+                  }
+                };
+            worker.setComponent(AbstractTreeEditor.this);
+            worker.start();
+          }
+        });
+  }
 
-	public void saveChanges(final Runnable actionAfterSave)
-	{
-		if( currentEditor == null || !currentEditor.hasChanges() )
-		{
-			actionAfterSave.run();
-			return;
-		}
+  public void saveChanges(final Runnable actionAfterSave) {
+    if (currentEditor == null || !currentEditor.hasChanges()) {
+      actionAfterSave.run();
+      return;
+    }
 
-		String message = CurrentLocale.get("com.tle.admin.gui.common.tree.nodeeditor.saveconfirm");
-		String[] buttons = {CurrentLocale.get("com.dytech.edge.admin.gui.save"),
-				CurrentLocale.get("com.dytech.edge.admin.gui.dontsave"),
-				CurrentLocale.get("com.dytech.edge.admin.gui.cancel")};
-		final int confirm = JOptionPane.showOptionDialog(this, message,
-			CurrentLocale.get("com.dytech.edge.admin.gui.savechanges"), JOptionPane.YES_NO_CANCEL_OPTION,
-			JOptionPane.WARNING_MESSAGE, null, buttons, buttons[0]);
+    String message = CurrentLocale.get("com.tle.admin.gui.common.tree.nodeeditor.saveconfirm");
+    String[] buttons = {
+      CurrentLocale.get("com.dytech.edge.admin.gui.save"),
+      CurrentLocale.get("com.dytech.edge.admin.gui.dontsave"),
+      CurrentLocale.get("com.dytech.edge.admin.gui.cancel")
+    };
+    final int confirm =
+        JOptionPane.showOptionDialog(
+            this,
+            message,
+            CurrentLocale.get("com.dytech.edge.admin.gui.savechanges"),
+            JOptionPane.YES_NO_CANCEL_OPTION,
+            JOptionPane.WARNING_MESSAGE,
+            null,
+            buttons,
+            buttons[0]);
 
-		if( confirm == JOptionPane.CANCEL_OPTION )
-		{
-			return;
-		}
-		else if( confirm == JOptionPane.NO_OPTION )
-		{
-			actionAfterSave.run();
-			return;
-		}
+    if (confirm == JOptionPane.CANCEL_OPTION) {
+      return;
+    } else if (confirm == JOptionPane.NO_OPTION) {
+      actionAfterSave.run();
+      return;
+    }
 
-		// We must save then run the runnable
-		GlassSwingWorker<?> worker = new GlassSwingWorker<Object>()
-		{
-			@Override
-			public Object construct()
-			{
-				currentEditor.doSave();
-				return null;
-			}
+    // We must save then run the runnable
+    GlassSwingWorker<?> worker =
+        new GlassSwingWorker<Object>() {
+          @Override
+          public Object construct() {
+            currentEditor.doSave();
+            return null;
+          }
 
-			@Override
-			public void finished()
-			{
-				actionAfterSave.run();
-			}
+          @Override
+          public void finished() {
+            actionAfterSave.run();
+          }
 
-			@Override
-			public void exception()
-			{
-				JOptionPane.showMessageDialog(getComponent(),
-					CurrentLocale.get("com.tle.admin.gui.common.tree.nodeeditor.saveerror"));
-				getException().printStackTrace();
-			}
-		};
-		worker.setComponent(this);
-		worker.start();
-	}
+          @Override
+          public void exception() {
+            JOptionPane.showMessageDialog(
+                getComponent(),
+                CurrentLocale.get("com.tle.admin.gui.common.tree.nodeeditor.saveerror"));
+            getException().printStackTrace();
+          }
+        };
+    worker.setComponent(this);
+    worker.start();
+  }
 }

@@ -38,89 +38,82 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.remoting.RemoteItemDefinitionService;
 
 @SuppressWarnings("nls")
-public abstract class AbstractTemplatingConfig extends AbstractOnlyTitleConfig
-{
-	private static final long serialVersionUID = 1L;
+public abstract class AbstractTemplatingConfig extends AbstractOnlyTitleConfig {
+  private static final long serialVersionUID = 1L;
 
-	protected RSyntaxTextArea editor;
-	protected EditorState<ItemDefinition> state;
-	protected ClientService clientService;
+  protected RSyntaxTextArea editor;
+  protected EditorState<ItemDefinition> state;
+  protected ClientService clientService;
 
-	protected abstract String getEditorLabelKey();
+  protected abstract String getEditorLabelKey();
 
-	@Override
-	public void setup()
-	{
-		// Layout
-		setLayout(new MigLayout("fill, wrap 1"));
-		super.setup();
+  @Override
+  public void setup() {
+    // Layout
+    setLayout(new MigLayout("fill, wrap 1"));
+    super.setup();
 
-		// Label
-		add(new JLabel(CurrentLocale.get(getEditorLabelKey())));
+    // Label
+    add(new JLabel(CurrentLocale.get(getEditorLabelKey())));
 
-		// Editor (Note size is irrelevant and annoying)
-		// Aaron: No, not irrelevant. Well, maybe to us, but not the highlighter
-		editor = new RSyntaxTextArea(500, 2000);
-		add(new RTextScrollPane(editor), "grow, push");
+    // Editor (Note size is irrelevant and annoying)
+    // Aaron: No, not irrelevant. Well, maybe to us, but not the highlighter
+    editor = new RSyntaxTextArea(500, 2000);
+    add(new RTextScrollPane(editor), "grow, push");
 
-		final JButton showFiles = new JButton(
-			getString("summarydisplay.abstracttemplating.showfiles"));
-		showFiles.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				EntityStagingFileViewer file = new EntityStagingFileViewer(state, clientService
-					.getService(RemoteItemDefinitionService.class), "displaytemplate/");
-				changeDetector.watch(file.getFileTreeModel());
+    final JButton showFiles = new JButton(getString("summarydisplay.abstracttemplating.showfiles"));
+    showFiles.addActionListener(
+        new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            EntityStagingFileViewer file =
+                new EntityStagingFileViewer(
+                    state,
+                    clientService.getService(RemoteItemDefinitionService.class),
+                    "displaytemplate/");
+            changeDetector.watch(file.getFileTreeModel());
 
-				add(file, "grow, push");
-				remove(showFiles);
-				revalidate();
+            add(file, "grow, push");
+            remove(showFiles);
+            revalidate();
 
-				showFiles.removeActionListener(this);
-			}
-		});
-		add(showFiles);
+            showFiles.removeActionListener(this);
+          }
+        });
+    add(showFiles);
 
-		changeDetector.watch(editor);
-	}
+    changeDetector.watch(editor);
+  }
 
-	@Override
-	public void save(SummarySectionsConfig element)
-	{
-		element.setConfiguration(editor.getText());
-		super.save(element);
-	}
+  @Override
+  public void save(SummarySectionsConfig element) {
+    element.setConfiguration(editor.getText());
+    super.save(element);
+  }
 
-	@Override
-	public void load(SummarySectionsConfig element)
-	{
-		editor.setText(element.getConfiguration());
-		super.load(element);
-	}
+  @Override
+  public void load(SummarySectionsConfig element) {
+    editor.setText(element.getConfiguration());
+    super.load(element);
+  }
 
-	@Override
-	public Component getComponent()
-	{
-		return this;
-	}
+  @Override
+  public Component getComponent() {
+    return this;
+  }
 
-	@Override
-	public void setSchemaModel(SchemaModel model)
-	{
-		// Don't need this
-	}
+  @Override
+  public void setSchemaModel(SchemaModel model) {
+    // Don't need this
+  }
 
-	@Override
-	public void setState(EditorState<ItemDefinition> state)
-	{
-		this.state = state;
-	}
+  @Override
+  public void setState(EditorState<ItemDefinition> state) {
+    this.state = state;
+  }
 
-	@Override
-	public void setClientService(ClientService service)
-	{
-		this.clientService = service;
-	}
+  @Override
+  public void setClientService(ClientService service) {
+    this.clientService = service;
+  }
 }

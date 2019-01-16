@@ -26,19 +26,16 @@ import javax.servlet.http.HttpServletResponse;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.web.dispatcher.FilterResult;
 
-/**
- * @author nread
- */
-public interface UserManagementLogonFilter
-{
+/** @author nread */
+public interface UserManagementLogonFilter {
 
-	boolean init(Map<Object, Object> attributes);
+  boolean init(Map<Object, Object> attributes);
 
-	FilterResult filter(HttpServletRequest request, HttpServletResponse response) throws IOException;
+  FilterResult filter(HttpServletRequest request, HttpServletResponse response) throws IOException;
 
-	URI logoutURI(UserState state, URI loggedOutURI);
+  URI logoutURI(UserState state, URI loggedOutURI);
 
-	URI logoutRedirect(URI loggedOutURI);
+  URI logoutRedirect(URI loggedOutURI);
 
-	void addStateParameters(HttpServletRequest request, Map<String, String[]> params);
+  void addStateParameters(HttpServletRequest request, Map<String, String[]> params);
 }

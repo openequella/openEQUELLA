@@ -30,15 +30,14 @@ import io.swagger.annotations.ApiParam;
 @Path("item/{uuid}/{version}/moderation")
 @Api(value = "Moderation status", description = "item-moderation")
 @SuppressWarnings("nls")
-public interface ItemModerationResource
-{
-	static final String APIDOC_ITEMUUID = "The uuid of the item";
-	static final String APIDOC_ITEMVERSION = "The version of the item";
+public interface ItemModerationResource {
+  static final String APIDOC_ITEMUUID = "The uuid of the item";
+  static final String APIDOC_ITEMVERSION = "The version of the item";
 
-	@GET
-	@ApiOperation(value = "Get the current moderation state", response = ItemStatusBean.class)
-	public ItemStatusBean getModeration(
-		// @formatter:off
-		@ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
-		@ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version); // @formatter:on
+  @GET
+  @ApiOperation(value = "Get the current moderation state", response = ItemStatusBean.class)
+  public ItemStatusBean getModeration(
+      // @formatter:off
+      @ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
+      @ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version); // @formatter:on
 }

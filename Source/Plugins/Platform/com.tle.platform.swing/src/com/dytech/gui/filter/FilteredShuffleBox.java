@@ -31,209 +31,176 @@ import com.dytech.gui.JShuffleBox;
 import com.dytech.gui.TableLayout;
 import com.tle.common.gui.models.GenericListModel;
 
-public class FilteredShuffleBox<T> extends JComponent implements ActionListener
-{
-	protected int minimumFilter;
-	protected JButton search;
-	protected JTextField query;
-	protected JShuffleBox<T> shuffle;
-	protected FilterModel<T> filter;
-	protected boolean rightHasPriority;
+public class FilteredShuffleBox<T> extends JComponent implements ActionListener {
+  protected int minimumFilter;
+  protected JButton search;
+  protected JTextField query;
+  protected JShuffleBox<T> shuffle;
+  protected FilterModel<T> filter;
+  protected boolean rightHasPriority;
 
-	public FilteredShuffleBox(FilterModel<T> search)
-	{
-		this(search, 1);
-	}
+  public FilteredShuffleBox(FilterModel<T> search) {
+    this(search, 1);
+  }
 
-	public FilteredShuffleBox(FilterModel<T> search, int minimumFilter)
-	{
-		this(search, null, null, minimumFilter);
-	}
+  public FilteredShuffleBox(FilterModel<T> search, int minimumFilter) {
+    this(search, null, null, minimumFilter);
+  }
 
-	public FilteredShuffleBox(FilterModel<T> search, String leftTitle, String rightTitle)
-	{
-		this(search, leftTitle, rightTitle, 1);
-	}
+  public FilteredShuffleBox(FilterModel<T> search, String leftTitle, String rightTitle) {
+    this(search, leftTitle, rightTitle, 1);
+  }
 
-	public FilteredShuffleBox(FilterModel<T> search, String leftTitle, String rightTitle, int minimumFilter)
-	{
-		this.minimumFilter = minimumFilter;
-		setupGUI(search, leftTitle, rightTitle);
-	}
+  public FilteredShuffleBox(
+      FilterModel<T> search, String leftTitle, String rightTitle, int minimumFilter) {
+    this.minimumFilter = minimumFilter;
+    setupGUI(search, leftTitle, rightTitle);
+  }
 
-	public GenericListModel<T> getLeftModel()
-	{
-		return shuffle.getLeftModel();
-	}
+  public GenericListModel<T> getLeftModel() {
+    return shuffle.getLeftModel();
+  }
 
-	public GenericListModel<T> getRightModel()
-	{
-		return shuffle.getRightModel();
-	}
+  public GenericListModel<T> getRightModel() {
+    return shuffle.getRightModel();
+  }
 
-	/**
-	 * Enabled the right-hand column to have priority over any duplicates that
-	 * are added to the left-hand column. When a search is performed, if a value
-	 * already exists in the right-hand column, it will not be added to the
-	 * left. This is the default operation of this control.
-	 * 
-	 * @param b true if the right-hand column should have priority.
-	 */
-	public void setRightHasPriority(boolean b)
-	{
-		rightHasPriority = b;
-	}
+  /**
+   * Enabled the right-hand column to have priority over any duplicates that are added to the
+   * left-hand column. When a search is performed, if a value already exists in the right-hand
+   * column, it will not be added to the left. This is the default operation of this control.
+   *
+   * @param b true if the right-hand column should have priority.
+   */
+  public void setRightHasPriority(boolean b) {
+    rightHasPriority = b;
+  }
 
-	@Override
-	public void setEnabled(boolean b)
-	{
-		search.setEnabled(b);
-		query.setEnabled(b);
-		shuffle.setEnabled(b);
-	}
+  @Override
+  public void setEnabled(boolean b) {
+    search.setEnabled(b);
+    query.setEnabled(b);
+    shuffle.setEnabled(b);
+  }
 
-	public void addToLeft(T o)
-	{
-		shuffle.addToLeft(o);
-	}
+  public void addToLeft(T o) {
+    shuffle.addToLeft(o);
+  }
 
-	public void addToLeft(T[] o)
-	{
-		shuffle.addToLeft(o);
-	}
+  public void addToLeft(T[] o) {
+    shuffle.addToLeft(o);
+  }
 
-	public void addToLeft(Collection<T> c)
-	{
-		shuffle.addToLeft(c);
-	}
+  public void addToLeft(Collection<T> c) {
+    shuffle.addToLeft(c);
+  }
 
-	public void addToRight(T o)
-	{
-		shuffle.addToRight(o);
-	}
+  public void addToRight(T o) {
+    shuffle.addToRight(o);
+  }
 
-	public void addToRight(T[] o)
-	{
-		shuffle.addToRight(o);
-	}
+  public void addToRight(T[] o) {
+    shuffle.addToRight(o);
+  }
 
-	public void addToRight(Collection<T> c)
-	{
-		shuffle.addToRight(c);
-	}
+  public void addToRight(Collection<T> c) {
+    shuffle.addToRight(c);
+  }
 
-	public void removeAllFromLeft()
-	{
-		shuffle.removeAllFromLeft();
-	}
+  public void removeAllFromLeft() {
+    shuffle.removeAllFromLeft();
+  }
 
-	public void removeAllFromRight()
-	{
-		shuffle.removeAllFromRight();
-	}
+  public void removeAllFromRight() {
+    shuffle.removeAllFromRight();
+  }
 
-	public List<T> getLeft()
-	{
-		return shuffle.getLeft();
-	}
+  public List<T> getLeft() {
+    return shuffle.getLeft();
+  }
 
-	public T getLeftAt(int index)
-	{
-		return shuffle.getLeftAt(index);
-	}
+  public T getLeftAt(int index) {
+    return shuffle.getLeftAt(index);
+  }
 
-	public int getLeftCount()
-	{
-		return shuffle.getLeftCount();
-	}
+  public int getLeftCount() {
+    return shuffle.getLeftCount();
+  }
 
-	public List<T> getRight()
-	{
-		return shuffle.getRight();
-	}
+  public List<T> getRight() {
+    return shuffle.getRight();
+  }
 
-	public T getRightAt(int index)
-	{
-		return shuffle.getRightAt(index);
-	}
+  public T getRightAt(int index) {
+    return shuffle.getRightAt(index);
+  }
 
-	public int getRightCount()
-	{
-		return shuffle.getRightCount();
-	}
+  public int getRightCount() {
+    return shuffle.getRightCount();
+  }
 
-	protected void setupGUI(FilterModel<T> filterModel, String leftTitle, String rightTitle)
-	{
-		filter = filterModel;
+  protected void setupGUI(FilterModel<T> filterModel, String leftTitle, String rightTitle) {
+    filter = filterModel;
 
-		query = new JTextField();
-		search = new JButton("Search"); //$NON-NLS-1$
-		query.addActionListener(this);
-		search.addActionListener(this);
+    query = new JTextField();
+    search = new JButton("Search"); // $NON-NLS-1$
+    query.addActionListener(this);
+    search.addActionListener(this);
 
-		if( leftTitle == null || rightTitle == null )
-		{
-			shuffle = new JShuffleBox<T>();
-		}
-		else
-		{
-			shuffle = new JShuffleBox<T>(leftTitle, rightTitle);
-		}
+    if (leftTitle == null || rightTitle == null) {
+      shuffle = new JShuffleBox<T>();
+    } else {
+      shuffle = new JShuffleBox<T>(leftTitle, rightTitle);
+    }
 
-		shuffle.setAllowDuplicates(true);
+    shuffle.setAllowDuplicates(true);
 
-		final int height = query.getPreferredSize().height;
-		final int width1 = 200;
-		final int width2 = search.getPreferredSize().width;
+    final int height = query.getPreferredSize().height;
+    final int width1 = 200;
+    final int width2 = search.getPreferredSize().width;
 
-		final int[] rows = new int[]{height, TableLayout.FILL};
-		final int[] columns = new int[]{TableLayout.FILL, width1, width2, TableLayout.FILL};
+    final int[] rows = new int[] {height, TableLayout.FILL};
+    final int[] columns = new int[] {TableLayout.FILL, width1, width2, TableLayout.FILL};
 
-		setLayout(new TableLayout(rows, columns, 5, 5));
-		add(query, new Rectangle(1, 0, 1, 1));
-		add(search, new Rectangle(2, 0, 1, 1));
-		add(shuffle, new Rectangle(0, 1, 4, 1));
+    setLayout(new TableLayout(rows, columns, 5, 5));
+    add(query, new Rectangle(1, 0, 1, 1));
+    add(search, new Rectangle(2, 0, 1, 1));
+    add(shuffle, new Rectangle(0, 1, 4, 1));
 
-		rightHasPriority = true;
-	}
+    rightHasPriority = true;
+  }
 
-	public void setSearchText(String text)
-	{
-		search.setText(text);
-	}
+  public void setSearchText(String text) {
+    search.setText(text);
+  }
 
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		if( e.getSource() == search || e.getSource() == query )
-		{
-			shuffle.removeAllFromLeft();
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    if (e.getSource() == search || e.getSource() == query) {
+      shuffle.removeAllFromLeft();
 
-			String q = query.getText().trim();
-			if( q.length() >= minimumFilter )
-			{
-				filter.setExclusion(getRight());
-				Collection<T> results = filter.search(q);
-				if( rightHasPriority )
-				{
-					for( T item : results )
-					{
-						if( rightHasPriority && shuffle.getRightIndexOf(item) == -1 )
-						{
-							shuffle.addToLeft(item);
-						}
-					}
-				}
-				else
-				{
-					shuffle.addToLeft(results);
-				}
-			}
-			else
-			{
-				JOptionPane.showMessageDialog(this, "You must enter at least " + minimumFilter //$NON-NLS-1$
-					+ " character(s) to search on.", "Not Enough Characters", JOptionPane.WARNING_MESSAGE); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-		}
-	}
+      String q = query.getText().trim();
+      if (q.length() >= minimumFilter) {
+        filter.setExclusion(getRight());
+        Collection<T> results = filter.search(q);
+        if (rightHasPriority) {
+          for (T item : results) {
+            if (rightHasPriority && shuffle.getRightIndexOf(item) == -1) {
+              shuffle.addToLeft(item);
+            }
+          }
+        } else {
+          shuffle.addToLeft(results);
+        }
+      } else {
+        JOptionPane.showMessageDialog(
+            this,
+            "You must enter at least "
+                + minimumFilter //$NON-NLS-1$
+                + " character(s) to search on.",
+            "Not Enough Characters",
+            JOptionPane.WARNING_MESSAGE); // $NON-NLS-1$ //$NON-NLS-2$
+      }
+    }
+  }
 }

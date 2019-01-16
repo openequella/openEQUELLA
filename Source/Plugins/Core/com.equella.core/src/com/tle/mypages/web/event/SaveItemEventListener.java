@@ -23,7 +23,6 @@ import com.tle.web.sections.SectionInfo;
 /*
  * @author aholland
  */
-public interface SaveItemEventListener extends EventListener
-{
-	void doSaveItemEvent(SectionInfo info, SaveItemEvent event);
+public interface SaveItemEventListener extends EventListener {
+  void doSaveItemEvent(SectionInfo info, SaveItemEvent event);
 }

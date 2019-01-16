@@ -27,25 +27,17 @@ import com.tle.core.item.standard.FilterFactory;
 import com.tle.core.notification.standard.service.NotificationPreferencesService;
 import com.tle.core.scheduler.ScheduledTask;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @Bind
 @Singleton
-public class NotifyOfNewItemsTask implements ScheduledTask
-{
-	@Inject
-	private NotificationPreferencesService notificationPrefs;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private FilterFactory filterFactory;
+public class NotifyOfNewItemsTask implements ScheduledTask {
+  @Inject private NotificationPreferencesService notificationPrefs;
+  @Inject private ItemService itemService;
+  @Inject private FilterFactory filterFactory;
 
-	@Transactional
-	@Override
-	public void execute()
-	{
-		itemService.operateAll(filterFactory.createFilter(notificationPrefs.getWatchedCollectionMap()));
-	}
-
+  @Transactional
+  @Override
+  public void execute() {
+    itemService.operateAll(filterFactory.createFilter(notificationPrefs.getWatchedCollectionMap()));
+  }
 }

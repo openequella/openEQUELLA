@@ -23,46 +23,41 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.Institution;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @NonNullByDefault
-public interface UserSessionService
-{
-	@Nullable
-	<T> T getAttribute(String key);
+public interface UserSessionService {
+  @Nullable
+  <T> T getAttribute(String key);
 
-	/**
-	 * @param attribute WARNING: This object should be immutable!
-	 */
-	void setAttribute(String key, Object attribute);
+  /** @param attribute WARNING: This object should be immutable! */
+  void setAttribute(String key, Object attribute);
 
-	void removeAttribute(String key);
+  void removeAttribute(String key);
 
-	String createUniqueKey();
+  String createUniqueKey();
 
-	boolean isSessionPrevented();
+  boolean isSessionPrevented();
 
-	void preventSessionUse();
+  void preventSessionUse();
 
-	void reenableSessionUse();
+  void reenableSessionUse();
 
-	void bindRequest(HttpServletRequest request);
+  void bindRequest(HttpServletRequest request);
 
-	void unbind();
+  void unbind();
 
-	void nudgeSession();
+  void nudgeSession();
 
-	void forceSession();
+  void forceSession();
 
-	Iterable<UserSessionTimestamp> getInstitutionSessions();
+  Iterable<UserSessionTimestamp> getInstitutionSessions();
 
-	@Nullable
-	<T> T getAttributeFromSession(HttpSession session, Institution institution, String attribute);
+  @Nullable
+  <T> T getAttributeFromSession(HttpSession session, Institution institution, String attribute);
 
-	HttpServletRequest getAssociatedRequest();
+  HttpServletRequest getAssociatedRequest();
 
-	boolean isSessionAvailable();
+  boolean isSessionAvailable();
 
-	Object getSessionLock();
+  Object getSessionLock();
 }

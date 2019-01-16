@@ -28,59 +28,49 @@ import com.tle.common.EntityPack;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.PrivilegeTree.Node;
 
-/**
- * @author Nicholas Read
- */
-public class SearchManagement extends BaseEntityEditor<FederatedSearch>
-{
-	private final SearchTool tool2;
-	private SearchTab search;
+/** @author Nicholas Read */
+public class SearchManagement extends BaseEntityEditor<FederatedSearch> {
+  private final SearchTool tool2;
+  private SearchTab search;
 
-	public SearchManagement(SearchTool tool, boolean readonly)
-	{
-		super(tool, readonly);
-		tool2 = tool;
-	}
+  public SearchManagement(SearchTool tool, boolean readonly) {
+    super(tool, readonly);
+    tool2 = tool;
+  }
 
-	@Override
-	public void load(EntityPack<FederatedSearch> bentity, boolean isLoaded)
-	{
-		search = new SearchTab();
-		search.setPlugin(tool2.getToolInstance(bentity.getEntity().getType()));
+  @Override
+  public void load(EntityPack<FederatedSearch> bentity, boolean isLoaded) {
+    search = new SearchTab();
+    search.setPlugin(tool2.getToolInstance(bentity.getEntity().getType()));
 
-		super.load(bentity, isLoaded);
-	}
+    super.load(bentity, isLoaded);
+  }
 
-	@Override
-	protected AbstractDetailsTab<FederatedSearch> constructDetailsTab()
-	{
-		return search;
-	}
+  @Override
+  protected AbstractDetailsTab<FederatedSearch> constructDetailsTab() {
+    return search;
+  }
 
-	@Override
-	protected String getEntityName()
-	{
-		return getString("searchmanagement.name"); //$NON-NLS-1$
-	}
+  @Override
+  protected String getEntityName() {
+    return getString("searchmanagement.name"); // $NON-NLS-1$
+  }
 
-	@Override
-	protected String getWindowTitle()
-	{
-		return getString("searchmanagement.title"); //$NON-NLS-1$
-	}
+  @Override
+  protected String getWindowTitle() {
+    return getString("searchmanagement.title"); // $NON-NLS-1$
+  }
 
-	@Override
-	protected List<? extends BaseEntityTab<FederatedSearch>> getTabs()
-	{
-		List<BaseEntityTab<FederatedSearch>> list = new ArrayList<BaseEntityTab<FederatedSearch>>();
-		list.add(search);
-		list.add(new AccessControlTab<FederatedSearch>(Node.FEDERATED_SEARCH));
-		return list;
-	}
+  @Override
+  protected List<? extends BaseEntityTab<FederatedSearch>> getTabs() {
+    List<BaseEntityTab<FederatedSearch>> list = new ArrayList<BaseEntityTab<FederatedSearch>>();
+    list.add(search);
+    list.add(new AccessControlTab<FederatedSearch>(Node.FEDERATED_SEARCH));
+    return list;
+  }
 
-	@Override
-	public String getDocumentName()
-	{
-		return getString("searchmanagement.name"); //$NON-NLS-1$
-	}
+  @Override
+  public String getDocumentName() {
+    return getString("searchmanagement.name"); // $NON-NLS-1$
+  }
 }

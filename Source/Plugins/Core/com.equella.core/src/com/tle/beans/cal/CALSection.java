@@ -34,90 +34,79 @@ import com.tle.core.copyright.Section;
 @Entity
 @AccessType("field")
 @Table(name = "cal_section")
-public class CALSection implements Section
-{
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-	@JoinColumn(nullable = false)
-	@Index(name = "portionIndex")
-	@ManyToOne(fetch = FetchType.LAZY)
-	private CALPortion portion;
-	private String range;
-	private String copyrightStatus;
-	@Column(length = 40)
-	@Index(name = "attachmentIndex")
-	private String attachment;
-	private Boolean illustration;
+public class CALSection implements Section {
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	@Override
-	public boolean isIllustration()
-	{
-		return (illustration != null ? illustration : false);
-	}
+  @JoinColumn(nullable = false)
+  @Index(name = "portionIndex")
+  @ManyToOne(fetch = FetchType.LAZY)
+  private CALPortion portion;
 
-	public void setIllustration(boolean illustration)
-	{
-		this.illustration = illustration;
-	}
+  private String range;
+  private String copyrightStatus;
 
-	@Override
-	public long getId()
-	{
-		return id;
-	}
+  @Column(length = 40)
+  @Index(name = "attachmentIndex")
+  private String attachment;
 
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  private Boolean illustration;
 
-	@Override
-	public String getRange()
-	{
-		return range;
-	}
+  @Override
+  public boolean isIllustration() {
+    return (illustration != null ? illustration : false);
+  }
 
-	public void setRange(String range)
-	{
-		this.range = range;
-	}
+  public void setIllustration(boolean illustration) {
+    this.illustration = illustration;
+  }
 
-	@Override
-	public String getCopyrightStatus()
-	{
-		return copyrightStatus;
-	}
+  @Override
+  public long getId() {
+    return id;
+  }
 
-	public void setCopyrightStatus(String copyrightStatus)
-	{
-		this.copyrightStatus = copyrightStatus;
-	}
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	@Override
-	public String getAttachment()
-	{
-		return attachment;
-	}
+  @Override
+  public String getRange() {
+    return range;
+  }
 
-	public void setAttachment(String attachment)
-	{
-		if( attachment != null && attachment.length() >= 40 )
-		{
-			attachment = attachment.substring(0, 40);
-		}
-		this.attachment = attachment;
-	}
+  public void setRange(String range) {
+    this.range = range;
+  }
 
-	@Override
-	public CALPortion getPortion()
-	{
-		return portion;
-	}
+  @Override
+  public String getCopyrightStatus() {
+    return copyrightStatus;
+  }
 
-	public void setPortion(CALPortion portion)
-	{
-		this.portion = portion;
-	}
+  public void setCopyrightStatus(String copyrightStatus) {
+    this.copyrightStatus = copyrightStatus;
+  }
 
+  @Override
+  public String getAttachment() {
+    return attachment;
+  }
+
+  public void setAttachment(String attachment) {
+    if (attachment != null && attachment.length() >= 40) {
+      attachment = attachment.substring(0, 40);
+    }
+    this.attachment = attachment;
+  }
+
+  @Override
+  public CALPortion getPortion() {
+    return portion;
+  }
+
+  public void setPortion(CALPortion portion) {
+    this.portion = portion;
+  }
 }

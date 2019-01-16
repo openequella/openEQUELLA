@@ -31,110 +31,91 @@ import com.tle.common.Check;
 import com.tle.core.freetext.queries.BaseQuery;
 import com.tle.core.wizard.controls.WizardPage;
 
-public class CMultiEditBox extends AbstractHTMLControl
-{
-	private static final long serialVersionUID = 1L;
+public class CMultiEditBox extends AbstractHTMLControl {
+  private static final long serialVersionUID = 1L;
 
-	private Map<String, String> langValues = new HashMap<String, String>();
-	private Collection<String> locales;
-	private Map<String, String> localeNames;
-	private Locale defaultLocale;
+  private Map<String, String> langValues = new HashMap<String, String>();
+  private Collection<String> locales;
+  private Map<String, String> localeNames;
+  private Locale defaultLocale;
 
-	public CMultiEditBox(WizardPage page, int controlNumber, int nestingLevel, WizardControl controlBean)
-	{
-		super(page, controlNumber, nestingLevel, controlBean);
-	}
+  public CMultiEditBox(
+      WizardPage page, int controlNumber, int nestingLevel, WizardControl controlBean) {
+    super(page, controlNumber, nestingLevel, controlBean);
+  }
 
-	public Collection<String> getLocales()
-	{
-		if( locales == null )
-		{
-			locales = new ArrayList<String>();
-			localeNames = new HashMap<String, String>();
-			List<Language> languages = getRepository().getLanguages();
-			for( Language language : languages )
-			{
-				Locale locale = language.getLocale();
-				if( defaultLocale == null )
-				{
-					defaultLocale = locale;
-				}
-				String locStr = locale.toString();
-				locales.add(locStr);
-				localeNames.put(locStr, locale.getDisplayName());
-			}
-		}
-		return locales;
-	}
+  public Collection<String> getLocales() {
+    if (locales == null) {
+      locales = new ArrayList<String>();
+      localeNames = new HashMap<String, String>();
+      List<Language> languages = getRepository().getLanguages();
+      for (Language language : languages) {
+        Locale locale = language.getLocale();
+        if (defaultLocale == null) {
+          defaultLocale = locale;
+        }
+        String locStr = locale.toString();
+        locales.add(locStr);
+        localeNames.put(locStr, locale.getDisplayName());
+      }
+    }
+    return locales;
+  }
 
-	public void setLocales(Collection<String> locales)
-	{
-		this.locales = locales;
-	}
+  public void setLocales(Collection<String> locales) {
+    this.locales = locales;
+  }
 
-	@Override
-	public void saveToDocument(PropBagEx itemxml)
-	{
-		List<TargetNode> targets = getTargets();
-		for( TargetNode node : targets )
-		{
-			node.clear(itemxml);
-			node.addLangNodes(itemxml, langValues);
-		}
-	}
+  @Override
+  public void saveToDocument(PropBagEx itemxml) {
+    List<TargetNode> targets = getTargets();
+    for (TargetNode node : targets) {
+      node.clear(itemxml);
+      node.addLangNodes(itemxml, langValues);
+    }
+  }
 
-	@Override
-	public void loadFromDocument(PropBagEx itemxml)
-	{
-		TargetNode firstTarget = getFirstTarget();
-		langValues = firstTarget.getLangNode(itemxml, getDefaultLocale());
-	}
+  @Override
+  public void loadFromDocument(PropBagEx itemxml) {
+    TargetNode firstTarget = getFirstTarget();
+    langValues = firstTarget.getLangNode(itemxml, getDefaultLocale());
+  }
 
-	public Map<String, String> getLangValues()
-	{
-		return langValues;
-	}
+  public Map<String, String> getLangValues() {
+    return langValues;
+  }
 
-	public void setLangValues(Map<String, String> langValues)
-	{
-		this.langValues = langValues;
-	}
+  public void setLangValues(Map<String, String> langValues) {
+    this.langValues = langValues;
+  }
 
-	@Override
-	public boolean isEmpty()
-	{
-		for( String val : langValues.values() )
-		{
-			if( !Check.isEmpty(val) )
-			{
-				return false;
-			}
-		}
-		return true;
-	}
+  @Override
+  public boolean isEmpty() {
+    for (String val : langValues.values()) {
+      if (!Check.isEmpty(val)) {
+        return false;
+      }
+    }
+    return true;
+  }
 
-	@Override
-	public BaseQuery getPowerSearchQuery()
-	{
-		return null;
-	}
+  @Override
+  public BaseQuery getPowerSearchQuery() {
+    return null;
+  }
 
-	@Override
-	public void resetToDefaults()
-	{
-		// nothing as yet
-	}
+  @Override
+  public void resetToDefaults() {
+    // nothing as yet
+  }
 
-	@Override
-	public void setValues(String... values)
-	{
-		// nope
-	}
+  @Override
+  public void setValues(String... values) {
+    // nope
+  }
 
-	public Locale getDefaultLocale()
-	{
-		getLocales();
-		return defaultLocale;
-	}
-
+  public Locale getDefaultLocale() {
+    getLocales();
+    return defaultLocale;
+  }
 }

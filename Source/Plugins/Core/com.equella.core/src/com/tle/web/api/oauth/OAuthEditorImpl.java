@@ -32,79 +32,77 @@ import com.tle.core.oauth.service.OAuthService;
 import com.tle.web.api.baseentity.serializer.AbstractBaseEntityEditor;
 import com.tle.web.api.oauth.interfaces.beans.OAuthClientBean;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
-public class OAuthEditorImpl extends AbstractBaseEntityEditor<OAuthClient, OAuthClientBean> implements OAuthEditor
-{
-	@Inject
-	private OAuthService oauthService;
-	@Inject
-	private EncryptionService encryptionService;
+public class OAuthEditorImpl extends AbstractBaseEntityEditor<OAuthClient, OAuthClientBean>
+    implements OAuthEditor {
+  @Inject private OAuthService oauthService;
+  @Inject private EncryptionService encryptionService;
 
-	private boolean mustDeleteTokens;
+  private boolean mustDeleteTokens;
 
-	@AssistedInject
-	public OAuthEditorImpl(@Assisted OAuthClient entity, @Assisted("stagingUuid") @Nullable String stagingUuid,
-		@Assisted("lockId") @Nullable String lockId, @Assisted("editing") boolean editing,
-		@Assisted("importing") boolean importing)
-	{
-		super(entity, stagingUuid, lockId, editing, importing);
-	}
+  @AssistedInject
+  public OAuthEditorImpl(
+      @Assisted OAuthClient entity,
+      @Assisted("stagingUuid") @Nullable String stagingUuid,
+      @Assisted("lockId") @Nullable String lockId,
+      @Assisted("editing") boolean editing,
+      @Assisted("importing") boolean importing) {
+    super(entity, stagingUuid, lockId, editing, importing);
+  }
 
-	@AssistedInject
-	public OAuthEditorImpl(@Assisted OAuthClient entity, @Assisted("stagingUuid") @Nullable String stagingUuid,
-		@Assisted("importing") boolean importing)
-	{
-		this(entity, stagingUuid, null, false, importing);
-	}
+  @AssistedInject
+  public OAuthEditorImpl(
+      @Assisted OAuthClient entity,
+      @Assisted("stagingUuid") @Nullable String stagingUuid,
+      @Assisted("importing") boolean importing) {
+    this(entity, stagingUuid, null, false, importing);
+  }
 
-	@Override
-	protected void copyCustomFields(OAuthClientBean bean)
-	{
-		super.copyCustomFields(bean);
+  @Override
+  protected void copyCustomFields(OAuthClientBean bean) {
+    super.copyCustomFields(bean);
 
-		if( !Objects.equals(bean.getClientId(), entity.getClientId())
-			|| !Objects.equals(bean.getClientSecret(), entity.getClientSecret())
-			|| !Objects.equals(bean.getRedirectUrl(), entity.getRedirectUrl())
-			|| !Objects.equals(bean.getUserId(), entity.getUserId()) )
-		{
-			mustDeleteTokens = true;
-		}
-		entity.setClientId(bean.getClientId());
-		entity.setClientSecret(encryptionService.encrypt(bean.getClientSecret()));
-		entity.setPermissions(bean.getPermissions());
-		entity.setUserId(bean.getUserId());
-		entity.setRedirectUrl(bean.getRedirectUrl());
+    if (!Objects.equals(bean.getClientId(), entity.getClientId())
+        || !Objects.equals(bean.getClientSecret(), entity.getClientSecret())
+        || !Objects.equals(bean.getRedirectUrl(), entity.getRedirectUrl())
+        || !Objects.equals(bean.getUserId(), entity.getUserId())) {
+      mustDeleteTokens = true;
+    }
+    entity.setClientId(bean.getClientId());
+    entity.setClientSecret(encryptionService.encrypt(bean.getClientSecret()));
+    entity.setPermissions(bean.getPermissions());
+    entity.setUserId(bean.getUserId());
+    entity.setRedirectUrl(bean.getRedirectUrl());
 
-		// entity.setAttribute(KEY_OAUTH_FLOW, bean.getFlow());
-	}
+    // entity.setAttribute(KEY_OAUTH_FLOW, bean.getFlow());
+  }
 
-	@Override
-	protected void afterFinishedEditing()
-	{
-		super.afterFinishedEditing();
-		if( editing && mustDeleteTokens )
-		{
-			oauthService.deleteTokens(entity);
-		}
-	}
+  @Override
+  protected void afterFinishedEditing() {
+    super.afterFinishedEditing();
+    if (editing && mustDeleteTokens) {
+      oauthService.deleteTokens(entity);
+    }
+  }
 
-	@Override
-	protected AbstractEntityService<?, OAuthClient> getEntityService()
-	{
-		return oauthService;
-	}
+  @Override
+  protected AbstractEntityService<?, OAuthClient> getEntityService() {
+    return oauthService;
+  }
 
-	@BindFactory
-	public interface OAuthEditorFactory
-	{
-		OAuthEditorImpl createExistingEditor(@Assisted OAuthClient oauthClient,
-			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("lockId") @Nullable String lockId,
-			@Assisted("editing") boolean editing, @Assisted("importing") boolean importing);
+  @BindFactory
+  public interface OAuthEditorFactory {
+    OAuthEditorImpl createExistingEditor(
+        @Assisted OAuthClient oauthClient,
+        @Assisted("stagingUuid") @Nullable String stagingUuid,
+        @Assisted("lockId") @Nullable String lockId,
+        @Assisted("editing") boolean editing,
+        @Assisted("importing") boolean importing);
 
-		OAuthEditorImpl createNewEditor(@Assisted OAuthClient oauthClient,
-			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("importing") boolean importing);
-	}
+    OAuthEditorImpl createNewEditor(
+        @Assisted OAuthClient oauthClient,
+        @Assisted("stagingUuid") @Nullable String stagingUuid,
+        @Assisted("importing") boolean importing);
+  }
 }

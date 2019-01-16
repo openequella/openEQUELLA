@@ -27,16 +27,14 @@ import freemarker.template.Configuration;
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class BasicConfiguration extends Configuration
-{
-	public BasicConfiguration()
-	{
-		setDateFormat("full");
-		setTimeFormat("short");
-		setDateTimeFormat("long_short");
-		setLocalizedLookup(false);
-		if (DebugSettings.isDebuggingMode()) {
-			setCacheStorage(new NullCacheStorage());
-		}
-	}
+public class BasicConfiguration extends Configuration {
+  public BasicConfiguration() {
+    setDateFormat("full");
+    setTimeFormat("short");
+    setDateTimeFormat("long_short");
+    setLocalizedLookup(false);
+    if (DebugSettings.isDebuggingMode()) {
+      setCacheStorage(new NullCacheStorage());
+    }
+  }
 }

@@ -28,16 +28,13 @@ import com.tle.core.services.TaskService;
 
 @Bind
 @Singleton
-public class CheckEmailsTask implements ScheduledTask
-{
-	@Inject
-	private TaskService taskService;
-	@Inject
-	private NotificationService notificationService;
+public class CheckEmailsTask implements ScheduledTask {
+  @Inject private TaskService taskService;
+  @Inject private NotificationService notificationService;
 
-	@Override
-	public void execute()
-	{
-		taskService.getGlobalTask(notificationService.getClusteredTask(true), TimeUnit.MINUTES.toMillis(1));
-	}
+  @Override
+  public void execute() {
+    taskService.getGlobalTask(
+        notificationService.getClusteredTask(true), TimeUnit.MINUTES.toMillis(1));
+  }
 }

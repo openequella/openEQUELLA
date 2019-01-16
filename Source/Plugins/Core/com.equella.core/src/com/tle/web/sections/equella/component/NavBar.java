@@ -32,121 +32,98 @@ import com.tle.web.sections.standard.RendererFactory;
 
 @Bind
 @SuppressWarnings("nls")
-public class NavBar extends AbstractRenderedComponent<NavBarState>
-{
-	@Inject
-	private RendererFactory rendererFactory;
+public class NavBar extends AbstractRenderedComponent<NavBarState> {
+  @Inject private RendererFactory rendererFactory;
 
-	private Link title;
-	private List<NavBarElement> left;
-	private List<NavBarElement> right;
-	private List<NavBarElement> middle;
+  private Link title;
+  private List<NavBarElement> left;
+  private List<NavBarElement> right;
+  private List<NavBarElement> middle;
 
-	public NavBar()
-	{
-		super("navbar");
-	}
+  public NavBar() {
+    super("navbar");
+  }
 
-	@Override
-	protected void prepareModel(RenderContext info)
-	{
-		final NavBarState model = getModel(info);
-		if( model.getTitleLink() == null )
-		{
-			model.setTitleLink(title);
-		}
+  @Override
+  protected void prepareModel(RenderContext info) {
+    final NavBarState model = getModel(info);
+    if (model.getTitleLink() == null) {
+      model.setTitleLink(title);
+    }
 
-		if( left != null )
-		{
-			List<NavBarElement> mleft = model.getLeft();
-			if( mleft == null )
-			{
-				mleft = Lists.newArrayList();
-				model.setLeft(mleft);
-			}
-			mleft.addAll(0, left);
-		}
-		if( right != null )
-		{
-			List<NavBarElement> mright = model.getRight();
-			if( mright == null )
-			{
-				mright = Lists.newArrayList();
-				model.setRight(mright);
-			}
-			mright.addAll(0, right);
-		}
-		if( middle != null )
-		{
-			List<NavBarElement> mmiddle = model.getMiddle();
-			if( mmiddle == null )
-			{
-				mmiddle = Lists.newArrayList();
-				model.setMiddle(mmiddle);
-			}
-			mmiddle.addAll(0, mmiddle);
-		}
-	}
+    if (left != null) {
+      List<NavBarElement> mleft = model.getLeft();
+      if (mleft == null) {
+        mleft = Lists.newArrayList();
+        model.setLeft(mleft);
+      }
+      mleft.addAll(0, left);
+    }
+    if (right != null) {
+      List<NavBarElement> mright = model.getRight();
+      if (mright == null) {
+        mright = Lists.newArrayList();
+        model.setRight(mright);
+      }
+      mright.addAll(0, right);
+    }
+    if (middle != null) {
+      List<NavBarElement> mmiddle = model.getMiddle();
+      if (mmiddle == null) {
+        mmiddle = Lists.newArrayList();
+        model.setMiddle(mmiddle);
+      }
+      mmiddle.addAll(0, mmiddle);
+    }
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new NavBarState(rendererFactory);
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new NavBarState(rendererFactory);
+  }
 
-	public void setTitle(Link title)
-	{
-		ensureBuildingTree();
-		this.title = title;
-	}
+  public void setTitle(Link title) {
+    ensureBuildingTree();
+    this.title = title;
+  }
 
-	public NavBarBuilder buildLeft()
-	{
-		ensureBuildingTree();
-		if( left == null )
-		{
-			left = Lists.newArrayList();
-		}
-		return new NavBarBuilder(left, rendererFactory);
-	}
+  public NavBarBuilder buildLeft() {
+    ensureBuildingTree();
+    if (left == null) {
+      left = Lists.newArrayList();
+    }
+    return new NavBarBuilder(left, rendererFactory);
+  }
 
-	public NavBarBuilder buildRight()
-	{
-		ensureBuildingTree();
-		if( right == null )
-		{
-			right = Lists.newArrayList();
-		}
-		return new NavBarBuilder(right, rendererFactory);
-	}
+  public NavBarBuilder buildRight() {
+    ensureBuildingTree();
+    if (right == null) {
+      right = Lists.newArrayList();
+    }
+    return new NavBarBuilder(right, rendererFactory);
+  }
 
-	public NavBarBuilder buildMiddle()
-	{
-		ensureBuildingTree();
-		if( middle == null )
-		{
-			middle = Lists.newArrayList();
-		}
-		return new NavBarBuilder(middle, rendererFactory);
-	}
+  public NavBarBuilder buildMiddle() {
+    ensureBuildingTree();
+    if (middle == null) {
+      middle = Lists.newArrayList();
+    }
+    return new NavBarBuilder(middle, rendererFactory);
+  }
 
-	public Link getTitle()
-	{
-		return title;
-	}
+  public Link getTitle() {
+    return title;
+  }
 
-	public List<NavBarElement> getLeft()
-	{
-		return left;
-	}
+  public List<NavBarElement> getLeft() {
+    return left;
+  }
 
-	public List<NavBarElement> getRight()
-	{
-		return right;
-	}
+  public List<NavBarElement> getRight() {
+    return right;
+  }
 
-	public List<NavBarElement> getMiddle()
-	{
-		return middle;
-	}
+  public List<NavBarElement> getMiddle() {
+    return middle;
+  }
 }

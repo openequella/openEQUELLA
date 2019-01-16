@@ -25,135 +25,107 @@ import org.hibernate.annotations.Index;
 
 import com.tle.beans.entity.BaseEntity;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Entity
 @AccessType("field")
 // TODO: how do you do this when it's across two tables????
 // @Table(uniqueConstraints = {@UniqueConstraint(columnNames =
 // {"institution_id", "clientId"})})
-public final class HtmlEditorPlugin extends BaseEntity
-{
-	private static final long serialVersionUID = 1L;
+public final class HtmlEditorPlugin extends BaseEntity {
+  private static final long serialVersionUID = 1L;
 
-	@Index(name = "htmleditorPluginIdIndex")
-	@Column(nullable = false, length = 100)
-	private String pluginId;
-	/**
-	 * E.g. tinymce
-	 */
-	@Index(name = "htmleditorPluginType")
-	@Column(nullable = false, length = 20)
-	private String type;
-	@Column(nullable = true, length = 255)
-	private String author;
-	@Lob
-	private String buttons;
-	@Lob
-	private String config;
-	@Lob
-	private String extra;
-	@Lob
-	private String clientJs;
-	@Lob
-	private String serverJs;
+  @Index(name = "htmleditorPluginIdIndex")
+  @Column(nullable = false, length = 100)
+  private String pluginId;
+  /** E.g. tinymce */
+  @Index(name = "htmleditorPluginType")
+  @Column(nullable = false, length = 20)
+  private String type;
 
-	public String getPluginId()
-	{
-		return pluginId;
-	}
+  @Column(nullable = true, length = 255)
+  private String author;
 
-	public void setPluginId(String pluginId)
-	{
-		this.pluginId = pluginId;
-	}
+  @Lob private String buttons;
+  @Lob private String config;
+  @Lob private String extra;
+  @Lob private String clientJs;
+  @Lob private String serverJs;
 
-	public String getAuthor()
-	{
-		return author;
-	}
+  public String getPluginId() {
+    return pluginId;
+  }
 
-	public void setAuthor(String author)
-	{
-		this.author = author;
-	}
+  public void setPluginId(String pluginId) {
+    this.pluginId = pluginId;
+  }
 
-	public String getType()
-	{
-		return type;
-	}
+  public String getAuthor() {
+    return author;
+  }
 
-	public void setType(String type)
-	{
-		this.type = type;
-	}
+  public void setAuthor(String author) {
+    this.author = author;
+  }
 
-	/**
-	 * A JSON array of button defintions E.g. <code>
-	 * [
-	 * {"id":"bacon_example_frybacon",
-	 * "image":"images/frybacon.png"},
-	 * {"id":"bacon_example_grillbacon",
-	 * "image":"images/grillbacon.png"}
-	 * ]
-	 * </code>
-	 * 
-	 * @return
-	 */
-	public String getButtons()
-	{
-		return buttons;
-	}
+  public String getType() {
+    return type;
+  }
 
-	public void setButtons(String buttons)
-	{
-		this.buttons = buttons;
-	}
+  public void setType(String type) {
+    this.type = type;
+  }
 
-	/**
-	 * User-specified config
-	 */
-	public String getConfig()
-	{
-		return config;
-	}
+  /**
+   * A JSON array of button defintions E.g. <code>
+   * [
+   * {"id":"bacon_example_frybacon",
+   * "image":"images/frybacon.png"},
+   * {"id":"bacon_example_grillbacon",
+   * "image":"images/grillbacon.png"}
+   * ]
+   * </code>
+   *
+   * @return
+   */
+  public String getButtons() {
+    return buttons;
+  }
 
-	public void setConfig(String config)
-	{
-		this.config = config;
-	}
+  public void setButtons(String buttons) {
+    this.buttons = buttons;
+  }
 
-	/**
-	 * Editor type specific config. E.g. tinymce specific properties
-	 */
-	public String getExtra()
-	{
-		return extra;
-	}
+  /** User-specified config */
+  public String getConfig() {
+    return config;
+  }
 
-	public void setExtra(String extra)
-	{
-		this.extra = extra;
-	}
+  public void setConfig(String config) {
+    this.config = config;
+  }
 
-	public String getClientJs()
-	{
-		return clientJs;
-	}
+  /** Editor type specific config. E.g. tinymce specific properties */
+  public String getExtra() {
+    return extra;
+  }
 
-	public void setClientJs(String clientJs)
-	{
-		this.clientJs = clientJs;
-	}
+  public void setExtra(String extra) {
+    this.extra = extra;
+  }
 
-	public String getServerJs()
-	{
-		return serverJs;
-	}
+  public String getClientJs() {
+    return clientJs;
+  }
 
-	public void setServerJs(String serverJs)
-	{
-		this.serverJs = serverJs;
-	}
+  public void setClientJs(String clientJs) {
+    this.clientJs = clientJs;
+  }
+
+  public String getServerJs() {
+    return serverJs;
+  }
+
+  public void setServerJs(String serverJs) {
+    this.serverJs = serverJs;
+  }
 }

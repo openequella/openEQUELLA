@@ -26,27 +26,31 @@ import com.tle.web.sections.events.js.BookmarkAndModify;
 import com.tle.web.sections.generic.InfoBookmark;
 
 @SuppressWarnings("nls")
-public class IntegrationShareSearchQuerySection extends StandardShareSearchQuerySection
-{
-	private static final String SEARCHURL;
+public class IntegrationShareSearchQuerySection extends StandardShareSearchQuerySection {
+  private static final String SEARCHURL;
 
-	static
-	{
-		SEARCHURL = RootSearchSection.SEARCHURL.startsWith("/") ? RootSearchSection.SEARCHURL.substring(1)
-			: RootSearchSection.SEARCHURL;
-	}
+  static {
+    SEARCHURL =
+        RootSearchSection.SEARCHURL.startsWith("/")
+            ? RootSearchSection.SEARCHURL.substring(1)
+            : RootSearchSection.SEARCHURL;
+  }
 
-	@Override
-	public void setupUrl(InfoBookmark bookmark, RenderContext context)
-	{
-		url.setValue(context, new BookmarkAndModify(bookmark, new BookmarkModifier()
-		{
-			@Override
-			public void addToBookmark(SectionInfo info, Map<String, String[]> bookmarkState)
-			{
-				bookmarkState.put(SectionInfo.KEY_PATH, new String[]{institutionService.institutionalise(SEARCHURL)});
-			}
-		}).getHref());
-		url.getState(context).setEditable(false);
-	}
+  @Override
+  public void setupUrl(InfoBookmark bookmark, RenderContext context) {
+    url.setValue(
+        context,
+        new BookmarkAndModify(
+                bookmark,
+                new BookmarkModifier() {
+                  @Override
+                  public void addToBookmark(SectionInfo info, Map<String, String[]> bookmarkState) {
+                    bookmarkState.put(
+                        SectionInfo.KEY_PATH,
+                        new String[] {institutionService.institutionalise(SEARCHURL)});
+                  }
+                })
+            .getHref());
+    url.getState(context).setEditable(false);
+  }
 }

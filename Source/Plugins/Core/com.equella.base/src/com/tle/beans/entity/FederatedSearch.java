@@ -22,66 +22,54 @@ import javax.persistence.Lob;
 
 import org.hibernate.annotations.AccessType;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @Entity
 @AccessType("field")
-public class FederatedSearch extends BaseEntity
-{
-	private static final long serialVersionUID = 1L;
+public class FederatedSearch extends BaseEntity {
+  private static final long serialVersionUID = 1L;
 
-	@Column(length = 64)
-	private String type;
-	private int timeout;
+  @Column(length = 64)
+  private String type;
 
-	private String collectionUuid;
+  private int timeout;
 
-	@Lob
-	private String advancedSearchFields;
+  private String collectionUuid;
 
-	public String getAdvancedSearchFields()
-	{
-		return advancedSearchFields;
-	}
+  @Lob private String advancedSearchFields;
 
-	public void setAdvancedSearchFields(String advancedSearchFields)
-	{
-		this.advancedSearchFields = advancedSearchFields;
-	}
+  public String getAdvancedSearchFields() {
+    return advancedSearchFields;
+  }
 
-	public FederatedSearch()
-	{
-		timeout = 30;
-	}
+  public void setAdvancedSearchFields(String advancedSearchFields) {
+    this.advancedSearchFields = advancedSearchFields;
+  }
 
-	public int getTimeout()
-	{
-		return timeout;
-	}
+  public FederatedSearch() {
+    timeout = 30;
+  }
 
-	public void setTimeout(int timeout)
-	{
-		this.timeout = timeout;
-	}
+  public int getTimeout() {
+    return timeout;
+  }
 
-	public String getType()
-	{
-		return type;
-	}
+  public void setTimeout(int timeout) {
+    this.timeout = timeout;
+  }
 
-	public void setType(String type)
-	{
-		this.type = type;
-	}
+  public String getType() {
+    return type;
+  }
 
-	public String getCollectionUuid()
-	{
-		return collectionUuid;
-	}
+  public void setType(String type) {
+    this.type = type;
+  }
 
-	public void setCollectionUuid(String collectionUuid)
-	{
-		this.collectionUuid = collectionUuid;
-	}
+  public String getCollectionUuid() {
+    return collectionUuid;
+  }
+
+  public void setCollectionUuid(String collectionUuid) {
+    this.collectionUuid = collectionUuid;
+  }
 }

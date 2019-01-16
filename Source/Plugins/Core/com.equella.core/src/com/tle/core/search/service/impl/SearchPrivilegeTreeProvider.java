@@ -22,16 +22,13 @@ import com.tle.common.security.SettingsTarget;
 import com.tle.core.guice.Bind;
 import com.tle.core.settings.security.AbstractSettingsPrivilegeTreeProvider;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class SearchPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider
-{
-	public SearchPrivilegeTreeProvider()
-	{
-		super(Type.SYSTEM_SETTING, r.key("securitytree.searchsettings"), new SettingsTarget("searching"));
-	}
+public class SearchPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider {
+  public SearchPrivilegeTreeProvider() {
+    super(
+        Type.SYSTEM_SETTING, r.key("securitytree.searchsettings"), new SettingsTarget("searching"));
+  }
 }

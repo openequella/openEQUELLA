@@ -26,75 +26,64 @@ import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.PreRenderable;
 
 /**
- * Please note, if you add any additional javascript files, they must be
- * included in the JQueryLibrary modules list.
+ * Please note, if you add any additional javascript files, they must be included in the
+ * JQueryLibrary modules list.
  */
-public class JQueryLibraryInclude extends IncludeFile
-{
-	public static final PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(JQueryLibraryInclude.class);
+public class JQueryLibraryInclude extends IncludeFile {
+  public static final PluginResourceHelper urlHelper =
+      ResourcesService.getResourceHelper(JQueryLibraryInclude.class);
 
-	public static CssInclude.CssIncludeBuilder cssb(String css)
-	{
-		return CssInclude.include(urlHelper.url("css/jquerylib/" + css));
-	}
+  public static CssInclude.CssIncludeBuilder cssb(String css) {
+    return CssInclude.include(urlHelper.url("css/jquerylib/" + css));
+  }
 
-	public static CssInclude css(String css)
-	{
-		return cssb(css).make();
-	}
+  public static CssInclude css(String css) {
+    return cssb(css).make();
+  }
 
-	private static String[] addLibFolder(String[] jses)
-	{
-		String[] fullJses = new String[jses.length];
-		int i = 0;
-		for( String js : jses )
-		{
-			if( js.startsWith("~") ) //$NON-NLS-1$
-			{
-				// strip the ~ and use the path as-is
-				fullJses[i++] = urlHelper.url(js.substring(1));
-			}
-			else
-			{
-				fullJses[i++] = urlHelper.url("jquerylib/" + js); //$NON-NLS-1$
-			}
-		}
-		return fullJses;
-	}
+  private static String[] addLibFolder(String[] jses) {
+    String[] fullJses = new String[jses.length];
+    int i = 0;
+    for (String js : jses) {
+      if (js.startsWith("~")) // $NON-NLS-1$
+      {
+        // strip the ~ and use the path as-is
+        fullJses[i++] = urlHelper.url(js.substring(1));
+      } else {
+        fullJses[i++] = urlHelper.url("jquerylib/" + js); // $NON-NLS-1$
+      }
+    }
+    return fullJses;
+  }
 
-	public JQueryLibraryInclude(String js, String css, boolean hasNew, PreRenderable... preRenderables)
-	{
-		this(js, preRenderables);
-		addPreRenderer(cssb(css).make()); //$NON-NLS-1$
-	}
+  public JQueryLibraryInclude(
+      String js, String css, boolean hasNew, PreRenderable... preRenderables) {
+    this(js, preRenderables);
+    addPreRenderer(cssb(css).make()); // $NON-NLS-1$
+  }
 
-	public JQueryLibraryInclude(String js, String css, PreRenderable... preRenderables)
-	{
-		this(js, css, false, preRenderables);
-	}
+  public JQueryLibraryInclude(String js, String css, PreRenderable... preRenderables) {
+    this(js, css, false, preRenderables);
+  }
 
-	public JQueryLibraryInclude(String[] jses, String css, PreRenderable... preRenderables)
-	{
-		this(jses, preRenderables);
-		addPreRenderer(css(css));
-	}
+  public JQueryLibraryInclude(String[] jses, String css, PreRenderable... preRenderables) {
+    this(jses, preRenderables);
+    addPreRenderer(css(css));
+  }
 
-	public JQueryLibraryInclude(String js, PreRenderable... preRenderables)
-	{
-		super(urlHelper.url("jquerylib/" + js), preRenderables); //$NON-NLS-1$
-		addPreRenderer(JQueryCore.PRERENDER);
-	}
+  public JQueryLibraryInclude(String js, PreRenderable... preRenderables) {
+    super(urlHelper.url("jquerylib/" + js), preRenderables); // $NON-NLS-1$
+    addPreRenderer(JQueryCore.PRERENDER);
+  }
 
-	/**
-	 * @param jses A js file location can be prefixed with '~' if you don't want
-	 *            it to look in the jquerylib folder
-	 * @param preRenderables
-	 */
-	public JQueryLibraryInclude(String[] jses, PreRenderable... preRenderables)
-	{
-		super(addLibFolder(jses));
-		addPreRenderers(Arrays.asList(preRenderables));
-		addPreRenderer(JQueryCore.PRERENDER);
-	}
-
+  /**
+   * @param jses A js file location can be prefixed with '~' if you don't want it to look in the
+   *     jquerylib folder
+   * @param preRenderables
+   */
+  public JQueryLibraryInclude(String[] jses, PreRenderable... preRenderables) {
+    super(addLibFolder(jses));
+    addPreRenderers(Arrays.asList(preRenderables));
+    addPreRenderer(JQueryCore.PRERENDER);
+  }
 }

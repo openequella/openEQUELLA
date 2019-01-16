@@ -25,23 +25,18 @@ import com.tle.core.guice.Bind;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.js.JSHandler;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class MimeListEntryFactory
-{
-	@Inject
-	private Provider<MimeListEntry> entryProvider;
+public class MimeListEntryFactory {
+  @Inject private Provider<MimeListEntry> entryProvider;
 
-	public MimeListEntry createMimeListEntry(SectionInfo info, MimeEntry mime, JSHandler editHandler,
-		JSHandler deleteHandler)
-	{
-		MimeListEntry listItem = entryProvider.get();
-		listItem.setEditHandler(editHandler);
-		listItem.setDeleteHandler(deleteHandler);
-		listItem.setMime(mime);
-		return listItem;
-	}
+  public MimeListEntry createMimeListEntry(
+      SectionInfo info, MimeEntry mime, JSHandler editHandler, JSHandler deleteHandler) {
+    MimeListEntry listItem = entryProvider.get();
+    listItem.setEditHandler(editHandler);
+    listItem.setDeleteHandler(deleteHandler);
+    listItem.setMime(mime);
+    return listItem;
+  }
 }

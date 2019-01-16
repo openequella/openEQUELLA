@@ -37,319 +37,288 @@ import com.tle.common.Check;
 @Entity
 @AccessType("field")
 @DiscriminatorValue("t")
-public class WorkflowItem extends WorkflowNode
-{
-	public enum MoveLive
-	{
-		NO, ARRIVAL, ACCEPTED
-	}
+public class WorkflowItem extends WorkflowNode {
+  public enum MoveLive {
+    NO,
+    ARRIVAL,
+    ACCEPTED
+  }
 
-	public enum AutoAction
-	{
-		NONE, ACCEPT, REJECT
-	}
+  public enum AutoAction {
+    NONE,
+    ACCEPT,
+    REJECT
+  }
 
-	public enum Priority
-	{
-		LOW(10), NORMAL(20), HIGH(30);
+  public enum Priority {
+    LOW(10),
+    NORMAL(20),
+    HIGH(30);
 
-		private int intValue;
+    private int intValue;
 
-		Priority(int intValue)
-		{
-			this.intValue = intValue;
-		}
+    Priority(int intValue) {
+      this.intValue = intValue;
+    }
 
-		public int intValue()
-		{
-			return intValue;
-		}
-	}
+    public int intValue() {
+      return intValue;
+    }
+  }
 
-	private static final long serialVersionUID = 1;
+  private static final long serialVersionUID = 1;
 
-	@ElementCollection
-	@Column(name = "`user`", length = 255)
-	@CollectionTable(name = "workflow_node_users", joinColumns = @JoinColumn(name = "workflow_node_id"))
-	private Set<String> users;
-	@ElementCollection
-	@Column(name = "`group`", length = 255)
-	@CollectionTable(name = "workflow_node_groups", joinColumns = @JoinColumn(name = "workflow_node_id"))
-	private Set<String> groups;
-	@ElementCollection
-	@Column(name = "role", length = 255)
-	@CollectionTable(name = "workflow_node_roles", joinColumns = @JoinColumn(name = "workflow_node_id"))
-	private Set<String> roles;
+  @ElementCollection
+  @Column(name = "`user`", length = 255)
+  @CollectionTable(
+      name = "workflow_node_users",
+      joinColumns = @JoinColumn(name = "workflow_node_id"))
+  private Set<String> users;
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@Index(name = "workflowNodeDesc")
-	private LanguageBundle description;
-	private boolean unanimousacceptance;
-	private boolean escalate;
-	private int escalationdays;
-	private boolean allowEditing;
-	private boolean movelive;
-	private boolean moveliveAccept;
-	private int priority;
-	private Boolean autoAction;
-	private int actionDays;
+  @ElementCollection
+  @Column(name = "`group`", length = 255)
+  @CollectionTable(
+      name = "workflow_node_groups",
+      joinColumns = @JoinColumn(name = "workflow_node_id"))
+  private Set<String> groups;
 
-	// Auto-assign based on steps
-	@ElementCollection
-	@Column(name = "`task`", length = 40)
-	@CollectionTable(name = "workflow_node_auto_assigns", joinColumns = @JoinColumn(name = "workflow_node_id"))
-	private Set<String> autoAssigns;
-	// Auto-assign based on user ID in this metadata path
-	@Column(length = 512)
-	private String autoAssignNode;
-	@Column(length = 40)
-	private String autoAssignSchemaUuid;
-	@Column(length = 512)
-	private String userPath;
-	@Column(length = 40)
-	private String userSchemaUuid;
-	@Column(length = 512)
-	private String dueDatePath;
-	@Column(length = 40)
-	private String dueDateSchemaUuid;
+  @ElementCollection
+  @Column(name = "role", length = 255)
+  @CollectionTable(
+      name = "workflow_node_roles",
+      joinColumns = @JoinColumn(name = "workflow_node_id"))
+  private Set<String> roles;
 
-	public WorkflowItem(final LanguageBundle name)
-	{
-		super(name);
-		escalationdays = 0;
-	}
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @Index(name = "workflowNodeDesc")
+  private LanguageBundle description;
 
-	public WorkflowItem()
-	{
-		this(null);
-	}
+  private boolean unanimousacceptance;
+  private boolean escalate;
+  private int escalationdays;
+  private boolean allowEditing;
+  private boolean movelive;
+  private boolean moveliveAccept;
+  private int priority;
+  private Boolean autoAction;
+  private int actionDays;
 
-	@Override
-	public char getType()
-	{
-		return 't';
-	}
+  // Auto-assign based on steps
+  @ElementCollection
+  @Column(name = "`task`", length = 40)
+  @CollectionTable(
+      name = "workflow_node_auto_assigns",
+      joinColumns = @JoinColumn(name = "workflow_node_id"))
+  private Set<String> autoAssigns;
+  // Auto-assign based on user ID in this metadata path
+  @Column(length = 512)
+  private String autoAssignNode;
 
-	public LanguageBundle getDisplayName()
-	{
-		return name;
-	}
+  @Column(length = 40)
+  private String autoAssignSchemaUuid;
 
-	public LanguageBundle getDescription()
-	{
-		return description;
-	}
+  @Column(length = 512)
+  private String userPath;
 
-	public void setDescription(final LanguageBundle description)
-	{
-		this.description = description;
-	}
+  @Column(length = 40)
+  private String userSchemaUuid;
 
-	public boolean isEscalate()
-	{
-		return escalate;
-	}
+  @Column(length = 512)
+  private String dueDatePath;
 
-	public void setEscalate(final boolean escalate)
-	{
-		this.escalate = escalate;
-	}
+  @Column(length = 40)
+  private String dueDateSchemaUuid;
 
-	public int getEscalationdays()
-	{
-		return escalationdays;
-	}
+  public WorkflowItem(final LanguageBundle name) {
+    super(name);
+    escalationdays = 0;
+  }
 
-	public void setEscalationdays(final int escalationdays)
-	{
-		this.escalationdays = escalationdays;
-	}
+  public WorkflowItem() {
+    this(null);
+  }
 
-	public boolean isUnanimousacceptance()
-	{
-		return unanimousacceptance;
-	}
+  @Override
+  public char getType() {
+    return 't';
+  }
 
-	public void setUnanimousacceptance(final boolean unanimousacceptance)
-	{
-		this.unanimousacceptance = unanimousacceptance;
-	}
+  public LanguageBundle getDisplayName() {
+    return name;
+  }
 
-	public Set<String> getGroups()
-	{
-		return groups;
-	}
+  public LanguageBundle getDescription() {
+    return description;
+  }
 
-	public void setGroups(final Set<String> group)
-	{
-		this.groups = group;
-	}
+  public void setDescription(final LanguageBundle description) {
+    this.description = description;
+  }
 
-	public Set<String> getUsers()
-	{
-		return users;
-	}
+  public boolean isEscalate() {
+    return escalate;
+  }
 
-	public void setUsers(final Set<String> user)
-	{
-		this.users = user;
-	}
+  public void setEscalate(final boolean escalate) {
+    this.escalate = escalate;
+  }
 
-	public Set<String> getRoles()
-	{
-		return roles;
-	}
+  public int getEscalationdays() {
+    return escalationdays;
+  }
 
-	public void setRoles(final Set<String> roles)
-	{
-		this.roles = roles;
-	}
+  public void setEscalationdays(final int escalationdays) {
+    this.escalationdays = escalationdays;
+  }
 
-	public Set<String> getAutoAssigns()
-	{
-		return autoAssigns;
-	}
+  public boolean isUnanimousacceptance() {
+    return unanimousacceptance;
+  }
 
-	public void setAutoAssigns(final Set<String> autoAssigns)
-	{
-		this.autoAssigns = autoAssigns;
-	}
+  public void setUnanimousacceptance(final boolean unanimousacceptance) {
+    this.unanimousacceptance = unanimousacceptance;
+  }
 
-	public boolean isAllowEditing()
-	{
-		return allowEditing;
-	}
+  public Set<String> getGroups() {
+    return groups;
+  }
 
-	public void setAllowEditing(final boolean allowEditing)
-	{
-		this.allowEditing = allowEditing;
-	}
+  public void setGroups(final Set<String> group) {
+    this.groups = group;
+  }
 
-	public String getAutoAssignNode()
-	{
-		return autoAssignNode;
-	}
+  public Set<String> getUsers() {
+    return users;
+  }
 
-	public void setAutoAssignNode(String autoAssignNode)
-	{
-		this.autoAssignNode = autoAssignNode;
-	}
+  public void setUsers(final Set<String> user) {
+    this.users = user;
+  }
 
-	public String getAutoAssignSchemaUuid()
-	{
-		return autoAssignSchemaUuid;
-	}
+  public Set<String> getRoles() {
+    return roles;
+  }
 
-	public void setAutoAssignSchemaUuid(String autoAssignSchemaUuid)
-	{
-		this.autoAssignSchemaUuid = autoAssignSchemaUuid;
-	}
+  public void setRoles(final Set<String> roles) {
+    this.roles = roles;
+  }
 
-	@Override
-	public boolean canHaveSiblingRejectPoints()
-	{
-		return false;
-	}
+  public Set<String> getAutoAssigns() {
+    return autoAssigns;
+  }
 
-	public String getUserPath()
-	{
-		return userPath;
-	}
+  public void setAutoAssigns(final Set<String> autoAssigns) {
+    this.autoAssigns = autoAssigns;
+  }
 
-	public void setUserPath(String userPath)
-	{
-		this.userPath = userPath;
-	}
+  public boolean isAllowEditing() {
+    return allowEditing;
+  }
 
-	public String getUserSchemaUuid()
-	{
-		return userSchemaUuid;
-	}
+  public void setAllowEditing(final boolean allowEditing) {
+    this.allowEditing = allowEditing;
+  }
 
-	public void setUserSchemaUuid(String userSchemaUuid)
-	{
-		this.userSchemaUuid = userSchemaUuid;
-	}
+  public String getAutoAssignNode() {
+    return autoAssignNode;
+  }
 
-	public boolean isModeratorsSpecified()
-	{
-		return (!Check.isEmpty(userPath) || !Check.isEmpty(users) || !Check.isEmpty(groups) || !Check.isEmpty(roles));
-	}
+  public void setAutoAssignNode(String autoAssignNode) {
+    this.autoAssignNode = autoAssignNode;
+  }
 
-	public int getPriority()
-	{
-		return priority;
-	}
+  public String getAutoAssignSchemaUuid() {
+    return autoAssignSchemaUuid;
+  }
 
-	public void setPriority(int priority)
-	{
-		this.priority = priority;
-	}
+  public void setAutoAssignSchemaUuid(String autoAssignSchemaUuid) {
+    this.autoAssignSchemaUuid = autoAssignSchemaUuid;
+  }
 
-	public AutoAction getAutoAction()
-	{
-		if( autoAction == null )
-		{
-			return AutoAction.NONE;
-		}
-		return autoAction ? AutoAction.ACCEPT : AutoAction.REJECT;
-	}
+  @Override
+  public boolean canHaveSiblingRejectPoints() {
+    return false;
+  }
 
-	public void setAutoAction(AutoAction autoAction)
-	{
-		if( autoAction == AutoAction.NONE )
-		{
-			this.autoAction = null;
-		}
-		else
-		{
-			this.autoAction = autoAction == AutoAction.ACCEPT;
-		}
-	}
+  public String getUserPath() {
+    return userPath;
+  }
 
-	public MoveLive getMovelive()
-	{
-		if( !movelive )
-		{
-			return MoveLive.NO;
-		}
-		return moveliveAccept ? MoveLive.ACCEPTED : MoveLive.ARRIVAL;
-	}
+  public void setUserPath(String userPath) {
+    this.userPath = userPath;
+  }
 
-	public void setMovelive(MoveLive movelive)
-	{
-		this.movelive = movelive != MoveLive.NO;
-		this.moveliveAccept = (movelive == MoveLive.ACCEPTED);
-	}
+  public String getUserSchemaUuid() {
+    return userSchemaUuid;
+  }
 
-	public int getActionDays()
-	{
-		return actionDays;
-	}
+  public void setUserSchemaUuid(String userSchemaUuid) {
+    this.userSchemaUuid = userSchemaUuid;
+  }
 
-	public void setActionDays(int actionDays)
-	{
-		this.actionDays = actionDays;
-	}
+  public boolean isModeratorsSpecified() {
+    return (!Check.isEmpty(userPath)
+        || !Check.isEmpty(users)
+        || !Check.isEmpty(groups)
+        || !Check.isEmpty(roles));
+  }
 
-	public String getDueDatePath()
-	{
-		return dueDatePath;
-	}
+  public int getPriority() {
+    return priority;
+  }
 
-	public void setDueDatePath(String dueDatePath)
-	{
-		this.dueDatePath = dueDatePath;
-	}
+  public void setPriority(int priority) {
+    this.priority = priority;
+  }
 
-	public String getDueDateSchemaUuid()
-	{
-		return dueDateSchemaUuid;
-	}
+  public AutoAction getAutoAction() {
+    if (autoAction == null) {
+      return AutoAction.NONE;
+    }
+    return autoAction ? AutoAction.ACCEPT : AutoAction.REJECT;
+  }
 
-	public void setDueDateSchemaUuid(String dueDateSchemaUuid)
-	{
-		this.dueDateSchemaUuid = dueDateSchemaUuid;
-	}
+  public void setAutoAction(AutoAction autoAction) {
+    if (autoAction == AutoAction.NONE) {
+      this.autoAction = null;
+    } else {
+      this.autoAction = autoAction == AutoAction.ACCEPT;
+    }
+  }
 
+  public MoveLive getMovelive() {
+    if (!movelive) {
+      return MoveLive.NO;
+    }
+    return moveliveAccept ? MoveLive.ACCEPTED : MoveLive.ARRIVAL;
+  }
+
+  public void setMovelive(MoveLive movelive) {
+    this.movelive = movelive != MoveLive.NO;
+    this.moveliveAccept = (movelive == MoveLive.ACCEPTED);
+  }
+
+  public int getActionDays() {
+    return actionDays;
+  }
+
+  public void setActionDays(int actionDays) {
+    this.actionDays = actionDays;
+  }
+
+  public String getDueDatePath() {
+    return dueDatePath;
+  }
+
+  public void setDueDatePath(String dueDatePath) {
+    this.dueDatePath = dueDatePath;
+  }
+
+  public String getDueDateSchemaUuid() {
+    return dueDateSchemaUuid;
+  }
+
+  public void setDueDateSchemaUuid(String dueDateSchemaUuid) {
+    this.dueDateSchemaUuid = dueDateSchemaUuid;
+  }
 }

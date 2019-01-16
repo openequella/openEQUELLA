@@ -23,25 +23,19 @@ import com.tle.beans.item.Item;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.standard.operations.AbstractStandardWorkflowOperation;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
-public class CreateTestEntitiesOperation extends AbstractStandardWorkflowOperation
-{
-	@Inject
-	private QtiAttachmentListener attachmentListener;
+public class CreateTestEntitiesOperation extends AbstractStandardWorkflowOperation {
+  @Inject private QtiAttachmentListener attachmentListener;
 
-	@Override
-	public boolean execute()
-	{
-		final Item item = getItem();
-		FileHandle handle = getStaging();
-		if( handle == null )
-		{
-			handle = itemFileService.getItemFile(item);
-		}
-		attachmentListener.attachmentsChanged(null, item, handle);
-		return false;
-	}
+  @Override
+  public boolean execute() {
+    final Item item = getItem();
+    FileHandle handle = getStaging();
+    if (handle == null) {
+      handle = itemFileService.getItemFile(item);
+    }
+    attachmentListener.attachmentsChanged(null, item, handle);
+    return false;
+  }
 }

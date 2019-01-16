@@ -33,32 +33,32 @@ import com.tle.core.hibernate.impl.TablesOnlyFilter;
 import com.tle.core.migration.AbstractCreateMigration;
 import com.tle.core.migration.MigrationInfo;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class CreateHtmlEditorPluginSchema extends AbstractCreateMigration
-{
-	@Override
-	protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper)
-	{
-		Set<String> tables = new HashSet<String>();
-		tables.add("html_editor_plugin");
-		return new TablesOnlyFilter(tables.toArray(new String[tables.size()]));
-	}
+public class CreateHtmlEditorPluginSchema extends AbstractCreateMigration {
+  @Override
+  protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
+    Set<String> tables = new HashSet<String>();
+    tables.add("html_editor_plugin");
+    return new TablesOnlyFilter(tables.toArray(new String[tables.size()]));
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class[]{HtmlEditorPlugin.class, BaseEntity.class, BaseEntity.Attribute.class, LanguageBundle.class,
-				Institution.class, LanguageString.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class[] {
+      HtmlEditorPlugin.class,
+      BaseEntity.class,
+      BaseEntity.Attribute.class,
+      LanguageBundle.class,
+      Institution.class,
+      LanguageString.class
+    };
+  }
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo("com.tle.core.htmleditor.migration.htmleditorschema.title", "");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo("com.tle.core.htmleditor.migration.htmleditorschema.title", "");
+  }
 }

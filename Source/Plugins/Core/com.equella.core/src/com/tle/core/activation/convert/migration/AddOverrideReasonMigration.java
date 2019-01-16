@@ -35,57 +35,47 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 
 @Bind
 @Singleton
-public class AddOverrideReasonMigration extends AbstractHibernateSchemaMigration
-{
+public class AddOverrideReasonMigration extends AbstractHibernateSchemaMigration {
 
-	private static final String KEY_PREFIX = PluginServiceImpl.getMyPluginId(AddOverrideReasonMigration.class) + ".";
+  private static final String KEY_PREFIX =
+      PluginServiceImpl.getMyPluginId(AddOverrideReasonMigration.class) + ".";
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(KEY_PREFIX + "migration.add.overridereason");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(KEY_PREFIX + "migration.add.overridereason");
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-		throws Exception
-	{
-		// move along please, nothing to see here
-	}
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception {
+    // move along please, nothing to see here
+  }
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return 0;
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return 0;
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		return null;
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    return null;
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		return helper.getAddColumnsSQL("activate_request", "override_reason");
-	}
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    return helper.getAddColumnsSQL("activate_request", "override_reason");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{FakeActivateRequest.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {FakeActivateRequest.class};
+  }
 
-	@Entity(name = "ActivateRequest")
-	@AccessType("field")
-	public static class FakeActivateRequest
-	{
-		@Id
-		private long id;
+  @Entity(name = "ActivateRequest")
+  @AccessType("field")
+  public static class FakeActivateRequest {
+    @Id private long id;
 
-		@Lob
-		String overrideReason;
-	}
-
+    @Lob String overrideReason;
+  }
 }

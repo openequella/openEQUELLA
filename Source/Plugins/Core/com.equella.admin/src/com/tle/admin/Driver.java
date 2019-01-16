@@ -41,165 +41,147 @@ import com.tle.web.appletcommon.AbstractAppletLauncher;
 
 /**
  * Provides the communications ability for the admin console.
- * 
+ *
  * @author Nicholas Read
  */
-public final class Driver
-{
-	private static final Log LOGGER = LogFactory.getLog(Driver.class);
-	private static final String COLON = ":"; //$NON-NLS-1$
+public final class Driver {
+  private static final Log LOGGER = LogFactory.getLog(Driver.class);
+  private static final String COLON = ":"; // $NON-NLS-1$
 
-	private static Driver driver = null;
+  private static Driver driver = null;
 
-	private final Version version;
-	private final String institutionName;
-	private final String loggedInUserID;
+  private final Version version;
+  private final String institutionName;
+  private final String loggedInUserID;
 
-	private final ClientService clientService;
+  private final ClientService clientService;
 
-	private ControlRepository controlRepository;
-	private final PluginServiceImpl pluginService;
+  private ControlRepository controlRepository;
+  private final PluginServiceImpl pluginService;
 
-	/**
-	 * @return The singleton Driver instance or null.
-	 */
-	public static Driver instance()
-	{
-		return driver;
-	}
+  /** @return The singleton Driver instance or null. */
+  public static Driver instance() {
+    return driver;
+  }
 
-	public static Driver create(ClientService clientService, PluginServiceImpl pluginService) throws Exception
-	{
-		if( driver != null )
-		{
-			throw new IllegalStateException();
-		}
+  public static Driver create(ClientService clientService, PluginServiceImpl pluginService)
+      throws Exception {
+    if (driver != null) {
+      throw new IllegalStateException();
+    }
 
-		driver = new Driver(clientService, pluginService);
-		return driver;
-	}
+    driver = new Driver(clientService, pluginService);
+    return driver;
+  }
 
-	@SuppressWarnings("nls")
-	private Driver(ClientService clientService, PluginServiceImpl pluginService) throws Exception
-	{
-		this.clientService = clientService;
+  @SuppressWarnings("nls")
+  private Driver(ClientService clientService, PluginServiceImpl pluginService) throws Exception {
+    this.clientService = clientService;
 
-		// Setup some initial state.
+    // Setup some initial state.
 
-		SessionHolder session = clientService.getSession();
-		loggedInUserID = session.getLoginService().getLoggedInUserId();
-		institutionName = clientService.getParameter(AbstractAppletLauncher.PARAMETER_PREFIX + "INSTITUTIONNAME");
+    SessionHolder session = clientService.getSession();
+    loggedInUserID = session.getLoginService().getLoggedInUserId();
+    institutionName =
+        clientService.getParameter(AbstractAppletLauncher.PARAMETER_PREFIX + "INSTITUTIONNAME");
 
-		version = Version.load();
+    version = Version.load();
 
-		if( pluginService == null )
-		{
-			LOGGER.info("Product Version is " + version.getFull());
-			pluginService = new PluginServiceImpl(clientService.getServerURL(), version.getCommit(),
-				clientService.getService(RemotePluginDownloadService.class));
-		}
-		this.pluginService = pluginService;
-		try
-		{
-			pluginService.registerPlugins();
-		}
-		catch( JpfException e )
-		{
-			throw new RuntimeException(e);
-		}
-		session.enableKeepAlive(true);
-	}
+    if (pluginService == null) {
+      LOGGER.info("Product Version is " + version.getFull());
+      pluginService =
+          new PluginServiceImpl(
+              clientService.getServerURL(),
+              version.getCommit(),
+              clientService.getService(RemotePluginDownloadService.class));
+    }
+    this.pluginService = pluginService;
+    try {
+      pluginService.registerPlugins();
+    } catch (JpfException e) {
+      throw new RuntimeException(e);
+    }
+    session.enableKeepAlive(true);
+  }
 
-	@Deprecated
-	public ClientService getClientService()
-	{
-		return clientService;
-	}
+  @Deprecated
+  public ClientService getClientService() {
+    return clientService;
+  }
 
-	public static void displayError(Component parent, String titleKey, String messageKey, Throwable throwable)
-	{
-		displayErrorRaw(parent, CurrentLocale.get(titleKey), CurrentLocale.get(messageKey), throwable);
-	}
+  public static void displayError(
+      Component parent, String titleKey, String messageKey, Throwable throwable) {
+    displayErrorRaw(parent, CurrentLocale.get(titleKey), CurrentLocale.get(messageKey), throwable);
+  }
 
-	@Deprecated
-	public static void displayError(Component parent, String messageGroup, Throwable throwable)
-	{
-		PropBagEx xml = Messages.getInstance().getError(messageGroup);
-		if( xml == null )
-		{
-			xml = Messages.getInstance().getError("unknown"); //$NON-NLS-1$
-		}
-		String title = xml.getNode("title"); //$NON-NLS-1$
-		String message = xml.getNode("message"); //$NON-NLS-1$
-		String thrownMsg = throwable.getMessage();
-		if( !Check.isEmpty(thrownMsg) )
-		{
-			// Most likely thrown message is prefixed with a ':' separated chain
-			// of exception types, which is just clutter for the purpose of a
-			// quick display of brief message.
-			if( thrownMsg.contains(COLON) )
-			{
-				thrownMsg = thrownMsg.substring(thrownMsg.lastIndexOf(COLON) + 1);
-			}
-			message += "\n\n" + thrownMsg; //$NON-NLS-1$
-		}
-		message = message.replaceAll("\\\\n", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
-		displayErrorRaw(parent, title, message, throwable);
-	}
+  @Deprecated
+  public static void displayError(Component parent, String messageGroup, Throwable throwable) {
+    PropBagEx xml = Messages.getInstance().getError(messageGroup);
+    if (xml == null) {
+      xml = Messages.getInstance().getError("unknown"); // $NON-NLS-1$
+    }
+    String title = xml.getNode("title"); // $NON-NLS-1$
+    String message = xml.getNode("message"); // $NON-NLS-1$
+    String thrownMsg = throwable.getMessage();
+    if (!Check.isEmpty(thrownMsg)) {
+      // Most likely thrown message is prefixed with a ':' separated chain
+      // of exception types, which is just clutter for the purpose of a
+      // quick display of brief message.
+      if (thrownMsg.contains(COLON)) {
+        thrownMsg = thrownMsg.substring(thrownMsg.lastIndexOf(COLON) + 1);
+      }
+      message += "\n\n" + thrownMsg; // $NON-NLS-1$
+    }
+    message = message.replaceAll("\\\\n", "\n"); // $NON-NLS-1$ //$NON-NLS-2$
+    displayErrorRaw(parent, title, message, throwable);
+  }
 
-	public static void displayErrorRaw(Component parent, String title, String message, Throwable throwable)
-	{
-		String version = instance().getVersion().getFull();
-		ExceptionDialog ed;
+  public static void displayErrorRaw(
+      Component parent, String title, String message, Throwable throwable) {
+    String version = instance().getVersion().getFull();
+    ExceptionDialog ed;
 
-		parent = SwingUtilities.getWindowAncestor(parent);
-		if( parent instanceof Dialog )
-		{
-			ed = new ExceptionDialog((Dialog) parent, title, message, version, throwable);
-		}
-		else
-		{
-			ed = new ExceptionDialog((Frame) parent, title, message, version, throwable);
-		}
+    parent = SwingUtilities.getWindowAncestor(parent);
+    if (parent instanceof Dialog) {
+      ed = new ExceptionDialog((Dialog) parent, title, message, version, throwable);
+    } else {
+      ed = new ExceptionDialog((Frame) parent, title, message, version, throwable);
+    }
 
-		ed.setTitle(CurrentLocale.get("com.tle.admin.driver.title")); //$NON-NLS-1$
-		ed.setVisible(true);
-	}
+    ed.setTitle(CurrentLocale.get("com.tle.admin.driver.title")); // $NON-NLS-1$
+    ed.setVisible(true);
+  }
 
-	public static void displayInformation(Component parent, String message)
-	{
-		JOptionPane.showMessageDialog(parent, message,
-			CurrentLocale.get("com.tle.admin.driver.info"), JOptionPane.INFORMATION_MESSAGE); //$NON-NLS-1$
-	}
+  public static void displayInformation(Component parent, String message) {
+    JOptionPane.showMessageDialog(
+        parent,
+        message,
+        CurrentLocale.get("com.tle.admin.driver.info"),
+        JOptionPane.INFORMATION_MESSAGE); // $NON-NLS-1$
+  }
 
-	// ///////// SOAPED //////////////////////////////////////////////
+  // ///////// SOAPED //////////////////////////////////////////////
 
-	public Version getVersion()
-	{
-		return version;
-	}
+  public Version getVersion() {
+    return version;
+  }
 
-	public String getInstitutionName()
-	{
-		return institutionName;
-	}
+  public String getInstitutionName() {
+    return institutionName;
+  }
 
-	public String getLoggedInUserUUID()
-	{
-		return loggedInUserID;
-	}
+  public String getLoggedInUserUUID() {
+    return loggedInUserID;
+  }
 
-	public PluginServiceImpl getPluginService()
-	{
-		return pluginService;
-	}
+  public PluginServiceImpl getPluginService() {
+    return pluginService;
+  }
 
-	public ControlRepository getControlRepository()
-	{
-		if( controlRepository == null )
-		{
-			controlRepository = new ControlRepositoryImpl(pluginService);
-		}
-		return controlRepository;
-	}
+  public ControlRepository getControlRepository() {
+    if (controlRepository == null) {
+      controlRepository = new ControlRepositoryImpl(pluginService);
+    }
+    return controlRepository;
+  }
 }

@@ -26,12 +26,13 @@ import com.tle.beans.item.ItemId;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.common.Pair;
 
-public interface QuickUploadService
-{
-	ItemDefinition getOneClickItemDef();
+public interface QuickUploadService {
+  ItemDefinition getOneClickItemDef();
 
-	Pair<ItemId, Attachment> createOrSelectExisting(InputStream inputStream, String filename) throws IOException;
-	Pair<ItemId, Attachment> createOrSelectExisting(InputStream inputStream, String filename,
-		Map<String, List<String>> params)
-		throws IOException;
+  Pair<ItemId, Attachment> createOrSelectExisting(InputStream inputStream, String filename)
+      throws IOException;
+
+  Pair<ItemId, Attachment> createOrSelectExisting(
+      InputStream inputStream, String filename, Map<String, List<String>> params)
+      throws IOException;
 }

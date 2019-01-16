@@ -25,34 +25,28 @@ import com.tle.common.dynacollection.RemoteDynaCollectionService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.remoting.RemoteAbstractEntityService;
 
-public class DynaCollectionTool extends BaseEntityTool<DynaCollection>
-{
-	public DynaCollectionTool() throws Exception
-	{
-		super(DynaCollection.class, RemoteDynaCollectionService.ENTITY_TYPE);
-	}
+public class DynaCollectionTool extends BaseEntityTool<DynaCollection> {
+  public DynaCollectionTool() throws Exception {
+    super(DynaCollection.class, RemoteDynaCollectionService.ENTITY_TYPE);
+  }
 
-	@Override
-	protected RemoteAbstractEntityService<DynaCollection> getService(ClientService client)
-	{
-		return client.getService(RemoteDynaCollectionService.class);
-	}
+  @Override
+  protected RemoteAbstractEntityService<DynaCollection> getService(ClientService client) {
+    return client.getService(RemoteDynaCollectionService.class);
+  }
 
-	@Override
-	protected String getErrorPath()
-	{
-		return "dynacollection"; //$NON-NLS-1$
-	}
+  @Override
+  protected String getErrorPath() {
+    return "dynacollection"; //$NON-NLS-1$
+  }
 
-	@Override
-	protected BaseEntityEditor<DynaCollection> createEditor(boolean readonly)
-	{
-		return new DynaCollectionEditor(this, readonly);
-	}
+  @Override
+  protected BaseEntityEditor<DynaCollection> createEditor(boolean readonly) {
+    return new DynaCollectionEditor(this, readonly);
+  }
 
-	@Override
-	protected String getEntityName()
-	{
-		return getString("entityname"); //$NON-NLS-1$
-	}
+  @Override
+  protected String getEntityName() {
+    return getString("entityname"); // $NON-NLS-1$
+  }
 }

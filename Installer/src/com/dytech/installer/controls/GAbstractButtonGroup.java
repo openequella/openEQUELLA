@@ -28,67 +28,57 @@ import com.dytech.devlib.PropBagEx;
 import com.dytech.installer.InstallerException;
 import com.dytech.installer.Item;
 
-public abstract class GAbstractButtonGroup extends GuiControl
-{
-	public GAbstractButtonGroup(PropBagEx controlBag) throws InstallerException
-	{
-		super(controlBag);
-	}
+public abstract class GAbstractButtonGroup extends GuiControl {
+  public GAbstractButtonGroup(PropBagEx controlBag) throws InstallerException {
+    super(controlBag);
+  }
 
-	@Override
-	public void loadControl(PropBagEx xml)
-	{
-		if( xml != null )
-		{
-			Iterator i = targets.iterator();
-			while( i.hasNext() )
-			{
-				String target = (String) i.next();
-				String value = xml.getNode(target);
+  @Override
+  public void loadControl(PropBagEx xml) {
+    if (xml != null) {
+      Iterator i = targets.iterator();
+      while (i.hasNext()) {
+        String target = (String) i.next();
+        String value = xml.getNode(target);
 
-				if( items.size() > 0 && value.length() > 0 )
-				{
-					for( Iterator j = items.iterator(); j.hasNext(); )
-					{
-						Item item = (Item) j.next();
-						boolean selected = item.getValue().equals(value);
-						item.setSelected(selected);
-					}
-				}
-			}
-		}
-	}
+        if (items.size() > 0 && value.length() > 0) {
+          for (Iterator j = items.iterator(); j.hasNext(); ) {
+            Item item = (Item) j.next();
+            boolean selected = item.getValue().equals(value);
+            item.setSelected(selected);
+          }
+        }
+      }
+    }
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.dytech.installer.controls.GuiControl#generateControl()
-	 */
-	@Override
-	public JComponent generateControl()
-	{
-		ButtonGroup group = new ButtonGroup();
+  /*
+   * (non-Javadoc)
+   * @see com.dytech.installer.controls.GuiControl#generateControl()
+   */
+  @Override
+  public JComponent generateControl() {
+    ButtonGroup group = new ButtonGroup();
 
-		JPanel buttons = new JPanel();
-		buttons.setLayout(new BoxLayout(buttons, BoxLayout.Y_AXIS));
+    JPanel buttons = new JPanel();
+    buttons.setLayout(new BoxLayout(buttons, BoxLayout.Y_AXIS));
 
-		Iterator i = items.iterator();
-		while( i.hasNext() )
-		{
-			Item item = (Item) i.next();
+    Iterator i = items.iterator();
+    while (i.hasNext()) {
+      Item item = (Item) i.next();
 
-			AbstractButton button = generateButton(item.getName(), group);
+      AbstractButton button = generateButton(item.getName(), group);
 
-			item.setButton(button);
-			if( item.isSelected() )
-			{
-				button.setSelected(true);
-			}
+      item.setButton(button);
+      if (item.isSelected()) {
+        button.setSelected(true);
+      }
 
-			buttons.add(button);
-		}
+      buttons.add(button);
+    }
 
-		return buttons;
-	}
+    return buttons;
+  }
 
-	protected abstract AbstractButton generateButton(String name, ButtonGroup group);
+  protected abstract AbstractButton generateButton(String name, ButtonGroup group);
 }

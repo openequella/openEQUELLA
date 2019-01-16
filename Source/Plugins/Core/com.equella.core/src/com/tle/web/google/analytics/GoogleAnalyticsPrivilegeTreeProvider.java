@@ -25,11 +25,12 @@ import com.tle.web.resources.ResourcesService;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class GoogleAnalyticsPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider
-{
-	public GoogleAnalyticsPrivilegeTreeProvider()
-	{
-		super(Type.SYSTEM_SETTING, ResourcesService.getResourceHelper(GoogleAnalyticsPrivilegeTreeProvider.class).key(
-			"securitytree.googleanalytics"), new SettingsTarget("googleanalytics"));
-	}
+public class GoogleAnalyticsPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider {
+  public GoogleAnalyticsPrivilegeTreeProvider() {
+    super(
+        Type.SYSTEM_SETTING,
+        ResourcesService.getResourceHelper(GoogleAnalyticsPrivilegeTreeProvider.class)
+            .key("securitytree.googleanalytics"),
+        new SettingsTarget("googleanalytics"));
+  }
 }

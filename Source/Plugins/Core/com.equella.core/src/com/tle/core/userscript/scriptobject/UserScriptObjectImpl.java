@@ -31,22 +31,17 @@ import com.tle.core.userscripts.dao.UserScriptsDao;
 
 @Bind
 @Singleton
-public class UserScriptObjectImpl implements UserScriptObjectContributor
-{
-	@Inject
-	private UserScriptsDao userScriptDao;
+public class UserScriptObjectImpl implements UserScriptObjectContributor {
+  @Inject private UserScriptsDao userScriptDao;
 
-	@Override
-	public void addUserScriptObject(Map<String, Object> objects)
-	{
-		List<UserScript> scriptList = userScriptDao.enumerateForType(ScriptTypes.EXECUTABLE);
-		for( UserScript userScript : scriptList )
-		{
-			String name = userScript.getModuleName();
-			if( !Check.isEmpty(name) )
-			{
-				objects.put(name, userScript.getScript());
-			}
-		}
-	}
+  @Override
+  public void addUserScriptObject(Map<String, Object> objects) {
+    List<UserScript> scriptList = userScriptDao.enumerateForType(ScriptTypes.EXECUTABLE);
+    for (UserScript userScript : scriptList) {
+      String name = userScript.getModuleName();
+      if (!Check.isEmpty(name)) {
+        objects.put(name, userScript.getScript());
+      }
+    }
+  }
 }

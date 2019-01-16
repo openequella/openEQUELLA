@@ -20,88 +20,75 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @XmlRootElement
-public class OrgUnitInfo
-{
-	@JsonProperty("Id")
-	private long id;
-	@JsonProperty("Code")
-	private String code;
-	@JsonProperty("Name")
-	private String name;
+public class OrgUnitInfo {
+  @JsonProperty("Id")
+  private long id;
 
-	public long getId()
-	{
-		return id;
-	}
+  @JsonProperty("Code")
+  private String code;
 
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  @JsonProperty("Name")
+  private String name;
 
-	public String getCode()
-	{
-		return code;
-	}
+  public long getId() {
+    return id;
+  }
 
-	public void setCode(String code)
-	{
-		this.code = code;
-	}
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public String getName()
-	{
-		return name;
-	}
+  public String getCode() {
+    return code;
+  }
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  public void setCode(String code) {
+    this.code = code;
+  }
 
-	@XmlRootElement
-	public static class OrgUnitTypeInfo
-	{
-		@JsonProperty("Id")
-		private long id;
-		@JsonProperty("Code")
-		private String code;
-		@JsonProperty("Name")
-		private String name;
+  public String getName() {
+    return name;
+  }
 
-		public long getId()
-		{
-			return id;
-		}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-		public void setId(long id)
-		{
-			this.id = id;
-		}
+  @XmlRootElement
+  public static class OrgUnitTypeInfo {
+    @JsonProperty("Id")
+    private long id;
 
-		public String getCode()
-		{
-			return code;
-		}
+    @JsonProperty("Code")
+    private String code;
 
-		public void setCode(String code)
-		{
-			this.code = code;
-		}
+    @JsonProperty("Name")
+    private String name;
 
-		public String getName()
-		{
-			return name;
-		}
+    public long getId() {
+      return id;
+    }
 
-		public void setName(String name)
-		{
-			this.name = name;
-		}
-	}
+    public void setId(long id) {
+      this.id = id;
+    }
+
+    public String getCode() {
+      return code;
+    }
+
+    public void setCode(String code) {
+      this.code = code;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
+  }
 }

@@ -27,22 +27,18 @@ import com.tle.core.guice.Bind;
 import com.tle.web.copyright.AbstractCopyrightAttachmentFilter;
 
 @Bind
-public class CLAAttachmentViewFilter extends AbstractCopyrightAttachmentFilter<CLAHolding, CLAPortion, CLASection>
-{
+public class CLAAttachmentViewFilter
+    extends AbstractCopyrightAttachmentFilter<CLAHolding, CLAPortion, CLASection> {
 
-	@Inject
-	CLAWebServiceImpl claWebService;
+  @Inject CLAWebServiceImpl claWebService;
 
-	@Override
-	protected CLAWebServiceImpl getCopyrightWebServiceImpl()
-	{
-		return claWebService;
-	}
+  @Override
+  protected CLAWebServiceImpl getCopyrightWebServiceImpl() {
+    return claWebService;
+  }
 
-	@Override
-	protected CopyrightService<CLAHolding, CLAPortion, CLASection> getCopyrightServiceImpl()
-	{
-		return claWebService.getCopyrightServiceImpl();
-	}
-
+  @Override
+  protected CopyrightService<CLAHolding, CLAPortion, CLASection> getCopyrightServiceImpl() {
+    return claWebService.getCopyrightServiceImpl();
+  }
 }

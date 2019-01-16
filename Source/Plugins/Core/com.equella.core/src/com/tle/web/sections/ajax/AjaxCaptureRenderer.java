@@ -26,47 +26,39 @@ import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.render.SectionRenderable;
 
 @NonNullByDefault
-public class AjaxCaptureRenderer implements SectionRenderable
-{
-	private final String divId;
-	private final SectionRenderable renderer;
-	private final Map<String, Object> params;
+public class AjaxCaptureRenderer implements SectionRenderable {
+  private final String divId;
+  private final SectionRenderable renderer;
+  private final Map<String, Object> params;
 
-	public AjaxCaptureRenderer(String divId, SectionRenderable renderer)
-	{
-		this(divId, renderer, null);
-	}
+  public AjaxCaptureRenderer(String divId, SectionRenderable renderer) {
+    this(divId, renderer, null);
+  }
 
-	public AjaxCaptureRenderer(String divId, SectionRenderable renderer, Map<String, Object> params)
-	{
-		this.divId = divId;
-		this.renderer = renderer;
-		this.params = params;
-	}
+  public AjaxCaptureRenderer(String divId, SectionRenderable renderer, Map<String, Object> params) {
+    this.divId = divId;
+    this.renderer = renderer;
+    this.params = params;
+  }
 
-	@Override
-	public void realRender(SectionWriter writer) throws IOException
-	{
-		AjaxRenderContext ajaxContext = writer.getAttributeForClass(AjaxRenderContext.class);
-		if( ajaxContext != null )
-		{
-			Writer newWriter = ajaxContext.startCapture(writer, divId, params, false);
-			if( !newWriter.equals(writer) )
-			{
-				writer = new SectionWriter(newWriter, writer);
-			}
-		}
-		writer.preRender(renderer);
-		renderer.realRender(writer);
-		if( ajaxContext != null )
-		{
-			ajaxContext.endCapture(divId);
-		}
-	}
+  @Override
+  public void realRender(SectionWriter writer) throws IOException {
+    AjaxRenderContext ajaxContext = writer.getAttributeForClass(AjaxRenderContext.class);
+    if (ajaxContext != null) {
+      Writer newWriter = ajaxContext.startCapture(writer, divId, params, false);
+      if (!newWriter.equals(writer)) {
+        writer = new SectionWriter(newWriter, writer);
+      }
+    }
+    writer.preRender(renderer);
+    renderer.realRender(writer);
+    if (ajaxContext != null) {
+      ajaxContext.endCapture(divId);
+    }
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		// nothing
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    // nothing
+  }
 }

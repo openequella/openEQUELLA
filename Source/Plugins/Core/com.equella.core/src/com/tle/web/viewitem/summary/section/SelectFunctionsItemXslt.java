@@ -33,64 +33,52 @@ import com.tle.web.viewurl.ItemSectionInfo;
 
 @Bind
 @Singleton
-public class SelectFunctionsItemXslt implements ItemXsltExtension
-{
-	private static final String SELECT_ITEM = "selectItem"; //$NON-NLS-1$
-	private static final String SELECT_PATH = "selectPath"; //$NON-NLS-1$
-	private static final String SELECT_ATTACHMENT_BY_UUID = "selectAttachmentByUuid"; //$NON-NLS-1$
-	@Inject
-	private IntegrationService integrationService;
-	@Inject
-	private SelectionService selectionService;
+public class SelectFunctionsItemXslt implements ItemXsltExtension {
+  private static final String SELECT_ITEM = "selectItem"; // $NON-NLS-1$
+  private static final String SELECT_PATH = "selectPath"; // $NON-NLS-1$
+  private static final String SELECT_ATTACHMENT_BY_UUID = "selectAttachmentByUuid"; // $NON-NLS-1$
+  @Inject private IntegrationService integrationService;
+  @Inject private SelectionService selectionService;
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		SelectionSession currentSelection = selectionService.getCurrentSession(info);
-		if( currentSelection != null )
-		{
-			ItemSectionInfo itemInfo = info.getAttributeForClass(ItemSectionInfo.class);
-			ItemKey itemId = itemInfo.getItemId();
-			if( currentSelection.isSelectAttachments() )
-			{
-				SelectedResource attachResource = new SelectedResource(itemId, null, null);
-				attachResource.setType(SelectedResource.TYPE_ATTACHMENT);
-				SelectedResource pathResource = new SelectedResource(itemId, null, null);
-				pathResource.setUrl("path"); //$NON-NLS-1$
-				info.preRender(selectionService.getSelectFunction(info, SELECT_ATTACHMENT_BY_UUID, attachResource),
-					selectionService.getSelectFunction(info, SELECT_PATH, pathResource));
-			}
-			if( currentSelection.isSelectItem() )
-			{
-				info.preRender(selectionService.getSelectFunction(info, SELECT_ITEM, new SelectedResource(itemId, null,
-					null)));
-			}
-		}
+  @Override
+  public void preRender(PreRenderContext info) {
+    SelectionSession currentSelection = selectionService.getCurrentSession(info);
+    if (currentSelection != null) {
+      ItemSectionInfo itemInfo = info.getAttributeForClass(ItemSectionInfo.class);
+      ItemKey itemId = itemInfo.getItemId();
+      if (currentSelection.isSelectAttachments()) {
+        SelectedResource attachResource = new SelectedResource(itemId, null, null);
+        attachResource.setType(SelectedResource.TYPE_ATTACHMENT);
+        SelectedResource pathResource = new SelectedResource(itemId, null, null);
+        pathResource.setUrl("path"); // $NON-NLS-1$
+        info.preRender(
+            selectionService.getSelectFunction(info, SELECT_ATTACHMENT_BY_UUID, attachResource),
+            selectionService.getSelectFunction(info, SELECT_PATH, pathResource));
+      }
+      if (currentSelection.isSelectItem()) {
+        info.preRender(
+            selectionService.getSelectFunction(
+                info, SELECT_ITEM, new SelectedResource(itemId, null, null)));
+      }
+    }
+  }
 
-	}
-
-	@Override
-	public void addXml(PropBagEx xml, SectionInfo info)
-	{
-		SelectionSession currentSelection = selectionService.getCurrentSession(info);
-		if( currentSelection != null )
-		{
-			PropBagEx selectXml = xml.newSubtree("selection"); //$NON-NLS-1$
-			if( currentSelection.isSelectAttachments() )
-			{
-				selectXml.setNode("selectAttachmentFunction", SELECT_ATTACHMENT_BY_UUID); //$NON-NLS-1$
-				selectXml.setNode("selectPathFunction", SELECT_PATH); //$NON-NLS-1$
-			}
-			if( currentSelection.isSelectItem() )
-			{
-				selectXml.setNode("selectItemFunction", SELECT_ITEM); //$NON-NLS-1$
-			}
-		}
-		if( integrationService.getIntegrationInterface(info) != null )
-		{
-			PropBagEx integrationXml = xml.newSubtree("integration"); //$NON-NLS-1$
-			integrationXml.setNode("integrating", true); //$NON-NLS-1$
-		}
-	}
-
+  @Override
+  public void addXml(PropBagEx xml, SectionInfo info) {
+    SelectionSession currentSelection = selectionService.getCurrentSession(info);
+    if (currentSelection != null) {
+      PropBagEx selectXml = xml.newSubtree("selection"); // $NON-NLS-1$
+      if (currentSelection.isSelectAttachments()) {
+        selectXml.setNode("selectAttachmentFunction", SELECT_ATTACHMENT_BY_UUID); // $NON-NLS-1$
+        selectXml.setNode("selectPathFunction", SELECT_PATH); // $NON-NLS-1$
+      }
+      if (currentSelection.isSelectItem()) {
+        selectXml.setNode("selectItemFunction", SELECT_ITEM); // $NON-NLS-1$
+      }
+    }
+    if (integrationService.getIntegrationInterface(info) != null) {
+      PropBagEx integrationXml = xml.newSubtree("integration"); // $NON-NLS-1$
+      integrationXml.setNode("integrating", true); // $NON-NLS-1$
+    }
+  }
 }

@@ -27,14 +27,11 @@ import java.util.Map;
 
 @Bind
 @Singleton
-public class MetadataScriptContributor implements ScriptObjectContributor
-{
-	@Inject
-	private MetadataScriptObject metadataScriptObject;
+public class MetadataScriptContributor implements ScriptObjectContributor {
+  @Inject private MetadataScriptObject metadataScriptObject;
 
-	@Override
-	public void addScriptObjects(Map<String, Object> objects, ScriptContextCreationParams params)
-	{
-		objects.put(MetadataScriptObject.DEFAULT_VARIABLE, metadataScriptObject);
-	}
+  @Override
+  public void addScriptObjects(Map<String, Object> objects, ScriptContextCreationParams params) {
+    objects.put(MetadataScriptObject.DEFAULT_VARIABLE, metadataScriptObject);
+  }
 }

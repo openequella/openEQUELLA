@@ -30,18 +30,14 @@ import com.tle.core.item.convert.ItemConverter.ItemConverterInfo;
 
 @Bind
 @Singleton
-public class EnsureAttachmentUUID implements PostReadMigrator<ItemConverterInfo>
-{
-	@Override
-	public void migrate(ItemConverterInfo obj) throws IOException
-	{
-		Item item = obj.getItem();
-		for( Attachment attachment : item.getAttachmentsUnmodifiable() )
-		{
-			if( Check.isEmpty(attachment.getUuid()) )
-			{
-				attachment.setUuid(UUID.randomUUID().toString());
-			}
-		}
-	}
+public class EnsureAttachmentUUID implements PostReadMigrator<ItemConverterInfo> {
+  @Override
+  public void migrate(ItemConverterInfo obj) throws IOException {
+    Item item = obj.getItem();
+    for (Attachment attachment : item.getAttachmentsUnmodifiable()) {
+      if (Check.isEmpty(attachment.getUuid())) {
+        attachment.setUuid(UUID.randomUUID().toString());
+      }
+    }
+  }
 }

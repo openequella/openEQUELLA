@@ -41,38 +41,39 @@ import io.swagger.annotations.ApiParam;
 @Path("usermanagement/local/role/")
 @Api(value = "Local roles", description = "usermanagement-local-role")
 @SuppressWarnings("nls")
-public interface RoleResource
-{
-	static final UriBuilder GETROLE = UriBuilder.fromResource(RoleResource.class).path(RoleResource.class, "getRole");
-	static final String ACTIVITY_OBJECT_ROLE = "role";
+public interface RoleResource {
+  static final UriBuilder GETROLE =
+      UriBuilder.fromResource(RoleResource.class).path(RoleResource.class, "getRole");
+  static final String ACTIVITY_OBJECT_ROLE = "role";
 
-	@GET
-	@Path("/{uuid}")
-	@ApiOperation("Retrieve a role")
-	public RoleBean getRole(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+  @GET
+  @Path("/{uuid}")
+  @ApiOperation("Retrieve a role")
+  public RoleBean getRole(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@PUT
-	@Path("/{uuid}")
-	@ApiOperation("Edit a role")
-	public Response editRole(@PathParam("uuid") String uuid, @ApiParam RoleBean role);
+  @PUT
+  @Path("/{uuid}")
+  @ApiOperation("Edit a role")
+  public Response editRole(@PathParam("uuid") String uuid, @ApiParam RoleBean role);
 
-	@DELETE
-	@Path("/{uuid}")
-	@ApiOperation("Delete a role")
-	public Response deleteRole(@PathParam("uuid") String uuid);
+  @DELETE
+  @Path("/{uuid}")
+  @ApiOperation("Delete a role")
+  public Response deleteRole(@PathParam("uuid") String uuid);
 
-	@POST
-	@Path("/")
-	@ApiOperation("Add a role")
-	public Response addRole(@ApiParam RoleBean role);
+  @POST
+  @Path("/")
+  @ApiOperation("Add a role")
+  public Response addRole(@ApiParam RoleBean role);
 
-	@GET
-	@Path("/name/{name}")
-	@ApiOperation("Retrieve a role by name")
-	public RoleBean getRoleByName(@Context UriInfo uriInfo, @PathParam("name") String name);
+  @GET
+  @Path("/name/{name}")
+  @ApiOperation("Retrieve a role by name")
+  public RoleBean getRoleByName(@Context UriInfo uriInfo, @PathParam("name") String name);
 
-	@GET
-	@Path("/")
-	@ApiOperation("List internal roles")
-	public SearchBean<RoleBean> list(@Context UriInfo uriInfo, @ApiParam(required = false) @QueryParam("q") String query);
+  @GET
+  @Path("/")
+  @ApiOperation("List internal roles")
+  public SearchBean<RoleBean> list(
+      @Context UriInfo uriInfo, @ApiParam(required = false) @QueryParam("q") String query);
 }

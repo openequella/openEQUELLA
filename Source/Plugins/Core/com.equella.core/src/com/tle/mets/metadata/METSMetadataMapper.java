@@ -32,39 +32,33 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
 import com.tle.ims.service.IMSService;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class METSMetadataMapper extends AbstractXPathPackageMapper
-{
-	@Inject
-	private IMSService imsService;
+public class METSMetadataMapper extends AbstractXPathPackageMapper {
+  @Inject private IMSService imsService;
 
-	@Override
-	public boolean isSupportedPackage(FileHandle handle, String packageName)
-	{
-		try( InputStream inp = imsService.getMetsManifestAsStream(handle, packageName, METS_FILENAME, false) )
-		{
-			return inp != null;
-		}
-		catch( IOException e )
-		{
-			throw new RuntimeException(e);
-		}
-	}
+  @Override
+  public boolean isSupportedPackage(FileHandle handle, String packageName) {
+    try (InputStream inp =
+        imsService.getMetsManifestAsStream(handle, packageName, METS_FILENAME, false)) {
+      return inp != null;
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-	@Override
-	protected InputStream getXmlStream(FileHandle handle, String packageName) throws IOException
-	{
-		return imsService.getMetsManifestAsStream(handle, packageName, METS_FILENAME, true);
-	}
+  @Override
+  protected InputStream getXmlStream(FileHandle handle, String packageName) throws IOException {
+    return imsService.getMetsManifestAsStream(handle, packageName, METS_FILENAME, true);
+  }
 
-	@Override
-	public List<String> getSupportedFormatsForDisplay()
-	{
-		return Arrays.asList(new String[]{CurrentLocale.get("com.tle.mets.metspackage"), //$NON-NLS-1$
-				CurrentLocale.get("com.tle.mets.metsmanifest")}); //$NON-NLS-1$
-	}
+  @Override
+  public List<String> getSupportedFormatsForDisplay() {
+    return Arrays.asList(
+        new String[] {
+          CurrentLocale.get("com.tle.mets.metspackage"), // $NON-NLS-1$
+          CurrentLocale.get("com.tle.mets.metsmanifest")
+        }); //$NON-NLS-1$
+  }
 }

@@ -28,33 +28,25 @@ import com.tle.common.Format;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.remoting.RemoteUserService;
 
-/**
- * @author Nicholas Read
- */
-public class FilterUserBeanModel extends FilterModel<UserBean>
-{
-	private static final Log LOGGER = LogFactory.getLog(FilterUserBeanModel.class);
+/** @author Nicholas Read */
+public class FilterUserBeanModel extends FilterModel<UserBean> {
+  private static final Log LOGGER = LogFactory.getLog(FilterUserBeanModel.class);
 
-	private RemoteUserService userService;
+  private RemoteUserService userService;
 
-	public FilterUserBeanModel(RemoteUserService userService)
-	{
-		this.userService = userService;
-	}
+  public FilterUserBeanModel(RemoteUserService userService) {
+    this.userService = userService;
+  }
 
-	@Override
-	public List<UserBean> search(String pattern)
-	{
-		try
-		{
-			List<UserBean> users = removeExclusions(userService.searchUsers(pattern));
-			Collections.sort(users, Format.USER_BEAN_COMPARATOR);
-			return users;
-		}
-		catch( Exception ex )
-		{
-			LOGGER.warn("Error searching for users matching " + pattern, ex);
-			return new ArrayList<UserBean>(0);
-		}
-	}
+  @Override
+  public List<UserBean> search(String pattern) {
+    try {
+      List<UserBean> users = removeExclusions(userService.searchUsers(pattern));
+      Collections.sort(users, Format.USER_BEAN_COMPARATOR);
+      return users;
+    } catch (Exception ex) {
+      LOGGER.warn("Error searching for users matching " + pattern, ex);
+      return new ArrayList<UserBean>(0);
+    }
+  }
 }

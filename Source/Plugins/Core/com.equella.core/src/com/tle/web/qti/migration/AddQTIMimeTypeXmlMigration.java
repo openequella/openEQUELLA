@@ -33,29 +33,26 @@ import com.tle.core.xml.service.XmlService;
 
 @Bind
 @Singleton
-public class AddQTIMimeTypeXmlMigration extends XmlMigrator
-{
-	public static final String TEST_MIME_TYPE_DESCRIPTION = "QTI quiz";
+public class AddQTIMimeTypeXmlMigration extends XmlMigrator {
+  public static final String TEST_MIME_TYPE_DESCRIPTION = "QTI quiz";
 
-	@Inject
-	private XmlService xmlService;
+  @Inject private XmlService xmlService;
 
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
-	{
-		SubTemporaryFile mimeFolder = MimeEntryConverter.getMimeFolder(staging);
-		MimeEntry mimeEntry = new MimeEntry();
-		mimeEntry.setType(QtiConstants.TEST_MIME_TYPE);
-		mimeEntry.setDescription(TEST_MIME_TYPE_DESCRIPTION);
-		mimeEntry.setAttribute(MimeTypeConstants.KEY_DEFAULT_VIEWERID, "qtiTestViewer");
-		mimeEntry.setAttribute(MimeTypeConstants.KEY_ENABLED_VIEWERS, "[\"qtiTestViewer\"]");
-		mimeEntry.setAttribute(MimeTypeConstants.KEY_DISABLE_FILEVIEWER, "true");
-		mimeEntry.setAttribute(MimeTypeConstants.KEY_ICON_PLUGINICON, QtiConstants.MIME_ICON_PATH);
+  @Override
+  public void execute(
+      TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) {
+    SubTemporaryFile mimeFolder = MimeEntryConverter.getMimeFolder(staging);
+    MimeEntry mimeEntry = new MimeEntry();
+    mimeEntry.setType(QtiConstants.TEST_MIME_TYPE);
+    mimeEntry.setDescription(TEST_MIME_TYPE_DESCRIPTION);
+    mimeEntry.setAttribute(MimeTypeConstants.KEY_DEFAULT_VIEWERID, "qtiTestViewer");
+    mimeEntry.setAttribute(MimeTypeConstants.KEY_ENABLED_VIEWERS, "[\"qtiTestViewer\"]");
+    mimeEntry.setAttribute(MimeTypeConstants.KEY_DISABLE_FILEVIEWER, "true");
+    mimeEntry.setAttribute(MimeTypeConstants.KEY_ICON_PLUGINICON, QtiConstants.MIME_ICON_PATH);
 
-		String filename = MimeEntryConverter.getFilenameForEntry(mimeEntry);
-		if( !fileExists(mimeFolder, filename) )
-		{
-			xmlHelper.writeFile(mimeFolder, filename, xmlService.serialiseToXml(mimeEntry));
-		}
-	}
+    String filename = MimeEntryConverter.getFilenameForEntry(mimeEntry);
+    if (!fileExists(mimeFolder, filename)) {
+      xmlHelper.writeFile(mimeFolder, filename, xmlService.serialiseToXml(mimeEntry));
+    }
+  }
 }

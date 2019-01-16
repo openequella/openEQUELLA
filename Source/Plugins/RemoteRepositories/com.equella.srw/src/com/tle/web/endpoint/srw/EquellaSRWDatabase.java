@@ -53,371 +53,337 @@ import com.tle.common.Utils;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.searching.Search;
 
-public class EquellaSRWDatabase extends SRWDatabase
-{
-	private static final Logger LOGGER = Logger.getLogger(EquellaSRWDatabase.class);
-	private static final ThreadLocal<String> EXPLAIN = new ThreadLocal<String>();
+public class EquellaSRWDatabase extends SRWDatabase {
+  private static final Logger LOGGER = Logger.getLogger(EquellaSRWDatabase.class);
+  private static final ThreadLocal<String> EXPLAIN = new ThreadLocal<String>();
 
-	protected static final Map<String, SchemaInfo> SCHEMAS = new HashMap<String, SchemaInfo>();
-	static
-	{
-		SCHEMAS.put("OAI_DC", new SchemaInfo("OAI_DC", "info:srw/schema/1/dc-v1.1", //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
-			"http://www.loc.gov/srw/dc-schema.xsd", "dc", "Dublin Core")); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+  protected static final Map<String, SchemaInfo> SCHEMAS = new HashMap<String, SchemaInfo>();
 
-		SCHEMAS.put("OAI_LOM", new SchemaInfo("OAI_LOM", "http://ltsc.ieee.org/xsd/LOMv1p0", //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
-			"http://www.rdn.ac.uk/oai/lom/lom.xsd", "LOM", "LOM")); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+  static {
+    SCHEMAS.put(
+        "OAI_DC",
+        new SchemaInfo(
+            "OAI_DC",
+            "info:srw/schema/1/dc-v1.1", //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+            "http://www.loc.gov/srw/dc-schema.xsd",
+            "dc",
+            "Dublin Core")); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 
-		SCHEMAS.put("tle", new SchemaInfo("tle", "http://www.thelearningedge.com.au/xsd/item", //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
-			"http://www.thelearningedge.com.au/xsd/item", "tle", "TLE")); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
-	}
+    SCHEMAS.put(
+        "OAI_LOM",
+        new SchemaInfo(
+            "OAI_LOM",
+            "http://ltsc.ieee.org/xsd/LOMv1p0", //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+            "http://www.rdn.ac.uk/oai/lom/lom.xsd",
+            "LOM",
+            "LOM")); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 
-	// Package protected
-	static final SchemaInfo DEFAULT_SCHEMA = SCHEMAS.get("tle"); //$NON-NLS-1$
+    SCHEMAS.put(
+        "tle",
+        new SchemaInfo(
+            "tle",
+            "http://www.thelearningedge.com.au/xsd/item", //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+            "http://www.thelearningedge.com.au/xsd/item",
+            "tle",
+            "TLE")); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+  }
 
-	@Inject
-	private static FreeTextService freeTextService;
-	@Inject
-	private static ItemService itemService;
-	@Inject
-	private static SchemaService schemaService;
-	@Inject
-	private static ItemHelper itemHelper;
+  // Package protected
+  static final SchemaInfo DEFAULT_SCHEMA = SCHEMAS.get("tle"); // $NON-NLS-1$
 
-	@Override
-	public String getExtraResponseData(QueryResult result, SearchRetrieveRequestType request)
-	{
-		// This needs to be null or an error is thrown
-		return null;
-	}
+  @Inject private static FreeTextService freeTextService;
+  @Inject private static ItemService itemService;
+  @Inject private static SchemaService schemaService;
+  @Inject private static ItemHelper itemHelper;
 
-	@Override
-	public QueryResult getQueryResult(String query, SearchRetrieveRequestType request) throws InstantiationException
-	{
-		DefaultSearch search = new DefaultSearch();
-		search.setQuery(query);
+  @Override
+  public String getExtraResponseData(QueryResult result, SearchRetrieveRequestType request) {
+    // This needs to be null or an error is thrown
+    return null;
+  }
 
-		ItemSelect is = new ItemSelect();
-		is.setAttachments(false);
-		is.setBadurls(false);
-		is.setCollaborators(false);
-		is.setDescription(true);
-		is.setDrm(true);
-		is.setHistory(false);
-		is.setItemdef(true);
-		is.setItemXml(true);
-		is.setModeration(true);
-		is.setName(true);
-		is.setSchema(true);
-		search.setSelect(is);
+  @Override
+  public QueryResult getQueryResult(String query, SearchRetrieveRequestType request)
+      throws InstantiationException {
+    DefaultSearch search = new DefaultSearch();
+    search.setQuery(query);
 
-		int startPoint = 1;
-		PositiveInteger startRec = request.getStartRecord();
-		if( startRec != null )
-		{
-			startPoint = startRec.intValue();
-		}
+    ItemSelect is = new ItemSelect();
+    is.setAttachments(false);
+    is.setBadurls(false);
+    is.setCollaborators(false);
+    is.setDescription(true);
+    is.setDrm(true);
+    is.setHistory(false);
+    is.setItemdef(true);
+    is.setItemXml(true);
+    is.setModeration(true);
+    is.setName(true);
+    is.setSchema(true);
+    search.setSelect(is);
 
-		int count = 1;
-		NonNegativeInteger max = request.getMaximumRecords();
-		if( max != null )
-		{
-			count = max.intValue();
-		}
+    int startPoint = 1;
+    PositiveInteger startRec = request.getStartRecord();
+    if (startRec != null) {
+      startPoint = startRec.intValue();
+    }
 
-		return new TLEQueryResult(freeTextService.search(search, startPoint - 1, count));
-	}
+    int count = 1;
+    NonNegativeInteger max = request.getMaximumRecords();
+    if (max != null) {
+      count = max.intValue();
+    }
 
-	@Override
-	public void addRenderer(String schemaName, String schemaID, Properties props) throws InstantiationException
-	{
-		// Nothing to see here, move along...
-	}
+    return new TLEQueryResult(freeTextService.search(search, startPoint - 1, count));
+  }
 
-	@Override
-	public boolean hasaConfigurationFile()
-	{
-		return false;
-	}
+  @Override
+  public void addRenderer(String schemaName, String schemaID, Properties props)
+      throws InstantiationException {
+    // Nothing to see here, move along...
+  }
 
-	@Override
-	public ScanResponseType doRequest(ScanRequestType type) throws ServletException
-	{
-		DefaultSearch search = new DefaultSearch();
-		String clause = type.getScanClause();
-		search.setQuery(clause);
-		List<Search> filters = new ArrayList<Search>();
-		filters.add(search);
-		int[] counts = freeTextService.countsFromFilters(filters);
+  @Override
+  public boolean hasaConfigurationFile() {
+    return false;
+  }
 
-		ScanResponseType scanResponse = new ScanResponseType();
-		TermsType terms = new TermsType();
-		TermType term[] = new TermType[0];
-		TermType t = new TermType();
-		t.setNumberOfRecords(new NonNegativeInteger(Integer.toString(counts[0])));
-		t.setValue(clause);
-		term[0] = t;
-		terms.setTerm(term);
-		scanResponse.setTerms(terms);
-		return scanResponse;
-	}
+  @Override
+  public ScanResponseType doRequest(ScanRequestType type) throws ServletException {
+    DefaultSearch search = new DefaultSearch();
+    String clause = type.getScanClause();
+    search.setQuery(clause);
+    List<Search> filters = new ArrayList<Search>();
+    filters.add(search);
+    int[] counts = freeTextService.countsFromFilters(filters);
 
-	@Override
-	public String getIndexInfo()
-	{
-		// Nothing to see here, move along...
-		return ""; //$NON-NLS-1$
-	}
+    ScanResponseType scanResponse = new ScanResponseType();
+    TermsType terms = new TermsType();
+    TermType term[] = new TermType[0];
+    TermType t = new TermType();
+    t.setNumberOfRecords(new NonNegativeInteger(Integer.toString(counts[0])));
+    t.setValue(clause);
+    term[0] = t;
+    terms.setTerm(term);
+    scanResponse.setTerms(terms);
+    return scanResponse;
+  }
 
-	// TODO: This should be implemented. See TLERecordIterator.nextRecord
-	@Override
-	public Record transform(Record rec, String schemaID) throws SRWDiagnostic
-	{
-		return rec;
-	}
+  @Override
+  public String getIndexInfo() {
+    // Nothing to see here, move along...
+    return ""; //$NON-NLS-1$
+  }
 
-	@Override
-	public String getSchemaID(String schemaName)
-	{
-		SchemaInfo schema = SCHEMAS.get(schemaName);
-		return schema == null ? null : schema.getIdentifier();
-	}
+  // TODO: This should be implemented. See TLERecordIterator.nextRecord
+  @Override
+  public Record transform(Record rec, String schemaID) throws SRWDiagnostic {
+    return rec;
+  }
 
-	@Override
-	public boolean supportsSort()
-	{
-		return false;
-	}
+  @Override
+  public String getSchemaID(String schemaName) {
+    SchemaInfo schema = SCHEMAS.get(schemaName);
+    return schema == null ? null : schema.getIdentifier();
+  }
 
-	private class TLEQueryResult extends QueryResult
-	{
-		private final FreetextSearchResults<?> searchResults;
+  @Override
+  public boolean supportsSort() {
+    return false;
+  }
 
-		public TLEQueryResult(FreetextSearchResults<?> searchResults)
-		{
-			this.searchResults = searchResults;
-		}
+  private class TLEQueryResult extends QueryResult {
+    private final FreetextSearchResults<?> searchResults;
 
-		/**
-		 * I believe this is supposed to be the 'available' count
-		 */
-		@Override
-		public long getNumberOfRecords()
-		{
-			// return Math.min(max, searchResults.getCount());
-			return searchResults.getAvailable();
-		}
+    public TLEQueryResult(FreetextSearchResults<?> searchResults) {
+      this.searchResults = searchResults;
+    }
 
-		@Override
-		public RecordIterator newRecordIterator(long startPoint, int numResults, String schemaID, ExtraDataType arg3)
-			throws InstantiationException
-		{
-			return new TLERecordIterator(searchResults, schemaID);
-		}
-	}
+    /** I believe this is supposed to be the 'available' count */
+    @Override
+    public long getNumberOfRecords() {
+      // return Math.min(max, searchResults.getCount());
+      return searchResults.getAvailable();
+    }
 
-	@Override
-	public TermList getTermList(CQLTermNode arg0, int arg1, int arg2, ScanRequestType arg3)
-	{
-		return null;
-	}
+    @Override
+    public RecordIterator newRecordIterator(
+        long startPoint, int numResults, String schemaID, ExtraDataType arg3)
+        throws InstantiationException {
+      return new TLERecordIterator(searchResults, schemaID);
+    }
+  }
 
-	@Override
-	public String getSchemaInfo()
-	{
-		List<String> exportSchemaTypes = schemaService.getExportSchemaTypes();
-		StringBuffer schemaInfoBuf = new StringBuffer("<schemaInfo>\n"); //$NON-NLS-1$
+  @Override
+  public TermList getTermList(CQLTermNode arg0, int arg1, int arg2, ScanRequestType arg3) {
+    return null;
+  }
 
-		for( String schemaName : exportSchemaTypes )
-		{
-			SchemaInfo info = SCHEMAS.get(schemaName);
-			if( info != null )
-			{
-				try
-				{
-					schema(schemaInfoBuf, info);
-				}
-				catch( Exception e )
-				{
-					LOGGER.error(e, e);
-				}
-			}
-		}
-		schema(schemaInfoBuf, DEFAULT_SCHEMA);
+  @Override
+  public String getSchemaInfo() {
+    List<String> exportSchemaTypes = schemaService.getExportSchemaTypes();
+    StringBuffer schemaInfoBuf = new StringBuffer("<schemaInfo>\n"); // $NON-NLS-1$
 
-		schemaInfoBuf.append("</schemaInfo>\n"); //$NON-NLS-1$
+    for (String schemaName : exportSchemaTypes) {
+      SchemaInfo info = SCHEMAS.get(schemaName);
+      if (info != null) {
+        try {
+          schema(schemaInfoBuf, info);
+        } catch (Exception e) {
+          LOGGER.error(e, e);
+        }
+      }
+    }
+    schema(schemaInfoBuf, DEFAULT_SCHEMA);
 
-		return schemaInfoBuf.toString();
-	}
+    schemaInfoBuf.append("</schemaInfo>\n"); // $NON-NLS-1$
 
-	private void schema(StringBuffer schemaInfoBuf, SchemaInfo info)
-	{
-		schemaInfoBuf.append("<schema identifier=\""); //$NON-NLS-1$
-		schemaInfoBuf.append(Utils.ent(info.getIdentifier()));
-		schemaInfoBuf.append("\" schemaLocation=\""); //$NON-NLS-1$
-		schemaInfoBuf.append(Utils.ent(info.getLocation()));
-		schemaInfoBuf.append("\" sort=\"false\" retrieve=\"true\" name=\""); //$NON-NLS-1$
-		schemaInfoBuf.append(Utils.ent(info.getName()));
-		schemaInfoBuf.append("\"><title>"); //$NON-NLS-1$
-		schemaInfoBuf.append(Utils.ent(info.getTitle()));
-		schemaInfoBuf.append("</title> </schema>"); //$NON-NLS-1$
-	}
+    return schemaInfoBuf.toString();
+  }
 
-	@Override
-	public void setExplainRecord(String ex)
-	{
-		EXPLAIN.set(ex);
-	}
+  private void schema(StringBuffer schemaInfoBuf, SchemaInfo info) {
+    schemaInfoBuf.append("<schema identifier=\""); // $NON-NLS-1$
+    schemaInfoBuf.append(Utils.ent(info.getIdentifier()));
+    schemaInfoBuf.append("\" schemaLocation=\""); // $NON-NLS-1$
+    schemaInfoBuf.append(Utils.ent(info.getLocation()));
+    schemaInfoBuf.append("\" sort=\"false\" retrieve=\"true\" name=\""); // $NON-NLS-1$
+    schemaInfoBuf.append(Utils.ent(info.getName()));
+    schemaInfoBuf.append("\"><title>"); // $NON-NLS-1$
+    schemaInfoBuf.append(Utils.ent(info.getTitle()));
+    schemaInfoBuf.append("</title> </schema>"); // $NON-NLS-1$
+  }
 
-	@Override
-	public String getExplainRecord(HttpServletRequest request)
-	{
-		// This is so it can be generated at run time because we may change the
-		// available schemas
-		String ex = EXPLAIN.get();
-		if( ex == null )
-		{
-			makeExplainRecord(request);
-			ex = EXPLAIN.get();
-		}
-		EXPLAIN.remove();
-		return ex;
-	}
+  @Override
+  public void setExplainRecord(String ex) {
+    EXPLAIN.set(ex);
+  }
 
-	private class TLERecordIterator implements RecordIterator
-	{
-		private final FreetextSearchResults<?> searchResults;
+  @Override
+  public String getExplainRecord(HttpServletRequest request) {
+    // This is so it can be generated at run time because we may change the
+    // available schemas
+    String ex = EXPLAIN.get();
+    if (ex == null) {
+      makeExplainRecord(request);
+      ex = EXPLAIN.get();
+    }
+    EXPLAIN.remove();
+    return ex;
+  }
 
-		private final String schemaID;
+  private class TLERecordIterator implements RecordIterator {
+    private final FreetextSearchResults<?> searchResults;
 
-		private int i;
+    private final String schemaID;
 
-		public TLERecordIterator(FreetextSearchResults<?> searchResults, String schemaID)
-		{
-			this.searchResults = searchResults;
-			this.schemaID = schemaID;
-			this.i = 0;
-		}
+    private int i;
 
-		@Override
-		public void close()
-		{
-			// IGNORE
-		}
+    public TLERecordIterator(FreetextSearchResults<?> searchResults, String schemaID) {
+      this.searchResults = searchResults;
+      this.schemaID = schemaID;
+      this.i = 0;
+    }
 
-		// TODO: This shouldn't be required anymore, there is a list of map of
-		// transformers in the SRWDatabase base class that you can add to
-		@Override
-		public Record nextRecord()
-		{
-			ItemPack<Item> pack = new ItemPack<>();
-			pack.setItem(searchResults.getResults().get(i++));
-			pack.setXml(itemService.getItemXmlPropBag(pack.getItem()));
+    @Override
+    public void close() {
+      // IGNORE
+    }
 
-			PropBagEx xml = itemHelper.convertToXml(pack);
+    // TODO: This shouldn't be required anymore, there is a list of map of
+    // transformers in the SRWDatabase base class that you can add to
+    @Override
+    public Record nextRecord() {
+      ItemPack<Item> pack = new ItemPack<>();
+      pack.setItem(searchResults.getResults().get(i++));
+      pack.setXml(itemService.getItemXmlPropBag(pack.getItem()));
 
-			String s = null;
-			if( schemaID != null )
-			{
-				String transformId = findTleSchemaId(schemaID);
-				if( transformId != null )
-				{
-					final Schema schema = pack.getItem().getItemDefinition().getSchema();
-					if (schema != null)
-					{
-						s = schemaService.transformForExport(schema.getId(), transformId, xml, true);
-					}
-				}
-			}
+      PropBagEx xml = itemHelper.convertToXml(pack);
 
-			String actualSchema = schemaID;
-			if( s == null )
-			{
-				actualSchema = DEFAULT_SCHEMA.getIdentifier();
-				s = xml.toString();
-			}
+      String s = null;
+      if (schemaID != null) {
+        String transformId = findTleSchemaId(schemaID);
+        if (transformId != null) {
+          final Schema schema = pack.getItem().getItemDefinition().getSchema();
+          if (schema != null) {
+            s = schemaService.transformForExport(schema.getId(), transformId, xml, true);
+          }
+        }
+      }
 
-			return new Record(s, actualSchema);
+      String actualSchema = schemaID;
+      if (s == null) {
+        actualSchema = DEFAULT_SCHEMA.getIdentifier();
+        s = xml.toString();
+      }
 
-		}
+      return new Record(s, actualSchema);
+    }
 
-		private String findTleSchemaId(String identifier)
-		{
-			for( SchemaInfo info : SCHEMAS.values() )
-			{
-				if( identifier.equals(info.getIdentifier()) )
-				{
-					return info.getTleId();
-				}
-			}
-			return null;
-		}
+    private String findTleSchemaId(String identifier) {
+      for (SchemaInfo info : SCHEMAS.values()) {
+        if (identifier.equals(info.getIdentifier())) {
+          return info.getTleId();
+        }
+      }
+      return null;
+    }
 
-		@Override
-		public boolean hasNext()
-		{
-			return i < searchResults.getCount();
-		}
+    @Override
+    public boolean hasNext() {
+      return i < searchResults.getCount();
+    }
 
-		@Override
-		public Object next()
-		{
-			return nextRecord();
-		}
+    @Override
+    public Object next() {
+      return nextRecord();
+    }
 
-		@Override
-		public void remove()
-		{
-			throw new UnsupportedOperationException();
-		}
-	}
+    @Override
+    public void remove() {
+      throw new UnsupportedOperationException();
+    }
+  }
 
-	// Package protected
-	static class SchemaInfo
-	{
-		private final String tleId;
-		private final String identifier;
-		private final String location;
-		private final String name;
-		private final String title;
+  // Package protected
+  static class SchemaInfo {
+    private final String tleId;
+    private final String identifier;
+    private final String location;
+    private final String name;
+    private final String title;
 
-		public SchemaInfo(String tleId, String identifier, String location, String name, String title)
-		{
-			this.tleId = tleId;
-			this.identifier = identifier;
-			this.location = location;
-			this.name = name;
-			this.title = title;
-		}
+    public SchemaInfo(String tleId, String identifier, String location, String name, String title) {
+      this.tleId = tleId;
+      this.identifier = identifier;
+      this.location = location;
+      this.name = name;
+      this.title = title;
+    }
 
-		public String getTleId()
-		{
-			return tleId;
-		}
+    public String getTleId() {
+      return tleId;
+    }
 
-		public String getIdentifier()
-		{
-			return identifier;
-		}
+    public String getIdentifier() {
+      return identifier;
+    }
 
-		public String getLocation()
-		{
-			return location;
-		}
+    public String getLocation() {
+      return location;
+    }
 
-		public String getName()
-		{
-			return name;
-		}
+    public String getName() {
+      return name;
+    }
 
-		public String getTitle()
-		{
-			return title;
-		}
-	}
+    public String getTitle() {
+      return title;
+    }
+  }
 
-	@Override
-	public void init(String arg0, String arg1, String arg2, String arg3, Properties arg4) throws Exception 
-	{
-		// nothing		
-	}
+  @Override
+  public void init(String arg0, String arg1, String arg2, String arg3, Properties arg4)
+      throws Exception {
+    // nothing
+  }
 }

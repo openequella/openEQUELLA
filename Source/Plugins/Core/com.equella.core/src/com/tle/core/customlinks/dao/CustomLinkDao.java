@@ -21,7 +21,6 @@ import java.util.List;
 import com.tle.common.customlinks.entity.CustomLink;
 import com.tle.core.entity.dao.AbstractEntityDao;
 
-public interface CustomLinkDao extends AbstractEntityDao<CustomLink>
-{
-	List<CustomLink> listLinksForUser();
+public interface CustomLinkDao extends AbstractEntityDao<CustomLink> {
+  List<CustomLink> listLinksForUser();
 }

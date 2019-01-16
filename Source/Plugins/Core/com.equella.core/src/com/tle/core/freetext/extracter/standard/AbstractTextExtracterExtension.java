@@ -20,40 +20,34 @@ import com.tle.beans.mime.MimeEntry;
 import com.tle.core.TextExtracterExtension;
 import com.tle.core.plugins.AbstractPluginService;
 
-/**
- * @author aholland
- */
-public abstract class AbstractTextExtracterExtension implements TextExtracterExtension
-{
-	private static String PFX_KEY = AbstractPluginService.getMyPluginId(AbstractTextExtracterExtension.class)+".";
-	protected String getKey()
-	{
-		return this.getClass().getSimpleName();
-	}
+/** @author aholland */
+public abstract class AbstractTextExtracterExtension implements TextExtracterExtension {
+  private static String PFX_KEY =
+      AbstractPluginService.getMyPluginId(AbstractTextExtracterExtension.class) + ".";
 
-	protected abstract boolean isSupportedByDefault(MimeEntry mimeEntry);
+  protected String getKey() {
+    return this.getClass().getSimpleName();
+  }
 
-	@Override
-	public void setEnabledForMimeEntry(MimeEntry mimeEntry, boolean enabled)
-	{
-		mimeEntry.getAttributes().put(getKey(), Boolean.toString(enabled));
-	}
+  protected abstract boolean isSupportedByDefault(MimeEntry mimeEntry);
 
-	@Override
-	public boolean isEnabledForMimeEntry(MimeEntry mimeEntry)
-	{
-		String enabled = mimeEntry.getAttributes().get(getKey());
-		if( enabled == null )
-		{
-			// is the mimeEntry one of the ones we will support by default?
-			return isSupportedByDefault(mimeEntry);
-		}
-		return Boolean.valueOf(enabled);
-	}
+  @Override
+  public void setEnabledForMimeEntry(MimeEntry mimeEntry, boolean enabled) {
+    mimeEntry.getAttributes().put(getKey(), Boolean.toString(enabled));
+  }
 
-	@Override
-	public String getNameKey()
-	{
-		return PFX_KEY + getKey().toLowerCase() + ".title"; //$NON-NLS-1$ //$NON-NLS-2$
-	}
+  @Override
+  public boolean isEnabledForMimeEntry(MimeEntry mimeEntry) {
+    String enabled = mimeEntry.getAttributes().get(getKey());
+    if (enabled == null) {
+      // is the mimeEntry one of the ones we will support by default?
+      return isSupportedByDefault(mimeEntry);
+    }
+    return Boolean.valueOf(enabled);
+  }
+
+  @Override
+  public String getNameKey() {
+    return PFX_KEY + getKey().toLowerCase() + ".title"; // $NON-NLS-1$ //$NON-NLS-2$
+  }
 }

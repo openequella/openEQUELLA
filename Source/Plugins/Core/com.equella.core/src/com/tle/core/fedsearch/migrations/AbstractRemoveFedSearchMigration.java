@@ -46,123 +46,121 @@ import com.tle.core.migration.AbstractHibernateDataMigration;
 import com.tle.core.migration.MigrationResult;
 
 @SuppressWarnings("nls")
-public abstract class AbstractRemoveFedSearchMigration extends AbstractHibernateDataMigration
-{
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class[]{FakeBaseEntity.class, FakeBaseEntity.Attribute.class, FakeLanguageBundle.class,
-				FakeLanguageString.class, FakeFederatedSearch.class, FakeEntityLock.class,};
-	}
+public abstract class AbstractRemoveFedSearchMigration extends AbstractHibernateDataMigration {
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class[] {
+      FakeBaseEntity.class,
+      FakeBaseEntity.Attribute.class,
+      FakeLanguageBundle.class,
+      FakeLanguageString.class,
+      FakeFederatedSearch.class,
+      FakeEntityLock.class,
+    };
+  }
 
-	@Override
-	public boolean isBackwardsCompatible()
-	{
-		return false;
-	}
+  @Override
+  public boolean isBackwardsCompatible() {
+    return false;
+  }
 
-	protected abstract String getFedSearchType();
+  protected abstract String getFedSearchType();
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return count(session, "FROM FederatedSearch WHERE type = '" + getFedSearchType() + "'");
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return count(session, "FROM FederatedSearch WHERE type = '" + getFedSearchType() + "'");
+  }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-	{
-		final List<FakeFederatedSearch> fs = session.createQuery(
-			"FROM FederatedSearch WHERE type = '" + getFedSearchType() + "'").list();
-		if( !fs.isEmpty() )
-		{
-			session.createQuery("DELETE FROM EntityLock WHERE entity IN (:entities)").setParameterList("entities", fs)
-				.executeUpdate();
+  @Override
+  @SuppressWarnings("unchecked")
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) {
+    final List<FakeFederatedSearch> fs =
+        session
+            .createQuery("FROM FederatedSearch WHERE type = '" + getFedSearchType() + "'")
+            .list();
+    if (!fs.isEmpty()) {
+      session
+          .createQuery("DELETE FROM EntityLock WHERE entity IN (:entities)")
+          .setParameterList("entities", fs)
+          .executeUpdate();
 
-			for( FakeFederatedSearch f : fs )
-			{
-				session.delete(f);
-				result.incrementStatus();
-			}
-		}
-	}
+      for (FakeFederatedSearch f : fs) {
+        session.delete(f);
+        result.incrementStatus();
+      }
+    }
+  }
 
-	@Entity(name = "BaseEntity")
-	@AccessType("field")
-	@Inheritance(strategy = InheritanceType.JOINED)
-	public static class FakeBaseEntity
-	{
-		@Id
-		long id;
+  @Entity(name = "BaseEntity")
+  @AccessType("field")
+  @Inheritance(strategy = InheritanceType.JOINED)
+  public static class FakeBaseEntity {
+    @Id long id;
 
-		@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-		FakeLanguageBundle name;
-		@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-		FakeLanguageBundle description;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    FakeLanguageBundle name;
 
-		@JoinColumn
-		@ElementCollection(fetch = FetchType.EAGER)
-		@CollectionTable(name = "base_entity_attributes", joinColumns = @JoinColumn(name = "base_entity_id"))
-		@Fetch(value = FetchMode.SUBSELECT)
-		List<Attribute> attributes;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    FakeLanguageBundle description;
 
-		@Embeddable
-		@AccessType("field")
-		public static class Attribute implements Serializable
-		{
-			private static final long serialVersionUID = 1L;
+    @JoinColumn
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+        name = "base_entity_attributes",
+        joinColumns = @JoinColumn(name = "base_entity_id"))
+    @Fetch(value = FetchMode.SUBSELECT)
+    List<Attribute> attributes;
 
-			@Column(length = 64, nullable = false)
-			String key;
-			@Column(name = "value", length = 1024)
-			String value;
-		}
-	}
+    @Embeddable
+    @AccessType("field")
+    public static class Attribute implements Serializable {
+      private static final long serialVersionUID = 1L;
 
-	@Entity(name = "LanguageBundle")
-	@AccessType("field")
-	public static class FakeLanguageBundle
-	{
-		@Id
-		long id;
+      @Column(length = 64, nullable = false)
+      String key;
 
-		@OneToMany(cascade = CascadeType.ALL, mappedBy = "bundle")
-		@Fetch(value = FetchMode.SELECT)
-		@MapKey(name = "locale")
-		Map<String, FakeLanguageString> strings;
-	}
+      @Column(name = "value", length = 1024)
+      String value;
+    }
+  }
 
-	@Entity(name = "LanguageString")
-	@AccessType("field")
-	public static class FakeLanguageString
-	{
-		@Id
-		long id;
+  @Entity(name = "LanguageBundle")
+  @AccessType("field")
+  public static class FakeLanguageBundle {
+    @Id long id;
 
-		@Column(length = 20, nullable = false)
-		String locale;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "bundle")
+    @Fetch(value = FetchMode.SELECT)
+    @MapKey(name = "locale")
+    Map<String, FakeLanguageString> strings;
+  }
 
-		@ManyToOne(fetch = FetchType.LAZY)
-		@JoinColumn(nullable = false)
-		FakeLanguageBundle bundle;
-	}
+  @Entity(name = "LanguageString")
+  @AccessType("field")
+  public static class FakeLanguageString {
+    @Id long id;
 
-	@Entity(name = "FederatedSearch")
-	@AccessType("field")
-	public static class FakeFederatedSearch extends FakeBaseEntity
-	{
-		String type;
-	}
+    @Column(length = 20, nullable = false)
+    String locale;
 
-	@Entity(name = "EntityLock")
-	@AccessType("field")
-	public static class FakeEntityLock
-	{
-		@Id
-		long id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    FakeLanguageBundle bundle;
+  }
 
-		@OneToOne(fetch = FetchType.LAZY)
-		FakeBaseEntity entity;
-	}
+  @Entity(name = "FederatedSearch")
+  @AccessType("field")
+  public static class FakeFederatedSearch extends FakeBaseEntity {
+    String type;
+  }
+
+  @Entity(name = "EntityLock")
+  @AccessType("field")
+  public static class FakeEntityLock {
+    @Id long id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    FakeBaseEntity entity;
+  }
 }

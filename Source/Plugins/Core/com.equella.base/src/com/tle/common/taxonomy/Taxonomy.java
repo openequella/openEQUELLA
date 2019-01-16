@@ -25,30 +25,25 @@ import com.tle.beans.entity.BaseEntity;
 
 @Entity
 @AccessType("field")
-public class Taxonomy extends BaseEntity
-{
-	private static final long serialVersionUID = 1L;
+public class Taxonomy extends BaseEntity {
+  private static final long serialVersionUID = 1L;
 
-	@Column(length = 100)
-	private String dataSourcePluginId;
+  @Column(length = 100)
+  private String dataSourcePluginId;
 
-	public Taxonomy()
-	{
-		super();
-	}
+  public Taxonomy() {
+    super();
+  }
 
-	public Taxonomy(long id)
-	{
-		setId(id);
-	}
+  public Taxonomy(long id) {
+    setId(id);
+  }
 
-	public String getDataSourcePluginId()
-	{
-		return dataSourcePluginId;
-	}
+  public String getDataSourcePluginId() {
+    return dataSourcePluginId;
+  }
 
-	public void setDataSourcePluginId(String dataSourcePluginId)
-	{
-		this.dataSourcePluginId = dataSourcePluginId;
-	}
+  public void setDataSourcePluginId(String dataSourcePluginId) {
+    this.dataSourcePluginId = dataSourcePluginId;
+  }
 }

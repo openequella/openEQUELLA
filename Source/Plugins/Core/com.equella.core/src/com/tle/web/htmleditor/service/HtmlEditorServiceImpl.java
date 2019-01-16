@@ -60,222 +60,200 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.SimpleSectionResult;
 
 /**
- * TODO: anything which edits a HtmlEditorConfiguration is subject to values
- * being over-written by other sessions
- * 
+ * TODO: anything which edits a HtmlEditorConfiguration is subject to values being over-written by
+ * other sessions
+ *
  * @author aholland
  */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind(HtmlEditorService.class)
 @Singleton
-public class HtmlEditorServiceImpl implements HtmlEditorService
-{
-	private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
-	static
-	{
-		JSON_MAPPER.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-		JSON_MAPPER.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-	}
+public class HtmlEditorServiceImpl implements HtmlEditorService {
+  private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
-	private PluginTracker<HtmlEditorFactoryInterface> editorFactories;
-	private PluginTracker<HtmlEditorFactoryInterface> controlFactories;
-	@Inject
-	private ConfigurationService configService;
-	@Inject
-	private UserSessionService sessionService;
-	@Inject
-	private FileSystemService fileSystemService;
+  static {
+    JSON_MAPPER.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+    JSON_MAPPER.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+  }
 
-	@Override
-	public HtmlEditorControl getControl()
-	{
-		List<HtmlEditorFactoryInterface> potential = controlFactories.getBeanList();
-		if( potential.size() > 0 )
-		{
-			return potential.get(0).createControl();
-		}
-		throw new RuntimeException(CurrentLocale.get("com.tle.web.htmleditor.nohtmleditor"));
-	}
+  private PluginTracker<HtmlEditorFactoryInterface> editorFactories;
+  private PluginTracker<HtmlEditorFactoryInterface> controlFactories;
+  @Inject private ConfigurationService configService;
+  @Inject private UserSessionService sessionService;
+  @Inject private FileSystemService fileSystemService;
 
-	@Override
-	public HtmlEditorInterface getEditor()
-	{
-		List<HtmlEditorFactoryInterface> potential = editorFactories.getBeanList();
-		if( potential.size() > 0 )
-		{
-			return potential.get(0).createEditor();
-		}
-		throw new RuntimeException(CurrentLocale.get("com.tle.web.htmleditor.nohtmleditor"));
-	}
+  @Override
+  public HtmlEditorControl getControl() {
+    List<HtmlEditorFactoryInterface> potential = controlFactories.getBeanList();
+    if (potential.size() > 0) {
+      return potential.get(0).createControl();
+    }
+    throw new RuntimeException(CurrentLocale.get("com.tle.web.htmleditor.nohtmleditor"));
+  }
 
-	@Override
-	public HtmlEditorConfiguration getEditorConfig()
-	{
-		return configService.getProperties(new HtmlEditorConfiguration());
-	}
+  @Override
+  public HtmlEditorInterface getEditor() {
+    List<HtmlEditorFactoryInterface> potential = editorFactories.getBeanList();
+    if (potential.size() > 0) {
+      return potential.get(0).createEditor();
+    }
+    throw new RuntimeException(CurrentLocale.get("com.tle.web.htmleditor.nohtmleditor"));
+  }
 
-	@Override
-	public HtmlEditorConfigurationEditingSession createEditorConfigEditingSession()
-	{
-		final HtmlEditorConfiguration config = getEditorConfig().clone();
-		final String sessionId = UUID.randomUUID().toString();
-		final HtmlEditorConfigurationEditingSession session = new HtmlEditorConfigurationEditingSession();
-		session.setConfig(config);
-		session.setSessionId(sessionId);
-		sessionService.setAttribute(sessionId, session);
-		return session;
-	}
+  @Override
+  public HtmlEditorConfiguration getEditorConfig() {
+    return configService.getProperties(new HtmlEditorConfiguration());
+  }
 
-	@Override
-	public HtmlEditorConfigurationEditingSession getEditorConfigEditingSession(String sessionId)
-	{
-		HtmlEditorConfigurationEditingSession session = sessionService.getAttribute(sessionId);
-		if( session == null )
-		{
-			throw new RuntimeException("Invalid session ID");
-		}
-		return session;
-	}
+  @Override
+  public HtmlEditorConfigurationEditingSession createEditorConfigEditingSession() {
+    final HtmlEditorConfiguration config = getEditorConfig().clone();
+    final String sessionId = UUID.randomUUID().toString();
+    final HtmlEditorConfigurationEditingSession session =
+        new HtmlEditorConfigurationEditingSession();
+    session.setConfig(config);
+    session.setSessionId(sessionId);
+    sessionService.setAttribute(sessionId, session);
+    return session;
+  }
 
-	@Override
-	public void cancelEditorConfigEditingSession(String sessionId)
-	{
-		sessionService.removeAttribute(sessionId);
-	}
+  @Override
+  public HtmlEditorConfigurationEditingSession getEditorConfigEditingSession(String sessionId) {
+    HtmlEditorConfigurationEditingSession session = sessionService.getAttribute(sessionId);
+    if (session == null) {
+      throw new RuntimeException("Invalid session ID");
+    }
+    return session;
+  }
 
-	@Override
-	public void commitEditorConfigEditingSession(String sessionId)
-	{
-		configService.setProperties(getEditorConfigEditingSession(sessionId).getConfig());
-		sessionService.removeAttribute(sessionId);
-	}
+  @Override
+  public void cancelEditorConfigEditingSession(String sessionId) {
+    sessionService.removeAttribute(sessionId);
+  }
 
-	@Override
-	public void validateEditorOptions(String editorOptions) throws InvalidDataException
-	{
-		try
-		{
-			JSON_MAPPER.readTree(editorOptions);
-		}
-		catch( IOException io )
-		{
-			throw new InvalidDataException(new ValidationError("options", io.getMessage()));
-		}
-	}
+  @Override
+  public void commitEditorConfigEditingSession(String sessionId) {
+    configService.setProperties(getEditorConfigEditingSession(sessionId).getConfig());
+    sessionService.removeAttribute(sessionId);
+  }
 
-	@Override
-	public String getStylesheetContents()
-	{
-		final PublicFile styles = new PublicFile("htmleditorstyles");
-		final HtmlEditorConfiguration editorConfig = getEditorConfig();
-		final String filename = (Check.isEmpty(editorConfig.getStylesheetUuid()) ? "styles.css" : PathUtils.filePath(
-			editorConfig.getStylesheetUuid(), "styles.css"));
-		if( fileSystemService.fileExists(styles, filename) )
-		{
-			try (InputStream in = fileSystemService.read(styles, filename); Reader rdr = new InputStreamReader(in))
-			{
-				final StringWriter sw = new StringWriter();
-				CharStreams.copy(rdr, sw);
-				return sw.toString();
-			}
-			catch( IOException e )
-			{
-				throw Throwables.propagate(e);
-			}
-		}
-		return "";
-	}
+  @Override
+  public void validateEditorOptions(String editorOptions) throws InvalidDataException {
+    try {
+      JSON_MAPPER.readTree(editorOptions);
+    } catch (IOException io) {
+      throw new InvalidDataException(new ValidationError("options", io.getMessage()));
+    }
+  }
 
-	@Override
-	public void setStylesheetContents(String css)
-	{
-		final HtmlEditorConfiguration editorConfig = getEditorConfig();
-		final String oldUuid = editorConfig.getStylesheetUuid();
-		final PublicFile styles = new PublicFile("htmleditorstyles");
-		try
-		{
-			final String newUuid = UUID.randomUUID().toString();
-			final String newFilename = PathUtils.filePath(newUuid, "styles.css");
-			fileSystemService.write(styles, newFilename, new StringReader(css), false);
-			editorConfig.setStylesheetUuid(newUuid);
-			configService.setProperties(editorConfig);
+  @Override
+  public String getStylesheetContents() {
+    final PublicFile styles = new PublicFile("htmleditorstyles");
+    final HtmlEditorConfiguration editorConfig = getEditorConfig();
+    final String filename =
+        (Check.isEmpty(editorConfig.getStylesheetUuid())
+            ? "styles.css"
+            : PathUtils.filePath(editorConfig.getStylesheetUuid(), "styles.css"));
+    if (fileSystemService.fileExists(styles, filename)) {
+      try (InputStream in = fileSystemService.read(styles, filename);
+          Reader rdr = new InputStreamReader(in)) {
+        final StringWriter sw = new StringWriter();
+        CharStreams.copy(rdr, sw);
+        return sw.toString();
+      } catch (IOException e) {
+        throw Throwables.propagate(e);
+      }
+    }
+    return "";
+  }
 
-			final String oldFilename = (Check.isEmpty(oldUuid) ? "styles.css" : PathUtils.filePath(oldUuid,
-				"styles.css"));
-			fileSystemService.removeFile(styles, oldFilename);
-		}
-		catch( IOException e )
-		{
-			throw Throwables.propagate(e);
-		}
-	}
+  @Override
+  public void setStylesheetContents(String css) {
+    final HtmlEditorConfiguration editorConfig = getEditorConfig();
+    final String oldUuid = editorConfig.getStylesheetUuid();
+    final PublicFile styles = new PublicFile("htmleditorstyles");
+    try {
+      final String newUuid = UUID.randomUUID().toString();
+      final String newFilename = PathUtils.filePath(newUuid, "styles.css");
+      fileSystemService.write(styles, newFilename, new StringReader(css), false);
+      editorConfig.setStylesheetUuid(newUuid);
+      configService.setProperties(editorConfig);
 
-	@Nullable
-	@Override
-	public String getStylesheetRelativeUrl()
-	{
-		final PublicFile styles = new PublicFile("htmleditorstyles");
-		final HtmlEditorConfiguration editorConfig = getEditorConfig();
-		final String uuid = editorConfig.getStylesheetUuid();
-		final String filename = (Check.isEmpty(uuid) ? "styles.css" : PathUtils.filePath(uuid, "styles.css"));
-		if( fileSystemService.fileExists(styles, filename) )
-		{
-			return PathUtils.urlPath("public", "htmleditorstyles", uuid, "styles.css");
-		}
-		return null;
-	}
+      final String oldFilename =
+          (Check.isEmpty(oldUuid) ? "styles.css" : PathUtils.filePath(oldUuid, "styles.css"));
+      fileSystemService.removeFile(styles, oldFilename);
+    } catch (IOException e) {
+      throw Throwables.propagate(e);
+    }
+  }
 
-	@Override
-	public void exportStylesheet(FileHandle handle, @Nullable String folder)
-	{
-		final PublicFile styles = new PublicFile("htmleditorstyles");
-		if( fileSystemService.fileExists(styles, "styles.css") )
-		{
-			fileSystemService.copy(styles, "styles.css", handle, PathUtils.filePath(folder, "styles.css"));
-		}
-	}
+  @Nullable
+  @Override
+  public String getStylesheetRelativeUrl() {
+    final PublicFile styles = new PublicFile("htmleditorstyles");
+    final HtmlEditorConfiguration editorConfig = getEditorConfig();
+    final String uuid = editorConfig.getStylesheetUuid();
+    final String filename =
+        (Check.isEmpty(uuid) ? "styles.css" : PathUtils.filePath(uuid, "styles.css"));
+    if (fileSystemService.fileExists(styles, filename)) {
+      return PathUtils.urlPath("public", "htmleditorstyles", uuid, "styles.css");
+    }
+    return null;
+  }
 
-	protected void preRender(PreRenderContext context)
-	{
-		final String pf = getStylesheetRelativeUrl();
-		if( pf != null )
-		{
-			final CssInclude css = CssInclude.include(pf).make();
-			css.preRender(context);
-		}
-	}
+  @Override
+  public void exportStylesheet(FileHandle handle, @Nullable String folder) {
+    final PublicFile styles = new PublicFile("htmleditorstyles");
+    if (fileSystemService.fileExists(styles, "styles.css")) {
+      fileSystemService.copy(
+          styles, "styles.css", handle, PathUtils.filePath(folder, "styles.css"));
+    }
+  }
 
-	@Override
-	public SectionRenderable getHtmlRenderable(RenderContext context, String html)
-	{
-		return new HtmlOutputRenderable(html);
-	}
+  protected void preRender(PreRenderContext context) {
+    final String pf = getStylesheetRelativeUrl();
+    if (pf != null) {
+      final CssInclude css = CssInclude.include(pf).make();
+      css.preRender(context);
+    }
+  }
 
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		controlFactories = new PluginTracker<HtmlEditorFactoryInterface>(pluginService, "com.tle.web.htmleditor",
-			"control", "id", new ExtensionParamComparator("order"));
-		controlFactories.setBeanKey("class");
+  @Override
+  public SectionRenderable getHtmlRenderable(RenderContext context, String html) {
+    return new HtmlOutputRenderable(html);
+  }
 
-		editorFactories = new PluginTracker<HtmlEditorFactoryInterface>(pluginService, "com.tle.web.htmleditor",
-			"editor", "id", new ExtensionParamComparator("order"));
-		editorFactories.setBeanKey("class");
-	}
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    controlFactories =
+        new PluginTracker<HtmlEditorFactoryInterface>(
+            pluginService,
+            "com.tle.web.htmleditor",
+            "control",
+            "id",
+            new ExtensionParamComparator("order"));
+    controlFactories.setBeanKey("class");
 
-	public class HtmlOutputRenderable extends SimpleSectionResult
-	{
-		public HtmlOutputRenderable(String html)
-		{
-			super(html);
-		}
+    editorFactories =
+        new PluginTracker<HtmlEditorFactoryInterface>(
+            pluginService,
+            "com.tle.web.htmleditor",
+            "editor",
+            "id",
+            new ExtensionParamComparator("order"));
+    editorFactories.setBeanKey("class");
+  }
 
-		@Override
-		public void preRender(PreRenderContext info)
-		{
-			super.preRender(info);
-			HtmlEditorServiceImpl.this.preRender(info);
-		}
-	}
+  public class HtmlOutputRenderable extends SimpleSectionResult {
+    public HtmlOutputRenderable(String html) {
+      super(html);
+    }
+
+    @Override
+    public void preRender(PreRenderContext info) {
+      super.preRender(info);
+      HtmlEditorServiceImpl.this.preRender(info);
+    }
+  }
 }

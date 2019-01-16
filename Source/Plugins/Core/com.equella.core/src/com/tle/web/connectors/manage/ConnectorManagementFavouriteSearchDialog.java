@@ -23,14 +23,11 @@ import com.tle.web.search.actions.AbstractFavouriteSearchDialog;
 import com.tle.web.search.actions.AbstractFavouriteSearchSection;
 
 @Bind
-public class ConnectorManagementFavouriteSearchDialog extends AbstractFavouriteSearchDialog
-{
-	@Inject
-	private ConnectorManagementFavouriteSearchSection contentSection;
+public class ConnectorManagementFavouriteSearchDialog extends AbstractFavouriteSearchDialog {
+  @Inject private ConnectorManagementFavouriteSearchSection contentSection;
 
-	@Override
-	protected AbstractFavouriteSearchSection getContentSection()
-	{
-		return contentSection;
-	}
+  @Override
+  protected AbstractFavouriteSearchSection getContentSection() {
+    return contentSection;
+  }
 }

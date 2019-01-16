@@ -70,284 +70,257 @@ import com.tle.web.viewable.ViewableItemResolver;
 
 @SuppressWarnings("nls")
 @TreeIndexed
-public class SelectionSummarySection extends AbstractPrototypeSection<SelectionSummarySection.SelectionSessionModel>
-	implements
-		HtmlRenderer,
-		ViewableChildInterface,
-		AttachmentSelectorEventListener
-{
-	static
-	{
-		PluginResourceHandler.init(SelectionSummarySection.class);
-	}
+public class SelectionSummarySection
+    extends AbstractPrototypeSection<SelectionSummarySection.SelectionSessionModel>
+    implements HtmlRenderer, ViewableChildInterface, AttachmentSelectorEventListener {
+  static {
+    PluginResourceHandler.init(SelectionSummarySection.class);
+  }
 
-	private static final String DIVID_SELECTBOX = "selection-summary";
+  private static final String DIVID_SELECTBOX = "selection-summary";
 
-	@PlugKey("selectionsbox.title")
-	private static String KEY_BOXTITLE;
+  @PlugKey("selectionsbox.title")
+  private static String KEY_BOXTITLE;
 
-	@Inject
-	private SelectionService selectionService;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private ViewableItemResolver viewableItemResolver;
+  @Inject private SelectionService selectionService;
+  @Inject private ItemService itemService;
+  @Inject private ViewableItemResolver viewableItemResolver;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
+  @AjaxFactory private AjaxGenerator ajax;
 
-	@Component
-	private Box box;
-	@Component
-	@PlugKey("selectionsbox.viewselected")
-	private Link viewSelectedLink;
-	@Component
-	@PlugKey("selectionsbox.unselectall")
-	private Link unselectAllLink;
-	@Component
-	@PlugKey("returnselections")
-	private Button finishedButton;
+  @Component private Box box;
 
-	private boolean finishedInBox;
-	private boolean followWithHr;
-	private String layout = AbstractSearchActionsSection.AREA_SELECT;
+  @Component
+  @PlugKey("selectionsbox.viewselected")
+  private Link viewSelectedLink;
 
-	// private JSCallable selectAttachmentFunction;
+  @Component
+  @PlugKey("selectionsbox.unselectall")
+  private Link unselectAllLink;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Component
+  @PlugKey("returnselections")
+  private Button finishedButton;
 
-		SubmitValuesHandler checkoutFunc = events.getNamedHandler("checkout");
+  private boolean finishedInBox;
+  private boolean followWithHr;
+  private String layout = AbstractSearchActionsSection.AREA_SELECT;
 
-		box.setNoMinMaxOnHeader(true);
+  // private JSCallable selectAttachmentFunction;
 
-		viewSelectedLink.setClickHandler(checkoutFunc);
-		unselectAllLink.setClickHandler(events.getNamedHandler("unselectAll"));
-		finishedButton.setClickHandler(checkoutFunc);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		if( !finishedInBox )
-		{
-			finishedButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
-			finishedButton.setStyleClass("execute-action");
-		}
+    SubmitValuesHandler checkoutFunc = events.getNamedHandler("checkout");
 
-		if( !Check.isEmpty(layout) )
-		{
-			tree.setLayout(id, layout);
-		}
+    box.setNoMinMaxOnHeader(true);
 
-		tree.addListener(null, AttachmentSelectorEventListener.class, this);
+    viewSelectedLink.setClickHandler(checkoutFunc);
+    unselectAllLink.setClickHandler(events.getNamedHandler("unselectAll"));
+    finishedButton.setClickHandler(checkoutFunc);
 
-		// selectAttachmentFunction =
-		// events.getSubmitValuesFunction("addAttachment");
-	}
+    if (!finishedInBox) {
+      finishedButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
+      finishedButton.setStyleClass("execute-action");
+    }
 
-	public JSCallable getUpdateSelection(SectionTree tree, ParameterizedEvent event)
-	{
-		return ajax.getAjaxUpdateDomFunction(tree, null, event, ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
-			DIVID_SELECTBOX);
-	}
+    if (!Check.isEmpty(layout)) {
+      tree.setLayout(id, layout);
+    }
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		return selectionService.getCurrentSession(info) != null;
-	}
+    tree.addListener(null, AttachmentSelectorEventListener.class, this);
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final SelectionSession ss = selectionService.getCurrentSession(context);
-		if( ss == null )
-		{
-			return null;
-		}
+    // selectAttachmentFunction =
+    // events.getSubmitValuesFunction("addAttachment");
+  }
 
-		getModel(context).setSession(ss);
+  public JSCallable getUpdateSelection(SectionTree tree, ParameterizedEvent event) {
+    return ajax.getAjaxUpdateDomFunction(
+        tree, null, event, ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), DIVID_SELECTBOX);
+  }
 
-		box.setLabel(context, new KeyLabel(KEY_BOXTITLE, ss.getSelectedResources().size()));
-		return viewFactory.createNamedResult("ss", "selection/selectionsummary.ftl", context);
-	}
+  @Override
+  public boolean canView(SectionInfo info) {
+    return selectionService.getCurrentSession(info) != null;
+  }
 
-	@EventHandlerMethod
-	public void unselectAll(SectionContext context)
-	{
-		selectionService.getCurrentSession(context).clearResources();
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    final SelectionSession ss = selectionService.getCurrentSession(context);
+    if (ss == null) {
+      return null;
+    }
 
-	@EventHandlerMethod
-	public void checkout(SectionContext context)
-	{
-		// TODO: Do show a message here if SelectionSession.isCancelDisabled and
-		// there are no selections? Alternatively, do we now show the checkout
-		// button until there are selections if isCancelDisabled is true?
-		final SelectionSession session = selectionService.getCurrentSession(context);
-		if (session.isSkipCheckoutPage())
-		{
-			selectionService.returnFromSession(context);
-		}
-		else
-		{
-			selectionService.forwardToCheckout(context);
-		}
-	}
+    getModel(context).setSession(ss);
 
-	@EventHandlerMethod
-	public void addAttachment(SectionInfo info, String uuid, int version, String attachUuid)
-	{
-		ItemId itemId = new ItemId(uuid, version);
-		Item item = itemService.get(itemId);
-		ViewableItem<?> vitem = viewableItemResolver.createViewableItem(item, null);
+    box.setLabel(context, new KeyLabel(KEY_BOXTITLE, ss.getSelectedResources().size()));
+    return viewFactory.createNamedResult("ss", "selection/selectionsummary.ftl", context);
+  }
 
-		final SelectAttachmentHandler selectAttachmentHandler = selectionService.getSelectAttachmentHandler(info,
-			vitem, attachUuid);
-		if( selectAttachmentHandler != null )
-		{
-			Attachment attachment = UnmodifiableAttachments.convertToMapUuid(item.getAttachmentsUnmodifiable()).get(
-				attachUuid);
-			selectAttachmentHandler.handleAttachmentSelection(info, itemId, attachment, null, true);
-		}
-	}
+  @EventHandlerMethod
+  public void unselectAll(SectionContext context) {
+    selectionService.getCurrentSession(context).clearResources();
+  }
 
-	@EventHandlerMethod
-	public void addSimpleSelection(SectionInfo info, String uuid, int version, String path, String title)
-	{
-		ItemId itemId = new ItemId(uuid, version);
-		selectionService.addSelectedPath(info, itemId, path, title, null, null, null);
-	}
+  @EventHandlerMethod
+  public void checkout(SectionContext context) {
+    // TODO: Do show a message here if SelectionSession.isCancelDisabled and
+    // there are no selections? Alternatively, do we now show the checkout
+    // button until there are selections if isCancelDisabled is true?
+    final SelectionSession session = selectionService.getCurrentSession(context);
+    if (session.isSkipCheckoutPage()) {
+      selectionService.returnFromSession(context);
+    } else {
+      selectionService.forwardToCheckout(context);
+    }
+  }
 
-	@EventHandlerMethod
-	public void addPath(SectionInfo info, String uuid, int version, String path, String title)
-	{
-		ItemId itemId = new ItemId(uuid, version);
-		selectionService.addSelectedPath(info, itemId, path, title, null, null, null);
-	}
+  @EventHandlerMethod
+  public void addAttachment(SectionInfo info, String uuid, int version, String attachUuid) {
+    ItemId itemId = new ItemId(uuid, version);
+    Item item = itemService.get(itemId);
+    ViewableItem<?> vitem = viewableItemResolver.createViewableItem(item, null);
 
-	@EventHandlerMethod
-	public void addItem(SectionInfo info, String uuid, int version)
-	{
-		selectionService.addSelectedItem(info, itemService.get(new ItemId(uuid, version)), null, null);
-	}
+    final SelectAttachmentHandler selectAttachmentHandler =
+        selectionService.getSelectAttachmentHandler(info, vitem, attachUuid);
+    if (selectAttachmentHandler != null) {
+      Attachment attachment =
+          UnmodifiableAttachments.convertToMapUuid(item.getAttachmentsUnmodifiable())
+              .get(attachUuid);
+      selectAttachmentHandler.handleAttachmentSelection(info, itemId, attachment, null, true);
+    }
+  }
 
-	@Override
-	public void supplyFunction(SectionInfo info, AttachmentSelectorEvent event)
-	{
-		event.setHandler(this);
-	}
+  @EventHandlerMethod
+  public void addSimpleSelection(
+      SectionInfo info, String uuid, int version, String path, String title) {
+    ItemId itemId = new ItemId(uuid, version);
+    selectionService.addSelectedPath(info, itemId, path, title, null, null, null);
+  }
 
-	@Override
-	public void handleAttachmentSelection(SectionInfo info, ItemId itemId, IAttachment attachment, String extensionType, boolean canForward)
-	{
-		selectionService.addSelectedResource(info,
-			selectionService.createAttachmentSelection(info, itemId, attachment, null, extensionType), canForward);
-	}
+  @EventHandlerMethod
+  public void addPath(SectionInfo info, String uuid, int version, String path, String title) {
+    ItemId itemId = new ItemId(uuid, version);
+    selectionService.addSelectedPath(info, itemId, path, title, null, null, null);
+  }
 
-	public boolean isFinishedInBox()
-	{
-		return finishedInBox;
-	}
+  @EventHandlerMethod
+  public void addItem(SectionInfo info, String uuid, int version) {
+    selectionService.addSelectedItem(info, itemService.get(new ItemId(uuid, version)), null, null);
+  }
 
-	public void setFinishedInBox(boolean finishedInBox)
-	{
-		this.finishedInBox = finishedInBox;
-	}
+  @Override
+  public void supplyFunction(SectionInfo info, AttachmentSelectorEvent event) {
+    event.setHandler(this);
+  }
 
-	public boolean isFollowWithHr()
-	{
-		return followWithHr;
-	}
+  @Override
+  public void handleAttachmentSelection(
+      SectionInfo info,
+      ItemId itemId,
+      IAttachment attachment,
+      String extensionType,
+      boolean canForward) {
+    selectionService.addSelectedResource(
+        info,
+        selectionService.createAttachmentSelection(info, itemId, attachment, null, extensionType),
+        canForward);
+  }
 
-	public void setFollowWithHr(boolean followWithHr)
-	{
-		this.followWithHr = followWithHr;
-	}
+  public boolean isFinishedInBox() {
+    return finishedInBox;
+  }
 
-	public void setLayout(String layout)
-	{
-		this.layout = layout;
-	}
+  public void setFinishedInBox(boolean finishedInBox) {
+    this.finishedInBox = finishedInBox;
+  }
 
-	public Box getBox()
-	{
-		return box;
-	}
+  public boolean isFollowWithHr() {
+    return followWithHr;
+  }
 
-	public Link getViewSelectedLink()
-	{
-		return viewSelectedLink;
-	}
+  public void setFollowWithHr(boolean followWithHr) {
+    this.followWithHr = followWithHr;
+  }
 
-	public Link getUnselectAllLink()
-	{
-		return unselectAllLink;
-	}
+  public void setLayout(String layout) {
+    this.layout = layout;
+  }
 
-	public Button getFinishedButton()
-	{
-		return finishedButton;
-	}
+  public Box getBox() {
+    return box;
+  }
 
-	/**
-	 * Only called by the item XSLT extension. Thankfully.
-	 * 
-	 * @param info
-	 * @param functionName
-	 * @param sampleResource
-	 * @return
-	 */
-	public JSCallable getSelectFunction(SectionInfo info, String functionName, SelectedResource sampleResource)
-	{
-		char type = sampleResource.getType();
-		String uuid = sampleResource.getUuid();
-		int version = sampleResource.getVersion();
-		if( type == SelectedResource.TYPE_ATTACHMENT )
-		{
-			SubmitValuesFunction addAttach = events.getSubmitValuesFunction("addAttachment");
-			ScriptVariable uuidVar = new ScriptVariable("uuid");
-			return new SimpleFunction(functionName, new ReturnStatement(new FunctionCallExpression(addAttach, uuid,
-				version, uuidVar)), uuidVar);
-		}
-		else if( type == SelectedResource.TYPE_PATH )
-		{
-			if( sampleResource.getUrl().length() == 0 )
-			{
-				return new SimpleFunction(functionName, new ReturnStatement(new FunctionCallExpression(
-					events.getSubmitValuesFunction("addItem"), uuid, version)));
-			}
-			SubmitValuesFunction addPath = events.getSubmitValuesFunction("addPath");
-			ScriptVariable pathVar = new ScriptVariable("path");
-			ScriptVariable titleVar = new ScriptVariable("title");
-			return new SimpleFunction(functionName, new ReturnStatement(new FunctionCallExpression(addPath, uuid,
-				version, pathVar, titleVar)), pathVar, titleVar);
+  public Link getViewSelectedLink() {
+    return viewSelectedLink;
+  }
 
-		}
-		throw new UnsupportedOperationException();
-	}
+  public Link getUnselectAllLink() {
+    return unselectAllLink;
+  }
 
-	@Override
-	public Class<SelectionSessionModel> getModelClass()
-	{
-		return SelectionSessionModel.class;
-	}
+  public Button getFinishedButton() {
+    return finishedButton;
+  }
 
-	public static class SelectionSessionModel
-	{
-		private SelectionSession session;
+  /**
+   * Only called by the item XSLT extension. Thankfully.
+   *
+   * @param info
+   * @param functionName
+   * @param sampleResource
+   * @return
+   */
+  public JSCallable getSelectFunction(
+      SectionInfo info, String functionName, SelectedResource sampleResource) {
+    char type = sampleResource.getType();
+    String uuid = sampleResource.getUuid();
+    int version = sampleResource.getVersion();
+    if (type == SelectedResource.TYPE_ATTACHMENT) {
+      SubmitValuesFunction addAttach = events.getSubmitValuesFunction("addAttachment");
+      ScriptVariable uuidVar = new ScriptVariable("uuid");
+      return new SimpleFunction(
+          functionName,
+          new ReturnStatement(new FunctionCallExpression(addAttach, uuid, version, uuidVar)),
+          uuidVar);
+    } else if (type == SelectedResource.TYPE_PATH) {
+      if (sampleResource.getUrl().length() == 0) {
+        return new SimpleFunction(
+            functionName,
+            new ReturnStatement(
+                new FunctionCallExpression(
+                    events.getSubmitValuesFunction("addItem"), uuid, version)));
+      }
+      SubmitValuesFunction addPath = events.getSubmitValuesFunction("addPath");
+      ScriptVariable pathVar = new ScriptVariable("path");
+      ScriptVariable titleVar = new ScriptVariable("title");
+      return new SimpleFunction(
+          functionName,
+          new ReturnStatement(
+              new FunctionCallExpression(addPath, uuid, version, pathVar, titleVar)),
+          pathVar,
+          titleVar);
+    }
+    throw new UnsupportedOperationException();
+  }
 
-		public SelectionSession getSession()
-		{
-			return session;
-		}
+  @Override
+  public Class<SelectionSessionModel> getModelClass() {
+    return SelectionSessionModel.class;
+  }
 
-		public void setSession(SelectionSession session)
-		{
-			this.session = session;
-		}
-	}
+  public static class SelectionSessionModel {
+    private SelectionSession session;
+
+    public SelectionSession getSession() {
+      return session;
+    }
+
+    public void setSession(SelectionSession session) {
+      this.session = session;
+    }
+  }
 }

@@ -30,15 +30,15 @@ import com.tle.web.scripting.types.ItemScriptTypeImpl;
 import com.tle.web.scripting.types.SearchResultsScriptTypeImpl;
 
 @BindFactory
-public interface ScriptTypeFactory
-{
-	CollectionScriptTypeImpl createCollection(@Assisted("collection") ItemDefinition collection);
+public interface ScriptTypeFactory {
+  CollectionScriptTypeImpl createCollection(@Assisted("collection") ItemDefinition collection);
 
-	ItemScriptTypeImpl createItem(@Assisted("item") Item item);
+  ItemScriptTypeImpl createItem(@Assisted("item") Item item);
 
-	ItemScriptTypeImpl createItem(@Assisted("itemId") ItemId itemId);
+  ItemScriptTypeImpl createItem(@Assisted("itemId") ItemId itemId);
 
-	AttachmentScriptTypeImpl createAttachment(@Assisted("attachment") Attachment attachment, @Assisted("staging") FileHandle staging);
+  AttachmentScriptTypeImpl createAttachment(
+      @Assisted("attachment") Attachment attachment, @Assisted("staging") FileHandle staging);
 
-	SearchResultsScriptTypeImpl createSearchResults(@Assisted("results") SearchResults<Item> results);
+  SearchResultsScriptTypeImpl createSearchResults(@Assisted("results") SearchResults<Item> results);
 }

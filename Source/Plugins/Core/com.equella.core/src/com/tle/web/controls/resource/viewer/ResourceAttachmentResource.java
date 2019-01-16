@@ -72,200 +72,187 @@ import com.tle.web.viewurl.resource.SimpleUrlResource;
 @Bind
 @Singleton
 public class ResourceAttachmentResource
-	implements
-		AttachmentResourceExtension<CustomAttachment>,
-		RegisterMimeTypeExtension<CustomAttachment>
-{
-	static
-	{
-		PluginResourceHandler.init(ResourceAttachmentResource.class);
-	}
+    implements AttachmentResourceExtension<CustomAttachment>,
+        RegisterMimeTypeExtension<CustomAttachment> {
+  static {
+    PluginResourceHandler.init(ResourceAttachmentResource.class);
+  }
 
-	@PlugKey("ressel.details.type")
-	private static Label TYPE;
-	@PlugKey("ressel.details.mimetype")
-	private static Label MIMETYPE;
-	@PlugKey("ressel.details.item.nodetail")
-	private static Label LABEL_NA;
-	@PlugKey("ressel.details.item.name")
-	private static Label ITEM_NAME;
-	@PlugKey("ressel.details.item.collection")
-	private static Label ITEM_COLLECTION;
-	@PlugKey("ressel.details.item.version")
-	private static Label ITEM_VERSION;
-	@PlugKey("ressel.details.item.rating")
-	private static Label ITEM_RATING;
-	@PlugKey("ressel.details.item.lastmod")
-	private static Label ITEM_MODIFIED;
+  @PlugKey("ressel.details.type")
+  private static Label TYPE;
 
-	private static final Log LOGGER = LogFactory.getLog(ResourceAttachmentResource.class);
+  @PlugKey("ressel.details.mimetype")
+  private static Label MIMETYPE;
 
-	@Inject
-	private ViewableItemFactory viewableItemFactory;
-	@Inject
-	private AttachmentResourceService attachmentResourceService;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private IntegrationService integService;
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private BundleCache bundleCache;
-	@Inject
-	private ItemCommentService itemCommentService;
-	@Inject
-	private DateRendererFactory dateRendererFactory;
+  @PlugKey("ressel.details.item.nodetail")
+  private static Label LABEL_NA;
 
-	@Override
-	public ViewableResource process(SectionInfo info, ViewableResource resource, CustomAttachment attachment)
-	{
-		char type = ((String) attachment.getData("type")).charAt(0);
-		if( SelectedResource.TYPE_REMOTE == type )
-		{
-			return new SimpleUrlResource(resource, attachment.getUrl(), attachment.getDescription(), false);
-		}
-		try
-		{
-			boolean latest = false;
-			ItemId itemId = new ItemId((String) attachment.getData("uuid"), (Integer) attachment.getData("version"));
-			if( itemId.getVersion() == 0 )
-			{
-				latest = true;
-				int liveVersion = itemService.getLiveItemVersion(itemId.getUuid());
-				itemId = new ItemId(itemId.getUuid(), liveVersion);
-			}
+  @PlugKey("ressel.details.item.name")
+  private static Label ITEM_NAME;
 
-			final ViewableItem<Item> viewableItem;
-			if( integService.isInIntegrationSession(info) )
-			{
-				viewableItem = integService.getIntegrationServiceForData(integService.getSessionData(info))
-					.createViewableItem(itemId, latest, null);
-			}
-			else
-			{
-				viewableItem = viewableItemFactory.createNewViewableItem(itemId);
-			}
+  @PlugKey("ressel.details.item.collection")
+  private static Label ITEM_COLLECTION;
 
-			if( type == SelectedResource.TYPE_PATH )
-			{
-				ViewableResource baseResource = attachmentResourceService.createPathResource(info, viewableItem,
-					attachment.getUrl(), attachment);
-				if( Check.isEmpty(attachment.getUrl()) )
-				{
-					baseResource = new LinkedItemResource(baseResource, viewableItem);
-				}
-				resource = baseResource;
-			}
-			else if( type == SelectedResource.TYPE_ATTACHMENT )
-			{
-				Item item = viewableItem.getItem();
-				Map<String, Attachment> attachMap = UnmodifiableAttachments
-					.convertToMapUuid(item.getAttachmentsUnmodifiable());
+  @PlugKey("ressel.details.item.version")
+  private static Label ITEM_VERSION;
 
-				//TODO: quicker? possibly slower if getItem is called elsewhere
-				//Attachment linkedAttachment = itemService.getAttachmentForFilepath(itemId, attachment.getUrl());
-				Attachment linkedAttachment = attachMap.get(attachment.getUrl());
-				if( linkedAttachment != null )
-				{
-					resource = attachmentResourceService.getViewableResource(info, viewableItem, linkedAttachment);
-					// attached CustomAttachments should always be visible...
-					resource.setAttribute(ViewableResource.KEY_HIDDEN, false);
-				}
-				else
-				{
-					// TODO: This needs to be turned into a resource
-					// which shows \"deleted\" or something
-					LOGGER.warn("Attachment not found");
-					FileAttachment dummy = new FileAttachment();
-					dummy.setDescription(attachment.getDescription());
-					dummy.setFilename(attachment.getDescription());
-					resource = attachmentResourceService.getViewableResource(info, viewableItem, dummy);
-				}
-			}
-		}
-		catch( NotFoundException nfe )
-		{
-			// TODO: This needs to be turned into a resource which
-			// shows \"deleted\" or something
-			FileAttachment dummy = new FileAttachment();
-			dummy.setDescription(attachment.getDescription());
-			dummy.setFilename(attachment.getDescription());
-			resource = attachmentResourceService.getViewableResource(info, resource.getViewableItem(), dummy);
-		}
-		return resource;
-	}
+  @PlugKey("ressel.details.item.rating")
+  private static Label ITEM_RATING;
 
-	public class LinkedItemResource extends AbstractWrappedResource
-	{
-		private final ViewableItem<Item> vitem;
+  @PlugKey("ressel.details.item.lastmod")
+  private static Label ITEM_MODIFIED;
 
-		public LinkedItemResource(ViewableResource inner, ViewableItem<Item> vitem)
-		{
-			super(inner);
-			this.vitem = vitem;
-		}
+  private static final Log LOGGER = LogFactory.getLog(ResourceAttachmentResource.class);
 
-		@Override
-		public String getMimeType()
-		{
-			return MimeTypeConstants.MIME_ITEM;
-		}
+  @Inject private ViewableItemFactory viewableItemFactory;
+  @Inject private AttachmentResourceService attachmentResourceService;
+  @Inject private ItemService itemService;
+  @Inject private IntegrationService integService;
+  @Inject private InstitutionService institutionService;
+  @Inject private BundleCache bundleCache;
+  @Inject private ItemCommentService itemCommentService;
+  @Inject private DateRendererFactory dateRendererFactory;
 
-		@Override
-		public String getDescription()
-		{
-			final Map<ItemId, LanguageBundle> itemNames = itemService
-				.getItemNames(Collections.singleton(vitem.getItemId()));
-			return CurrentLocale.get(itemNames.get(vitem.getItemId()), vitem.getItemId().getUuid());
-		}
+  @Override
+  public ViewableResource process(
+      SectionInfo info, ViewableResource resource, CustomAttachment attachment) {
+    char type = ((String) attachment.getData("type")).charAt(0);
+    if (SelectedResource.TYPE_REMOTE == type) {
+      return new SimpleUrlResource(
+          resource, attachment.getUrl(), attachment.getDescription(), false);
+    }
+    try {
+      boolean latest = false;
+      ItemId itemId =
+          new ItemId((String) attachment.getData("uuid"), (Integer) attachment.getData("version"));
+      if (itemId.getVersion() == 0) {
+        latest = true;
+        int liveVersion = itemService.getLiveItemVersion(itemId.getUuid());
+        itemId = new ItemId(itemId.getUuid(), liveVersion);
+      }
 
-		@Override
-		public ImageRenderer createStandardThumbnailRenderer(Label label)
-		{
-			ItemKey itemId = getViewableItem().getItemId();
-			String source = institutionService
-				.institutionalise(MessageFormat.format("thumbs/{0}/{1}/", itemId.getUuid(), itemId.getVersion()));
-			return new ImageRenderer(source, label);
-		}
+      final ViewableItem<Item> viewableItem;
+      if (integService.isInIntegrationSession(info)) {
+        viewableItem =
+            integService
+                .getIntegrationServiceForData(integService.getSessionData(info))
+                .createViewableItem(itemId, latest, null);
+      } else {
+        viewableItem = viewableItemFactory.createNewViewableItem(itemId);
+      }
 
-		@Override
-		public List<AttachmentDetail> getCommonAttachmentDetails()
-		{
-			List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
+      if (type == SelectedResource.TYPE_PATH) {
+        ViewableResource baseResource =
+            attachmentResourceService.createPathResource(
+                info, viewableItem, attachment.getUrl(), attachment);
+        if (Check.isEmpty(attachment.getUrl())) {
+          baseResource = new LinkedItemResource(baseResource, viewableItem);
+        }
+        resource = baseResource;
+      } else if (type == SelectedResource.TYPE_ATTACHMENT) {
+        Item item = viewableItem.getItem();
+        Map<String, Attachment> attachMap =
+            UnmodifiableAttachments.convertToMapUuid(item.getAttachmentsUnmodifiable());
 
-			// Type
-			commonDetails.add(makeDetail(TYPE, MIMETYPE));
+        // TODO: quicker? possibly slower if getItem is called elsewhere
+        // Attachment linkedAttachment = itemService.getAttachmentForFilepath(itemId,
+        // attachment.getUrl());
+        Attachment linkedAttachment = attachMap.get(attachment.getUrl());
+        if (linkedAttachment != null) {
+          resource =
+              attachmentResourceService.getViewableResource(info, viewableItem, linkedAttachment);
+          // attached CustomAttachments should always be visible...
+          resource.setAttribute(ViewableResource.KEY_HIDDEN, false);
+        } else {
+          // TODO: This needs to be turned into a resource
+          // which shows \"deleted\" or something
+          LOGGER.warn("Attachment not found");
+          FileAttachment dummy = new FileAttachment();
+          dummy.setDescription(attachment.getDescription());
+          dummy.setFilename(attachment.getDescription());
+          resource = attachmentResourceService.getViewableResource(info, viewableItem, dummy);
+        }
+      }
+    } catch (NotFoundException nfe) {
+      // TODO: This needs to be turned into a resource which
+      // shows \"deleted\" or something
+      FileAttachment dummy = new FileAttachment();
+      dummy.setDescription(attachment.getDescription());
+      dummy.setFilename(attachment.getDescription());
+      resource =
+          attachmentResourceService.getViewableResource(info, resource.getViewableItem(), dummy);
+    }
+    return resource;
+  }
 
-			// Get Item details
-			ItemId itemId = ItemId.fromKey(vitem.getItemId());
-			Map<String, Object> allInfo = itemService.getItemInfo(itemId);
-			int rating = AttachmentHandlerUtils.getRating(itemCommentService.getAverageRatingForItem(itemId));
+  public class LinkedItemResource extends AbstractWrappedResource {
+    private final ViewableItem<Item> vitem;
 
-			if( !Check.isEmpty(allInfo) )
-			{
-				BundleLabel name = new BundleLabel(allInfo.get("name_id"), LABEL_NA, bundleCache);
-				BundleLabel collection = new BundleLabel(allInfo.get("collection_id"), bundleCache);
+    public LinkedItemResource(ViewableResource inner, ViewableItem<Item> vitem) {
+      super(inner);
+      this.vitem = vitem;
+    }
 
-				commonDetails.add(makeDetail(ITEM_NAME, name)); // Name
-				commonDetails.add(makeDetail(ITEM_COLLECTION, collection)); // Collection
-				commonDetails.add(makeDetail(ITEM_VERSION, new NumberLabel(itemId.getVersion()))); // Version
-				Date date = (Date) allInfo.get("date_mod");
-				if( date != null )
-				{
-					commonDetails.add(makeDetail(ITEM_MODIFIED, dateRendererFactory.createDateRenderer(date)));
-				}
-				commonDetails.add(makeDetail(ITEM_RATING,
-					new DivRenderer("rating-stars " + AttachmentHandlerUtils.RATING_CLASSES.get(rating), "")));
-			}
+    @Override
+    public String getMimeType() {
+      return MimeTypeConstants.MIME_ITEM;
+    }
 
-			return commonDetails;
-		}
-	}
+    @Override
+    public String getDescription() {
+      final Map<ItemId, LanguageBundle> itemNames =
+          itemService.getItemNames(Collections.singleton(vitem.getItemId()));
+      return CurrentLocale.get(itemNames.get(vitem.getItemId()), vitem.getItemId().getUuid());
+    }
 
-	@Override
-	public String getMimeType(CustomAttachment attachment)
-	{
-		return MimeTypeConstants.MIME_ITEM;
-	}
+    @Override
+    public ImageRenderer createStandardThumbnailRenderer(Label label) {
+      ItemKey itemId = getViewableItem().getItemId();
+      String source =
+          institutionService.institutionalise(
+              MessageFormat.format("thumbs/{0}/{1}/", itemId.getUuid(), itemId.getVersion()));
+      return new ImageRenderer(source, label);
+    }
+
+    @Override
+    public List<AttachmentDetail> getCommonAttachmentDetails() {
+      List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
+
+      // Type
+      commonDetails.add(makeDetail(TYPE, MIMETYPE));
+
+      // Get Item details
+      ItemId itemId = ItemId.fromKey(vitem.getItemId());
+      Map<String, Object> allInfo = itemService.getItemInfo(itemId);
+      int rating =
+          AttachmentHandlerUtils.getRating(itemCommentService.getAverageRatingForItem(itemId));
+
+      if (!Check.isEmpty(allInfo)) {
+        BundleLabel name = new BundleLabel(allInfo.get("name_id"), LABEL_NA, bundleCache);
+        BundleLabel collection = new BundleLabel(allInfo.get("collection_id"), bundleCache);
+
+        commonDetails.add(makeDetail(ITEM_NAME, name)); // Name
+        commonDetails.add(makeDetail(ITEM_COLLECTION, collection)); // Collection
+        commonDetails.add(
+            makeDetail(ITEM_VERSION, new NumberLabel(itemId.getVersion()))); // Version
+        Date date = (Date) allInfo.get("date_mod");
+        if (date != null) {
+          commonDetails.add(
+              makeDetail(ITEM_MODIFIED, dateRendererFactory.createDateRenderer(date)));
+        }
+        commonDetails.add(
+            makeDetail(
+                ITEM_RATING,
+                new DivRenderer(
+                    "rating-stars " + AttachmentHandlerUtils.RATING_CLASSES.get(rating), "")));
+      }
+
+      return commonDetails;
+    }
+  }
+
+  @Override
+  public String getMimeType(CustomAttachment attachment) {
+    return MimeTypeConstants.MIME_ITEM;
+  }
 }

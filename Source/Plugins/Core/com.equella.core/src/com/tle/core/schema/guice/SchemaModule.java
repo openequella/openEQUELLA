@@ -21,19 +21,15 @@ import com.tle.core.schema.SchemaReferences;
 import com.tle.core.schema.extension.SchemaSaveExtension;
 
 @SuppressWarnings("nls")
-public class SchemaModule extends PluginTrackerModule
-{
-	@Override
-	protected String getPluginId()
-	{
-		return "com.tle.core.schema";
-	}
+public class SchemaModule extends PluginTrackerModule {
+  @Override
+  protected String getPluginId() {
+    return "com.tle.core.schema";
+  }
 
-	@Override
-	protected void configure()
-	{
-		bindTracker(SchemaReferences.class, "schemaRefs", "bean");
-		bindTracker(SchemaSaveExtension.class, "schemaSave", "bean");
-	}
-
+  @Override
+  protected void configure() {
+    bindTracker(SchemaReferences.class, "schemaRefs", "bean");
+    bindTracker(SchemaSaveExtension.class, "schemaSave", "bean");
+  }
 }

@@ -30,14 +30,22 @@ import edu.harvard.hul.ois.mets.File;
 import edu.harvard.hul.ois.mets.helper.MetsElement;
 import edu.harvard.hul.ois.mets.helper.MetsIDElement;
 
-public interface MetsAttachmentImporterExporter
-{
-	boolean canExport(Item item, Attachment attachment);
+public interface MetsAttachmentImporterExporter {
+  boolean canExport(Item item, Attachment attachment);
 
-	boolean canImport(File parentElem, MetsElement elem, PropBagEx xmlData, ItemNavigationNode parentNode);
+  boolean canImport(
+      File parentElem, MetsElement elem, PropBagEx xmlData, ItemNavigationNode parentNode);
 
-	List<MetsIDElementInfo<? extends MetsIDElement>> export(SectionInfo info, Item item, Attachment attachment);
+  List<MetsIDElementInfo<? extends MetsIDElement>> export(
+      SectionInfo info, Item item, Attachment attachment);
 
-	void doImport(Item item, FileHandle staging, String packageFolder, File parentElem, MetsElement elem,
-		PropBagEx xmlData, ItemNavigationNode parentNode, AttachmentAdder attachmentAdder);
+  void doImport(
+      Item item,
+      FileHandle staging,
+      String packageFolder,
+      File parentElem,
+      MetsElement elem,
+      PropBagEx xmlData,
+      ItemNavigationNode parentNode,
+      AttachmentAdder attachmentAdder);
 }

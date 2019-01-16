@@ -26,20 +26,15 @@ import com.tle.web.freemarker.methods.UserFormatMethod;
 
 @Bind
 @Singleton
-public class SectionsConfiguration extends BasicConfiguration
-{
-	@Inject
-	private CustomTemplateLoader customLoader;
-	@Inject
-	private SectionsBeansWrapper beanWrapper;
-	@Inject
-	private UserService userService;
+public class SectionsConfiguration extends BasicConfiguration {
+  @Inject private CustomTemplateLoader customLoader;
+  @Inject private SectionsBeansWrapper beanWrapper;
+  @Inject private UserService userService;
 
-	@PostConstruct
-	protected void setup()
-	{
-		setObjectWrapper(beanWrapper);
-		setTemplateLoader(customLoader);
-		setSharedVariable("_userformat", new UserFormatMethod(userService)); //$NON-NLS-1$
-	}
+  @PostConstruct
+  protected void setup() {
+    setObjectWrapper(beanWrapper);
+    setTemplateLoader(customLoader);
+    setSharedVariable("_userformat", new UserFormatMethod(userService)); // $NON-NLS-1$
+  }
 }

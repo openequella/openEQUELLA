@@ -28,21 +28,19 @@ import com.tle.core.migration.AbstractHibernateSchemaMigration;
 
 @Bind
 @Singleton
-public class AddNotificationSchema extends AbstractCombinedSchemaMigration
-{
-	private final ImmutableList<AbstractHibernateSchemaMigration> migrations;
+public class AddNotificationSchema extends AbstractCombinedSchemaMigration {
+  private final ImmutableList<AbstractHibernateSchemaMigration> migrations;
 
-	@Inject
-	public AddNotificationSchema(AddNotificationSchemaOrig original, AddTaskStartDate addLast,
-		CreateTaskHistoryTable addTaskHistory)
-	{
-		migrations = ImmutableList.of(original, addLast, addTaskHistory);
-	}
+  @Inject
+  public AddNotificationSchema(
+      AddNotificationSchemaOrig original,
+      AddTaskStartDate addLast,
+      CreateTaskHistoryTable addTaskHistory) {
+    migrations = ImmutableList.of(original, addLast, addTaskHistory);
+  }
 
-	@Override
-	protected List<AbstractHibernateSchemaMigration> getMigrations()
-	{
-		return migrations;
-	}
-
+  @Override
+  protected List<AbstractHibernateSchemaMigration> getMigrations() {
+    return migrations;
+  }
 }

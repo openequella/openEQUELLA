@@ -40,76 +40,77 @@ import edu.harvard.hul.ois.mets.Loctype;
 import edu.harvard.hul.ois.mets.helper.MetsElement;
 import edu.harvard.hul.ois.mets.helper.MetsIDElement;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
 @Singleton
-public class CustomMetsAttachmentImporterExporter extends AbstractMetsAttachmentImportExporter
-{
-	@Override
-	public boolean canExport(Item item, Attachment attachment)
-	{
-		return attachment.getAttachmentType() == AttachmentType.CUSTOM;
-	}
+public class CustomMetsAttachmentImporterExporter extends AbstractMetsAttachmentImportExporter {
+  @Override
+  public boolean canExport(Item item, Attachment attachment) {
+    return attachment.getAttachmentType() == AttachmentType.CUSTOM;
+  }
 
-	@Override
-	public boolean canImport(File parentElem, MetsElement elem, PropBagEx xmlData, ItemNavigationNode parentNode)
-	{
-		return idPrefixMatch(elem, "custom:");
-	}
+  @Override
+  public boolean canImport(
+      File parentElem, MetsElement elem, PropBagEx xmlData, ItemNavigationNode parentNode) {
+    return idPrefixMatch(elem, "custom:");
+  }
 
-	@Override
-	public List<MetsIDElementInfo<? extends MetsIDElement>> export(SectionInfo info, Item item, Attachment attachment)
-	{
-		final List<MetsIDElementInfo<? extends MetsIDElement>> res = new ArrayList<MetsIDElementInfo<? extends MetsIDElement>>();
+  @Override
+  public List<MetsIDElementInfo<? extends MetsIDElement>> export(
+      SectionInfo info, Item item, Attachment attachment) {
+    final List<MetsIDElementInfo<? extends MetsIDElement>> res =
+        new ArrayList<MetsIDElementInfo<? extends MetsIDElement>>();
 
-		final CustomAttachment custom = (CustomAttachment) attachment;
+    final CustomAttachment custom = (CustomAttachment) attachment;
 
-		final PropBagEx xmlData = new PropBagEx();
-		final XStream x = new XStream();
-		xmlData.append("xstream", new PropBagEx(x.toXML(custom.getDataAttributesReadOnly())));
-		xmlData.setNode("url", custom.getUrl());
-		xmlData.setNode("uuid", custom.getUuid());
-		xmlData.setNode("description", custom.getDescription());
-		xmlData.setNode("type", custom.getType());
+    final PropBagEx xmlData = new PropBagEx();
+    final XStream x = new XStream();
+    xmlData.append("xstream", new PropBagEx(x.toXML(custom.getDataAttributesReadOnly())));
+    xmlData.setNode("url", custom.getUrl());
+    xmlData.setNode("uuid", custom.getUuid());
+    xmlData.setNode("description", custom.getDescription());
+    xmlData.setNode("type", custom.getType());
 
-		final FLocat location = new FLocat();
-		location.setID("custom:" + custom.getUuid());
-		location.setXlinkHref(custom.getUuid());
-		location.setXlinkTitle(custom.getDescription());
-		location.setLOCTYPE(Loctype.OTHER);
-		location.setOTHERLOCTYPE("equellacustom");
+    final FLocat location = new FLocat();
+    location.setID("custom:" + custom.getUuid());
+    location.setXlinkHref(custom.getUuid());
+    location.setXlinkTitle(custom.getDescription());
+    location.setLOCTYPE(Loctype.OTHER);
+    location.setOTHERLOCTYPE("equellacustom");
 
-		res.add(new MetsIDElementInfo<FLocat>(location, "equella/" + custom.getType(), xmlData));
-		return res;
-	}
+    res.add(new MetsIDElementInfo<FLocat>(location, "equella/" + custom.getType(), xmlData));
+    return res;
+  }
 
-	@Override
-	public void doImport(Item item, FileHandle staging, String packageFolder, File parentElem, MetsElement elem,
-		PropBagEx xmlData, ItemNavigationNode parentNode, AttachmentAdder attachmentAdder)
-	{
-		final CustomAttachment custom = new CustomAttachment();
+  @Override
+  public void doImport(
+      Item item,
+      FileHandle staging,
+      String packageFolder,
+      File parentElem,
+      MetsElement elem,
+      PropBagEx xmlData,
+      ItemNavigationNode parentNode,
+      AttachmentAdder attachmentAdder) {
+    final CustomAttachment custom = new CustomAttachment();
 
-		final XStream x = new XStream();
-		// need to use the first child
-		PropBagEx mapXml = null;
-		for( PropBagEx child : xmlData.getSubtree("xstream").iterator() )
-		{
-			mapXml = child;
-			break;
-		}
-		if( mapXml != null )
-		{
-			custom.setDataAttributes((Map<String, Object>) x.fromXML(mapXml.toString()));
-		}
+    final XStream x = new XStream();
+    // need to use the first child
+    PropBagEx mapXml = null;
+    for (PropBagEx child : xmlData.getSubtree("xstream").iterator()) {
+      mapXml = child;
+      break;
+    }
+    if (mapXml != null) {
+      custom.setDataAttributes((Map<String, Object>) x.fromXML(mapXml.toString()));
+    }
 
-		custom.setUrl(xmlData.getNode("url"));
-		custom.setUuid(xmlData.getNode("uuid"));
-		final String description = xmlData.getNode("description");
-		custom.setDescription(description);
-		custom.setType(xmlData.getNode("type"));
+    custom.setUrl(xmlData.getNode("url"));
+    custom.setUuid(xmlData.getNode("uuid"));
+    final String description = xmlData.getNode("description");
+    custom.setDescription(description);
+    custom.setType(xmlData.getNode("type"));
 
-		attachmentAdder.addAttachment(parentNode, custom, description);
-	}
+    attachmentAdder.addAttachment(parentNode, custom, description);
+  }
 }

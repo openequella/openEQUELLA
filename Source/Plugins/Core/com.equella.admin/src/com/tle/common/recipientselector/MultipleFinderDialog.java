@@ -32,99 +32,89 @@ import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.remoting.RemoteUserService;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @SuppressWarnings("nls")
-public class MultipleFinderDialog implements ActionListener
-{
-	private JButton ok;
-	private JButton cancel;
+public class MultipleFinderDialog implements ActionListener {
+  private JButton ok;
+  private JButton cancel;
 
-	private MultipleFinderControl control;
+  private MultipleFinderControl control;
 
-	private JPanel all;
-	private JDialog dialog;
-	private boolean returnResults;
+  private JPanel all;
+  private JDialog dialog;
+  private boolean returnResults;
 
-	public MultipleFinderDialog(RemoteUserService userService)
-	{
-		setupGUI(userService);
-	}
+  public MultipleFinderDialog(RemoteUserService userService) {
+    setupGUI(userService);
+  }
 
-	private void setupGUI(RemoteUserService userService)
-	{
-		control = new MultipleFinderControl(userService);
+  private void setupGUI(RemoteUserService userService) {
+    control = new MultipleFinderControl(userService);
 
-		ok = new JButton(CurrentLocale.get("com.tle.admin.ok"));
-		cancel = new JButton(CurrentLocale.get("com.tle.admin.cancel"));
+    ok = new JButton(CurrentLocale.get("com.tle.admin.ok"));
+    cancel = new JButton(CurrentLocale.get("com.tle.admin.cancel"));
 
-		ok.addActionListener(this);
-		cancel.addActionListener(this);
+    ok.addActionListener(this);
+    cancel.addActionListener(this);
 
-		final int height1 = ok.getPreferredSize().height;
-		final int width1 = cancel.getPreferredSize().width;
+    final int height1 = ok.getPreferredSize().height;
+    final int width1 = cancel.getPreferredSize().width;
 
-		final int[] rows = {TableLayout.FILL, height1,};
-		final int[] cols = {TableLayout.FILL, width1, width1,};
+    final int[] rows = {
+      TableLayout.FILL, height1,
+    };
+    final int[] cols = {
+      TableLayout.FILL, width1, width1,
+    };
 
-		all = new JPanel(new TableLayout(rows, cols));
-		all.setBorder(AppletGuiUtils.DEFAULT_BORDER);
+    all = new JPanel(new TableLayout(rows, cols));
+    all.setBorder(AppletGuiUtils.DEFAULT_BORDER);
 
-		all.add(control, new Rectangle(0, 0, 3, 1));
-		all.add(ok, new Rectangle(1, 1, 1, 1));
-		all.add(cancel, new Rectangle(2, 1, 1, 1));
-	}
+    all.add(control, new Rectangle(0, 0, 3, 1));
+    all.add(ok, new Rectangle(1, 1, 1, 1));
+    all.add(cancel, new Rectangle(2, 1, 1, 1));
+  }
 
-	public List<String> editExpressions(Component parent, List<String> existingExpressions)
-	{
-		control.load(existingExpressions);
+  public List<String> editExpressions(Component parent, List<String> existingExpressions) {
+    control.load(existingExpressions);
 
-		dialog = ComponentHelper.createJDialog(parent);
-		dialog.setTitle(CurrentLocale.get("com.tle.admin.recipients.multiplefinderdialog.select"));
-		dialog.setContentPane(all);
-		dialog.setModal(true);
+    dialog = ComponentHelper.createJDialog(parent);
+    dialog.setTitle(CurrentLocale.get("com.tle.admin.recipients.multiplefinderdialog.select"));
+    dialog.setContentPane(all);
+    dialog.setModal(true);
 
-		ComponentHelper.percentageOfScreen(dialog, 0.8f, 0.8f);
-		ComponentHelper.centreOnScreen(dialog);
+    ComponentHelper.percentageOfScreen(dialog, 0.8f, 0.8f);
+    ComponentHelper.centreOnScreen(dialog);
 
-		// Show modal dialog...
-		dialog.setVisible(true);
-		// Dialog closed.
+    // Show modal dialog...
+    dialog.setVisible(true);
+    // Dialog closed.
 
-		if( returnResults )
-		{
-			return control.save();
-		}
-		else
-		{
-			return null;
-		}
-	}
+    if (returnResults) {
+      return control.save();
+    } else {
+      return null;
+    }
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		if( e.getSource() == ok )
-		{
-			destroyDialog();
-			returnResults = true;
-		}
-		else if( e.getSource() == cancel )
-		{
-			destroyDialog();
-			returnResults = false;
-		}
-	}
+  /*
+   * (non-Javadoc)
+   * @see
+   * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+   */
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    if (e.getSource() == ok) {
+      destroyDialog();
+      returnResults = true;
+    } else if (e.getSource() == cancel) {
+      destroyDialog();
+      returnResults = false;
+    }
+  }
 
-	private void destroyDialog()
-	{
-		dialog.setVisible(false);
-		dialog = null;
-	}
+  private void destroyDialog() {
+    dialog.setVisible(false);
+    dialog = null;
+  }
 }

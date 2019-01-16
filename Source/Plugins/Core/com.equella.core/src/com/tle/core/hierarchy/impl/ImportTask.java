@@ -41,152 +41,129 @@ import com.tle.core.hibernate.equella.service.InitialiserService;
 import com.tle.core.services.impl.SingleShotTask;
 import com.tle.common.usermanagement.user.UserState;
 
-public class ImportTask extends SingleShotTask
-{
-	private final UserState userState;
-	private final String xml;
-	private final long inTo;
-	private final boolean newids;
-	private final boolean useSecurity;
+public class ImportTask extends SingleShotTask {
+  private final UserState userState;
+  private final String xml;
+  private final long inTo;
+  private final boolean newids;
+  private final boolean useSecurity;
 
-	@Inject
-	private HierarchyServiceImpl hierarchyService;
-	@Inject
-	private HierarchyDao dao;
-	@Inject
-	private RunAsInstitution runAs;
-	@Inject
-	private InitialiserService initialiserService;
-	@Inject
-	private TLEAclManager aclManager;
+  @Inject private HierarchyServiceImpl hierarchyService;
+  @Inject private HierarchyDao dao;
+  @Inject private RunAsInstitution runAs;
+  @Inject private InitialiserService initialiserService;
+  @Inject private TLEAclManager aclManager;
 
-	@Inject
-	public ImportTask(@Assisted UserState userState, @Assisted String xml, @Assisted long inTo,
-		@Assisted("newids") boolean newids, @Assisted("useSecurity") boolean useSecurity)
-	{
-		this.userState = userState;
-		this.xml = xml;
-		this.inTo = inTo;
-		this.newids = newids;
-		this.useSecurity = useSecurity;
-	}
+  @Inject
+  public ImportTask(
+      @Assisted UserState userState,
+      @Assisted String xml,
+      @Assisted long inTo,
+      @Assisted("newids") boolean newids,
+      @Assisted("useSecurity") boolean useSecurity) {
+    this.userState = userState;
+    this.xml = xml;
+    this.inTo = inTo;
+    this.newids = newids;
+    this.useSecurity = useSecurity;
+  }
 
-	@Override
-	public Priority getPriority()
-	{
-		return Priority.INTERACTIVE;
-	}
+  @Override
+  public Priority getPriority() {
+    return Priority.INTERACTIVE;
+  }
 
-	@Override
-	public void runTask() throws Exception
-	{
-		runAs.execute(userState, new Callable<Void>()
-		{
-			@Override
-			public Void call() throws Exception
-			{
-				doImport();
-				return null;
-			}
-		});
-	}
+  @Override
+  public void runTask() throws Exception {
+    runAs.execute(
+        userState,
+        new Callable<Void>() {
+          @Override
+          public Void call() throws Exception {
+            doImport();
+            return null;
+          }
+        });
+  }
 
-	@Transactional
-	void doImport()
-	{
-		HierarchyTopic parent = inTo <= 0 ? null : hierarchyService.getHierarchyTopic(inTo);
-		ExportedHierarchyNode node = (ExportedHierarchyNode) hierarchyService.getXStream().fromXML(xml);
-		initialiserService.initialiseClones(node);
+  @Transactional
+  void doImport() {
+    HierarchyTopic parent = inTo <= 0 ? null : hierarchyService.getHierarchyTopic(inTo);
+    ExportedHierarchyNode node = (ExportedHierarchyNode) hierarchyService.getXStream().fromXML(xml);
+    initialiserService.initialiseClones(node);
 
-		setupStatus(null, countTopics(node));
+    setupStatus(null, countTopics(node));
 
-		doImportRecursive(node, parent);
-	}
+    doImportRecursive(node, parent);
+  }
 
-	private int countTopics(ExportedHierarchyNode node)
-	{
-		int count = 1;
-		List<ExportedHierarchyNode> cs = node.getChildren();
-		for( ExportedHierarchyNode c : cs )
-		{
-			count += countTopics(c);
-		}
-		return count;
-	}
+  private int countTopics(ExportedHierarchyNode node) {
+    int count = 1;
+    List<ExportedHierarchyNode> cs = node.getChildren();
+    for (ExportedHierarchyNode c : cs) {
+      count += countTopics(c);
+    }
+    return count;
+  }
 
-	/**
-	 * @return true if the recursion should continue
-	 */
-	@SuppressWarnings("nls")
-	private boolean doImportRecursive(ExportedHierarchyNode node, HierarchyTopic parent)
-	{
-		HierarchyTopic topic = node.getTopic();
-		topic.setId(0l);
-		if( newids )
-		{
-			topic.setUuid(UUID.randomUUID().toString());
-		}
-		else
-		{
-			HierarchyTopic previous = hierarchyService.getHierarchyTopicByUuid(topic.getUuid());
-			if( previous != null )
-			{
-				addLogEntry(new ValidationError("uuid", CurrentLocale.get(previous.getName())));
-				return false;
-			}
-		}
+  /** @return true if the recursion should continue */
+  @SuppressWarnings("nls")
+  private boolean doImportRecursive(ExportedHierarchyNode node, HierarchyTopic parent) {
+    HierarchyTopic topic = node.getTopic();
+    topic.setId(0l);
+    if (newids) {
+      topic.setUuid(UUID.randomUUID().toString());
+    } else {
+      HierarchyTopic previous = hierarchyService.getHierarchyTopicByUuid(topic.getUuid());
+      if (previous != null) {
+        addLogEntry(new ValidationError("uuid", CurrentLocale.get(previous.getName())));
+        return false;
+      }
+    }
 
-		processImportedQueries(topic.getAdditionalItemDefs());
-		processImportedQueries(topic.getAdditionalSchemas());
-		processImportedQueries(topic.getInheritedItemDefs());
-		processImportedQueries(topic.getInheritedSchemas());
+    processImportedQueries(topic.getAdditionalItemDefs());
+    processImportedQueries(topic.getAdditionalSchemas());
+    processImportedQueries(topic.getInheritedItemDefs());
+    processImportedQueries(topic.getInheritedSchemas());
 
-		hierarchyService.insert(topic, parent, Integer.MAX_VALUE);
-		TargetList targetList = null;
-		if( useSecurity )
-		{
-			targetList = node.getTargetList();
-		}
-		dao.flush();
-		dao.clear();
-		dao.evict(topic);
+    hierarchyService.insert(topic, parent, Integer.MAX_VALUE);
+    TargetList targetList = null;
+    if (useSecurity) {
+      targetList = node.getTargetList();
+    }
+    dao.flush();
+    dao.clear();
+    dao.evict(topic);
 
-		aclManager.setTargetList(Node.HIERARCHY_TOPIC, topic, targetList);
+    aclManager.setTargetList(Node.HIERARCHY_TOPIC, topic, targetList);
 
-		incrementWork();
+    incrementWork();
 
-		List<ExportedHierarchyNode> children = node.getChildren();
-		if( children != null )
-		{
-			for( ExportedHierarchyNode childNode : children )
-			{
-				if( !doImportRecursive(childNode, topic) )
-				{
-					return false;
-				}
-			}
-		}
+    List<ExportedHierarchyNode> children = node.getChildren();
+    if (children != null) {
+      for (ExportedHierarchyNode childNode : children) {
+        if (!doImportRecursive(childNode, topic)) {
+          return false;
+        }
+      }
+    }
 
-		return true;
-	}
+    return true;
+  }
 
-	private <T extends BaseEntity> void processImportedQueries(List<? extends EntityScript<T>> queries)
-	{
-		if( queries != null )
-		{
-			for( Iterator<? extends EntityScript<T>> i = queries.iterator(); i.hasNext(); )
-			{
-				if( i.next().getEntity() == null )
-				{
-					i.remove();
-				}
-			}
-		}
-	}
+  private <T extends BaseEntity> void processImportedQueries(
+      List<? extends EntityScript<T>> queries) {
+    if (queries != null) {
+      for (Iterator<? extends EntityScript<T>> i = queries.iterator(); i.hasNext(); ) {
+        if (i.next().getEntity() == null) {
+          i.remove();
+        }
+      }
+    }
+  }
 
-	@Override
-	protected String getTitleKey()
-	{
-		return null;
-	}
+  @Override
+  protected String getTitleKey() {
+    return null;
+  }
 }

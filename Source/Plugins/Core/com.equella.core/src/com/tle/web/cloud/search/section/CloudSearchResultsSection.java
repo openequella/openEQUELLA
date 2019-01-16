@@ -35,76 +35,70 @@ import com.tle.web.search.base.AbstractSearchResultsSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
 @Bind
 public class CloudSearchResultsSection
-	extends
-		AbstractSearchResultsSection<CloudSearchListEntry, CloudSearchEvent, CloudSearchResultsEvent, CloudSearchResultsSection.CloudSearchResultsModel>
-{
-	@Inject
-	private CloudService cloudService;
+    extends AbstractSearchResultsSection<
+        CloudSearchListEntry,
+        CloudSearchEvent,
+        CloudSearchResultsEvent,
+        CloudSearchResultsSection.CloudSearchResultsModel> {
+  @Inject private CloudService cloudService;
 
-	@Inject
-	private CloudSearchItemListSection list;
+  @Inject private CloudSearchItemListSection list;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.registerInnerSection(list, id);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.registerInnerSection(list, id);
+  }
 
-	@Override
-	public void processResults(SectionInfo info, CloudSearchResultsEvent event)
-	{
-		final CloudSearchResults results = event.getResults();
-		final List<CloudItem> searchResults = results.getResults();
-		for( CloudItem cloudItemBean : searchResults )
-		{
-			list.addItem(info, cloudItemBean, null);
-		}
+  @Override
+  public void processResults(SectionInfo info, CloudSearchResultsEvent event) {
+    final CloudSearchResults results = event.getResults();
+    final List<CloudItem> searchResults = results.getResults();
+    for (CloudItem cloudItemBean : searchResults) {
+      list.addItem(info, cloudItemBean, null);
+    }
 
-		final Collection<String> words = new DefaultSearch.QueryParser(event.getEvent().getQuery()).getHilightedList();
-		final ListSettings<CloudSearchListEntry> listSettings = list.getListSettings(info);
-		listSettings.setHilightedWords(words);
-	}
+    final Collection<String> words =
+        new DefaultSearch.QueryParser(event.getEvent().getQuery()).getHilightedList();
+    final ListSettings<CloudSearchListEntry> listSettings = list.getListSettings(info);
+    listSettings.setHilightedWords(words);
+  }
 
-	@Override
-	protected CloudSearchResultsEvent createResultsEvent(SectionInfo info, CloudSearchEvent searchEvent)
-	{
-		CloudSearchResults results = cloudService.search(searchEvent.getCloudSearch(), searchEvent.getOffset(),
-			searchEvent.getCount());
+  @Override
+  protected CloudSearchResultsEvent createResultsEvent(
+      SectionInfo info, CloudSearchEvent searchEvent) {
+    CloudSearchResults results =
+        cloudService.search(
+            searchEvent.getCloudSearch(), searchEvent.getOffset(), searchEvent.getCount());
 
-		CloudSearchResultsEvent resultsEvent = new CloudSearchResultsEvent(searchEvent, results,
-			results.getFilteredOut());
+    CloudSearchResultsEvent resultsEvent =
+        new CloudSearchResultsEvent(searchEvent, results, results.getFilteredOut());
 
-		return resultsEvent;
-	}
+    return resultsEvent;
+  }
 
-	@Override
-	public CloudSearchEvent createSearchEvent(SectionInfo info)
-	{
-		CloudSearchEvent event = new CloudSearchEvent(null);
-		return event;
-	}
+  @Override
+  public CloudSearchEvent createSearchEvent(SectionInfo info) {
+    CloudSearchEvent event = new CloudSearchEvent(null);
+    return event;
+  }
 
-	@Override
-	public CloudSearchItemListSection getItemList(SectionInfo info)
-	{
-		return list;
-	}
+  @Override
+  public CloudSearchItemListSection getItemList(SectionInfo info) {
+    return list;
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new CloudSearchResultsModel();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new CloudSearchResultsModel();
+  }
 
-	public static class CloudSearchResultsModel extends AbstractSearchResultsSection.SearchResultsModel
-	{
-		// Here be dragons
-	}
+  public static class CloudSearchResultsModel
+      extends AbstractSearchResultsSection.SearchResultsModel {
+    // Here be dragons
+  }
 }

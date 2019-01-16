@@ -34,98 +34,83 @@ import com.dytech.edge.wizard.beans.control.WizardControlItem;
 import com.google.common.base.Throwables;
 import com.tle.common.i18n.LangUtils;
 
-public abstract class AbstractListBirtType extends AbstractBirtType
-{
-	private Map<String, String> displayTexts;
+public abstract class AbstractListBirtType extends AbstractBirtType {
+  private Map<String, String> displayTexts;
 
-	public AbstractListBirtType(IScalarParameterDefn def, int paramNum)
-	{
-		this(def, paramNum, null);
-	}
+  public AbstractListBirtType(IScalarParameterDefn def, int paramNum) {
+    this(def, paramNum, null);
+  }
 
-	public AbstractListBirtType(IScalarParameterDefn def, int paramNum, IParameterGroupDefn group)
-	{
-		super(def, paramNum, group);
-	}
+  public AbstractListBirtType(IScalarParameterDefn def, int paramNum, IParameterGroupDefn group) {
+    super(def, paramNum, group);
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void setupControl(IGetParameterDefinitionTask paramTask, WizardControl control)
-	{
-		super.setupControl(paramTask, control);
-		Object defaultValue = paramTask.getDefaultValue(scalarDef);
-		Collection<IParameterSelectionChoice> selectionList = paramTask.getSelectionList(scalarDef.getName());
-		List<?> errors = paramTask.getErrors();
-		for( Object o : errors )
-		{
-			if( o instanceof Throwable )
-			{
-				throw Throwables.propagate((Throwable) o);
-			}
-			throw new RuntimeException("An unknown error occurred");
-		}
+  @SuppressWarnings("unchecked")
+  @Override
+  protected void setupControl(IGetParameterDefinitionTask paramTask, WizardControl control) {
+    super.setupControl(paramTask, control);
+    Object defaultValue = paramTask.getDefaultValue(scalarDef);
+    Collection<IParameterSelectionChoice> selectionList =
+        paramTask.getSelectionList(scalarDef.getName());
+    List<?> errors = paramTask.getErrors();
+    for (Object o : errors) {
+      if (o instanceof Throwable) {
+        throw Throwables.propagate((Throwable) o);
+      }
+      throw new RuntimeException("An unknown error occurred");
+    }
 
-		List<WizardControlItem> items = control.getItems();
-		displayTexts = new HashMap<String, String>();
-		for( IParameterSelectionChoice choice : selectionList )
-		{
-			String valString = String.valueOf(choice.getValue());
-			String label = choice.getLabel() != null ? choice.getLabel() : String.valueOf(choice.getValue());
-			WizardControlItem item = new WizardControlItem(LangUtils.createTextTempLangugageBundle(label), valString);
-			if( choice.getValue().equals(defaultValue) )
-			{
-				item.setDefaultOption(true);
-			}
-			items.add(item);
+    List<WizardControlItem> items = control.getItems();
+    displayTexts = new HashMap<String, String>();
+    for (IParameterSelectionChoice choice : selectionList) {
+      String valString = String.valueOf(choice.getValue());
+      String label =
+          choice.getLabel() != null ? choice.getLabel() : String.valueOf(choice.getValue());
+      WizardControlItem item =
+          new WizardControlItem(LangUtils.createTextTempLangugageBundle(label), valString);
+      if (choice.getValue().equals(defaultValue)) {
+        item.setDefaultOption(true);
+      }
+      items.add(item);
 
-			displayTexts.put(choice.getValue().toString(), choice.getLabel());
-		}
-	}
+      displayTexts.put(choice.getValue().toString(), choice.getLabel());
+    }
+  }
 
-	@Override
-	public void convertToParams(PropBagEx docXml, Map<String, String[]> params)
-	{
-		List<String> paramVals = new ArrayList<String>();
-		ValueThoroughIterator vals = docXml.iterateAllValues(targetNode);
-		while( vals.hasNext() )
-		{
-			paramVals.add(vals.next());
-		}
-		if( !paramVals.isEmpty() )
-		{
-			params.put(scalarDef.getName(), paramVals.toArray(new String[paramVals.size()]));
-		}
-		else
-		{
-			params.remove(scalarDef.getName());
-		}
-	}
+  @Override
+  public void convertToParams(PropBagEx docXml, Map<String, String[]> params) {
+    List<String> paramVals = new ArrayList<String>();
+    ValueThoroughIterator vals = docXml.iterateAllValues(targetNode);
+    while (vals.hasNext()) {
+      paramVals.add(vals.next());
+    }
+    if (!paramVals.isEmpty()) {
+      params.put(scalarDef.getName(), paramVals.toArray(new String[paramVals.size()]));
+    } else {
+      params.remove(scalarDef.getName());
+    }
+  }
 
-	@Override
-	public void convertToXml(PropBagEx docXml, Map<String, String[]> params)
-	{
-		String[] vals = params.get(scalarDef.getName());
-		if( vals != null )
-		{
-			for( String val : vals )
-			{
-				docXml.createNode(targetNode, val);
-			}
-		}
-	}
+  @Override
+  public void convertToXml(PropBagEx docXml, Map<String, String[]> params) {
+    String[] vals = params.get(scalarDef.getName());
+    if (vals != null) {
+      for (String val : vals) {
+        docXml.createNode(targetNode, val);
+      }
+    }
+  }
 
-	@Override
-	public String[] getDisplayTexts(PropBagEx docXml)
-	{
-		List<String> texts = new ArrayList<String>();
-		ValueThoroughIterator vals = docXml.iterateAllValues(targetNode);
-		while( vals.hasNext() )
-		{
-			String textVal = displayTexts.get(vals.next());
-			if (textVal != null) {
-				texts.add(textVal);
-			}
-		}
-		return texts.toArray(new String[texts.size()]);
-	}
+  @Override
+  public String[] getDisplayTexts(PropBagEx docXml) {
+    List<String> texts = new ArrayList<String>();
+    ValueThoroughIterator vals = docXml.iterateAllValues(targetNode);
+    while (vals.hasNext()) {
+      String textVal = displayTexts.get(vals.next());
+      if (textVal != null) {
+        texts.add(textVal);
+      }
+    }
+    return texts.toArray(new String[texts.size()]);
+  }
 }

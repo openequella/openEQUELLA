@@ -42,73 +42,64 @@ import com.tle.web.workflow.tasks.dialog.ApproveDialog;
 import com.tle.web.workflow.tasks.dialog.RejectDialog;
 
 @Bind
-public class ViewMetadataAction extends AbstractParentViewItemSection<Object>
-{
-	@Component
-	@PlugKey("action.name")
-	private Button metadataButton;
+public class ViewMetadataAction extends AbstractParentViewItemSection<Object> {
+  @Component
+  @PlugKey("action.name")
+  private Button metadataButton;
 
-	@Component
-	@PlugKey("approve.name")
-	private Button approveButton;
+  @Component
+  @PlugKey("approve.name")
+  private Button approveButton;
 
-	@Component
-	@PlugKey("reject.name")
-	private Button rejectButton;
+  @Component
+  @PlugKey("reject.name")
+  private Button rejectButton;
 
-	@EventFactory
-	protected EventGenerator events;
+  @EventFactory protected EventGenerator events;
 
-	@Inject
-	private ModerationService moderationService;
+  @Inject private ModerationService moderationService;
 
-	@Override
-	@SuppressWarnings("nls")
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		metadataButton.setClickHandler(events.getNamedHandler("execute"));
-		metadataButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
-		approveButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
-		rejectButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
-	}
+  @Override
+  @SuppressWarnings("nls")
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    metadataButton.setClickHandler(events.getNamedHandler("execute"));
+    metadataButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
+    approveButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
+    rejectButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
+  }
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		return moderationService.isModerating(info);
-	}
+  @Override
+  public boolean canView(SectionInfo info) {
+    return moderationService.isModerating(info);
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		if( !canView(context) )
-		{
-			return null;
-		}
-		approveButton.setClickHandler(context, context.lookupSection(ApproveDialog.class).getOpenFunction());
-		rejectButton.setClickHandler(context, context.lookupSection(RejectDialog.class).getOpenFunction());
-		return viewFactory.createResult("modbuttons.ftl", this);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    if (!canView(context)) {
+      return null;
+    }
+    approveButton.setClickHandler(
+        context, context.lookupSection(ApproveDialog.class).getOpenFunction());
+    rejectButton.setClickHandler(
+        context, context.lookupSection(RejectDialog.class).getOpenFunction());
+    return viewFactory.createResult("modbuttons.ftl", this);
+  }
 
-	@EventHandlerMethod
-	public void execute(SectionInfo info) throws Exception
-	{
-		moderationService.viewMetadata(info);
-	}
+  @EventHandlerMethod
+  public void execute(SectionInfo info) throws Exception {
+    moderationService.viewMetadata(info);
+  }
 
-	public Button getMetadataButton()
-	{
-		return metadataButton;
-	}
+  public Button getMetadataButton() {
+    return metadataButton;
+  }
 
-	public Button getApproveButton()
-	{
-		return approveButton;
-	}
+  public Button getApproveButton() {
+    return approveButton;
+  }
 
-	public Button getRejectButton()
-	{
-		return rejectButton;
-	}
+  public Button getRejectButton() {
+    return rejectButton;
+  }
 }

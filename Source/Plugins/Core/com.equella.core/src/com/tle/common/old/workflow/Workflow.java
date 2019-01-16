@@ -42,137 +42,113 @@ import com.tle.common.old.workflow.node.WorkflowTreeNode;
 
 @Entity
 @AccessType("field")
-public class Workflow extends BaseEntity
-{
-	private static final long serialVersionUID = 1L;
+public class Workflow extends BaseEntity {
+  private static final long serialVersionUID = 1L;
 
-	private boolean movelive;
+  private boolean movelive;
 
-	@Type(type = "xstream_immutable")
-	private WorkflowTreeNode root;
+  @Type(type = "xstream_immutable")
+  private WorkflowTreeNode root;
 
-	@ElementCollection(fetch = FetchType.LAZY)
-	@Fetch(value = FetchMode.SUBSELECT)
-	@Column(name = "element")
-	private Set<String> allGroups;
+  @ElementCollection(fetch = FetchType.LAZY)
+  @Fetch(value = FetchMode.SUBSELECT)
+  @Column(name = "element")
+  private Set<String> allGroups;
 
-	public Workflow()
-	{
-		super();
-	}
+  public Workflow() {
+    super();
+  }
 
-	@Lob
-	public WorkflowTreeNode getRoot()
-	{
-		return root;
-	}
+  @Lob
+  public WorkflowTreeNode getRoot() {
+    return root;
+  }
 
-	public void setRoot(WorkflowTreeNode root)
-	{
-		this.root = root;
-	}
+  public void setRoot(WorkflowTreeNode root) {
+    this.root = root;
+  }
 
-	public boolean isMovelive()
-	{
-		return movelive;
-	}
+  public boolean isMovelive() {
+    return movelive;
+  }
 
-	public void setMovelive(boolean movelive)
-	{
-		this.movelive = movelive;
-	}
+  public void setMovelive(boolean movelive) {
+    this.movelive = movelive;
+  }
 
-	public Set<String> getAllGroups()
-	{
-		return allGroups;
-	}
+  public Set<String> getAllGroups() {
+    return allGroups;
+  }
 
-	public void setAllGroups(Set<String> allGroups)
-	{
-		this.allGroups = allGroups;
-	}
+  public void setAllGroups(Set<String> allGroups) {
+    this.allGroups = allGroups;
+  }
 
-	public Map<String, WorkflowNode> getAllTasksAsMap()
-	{
-		return getTasksAsMap(new HashMap<String, WorkflowNode>(), getRoot());
-	}
+  public Map<String, WorkflowNode> getAllTasksAsMap() {
+    return getTasksAsMap(new HashMap<String, WorkflowNode>(), getRoot());
+  }
 
-	private Map<String, WorkflowNode> getTasksAsMap(Map<String, WorkflowNode> map, WorkflowNode node)
-	{
-		map.put(node.getId(), node);
-		if( !node.isLeafNode() )
-		{
-			WorkflowTreeNode treenode = (WorkflowTreeNode) node;
-			int num = treenode.numberOfChildren();
-			for( int i = 0; i < num; i++ )
-			{
-				getTasksAsMap(map, treenode.getChild(i));
-			}
-		}
-		return map;
-	}
+  private Map<String, WorkflowNode> getTasksAsMap(
+      Map<String, WorkflowNode> map, WorkflowNode node) {
+    map.put(node.getId(), node);
+    if (!node.isLeafNode()) {
+      WorkflowTreeNode treenode = (WorkflowTreeNode) node;
+      int num = treenode.numberOfChildren();
+      for (int i = 0; i < num; i++) {
+        getTasksAsMap(map, treenode.getChild(i));
+      }
+    }
+    return map;
+  }
 
-	public Map<String, WorkflowItem> getAllWorkflowItems()
-	{
-		return getAllWorkflowItems(getRoot());
-	}
+  public Map<String, WorkflowItem> getAllWorkflowItems() {
+    return getAllWorkflowItems(getRoot());
+  }
 
-	public void refreshGroupsList()
-	{
-		Set<String> groups = new HashSet<String>();
-		for( WorkflowItem item : getAllWorkflowItems().values() )
-		{
-			List<String> gs = item.getGroups();
-			if( !Check.isEmpty(gs) )
-			{
-				groups.addAll(gs);
-			}
-		}
-		setAllGroups(groups);
-	}
+  public void refreshGroupsList() {
+    Set<String> groups = new HashSet<String>();
+    for (WorkflowItem item : getAllWorkflowItems().values()) {
+      List<String> gs = item.getGroups();
+      if (!Check.isEmpty(gs)) {
+        groups.addAll(gs);
+      }
+    }
+    setAllGroups(groups);
+  }
 
-	public static Map<String, WorkflowItem> getAllWorkflowItems(WorkflowNode node)
-	{
-		return getAllWorkflowItems(node, null);
-	}
+  public static Map<String, WorkflowItem> getAllWorkflowItems(WorkflowNode node) {
+    return getAllWorkflowItems(node, null);
+  }
 
-	public static Map<String, WorkflowItem> getAllWorkflowItems(WorkflowNode node, String stopAtID)
-	{
-		// Use a LinkedHashMap to maintain correct step ordering
-		Map<String, WorkflowItem> results = new LinkedHashMap<String, WorkflowItem>();
-		recurseWorkflowItems(results, node, stopAtID);
-		return results;
-	}
+  public static Map<String, WorkflowItem> getAllWorkflowItems(WorkflowNode node, String stopAtID) {
+    // Use a LinkedHashMap to maintain correct step ordering
+    Map<String, WorkflowItem> results = new LinkedHashMap<String, WorkflowItem>();
+    recurseWorkflowItems(results, node, stopAtID);
+    return results;
+  }
 
-	/**
-	 * @return true if the recursion should stop.
-	 */
-	private static boolean recurseWorkflowItems(Map<String, WorkflowItem> items, WorkflowNode node, String stopAtID)
-	{
-		if( stopAtID != null && stopAtID.equals(node.getId()) )
-		{
-			return true;
-		}
+  /** @return true if the recursion should stop. */
+  private static boolean recurseWorkflowItems(
+      Map<String, WorkflowItem> items, WorkflowNode node, String stopAtID) {
+    if (stopAtID != null && stopAtID.equals(node.getId())) {
+      return true;
+    }
 
-		if( node instanceof WorkflowItem )
-		{
-			items.put(node.getId(), (WorkflowItem) node);
-		}
+    if (node instanceof WorkflowItem) {
+      items.put(node.getId(), (WorkflowItem) node);
+    }
 
-		if( !node.isLeafNode() )
-		{
-			WorkflowTreeNode treenode = (WorkflowTreeNode) node;
-			int num = treenode.numberOfChildren();
-			for( int i = 0; i < num; i++ )
-			{
-				boolean stop = recurseWorkflowItems(items, treenode.getChild(i), stopAtID);
-				if( stop )
-				{
-					return true;
-				}
-			}
-		}
+    if (!node.isLeafNode()) {
+      WorkflowTreeNode treenode = (WorkflowTreeNode) node;
+      int num = treenode.numberOfChildren();
+      for (int i = 0; i < num; i++) {
+        boolean stop = recurseWorkflowItems(items, treenode.getChild(i), stopAtID);
+        if (stop) {
+          return true;
+        }
+      }
+    }
 
-		return false;
-	}
+    return false;
+  }
 }

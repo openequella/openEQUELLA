@@ -26,31 +26,28 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.standard.renderers.LinkTagRenderer;
 import com.tle.web.viewurl.ViewItemServiceImpl.CachedTree;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @NonNullByDefault
-public interface ViewItemService
-{
-	List<NameValue> getViewerNames();
+public interface ViewItemService {
+  List<NameValue> getViewerNames();
 
-	String getViewerNameKey(String viewerId);
+  String getViewerNameKey(String viewerId);
 
-	String getViewerLinkKey(String viewerId);
+  String getViewerLinkKey(String viewerId);
 
-	@Nullable
-	ResourceViewer getViewer(String viewerId);
+  @Nullable
+  ResourceViewer getViewer(String viewerId);
 
-	List<NameValue> getEnabledViewers(SectionInfo info, ViewableResource resource);
+  List<NameValue> getEnabledViewers(SectionInfo info, ViewableResource resource);
 
-	LinkTagRenderer getViewableLink(SectionInfo info, ViewableResource resource, String viewerId);
+  LinkTagRenderer getViewableLink(SectionInfo info, ViewableResource resource, String viewerId);
 
-	String getDefaultViewerId(ViewableResource resource);
+  String getDefaultViewerId(ViewableResource resource);
 
-	String getDefaultViewerId(String mimeType);
+  String getDefaultViewerId(String mimeType);
 
-	@Nullable
-	CachedTree getCachedTree(ItemDefinition collection);
+  @Nullable
+  CachedTree getCachedTree(ItemDefinition collection);
 
-	void putCachedTree(ItemDefinition collectionId, CachedTree cachedTree);
+  void putCachedTree(ItemDefinition collectionId, CachedTree cachedTree);
 }

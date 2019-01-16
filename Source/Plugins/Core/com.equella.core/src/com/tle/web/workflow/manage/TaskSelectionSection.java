@@ -38,95 +38,84 @@ import com.tle.web.sections.result.util.PluralKeyLabel;
 import com.tle.web.sections.standard.annotations.Component;
 
 @NonNullByDefault
-public class TaskSelectionSection extends AbstractBulkSelectionSection<ItemTaskId>
-{
-	private static final String KEY_SELECTIONS = "taskSelections";
+public class TaskSelectionSection extends AbstractBulkSelectionSection<ItemTaskId> {
+  private static final String KEY_SELECTIONS = "taskSelections";
 
-	@PlugKey("tasks.selectionsbox.selectall")
-	private static Label LABEL_SELECTALL;
-	@PlugKey("tasks.selectionsbox.unselect")
-	private static Label LABEL_UNSELECTALL;
-	@PlugKey("tasks.selectionsbox.viewselected")
-	private static Label LABEL_VIEWSELECTED;
-	@PlugKey("tasks.selectionsbox.pleaseselect")
-	private static Label LABEL_PLEASE;
-	@PlugKey("tasks.selectionsbox.count")
-	private static String LABEL_COUNT;
+  @PlugKey("tasks.selectionsbox.selectall")
+  private static Label LABEL_SELECTALL;
 
-	@Component
-	@Inject
-	private TaskResultsDialog bulkDialog;
-	@Inject
-	private FreeTextService freeTextService;
+  @PlugKey("tasks.selectionsbox.unselect")
+  private static Label LABEL_UNSELECTALL;
 
-	@TreeLookup
-	private AbstractFreetextResultsSection<?, ?> resultsSection;
+  @PlugKey("tasks.selectionsbox.viewselected")
+  private static Label LABEL_VIEWSELECTED;
 
-	@Override
-	public void selectAll(SectionInfo info)
-	{
-		FreetextSearchEvent searchEvent = resultsSection.createSearchEvent(info);
-		info.processEvent(searchEvent);
-		DefaultSearch search = searchEvent.getFinalSearch();
-		FreetextSearchResults<TaskResult> results = freeTextService.search(search, 0, Integer.MAX_VALUE);
-		Model<ItemTaskId> model = getModel(info);
-		Set<ItemTaskId> selections = model.getSelections();
+  @PlugKey("tasks.selectionsbox.pleaseselect")
+  private static Label LABEL_PLEASE;
 
-		int count = results.getCount();
-		for( int i = 0; i < count; i++ )
-		{
-			TaskResult itemId = results.getResultData(i);
-			selections.add(new ItemTaskId(itemId.getItemIdKey(), itemId.getTaskId()));
-		}
-		model.setModifiedSelection(true);
-	}
+  @PlugKey("tasks.selectionsbox.count")
+  private static String LABEL_COUNT;
 
-	@Override
-	protected Label getLabelSelectAll()
-	{
-		return LABEL_SELECTALL;
-	}
+  @Component @Inject private TaskResultsDialog bulkDialog;
+  @Inject private FreeTextService freeTextService;
 
-	@Override
-	protected Label getLabelUnselectAll()
-	{
-		return LABEL_UNSELECTALL;
-	}
+  @TreeLookup private AbstractFreetextResultsSection<?, ?> resultsSection;
 
-	@Override
-	protected Label getLabelViewSelected()
-	{
-		return LABEL_VIEWSELECTED;
-	}
+  @Override
+  public void selectAll(SectionInfo info) {
+    FreetextSearchEvent searchEvent = resultsSection.createSearchEvent(info);
+    info.processEvent(searchEvent);
+    DefaultSearch search = searchEvent.getFinalSearch();
+    FreetextSearchResults<TaskResult> results =
+        freeTextService.search(search, 0, Integer.MAX_VALUE);
+    Model<ItemTaskId> model = getModel(info);
+    Set<ItemTaskId> selections = model.getSelections();
 
-	@Override
-	protected Label getPleaseSelectLabel()
-	{
-		return LABEL_PLEASE;
-	}
+    int count = results.getCount();
+    for (int i = 0; i < count; i++) {
+      TaskResult itemId = results.getResultData(i);
+      selections.add(new ItemTaskId(itemId.getItemIdKey(), itemId.getTaskId()));
+    }
+    model.setModifiedSelection(true);
+  }
 
-	@Override
-	protected Label getSelectionBoxCountLabel(int selectionCount)
-	{
-		return new PluralKeyLabel(LABEL_COUNT, selectionCount);
-	}
+  @Override
+  protected Label getLabelSelectAll() {
+    return LABEL_SELECTALL;
+  }
 
-	@Override
-	protected String getKeySelections()
-	{
-		return KEY_SELECTIONS;
-	}
+  @Override
+  protected Label getLabelUnselectAll() {
+    return LABEL_UNSELECTALL;
+  }
 
-	@Override
-	protected AbstractBulkResultsDialog<ItemTaskId> getBulkDialog()
-	{
-		return bulkDialog;
-	}
+  @Override
+  protected Label getLabelViewSelected() {
+    return LABEL_VIEWSELECTED;
+  }
 
-	@Override
-	protected boolean useBitSet()
-	{
-		return false;
-	}
+  @Override
+  protected Label getPleaseSelectLabel() {
+    return LABEL_PLEASE;
+  }
 
+  @Override
+  protected Label getSelectionBoxCountLabel(int selectionCount) {
+    return new PluralKeyLabel(LABEL_COUNT, selectionCount);
+  }
+
+  @Override
+  protected String getKeySelections() {
+    return KEY_SELECTIONS;
+  }
+
+  @Override
+  protected AbstractBulkResultsDialog<ItemTaskId> getBulkDialog() {
+    return bulkDialog;
+  }
+
+  @Override
+  protected boolean useBitSet() {
+    return false;
+  }
 }

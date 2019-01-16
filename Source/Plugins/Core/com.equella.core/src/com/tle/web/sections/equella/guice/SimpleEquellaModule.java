@@ -23,18 +23,16 @@ import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;
 
-public class SimpleEquellaModule extends AbstractModule
-{
-	@Override
-	protected void configure()
-	{
-		bindListener(Matchers.any(), new TypeListener()
-		{
-			@Override
-			public <I> void hear(TypeLiteral<I> type, TypeEncounter<I> encounter)
-			{
-				PluginResourceHandler.inst().getForClass(type.getRawType());
-			}
-		});
-	}
+public class SimpleEquellaModule extends AbstractModule {
+  @Override
+  protected void configure() {
+    bindListener(
+        Matchers.any(),
+        new TypeListener() {
+          @Override
+          public <I> void hear(TypeLiteral<I> type, TypeEncounter<I> encounter) {
+            PluginResourceHandler.inst().getForClass(type.getRawType());
+          }
+        });
+  }
 }

@@ -24,10 +24,12 @@ import javax.servlet.http.HttpServletResponse;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.IAttachment;
 
-public interface FilestoreContentFilter
-{
-	FilestoreContentStream filter(FilestoreContentStream contentStream, HttpServletRequest request,
-		HttpServletResponse response) throws IOException;
+public interface FilestoreContentFilter {
+  FilestoreContentStream filter(
+      FilestoreContentStream contentStream,
+      HttpServletRequest request,
+      HttpServletResponse response)
+      throws IOException;
 
-	boolean canView(Item item, IAttachment attachment);
+  boolean canView(Item item, IAttachment attachment);
 }

@@ -43,107 +43,104 @@ import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
 import com.tle.core.mimetypes.MimeTypeConstants;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class PrettyPhotoToFancyBoxDatabaseMigration extends AbstractHibernateDataMigration
-{
-	private static final String OLD_VIEWER_ID = "pretty";
-	private static final String NEW_VIEWER_ID = "fancy";
-	private static final String FROM = "FROM MimeEntry WHERE CAST(attributes['"
-		+ MimeTypeConstants.KEY_DEFAULT_VIEWERID + "'] AS string) = '" + OLD_VIEWER_ID + "'" + " OR CAST(attributes['"
-		+ MimeTypeConstants.KEY_ENABLED_VIEWERS + "'] AS string) LIKE '%" + OLD_VIEWER_ID + "%'";
+public class PrettyPhotoToFancyBoxDatabaseMigration extends AbstractHibernateDataMigration {
+  private static final String OLD_VIEWER_ID = "pretty";
+  private static final String NEW_VIEWER_ID = "fancy";
+  private static final String FROM =
+      "FROM MimeEntry WHERE CAST(attributes['"
+          + MimeTypeConstants.KEY_DEFAULT_VIEWERID
+          + "'] AS string) = '"
+          + OLD_VIEWER_ID
+          + "'"
+          + " OR CAST(attributes['"
+          + MimeTypeConstants.KEY_ENABLED_VIEWERS
+          + "'] AS string) LIKE '%"
+          + OLD_VIEWER_ID
+          + "%'";
 
-	private static final String FROM_ATTACHMENTS = "FROM Attachment WHERE viewer = '" + OLD_VIEWER_ID + "'";
+  private static final String FROM_ATTACHMENTS =
+      "FROM Attachment WHERE viewer = '" + OLD_VIEWER_ID + "'";
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo("com.tle.core.legacy.migration.prettytofancy.migration.title", "");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo("com.tle.core.legacy.migration.prettytofancy.migration.title", "");
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-		throws Exception
-	{
-		final List<FakeMimeEntry> entries = session.createQuery(FROM).list();
-		for( FakeMimeEntry entry : entries )
-		{
-			final Map<String, String> attributes = entry.attributes;
-			final String defaultViewer = attributes.get(MimeTypeConstants.KEY_DEFAULT_VIEWERID);
-			if( defaultViewer.equals(OLD_VIEWER_ID) )
-			{
-				attributes.put(MimeTypeConstants.KEY_DEFAULT_VIEWERID, NEW_VIEWER_ID);
-			}
+  @SuppressWarnings("unchecked")
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception {
+    final List<FakeMimeEntry> entries = session.createQuery(FROM).list();
+    for (FakeMimeEntry entry : entries) {
+      final Map<String, String> attributes = entry.attributes;
+      final String defaultViewer = attributes.get(MimeTypeConstants.KEY_DEFAULT_VIEWERID);
+      if (defaultViewer.equals(OLD_VIEWER_ID)) {
+        attributes.put(MimeTypeConstants.KEY_DEFAULT_VIEWERID, NEW_VIEWER_ID);
+      }
 
-			final String enabledViewersJson = attributes.get(MimeTypeConstants.KEY_ENABLED_VIEWERS);
-			if( !Check.isEmpty(enabledViewersJson) )
-			{
-				final List<String> viewers = new ArrayList<String>(JSONArray.toCollection(
-					JSONArray.fromObject(enabledViewersJson), String.class));
-				final int oldViewerIndex = viewers.indexOf(OLD_VIEWER_ID);
-				if( oldViewerIndex >= 0 )
-				{
-					viewers.set(oldViewerIndex, NEW_VIEWER_ID);
-					attributes.put(MimeTypeConstants.KEY_ENABLED_VIEWERS, JSONArray.fromObject(viewers).toString());
-				}
-			}
+      final String enabledViewersJson = attributes.get(MimeTypeConstants.KEY_ENABLED_VIEWERS);
+      if (!Check.isEmpty(enabledViewersJson)) {
+        final List<String> viewers =
+            new ArrayList<String>(
+                JSONArray.toCollection(JSONArray.fromObject(enabledViewersJson), String.class));
+        final int oldViewerIndex = viewers.indexOf(OLD_VIEWER_ID);
+        if (oldViewerIndex >= 0) {
+          viewers.set(oldViewerIndex, NEW_VIEWER_ID);
+          attributes.put(
+              MimeTypeConstants.KEY_ENABLED_VIEWERS, JSONArray.fromObject(viewers).toString());
+        }
+      }
 
-			session.update(entry);
-			session.flush();
+      session.update(entry);
+      session.flush();
 
-			result.incrementStatus();
-		}
+      result.incrementStatus();
+    }
 
-		final List<FakeAttachment> attachments = session.createQuery(FROM_ATTACHMENTS).list();
-		for( FakeAttachment attachment : attachments )
-		{
-			attachment.viewer = NEW_VIEWER_ID;
-			session.update(attachment);
-			session.flush();
+    final List<FakeAttachment> attachments = session.createQuery(FROM_ATTACHMENTS).list();
+    for (FakeAttachment attachment : attachments) {
+      attachment.viewer = NEW_VIEWER_ID;
+      session.update(attachment);
+      session.flush();
 
-			result.incrementStatus();
-		}
-	}
+      result.incrementStatus();
+    }
+  }
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return count(session, FROM) + count(session, FROM_ATTACHMENTS);
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return count(session, FROM) + count(session, FROM_ATTACHMENTS);
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class[]{FakeMimeEntry.class, FakeAttachment.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class[] {FakeMimeEntry.class, FakeAttachment.class};
+  }
 
-	@Entity(name = "MimeEntry")
-	@AccessType("field")
-	public static class FakeMimeEntry
-	{
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		long id;
+  @Entity(name = "MimeEntry")
+  @AccessType("field")
+  public static class FakeMimeEntry {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    long id;
 
-		@CollectionOfElements
-		@Column(nullable = false)
-		@MapKey(columns = {@Column(length = 100, nullable = false)})
-		Map<String, String> attributes = new HashMap<String, String>();
-	}
+    @CollectionOfElements
+    @Column(nullable = false)
+    @MapKey(columns = {@Column(length = 100, nullable = false)})
+    Map<String, String> attributes = new HashMap<String, String>();
+  }
 
-	@Entity(name = "Attachment")
-	@AccessType("field")
-	public static class FakeAttachment
-	{
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		long id;
+  @Entity(name = "Attachment")
+  @AccessType("field")
+  public static class FakeAttachment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    long id;
 
-		String viewer;
-	}
+    String viewer;
+  }
 }

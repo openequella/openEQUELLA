@@ -60,303 +60,245 @@ import com.tle.web.sections.standard.renderers.list.DropDownRenderer;
 
 /**
  * A multi selection list component.
- * <p>
- * It provides methods for getting and setting a list of values, as strings or
- * the values stored in the model. <br>
+ *
+ * <p>It provides methods for getting and setting a list of values, as strings or the values stored
+ * in the model. <br>
  * The default renderer is usually {@link DropDownRenderer}.
- * 
+ *
  * @author jmaginnis
  */
 public class MultiSelectionList<T> extends AbstractValueComponent<HtmlListState, JSListComponent>
-	implements
-		ParametersEventListener,
-		BookmarkEventListener,
-		JSListComponent
-{
-	protected HtmlListModel<T> listModel = new NothingListModel<T>();
-	private boolean alwaysSelect;
-	private boolean alwaysSelectForBookmark;
-	@AjaxFactory
-	private AjaxGenerator ajaxMethods;
-	private DelayedJSListComponent<JSListComponent> delayedList;
-	private ValueSetListener<Set<String>> listener;
+    implements ParametersEventListener, BookmarkEventListener, JSListComponent {
+  protected HtmlListModel<T> listModel = new NothingListModel<T>();
+  private boolean alwaysSelect;
+  private boolean alwaysSelectForBookmark;
+  @AjaxFactory private AjaxGenerator ajaxMethods;
+  private DelayedJSListComponent<JSListComponent> delayedList;
+  private ValueSetListener<Set<String>> listener;
 
-	public MultiSelectionList()
-	{
-		super(RendererConstants.DROPDOWN);
-	}
+  public MultiSelectionList() {
+    super(RendererConstants.DROPDOWN);
+  }
 
-	@Override
-	protected DelayedJSValueComponent<JSListComponent> createDelayedJS(ElementId id)
-	{
-		delayedList = new DelayedJSListComponent<JSListComponent>(this);
-		return delayedList;
-	}
+  @Override
+  protected DelayedJSValueComponent<JSListComponent> createDelayedJS(ElementId id) {
+    delayedList = new DelayedJSListComponent<JSListComponent>(this);
+    return delayedList;
+  }
 
-	@Override
-	public Class<HtmlListState> getModelClass()
-	{
-		return HtmlListState.class;
-	}
+  @Override
+  public Class<HtmlListState> getModelClass() {
+    return HtmlListState.class;
+  }
 
-	public boolean isAlwaysSelect()
-	{
-		return alwaysSelect;
-	}
+  public boolean isAlwaysSelect() {
+    return alwaysSelect;
+  }
 
-	public void setAlwaysSelect(boolean alwaysSelect)
-	{
-		this.alwaysSelect = alwaysSelect;
-	}
+  public void setAlwaysSelect(boolean alwaysSelect) {
+    this.alwaysSelect = alwaysSelect;
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void prepareModel(RenderContext info)
-	{
-		super.prepareModel(info);
-		ensureSelection(info);
-		final HtmlListState state = getState(info);
-		state.setOptions((List<Option<?>>) getOptions(info));
-		extraHtmlRender(info);
-	}
+  @SuppressWarnings("unchecked")
+  @Override
+  protected void prepareModel(RenderContext info) {
+    super.prepareModel(info);
+    ensureSelection(info);
+    final HtmlListState state = getState(info);
+    state.setOptions((List<Option<?>>) getOptions(info));
+    extraHtmlRender(info);
+  }
 
-	protected List<?> getOptions(SectionInfo info)
-	{
-		return getListModel().getOptions(info);
-	}
+  protected List<?> getOptions(SectionInfo info) {
+    return getListModel().getOptions(info);
+  }
 
-	protected void extraHtmlRender(SectionInfo info)
-	{
-		HtmlListState state = getState(info);
-		state.setMultiple(!state.isDisallowMultiple());
-	}
+  protected void extraHtmlRender(SectionInfo info) {
+    HtmlListState state = getState(info);
+    state.setMultiple(!state.isDisallowMultiple());
+  }
 
-	@Override
-	public void handleParameters(SectionInfo info, ParametersEvent event)
-	{
-		handleListParameters(info, event);
-	}
+  @Override
+  public void handleParameters(SectionInfo info, ParametersEvent event) {
+    handleListParameters(info, event);
+  }
 
-	protected void handleListParameters(SectionInfo info, ParametersEvent event)
-	{
-		String[] params = event.getParameterValues(getParameterId());
-		if( params != null )
-		{
-			List<String> paramList = Arrays.asList(params);
-			setValuesInternal(info, new HashSet<String>(paramList));
-		}
-	}
+  protected void handleListParameters(SectionInfo info, ParametersEvent event) {
+    String[] params = event.getParameterValues(getParameterId());
+    if (params != null) {
+      List<String> paramList = Arrays.asList(params);
+      setValuesInternal(info, new HashSet<String>(paramList));
+    }
+  }
 
-	public void addClass(SectionInfo info, String styleClass)
-	{
-		HtmlListState state = getState(info);
-		state.addClass(styleClass);
-	}
+  public void addClass(SectionInfo info, String styleClass) {
+    HtmlListState state = getState(info);
+    state.addClass(styleClass);
+  }
 
-	public void setSelectedStringValue(SectionInfo info, String value)
-	{
-		if( value == null )
-		{
-			setSelectedStringValues(info, new HashSet<String>());
-		}
-		else
-		{
-			setSelectedStringValues(info, Collections.singleton(value));
-		}
-	}
+  public void setSelectedStringValue(SectionInfo info, String value) {
+    if (value == null) {
+      setSelectedStringValues(info, new HashSet<String>());
+    } else {
+      setSelectedStringValues(info, Collections.singleton(value));
+    }
+  }
 
-	public void setSelectedStringValues(SectionInfo info, Collection<String> values)
-	{
-		if( values == null || values.isEmpty() )
-		{
-			Set<String> emptySet = Collections.emptySet();
-			setValuesInternal(info, emptySet);
-		}
-		else
-		{
-			setValuesInternal(info, new HashSet<String>(values));
-		}
-	}
+  public void setSelectedStringValues(SectionInfo info, Collection<String> values) {
+    if (values == null || values.isEmpty()) {
+      Set<String> emptySet = Collections.emptySet();
+      setValuesInternal(info, emptySet);
+    } else {
+      setValuesInternal(info, new HashSet<String>(values));
+    }
+  }
 
-	public List<T> getSelectedValues(SectionInfo info)
-	{
-		Set<String> selectedValues = ensureSelection(info);
-		if( selectedValues != null )
-		{
-			return listModel.getValues(info, selectedValues);
-		}
-		return Collections.emptyList();
-	}
+  public List<T> getSelectedValues(SectionInfo info) {
+    Set<String> selectedValues = ensureSelection(info);
+    if (selectedValues != null) {
+      return listModel.getValues(info, selectedValues);
+    }
+    return Collections.emptyList();
+  }
 
-	protected Set<String> ensureSelection(SectionInfo info)
-	{
-		HtmlListState state = getState(info);
-		Set<String> selectedValues = state.getSelectedValues();
-		boolean set = false;
-		if( selectedValues == null )
-		{
-			selectedValues = Collections.emptySet();
-			set = true;
-		}
-		if( alwaysSelect && selectedValues.isEmpty() )
-		{
-			String defaultValue = listModel.getDefaultValue(info);
-			if( defaultValue != null )
-			{
-				selectedValues = Collections.singleton(defaultValue);
-				set = true;
-			}
-		}
-		if( set )
-		{
-			setValuesInternal(info, selectedValues);
-		}
-		return selectedValues;
-	}
+  protected Set<String> ensureSelection(SectionInfo info) {
+    HtmlListState state = getState(info);
+    Set<String> selectedValues = state.getSelectedValues();
+    boolean set = false;
+    if (selectedValues == null) {
+      selectedValues = Collections.emptySet();
+      set = true;
+    }
+    if (alwaysSelect && selectedValues.isEmpty()) {
+      String defaultValue = listModel.getDefaultValue(info);
+      if (defaultValue != null) {
+        selectedValues = Collections.singleton(defaultValue);
+        set = true;
+      }
+    }
+    if (set) {
+      setValuesInternal(info, selectedValues);
+    }
+    return selectedValues;
+  }
 
-	protected void setValuesInternal(SectionInfo info, Set<String> values)
-	{
-		getState(info).setSelectedValues(values);
-		if( listener != null )
-		{
-			listener.valueSet(info, values);
-		}
-	}
+  protected void setValuesInternal(SectionInfo info, Set<String> values) {
+    getState(info).setSelectedValues(values);
+    if (listener != null) {
+      listener.valueSet(info, values);
+    }
+  }
 
-	public Set<String> getSelectedValuesAsStrings(SectionInfo info)
-	{
-		return ensureSelection(info);
-	}
+  public Set<String> getSelectedValuesAsStrings(SectionInfo info) {
+    return ensureSelection(info);
+  }
 
-	public HtmlListModel<T> getListModel()
-	{
-		return listModel;
-	}
+  public HtmlListModel<T> getListModel() {
+    return listModel;
+  }
 
-	public void setListModel(HtmlListModel<T> listModel)
-	{
-		this.listModel = listModel;
-	}
+  public void setListModel(HtmlListModel<T> listModel) {
+    this.listModel = listModel;
+  }
 
-	public int size(SectionInfo info)
-	{
-		return getListModel().getOptions(info).size();
-	}
+  public int size(SectionInfo info) {
+    return getListModel().getOptions(info).size();
+  }
 
-	@Override
-	public void bookmark(SectionInfo info, BookmarkEvent event)
-	{
-		if( addToThisBookmark(info, event) )
-		{
-			Set<String> vals;
-			if( alwaysSelectForBookmark )
-			{
-				vals = ensureSelection(info);
-			}
-			else
-			{
-				vals = getState(info).getSelectedValues();
-			}
-			event.setParams(getParameterId(), vals);
-		}
-	}
+  @Override
+  public void bookmark(SectionInfo info, BookmarkEvent event) {
+    if (addToThisBookmark(info, event)) {
+      Set<String> vals;
+      if (alwaysSelectForBookmark) {
+        vals = ensureSelection(info);
+      } else {
+        vals = getState(info).getSelectedValues();
+      }
+      event.setParams(getParameterId(), vals);
+    }
+  }
 
-	public AnonymousFunction getDefaultAjaxCall()
-	{
-		JSCallAndReference callbackVar = new ExternallyDefinedFunction("callback"); //$NON-NLS-1$
-		FunctionCallStatement justUpdate = new FunctionCallStatement(getDefaultAjaxUpdateCallback(),
-			AjaxGenerator.RESULTS_VAR, AjaxGenerator.STATUS_VAR);
-		FunctionCallStatement callbackStatement = new FunctionCallStatement(callbackVar);
-		FunctionCallStatement postAjax = new FunctionCallStatement(getAjaxOptionsFunction(), new AnonymousAjaxCallback(
-			StatementBlock.get(justUpdate, callbackStatement)));
-		return new AnonymousFunction(postAjax, callbackVar);
-	}
+  public AnonymousFunction getDefaultAjaxCall() {
+    JSCallAndReference callbackVar = new ExternallyDefinedFunction("callback"); // $NON-NLS-1$
+    FunctionCallStatement justUpdate =
+        new FunctionCallStatement(
+            getDefaultAjaxUpdateCallback(), AjaxGenerator.RESULTS_VAR, AjaxGenerator.STATUS_VAR);
+    FunctionCallStatement callbackStatement = new FunctionCallStatement(callbackVar);
+    FunctionCallStatement postAjax =
+        new FunctionCallStatement(
+            getAjaxOptionsFunction(),
+            new AnonymousAjaxCallback(StatementBlock.get(justUpdate, callbackStatement)));
+    return new AnonymousFunction(postAjax, callbackVar);
+  }
 
-	public JSCallable getDefaultAjaxUpdateCallback()
-	{
-		return new SelectOptionsCallback(getParameterId(), new ElementByIdExpression(this));
-	}
+  public JSCallable getDefaultAjaxUpdateCallback() {
+    return new SelectOptionsCallback(getParameterId(), new ElementByIdExpression(this));
+  }
 
-	public JSCallable getAjaxOptionsFunction()
-	{
-		return ajaxMethods.getAjaxFunction("ajaxOptions"); //$NON-NLS-1$
-	}
+  public JSCallable getAjaxOptionsFunction() {
+    return ajaxMethods.getAjaxFunction("ajaxOptions"); // $NON-NLS-1$
+  }
 
-	@AjaxMethod
-	public SimpleResult ajaxOptions(SectionInfo info)
-	{
-		return new SimpleResult(getOptions(info));
-	}
+  @AjaxMethod
+  public SimpleResult ajaxOptions(SectionInfo info) {
+    return new SimpleResult(getOptions(info));
+  }
 
-	public JSValidator createEmptyValidator()
-	{
-		return new SimpleValidator(delayedList.createNotEmptyExpression());
-	}
+  public JSValidator createEmptyValidator() {
+    return new SimpleValidator(delayedList.createNotEmptyExpression());
+  }
 
-	@Override
-	public JSExpression createGetNameExpression()
-	{
-		return delayedList.createGetNameExpression();
-	}
+  @Override
+  public JSExpression createGetNameExpression() {
+    return delayedList.createGetNameExpression();
+  }
 
-	@Override
-	public JSExpression createNotEmptyExpression()
-	{
-		return delayedList.createNotEmptyExpression();
-	}
+  @Override
+  public JSExpression createNotEmptyExpression() {
+    return delayedList.createNotEmptyExpression();
+  }
 
-	public void setValueSetListener(ValueSetListener<Set<String>> listener)
-	{
-		this.listener = listener;
-	}
+  public void setValueSetListener(ValueSetListener<Set<String>> listener) {
+    this.listener = listener;
+  }
 
-	public boolean isAlwaysSelectForBookmark()
-	{
-		return alwaysSelectForBookmark;
-	}
+  public boolean isAlwaysSelectForBookmark() {
+    return alwaysSelectForBookmark;
+  }
 
-	public void setAlwaysSelectForBookmark(boolean alwaysSelectForBookmark)
-	{
-		this.alwaysSelectForBookmark = alwaysSelectForBookmark;
-	}
+  public void setAlwaysSelectForBookmark(boolean alwaysSelectForBookmark) {
+    this.alwaysSelectForBookmark = alwaysSelectForBookmark;
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public void document(SectionInfo info, DocumentParamsEvent event)
-	{
-		List<String> values = Collections.singletonList("Probably dynamic");
-		try
-		{
-			List<Option<T>> options = (List<Option<T>>) getOptions(info);
-			values = new ArrayList<String>();
-			String defaultVal = listModel.getDefaultValue(info);
-			for( Option<T> option : options )
-			{
-				String value = option.getValue();
-				if( defaultVal != null && defaultVal.equals(value) )
-				{
-					value = "(" + value + ")";
-				}
-				values.add(value);
-			}
-		}
-		catch( Exception e )
-		{
-			// nothing
-		}
-		String[] vals = values.toArray(new String[values.size()]);
-		addDocumentedParam(event, getParameterId(), getValueType(), vals);
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public void document(SectionInfo info, DocumentParamsEvent event) {
+    List<String> values = Collections.singletonList("Probably dynamic");
+    try {
+      List<Option<T>> options = (List<Option<T>>) getOptions(info);
+      values = new ArrayList<String>();
+      String defaultVal = listModel.getDefaultValue(info);
+      for (Option<T> option : options) {
+        String value = option.getValue();
+        if (defaultVal != null && defaultVal.equals(value)) {
+          value = "(" + value + ")";
+        }
+        values.add(value);
+      }
+    } catch (Exception e) {
+      // nothing
+    }
+    String[] vals = values.toArray(new String[values.size()]);
+    addDocumentedParam(event, getParameterId(), getValueType(), vals);
+  }
 
-	@SuppressWarnings("nls")
-	protected String getValueType()
-	{
-		return Set.class.getName() + " of " + String.class.getName();
-	}
+  @SuppressWarnings("nls")
+  protected String getValueType() {
+    return Set.class.getName() + " of " + String.class.getName();
+  }
 
-	@Override
-	public JSCallable createSetAllFunction()
-	{
-		return delayedList.createSetAllFunction();
-	}
+  @Override
+  public JSCallable createSetAllFunction() {
+    return delayedList.createSetAllFunction();
+  }
 }

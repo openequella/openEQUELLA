@@ -26,33 +26,32 @@ import com.tle.core.copyright.Holding;
 import com.tle.core.copyright.Portion;
 import com.tle.core.copyright.Section;
 
-public interface CopyrightDao<H extends Holding, P extends Portion, S extends Section>
-{
-	void deleteAllForItem(Item item);
+public interface CopyrightDao<H extends Holding, P extends Portion, S extends Section> {
+  void deleteAllForItem(Item item);
 
-	long save(Object entity);
+  long save(Object entity);
 
-	H getHoldingForItem(Item item);
+  H getHoldingForItem(Item item);
 
-	List<Item> getAllItemsForHolding(H holding);
+  List<Item> getAllItemsForHolding(H holding);
 
-	S getSectionForAttachment(Item item, String attachmentUuid);
+  S getSectionForAttachment(Item item, String attachmentUuid);
 
-	long saveHolding(Item item, H holding);
+  long saveHolding(Item item, H holding);
 
-	void savePortions(Item item, H holding, List<P> portions);
+  void savePortions(Item item, H holding, List<P> portions);
 
-	void updateHoldingReference(H holding, List<Item> portionItems);
+  void updateHoldingReference(H holding, List<Item> portionItems);
 
-	Map<Long, H> getHoldingsForItems(List<Item> items);
+  Map<Long, H> getHoldingsForItems(List<Item> items);
 
-	List<P> getPortionsForItems(List<Item> items);
+  List<P> getPortionsForItems(List<Item> items);
 
-	Map<Long, H> getHoldingsForItemIds(Collection<Long> items);
+  Map<Long, H> getHoldingsForItemIds(Collection<Long> items);
 
-	List<P> getPortionsForItemIds(Collection<Long> items);
+  List<P> getPortionsForItemIds(Collection<Long> items);
 
-	H getHoldingInItem(Item item);
+  H getHoldingInItem(Item item);
 
-	Attachment getSectionAttachmentForFilepath(Item item, String filepath);
+  Attachment getSectionAttachmentForFilepath(Item item, String filepath);
 }

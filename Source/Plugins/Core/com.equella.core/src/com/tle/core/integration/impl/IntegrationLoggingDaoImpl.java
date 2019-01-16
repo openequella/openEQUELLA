@@ -25,12 +25,10 @@ import com.tle.core.integration.beans.AuditLogLms;
 
 @Bind(IntegrationLoggingDao.class)
 @Singleton
-public class IntegrationLoggingDaoImpl extends AbstractAuditLogDaoImpl<AuditLogLms> implements IntegrationLoggingDao
-{
+public class IntegrationLoggingDaoImpl extends AbstractAuditLogDaoImpl<AuditLogLms>
+    implements IntegrationLoggingDao {
 
-	public IntegrationLoggingDaoImpl()
-	{
-		super(AuditLogLms.class);
-	}
-
+  public IntegrationLoggingDaoImpl() {
+    super(AuditLogLms.class);
+  }
 }

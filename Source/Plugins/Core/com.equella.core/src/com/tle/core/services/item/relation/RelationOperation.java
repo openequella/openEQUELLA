@@ -29,43 +29,35 @@ import com.tle.core.item.operations.AbstractWorkflowOperation;
 // static methods or fields', but methinks thats bunkum
 public class RelationOperation extends AbstractWorkflowOperation // NOSONAR
 {
-	@Inject
-	private RelationService relationService;
+  @Inject private RelationService relationService;
 
-	private final RelationOperationState state;
+  private final RelationOperationState state;
 
-	@AssistedInject
-	private RelationOperation(@Assisted RelationOperationState state)
-	{
-		this.state = state;
-	}
+  @AssistedInject
+  private RelationOperation(@Assisted RelationOperationState state) {
+    this.state = state;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		for( Relation relation : state.getAdds() )
-		{
-			relation.setId(0);
-			relation.setFirstItem(getItem());
-			Item secondItem = itemService.get(relation.getSecondItem().getItemId());
-			relation.setSecondItem(secondItem);
-			relationService.saveRelation(relation);
-		}
-		for( Relation relation : state.getModifies() )
-		{
-			relationService.updateRelation(relation);
-		}
-		for( long relationId : state.getDeletes() )
-		{
-			relationService.delete(relationService.getById(relationId));
-		}
-		return false;
-	}
+  @Override
+  public boolean execute() {
+    for (Relation relation : state.getAdds()) {
+      relation.setId(0);
+      relation.setFirstItem(getItem());
+      Item secondItem = itemService.get(relation.getSecondItem().getItemId());
+      relation.setSecondItem(secondItem);
+      relationService.saveRelation(relation);
+    }
+    for (Relation relation : state.getModifies()) {
+      relationService.updateRelation(relation);
+    }
+    for (long relationId : state.getDeletes()) {
+      relationService.delete(relationService.getById(relationId));
+    }
+    return false;
+  }
 
-	@BindFactory
-	public interface RelationOperationFactory
-	{
-		RelationOperation create(RelationOperationState state);
-	}
-
+  @BindFactory
+  public interface RelationOperationFactory {
+    RelationOperation create(RelationOperationState state);
+  }
 }

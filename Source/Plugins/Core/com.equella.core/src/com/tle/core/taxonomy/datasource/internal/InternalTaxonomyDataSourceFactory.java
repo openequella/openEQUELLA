@@ -27,14 +27,11 @@ import com.tle.core.taxonomy.datasource.TaxonomyDataSourceFactory;
 
 @Bind
 @Singleton
-public class InternalTaxonomyDataSourceFactory implements TaxonomyDataSourceFactory
-{
-	@Inject
-	private TermService termService;
+public class InternalTaxonomyDataSourceFactory implements TaxonomyDataSourceFactory {
+  @Inject private TermService termService;
 
-	@Override
-	public TaxonomyDataSource create(Taxonomy taxonomy) throws Exception
-	{
-		return new InternalTaxonomyDataSource(taxonomy, termService);
-	}
+  @Override
+  public TaxonomyDataSource create(Taxonomy taxonomy) throws Exception {
+    return new InternalTaxonomyDataSource(taxonomy, termService);
+  }
 }

@@ -37,69 +37,59 @@ import com.tle.core.migration.AbstractHibernateSchemaMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class AddItemDateForIndexIndex extends AbstractHibernateSchemaMigration
-{
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo("com.tle.core.entity.services.migration.v62.dateforindexindex.title");
-	}
+public class AddItemDateForIndexIndex extends AbstractHibernateSchemaMigration {
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo("com.tle.core.entity.services.migration.v62.dateforindexindex.title");
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-	{
-		// No data migration
-	}
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) {
+    // No data migration
+  }
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return 0;
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return 0;
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		List<String> sql = Lists.newArrayList();
-		sql.addAll(helper.getAddNotNullSQL("item", "date_for_index"));
-		sql.addAll(helper.getAddIndexesRaw("item", "itemDateForIndexIndex", "date_for_index"));
-		return sql;
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    List<String> sql = Lists.newArrayList();
+    sql.addAll(helper.getAddNotNullSQL("item", "date_for_index"));
+    sql.addAll(helper.getAddIndexesRaw("item", "itemDateForIndexIndex", "date_for_index"));
+    return sql;
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		return null;
-	}
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    return null;
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{FakeItem.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {FakeItem.class};
+  }
 
-	@Override
-	public boolean isBackwardsCompatible()
-	{
-		return true;
-	}
+  @Override
+  public boolean isBackwardsCompatible() {
+    return true;
+  }
 
-	@Entity(name = "Item")
-	@AccessType("field")
-	public static class FakeItem
-	{
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		long id;
+  @Entity(name = "Item")
+  @AccessType("field")
+  public static class FakeItem {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    long id;
 
-		@Index(name = "itemDateForIndexIndex")
-		@Column(nullable = false)
-		Date dateForIndex;
-	}
+    @Index(name = "itemDateForIndexIndex")
+    @Column(nullable = false)
+    Date dateForIndex;
+  }
 }

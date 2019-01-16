@@ -30,37 +30,28 @@ import com.tle.core.scheduler.ScheduledTask;
 
 @Bind
 @Singleton
-public class UpdateActivationStatusTask implements ScheduledTask
-{
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private Provider<ActivationStatusFilter> filterFactory;
+public class UpdateActivationStatusTask implements ScheduledTask {
+  @Inject private ItemService itemService;
+  @Inject private Provider<ActivationStatusFilter> filterFactory;
 
-	@Override
-	public void execute()
-	{
-		itemService.operateAll(filterFactory.get());
-	}
+  @Override
+  public void execute() {
+    itemService.operateAll(filterFactory.get());
+  }
 
-	@Bind
-	public static class ActivationStatusFilter extends AbstractStandardOperationFilter
-	{
-		@Inject
-		private ActivationService activationService;
-		@Inject
-		private Provider<ActivationStatusOperation> opFactory;
+  @Bind
+  public static class ActivationStatusFilter extends AbstractStandardOperationFilter {
+    @Inject private ActivationService activationService;
+    @Inject private Provider<ActivationStatusOperation> opFactory;
 
-		@Override
-		public WorkflowOperation[] createOperations()
-		{
-			return new WorkflowOperation[]{opFactory.get(), operationFactory.reindexOnly(false)};
-		}
+    @Override
+    public WorkflowOperation[] createOperations() {
+      return new WorkflowOperation[] {opFactory.get(), operationFactory.reindexOnly(false)};
+    }
 
-		@Override
-		public FilterResults getItemIds()
-		{
-			return new FilterResults(activationService.getAllActivatedItemsForInstitution());
-		}
-	}
+    @Override
+    public FilterResults getItemIds() {
+      return new FilterResults(activationService.getAllActivatedItemsForInstitution());
+    }
+  }
 }

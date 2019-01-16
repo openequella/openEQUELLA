@@ -24,28 +24,23 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.layout.ContentLayout;
 
 @SuppressWarnings("nls")
-public class MerlotRootRemoteRepoSection extends AbstractRootRemoteRepoSection
-{
-	protected static final String CONTEXT_KEY = "merlotRepoContext";
+public class MerlotRootRemoteRepoSection extends AbstractRootRemoteRepoSection {
+  protected static final String CONTEXT_KEY = "merlotRepoContext";
 
-	@Inject
-	private ViewMerlotResultSection viewResult;
+  @Inject private ViewMerlotResultSection viewResult;
 
-	@Override
-	protected ContentLayout getDefaultLayout(SectionInfo info)
-	{
-		return ContentLayout.ONE_COLUMN;
-	}
+  @Override
+  protected ContentLayout getDefaultLayout(SectionInfo info) {
+    return ContentLayout.ONE_COLUMN;
+  }
 
-	@Override
-	protected String getSessionKey()
-	{
-		return CONTEXT_KEY;
-	}
+  @Override
+  protected String getSessionKey() {
+    return CONTEXT_KEY;
+  }
 
-	@Override
-	protected RemoteRepoViewResultSection<?, ?, ?> getViewSection()
-	{
-		return viewResult;
-	}
+  @Override
+  protected RemoteRepoViewResultSection<?, ?, ?> getViewSection() {
+    return viewResult;
+  }
 }

@@ -28,55 +28,45 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.core.hibernate.HibernateService;
 
 @NonNullByDefault
-public abstract class AbstractHibernateDao
-{
-	@Inject
-	private HibernateService hibernateService;
+public abstract class AbstractHibernateDao {
+  @Inject private HibernateService hibernateService;
 
-	private SessionFactory lastFactory;
+  private SessionFactory lastFactory;
 
-	private HibernateTemplate template;
+  private HibernateTemplate template;
 
-	protected synchronized HibernateTemplate getHibernateTemplate()
-	{
-		SessionFactory newFactory = hibernateService.getTransactionAwareSessionFactory(getFactoryName(),
-			isSystemDataSource());
-		if( !newFactory.equals(lastFactory) )
-		{
-			lastFactory = newFactory;
-			template = new HibernateTemplate(newFactory)
-			{
-				@Override
-				protected Object doExecute(HibernateCallback action, boolean enforceNewSession,
-					boolean enforceNativeSession) throws DataAccessException
-				{
-					Thread currentThread = Thread.currentThread();
-					ClassLoader origLoader = currentThread.getContextClassLoader();
-					try
-					{
-						currentThread.setContextClassLoader(Session.class.getClassLoader());
-						return super.doExecute(action, enforceNewSession, enforceNativeSession);
-					}
-					finally
-					{
-						currentThread.setContextClassLoader(origLoader);
-					}
-				}
-			};
-			template.setAllowCreate(false);
-			template.setExposeNativeSession(true);
-		}
-		return template;
-	}
+  protected synchronized HibernateTemplate getHibernateTemplate() {
+    SessionFactory newFactory =
+        hibernateService.getTransactionAwareSessionFactory(getFactoryName(), isSystemDataSource());
+    if (!newFactory.equals(lastFactory)) {
+      lastFactory = newFactory;
+      template =
+          new HibernateTemplate(newFactory) {
+            @Override
+            protected Object doExecute(
+                HibernateCallback action, boolean enforceNewSession, boolean enforceNativeSession)
+                throws DataAccessException {
+              Thread currentThread = Thread.currentThread();
+              ClassLoader origLoader = currentThread.getContextClassLoader();
+              try {
+                currentThread.setContextClassLoader(Session.class.getClassLoader());
+                return super.doExecute(action, enforceNewSession, enforceNativeSession);
+              } finally {
+                currentThread.setContextClassLoader(origLoader);
+              }
+            }
+          };
+      template.setAllowCreate(false);
+      template.setExposeNativeSession(true);
+    }
+    return template;
+  }
 
-	protected boolean isSystemDataSource()
-	{
-		return false;
-	}
+  protected boolean isSystemDataSource() {
+    return false;
+  }
 
-	protected String getFactoryName()
-	{
-		return "main"; //$NON-NLS-1$
-	}
-
+  protected String getFactoryName() {
+    return "main"; //$NON-NLS-1$
+  }
 }

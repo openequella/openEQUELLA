@@ -39,185 +39,170 @@ import com.tle.admin.schema.TargetListener;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.i18n.BundleCache;
 
-public class RepeaterEditor extends AbstractControlEditor<Repeater> implements ChangeListener, TargetListener
-{
-	private static final long serialVersionUID = 1L;
-	private SingleTargetChooser picker;
-	private I18nTextField title;
-	private I18nTextField description;
-	private I18nTextField noun;
-	private SpinnerNumberModel minModel;
-	private SpinnerNumberModel maxModel;
+public class RepeaterEditor extends AbstractControlEditor<Repeater>
+    implements ChangeListener, TargetListener {
+  private static final long serialVersionUID = 1L;
+  private SingleTargetChooser picker;
+  private I18nTextField title;
+  private I18nTextField description;
+  private I18nTextField noun;
+  private SpinnerNumberModel minModel;
+  private SpinnerNumberModel maxModel;
 
-	public RepeaterEditor(Control control, int wizardType, SchemaModel schema)
-	{
-		super(control, wizardType, schema);
-		setupGUI();
-	}
+  public RepeaterEditor(Control control, int wizardType, SchemaModel schema) {
+    super(control, wizardType, schema);
+    setupGUI();
+  }
 
-	@Override
-	protected void loadControl()
-	{
-		Repeater control = getWizardControl();
+  @Override
+  protected void loadControl() {
+    Repeater control = getWizardControl();
 
-		title.load(control.getTitle());
-		description.load(control.getDescription());
-		noun.load(control.getNoun());
+    title.load(control.getTitle());
+    description.load(control.getDescription());
+    noun.load(control.getNoun());
 
-		WizardHelper.loadSchemaChooser(picker, control);
+    WizardHelper.loadSchemaChooser(picker, control);
 
-		minModel.setValue(control.getMin());
-		maxModel.setValue(control.getMax());
-	}
+    minModel.setValue(control.getMin());
+    maxModel.setValue(control.getMax());
+  }
 
-	@Override
-	protected void saveControl()
-	{
-		Repeater control = getWizardControl();
+  @Override
+  protected void saveControl() {
+    Repeater control = getWizardControl();
 
-		control.setTitle(title.save());
-		control.setDescription(description.save());
-		control.setNoun(noun.save());
+    control.setTitle(title.save());
+    control.setDescription(description.save());
+    control.setNoun(noun.save());
 
-		control.setMin(minModel.getNumber().intValue());
-		control.setMax(maxModel.getNumber().intValue());
+    control.setMin(minModel.getNumber().intValue());
+    control.setMax(maxModel.getNumber().intValue());
 
-		// Get the targets
-		WizardHelper.saveSchemaChooser(picker, control);
-	}
+    // Get the targets
+    WizardHelper.saveSchemaChooser(picker, control);
+  }
 
-	private void setupGUI()
-	{
-		if( getWizardType() == WizardHelper.WIZARD_TYPE_CONTRIBUTION )
-		{
-			setShowScripting(true);
-		}
+  private void setupGUI() {
+    if (getWizardType() == WizardHelper.WIZARD_TYPE_CONTRIBUTION) {
+      setShowScripting(true);
+    }
 
-		picker = WizardHelper.createSingleTargetChooser(this);
-		picker.setNonLeafSelection(true);
-		picker.addTargetListener(this);
+    picker = WizardHelper.createSingleTargetChooser(this);
+    picker.setNonLeafSelection(true);
+    picker.addTargetListener(this);
 
-		addSection(createDetails());
-		addSection(WizardHelper.createMetaData(picker));
-	}
+    addSection(createDetails());
+    addSection(WizardHelper.createMetaData(picker));
+  }
 
-	private JComponent createDetails()
-	{
-		JLabel titleLabel = new JLabel(CurrentLocale.get("wizard.controls.title")); //$NON-NLS-1$
-		JLabel descriptionLabel = new JLabel(CurrentLocale.get("wizard.controls.description")); //$NON-NLS-1$
-		JLabel nounLabel = new JLabel(CurrentLocale.get("wizard.controls.repeatnoun")); //$NON-NLS-1$
-		JLabel minLabel = new JLabel(CurrentLocale.get("wizard.controls.minoccurrences")); //$NON-NLS-1$
-		JLabel maxLabel = new JLabel(CurrentLocale.get("wizard.controls.maxoccurrences")); //$NON-NLS-1$
+  private JComponent createDetails() {
+    JLabel titleLabel = new JLabel(CurrentLocale.get("wizard.controls.title")); // $NON-NLS-1$
+    JLabel descriptionLabel =
+        new JLabel(CurrentLocale.get("wizard.controls.description")); // $NON-NLS-1$
+    JLabel nounLabel = new JLabel(CurrentLocale.get("wizard.controls.repeatnoun")); // $NON-NLS-1$
+    JLabel minLabel =
+        new JLabel(CurrentLocale.get("wizard.controls.minoccurrences")); // $NON-NLS-1$
+    JLabel maxLabel =
+        new JLabel(CurrentLocale.get("wizard.controls.maxoccurrences")); // $NON-NLS-1$
 
-		title = new I18nTextField(BundleCache.getLanguages());
-		description = new I18nTextField(BundleCache.getLanguages());
-		noun = new I18nTextField(BundleCache.getLanguages());
+    title = new I18nTextField(BundleCache.getLanguages());
+    description = new I18nTextField(BundleCache.getLanguages());
+    noun = new I18nTextField(BundleCache.getLanguages());
 
-		// Setup the number spinners
-		minModel = new SpinnerNumberModel(1, 0, 50, 1);
-		maxModel = new SpinnerNumberModel(10, 0, 500, 1);
+    // Setup the number spinners
+    minModel = new SpinnerNumberModel(1, 0, 50, 1);
+    maxModel = new SpinnerNumberModel(10, 0, 500, 1);
 
-		minModel.addChangeListener(this);
-		maxModel.addChangeListener(this);
+    minModel.addChangeListener(this);
+    maxModel.addChangeListener(this);
 
-		final int height1 = title.getPreferredSize().height;
-		final int width1 = maxLabel.getPreferredSize().width;
+    final int height1 = title.getPreferredSize().height;
+    final int width1 = maxLabel.getPreferredSize().width;
 
-		final int[] rows = {height1, height1, height1, height1, height1,};
-		final int[] cols = {width1, TableLayout.FILL, TableLayout.DOUBLE_FILL,};
+    final int[] rows = {
+      height1, height1, height1, height1, height1,
+    };
+    final int[] cols = {
+      width1, TableLayout.FILL, TableLayout.DOUBLE_FILL,
+    };
 
-		JPanel all = new JPanel(new TableLayout(rows, cols));
+    JPanel all = new JPanel(new TableLayout(rows, cols));
 
-		all.add(titleLabel, new Rectangle(0, 0, 1, 1));
-		all.add(title, new Rectangle(1, 0, 2, 1));
+    all.add(titleLabel, new Rectangle(0, 0, 1, 1));
+    all.add(title, new Rectangle(1, 0, 2, 1));
 
-		all.add(descriptionLabel, new Rectangle(0, 1, 1, 1));
-		all.add(description, new Rectangle(1, 1, 2, 1));
+    all.add(descriptionLabel, new Rectangle(0, 1, 1, 1));
+    all.add(description, new Rectangle(1, 1, 2, 1));
 
-		all.add(nounLabel, new Rectangle(0, 2, 1, 1));
-		all.add(noun, new Rectangle(1, 2, 2, 1));
+    all.add(nounLabel, new Rectangle(0, 2, 1, 1));
+    all.add(noun, new Rectangle(1, 2, 2, 1));
 
-		all.add(minLabel, new Rectangle(0, 3, 1, 1));
-		all.add(new JSpinner(minModel), new Rectangle(1, 3, 1, 1));
+    all.add(minLabel, new Rectangle(0, 3, 1, 1));
+    all.add(new JSpinner(minModel), new Rectangle(1, 3, 1, 1));
 
-		all.add(maxLabel, new Rectangle(0, 4, 1, 1));
-		all.add(new JSpinner(maxModel), new Rectangle(1, 4, 1, 1));
+    all.add(maxLabel, new Rectangle(0, 4, 1, 1));
+    all.add(new JSpinner(maxModel), new Rectangle(1, 4, 1, 1));
 
-		return all;
-	}
+    return all;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.dytech.edge.admin.schema.TargetListener#targetAdded(
-	 * com.dytech.edge.admin.schema.SchemaNode)
-	 */
-	@Override
-	public void targetAdded(String target)
-	{
-		setChildTargetBase();
-	}
+  /*
+   * (non-Javadoc)
+   * @see com.dytech.edge.admin.schema.TargetListener#targetAdded(
+   * com.dytech.edge.admin.schema.SchemaNode)
+   */
+  @Override
+  public void targetAdded(String target) {
+    setChildTargetBase();
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.dytech.edge.admin.schema.TargetListener#targetRemoved(
-	 * com.dytech.edge.admin.schema.SchemaNode)
-	 */
-	@Override
-	public void targetRemoved(String target)
-	{
-		// We don't care about this event.
-	}
+  /*
+   * (non-Javadoc)
+   * @see com.dytech.edge.admin.schema.TargetListener#targetRemoved(
+   * com.dytech.edge.admin.schema.SchemaNode)
+   */
+  @Override
+  public void targetRemoved(String target) {
+    // We don't care about this event.
+  }
 
-	/**
-	 * Removes all the targets from child controls.
-	 */
-	private void setChildTargetBase()
-	{
-		RemoveChildTargets walker = new RemoveChildTargets();
-		walker.execute(getControl());
+  /** Removes all the targets from child controls. */
+  private void setChildTargetBase() {
+    RemoveChildTargets walker = new RemoveChildTargets();
+    walker.execute(getControl());
 
-		if( walker.hasRemovedTargets() )
-		{
-			JOptionPane.showMessageDialog(this, CurrentLocale.get("wizard.prompt.removedchildtargets")); //$NON-NLS-1$
-		}
-	}
+    if (walker.hasRemovedTargets()) {
+      JOptionPane.showMessageDialog(
+          this, CurrentLocale.get("wizard.prompt.removedchildtargets")); // $NON-NLS-1$
+    }
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent
-	 * )
-	 */
-	@Override
-	public void stateChanged(ChangeEvent e)
-	{
-		Integer min = (Integer) minModel.getValue();
-		Integer max = (Integer) maxModel.getNumber();
+  /*
+   * (non-Javadoc)
+   * @see
+   * javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent
+   * )
+   */
+  @Override
+  public void stateChanged(ChangeEvent e) {
+    Integer min = (Integer) minModel.getValue();
+    Integer max = (Integer) maxModel.getNumber();
 
-		if( e.getSource() == minModel )
-		{
-			if( min.compareTo(max) > 0 )
-			{
-				if( min.compareTo((Integer) maxModel.getMaximum()) <= 0 )
-				{
-					maxModel.setValue(min);
-				}
-				else
-				{
-					minModel.setValue(max);
-				}
-			}
-		}
-		else if( e.getSource() == maxModel && max.compareTo(min) < 0 )
-		{
-			if( max.compareTo((Integer) minModel.getMinimum()) >= 0 )
-			{
-				minModel.setValue(max);
-			}
-			else
-			{
-				maxModel.setValue(min);
-			}
-		}
-	}
+    if (e.getSource() == minModel) {
+      if (min.compareTo(max) > 0) {
+        if (min.compareTo((Integer) maxModel.getMaximum()) <= 0) {
+          maxModel.setValue(min);
+        } else {
+          minModel.setValue(max);
+        }
+      }
+    } else if (e.getSource() == maxModel && max.compareTo(min) < 0) {
+      if (max.compareTo((Integer) minModel.getMinimum()) >= 0) {
+        minModel.setValue(max);
+      } else {
+        maxModel.setValue(min);
+      }
+    }
+  }
 }

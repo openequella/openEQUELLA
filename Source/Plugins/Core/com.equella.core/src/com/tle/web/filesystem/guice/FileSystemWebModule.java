@@ -22,22 +22,16 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.tle.core.services.FileSystemService;
 
-/**
- * @author Aaron
- *
- */
-public class FileSystemWebModule extends AbstractModule
-{
-	@Override
-	protected void configure()
-	{
-		// Nah
-	}
+/** @author Aaron */
+public class FileSystemWebModule extends AbstractModule {
+  @Override
+  protected void configure() {
+    // Nah
+  }
 
-	@Provides
-	@Named("remoteFileSystemService")
-	Object provideFileSystemService(FileSystemService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remoteFileSystemService")
+  Object provideFileSystemService(FileSystemService remote) {
+    return remote;
+  }
 }

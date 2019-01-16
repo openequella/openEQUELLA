@@ -28,80 +28,65 @@ import com.tle.upgrade.LineFileModifier;
 import com.tle.upgrade.UpgradeDepends;
 import com.tle.upgrade.UpgradeResult;
 
-/**
- * @author Aaron
- */
-public class AddLDAPPoolingOptions extends AbstractUpgrader
-{
-	@Override
-	public List<UpgradeDepends> getDepends()
-	{
-		List<UpgradeDepends> depends = new ArrayList<>();
-		depends.add(new UpgradeDepends(UpgradeToEmbeddedTomcat.ID));
-		return depends;
-	}
+/** @author Aaron */
+public class AddLDAPPoolingOptions extends AbstractUpgrader {
+  @Override
+  public List<UpgradeDepends> getDepends() {
+    List<UpgradeDepends> depends = new ArrayList<>();
+    depends.add(new UpgradeDepends(UpgradeToEmbeddedTomcat.ID));
+    return depends;
+  }
 
-	@Override
-	public String getId()
-	{
-		return "AddLDAPPoolingOptions";
-	}
+  @Override
+  public String getId() {
+    return "AddLDAPPoolingOptions";
+  }
 
-	@Override
-	public boolean isBackwardsCompatible()
-	{
-		return true;
-	}
+  @Override
+  public boolean isBackwardsCompatible() {
+    return true;
+  }
 
-	@Override
-	public void upgrade(UpgradeResult result, File tleInstallDir) throws Exception
-	{
-		final boolean windows = ExecUtils.determinePlatform().startsWith(ExecUtils.PLATFORM_WIN);
-		final String delim = windows ? ";" : " ";
-		final String config = windows ? "manager/equellaserver-config.bat" : "manager/equellaserver-config.sh";
+  @Override
+  public void upgrade(UpgradeResult result, File tleInstallDir) throws Exception {
+    final boolean windows = ExecUtils.determinePlatform().startsWith(ExecUtils.PLATFORM_WIN);
+    final String delim = windows ? ";" : " ";
+    final String config =
+        windows ? "manager/equellaserver-config.bat" : "manager/equellaserver-config.sh";
 
-		final File file = new File(tleInstallDir, config);
-		if( file.exists() )
-		{
-			new LineFileModifier(file, result)
-			{
-				@Override
-				protected String processLine(String line)
-				{
-					if( line.startsWith("set JAVA_ARGS=") )
-					{
-						return addPoolingOpts(line, "set JAVA_ARGS=", delim);
-					}
-					else if( line.startsWith("export JAVA_OPTS=") )
-					{
-						return addPoolingOpts(line, "export JAVA_OPTS=\"", delim);
-					}
-					return line;
-				}
-			}.update();
-		}
-	}
+    final File file = new File(tleInstallDir, config);
+    if (file.exists()) {
+      new LineFileModifier(file, result) {
+        @Override
+        protected String processLine(String line) {
+          if (line.startsWith("set JAVA_ARGS=")) {
+            return addPoolingOpts(line, "set JAVA_ARGS=", delim);
+          } else if (line.startsWith("export JAVA_OPTS=")) {
+            return addPoolingOpts(line, "export JAVA_OPTS=\"", delim);
+          }
+          return line;
+        }
+      }.update();
+    }
+  }
 
-	private String addPoolingOpts(String line, String prefix, String delim)
-	{
-		List<String> opts = Lists.newArrayList(Splitter.on(delim).split(line.substring(prefix.length())));
-		addIfAbsent(opts, "-Dcom.sun.jndi.ldap.connect.pool.timeout=", "3000000");
-		addIfAbsent(opts, "-Dcom.sun.jndi.ldap.connect.pool.maxsize=", "200");
-		addIfAbsent(opts, "-Dcom.sun.jndi.ldap.connect.pool.prefsize=", "20");
-		return prefix + Joiner.on(delim).join(opts);
-	}
+  private String addPoolingOpts(String line, String prefix, String delim) {
+    List<String> opts =
+        Lists.newArrayList(Splitter.on(delim).split(line.substring(prefix.length())));
+    addIfAbsent(opts, "-Dcom.sun.jndi.ldap.connect.pool.timeout=", "3000000");
+    addIfAbsent(opts, "-Dcom.sun.jndi.ldap.connect.pool.maxsize=", "200");
+    addIfAbsent(opts, "-Dcom.sun.jndi.ldap.connect.pool.prefsize=", "20");
+    return prefix + Joiner.on(delim).join(opts);
+  }
 
-	private boolean addIfAbsent(List<String> opts, String key, String value)
-	{
-		for( int i = 0; i < opts.size(); i++ )
-		{
-			String opt = opts.get(i);
-			if( opt.startsWith(key) )
-			{
-				return false;
-			}
-		}
-		opts.add(2, key + value);
-		return true;
-	}
+  private boolean addIfAbsent(List<String> opts, String key, String value) {
+    for (int i = 0; i < opts.size(); i++) {
+      String opt = opts.get(i);
+      if (opt.startsWith(key)) {
+        return false;
+      }
+    }
+    opts.add(2, key + value);
+    return true;
+  }
 }

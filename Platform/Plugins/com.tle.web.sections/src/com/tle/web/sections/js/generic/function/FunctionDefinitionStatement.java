@@ -23,44 +23,37 @@ import com.tle.web.sections.js.JSExpression;
 import com.tle.web.sections.js.JSStatements;
 
 @NonNullByDefault
-public class FunctionDefinitionStatement extends AbstractFunctionDefinition implements JSStatements
-{
-	private final FunctionDefinition definition;
+public class FunctionDefinitionStatement extends AbstractFunctionDefinition
+    implements JSStatements {
+  private final FunctionDefinition definition;
 
-	public FunctionDefinitionStatement(FunctionDefinition definition)
-	{
-		this.definition = definition;
-	}
+  public FunctionDefinitionStatement(FunctionDefinition definition) {
+    this.definition = definition;
+  }
 
-	@Override
-	public String getStatements(@Nullable RenderContext info)
-	{
-		return getDefinition(info);
-	}
+  @Override
+  public String getStatements(@Nullable RenderContext info) {
+    return getDefinition(info);
+  }
 
-	@Override
-	protected JSStatements getBody(@Nullable RenderContext context)
-	{
-		if( body == null )
-		{
-			body = definition.createFunctionBody(context, getParams(context));
-		}
-		return body;
-	}
+  @Override
+  protected JSStatements getBody(@Nullable RenderContext context) {
+    if (body == null) {
+      body = definition.createFunctionBody(context, getParams(context));
+    }
+    return body;
+  }
 
-	@Override
-	protected JSExpression[] getParams(@Nullable RenderContext context)
-	{
-		if( params == null )
-		{
-			params = definition.getFunctionParams(context);
-		}
-		return params;
-	}
+  @Override
+  protected JSExpression[] getParams(@Nullable RenderContext context) {
+    if (params == null) {
+      params = definition.getFunctionParams(context);
+    }
+    return params;
+  }
 
-	@Override
-	protected String getFunctionName(@Nullable RenderContext context)
-	{
-		return definition.getFunctionName(context);
-	}
+  @Override
+  protected String getFunctionName(@Nullable RenderContext context) {
+    return definition.getFunctionName(context);
+  }
 }

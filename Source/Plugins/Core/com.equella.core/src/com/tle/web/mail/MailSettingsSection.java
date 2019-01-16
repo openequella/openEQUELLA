@@ -62,310 +62,283 @@ import com.tle.web.template.Decorations;
 
 @Bind
 @SuppressWarnings("nls")
-public class MailSettingsSection extends OneColumnLayout<MailSettingsSection.MailSettingsModel>
-{
-	@PlugKey("mail.settings.page.title")
-	private static Label TITLE_LABEL;
-	@PlugKey("mail.settings.save.receipt")
-	private static Label SAVE_RECEIPT_LABEL;
-	@PlugKey("settings.test.email.subject")
-	private static String TEST_EMAIL_SUBJECT;
-	@PlugKey("settings.test.email.text")
-	private static String TEST_EMAIL_TEXT;
-	@PlugKey("settings.test.email.failure")
-	private static String TEST_EMAIL_FAILURE;
-	@PlugKey("settings.test.email.success")
-	private static String TEST_EMAIL_SUCCESS;
+public class MailSettingsSection extends OneColumnLayout<MailSettingsSection.MailSettingsModel> {
+  @PlugKey("mail.settings.page.title")
+  private static Label TITLE_LABEL;
 
-	@ResourceHelper
-	private PluginResourceHelper RESOURCES;
-	@EventFactory
-	private EventGenerator events;
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @PlugKey("mail.settings.save.receipt")
+  private static Label SAVE_RECEIPT_LABEL;
 
-	@Inject
-	private ConfigurationService configService;
-	@Inject
-	private ReceiptService receiptService;
-	@Inject
-	private MailSettingsPrivilegeTreeProvider securityProvider;
-	@Inject
-	private EmailService emailService;
-	@Inject
-	private EncryptionService encryptionService;
+  @PlugKey("settings.test.email.subject")
+  private static String TEST_EMAIL_SUBJECT;
 
-	@Component(name = "fe", stateful = false)
-	private TextField fromEmailAddr;
-	@Component(name = "s", stateful = false)
-	private TextField serverUrl;
-	@Component(name = "dn", stateful = false)
-	private TextField displayName;
+  @PlugKey("settings.test.email.text")
+  private static String TEST_EMAIL_TEXT;
 
-	@Component(name = "u", stateful = false)
-	private TextField username;
-	@Component(name = "p", stateful = false)
-	private TextField password;
+  @PlugKey("settings.test.email.failure")
+  private static String TEST_EMAIL_FAILURE;
 
-	@Component
-	@PlugKey("settings.save.button")
-	private Button saveButton;
+  @PlugKey("settings.test.email.success")
+  private static String TEST_EMAIL_SUCCESS;
 
-	@Component(name = "te", stateful = false)
-	private TextField testEmailAddr;
-	@Component
-	@PlugKey("settings.test.button")
-	private Button testButton;
+  @ResourceHelper private PluginResourceHelper RESOURCES;
+  @EventFactory private EventGenerator events;
+  @AjaxFactory private AjaxGenerator ajax;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		saveButton.setClickHandler(events.getNamedHandler("save"));
-		testButton.setClickHandler(
-			new OverrideHandler(ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("test"),
-				ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING), "emailstatus", "required", "testemail")));
-	}
+  @Inject private ConfigurationService configService;
+  @Inject private ReceiptService receiptService;
+  @Inject private MailSettingsPrivilegeTreeProvider securityProvider;
+  @Inject private EmailService emailService;
+  @Inject private EncryptionService encryptionService;
 
-	@Override
-	protected TemplateResult setupTemplate(RenderEventContext info)
-	{
-		securityProvider.checkAuthorised();
+  @Component(name = "fe", stateful = false)
+  private TextField fromEmailAddr;
 
-		if( !getModel(info).isLoaded() )
-		{
-			MailSettings mailSettings = getMailSettings();
-			fromEmailAddr.setValue(info, mailSettings.getSender());
-			username.setValue(info, mailSettings.getUsername());
-			// Don't set password in form
-			displayName.setValue(info, mailSettings.getSenderName());
-			serverUrl.setValue(info, mailSettings.getServer());
-			getModel(info).setLoaded(true);
-		}
+  @Component(name = "s", stateful = false)
+  private TextField serverUrl;
 
-		return new GenericTemplateResult(viewFactory.createNamedResult(BODY, "mailsettings.ftl", this));
-	}
+  @Component(name = "dn", stateful = false)
+  private TextField displayName;
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		decorations.setTitle(TITLE_LABEL);
-		crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
-	}
+  @Component(name = "u", stateful = false)
+  private TextField username;
 
-	@EventHandlerMethod
-	public void save(SectionInfo info)
-	{
-		saveSystemConstants(info);
-		receiptService.setReceipt(SAVE_RECEIPT_LABEL);
-	}
+  @Component(name = "p", stateful = false)
+  private TextField password;
 
-	private MailSettings getMailSettings()
-	{
-		return configService.getProperties(new MailSettings());
-	}
+  @Component
+  @PlugKey("settings.save.button")
+  private Button saveButton;
 
-	private void saveSystemConstants(SectionInfo info)
-	{
-		// Validate
-		final MailSettings mailSettings = getMailSettings();
+  @Component(name = "te", stateful = false)
+  private TextField testEmailAddr;
 
-		// Save settings
-		mailSettings.setSender(fromEmailAddr.getValue(info));
-		mailSettings.setUsername(username.getValue(info));
+  @Component
+  @PlugKey("settings.test.button")
+  private Button testButton;
 
-		// If password is blank... leave unchanged
-		String pwd = password.getValue(info);
-		if( !Check.isEmpty(pwd) )
-		{
-			mailSettings.setPassword(encryptionService.encrypt(pwd));
-		}
-		mailSettings.setSenderName(displayName.getValue(info));
-		mailSettings.setServer(serverUrl.getValue(info));
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    saveButton.setClickHandler(events.getNamedHandler("save"));
+    testButton.setClickHandler(
+        new OverrideHandler(
+            ajax.getAjaxUpdateDomFunction(
+                tree,
+                this,
+                events.getEventHandler("test"),
+                ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING),
+                "emailstatus",
+                "required",
+                "testemail")));
+  }
 
-		configService.setProperties(mailSettings);
-		getModel(info).setLoaded(false);
-	}
+  @Override
+  protected TemplateResult setupTemplate(RenderEventContext info) {
+    securityProvider.checkAuthorised();
 
-	@EventHandlerMethod
-	public void test(SectionInfo info)
-	{
-		MailSettingsModel model = getModel(info);
-		MailSettings testSettings = new MailSettings();
+    if (!getModel(info).isLoaded()) {
+      MailSettings mailSettings = getMailSettings();
+      fromEmailAddr.setValue(info, mailSettings.getSender());
+      username.setValue(info, mailSettings.getUsername());
+      // Don't set password in form
+      displayName.setValue(info, mailSettings.getSenderName());
+      serverUrl.setValue(info, mailSettings.getServer());
+      getModel(info).setLoaded(true);
+    }
 
-		String from = fromEmailAddr.getValue(info);
-		String srv = serverUrl.getValue(info);
-		String to = testEmailAddr.getValue(info);
+    return new GenericTemplateResult(viewFactory.createNamedResult(BODY, "mailsettings.ftl", this));
+  }
 
-		if( Check.isEmpty(to) )
-		{
-			model.addError("testEmailAddr", CurrentLocale.get(RESOURCES.key("settings.test.validate.to")));
-		}
-		else
-		{
-			try
-			{
-				javax.mail.internet.InternetAddress.parse(to, true);
-			}
-			catch( AddressException ae )
-			{
-				model.addError("testEmailAddr", ae.getLocalizedMessage());
-			}
-		}
-		if( Check.isEmpty(from) )
-		{
-			model.addError("fromEmailAddr", CurrentLocale.get(RESOURCES.key("settings.test.validate.from")));
-		}
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    decorations.setTitle(TITLE_LABEL);
+    crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
+  }
 
-		if( Check.isEmpty(srv) )
-		{
-			model.addError("serverUrl", CurrentLocale.get(RESOURCES.key("settings.test.validate.server")));
-		}
-		else
-		{
-			try
-			{
-				javax.mail.internet.InternetAddress.parse(to, true);
-			}
-			catch( AddressException ae )
-			{
-				model.addError("serverUrl", ae.getLocalizedMessage());
-			}
-		}
+  @EventHandlerMethod
+  public void save(SectionInfo info) {
+    saveSystemConstants(info);
+    receiptService.setReceipt(SAVE_RECEIPT_LABEL);
+  }
 
-		if( model.getErrors().size() == 0 )
-		{
-			testSettings.setSender(from);
-			testSettings.setServer(srv);
-			testSettings.setUsername(username.getValue(info));
+  private MailSettings getMailSettings() {
+    return configService.getProperties(new MailSettings());
+  }
 
-			String origpwd = getMailSettings().getPassword();
-			String newpwd = password.getValue(info);
-			// Use original if it exists and new is blank
-			testSettings.setPassword(Check.isEmpty(newpwd) ? origpwd : newpwd);
-			testSettings.setSenderName(displayName.getValue(info));
+  private void saveSystemConstants(SectionInfo info) {
+    // Validate
+    final MailSettings mailSettings = getMailSettings();
 
-			Future<EmailResult<String>> result = emailService.sendEmail(CurrentLocale.get(TEST_EMAIL_SUBJECT),
-				Lists.newArrayList(to), CurrentLocale.get(TEST_EMAIL_TEXT), testSettings, !Check.isEmpty(newpwd));
+    // Save settings
+    mailSettings.setSender(fromEmailAddr.getValue(info));
+    mailSettings.setUsername(username.getValue(info));
 
-			EmailResult<String> emailResult;
-			try
-			{
-				emailResult = result.get();
-				boolean successful = emailResult.isSuccessful();
-				model.setSuccessful(successful);
-				if( !successful )
-				{
-					Throwable error = emailResult.getError();
-					Throwable cause = error.getCause();
-					model.addError("emailError", MessageFormat.format("{0} {1}", CurrentLocale.get(TEST_EMAIL_FAILURE),
-						(cause != null) ? cause.getMessage() : error.getMessage()));
-				}
-				else
-				{
-					model.addError("emailSuccess", CurrentLocale.get(TEST_EMAIL_SUCCESS));
-				}
-			}
-			catch( InterruptedException e )
-			{
-				model.addError("emailError",
-					MessageFormat.format("{0} {1}", CurrentLocale.get(TEST_EMAIL_FAILURE), e.getMessage()));
-			}
-			catch( ExecutionException e )
-			{
-				model.addError("emailError",
-					MessageFormat.format("{0} {1}", CurrentLocale.get(TEST_EMAIL_FAILURE), e.getMessage()));
-			}
-		}
-	}
+    // If password is blank... leave unchanged
+    String pwd = password.getValue(info);
+    if (!Check.isEmpty(pwd)) {
+      mailSettings.setPassword(encryptionService.encrypt(pwd));
+    }
+    mailSettings.setSenderName(displayName.getValue(info));
+    mailSettings.setServer(serverUrl.getValue(info));
 
-	@Override
-	public Class<MailSettingsModel> getModelClass()
-	{
-		return MailSettingsModel.class;
-	}
+    configService.setProperties(mailSettings);
+    getModel(info).setLoaded(false);
+  }
 
-	public static class MailSettingsModel extends OneColumnLayout.OneColumnLayoutModel
-	{
-		@Bookmarked
-		private boolean loaded;
-		private boolean successful;
+  @EventHandlerMethod
+  public void test(SectionInfo info) {
+    MailSettingsModel model = getModel(info);
+    MailSettings testSettings = new MailSettings();
 
-		private Map<String, String> errors = new HashMap<String, String>();
+    String from = fromEmailAddr.getValue(info);
+    String srv = serverUrl.getValue(info);
+    String to = testEmailAddr.getValue(info);
 
-		public Map<String, String> getErrors()
-		{
-			return errors;
-		}
+    if (Check.isEmpty(to)) {
+      model.addError(
+          "testEmailAddr", CurrentLocale.get(RESOURCES.key("settings.test.validate.to")));
+    } else {
+      try {
+        javax.mail.internet.InternetAddress.parse(to, true);
+      } catch (AddressException ae) {
+        model.addError("testEmailAddr", ae.getLocalizedMessage());
+      }
+    }
+    if (Check.isEmpty(from)) {
+      model.addError(
+          "fromEmailAddr", CurrentLocale.get(RESOURCES.key("settings.test.validate.from")));
+    }
 
-		public void setErrors(Map<String, String> errors)
-		{
-			this.errors = errors;
-		}
+    if (Check.isEmpty(srv)) {
+      model.addError(
+          "serverUrl", CurrentLocale.get(RESOURCES.key("settings.test.validate.server")));
+    } else {
+      try {
+        javax.mail.internet.InternetAddress.parse(to, true);
+      } catch (AddressException ae) {
+        model.addError("serverUrl", ae.getLocalizedMessage());
+      }
+    }
 
-		public void addError(String key, String value)
-		{
-			this.errors.put(key, value);
-		}
+    if (model.getErrors().size() == 0) {
+      testSettings.setSender(from);
+      testSettings.setServer(srv);
+      testSettings.setUsername(username.getValue(info));
 
-		public boolean isSuccessful()
-		{
-			return successful;
-		}
+      String origpwd = getMailSettings().getPassword();
+      String newpwd = password.getValue(info);
+      // Use original if it exists and new is blank
+      testSettings.setPassword(Check.isEmpty(newpwd) ? origpwd : newpwd);
+      testSettings.setSenderName(displayName.getValue(info));
 
-		public void setSuccessful(boolean successful)
-		{
-			this.successful = successful;
-		}
+      Future<EmailResult<String>> result =
+          emailService.sendEmail(
+              CurrentLocale.get(TEST_EMAIL_SUBJECT),
+              Lists.newArrayList(to),
+              CurrentLocale.get(TEST_EMAIL_TEXT),
+              testSettings,
+              !Check.isEmpty(newpwd));
 
-		public boolean isLoaded()
-		{
-			return loaded;
-		}
+      EmailResult<String> emailResult;
+      try {
+        emailResult = result.get();
+        boolean successful = emailResult.isSuccessful();
+        model.setSuccessful(successful);
+        if (!successful) {
+          Throwable error = emailResult.getError();
+          Throwable cause = error.getCause();
+          model.addError(
+              "emailError",
+              MessageFormat.format(
+                  "{0} {1}",
+                  CurrentLocale.get(TEST_EMAIL_FAILURE),
+                  (cause != null) ? cause.getMessage() : error.getMessage()));
+        } else {
+          model.addError("emailSuccess", CurrentLocale.get(TEST_EMAIL_SUCCESS));
+        }
+      } catch (InterruptedException e) {
+        model.addError(
+            "emailError",
+            MessageFormat.format("{0} {1}", CurrentLocale.get(TEST_EMAIL_FAILURE), e.getMessage()));
+      } catch (ExecutionException e) {
+        model.addError(
+            "emailError",
+            MessageFormat.format("{0} {1}", CurrentLocale.get(TEST_EMAIL_FAILURE), e.getMessage()));
+      }
+    }
+  }
 
-		public void setLoaded(boolean loaded)
-		{
-			this.loaded = loaded;
-		}
-	}
+  @Override
+  public Class<MailSettingsModel> getModelClass() {
+    return MailSettingsModel.class;
+  }
 
-	public TextField getFromEmailAddr()
-	{
-		return fromEmailAddr;
-	}
+  public static class MailSettingsModel extends OneColumnLayout.OneColumnLayoutModel {
+    @Bookmarked private boolean loaded;
+    private boolean successful;
 
-	public TextField getPassword()
-	{
-		return password;
-	}
+    private Map<String, String> errors = new HashMap<String, String>();
 
-	public TextField getDisplayName()
-	{
-		return displayName;
-	}
+    public Map<String, String> getErrors() {
+      return errors;
+    }
 
-	public TextField getServerUrl()
-	{
-		return serverUrl;
-	}
+    public void setErrors(Map<String, String> errors) {
+      this.errors = errors;
+    }
 
-	public Button getSaveButton()
-	{
-		return saveButton;
-	}
+    public void addError(String key, String value) {
+      this.errors.put(key, value);
+    }
 
-	public TextField getUsername()
-	{
-		return username;
-	}
+    public boolean isSuccessful() {
+      return successful;
+    }
 
-	public Button getTestButton()
-	{
-		return testButton;
-	}
+    public void setSuccessful(boolean successful) {
+      this.successful = successful;
+    }
 
-	public TextField getTestEmailAddr()
-	{
-		return testEmailAddr;
-	}
+    public boolean isLoaded() {
+      return loaded;
+    }
+
+    public void setLoaded(boolean loaded) {
+      this.loaded = loaded;
+    }
+  }
+
+  public TextField getFromEmailAddr() {
+    return fromEmailAddr;
+  }
+
+  public TextField getPassword() {
+    return password;
+  }
+
+  public TextField getDisplayName() {
+    return displayName;
+  }
+
+  public TextField getServerUrl() {
+    return serverUrl;
+  }
+
+  public Button getSaveButton() {
+    return saveButton;
+  }
+
+  public TextField getUsername() {
+    return username;
+  }
+
+  public Button getTestButton() {
+    return testButton;
+  }
+
+  public TextField getTestEmailAddr() {
+    return testEmailAddr;
+  }
 }

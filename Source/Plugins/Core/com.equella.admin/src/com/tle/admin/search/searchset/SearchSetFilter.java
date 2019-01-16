@@ -34,97 +34,90 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.search.searchset.SearchSet;
 import com.tle.core.plugins.AbstractPluginService;
 
-/**
- * @author Nicholas Read
- */
-public class SearchSetFilter extends JPanel implements Changeable
-{
-	private final ChangeDetector changeDetector;
-	private final JTextField freetextQuery;
-	private final SchemaWhereEditor schemasEditor;
-	private final ItemDefinitionWhereEditor itemDefsEditor;
+/** @author Nicholas Read */
+public class SearchSetFilter extends JPanel implements Changeable {
+  private final ChangeDetector changeDetector;
+  private final JTextField freetextQuery;
+  private final SchemaWhereEditor schemasEditor;
+  private final ItemDefinitionWhereEditor itemDefsEditor;
 
-	private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
+  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
 
-	protected String getString(String key)
-	{
-		return CurrentLocale.get(getKey(key));
-	}
+  protected String getString(String key) {
+    return CurrentLocale.get(getKey(key));
+  }
 
-	protected String getKey(String key)
-	{
-		return KEY_PFX+key;
-	}
+  protected String getKey(String key) {
+    return KEY_PFX + key;
+  }
 
-	public SearchSetFilter(final EntityCache cache, final ClientService clientService)
-	{
-		final JLabel freetextLabel = new JLabel(
-			getString("searchset.searchsetfilter.freetextlabel")); //$NON-NLS-1$
-		final JLabel schemasAdditionalLabel = new JLabel(
-			getString("searchset.searchsetfilter.searchschemas")); //$NON-NLS-1$
-		final JLabel itemDefsAdditionalLabel = new JLabel(
-			getString("searchset.searchsetfilter.searchcollections")); //$NON-NLS-1$
+  public SearchSetFilter(final EntityCache cache, final ClientService clientService) {
+    final JLabel freetextLabel =
+        new JLabel(getString("searchset.searchsetfilter.freetextlabel")); // $NON-NLS-1$
+    final JLabel schemasAdditionalLabel =
+        new JLabel(getString("searchset.searchsetfilter.searchschemas")); // $NON-NLS-1$
+    final JLabel itemDefsAdditionalLabel =
+        new JLabel(getString("searchset.searchsetfilter.searchcollections")); // $NON-NLS-1$
 
-		freetextQuery = new JSmartTextField(100);
-		schemasEditor = new SchemaWhereEditor(cache, clientService);
-		itemDefsEditor = new ItemDefinitionWhereEditor(cache, clientService);
+    freetextQuery = new JSmartTextField(100);
+    schemasEditor = new SchemaWhereEditor(cache, clientService);
+    itemDefsEditor = new ItemDefinitionWhereEditor(cache, clientService);
 
-		final int height1 = freetextQuery.getPreferredSize().height;
-		final int width1 = 20;
+    final int height1 = freetextQuery.getPreferredSize().height;
+    final int width1 = 20;
 
-		final int[] rows = {height1, height1, height1, TableLayout.FILL, height1, TableLayout.FILL,};
-		final int[] cols = {width1, TableLayout.FILL,};
+    final int[] rows = {
+      height1, height1, height1, TableLayout.FILL, height1, TableLayout.FILL,
+    };
+    final int[] cols = {
+      width1, TableLayout.FILL,
+    };
 
-		setLayout(new TableLayout(rows, cols));
+    setLayout(new TableLayout(rows, cols));
 
-		add(freetextLabel, new Rectangle(0, 0, 2, 1));
-		add(freetextQuery, new Rectangle(1, 1, 1, 1));
+    add(freetextLabel, new Rectangle(0, 0, 2, 1));
+    add(freetextQuery, new Rectangle(1, 1, 1, 1));
 
-		add(schemasAdditionalLabel, new Rectangle(0, 2, 2, 1));
-		add(schemasEditor, new Rectangle(1, 3, 1, 1));
+    add(schemasAdditionalLabel, new Rectangle(0, 2, 2, 1));
+    add(schemasEditor, new Rectangle(1, 3, 1, 1));
 
-		add(itemDefsAdditionalLabel, new Rectangle(0, 4, 2, 1));
-		add(itemDefsEditor, new Rectangle(1, 5, 1, 1));
+    add(itemDefsAdditionalLabel, new Rectangle(0, 4, 2, 1));
+    add(itemDefsEditor, new Rectangle(1, 5, 1, 1));
 
-		changeDetector = new ChangeDetector();
-		changeDetector.watch(freetextQuery);
-		changeDetector.watch(schemasEditor);
-		changeDetector.watch(itemDefsEditor);
-	}
+    changeDetector = new ChangeDetector();
+    changeDetector.watch(freetextQuery);
+    changeDetector.watch(schemasEditor);
+    changeDetector.watch(itemDefsEditor);
+  }
 
-	@Override
-	public boolean hasDetectedChanges()
-	{
-		return changeDetector.hasDetectedChanges();
-	}
+  @Override
+  public boolean hasDetectedChanges() {
+    return changeDetector.hasDetectedChanges();
+  }
 
-	@Override
-	public void clearChanges()
-	{
-		changeDetector.clearChanges();
-	}
+  @Override
+  public void clearChanges() {
+    changeDetector.clearChanges();
+  }
 
-	@Override
-	public void setEnabled(boolean enabled)
-	{
-		super.setEnabled(enabled);
+  @Override
+  public void setEnabled(boolean enabled) {
+    super.setEnabled(enabled);
 
-		freetextQuery.setEnabled(enabled);
-		schemasEditor.setEnabled(enabled);
-		itemDefsEditor.setEnabled(enabled);
-	}
+    freetextQuery.setEnabled(enabled);
+    schemasEditor.setEnabled(enabled);
+    itemDefsEditor.setEnabled(enabled);
+  }
 
-	public void load(SearchSet searchSet)
-	{
-		freetextQuery.setText(searchSet.getFreetextQuery());
-		schemasEditor.load(searchSet.getSchemas());
-		itemDefsEditor.load(searchSet.getItemDefs());
-	}
+  public void load(SearchSet searchSet) {
+    freetextQuery.setText(searchSet.getFreetextQuery());
+    schemasEditor.load(searchSet.getSchemas());
+    itemDefsEditor.load(searchSet.getItemDefs());
+  }
 
-	public void save(SearchSet searchSet)
-	{
-		searchSet.setFreetextQuery(freetextQuery.getText());
-		searchSet.setSchemas(schemasEditor.saveAsList());
-		searchSet.setItemDefs(itemDefsEditor.saveAsList());
-	}
+  public void save(SearchSet searchSet) {
+    searchSet.setFreetextQuery(freetextQuery.getText());
+    searchSet.setSchemas(schemasEditor.saveAsList());
+    searchSet.setItemDefs(itemDefsEditor.saveAsList());
+  }
 }

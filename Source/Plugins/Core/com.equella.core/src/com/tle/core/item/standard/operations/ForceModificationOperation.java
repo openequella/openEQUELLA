@@ -22,15 +22,13 @@ import com.google.inject.assistedinject.AssistedInject;
 // static methods or fields', but methinks thats bunkum
 public class ForceModificationOperation extends AbstractStandardWorkflowOperation // NOSONAR
 {
-	@AssistedInject
-	private ForceModificationOperation()
-	{
-		// nothing
-	}
+  @AssistedInject
+  private ForceModificationOperation() {
+    // nothing
+  }
 
-	@Override
-	public boolean execute()
-	{
-		return true;
-	}
+  @Override
+  public boolean execute() {
+    return true;
+  }
 }

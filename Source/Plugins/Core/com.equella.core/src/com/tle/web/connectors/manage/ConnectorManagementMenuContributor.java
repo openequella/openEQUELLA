@@ -32,42 +32,39 @@ import com.tle.web.template.section.AbstractCachedMenuContributor;
 
 @Bind
 @Singleton
-public class ConnectorManagementMenuContributor extends AbstractCachedMenuContributor<Boolean>
-{
-	@PlugKey("connector.manage.menu")
-	private static Label LABEL_MENU;
-	@PlugURL("images/icons/manage-external-resources.png")
-	private static String URL_ICON;
+public class ConnectorManagementMenuContributor extends AbstractCachedMenuContributor<Boolean> {
+  @PlugKey("connector.manage.menu")
+  private static Label LABEL_MENU;
 
-	private static final String KEY = ConnectorManagementMenuContributor.class.getName();
+  @PlugURL("images/icons/manage-external-resources.png")
+  private static String URL_ICON;
 
-	@Inject
-	private ConnectorManagementPrivilegeTreeProvider securityProvider;
-	@Inject
-	private ConnectorService connectorService;
+  private static final String KEY = ConnectorManagementMenuContributor.class.getName();
 
-	@Override
-	@SuppressWarnings("nls")
-	protected MenuContribution getContribution(SectionInfo info, Boolean hasManageTasks)
-	{
-		if( hasManageTasks )
-		{
-			return new MenuContribution(
-				new HtmlLinkState(LABEL_MENU, new SimpleBookmark("access/manageconnectors.do")), URL_ICON, 30, 6);
-		}
-		return null;
-	}
+  @Inject private ConnectorManagementPrivilegeTreeProvider securityProvider;
+  @Inject private ConnectorService connectorService;
 
-	@Override
-	protected Boolean getCachedObject(SectionInfo info)
-	{
-		return Boolean.valueOf(securityProvider.isAuthorised() && !connectorService.listForViewing().isEmpty());
-	}
+  @Override
+  @SuppressWarnings("nls")
+  protected MenuContribution getContribution(SectionInfo info, Boolean hasManageTasks) {
+    if (hasManageTasks) {
+      return new MenuContribution(
+          new HtmlLinkState(LABEL_MENU, new SimpleBookmark("access/manageconnectors.do")),
+          URL_ICON,
+          30,
+          6);
+    }
+    return null;
+  }
 
-	@Override
-	protected String getSessionKey()
-	{
-		return KEY;
-	}
+  @Override
+  protected Boolean getCachedObject(SectionInfo info) {
+    return Boolean.valueOf(
+        securityProvider.isAuthorised() && !connectorService.listForViewing().isEmpty());
+  }
 
+  @Override
+  protected String getSessionKey() {
+    return KEY;
+  }
 }

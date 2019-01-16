@@ -34,46 +34,37 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
 
 public class ItemAdminSearchResultsSection
-	extends
-		AbstractFreetextResultsSection<StandardItemListEntry, SearchResultsModel>
-{
-	@Inject
-	private ItemAdminItemList itemList;
-	@TreeLookup
-	private ItemAdminQuerySection querySection;
+    extends AbstractFreetextResultsSection<StandardItemListEntry, SearchResultsModel> {
+  @Inject private ItemAdminItemList itemList;
+  @TreeLookup private ItemAdminQuerySection querySection;
 
-	@PlugKey("results.title")
-	private static Label LABEL_RESULTSTITLE;
+  @PlugKey("results.title")
+  private static Label LABEL_RESULTSTITLE;
 
-	@Override
-	protected Label getDefaultResultsTitle(SectionInfo info, FreetextSearchEvent searchEvent,
-		FreetextSearchResultEvent resultsEvent)
-	{
-		return LABEL_RESULTSTITLE;
-	}
+  @Override
+  protected Label getDefaultResultsTitle(
+      SectionInfo info, FreetextSearchEvent searchEvent, FreetextSearchResultEvent resultsEvent) {
+    return LABEL_RESULTSTITLE;
+  }
 
-	@Override
-	protected DefaultSearch createDefaultSearch(SectionInfo info)
-	{
-		return querySection.createDefaultSearch(info);
-	}
+  @Override
+  protected DefaultSearch createDefaultSearch(SectionInfo info) {
+    return querySection.createDefaultSearch(info);
+  }
 
-	@Override
-	public ItemAdminItemList getItemList(SectionInfo info)
-	{
-		return itemList;
-	}
+  @Override
+  public ItemAdminItemList getItemList(SectionInfo info) {
+    return itemList;
+  }
 
-	@Override
-	protected void addAjaxUpdateDivs(SectionTree tree, List<String> ajaxList)
-	{
-		super.addAjaxUpdateDivs(tree, ajaxList);
-		ajaxList.add(AbstractBulkSelectionSection.DIVID_SELECTBOX);
-	}
+  @Override
+  protected void addAjaxUpdateDivs(SectionTree tree, List<String> ajaxList) {
+    super.addAjaxUpdateDivs(tree, ajaxList);
+    ajaxList.add(AbstractBulkSelectionSection.DIVID_SELECTBOX);
+  }
 
-	@Override
-	protected void registerItemList(SectionTree tree, String id)
-	{
-		tree.registerInnerSection(itemList, id);
-	}
+  @Override
+  protected void registerItemList(SectionTree tree, String id) {
+    tree.registerInnerSection(itemList, id);
+  }
 }

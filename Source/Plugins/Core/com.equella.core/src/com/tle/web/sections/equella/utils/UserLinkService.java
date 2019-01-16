@@ -25,19 +25,15 @@ import com.tle.web.sections.SectionTree;
 
 @Bind
 @Singleton
-public class UserLinkService
-{
-	@Inject
-	private Provider<UserLinkSection> linkProvider;
+public class UserLinkService {
+  @Inject private Provider<UserLinkSection> linkProvider;
 
-	public UserLinkSection register(SectionTree tree, String parentId)
-	{
-		UserLinkSection uls = tree.lookupSection(UserLinkSection.class, null);
-		if( uls == null )
-		{
-			uls = linkProvider.get();
-			tree.registerInnerSection(uls, parentId);
-		}
-		return uls;
-	}
+  public UserLinkSection register(SectionTree tree, String parentId) {
+    UserLinkSection uls = tree.lookupSection(UserLinkSection.class, null);
+    if (uls == null) {
+      uls = linkProvider.get();
+      tree.registerInnerSection(uls, parentId);
+    }
+    return uls;
+  }
 }

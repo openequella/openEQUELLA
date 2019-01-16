@@ -43,113 +43,94 @@ import com.tle.common.usermanagement.user.CurrentUser;
 
 /**
  * Same as EditMetadataOperation, but different required privs
- * 
+ *
  * @author aholland
  */
 @Bind
 @SecureOnCall(priv = SecurityConstants.CREATE_ITEM)
-public class EditNewItemMetadataOperation extends AbstractEditMetadataOperation
-{
-	@Inject
-	private ItemDefinitionService itemDefinitionService;
-	@Inject
-	private ItemDao itemDao;
+public class EditNewItemMetadataOperation extends AbstractEditMetadataOperation {
+  @Inject private ItemDefinitionService itemDefinitionService;
+  @Inject private ItemDao itemDao;
 
-	private ItemStatus initialStatus;
+  private ItemStatus initialStatus;
 
-	public void setInitialStatus(ItemStatus initialStatus)
-	{
-		this.initialStatus = initialStatus;
-	}
+  public void setInitialStatus(ItemStatus initialStatus) {
+    this.initialStatus = initialStatus;
+  }
 
-	@Override
-	protected void checkExistence()
-	{
-		if( params.isUpdate() )
-		{
-			throw new OperationException("com.tle.core.workflow.operations.editmeta.error.itemexists", //$NON-NLS-1$
-				params.getItemKey());
-		}
-	}
+  @Override
+  protected void checkExistence() {
+    if (params.isUpdate()) {
+      throw new OperationException(
+          "com.tle.core.workflow.operations.editmeta.error.itemexists", //$NON-NLS-1$
+          params.getItemKey());
+    }
+  }
 
-	@Override
-	protected void ensureItemInternal(Item newItem)
-	{
-		ItemKey itemkey = params.getItemKey();
+  @Override
+  protected void ensureItemInternal(Item newItem) {
+    ItemKey itemkey = params.getItemKey();
 
-		params.setItemPack(newPack);
+    params.setItemPack(newPack);
 
-		String uuid = itemkey.getUuid();
-		if( uuid.length() == 0 )
-		{
-			uuid = UUID.randomUUID().toString();
-		}
-		else
-		{
-			// Make sure valid uuid
-			UUID.fromString(uuid);
-		}
+    String uuid = itemkey.getUuid();
+    if (uuid.length() == 0) {
+      uuid = UUID.randomUUID().toString();
+    } else {
+      // Make sure valid uuid
+      UUID.fromString(uuid);
+    }
 
-		itemkey = new ItemId(uuid, itemkey.getVersion());
-		params.setItemKey(itemkey, 0);
-		newItem.setId(0);
-		newItem.setUuid(uuid);
-		newItem.setVersion(itemkey.getVersion());
-		newItem.setDateCreated(new Date());
+    itemkey = new ItemId(uuid, itemkey.getVersion());
+    params.setItemKey(itemkey, 0);
+    newItem.setId(0);
+    newItem.setUuid(uuid);
+    newItem.setVersion(itemkey.getVersion());
+    newItem.setDateCreated(new Date());
 
-		newItem.setItemDefinition(itemDefinitionService.get(newItem.getItemDefinition().getId()));
-		if( itemkey.getVersion() > 1 )
-		{
-			long collectionId = itemDao.getCollectionIdForUuid(itemkey.getUuid());
-			if( collectionId != 0 && newItem.getItemDefinition().getId() != collectionId )
-			{
-				throw new OperationException("com.tle.core.workflow.operations.editmeta.error.cannotchangecollection"); //$NON-NLS-1$
-			}
-		}
+    newItem.setItemDefinition(itemDefinitionService.get(newItem.getItemDefinition().getId()));
+    if (itemkey.getVersion() > 1) {
+      long collectionId = itemDao.getCollectionIdForUuid(itemkey.getUuid());
+      if (collectionId != 0 && newItem.getItemDefinition().getId() != collectionId) {
+        throw new OperationException(
+            "com.tle.core.workflow.operations.editmeta.error.cannotchangecollection"); //$NON-NLS-1$
+      }
+    }
 
-		boolean noOwner = Check.isEmpty(newItem.getOwner());
-		if( noOwner )
-		{
-			newItem.setOwner(CurrentUser.getUserID());
-		}
+    boolean noOwner = Check.isEmpty(newItem.getOwner());
+    if (noOwner) {
+      newItem.setOwner(CurrentUser.getUserID());
+    }
 
-		newItem.setStatus(null);
-		newItem.setStatus(initialStatus);
+    newItem.setStatus(null);
+    newItem.setStatus(initialStatus);
 
-		relinkAttachments(newItem.getAttachments(), newItem.getTreeNodes());
-		createHistory(Type.contributed);
-	}
+    relinkAttachments(newItem.getAttachments(), newItem.getTreeNodes());
+    createHistory(Type.contributed);
+  }
 
-	/**
-	 * 1. Ensures any attachments that no longer exist are not referred to in
-	 * tree nodes.
-	 * 
-	 * @param attachments
-	 * @param treeNodes
-	 */
-	private void relinkAttachments(List<Attachment> attachments, List<ItemNavigationNode> treeNodes)
-	{
-		Map<String, Attachment> attmap = new HashMap<String, Attachment>();
-		for( Attachment a : attachments )
-		{
-			attmap.put(a.getUuid(), a);
-		}
+  /**
+   * 1. Ensures any attachments that no longer exist are not referred to in tree nodes.
+   *
+   * @param attachments
+   * @param treeNodes
+   */
+  private void relinkAttachments(List<Attachment> attachments, List<ItemNavigationNode> treeNodes) {
+    Map<String, Attachment> attmap = new HashMap<String, Attachment>();
+    for (Attachment a : attachments) {
+      attmap.put(a.getUuid(), a);
+    }
 
-		for( ItemNavigationNode node : treeNodes )
-		{
-			List<ItemNavigationTab> tabs = node.getTabs();
-			if( !Check.isEmpty(tabs) )
-			{
-				for( ItemNavigationTab tab : tabs )
-				{
-					Attachment attach = tab.getAttachment();
-					if( attach != null )
-					{
-						tab.setAttachment(attmap.get(attach.getUuid()));
-					}
-				}
-			}
-		}
-	}
-
+    for (ItemNavigationNode node : treeNodes) {
+      List<ItemNavigationTab> tabs = node.getTabs();
+      if (!Check.isEmpty(tabs)) {
+        for (ItemNavigationTab tab : tabs) {
+          Attachment attach = tab.getAttachment();
+          if (attach != null) {
+            tab.setAttachment(attmap.get(attach.getUuid()));
+          }
+        }
+      }
+    }
+  }
 }

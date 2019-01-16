@@ -35,38 +35,38 @@ import com.tle.core.guice.Bind;
 
 @Bind
 @Singleton
-public class ActivationIndex extends MultipleIndex<ActivationResult>
-{
-	private static final Map<String, String> privMap = ImmutableMap.of(ActivationConstants.VIEW_ACTIVATION_ITEM,
-		ActivationConstants.VIEW_ACTIVATION_ITEM_PFX, ActivationConstants.DELETE_ACTIVATION_ITEM,
-		ActivationConstants.DELETE_ACTIVATION_ITEM_PFX);
+public class ActivationIndex extends MultipleIndex<ActivationResult> {
+  private static final Map<String, String> privMap =
+      ImmutableMap.of(
+          ActivationConstants.VIEW_ACTIVATION_ITEM,
+          ActivationConstants.VIEW_ACTIVATION_ITEM_PFX,
+          ActivationConstants.DELETE_ACTIVATION_ITEM,
+          ActivationConstants.DELETE_ACTIVATION_ITEM_PFX);
 
-	@Override
-	protected Set<String> getKeyFields()
-	{
-		return new HashSet<String>(Arrays.asList(FreeTextQuery.FIELD_UNIQUE, FreeTextQuery.FIELD_ID,
-			FreeTextQuery.FIELD_ACTIVATION_ID));
-	}
+  @Override
+  protected Set<String> getKeyFields() {
+    return new HashSet<String>(
+        Arrays.asList(
+            FreeTextQuery.FIELD_UNIQUE, FreeTextQuery.FIELD_ID, FreeTextQuery.FIELD_ACTIVATION_ID));
+  }
 
-	@Override
-	public String getIndexId()
-	{
-		return ActivationConstants.ACTIVATION_INDEX_ID;
-	}
+  @Override
+  public String getIndexId() {
+    return ActivationConstants.ACTIVATION_INDEX_ID;
+  }
 
-	@Override
-	protected String getPrefixForPrivilege(String priv)
-	{
-		if( privMap.containsKey(priv) )
-		{
-			return privMap.get(priv);
-		}
-		return super.getPrefixForPrivilege(priv);
-	}
+  @Override
+  protected String getPrefixForPrivilege(String priv) {
+    if (privMap.containsKey(priv)) {
+      return privMap.get(priv);
+    }
+    return super.getPrefixForPrivilege(priv);
+  }
 
-	@Override
-	protected ActivationResult createResult(ItemIdKey key, Document doc, float relevance, boolean sortByRelevance)
-	{
-		return new ActivationResult(key, doc.get(FreeTextQuery.FIELD_ACTIVATION_ID), relevance, sortByRelevance);
-	}
+  @Override
+  protected ActivationResult createResult(
+      ItemIdKey key, Document doc, float relevance, boolean sortByRelevance) {
+    return new ActivationResult(
+        key, doc.get(FreeTextQuery.FIELD_ACTIVATION_ID), relevance, sortByRelevance);
+  }
 }

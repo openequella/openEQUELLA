@@ -23,11 +23,12 @@ import com.tle.web.resources.ResourcesService;
 
 @Bind
 @SuppressWarnings("nls")
-public class DateFormatSettingsPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider
-{
-	protected DateFormatSettingsPrivilegeTreeProvider()
-	{
-		super(Type.SYSTEM_SETTING, ResourcesService.getResourceHelper(DateFormatSettingsPrivilegeTreeProvider.class)
-			.key("securitytree.dateformatsettings"), new SettingsTarget("dateformat"));
-	}
+public class DateFormatSettingsPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider {
+  protected DateFormatSettingsPrivilegeTreeProvider() {
+    super(
+        Type.SYSTEM_SETTING,
+        ResourcesService.getResourceHelper(DateFormatSettingsPrivilegeTreeProvider.class)
+            .key("securitytree.dateformatsettings"),
+        new SettingsTarget("dateformat"));
+  }
 }

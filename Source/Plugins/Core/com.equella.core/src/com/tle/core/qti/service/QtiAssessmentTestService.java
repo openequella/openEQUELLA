@@ -24,39 +24,37 @@ import com.tle.annotation.Nullable;
 import com.tle.beans.item.Item;
 import com.tle.common.qti.entity.QtiAssessmentTest;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
-public interface QtiAssessmentTestService
-{
-	QtiAssessmentTest convertTestToEntity(ResolvedAssessmentTest test, Item item, String xmlPath, String testUuid);
+public interface QtiAssessmentTestService {
+  QtiAssessmentTest convertTestToEntity(
+      ResolvedAssessmentTest test, Item item, String xmlPath, String testUuid);
 
-	/**
-	 * Lookup a test from it's uuid. Will blow up if not found.
-	 * 
-	 * @param uuid
-	 * @return
-	 */
-	QtiAssessmentTest getByUuid(String uuid);
+  /**
+   * Lookup a test from it's uuid. Will blow up if not found.
+   *
+   * @param uuid
+   * @return
+   */
+  QtiAssessmentTest getByUuid(String uuid);
 
-	/**
-	 * Same as getByUuid but returns null if not found
-	 * 
-	 * @param uuid
-	 * @return null if not found
-	 */
-	@Nullable
-	QtiAssessmentTest findByUuid(String uuid);
+  /**
+   * Same as getByUuid but returns null if not found
+   *
+   * @param uuid
+   * @return null if not found
+   */
+  @Nullable
+  QtiAssessmentTest findByUuid(String uuid);
 
-	@Nullable
-	QtiAssessmentTest findByItem(Item item);
+  @Nullable
+  QtiAssessmentTest findByItem(Item item);
 
-	void validate(QtiAssessmentTest test) throws InvalidDataException;
+  void validate(QtiAssessmentTest test) throws InvalidDataException;
 
-	void save(QtiAssessmentTest test) throws InvalidDataException;
+  void save(QtiAssessmentTest test) throws InvalidDataException;
 
-	void deleteForItemId(long itemId);
+  void deleteForItemId(long itemId);
 
-	void delete(QtiAssessmentTest test);
+  void delete(QtiAssessmentTest test);
 }

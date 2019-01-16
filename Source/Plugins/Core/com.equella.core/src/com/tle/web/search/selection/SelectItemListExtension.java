@@ -27,21 +27,17 @@ import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.impl.ViewableItemFactory;
 
 @Bind
-public class SelectItemListExtension extends AbstractSelectItemListExtension<Item, ItemListEntry>
-{
-	@Inject
-	private ViewableItemFactory vitemFactory;
+public class SelectItemListExtension extends AbstractSelectItemListExtension<Item, ItemListEntry> {
+  @Inject private ViewableItemFactory vitemFactory;
 
-	@Override
-	protected ViewableItem<Item> getViewableItem(SectionInfo info, Item item)
-	{
-		return vitemFactory.createNewViewableItem(item.getItemId());
-	}
+  @Override
+  protected ViewableItem<Item> getViewableItem(SectionInfo info, Item item) {
+    return vitemFactory.createNewViewableItem(item.getItemId());
+  }
 
-	@Nullable
-	@Override
-	public String getItemExtensionType()
-	{
-		return null;
-	}
+  @Nullable
+  @Override
+  public String getItemExtensionType() {
+    return null;
+  }
 }

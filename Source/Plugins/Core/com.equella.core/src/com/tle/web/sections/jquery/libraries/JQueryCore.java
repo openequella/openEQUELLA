@@ -31,55 +31,52 @@ import com.tle.web.sections.render.PreRenderable;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public class JQueryCore implements PreRenderable, JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
+public class JQueryCore implements PreRenderable, JavascriptModule {
+  private static final long serialVersionUID = 1L;
 
-	private static final PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(JQueryCore.class);
+  private static final PluginResourceHelper urlHelper =
+      ResourcesService.getResourceHelper(JQueryCore.class);
 
-	private static final IncludeFile CORE_URL = new IncludeFile(urlHelper.url("jquerycore/jquery.js"));
-	private static final IncludeFile JQ_SHIM = new IncludeFile(urlHelper.url("jquerycore/jquery-migrate.js"), CORE_URL);
-	public static final IncludeFile PRERENDER = JQ_SHIM;
-	public static final ExternallyDefinedFunction JQUERY = new ExternallyDefinedFunction("$", PRERENDER);
+  private static final IncludeFile CORE_URL =
+      new IncludeFile(urlHelper.url("jquerycore/jquery.js"));
+  private static final IncludeFile JQ_SHIM =
+      new IncludeFile(urlHelper.url("jquerycore/jquery-migrate.js"), CORE_URL);
+  public static final IncludeFile PRERENDER = JQ_SHIM;
+  public static final ExternallyDefinedFunction JQUERY =
+      new ExternallyDefinedFunction("$", PRERENDER);
 
-	public static IncludeFile getJQueryCoreUrl()
-	{
-		return CORE_URL;
-	}
+  public static IncludeFile getJQueryCoreUrl() {
+    return CORE_URL;
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(PRERENDER);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(PRERENDER);
+  }
 
-	/**
-	 * Use someElement.addReadyStatements(JSStatements) instead.
-	 * 
-	 * @param info
-	 * @param statement
-	 */
-	@Deprecated
-	public static void appendReady(RenderContext info, JSStatements statement)
-	{
-		info.getPreRenderContext().addReadyStatements(statement);
-	}
+  /**
+   * Use someElement.addReadyStatements(JSStatements) instead.
+   *
+   * @param info
+   * @param statement
+   */
+  @Deprecated
+  public static void appendReady(RenderContext info, JSStatements statement) {
+    info.getPreRenderContext().addReadyStatements(statement);
+  }
 
-	@Override
-	public String getDisplayName()
-	{
-		return CurrentLocale.get("com.tle.web.sections.jquery.modules.core.name");
-	}
+  @Override
+  public String getDisplayName() {
+    return CurrentLocale.get("com.tle.web.sections.jquery.modules.core.name");
+  }
 
-	@Override
-	public String getId()
-	{
-		return "core";
-	}
+  @Override
+  public String getId() {
+    return "core";
+  }
 
-	@Override
-	public Object getPreRenderer()
-	{
-		return PRERENDER;
-	}
+  @Override
+  public Object getPreRenderer() {
+    return PRERENDER;
+  }
 }

@@ -20,13 +20,12 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.js.JSHandler;
 import com.tle.web.sections.render.Label;
 
-public interface Tab
-{
-	String getId();
+public interface Tab {
+  String getId();
 
-	Label getName();
+  Label getName();
 
-	JSHandler getClickHandler();
+  JSHandler getClickHandler();
 
-	boolean shouldDefault(SectionInfo info);
+  boolean shouldDefault(SectionInfo info);
 }

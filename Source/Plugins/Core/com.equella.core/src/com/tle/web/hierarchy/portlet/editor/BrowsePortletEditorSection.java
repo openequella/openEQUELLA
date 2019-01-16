@@ -29,72 +29,62 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.SectionRenderable;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 public class BrowsePortletEditorSection
-	extends
-		AbstractPortletEditorSection<AbstractPortletEditorSection.AbstractPortletEditorModel>
-{
-	private static final String TYPE = "browse";
+    extends AbstractPortletEditorSection<AbstractPortletEditorSection.AbstractPortletEditorModel> {
+  private static final String TYPE = "browse";
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "ebrs";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "ebrs";
+  }
 
-	@Override
-	protected Portlet createNewPortlet()
-	{
-		return new Portlet(TYPE);
-	}
+  @Override
+  protected Portlet createNewPortlet() {
+    return new Portlet(TYPE);
+  }
 
-	@Override
-	protected void customClear(SectionInfo info)
-	{
-		// Nothing to do here
-	}
+  @Override
+  protected void customClear(SectionInfo info) {
+    // Nothing to do here
+  }
 
-	@Override
-	protected void customLoad(SectionInfo info, PortletEditingBean portlet)
-	{
-		// Nothing to do here
-	}
+  @Override
+  protected void customLoad(SectionInfo info, PortletEditingBean portlet) {
+    // Nothing to do here
+  }
 
-	@Override
-	protected SectionRenderable customRender(RenderEventContext context,
-		AbstractPortletEditorSection.AbstractPortletEditorModel model, PortletEditingBean portlet) throws Exception
-	{
-		return null;
-	}
+  @Override
+  protected SectionRenderable customRender(
+      RenderEventContext context,
+      AbstractPortletEditorSection.AbstractPortletEditorModel model,
+      PortletEditingBean portlet)
+      throws Exception {
+    return null;
+  }
 
-	@Override
-	protected void customSave(SectionInfo info, PortletEditingBean portlet)
-	{
-		// Nothing to do here
-	}
+  @Override
+  protected void customSave(SectionInfo info, PortletEditingBean portlet) {
+    // Nothing to do here
+  }
 
-	@Override
-	protected void customValidate(SectionInfo info, PortletEditingBean portlet, Map<String, Object> errors)
-	{
-		// Nothing to do here
-	}
+  @Override
+  protected void customValidate(
+      SectionInfo info, PortletEditingBean portlet, Map<String, Object> errors) {
+    // Nothing to do here
+  }
 
-	@Override
-	public Class<AbstractPortletEditorSection.AbstractPortletEditorModel> getModelClass()
-	{
-		return AbstractPortletEditorSection.AbstractPortletEditorModel.class;
-	}
+  @Override
+  public Class<AbstractPortletEditorSection.AbstractPortletEditorModel> getModelClass() {
+    return AbstractPortletEditorSection.AbstractPortletEditorModel.class;
+  }
 
-	@Override
-	public SectionRenderable renderHelp(RenderContext context)
-	{
-		return viewFactory.createResult("portlet/browseportleteditorhelp.ftl", this);
-	}
+  @Override
+  public SectionRenderable renderHelp(RenderContext context) {
+    return viewFactory.createResult("portlet/browseportleteditorhelp.ftl", this);
+  }
 }

@@ -31,34 +31,28 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
-/**
- * @author Aaron
- */
-
+/** @author Aaron */
 @Produces(MediaType.APPLICATION_JSON)
 @Path("usermanagement/local/group/")
 @Api(value = "Local groups", description = "usermanagement-local-group")
-public interface EquellaGroupResource extends GroupResource
-{
-	// @formatter:off
-	@GET
-	@Path("/")
-	@ApiOperation("List groups")
-	SearchBean<GroupBean> list(
-		@Context 
-			UriInfo uriInfo,
-		@ApiParam(name = "q", required = false) 
-		@QueryParam("q") 
-			String q,
-		@ApiParam(value = "The uuid of the user", required = false)
-		@QueryParam("user") 
-			String userId,
-		@ApiParam(value = "Include parent groups", allowableValues = "true,false", defaultValue = "true", required = false)
-		@QueryParam("allParents") 
-			Boolean allParents,
-		@ApiParam(value = "Peform an exact search by group name",  required = false)
-		@QueryParam("name")
-			String name
-		);
-	// @formatter:on		
+public interface EquellaGroupResource extends GroupResource {
+  // @formatter:off
+  @GET
+  @Path("/")
+  @ApiOperation("List groups")
+  SearchBean<GroupBean> list(
+      @Context UriInfo uriInfo,
+      @ApiParam(name = "q", required = false) @QueryParam("q") String q,
+      @ApiParam(value = "The uuid of the user", required = false) @QueryParam("user") String userId,
+      @ApiParam(
+              value = "Include parent groups",
+              allowableValues = "true,false",
+              defaultValue = "true",
+              required = false)
+          @QueryParam("allParents")
+          Boolean allParents,
+      @ApiParam(value = "Peform an exact search by group name", required = false)
+          @QueryParam("name")
+          String name);
+  // @formatter:on
 }

@@ -33,74 +33,69 @@ import org.hibernate.mapping.RootClass;
 import org.hibernate.mapping.Table;
 import org.hibernate.type.BasicType;
 
-public class ExtendedAnnotationConfiguration extends Configuration
-{
-	private static final long serialVersionUID = 1L;
+public class ExtendedAnnotationConfiguration extends Configuration {
+  private static final long serialVersionUID = 1L;
 
-	public ExtendedAnnotationConfiguration(ExtendedDialect dialect)
-	{
-		Iterable<? extends BasicType> types = dialect.getExtraTypeOverrides();
-		for( BasicType basicType : types )
-		{
-			registerTypeOverride(basicType);
-		}
-	}
+  public ExtendedAnnotationConfiguration(ExtendedDialect dialect) {
+    Iterable<? extends BasicType> types = dialect.getExtraTypeOverrides();
+    for (BasicType basicType : types) {
+      registerTypeOverride(basicType);
+    }
+  }
 
-	public Map<String, Table> getTableMap()
-	{
-		return tables;
-	}
+  public Map<String, Table> getTableMap() {
+    return tables;
+  }
 
-	public List<AuxiliaryDatabaseObject> getAuxiliaryDatabaseObjects()
-	{
-		return auxiliaryDatabaseObjects;
-	}
+  public List<AuxiliaryDatabaseObject> getAuxiliaryDatabaseObjects() {
+    return auxiliaryDatabaseObjects;
+  }
 
-	public java.util.Collection<PersistentIdentifierGenerator> getGenerators(Dialect dialect, String defaultCatalog,
-		String defaultSchema)
-	{
-		TreeMap<Object, PersistentIdentifierGenerator> generators = new TreeMap<Object, PersistentIdentifierGenerator>();
+  public java.util.Collection<PersistentIdentifierGenerator> getGenerators(
+      Dialect dialect, String defaultCatalog, String defaultSchema) {
+    TreeMap<Object, PersistentIdentifierGenerator> generators =
+        new TreeMap<Object, PersistentIdentifierGenerator>();
 
-		Iterator<PersistentClass> iter = classes.values().iterator();
-		while( iter.hasNext() )
-		{
-			PersistentClass pc = iter.next();
+    Iterator<PersistentClass> iter = classes.values().iterator();
+    while (iter.hasNext()) {
+      PersistentClass pc = iter.next();
 
-			if( !pc.isInherited() )
-			{
-				IdentifierGenerator ig = pc.getIdentifier().createIdentifierGenerator(getIdentifierGeneratorFactory(),
-					dialect, defaultCatalog, defaultSchema, (RootClass) pc);
+      if (!pc.isInherited()) {
+        IdentifierGenerator ig =
+            pc.getIdentifier()
+                .createIdentifierGenerator(
+                    getIdentifierGeneratorFactory(),
+                    dialect,
+                    defaultCatalog,
+                    defaultSchema,
+                    (RootClass) pc);
 
-				if( ig instanceof PersistentIdentifierGenerator )
-				{
-					PersistentIdentifierGenerator pig = (PersistentIdentifierGenerator) ig;
-					generators.put(pig.generatorKey(), pig);
-				}
+        if (ig instanceof PersistentIdentifierGenerator) {
+          PersistentIdentifierGenerator pig = (PersistentIdentifierGenerator) ig;
+          generators.put(pig.generatorKey(), pig);
+        }
+      }
+    }
 
-			}
-		}
+    Iterator<Collection> coliter = collections.values().iterator();
+    while (coliter.hasNext()) {
+      Collection collection = coliter.next();
 
-		Iterator<Collection> coliter = collections.values().iterator();
-		while( coliter.hasNext() )
-		{
-			Collection collection = coliter.next();
+      if (collection.isIdentified()) {
 
-			if( collection.isIdentified() )
-			{
+        IdentifierGenerator ig =
+            ((IdentifierCollection) collection)
+                .getIdentifier()
+                .createIdentifierGenerator(
+                    getIdentifierGeneratorFactory(), dialect, defaultCatalog, defaultSchema, null);
 
-				IdentifierGenerator ig = ((IdentifierCollection) collection).getIdentifier().createIdentifierGenerator(
-					getIdentifierGeneratorFactory(), dialect, defaultCatalog, defaultSchema, null);
+        if (ig instanceof PersistentIdentifierGenerator) {
+          PersistentIdentifierGenerator pig = (PersistentIdentifierGenerator) ig;
+          generators.put(pig.generatorKey(), pig);
+        }
+      }
+    }
 
-				if( ig instanceof PersistentIdentifierGenerator )
-				{
-					PersistentIdentifierGenerator pig = (PersistentIdentifierGenerator) ig;
-					generators.put(pig.generatorKey(), pig);
-				}
-
-			}
-		}
-
-		return generators.values();
-
-	}
+    return generators.values();
+  }
 }

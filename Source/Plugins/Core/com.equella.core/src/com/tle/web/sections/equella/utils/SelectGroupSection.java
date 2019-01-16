@@ -24,19 +24,23 @@ import com.tle.web.sections.events.js.ParameterizedEvent;
 import com.tle.web.sections.js.JSCallable;
 
 @Bind
-public class SelectGroupSection extends AbstractSelectGroupSection<AbstractSelectGroupSection.Model>
-{
-	@SuppressWarnings("nls")
-	@Override
-	protected JSCallable getResultUpdater(SectionTree tree, ParameterizedEvent eventHandler)
-	{
-		return ajax.getAjaxUpdateDomFunction(tree, null, eventHandler,
-			ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING), RESULTS_DIVID, SELECT_DIVID, "buttons");
-	}
+public class SelectGroupSection
+    extends AbstractSelectGroupSection<AbstractSelectGroupSection.Model> {
+  @SuppressWarnings("nls")
+  @Override
+  protected JSCallable getResultUpdater(SectionTree tree, ParameterizedEvent eventHandler) {
+    return ajax.getAjaxUpdateDomFunction(
+        tree,
+        null,
+        eventHandler,
+        ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING),
+        RESULTS_DIVID,
+        SELECT_DIVID,
+        "buttons");
+  }
 
-	@Override
-	protected SelectedGroup createSelectedGroup(SectionInfo info, String uuid, String displayName)
-	{
-		return new SelectedGroup(uuid, displayName);
-	}
+  @Override
+  protected SelectedGroup createSelectedGroup(SectionInfo info, String uuid, String displayName) {
+    return new SelectedGroup(uuid, displayName);
+  }
 }

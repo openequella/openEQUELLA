@@ -25,44 +25,36 @@ import com.tle.web.sections.js.JSUtils;
 import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.expression.ScriptVariable;
 
-/**
- * @author aholland
- */
-public class DeclarationStatement implements JSStatements
-{
-	protected final ScriptVariable var;
-	protected final JSExpression defaultValue;
+/** @author aholland */
+public class DeclarationStatement implements JSStatements {
+  protected final ScriptVariable var;
+  protected final JSExpression defaultValue;
 
-	public DeclarationStatement(ScriptVariable var, Object defaultValue)
-	{
-		this.var = var;
-		this.defaultValue = JSUtils.convertExpression(defaultValue);
-	}
+  public DeclarationStatement(ScriptVariable var, Object defaultValue) {
+    this.var = var;
+    this.defaultValue = JSUtils.convertExpression(defaultValue);
+  }
 
-	public DeclarationStatement(ScriptVariable var)
-	{
-		this(var, null);
-	}
+  public DeclarationStatement(ScriptVariable var) {
+    this(var, null);
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public String getStatements(RenderContext info)
-	{
-		StringBuilder text = new StringBuilder("var ");
-		text.append(var.getExpression(info));
-		if( defaultValue != null )
-		{
-			text.append(" = ");
-			text.append(defaultValue.getExpression(info));
-		}
-		text.append(";");
-		text.append(Js.NEWLINE);
-		return text.toString();
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public String getStatements(RenderContext info) {
+    StringBuilder text = new StringBuilder("var ");
+    text.append(var.getExpression(info));
+    if (defaultValue != null) {
+      text.append(" = ");
+      text.append(defaultValue.getExpression(info));
+    }
+    text.append(";");
+    text.append(Js.NEWLINE);
+    return text.toString();
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		SectionUtils.preRender(info, defaultValue);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    SectionUtils.preRender(info, defaultValue);
+  }
 }

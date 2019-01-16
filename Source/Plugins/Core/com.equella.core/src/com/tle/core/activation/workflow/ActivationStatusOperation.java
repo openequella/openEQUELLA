@@ -23,15 +23,12 @@ import com.tle.core.guice.Bind;
 import com.tle.core.item.standard.operations.AbstractStandardWorkflowOperation;
 
 @Bind
-public class ActivationStatusOperation extends AbstractStandardWorkflowOperation
-{
-	@Inject
-	private ActivationService activationService;
+public class ActivationStatusOperation extends AbstractStandardWorkflowOperation {
+  @Inject private ActivationService activationService;
 
-	@Override
-	public boolean execute()
-	{
-		activationService.ensureStatesForItem(getItem());
-		return true;
-	}
+  @Override
+  public boolean execute() {
+    activationService.ensureStatesForItem(getItem());
+    return true;
+  }
 }

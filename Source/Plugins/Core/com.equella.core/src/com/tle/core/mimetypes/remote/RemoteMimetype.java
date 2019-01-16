@@ -28,23 +28,18 @@ import com.tle.core.guice.Bind;
 import com.tle.core.mimetypes.MimeTypeService;
 
 @Bind
-public class RemoteMimetype implements RemoteMimetypeService
-{
-	@Inject
-	private MimeTypeService mime;
+public class RemoteMimetype implements RemoteMimetypeService {
+  @Inject private MimeTypeService mime;
 
-	@Override
-	public List<NameValue> listAll()
-	{
-		List<MimeEntry> mimeEntries = mime.searchByMimeType("", 0, -1).getResults();
+  @Override
+  public List<NameValue> listAll() {
+    List<MimeEntry> mimeEntries = mime.searchByMimeType("", 0, -1).getResults();
 
-		List<NameValue> mimeTypes = new ArrayList<NameValue>();
+    List<NameValue> mimeTypes = new ArrayList<NameValue>();
 
-		for( MimeEntry entry : mimeEntries )
-		{
-			mimeTypes.add(new NameValue(entry.getType(), entry.getType()));
-		}
-		return mimeTypes;
-	}
-
+    for (MimeEntry entry : mimeEntries) {
+      mimeTypes.add(new NameValue(entry.getType(), entry.getType()));
+    }
+    return mimeTypes;
+  }
 }

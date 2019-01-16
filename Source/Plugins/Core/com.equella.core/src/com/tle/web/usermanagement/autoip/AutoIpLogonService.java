@@ -30,42 +30,34 @@ import com.tle.core.services.user.UserService;
 
 @Bind
 @Singleton
-public class AutoIpLogonService
-{
-	@Inject
-	private UserService userService;
+public class AutoIpLogonService {
+  @Inject private UserService userService;
 
-	public boolean autoLogon(HttpServletRequest request)
-	{
-		AutoLogin settings = userService.getAttribute(AutoLogin.class);
-		WebAuthenticationDetails details = userService.getWebAuthenticationDetails(request);
-		if( isAutoLoginAvailable(settings, details.getIpAddress()) )
-		{
-			String autoLoginAsUsername = settings.getUsername();
-			if( !Check.isEmpty(autoLoginAsUsername) )
-			{
-				// We want to catch any errors, otherwise we get a great big
-				// stack trace
-				UserState userState = userService.authenticateAsUser(autoLoginAsUsername, details);
-				userState.setWasAutoLoggedIn(true);
-				userService.login(userState, false);
-				return true;
-			}
-		}
-		return false;
-	}
+  public boolean autoLogon(HttpServletRequest request) {
+    AutoLogin settings = userService.getAttribute(AutoLogin.class);
+    WebAuthenticationDetails details = userService.getWebAuthenticationDetails(request);
+    if (isAutoLoginAvailable(settings, details.getIpAddress())) {
+      String autoLoginAsUsername = settings.getUsername();
+      if (!Check.isEmpty(autoLoginAsUsername)) {
+        // We want to catch any errors, otherwise we get a great big
+        // stack trace
+        UserState userState = userService.authenticateAsUser(autoLoginAsUsername, details);
+        userState.setWasAutoLoggedIn(true);
+        userService.login(userState, false);
+        return true;
+      }
+    }
+    return false;
+  }
 
-	public boolean isAutoLoginAvailable(AutoLogin autoLogin, String ipAddress)
-	{
-		if( autoLogin.isEnabledViaIp() )
-		{
-			return autoLogin.getHostMatcher().matches(ipAddress);
-		}
-		return false;
-	}
+  public boolean isAutoLoginAvailable(AutoLogin autoLogin, String ipAddress) {
+    if (autoLogin.isEnabledViaIp()) {
+      return autoLogin.getHostMatcher().matches(ipAddress);
+    }
+    return false;
+  }
 
-	public boolean isAutoLoginAvailable(AutoLogin autoLogin)
-	{
-		return isAutoLoginAvailable(autoLogin, CurrentUser.getUserState().getIpAddress());
-	}
+  public boolean isAutoLoginAvailable(AutoLogin autoLogin) {
+    return isAutoLoginAvailable(autoLogin, CurrentUser.getUserState().getIpAddress());
+  }
 }

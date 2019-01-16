@@ -32,35 +32,30 @@ import com.tle.core.replicatedcache.dao.ReplicatedCacheDao;
 @Bind
 @Singleton
 @SuppressWarnings({"nls", "deprecation"})
-public class ReplicatedCacheConverter extends AbstractConverter<CachedValue>
-{
-	@Inject
-	private ReplicatedCacheDao replicatedCacheDao;
+public class ReplicatedCacheConverter extends AbstractConverter<CachedValue> {
+  @Inject private ReplicatedCacheDao replicatedCacheDao;
 
-	@Override
-	public void doDelete(Institution institution, ConverterParams callback)
-	{
-		// Clean out DB cached_values for this institution
-		replicatedCacheDao.invalidateAllForInstitution(institution);
-	}
+  @Override
+  public void doDelete(Institution institution, ConverterParams callback) {
+    // Clean out DB cached_values for this institution
+    replicatedCacheDao.invalidateAllForInstitution(institution);
+  }
 
-	@Override
-	public void doImport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
-		throws IOException
-	{
-		// SHITBAG 1
-	}
+  @Override
+  public void doImport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
+      throws IOException {
+    // SHITBAG 1
+  }
 
-	@Override
-	public void doExport(TemporaryFileHandle staging, Institution institution, ConverterParams callback)
-		throws IOException
-	{
-		// SHITBAG 2
-	}
+  @Override
+  public void doExport(
+      TemporaryFileHandle staging, Institution institution, ConverterParams callback)
+      throws IOException {
+    // SHITBAG 2
+  }
 
-	@Override
-	public String getStringId()
-	{
-		return "REPLICATEDCACHE";
-	}
+  @Override
+  public String getStringId() {
+    return "REPLICATEDCACHE";
+  }
 }

@@ -20,7 +20,6 @@ import java.io.Serializable;
 
 import com.tle.core.item.operations.WorkflowOperation;
 
-public interface UnsavedEditOperation extends Serializable
-{
-	WorkflowOperation getOperation(boolean forSave);
+public interface UnsavedEditOperation extends Serializable {
+  WorkflowOperation getOperation(boolean forSave);
 }

@@ -26,19 +26,21 @@ import com.tle.core.guice.BindFactory;
 import com.tle.web.scripting.objects.*;
 
 @BindFactory
-public interface ScriptObjectFactory
-{
-	FileScriptingObjectImpl createFile(@Assisted("handle") FileHandle handle);
+public interface ScriptObjectFactory {
+  FileScriptingObjectImpl createFile(@Assisted("handle") FileHandle handle);
 
-	NavigationScriptWrapper createNavigation(@Assisted("item") Item item);
+  NavigationScriptWrapper createNavigation(@Assisted("item") Item item);
 
-	AttachmentsScriptWrapper createAttachments(@Assisted("attachments") ModifiableAttachments attachments, @Assisted("staging") FileHandle staging);
+  AttachmentsScriptWrapper createAttachments(
+      @Assisted("attachments") ModifiableAttachments attachments,
+      @Assisted("staging") FileHandle staging);
 
-	UserScriptWrapper createUser();
+  UserScriptWrapper createUser();
 
-	LoggingScriptWrapper createLogger(@Assisted("logger") Logger logger);
+  LoggingScriptWrapper createLogger(@Assisted("logger") Logger logger);
 
-	DrmScriptWrapper createDrm(@Assisted("item") Item item, @Assisted("drmSettings") DrmSettings drmSettings);
+  DrmScriptWrapper createDrm(
+      @Assisted("item") Item item, @Assisted("drmSettings") DrmSettings drmSettings);
 
-	ImagesScriptWrapper createImages(@Assisted("handle") FileHandle handle);
+  ImagesScriptWrapper createImages(@Assisted("handle") FileHandle handle);
 }

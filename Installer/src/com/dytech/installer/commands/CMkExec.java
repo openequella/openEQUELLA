@@ -22,20 +22,20 @@ import java.io.File;
 
 public class CMkExec extends Command {
 
-    private final String file;
+  private final String file;
 
-    public CMkExec(String file)
-    {
-        this.file = file;
-    }
-    @Override
-    public void execute() throws InstallerException {
+  public CMkExec(String file) {
+    this.file = file;
+  }
 
-        new File(file).setExecutable(true);
-    }
+  @Override
+  public void execute() throws InstallerException {
 
-    @Override
-    public String toString() {
-        return "Making "+file+" executable";
-    }
+    new File(file).setExecutable(true);
+  }
+
+  @Override
+  public String toString() {
+    return "Making " + file + " executable";
+  }
 }

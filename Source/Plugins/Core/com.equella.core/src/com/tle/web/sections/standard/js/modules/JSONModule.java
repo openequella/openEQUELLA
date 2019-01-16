@@ -28,38 +28,33 @@ import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.render.PreRenderable;
 
 @NonNullByDefault
-public class JSONModule implements JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
+public class JSONModule implements JavascriptModule {
+  private static final long serialVersionUID = 1L;
 
-	public static final PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(JSONModule.class);
+  public static final PluginResourceHelper urlHelper =
+      ResourcesService.getResourceHelper(JSONModule.class);
 
-	public static JSExpression getParseExpression(JSExpression text)
-	{
-		return new FunctionCallExpression(new ExternallyDefinedFunction("JSON.parse"), text);
-	}
+  public static JSExpression getParseExpression(JSExpression text) {
+    return new FunctionCallExpression(new ExternallyDefinedFunction("JSON.parse"), text);
+  }
 
-	public static JSExpression getStringifyExpression(JSExpression text)
-	{
-		return new FunctionCallExpression(new ExternallyDefinedFunction("JSON.stringify"), text);
-	}
+  public static JSExpression getStringifyExpression(JSExpression text) {
+    return new FunctionCallExpression(new ExternallyDefinedFunction("JSON.stringify"), text);
+  }
 
-	@Override
-	public String getDisplayName()
-	{
-		return urlHelper.getString("js.modules.json.name");
-	}
+  @Override
+  public String getDisplayName() {
+    return urlHelper.getString("js.modules.json.name");
+  }
 
-	@Override
-	public String getId()
-	{
-		return "json";
-	}
+  @Override
+  public String getId() {
+    return "json";
+  }
 
-	@Nullable
-	@Override
-	public PreRenderable getPreRenderer()
-	{
-		return null;
-	}
+  @Nullable
+  @Override
+  public PreRenderable getPreRenderer() {
+    return null;
+  }
 }

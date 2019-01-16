@@ -42,103 +42,90 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.model.Option;
 
 @Bind
-public class BulkWorkflowApproveTaskOperation extends AbstractBulkApproveRejectSection
-{
-	private static final String BULK_APPROVE_VAL = "approvetasks";
+public class BulkWorkflowApproveTaskOperation extends AbstractBulkApproveRejectSection {
+  private static final String BULK_APPROVE_VAL = "approvetasks";
 
-	@PlugKey("bulkop.approvetask")
-	private static String STRING_APPROVE;
-	@PlugKey("bulkop.approvetask.title")
-	private static Label LABEL_APPROVE_TITLE;
-	@PlugKey("bulkop.approvetask.subtitle")
-	private static Label LABEL_APPROVE_SUBTITLE;
+  @PlugKey("bulkop.approvetask")
+  private static String STRING_APPROVE;
 
-	@BindFactory
-	public interface ApproveOperationExecutorFactory
-	{
-		ApproveExecutor create(@Assisted("message") String message,
-			@Assisted("acceptAllUsers") boolean acceptAllUsers);
-	}
+  @PlugKey("bulkop.approvetask.title")
+  private static Label LABEL_APPROVE_TITLE;
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-	}
+  @PlugKey("bulkop.approvetask.subtitle")
+  private static Label LABEL_APPROVE_SUBTITLE;
 
-	public static class ApproveExecutor implements BulkOperationExecutor
-	{
-		private static final long serialVersionUID = 1L;
-		private final String message;
+  @BindFactory
+  public interface ApproveOperationExecutorFactory {
+    ApproveExecutor create(
+        @Assisted("message") String message, @Assisted("acceptAllUsers") boolean acceptAllUsers);
+  }
 
-		private final boolean acceptAllUsers;
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+  }
 
-		@Inject
-		private ItemOperationFactory workflowFactory;
-		@Inject
-		private BulkWorkflowTaskOperationFactory approveOperationFactory;
+  public static class ApproveExecutor implements BulkOperationExecutor {
+    private static final long serialVersionUID = 1L;
+    private final String message;
 
-		@Inject
-		public ApproveExecutor(@Assisted("message") String message,
-							   @Assisted("acceptAllUsers") boolean acceptAllUsers)
-		{
-			this.message = message;
-			this.acceptAllUsers = acceptAllUsers;
-		}
+    private final boolean acceptAllUsers;
 
-		@Override
-		public WorkflowOperation[] getOperations()
-		{
-			return new WorkflowOperation[]{approveOperationFactory.approve(message, acceptAllUsers),
-					workflowFactory.save()};
-		}
+    @Inject private ItemOperationFactory workflowFactory;
+    @Inject private BulkWorkflowTaskOperationFactory approveOperationFactory;
 
-		@Override
-		public String getTitleKey()
-		{
-			return "com.tle.web.bulk.workflowtask.bulk.approvetask.title";
-		}
-	}
+    @Inject
+    public ApproveExecutor(
+        @Assisted("message") String message, @Assisted("acceptAllUsers") boolean acceptAllUsers) {
+      this.message = message;
+      this.acceptAllUsers = acceptAllUsers;
+    }
 
-	@Override
-	public void addOptions(SectionInfo info, List<Option<OperationInfo>> options)
-	{
-		if( isOnMyTaskPage(info) )
-		{
-			if( hasPrivilege("APPROVE_BULK_TASKS") )
-			{
-				options.add(new KeyOption<OperationInfo>(STRING_APPROVE, BULK_APPROVE_VAL,
-					new OperationInfo(this, BULK_APPROVE_VAL)));
-			}
-		}
-		else
-		{
-			if( hasPrivilege("MANAGE_WORKFLOW") )
-			{
-				options.add(new KeyOption<OperationInfo>(STRING_APPROVE, BULK_APPROVE_VAL,
-					new OperationInfo(this, BULK_APPROVE_VAL)));
-			}
-		}
-	}
+    @Override
+    public WorkflowOperation[] getOperations() {
+      return new WorkflowOperation[] {
+        approveOperationFactory.approve(message, acceptAllUsers), workflowFactory.save()
+      };
+    }
 
-	@Override
-	public BeanLocator<ApproveExecutor> getExecutor(SectionInfo info, String operationId)
-	{
-		return new FactoryMethodLocator<ApproveExecutor>(ApproveOperationExecutorFactory.class, "create",
-			getComment(info), !isOnMyTaskPage(info));
-	}
+    @Override
+    public String getTitleKey() {
+      return "com.tle.web.bulk.workflowtask.bulk.approvetask.title";
+    }
+  }
 
-	@Override
-	public SectionRenderable renderOptions(RenderContext context, String operationId)
-	{
-		setTitle(context, LABEL_APPROVE_TITLE.getText());
-		setSubTitle(context, LABEL_APPROVE_SUBTITLE.getText());
-		return renderSection(context, this);
-	}
+  @Override
+  public void addOptions(SectionInfo info, List<Option<OperationInfo>> options) {
+    if (isOnMyTaskPage(info)) {
+      if (hasPrivilege("APPROVE_BULK_TASKS")) {
+        options.add(
+            new KeyOption<OperationInfo>(
+                STRING_APPROVE, BULK_APPROVE_VAL, new OperationInfo(this, BULK_APPROVE_VAL)));
+      }
+    } else {
+      if (hasPrivilege("MANAGE_WORKFLOW")) {
+        options.add(
+            new KeyOption<OperationInfo>(
+                STRING_APPROVE, BULK_APPROVE_VAL, new OperationInfo(this, BULK_APPROVE_VAL)));
+      }
+    }
+  }
 
-	@Override
-	public Label getStatusTitleLabel(SectionInfo info, String operationId)
-	{
-		return LABEL_APPROVE_TITLE;
-	}
+  @Override
+  public BeanLocator<ApproveExecutor> getExecutor(SectionInfo info, String operationId) {
+    return new FactoryMethodLocator<ApproveExecutor>(
+        ApproveOperationExecutorFactory.class, "create", getComment(info), !isOnMyTaskPage(info));
+  }
+
+  @Override
+  public SectionRenderable renderOptions(RenderContext context, String operationId) {
+    setTitle(context, LABEL_APPROVE_TITLE.getText());
+    setSubTitle(context, LABEL_APPROVE_SUBTITLE.getText());
+    return renderSection(context, this);
+  }
+
+  @Override
+  public Label getStatusTitleLabel(SectionInfo info, String operationId) {
+    return LABEL_APPROVE_TITLE;
+  }
 }

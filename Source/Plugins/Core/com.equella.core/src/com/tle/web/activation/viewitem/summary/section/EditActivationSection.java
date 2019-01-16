@@ -49,186 +49,165 @@ import com.tle.web.viewitem.summary.section.ItemSummaryContentSection;
 
 @NonNullByDefault
 @Bind
-public class EditActivationSection extends AbstractContentSection<EditActivationSection.EditActivationModel>
-{
-	@PlugKey("editactivation.error.fromafterbefore")
-	private static Label LABEL_ERROR_NONSENSICAL_DATES;
-	@PlugKey("editactivation.error.untilpast")
-	private static Label LABEL_ERROR_UNTIL_PAST;
-	@PlugKey("editactivation.error.pendingpast")
-	private static Label LABEL_ERROR_PENDING_PAST;
+public class EditActivationSection
+    extends AbstractContentSection<EditActivationSection.EditActivationModel> {
+  @PlugKey("editactivation.error.fromafterbefore")
+  private static Label LABEL_ERROR_NONSENSICAL_DATES;
 
-	@Inject
-	private ActivationService activationService;
+  @PlugKey("editactivation.error.untilpast")
+  private static Label LABEL_ERROR_UNTIL_PAST;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@TreeLookup
-	private ItemSummaryContentSection summarySection;
-	@TreeLookup
-	private ShowActivationsSection activationsSection;
+  @PlugKey("editactivation.error.pendingpast")
+  private static Label LABEL_ERROR_PENDING_PAST;
 
-	@Inject
-	@Component(name = "cid", stateful = false)
-	private CourseSelectionList course;
-	@Component(name = "fd", stateful = false)
-	private Calendar fromDate;
-	@Component(name = "ud", stateful = false)
-	private Calendar untilDate;
-	@Component
-	@PlugKey("editactivation.cancel")
-	private Button cancelButton;
-	@Component
-	@PlugKey("editactivation.save")
-	private Button saveButton;
+  @Inject private ActivationService activationService;
 
-	public void doEdit(SectionInfo info, String uuid)
-	{
-		getModel(info).setActivationId(uuid);
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @TreeLookup private ItemSummaryContentSection summarySection;
+  @TreeLookup private ShowActivationsSection activationsSection;
 
-		summarySection.setSummaryId(info, this);
-	}
+  @Inject
+  @Component(name = "cid", stateful = false)
+  private CourseSelectionList course;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		final EditActivationModel model = getModel(context);
-		final ActivateRequest request = activationService.getRequest(model.getActivationId());
-		course.setSelectedValue(context, request.getCourse());
+  @Component(name = "fd", stateful = false)
+  private Calendar fromDate;
 
-		if( model.getError() == null )
-		{
-			fromDate.setDate(context, new UtcDate(request.getFrom()).conceptualDate());
-			untilDate.setDate(context, new UtcDate(request.getUntil()).conceptualDate());
-		}
-		final boolean active = (request.getStatus() == ActivateRequest.TYPE_ACTIVE);
-		course.setDisabled(context, active);
-		fromDate.setDisabled(context, active);
-		return viewFactory.createResult("editactivation.ftl", this);
-	}
+  @Component(name = "ud", stateful = false)
+  private Calendar untilDate;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		cancelButton.setClickHandler(events.getNamedHandler("cancelEdit"));
-		saveButton.setClickHandler(events.getNamedHandler("save"));
-	}
+  @Component
+  @PlugKey("editactivation.cancel")
+  private Button cancelButton;
 
-	@EventHandlerMethod
-	public void save(SectionInfo info)
-	{
-		final EditActivationModel model = getModel(info);
-		final ActivateRequest request = activationService.getRequest(model.getActivationId());
-		if( isValid(info, request) )
-		{
-			if (request.getStatus() != ActivateRequest.TYPE_ACTIVE)
-			{
-				request.setCourse(course.getSelectedValue(info));
-				request.setFrom(fromDate.getDate(info).toDate());
-			}
-			request.setUntil(untilDate.getDate(info).toDate());
-			request.setUser(CurrentUser.getUserID());
-			activationService.updateActivation(request);
-			cancelEdit(info);
-		}
-		else
-		{
-			info.preventGET();
-		}
-	}
+  @Component
+  @PlugKey("editactivation.save")
+  private Button saveButton;
 
-	@EventHandlerMethod
-	public void cancelEdit(SectionInfo info)
-	{
-		getModel(info).setActivationId(null);
-		summarySection.setSummaryId(info, activationsSection.getSectionObject());
-	}
+  public void doEdit(SectionInfo info, String uuid) {
+    getModel(info).setActivationId(uuid);
 
-	private boolean isValid(SectionInfo info, ActivateRequest request)
-	{
-		final Date today = new Date();
-		final EditActivationModel model = getModel(info);
-		if( fromDate.getDate(info).after(untilDate.getDate(info)) )
-		{
-			// not actually possible but JUST IN CASE
-			model.setError(LABEL_ERROR_NONSENSICAL_DATES);
-			return false;
-		}
-		if( untilDate.getDate(info).toDate().before(today) )
-		{
-			model.setError(LABEL_ERROR_UNTIL_PAST);
-			return false;
-		}
-		if( request.getStatus() == ActivateRequest.TYPE_PENDING && fromDate.getDate(info).toDate().before(today) )
-		{
-			model.setError(LABEL_ERROR_PENDING_PAST);
-			return false;
-		}
-		return true;
-	}
+    summarySection.setSummaryId(info, this);
+  }
 
-	@Override
-	public Class<EditActivationModel> getModelClass()
-	{
-		return EditActivationModel.class;
-	}
-/*
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new EditActivationModel();
-	}*/
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    final EditActivationModel model = getModel(context);
+    final ActivateRequest request = activationService.getRequest(model.getActivationId());
+    course.setSelectedValue(context, request.getCourse());
 
-	public static class EditActivationModel
-	{
-		@Bookmarked(name = "aid")
-		private String activationId;
-		private Label error;
+    if (model.getError() == null) {
+      fromDate.setDate(context, new UtcDate(request.getFrom()).conceptualDate());
+      untilDate.setDate(context, new UtcDate(request.getUntil()).conceptualDate());
+    }
+    final boolean active = (request.getStatus() == ActivateRequest.TYPE_ACTIVE);
+    course.setDisabled(context, active);
+    fromDate.setDisabled(context, active);
+    return viewFactory.createResult("editactivation.ftl", this);
+  }
 
-		public String getActivationId()
-		{
-			return activationId;
-		}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    cancelButton.setClickHandler(events.getNamedHandler("cancelEdit"));
+    saveButton.setClickHandler(events.getNamedHandler("save"));
+  }
 
-		public void setActivationId(String activationId)
-		{
-			this.activationId = activationId;
-		}
+  @EventHandlerMethod
+  public void save(SectionInfo info) {
+    final EditActivationModel model = getModel(info);
+    final ActivateRequest request = activationService.getRequest(model.getActivationId());
+    if (isValid(info, request)) {
+      if (request.getStatus() != ActivateRequest.TYPE_ACTIVE) {
+        request.setCourse(course.getSelectedValue(info));
+        request.setFrom(fromDate.getDate(info).toDate());
+      }
+      request.setUntil(untilDate.getDate(info).toDate());
+      request.setUser(CurrentUser.getUserID());
+      activationService.updateActivation(request);
+      cancelEdit(info);
+    } else {
+      info.preventGET();
+    }
+  }
 
-		public Label getError()
-		{
-			return error;
-		}
+  @EventHandlerMethod
+  public void cancelEdit(SectionInfo info) {
+    getModel(info).setActivationId(null);
+    summarySection.setSummaryId(info, activationsSection.getSectionObject());
+  }
 
-		public void setError(Label error)
-		{
-			this.error = error;
-		}
-	}
+  private boolean isValid(SectionInfo info, ActivateRequest request) {
+    final Date today = new Date();
+    final EditActivationModel model = getModel(info);
+    if (fromDate.getDate(info).after(untilDate.getDate(info))) {
+      // not actually possible but JUST IN CASE
+      model.setError(LABEL_ERROR_NONSENSICAL_DATES);
+      return false;
+    }
+    if (untilDate.getDate(info).toDate().before(today)) {
+      model.setError(LABEL_ERROR_UNTIL_PAST);
+      return false;
+    }
+    if (request.getStatus() == ActivateRequest.TYPE_PENDING
+        && fromDate.getDate(info).toDate().before(today)) {
+      model.setError(LABEL_ERROR_PENDING_PAST);
+      return false;
+    }
+    return true;
+  }
 
-	public CourseSelectionList getCourse()
-	{
-		return course;
-	}
+  @Override
+  public Class<EditActivationModel> getModelClass() {
+    return EditActivationModel.class;
+  }
+  /*
+  @Override
+  public Object instantiateModel(SectionInfo info)
+  {
+  	return new EditActivationModel();
+  }*/
 
-	public Calendar getFromDate()
-	{
-		return fromDate;
-	}
+  public static class EditActivationModel {
+    @Bookmarked(name = "aid")
+    private String activationId;
 
-	public Calendar getUntilDate()
-	{
-		return untilDate;
-	}
+    private Label error;
 
-	public Button getCancelButton()
-	{
-		return cancelButton;
-	}
+    public String getActivationId() {
+      return activationId;
+    }
 
-	public Button getSaveButton()
-	{
-		return saveButton;
-	}
+    public void setActivationId(String activationId) {
+      this.activationId = activationId;
+    }
+
+    public Label getError() {
+      return error;
+    }
+
+    public void setError(Label error) {
+      this.error = error;
+    }
+  }
+
+  public CourseSelectionList getCourse() {
+    return course;
+  }
+
+  public Calendar getFromDate() {
+    return fromDate;
+  }
+
+  public Calendar getUntilDate() {
+    return untilDate;
+  }
+
+  public Button getCancelButton() {
+    return cancelButton;
+  }
+
+  public Button getSaveButton() {
+    return saveButton;
+  }
 }

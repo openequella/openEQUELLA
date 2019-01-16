@@ -28,38 +28,35 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.viewurl.ItemSectionInfo;
 
 @Bind
-public class RestoreSection extends GenericMinorActionSection
-{
-	@PlugKey("summary.sidebar.actions.restore.title")
-	private static Label LINK_LABEL;
-	@PlugKey("summary.sidebar.actions.restore.receipt")
-	private static Label RECEIPT_LABEL;
-	@Inject
-	private ItemOperationFactory workflowFactory;
+public class RestoreSection extends GenericMinorActionSection {
+  @PlugKey("summary.sidebar.actions.restore.title")
+  private static Label LINK_LABEL;
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return LINK_LABEL;
-	}
+  @PlugKey("summary.sidebar.actions.restore.receipt")
+  private static Label RECEIPT_LABEL;
 
-	@Override
-	@SuppressWarnings("nls")
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		return itemInfo.hasPrivilege("DELETE_ITEM") && status.getStatusName().equals(ItemStatus.DELETED);
-	}
+  @Inject private ItemOperationFactory workflowFactory;
 
-	@Override
-	protected void execute(SectionInfo info)
-	{
-		getItemInfo(info).modify(workflowFactory.restore());
-		setReceipt(RECEIPT_LABEL);
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return LINK_LABEL;
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return LINK_LABEL.getText();
-	}
+  @Override
+  @SuppressWarnings("nls")
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    return itemInfo.hasPrivilege("DELETE_ITEM")
+        && status.getStatusName().equals(ItemStatus.DELETED);
+  }
+
+  @Override
+  protected void execute(SectionInfo info) {
+    getItemInfo(info).modify(workflowFactory.restore());
+    setReceipt(RECEIPT_LABEL);
+  }
+
+  @Override
+  public String getLinkText() {
+    return LINK_LABEL.getText();
+  }
 }

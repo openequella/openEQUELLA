@@ -24,32 +24,30 @@ import com.tle.web.sections.equella.guice.SectionsModule;
 import com.tle.web.selection.home.sections.SelectionPortletRendererWrapper;
 
 @SuppressWarnings("nls")
-public class BrowsePortletModule extends SectionsModule
-{
-	private static String KEY_PFX = AbstractPluginService.getMyPluginId(BrowsePortletModule.class)+".";
+public class BrowsePortletModule extends SectionsModule {
+  private static String KEY_PFX =
+      AbstractPluginService.getMyPluginId(BrowsePortletModule.class) + ".";
 
-	@Override
-	protected void configure()
-	{
-		bind(Object.class).annotatedWith(Names.named("com.tle.web.hierarchy.portlet.browseSelectionPortal"))
-			.toProvider(browsePortletTree());
-	}
+  @Override
+  protected void configure() {
+    bind(Object.class)
+        .annotatedWith(Names.named("com.tle.web.hierarchy.portlet.browseSelectionPortal"))
+        .toProvider(browsePortletTree());
+  }
 
-	private NodeProvider browsePortletTree()
-	{
-		NodeProvider node = new NodeProvider(SelectionPortletRendererWrapper.class)
-		{
-			@Override
-			protected void customize(Section section)
-			{
-				SelectionPortletRendererWrapper sprw = (SelectionPortletRendererWrapper) section;
-				sprw.setPortletNameKey(KEY_PFX+"portlet.browse.name");
-				sprw.setPortletType("browse");
-			}
-		};
+  private NodeProvider browsePortletTree() {
+    NodeProvider node =
+        new NodeProvider(SelectionPortletRendererWrapper.class) {
+          @Override
+          protected void customize(Section section) {
+            SelectionPortletRendererWrapper sprw = (SelectionPortletRendererWrapper) section;
+            sprw.setPortletNameKey(KEY_PFX + "portlet.browse.name");
+            sprw.setPortletType("browse");
+          }
+        };
 
-		node.child(BrowsePortletRenderer.class);
+    node.child(BrowsePortletRenderer.class);
 
-		return node;
-	}
+    return node;
+  }
 }

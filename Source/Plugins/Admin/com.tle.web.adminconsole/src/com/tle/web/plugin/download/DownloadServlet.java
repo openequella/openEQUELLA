@@ -32,29 +32,23 @@ import com.tle.web.stream.FileContentStream;
 
 @Bind
 @Singleton
-public class DownloadServlet extends HttpServlet
-{
-	private static final long serialVersionUID = 1L;
+public class DownloadServlet extends HttpServlet {
+  private static final long serialVersionUID = 1L;
 
-	@Inject
-	private PluginDownloadService pluginDownloadService;
-	@Inject
-	private ContentStreamWriter contentStreamWriter;
+  @Inject private PluginDownloadService pluginDownloadService;
+  @Inject private ContentStreamWriter contentStreamWriter;
 
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-		IOException
-	{
-		String pathInfo = request.getPathInfo().substring(1);
-		File file = pluginDownloadService.getFileForJar(pathInfo);
-		if( file != null )
-		{
-			FileContentStream stream = new FileContentStream(file, file.getName(), "application/java-archive"); //$NON-NLS-1$
-			contentStreamWriter.outputStream(request, response, stream);
-		}
-		else
-		{
-			response.sendError(404);
-		}
-	}
+  @Override
+  protected void service(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    String pathInfo = request.getPathInfo().substring(1);
+    File file = pluginDownloadService.getFileForJar(pathInfo);
+    if (file != null) {
+      FileContentStream stream =
+          new FileContentStream(file, file.getName(), "application/java-archive"); // $NON-NLS-1$
+      contentStreamWriter.outputStream(request, response, stream);
+    } else {
+      response.sendError(404);
+    }
+  }
 }

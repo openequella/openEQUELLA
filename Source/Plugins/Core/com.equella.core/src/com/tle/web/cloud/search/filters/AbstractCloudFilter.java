@@ -41,59 +41,47 @@ import com.tle.web.sections.standard.model.HtmlListModel;
 
 @SuppressWarnings("nls")
 public abstract class AbstractCloudFilter extends AbstractPrototypeSection<Object>
-	implements
-		SearchEventListener<CloudSearchEvent>,
-		ResetFiltersListener,
-		HtmlRenderer
-{
-	@ViewFactory
-	protected FreemarkerFactory viewFactory;
+    implements SearchEventListener<CloudSearchEvent>, ResetFiltersListener, HtmlRenderer {
+  @ViewFactory protected FreemarkerFactory viewFactory;
 
-	@Inject
-	protected CloudService cloudService;
+  @Inject protected CloudService cloudService;
 
-	@TreeLookup
-	protected AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
+  @TreeLookup protected AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
 
-	@Component(supported = true)
-	protected SingleSelectionList<NameValue> list;
+  @Component(supported = true)
+  protected SingleSelectionList<NameValue> list;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
-		list.setListModel(buildListModel());
-		list.setParameterId(getPublicParam());
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
+    list.setListModel(buildListModel());
+    list.setParameterId(getPublicParam());
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		list.addChangeEventHandler(searchResults.getRestartSearchHandler(tree));
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    list.addChangeEventHandler(searchResults.getRestartSearchHandler(tree));
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		return viewFactory.createResult("filter/cloudfilter.ftl", context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    return viewFactory.createResult("filter/cloudfilter.ftl", context);
+  }
 
-	public SingleSelectionList<NameValue> getList()
-	{
-		return list;
-	}
+  public SingleSelectionList<NameValue> getList() {
+    return list;
+  }
 
-	@Override
-	public void reset(SectionInfo info)
-	{
-		list.setSelectedValue(info, null);
-	}
+  @Override
+  public void reset(SectionInfo info) {
+    list.setSelectedValue(info, null);
+  }
 
-	protected abstract Label getTitle();
+  protected abstract Label getTitle();
 
-	protected abstract HtmlListModel<NameValue> buildListModel();
+  protected abstract HtmlListModel<NameValue> buildListModel();
 
-	protected abstract String getPublicParam();
+  protected abstract String getPublicParam();
 }

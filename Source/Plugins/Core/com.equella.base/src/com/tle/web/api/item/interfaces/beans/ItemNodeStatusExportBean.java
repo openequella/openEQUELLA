@@ -23,96 +23,80 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public class ItemNodeStatusExportBean
-{
-	private String uuid;
-	private String status;
-	private Date started;
-	private Date due;
-	@JsonInclude(Include.NON_DEFAULT)
-	private int causeIndex = -1;
-	private String assignedTo;
-	private Set<String> acceptedUsers;
-	private List<ItemNodeStatusMessageBean> comments;
+public class ItemNodeStatusExportBean {
+  private String uuid;
+  private String status;
+  private Date started;
+  private Date due;
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  @JsonInclude(Include.NON_DEFAULT)
+  private int causeIndex = -1;
 
-	public void setUuid(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  private String assignedTo;
+  private Set<String> acceptedUsers;
+  private List<ItemNodeStatusMessageBean> comments;
 
-	public String getStatus()
-	{
-		return status;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public void setStatus(String status)
-	{
-		this.status = status;
-	}
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-	public Date getStarted()
-	{
-		return started;
-	}
+  public String getStatus() {
+    return status;
+  }
 
-	public void setStarted(Date started)
-	{
-		this.started = started;
-	}
+  public void setStatus(String status) {
+    this.status = status;
+  }
 
-	public Date getDue()
-	{
-		return due;
-	}
+  public Date getStarted() {
+    return started;
+  }
 
-	public void setDue(Date due)
-	{
-		this.due = due;
-	}
+  public void setStarted(Date started) {
+    this.started = started;
+  }
 
-	public int getCauseIndex()
-	{
-		return causeIndex;
-	}
+  public Date getDue() {
+    return due;
+  }
 
-	public void setCauseIndex(int causeIndex)
-	{
-		this.causeIndex = causeIndex;
-	}
+  public void setDue(Date due) {
+    this.due = due;
+  }
 
-	public String getAssignedTo()
-	{
-		return assignedTo;
-	}
+  public int getCauseIndex() {
+    return causeIndex;
+  }
 
-	public void setAssignedTo(String assignedTo)
-	{
-		this.assignedTo = assignedTo;
-	}
+  public void setCauseIndex(int causeIndex) {
+    this.causeIndex = causeIndex;
+  }
 
-	public Set<String> getAcceptedUsers()
-	{
-		return acceptedUsers;
-	}
+  public String getAssignedTo() {
+    return assignedTo;
+  }
 
-	public void setAcceptedUsers(Set<String> acceptedUsers)
-	{
-		this.acceptedUsers = acceptedUsers;
-	}
+  public void setAssignedTo(String assignedTo) {
+    this.assignedTo = assignedTo;
+  }
 
-	public List<ItemNodeStatusMessageBean> getComments()
-	{
-		return comments;
-	}
+  public Set<String> getAcceptedUsers() {
+    return acceptedUsers;
+  }
 
-	public void setComments(List<ItemNodeStatusMessageBean> comments)
-	{
-		this.comments = comments;
-	}
+  public void setAcceptedUsers(Set<String> acceptedUsers) {
+    this.acceptedUsers = acceptedUsers;
+  }
 
+  public List<ItemNodeStatusMessageBean> getComments() {
+    return comments;
+  }
+
+  public void setComments(List<ItemNodeStatusMessageBean> comments) {
+    this.comments = comments;
+  }
 }

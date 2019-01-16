@@ -61,166 +61,150 @@ import com.tle.web.sections.standard.model.Option;
 
 @Bind
 @SuppressWarnings("nls")
-public class BulkExecuteScriptSection extends AbstractPrototypeSection<BulkExecuteScriptModel> implements HtmlRenderer
-{
-	@PlugKey("script.validate")
-	private static Label LABEL_VALIDATE;
-	@PlugKey("script.errormessage")
-	private static String ERROR_MESSAGE;
-	@PlugKey("scriptlist.action")
-	private static Label SCRIPT_LIST_LABEL;
+public class BulkExecuteScriptSection extends AbstractPrototypeSection<BulkExecuteScriptModel>
+    implements HtmlRenderer {
+  @PlugKey("script.validate")
+  private static Label LABEL_VALIDATE;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	protected EventGenerator events;
-	@AjaxFactory
-	private AjaxGenerator ajax;
-	@Inject
-	private UserScriptsService userScriptService;
-	@Inject
-	private BundleCache bundleCache;
+  @PlugKey("script.errormessage")
+  private static String ERROR_MESSAGE;
 
-	@Component(name = "lds")
-	private SingleSelectionList<UserScript> scripts;
-	@Component(name = "vs")
-	private Button validateScriptButton;
+  @PlugKey("scriptlist.action")
+  private static Label SCRIPT_LIST_LABEL;
 
-	@Component(name = "scpt")
-	private CodeMirror scriptEditor;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory protected EventGenerator events;
+  @AjaxFactory private AjaxGenerator ajax;
+  @Inject private UserScriptsService userScriptService;
+  @Inject private BundleCache bundleCache;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext info)
-	{
-		scripts.setDisplayed(info, userScriptService.executableScriptsAvailable());
-		validateScriptButton.setLabel(info, LABEL_VALIDATE);
-		return viewFactory.createResult("bulkexecute.ftl", info);
-	}
+  @Component(name = "lds")
+  private SingleSelectionList<UserScript> scripts;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		scriptEditor.setEditorType(EditorType.JAVASCRIPT_EDITOR);
-		scriptEditor.setAllowFullScreen(false);
-		scriptEditor.setShowHelp(true);
+  @Component(name = "vs")
+  private Button validateScriptButton;
 
-		validateScriptButton.setStyleClass("validate");
-		validateScriptButton.setClickHandler(new StatementHandler(ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("validate"), ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING),
-			"errordisplay", "bss_bulkDialogfooter")));
+  @Component(name = "scpt")
+  private CodeMirror scriptEditor;
 
-		scripts.setLabel(SCRIPT_LIST_LABEL);
-		scripts.setListModel(new ScriptListModel());
-		scripts.setDefaultRenderer(BootstrapDropDownRenderer.RENDER_CONSTANT);
-		scripts.addChangeEventHandler(new StatementHandler(ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("loadUserScript"), "editor")));
+  @Override
+  public SectionResult renderHtml(RenderEventContext info) {
+    scripts.setDisplayed(info, userScriptService.executableScriptsAvailable());
+    validateScriptButton.setLabel(info, LABEL_VALIDATE);
+    return viewFactory.createResult("bulkexecute.ftl", info);
+  }
 
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    scriptEditor.setEditorType(EditorType.JAVASCRIPT_EDITOR);
+    scriptEditor.setAllowFullScreen(false);
+    scriptEditor.setShowHelp(true);
 
-	@EventHandlerMethod
-	public void loadUserScript(SectionInfo info)
-	{
-		String script = userScriptService.getByUuid(scripts.getSelectedValueAsString(info)).getScript();
-		scriptEditor.setValue(info, script);
-	}
+    validateScriptButton.setStyleClass("validate");
+    validateScriptButton.setClickHandler(
+        new StatementHandler(
+            ajax.getAjaxUpdateDomFunction(
+                tree,
+                this,
+                events.getEventHandler("validate"),
+                ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING),
+                "errordisplay",
+                "bss_bulkDialogfooter")));
 
-	@EventHandlerMethod
-	public void validate(SectionInfo info)
-	{
-		String script = getScript(info);
-		BulkExecuteScriptModel model = getModel(info);
-		model.setValidationRan(true);
-		CompilerEnvirons ce = new CompilerEnvirons();
-		ce.initFromContext(ContextFactory.getGlobal().enterContext());
-		ErrorReporter er = new ErrorReporter()
-		{
-			private Label errorMessage;
+    scripts.setLabel(SCRIPT_LIST_LABEL);
+    scripts.setListModel(new ScriptListModel());
+    scripts.setDefaultRenderer(BootstrapDropDownRenderer.RENDER_CONSTANT);
+    scripts.addChangeEventHandler(
+        new StatementHandler(
+            ajax.getAjaxUpdateDomFunction(
+                tree, this, events.getEventHandler("loadUserScript"), "editor")));
+  }
 
-			@Override
-			public void warning(String message, String sourceName, int line, String lineSource, int lineOffset)
-			{
-				// pfft warnings?
-			}
+  @EventHandlerMethod
+  public void loadUserScript(SectionInfo info) {
+    String script = userScriptService.getByUuid(scripts.getSelectedValueAsString(info)).getScript();
+    scriptEditor.setValue(info, script);
+  }
 
-			@Override
-			public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource,
-				int lineOffset)
-			{
-				return new EvaluatorException(errorMessage.getText());
-			}
+  @EventHandlerMethod
+  public void validate(SectionInfo info) {
+    String script = getScript(info);
+    BulkExecuteScriptModel model = getModel(info);
+    model.setValidationRan(true);
+    CompilerEnvirons ce = new CompilerEnvirons();
+    ce.initFromContext(ContextFactory.getGlobal().enterContext());
+    ErrorReporter er =
+        new ErrorReporter() {
+          private Label errorMessage;
 
-			@Override
-			public void error(String message, String sourceName, int line, String lineSource, int lineOffset)
-			{
-				// only log one error found. Helps with output
-				errorMessage = new KeyLabel(ERROR_MESSAGE, message, line + 1, lineOffset, lineSource);
-			}
+          @Override
+          public void warning(
+              String message, String sourceName, int line, String lineSource, int lineOffset) {
+            // pfft warnings?
+          }
 
-		};
-		Parser p = new Parser(ce, er);
-		try
-		{
-			p.parse(script, "bulkExecute", 0);
-		}
-		catch( EvaluatorException e )
-		{
-			model.setValidationErrors(true);
-			model.setErrorMessage(e.getMessage());
+          @Override
+          public EvaluatorException runtimeError(
+              String message, String sourceName, int line, String lineSource, int lineOffset) {
+            return new EvaluatorException(errorMessage.getText());
+          }
 
-			return;
-		}
-		model.setValidationErrors(false);
+          @Override
+          public void error(
+              String message, String sourceName, int line, String lineSource, int lineOffset) {
+            // only log one error found. Helps with output
+            errorMessage = new KeyLabel(ERROR_MESSAGE, message, line + 1, lineOffset, lineSource);
+          }
+        };
+    Parser p = new Parser(ce, er);
+    try {
+      p.parse(script, "bulkExecute", 0);
+    } catch (EvaluatorException e) {
+      model.setValidationErrors(true);
+      model.setErrorMessage(e.getMessage());
 
-	}
+      return;
+    }
+    model.setValidationErrors(false);
+  }
 
-	public class ScriptListModel extends DynamicHtmlListModel<UserScript>
-	{
-		@Override
-		protected Option<UserScript> convertToOption(SectionInfo info, UserScript script)
-		{
-			return new NameValueOption<UserScript>(
-				new BundleNameValue(script.getName(), script.getUuid(), bundleCache), script);
-		}
+  public class ScriptListModel extends DynamicHtmlListModel<UserScript> {
+    @Override
+    protected Option<UserScript> convertToOption(SectionInfo info, UserScript script) {
+      return new NameValueOption<UserScript>(
+          new BundleNameValue(script.getName(), script.getUuid(), bundleCache), script);
+    }
 
-		@Override
-		protected Iterable<UserScript> populateModel(SectionInfo info)
-		{
-			return userScriptService.enumerateForType(ScriptTypes.EXECUTABLE);
-		}
+    @Override
+    protected Iterable<UserScript> populateModel(SectionInfo info) {
+      return userScriptService.enumerateForType(ScriptTypes.EXECUTABLE);
+    }
+  }
 
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new BulkExecuteScriptModel();
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new BulkExecuteScriptModel();
-	}
+  @Override
+  public Class<BulkExecuteScriptModel> getModelClass() {
+    return BulkExecuteScriptModel.class;
+  }
 
-	@Override
-	public Class<BulkExecuteScriptModel> getModelClass()
-	{
-		return BulkExecuteScriptModel.class;
-	}
+  public Button getValidateScriptButton() {
+    return validateScriptButton;
+  }
 
-	public Button getValidateScriptButton()
-	{
-		return validateScriptButton;
-	}
+  public String getScript(SectionInfo info) {
+    return scriptEditor.getValue(info);
+  }
 
-	public String getScript(SectionInfo info)
-	{
-		return scriptEditor.getValue(info);
-	}
+  public SingleSelectionList<UserScript> getScripts() {
+    return scripts;
+  }
 
-	public SingleSelectionList<UserScript> getScripts()
-	{
-		return scripts;
-	}
-
-	public CodeMirror getScriptEditor()
-	{
-		return scriptEditor;
-	}
-
+  public CodeMirror getScriptEditor() {
+    return scriptEditor;
+  }
 }

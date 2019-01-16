@@ -18,12 +18,10 @@ package com.tle.web.freemarker;
 
 import javax.inject.Inject;
 
-public class BasicFreemarkerFactory extends AbstractFreemarkerFactory
-{
+public class BasicFreemarkerFactory extends AbstractFreemarkerFactory {
 
-	@Inject
-	public void setConfiguration(BasicConfiguration basicConfiguration)
-	{
-		this.configuration = basicConfiguration;
-	}
+  @Inject
+  public void setConfiguration(BasicConfiguration basicConfiguration) {
+    this.configuration = basicConfiguration;
+  }
 }

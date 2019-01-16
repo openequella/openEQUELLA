@@ -32,60 +32,48 @@ import ORG.oclc.oai.server.catalog.AbstractCatalog;
 
 @Deprecated
 @Bind
-public class OAIProperties
-{
-	private final Properties properties;
+public class OAIProperties {
+  private final Properties properties;
 
-	@Inject
-	private ConfigurationService configConstants;
-	@Inject
-	private InstitutionService institutionService;
+  @Inject private ConfigurationService configConstants;
+  @Inject private InstitutionService institutionService;
 
-	// Sonar objects to 'throws Throwable' but here we're bound by the
-	// declaration in external jar
-	@Inject
-	public OAIProperties(@Named("oaiLegacyProps") Properties properties) throws Throwable // NOSONAR
-	{
-		this.properties = new OAIExtendedProperties(properties);
-		try
-		{
-			AbstractCatalog.factory(this.properties, null);
-		}
-		catch( Exception e )
-		{
-			Throwables.propagate(e);
-		}
+  // Sonar objects to 'throws Throwable' but here we're bound by the
+  // declaration in external jar
+  @Inject
+  public OAIProperties(@Named("oaiLegacyProps") Properties properties) throws Throwable // NOSONAR
+      {
+    this.properties = new OAIExtendedProperties(properties);
+    try {
+      AbstractCatalog.factory(this.properties, null);
+    } catch (Exception e) {
+      Throwables.propagate(e);
+    }
+  }
 
-	}
+  // Unfortunately we can't extend OAIProperties from Properties
+  // or otherwise spring autowire will go 'spack'
+  private class OAIExtendedProperties extends Properties {
+    private static final long serialVersionUID = 1L;
 
-	// Unfortunately we can't extend OAIProperties from Properties
-	// or otherwise spring autowire will go 'spack'
-	private class OAIExtendedProperties extends Properties
-	{
-		private static final long serialVersionUID = 1L;
+    public OAIExtendedProperties(Properties p) {
+      super(p);
+    }
 
-		public OAIExtendedProperties(Properties p)
-		{
-			super(p);
-		}
+    @Override
+    public synchronized String getProperty(String key) {
+      if ("Identify.adminEmail".equals(key)) // $NON-NLS-1$
+      {
+        return Utils.ent(configConstants.getProperties(new MailSettings()).getSender());
+      } else if ("OAIHandler.baseURL".equals(key)) // $NON-NLS-1$
+      {
+        return institutionService.getInstitutionUrl() + "oai"; // $NON-NLS-1$
+      }
+      return super.getProperty(key);
+    }
+  }
 
-		@Override
-		public synchronized String getProperty(String key)
-		{
-			if( "Identify.adminEmail".equals(key) ) //$NON-NLS-1$
-			{
-				return Utils.ent(configConstants.getProperties(new MailSettings()).getSender());
-			}
-			else if( "OAIHandler.baseURL".equals(key) ) //$NON-NLS-1$
-			{
-				return institutionService.getInstitutionUrl() + "oai"; //$NON-NLS-1$
-			}
-			return super.getProperty(key);
-		}
-	}
-
-	public Properties getProperties()
-	{
-		return properties;
-	}
+  public Properties getProperties() {
+    return properties;
+  }
 }

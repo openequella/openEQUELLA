@@ -29,30 +29,28 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
 
 @SuppressWarnings("nls")
-public class FavouritesSortOptionsSection extends StandardSortOptionsSection<FreetextSearchEvent>
-{
-	private static final String FAV_DATE_VALUE = "favdate";
+public class FavouritesSortOptionsSection extends StandardSortOptionsSection<FreetextSearchEvent> {
+  private static final String FAV_DATE_VALUE = "favdate";
 
-	@PlugKey("sortoptions.items.bookmarkdate")
-	private static Label LABEL_BOOKDATE;
+  @PlugKey("sortoptions.items.bookmarkdate")
+  private static Label LABEL_BOOKDATE;
 
-	@Override
-	protected void addSortOptions(List<SortOption> sorts)
-	{
-		sorts.add(new SortOption(LABEL_BOOKDATE, FAV_DATE_VALUE, null)
-		{
-			@Override
-			public SortField[] createSort()
-			{
-				return new SortField[]{new SortField(FreeTextQuery.FIELD_BOOKMARK_DATE + CurrentUser.getUserID(), true)};
-			}
-		});
-		super.addSortOptions(sorts);
-	}
+  @Override
+  protected void addSortOptions(List<SortOption> sorts) {
+    sorts.add(
+        new SortOption(LABEL_BOOKDATE, FAV_DATE_VALUE, null) {
+          @Override
+          public SortField[] createSort() {
+            return new SortField[] {
+              new SortField(FreeTextQuery.FIELD_BOOKMARK_DATE + CurrentUser.getUserID(), true)
+            };
+          }
+        });
+    super.addSortOptions(sorts);
+  }
 
-	@Override
-	protected String getDefaultSearch(SectionInfo info)
-	{
-		return FAV_DATE_VALUE;
-	}
+  @Override
+  protected String getDefaultSearch(SectionInfo info) {
+    return FAV_DATE_VALUE;
+  }
 }

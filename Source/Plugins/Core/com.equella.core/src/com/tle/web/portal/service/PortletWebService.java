@@ -25,100 +25,95 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.render.SectionRenderable;
 
-/**
- * @author aholland
- */
-public interface PortletWebService
-{
-	boolean canCreate();
+/** @author aholland */
+public interface PortletWebService {
+  boolean canCreate();
 
-	boolean canAdminister();
+  boolean canAdminister();
 
-	void newPortlet(SectionInfo info, String portletType, boolean admin);
+  void newPortlet(SectionInfo info, String portletType, boolean admin);
 
-	void editPortlet(SectionInfo info, String portletUuid, boolean admin);
+  void editPortlet(SectionInfo info, String portletUuid, boolean admin);
 
-	void returnFromEdit(SectionInfo info, boolean cancelled, String portletUuid, boolean institutional);
+  void returnFromEdit(
+      SectionInfo info, boolean cancelled, String portletUuid, boolean institutional);
 
-	/**
-	 * Deletes the portlet if this is a user defined portlet, otherwise creates
-	 * a preference to say that the portlet is closed.
-	 * 
-	 * @param info
-	 * @param portletUuid
-	 */
-	void close(SectionInfo info, String portletUuid);
+  /**
+   * Deletes the portlet if this is a user defined portlet, otherwise creates a preference to say
+   * that the portlet is closed.
+   *
+   * @param info
+   * @param portletUuid
+   */
+  void close(SectionInfo info, String portletUuid);
 
-	/**
-	 * Unlike close(SectionInfo, String, String), this will always delete the
-	 * portlet (subject to permissions of course)
-	 * 
-	 * @param info
-	 * @param portletUuid
-	 */
-	void delete(SectionInfo info, String portletUuid);
+  /**
+   * Unlike close(SectionInfo, String, String), this will always delete the portlet (subject to
+   * permissions of course)
+   *
+   * @param info
+   * @param portletUuid
+   */
+  void delete(SectionInfo info, String portletUuid);
 
-	/**
-	 * Restores an institutional portlet that someone has previously decided to
-	 * close
-	 * 
-	 * @param info
-	 * @param portletUuid
-	 */
-	void restore(SectionInfo info, String portletUuid);
+  /**
+   * Restores an institutional portlet that someone has previously decided to close
+   *
+   * @param info
+   * @param portletUuid
+   */
+  void restore(SectionInfo info, String portletUuid);
 
-	/**
-	 * Restores all institutional portlets that someone has previously decided
-	 * to close
-	 * 
-	 * @param info
-	 */
-	void restoreAll(SectionInfo info);
+  /**
+   * Restores all institutional portlets that someone has previously decided to close
+   *
+   * @param info
+   */
+  void restoreAll(SectionInfo info);
 
-	/**
-	 * @param info
-	 * @param portlet
-	 * @param minimised
-	 */
-	void minimise(SectionInfo info, String portletUuid, boolean minimised);
+  /**
+   * @param info
+   * @param portlet
+   * @param minimised
+   */
+  void minimise(SectionInfo info, String portletUuid, boolean minimised);
 
-	/**
-	 * @param info
-	 * @return
-	 */
-	SectionTree getPortletRendererTree(SectionInfo info);
+  /**
+   * @param info
+   * @return
+   */
+  SectionTree getPortletRendererTree(SectionInfo info);
 
-	/**
-	 * @param info
-	 * @param tree Must have been created by buildRendererTree
-	 * @param position PortletPreference.POSITION_LEFT or
-	 *            PortletPreference.POSITION_RIGHT
-	 * @return A combined result of all left portlets
-	 */
-	SectionRenderable renderPortlets(RenderContext info, SectionTree tree, int position);
+  /**
+   * @param info
+   * @param tree Must have been created by buildRendererTree
+   * @param position PortletPreference.POSITION_LEFT or PortletPreference.POSITION_RIGHT
+   * @return A combined result of all left portlets
+   */
+  SectionRenderable renderPortlets(RenderContext info, SectionTree tree, int position);
 
-	/**
-	 * Determine if the user has any visible portlets. If not, then the 'welcome
-	 * to EQUELLA screen will show'
-	 * 
-	 * @param info
-	 * @param tree
-	 * @return
-	 */
-	boolean hasPortlets(SectionInfo info, SectionTree tree);
+  /**
+   * Determine if the user has any visible portlets. If not, then the 'welcome to EQUELLA screen
+   * will show'
+   *
+   * @param info
+   * @param tree
+   * @return
+   */
+  boolean hasPortlets(SectionInfo info, SectionTree tree);
 
-	/**
-	 * @param info
-	 * @param prev
-	 * @param toMove
-	 * @param next
-	 * @param position PortletPreference.POSITION_LEFT or
-	 *            PortletPreference.POSITION_RIGHT (or 0 for auto)
-	 */
-	void move(SectionInfo info, Portlet prev, Portlet toMove, int position);
+  /**
+   * @param info
+   * @param prev
+   * @param toMove
+   * @param next
+   * @param position PortletPreference.POSITION_LEFT or PortletPreference.POSITION_RIGHT (or 0 for
+   *     auto)
+   */
+  void move(SectionInfo info, Portlet prev, Portlet toMove, int position);
 
-	// debugging only
-	void clearPortletRendererCache(String userId);
+  // debugging only
+  void clearPortletRendererCache(String userId);
 
-	Map<String, PortletEditor> registerEditors(SectionTree tree, String parentId);
+  Map<String, PortletEditor> registerEditors(SectionTree tree, String parentId);
 }

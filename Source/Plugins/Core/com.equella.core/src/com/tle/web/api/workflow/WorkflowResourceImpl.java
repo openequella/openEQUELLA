@@ -31,48 +31,37 @@ import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.api.workflow.interfaces.WorkflowResource;
 import com.tle.web.api.workflow.interfaces.beans.WorkflowBean;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind(WorkflowResource.class)
 @Singleton
-public class WorkflowResourceImpl extends AbstractBaseEntityResource<Workflow, BaseEntitySecurityBean, WorkflowBean>
-	implements
-		WorkflowResource
-{
-	@Inject
-	private WorkflowService workflowService;
-	@Inject
-	private WorkflowBeanSerializer serializer;
+public class WorkflowResourceImpl
+    extends AbstractBaseEntityResource<Workflow, BaseEntitySecurityBean, WorkflowBean>
+    implements WorkflowResource {
+  @Inject private WorkflowService workflowService;
+  @Inject private WorkflowBeanSerializer serializer;
 
-	@Override
-	protected Node[] getAllNodes()
-	{
-		return new Node[]{Node.ALL_WORKFLOWS};
-	}
+  @Override
+  protected Node[] getAllNodes() {
+    return new Node[] {Node.ALL_WORKFLOWS};
+  }
 
-	@Override
-	protected BaseEntitySecurityBean createAllSecurityBean()
-	{
-		return new BaseEntitySecurityBean();
-	}
+  @Override
+  protected BaseEntitySecurityBean createAllSecurityBean() {
+    return new BaseEntitySecurityBean();
+  }
 
-	@Override
-	public AbstractEntityService<?, Workflow> getEntityService()
-	{
-		return workflowService;
-	}
+  @Override
+  public AbstractEntityService<?, Workflow> getEntityService() {
+    return workflowService;
+  }
 
-	@Override
-	protected BaseEntitySerializer<Workflow, WorkflowBean> getSerializer()
-	{
-		return serializer;
-	}
+  @Override
+  protected BaseEntitySerializer<Workflow, WorkflowBean> getSerializer() {
+    return serializer;
+  }
 
-	@Override
-	protected Class<?> getResourceClass()
-	{
-		return WorkflowResource.class;
-	}
-
+  @Override
+  protected Class<?> getResourceClass() {
+    return WorkflowResource.class;
+  }
 }

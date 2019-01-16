@@ -25,34 +25,28 @@ import com.tle.web.sections.annotations.DirectEvent;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
 
-public class RootNotificationListSection extends ContextableSearchSection<ContextableSearchSection.Model>
-{
-	@PlugKey("notification.title")
-	private static Label LABEL_TITLE;
+public class RootNotificationListSection
+    extends ContextableSearchSection<ContextableSearchSection.Model> {
+  @PlugKey("notification.title")
+  private static Label LABEL_TITLE;
 
-	@SuppressWarnings("nls")
-	public static final String URL = "/access/notifications.do";
+  @SuppressWarnings("nls")
+  public static final String URL = "/access/notifications.do";
 
-	@Inject
-	private TopbarLinkService topbarLinkService;
+  @Inject private TopbarLinkService topbarLinkService;
 
-	@Override
-	protected String getSessionKey()
-	{
-		return URL;
-	}
+  @Override
+  protected String getSessionKey() {
+    return URL;
+  }
 
+  @Override
+  public Label getTitle(SectionInfo info) {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	public Label getTitle(SectionInfo info)
-	{
-		return LABEL_TITLE;
-	}
-
-	@DirectEvent
-	public void updateTopbar(SectionInfo info)
-	{
-		topbarLinkService.clearCachedData();
-	}
-
+  @DirectEvent
+  public void updateTopbar(SectionInfo info) {
+    topbarLinkService.clearCachedData();
+  }
 }

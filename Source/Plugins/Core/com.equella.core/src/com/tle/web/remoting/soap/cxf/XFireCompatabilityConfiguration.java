@@ -28,36 +28,29 @@ import org.apache.cxf.service.model.OperationInfo;
 import com.tle.common.Check;
 
 @SuppressWarnings("nls")
-public class XFireCompatabilityConfiguration extends XFireCompatibilityServiceConfiguration
-{
-	@Override
-	public QName getInParameterName(OperationInfo op, Method method, int paramNumber)
-	{
-		Annotation[][] annos = method.getParameterAnnotations();
-		if( annos.length > paramNumber )
-		{
-			Annotation[] paramAnnos = annos[paramNumber];
-			for( Annotation anno : paramAnnos )
-			{
-				if( anno instanceof WebParam )
-				{
-					WebParam webParam = (WebParam) anno;
-					String targetNs = webParam.targetNamespace();
-					if( Check.isEmpty(targetNs) )
-					{
-						targetNs = op.getName().getNamespaceURI();
-					}
-					return new QName(targetNs, webParam.name());
-				}
-			}
-		}
+public class XFireCompatabilityConfiguration extends XFireCompatibilityServiceConfiguration {
+  @Override
+  public QName getInParameterName(OperationInfo op, Method method, int paramNumber) {
+    Annotation[][] annos = method.getParameterAnnotations();
+    if (annos.length > paramNumber) {
+      Annotation[] paramAnnos = annos[paramNumber];
+      for (Annotation anno : paramAnnos) {
+        if (anno instanceof WebParam) {
+          WebParam webParam = (WebParam) anno;
+          String targetNs = webParam.targetNamespace();
+          if (Check.isEmpty(targetNs)) {
+            targetNs = op.getName().getNamespaceURI();
+          }
+          return new QName(targetNs, webParam.name());
+        }
+      }
+    }
 
-		return new QName(op.getName().getNamespaceURI(), "in" + paramNumber);
-	}
+    return new QName(op.getName().getNamespaceURI(), "in" + paramNumber);
+  }
 
-	@Override
-	public QName getOutParameterName(OperationInfo op, Method method, int paramNumber)
-	{
-		return new QName(op.getName().getNamespaceURI(), "out");
-	}
+  @Override
+  public QName getOutParameterName(OperationInfo op, Method method, int paramNumber) {
+    return new QName(op.getName().getNamespaceURI(), "out");
+  }
 }

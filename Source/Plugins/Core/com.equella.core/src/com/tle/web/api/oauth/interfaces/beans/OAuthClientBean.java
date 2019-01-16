@@ -24,74 +24,62 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tle.web.api.interfaces.beans.BaseEntityBean;
 
 @XmlRootElement
-public class OAuthClientBean extends BaseEntityBean
-{
-	private String clientId;
-	private String clientSecret;
-	private String redirectUrl;
-	private Set<String> permissions;
-	private String userId;
-	@JsonProperty("_export")
-	private OAuthExportBean exportDetails;
+public class OAuthClientBean extends BaseEntityBean {
+  private String clientId;
+  private String clientSecret;
+  private String redirectUrl;
+  private Set<String> permissions;
+  private String userId;
 
-	public String getClientId()
-	{
-		return clientId;
-	}
+  @JsonProperty("_export")
+  private OAuthExportBean exportDetails;
 
-	public void setClientId(String clientId)
-	{
-		this.clientId = clientId;
-	}
+  public String getClientId() {
+    return clientId;
+  }
 
-	public String getClientSecret()
-	{
-		return clientSecret;
-	}
+  public void setClientId(String clientId) {
+    this.clientId = clientId;
+  }
 
-	public void setClientSecret(String clientSecret)
-	{
-		this.clientSecret = clientSecret;
-	}
+  public String getClientSecret() {
+    return clientSecret;
+  }
 
-	public String getRedirectUrl()
-	{
-		return redirectUrl;
-	}
+  public void setClientSecret(String clientSecret) {
+    this.clientSecret = clientSecret;
+  }
 
-	public void setRedirectUrl(String redirectUrl)
-	{
-		this.redirectUrl = redirectUrl;
-	}
+  public String getRedirectUrl() {
+    return redirectUrl;
+  }
 
-	public Set<String> getPermissions()
-	{
-		return permissions;
-	}
+  public void setRedirectUrl(String redirectUrl) {
+    this.redirectUrl = redirectUrl;
+  }
 
-	public void setPermissions(Set<String> permissions)
-	{
-		this.permissions = permissions;
-	}
+  public Set<String> getPermissions() {
+    return permissions;
+  }
 
-	public String getUserId()
-	{
-		return userId;
-	}
+  public void setPermissions(Set<String> permissions) {
+    this.permissions = permissions;
+  }
 
-	public void setUserId(String userId)
-	{
-		this.userId = userId;
-	}
+  public String getUserId() {
+    return userId;
+  }
 
-	@Override
-	public OAuthExportBean getExportDetails()
-	{
-		return exportDetails;
-	}
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
 
-	public void setExportDetails(OAuthExportBean exportDetails)
-	{
-		this.exportDetails = exportDetails;
-	}
+  @Override
+  public OAuthExportBean getExportDetails() {
+    return exportDetails;
+  }
+
+  public void setExportDetails(OAuthExportBean exportDetails) {
+    this.exportDetails = exportDetails;
+  }
 }

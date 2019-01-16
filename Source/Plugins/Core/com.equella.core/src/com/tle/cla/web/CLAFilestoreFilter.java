@@ -29,15 +29,12 @@ import com.tle.web.copyright.AbstractCopyrightFilestoreFilter;
 
 @Bind
 @Singleton
-public class CLAFilestoreFilter extends AbstractCopyrightFilestoreFilter<CLAHolding, CLAPortion, CLASection>
-{
-	@Inject
-	private CLAService claService;
+public class CLAFilestoreFilter
+    extends AbstractCopyrightFilestoreFilter<CLAHolding, CLAPortion, CLASection> {
+  @Inject private CLAService claService;
 
-	@Override
-	protected CopyrightService<CLAHolding, CLAPortion, CLASection> getCopyrightService()
-	{
-		return claService;
-	}
-
+  @Override
+  protected CopyrightService<CLAHolding, CLAPortion, CLASection> getCopyrightService() {
+    return claService;
+  }
 }

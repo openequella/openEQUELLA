@@ -26,13 +26,21 @@ import com.tle.web.selection.SelectedResource;
 import com.tle.web.selection.SelectionSession;
 
 @NonNullByDefault
-public interface IntegrationSessionExtension
-{
-	void setupSession(SectionInfo info, SelectionSession session, SingleSignonForm form);
+public interface IntegrationSessionExtension {
+  void setupSession(SectionInfo info, SelectionSession session, SingleSignonForm form);
 
-	void processResultForSingle(SectionInfo info, SelectionSession session, Map<String, String> params, String prefix,
-		IItem<?> item, SelectedResource resource);
+  void processResultForSingle(
+      SectionInfo info,
+      SelectionSession session,
+      Map<String, String> params,
+      String prefix,
+      IItem<?> item,
+      SelectedResource resource);
 
-	void processResultForMultiple(SectionInfo info, SelectionSession session, ObjectNode link, IItem<?> item,
-		SelectedResource resource);
+  void processResultForMultiple(
+      SectionInfo info,
+      SelectionSession session,
+      ObjectNode link,
+      IItem<?> item,
+      SelectedResource resource);
 }

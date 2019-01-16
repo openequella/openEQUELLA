@@ -51,119 +51,150 @@ import java.util.UUID;
 @SuppressWarnings("nls")
 @Bind(ReportResource.class)
 @Singleton
-public class ReportResourceImpl extends
-        AbstractBaseEntityResource<Report, BaseEntitySecurityBean, ReportBean>
-        implements ReportResource {
+public class ReportResourceImpl
+    extends AbstractBaseEntityResource<Report, BaseEntitySecurityBean, ReportBean>
+    implements ReportResource {
 
-    private static final Logger LOGGER = Logger.getLogger(ReportResourceImpl.class);
+  private static final Logger LOGGER = Logger.getLogger(ReportResourceImpl.class);
 
-    @Inject
-    private ReportingService reportingService;
+  @Inject private ReportingService reportingService;
 
-    @Inject
-    private ReportBeanSerializer reportSerializer;
+  @Inject private ReportBeanSerializer reportSerializer;
 
-    @Inject
-    private StagingService stagingService;
+  @Inject private StagingService stagingService;
 
-    @Inject
-    private FileSystemService fileSystemService;
+  @Inject private FileSystemService fileSystemService;
 
-    @Inject
-    private UrlLinkService urlLinkService;
+  @Inject private UrlLinkService urlLinkService;
 
-    @Override
-    public Response create(UriInfo uriInfo, ReportBean bean, String staginguuid, String packagename) {
-        LOGGER.debug("Beginning to create report - bean=[" + bean + "], stagingUuid=[" + staginguuid + "], packagename=[" + packagename + "]");
-        try {
-            handlePackageAndReportName(bean, staginguuid, packagename);
-        } catch (IOException ioe) {
-            logAndThrowError("Failed to create the report [%s] - %s", ioe, bean.getUuid(), ioe.getMessage());
-        }
-        return super.create(uriInfo, bean, staginguuid);
+  @Override
+  public Response create(UriInfo uriInfo, ReportBean bean, String staginguuid, String packagename) {
+    LOGGER.debug(
+        "Beginning to create report - bean=["
+            + bean
+            + "], stagingUuid=["
+            + staginguuid
+            + "], packagename=["
+            + packagename
+            + "]");
+    try {
+      handlePackageAndReportName(bean, staginguuid, packagename);
+    } catch (IOException ioe) {
+      logAndThrowError(
+          "Failed to create the report [%s] - %s", ioe, bean.getUuid(), ioe.getMessage());
+    }
+    return super.create(uriInfo, bean, staginguuid);
+  }
+
+  @Override
+  public Response edit(
+      UriInfo uriInfo,
+      String uuid,
+      ReportBean bean,
+      String staginguuid,
+      String packagename,
+      String lockId,
+      boolean keepLocked) {
+    LOGGER.debug(
+        "Beginning to edit report ["
+            + uuid
+            + "] - bean=["
+            + bean
+            + "], stagingUuid=["
+            + staginguuid
+            + "], packagename=["
+            + packagename
+            + "], lockId=["
+            + lockId
+            + "], keepLocked=["
+            + keepLocked
+            + "]");
+    try {
+      handlePackageAndReportName(bean, staginguuid, packagename);
+    } catch (IOException ioe) {
+      logAndThrowError(
+          "Failed to edit the report [%s] - %s", ioe, bean.getUuid(), ioe.getMessage());
+    }
+    return super.edit(uriInfo, uuid, bean, staginguuid, lockId, keepLocked);
+  }
+
+  @Override
+  public Response packageReportFiles(UriInfo uriInfo, String uuid) {
+    // Run the permissions check on this report
+    ReportBean bean = this.get(uriInfo, uuid);
+
+    // Gather Report
+    Report rpt = reportingService.getByUuid(uuid);
+    if (rpt == null) {
+      logAndThrowError("Unable to find the report via provided UUID.", null);
     }
 
-    @Override
-    public Response edit(UriInfo uriInfo, String uuid, ReportBean bean,
-                                  String staginguuid, String packagename, String lockId, boolean keepLocked) {
-        LOGGER.debug("Beginning to edit report [" + uuid + "] - bean=[" + bean + "], stagingUuid=[" + staginguuid + "], packagename=[" + packagename + "], lockId=[" + lockId + "], keepLocked=[" + keepLocked + "]");
-        try {
-            handlePackageAndReportName(bean, staginguuid, packagename);
-        } catch (IOException ioe) {
-            logAndThrowError("Failed to edit the report [%s] - %s", ioe, bean.getUuid(), ioe.getMessage());
-        }
-        return super.edit(uriInfo, uuid, bean, staginguuid, lockId, keepLocked);
+    // Create temporary location for packaged report files
+    StagingFile stagingArea = stagingService.createStagingArea();
+    String targetFilename = "report-files-" + uuid + ".zip";
+
+    // Zip report files as-is from persistent storage to staging area
+    try {
+      fileSystemService.zipFile(
+          new EntityFile(rpt), "", stagingArea, targetFilename, ArchiveType.ZIP);
+    } catch (IOException ioe) {
+      logAndThrowError("Error packaging the report files for download -%s.", ioe, ioe.getMessage());
     }
 
-    @Override
-    public Response packageReportFiles(UriInfo uriInfo, String uuid) {
-        // Run the permissions check on this report
-        ReportBean bean = this.get(uriInfo, uuid);
+    return Response.status(Response.Status.CREATED)
+        .location(
+            urlLinkService
+                .getMethodUriBuilder(StagingResource.class, "getFile")
+                .build(stagingArea.getUuid(), targetFilename))
+        .build();
+  }
 
-        //Gather Report
-        Report rpt = reportingService.getByUuid(uuid);
-        if(rpt == null) {
-            logAndThrowError("Unable to find the report via provided UUID.", null);
-        }
+  @Override
+  protected PrivilegeTree.Node[] getAllNodes() {
+    return new PrivilegeTree.Node[] {PrivilegeTree.Node.ALL_REPORTS};
+  }
 
-        //Create temporary location for packaged report files
-        StagingFile stagingArea = stagingService.createStagingArea();
-        String targetFilename = "report-files-"+uuid+".zip";
+  @Override
+  protected BaseEntitySecurityBean createAllSecurityBean() {
+    return new BaseEntitySecurityBean();
+  }
 
-        // Zip report files as-is from persistent storage to staging area
-        try {
-            fileSystemService.zipFile(new EntityFile(rpt), "", stagingArea, targetFilename, ArchiveType.ZIP);
-        } catch (IOException ioe) {
-            logAndThrowError("Error packaging the report files for download -%s.", ioe, ioe.getMessage());
-        }
+  @Override
+  public ReportingService getEntityService() {
+    return reportingService;
+  }
 
-        return Response.status(Response.Status.CREATED).location(urlLinkService.getMethodUriBuilder(StagingResource.class, "getFile").build(stagingArea.getUuid(), targetFilename)).build();
+  @Override
+  protected BaseEntitySerializer<Report, ReportBean> getSerializer() {
+    return reportSerializer;
+  }
+
+  @Override
+  protected Class<?> getResourceClass() {
+    return ReportResource.class;
+  }
+
+  private void handlePackageAndReportName(ReportBean bean, String staginguuid, String packagename)
+      throws IOException {
+    // Default packagename is the filename
+    if (Check.isEmpty(packagename)) {
+      packagename = bean.getFilename();
     }
 
-    @Override
-    protected PrivilegeTree.Node[] getAllNodes() {
-        return new PrivilegeTree.Node[]{PrivilegeTree.Node.ALL_REPORTS};
+    // All report files live in the ReportFiles sub directory, but the REST caller shouldn't care
+    // about that.
+    bean.setFilename(ReportingService.DIR_DESIGN + '/' + bean.getFilename());
+
+    // If the staging area is specified, we need to prepare the contents for storage / execution.
+    if (!Check.isEmpty(staginguuid)) {
+      reportingService.processReportDesign(staginguuid, packagename);
     }
+  }
 
-    @Override
-    protected BaseEntitySecurityBean createAllSecurityBean() {
-        return new BaseEntitySecurityBean();
-    }
-
-    @Override
-    public ReportingService getEntityService() {
-        return reportingService;
-    }
-
-    @Override
-    protected BaseEntitySerializer<Report, ReportBean> getSerializer() {
-        return reportSerializer;
-    }
-
-    @Override
-    protected Class<?> getResourceClass() {
-        return ReportResource.class;
-    }
-
-    private void handlePackageAndReportName(ReportBean bean, String staginguuid, String packagename) throws IOException {
-        // Default packagename is the filename
-        if(Check.isEmpty(packagename)) {
-            packagename = bean.getFilename();
-        }
-
-        // All report files live in the ReportFiles sub directory, but the REST caller shouldn't care about that.
-        bean.setFilename(ReportingService.DIR_DESIGN + '/' + bean.getFilename());
-
-        // If the staging area is specified, we need to prepare the contents for storage / execution.
-        if(!Check.isEmpty(staginguuid)) {
-            reportingService.processReportDesign(staginguuid, packagename);
-        }
-    }
-
-    private void logAndThrowError(String msg, Exception e, Object... args) throws ReportException {
-        String errId = UUID.randomUUID().toString();
-        String compiledMsg = "Error ID:["+errId+"] " + String.format(msg, args);
-        LOGGER.error(msg, e);
-        throw new ReportException(compiledMsg);
-    }
+  private void logAndThrowError(String msg, Exception e, Object... args) throws ReportException {
+    String errId = UUID.randomUUID().toString();
+    String compiledMsg = "Error ID:[" + errId + "] " + String.format(msg, args);
+    LOGGER.error(msg, e);
+    throw new ReportException(compiledMsg);
+  }
 }

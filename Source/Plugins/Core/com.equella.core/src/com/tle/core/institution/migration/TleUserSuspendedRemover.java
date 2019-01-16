@@ -28,20 +28,17 @@ import com.tle.core.institution.convert.XmlMigrator;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class TleUserSuspendedRemover extends XmlMigrator
-{
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
-	{
-		final String xmlFile = "users/users.xml";
-		if( fileExists(staging, xmlFile) )
-		{
-			PropBagEx xml = xmlHelper.readToPropBagEx(staging, xmlFile);
-			for( PropBagEx subXml : xml.iterator() )
-			{
-				subXml.deleteNode("suspended");
-			}
-			xmlHelper.writeFromPropBagEx(staging, xmlFile, xml);
-		}
-	}
+public class TleUserSuspendedRemover extends XmlMigrator {
+  @Override
+  public void execute(
+      TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) {
+    final String xmlFile = "users/users.xml";
+    if (fileExists(staging, xmlFile)) {
+      PropBagEx xml = xmlHelper.readToPropBagEx(staging, xmlFile);
+      for (PropBagEx subXml : xml.iterator()) {
+        subXml.deleteNode("suspended");
+      }
+      xmlHelper.writeFromPropBagEx(staging, xmlFile, xml);
+    }
+  }
 }

@@ -36,78 +36,67 @@ import com.tle.core.usermanagement.standard.convert.UserPreferenceConverter.User
 import com.tle.core.xml.service.XmlService;
 
 /**
- * To be honest, this should probably be in another plugin?  Needs access to power search dao though.
- * 
+ * To be honest, this should probably be in another plugin? Needs access to power search dao though.
+ *
  * @author aholland
  */
 @Bind
 @Singleton
-public class SavedSearchesMigrator implements PostReadMigrator<UserPreferenceConverterInfo>
-{
-	@Inject
-	private XmlService xmlService;
-	@Inject
-	private ItemDefinitionDao collectionDao;
-	@Inject
-	private PowerSearchDao powerDao;
+public class SavedSearchesMigrator implements PostReadMigrator<UserPreferenceConverterInfo> {
+  @Inject private XmlService xmlService;
+  @Inject private ItemDefinitionDao collectionDao;
+  @Inject private PowerSearchDao powerDao;
 
-	@Override
-	public void migrate(UserPreferenceConverterInfo migrationInfo) throws IOException
-	{
-		for( final UserPreference pref : migrationInfo.getPrefs() )
-		{
-			if( pref.getKey().getPreferenceID().equals("saved.searches") ) //$NON-NLS-1$
-			{
-				final Map<String, SavedSearch> searches = xmlService.deserialiseFromXml(getClass().getClassLoader(),
-					pref.getData());
+  @Override
+  public void migrate(UserPreferenceConverterInfo migrationInfo) throws IOException {
+    for (final UserPreference pref : migrationInfo.getPrefs()) {
+      if (pref.getKey().getPreferenceID().equals("saved.searches")) // $NON-NLS-1$
+      {
+        final Map<String, SavedSearch> searches =
+            xmlService.deserialiseFromXml(getClass().getClassLoader(), pref.getData());
 
-				FixSavedSearches.convertSavedSearches(searches.values(),
-					new InstitutionImportSavedSearchFixerIdResolver(migrationInfo.getParams().getOld2new()));
+        FixSavedSearches.convertSavedSearches(
+            searches.values(),
+            new InstitutionImportSavedSearchFixerIdResolver(
+                migrationInfo.getParams().getOld2new()));
 
-				pref.setData(xmlService.serialiseToXml(searches));
-			}
-		}
-	}
+        pref.setData(xmlService.serialiseToXml(searches));
+      }
+    }
+  }
 
-	protected class InstitutionImportSavedSearchFixerIdResolver implements SavedSearchFixerIdResolver
-	{
-		private final Map<Long, Long> entityIdMap;
+  protected class InstitutionImportSavedSearchFixerIdResolver
+      implements SavedSearchFixerIdResolver {
+    private final Map<Long, Long> entityIdMap;
 
-		protected InstitutionImportSavedSearchFixerIdResolver(Map<Long, Long> entityIdMap)
-		{
-			this.entityIdMap = entityIdMap;
-		}
+    protected InstitutionImportSavedSearchFixerIdResolver(Map<Long, Long> entityIdMap) {
+      this.entityIdMap = entityIdMap;
+    }
 
-		@Override
-		public String resolveToCollectionUuid(Long entId)
-		{
-			// look up the new ID:
-			Long newId = entityIdMap.get(entId);
-			if( newId != null )
-			{
-				final ItemDefinition ent = collectionDao.findById(newId);
-				if( ent != null )
-				{
-					return ent.getUuid();
-				}
-			}
-			return null;
-		}
+    @Override
+    public String resolveToCollectionUuid(Long entId) {
+      // look up the new ID:
+      Long newId = entityIdMap.get(entId);
+      if (newId != null) {
+        final ItemDefinition ent = collectionDao.findById(newId);
+        if (ent != null) {
+          return ent.getUuid();
+        }
+      }
+      return null;
+    }
 
-		@Override
-		public String resolveToPowerUuid(Long entId)
-		{
-			// look up the new ID:
-			Long newId = entityIdMap.get(entId);
-			if( newId != null )
-			{
-				final PowerSearch ent = powerDao.findById(entId);
-				if( ent != null )
-				{
-					return ent.getUuid();
-				}
-			}
-			return null;
-		}
-	}
+    @Override
+    public String resolveToPowerUuid(Long entId) {
+      // look up the new ID:
+      Long newId = entityIdMap.get(entId);
+      if (newId != null) {
+        final PowerSearch ent = powerDao.findById(entId);
+        if (ent != null) {
+          return ent.getUuid();
+        }
+      }
+      return null;
+    }
+  }
 }

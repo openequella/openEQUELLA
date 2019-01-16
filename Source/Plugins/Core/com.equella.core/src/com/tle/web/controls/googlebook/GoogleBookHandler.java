@@ -80,381 +80,359 @@ import com.tle.web.viewurl.attachments.AttachmentResourceService;
 @SuppressWarnings("nls")
 @Bind
 @NonNullByDefault
-public class GoogleBookHandler extends BasicAbstractAttachmentHandler<AbstractAttachmentHandlerModel>
-{
-	private static final int PER_PAGE = 10;
+public class GoogleBookHandler
+    extends BasicAbstractAttachmentHandler<AbstractAttachmentHandlerModel> {
+  private static final int PER_PAGE = 10;
 
-	@PlugKey("gbook.name")
-	private static Label NAME_LABEL;
-	@PlugKey("gbook.description")
-	private static Label DESCRIPTION_LABEL;
-	@PlugKey("gbook.add.title")
-	private static Label ADD_TITLE_LABEL;
-	@PlugKey("gbook.edit.title")
-	private static Label EDIT_TITLE_LABEL;
+  @PlugKey("gbook.name")
+  private static Label NAME_LABEL;
 
-	@PlugKey("gbook.details.description")
-	private static Label DESCRIPTION;
-	@PlugKey("gbook.details.author")
-	private static Label AUTHOR;
-	@PlugKey("gbook.details.authors")
-	private static Label AUTHORS;
-	@PlugKey("gbook.details.publisher")
-	private static Label PUBLISHER;
-	@PlugKey("gbook.details.publishers")
-	private static Label PUBLISHERS;
-	@PlugKey("gbook.details.rating")
-	private static Label RATING;
+  @PlugKey("gbook.description")
+  private static Label DESCRIPTION_LABEL;
 
-	@PlugKey("gbook.details.viewlink")
-	private static Label VIEW_LINK_LABEL;
+  @PlugKey("gbook.add.title")
+  private static Label ADD_TITLE_LABEL;
 
-	@Inject
-	private GoogleService google;
-	@Inject
-	private AttachmentResourceService attachmentResourceService;
+  @PlugKey("gbook.edit.title")
+  private static Label EDIT_TITLE_LABEL;
 
-	@Component
-	private TextField query;
-	@Component
-	@PlugKey("gbook.add.search")
-	private Button search;
-	@Component
-	private MultiSelectionList<Void> results;
-	@Component
-	private Pager pager;
+  @PlugKey("gbook.details.description")
+  private static Label DESCRIPTION;
 
-	@Override
-	public String getHandlerId()
-	{
-		return "googleBookHandler";
-	}
+  @PlugKey("gbook.details.author")
+  private static Label AUTHOR;
 
-	@Override
-	public void createNew(SectionInfo info)
-	{
-		super.createNew(info);
-		query.setValue(info, null);
-	}
+  @PlugKey("gbook.details.authors")
+  private static Label AUTHORS;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @PlugKey("gbook.details.publisher")
+  private static Label PUBLISHER;
 
-		search.setClickHandler(new ReloadHandler());
-		results.setListModel(new DynamicHtmlListModel<Void>()
-		{
-			@Override
-			protected Iterable<Option<Void>> populateOptions(SectionInfo info)
-			{
+  @PlugKey("gbook.details.publishers")
+  private static Label PUBLISHERS;
 
-				String q = query.getValue(info);
-				if( Check.isEmpty(q) || getModel(info).isButtonUpdate() )
-				{
-					return Collections.emptyList();
-				}
+  @PlugKey("gbook.details.rating")
+  private static Label RATING;
 
-				VolumeFeed searchBooks = google.searchBooks(q, (pager.getCurrentPage(info) - 1) * PER_PAGE, PER_PAGE);
-				pager.setup(info, (searchBooks.getTotalResults() - 1) / PER_PAGE + 1, 8);
+  @PlugKey("gbook.details.viewlink")
+  private static Label VIEW_LINK_LABEL;
 
-				final List<Option<Void>> rv = new ArrayList<Option<Void>>();
-				for( VolumeEntry entry : searchBooks.getEntries() )
-				{
-					StringBuilder description = new StringBuilder();
-					for( Description desc : entry.getDescriptions() )
-					{
-						description.append(desc.getValue());
-					}
+  @Inject private GoogleService google;
+  @Inject private AttachmentResourceService attachmentResourceService;
 
-					List<String> authorNames = Lists.transform(entry.getCreators(), new Function<Creator, String>()
-					{
-						@NonNullByDefault(false)
-						@Override
-						public String apply(Creator creator)
-						{
-							return creator.getValue();
-						}
-					});
-					String authors = Utils.join(authorNames.toArray(), ", ");
+  @Component private TextField query;
 
-					String title = entry.getTitle().getPlainText();
-					String href = entry.getInfoLink().getHref();
+  @Component
+  @PlugKey("gbook.add.search")
+  private Button search;
 
-					LinkRenderer titleLink = new PopupLinkRenderer(new HtmlLinkState(new SimpleBookmark(href)));
-					titleLink.setLabel(new TextLabel(title));
+  @Component private MultiSelectionList<Void> results;
+  @Component private Pager pager;
 
-					LinkRenderer thumbnail = null;
-					if( entry.getThumbnailLink() != null )
-					{
-						thumbnail = new PopupLinkRenderer(new HtmlLinkState(new SimpleBookmark(href)));
-						thumbnail.setNestedRenderable(new ImageRenderer(entry.getThumbnailLink().getHref(),
-							new TextLabel(title)));
-					}
+  @Override
+  public String getHandlerId() {
+    return "googleBookHandler";
+  }
 
-					GoogleBookResult result = new GoogleBookResult(entry.getId());
-					result.setAuthor(authors);
-					result.setThumbnail(thumbnail);
-					result.setDescription(description.toString());
-					result.setLink(titleLink);
+  @Override
+  public void createNew(SectionInfo info) {
+    super.createNew(info);
+    query.setValue(info, null);
+  }
 
-					rv.add(result);
-				}
-				return rv;
-			}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-			@Override
-			protected Iterable<Void> populateModel(SectionInfo info)
-			{
-				return null;
-			}
-		});
+    search.setClickHandler(new ReloadHandler());
+    results.setListModel(
+        new DynamicHtmlListModel<Void>() {
+          @Override
+          protected Iterable<Option<Void>> populateOptions(SectionInfo info) {
 
-		pager.setEventHandler(JSHandler.EVENT_CHANGE, new ReloadHandler());
-	}
+            String q = query.getValue(info);
+            if (Check.isEmpty(q) || getModel(info).isButtonUpdate()) {
+              return Collections.emptyList();
+            }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		StatementHandler updateHandler = new StatementHandler(dialogState.getDialog().getFooterUpdate(tree,
-			events.getEventHandler("updateButtons")));
+            VolumeFeed searchBooks =
+                google.searchBooks(q, (pager.getCurrentPage(info) - 1) * PER_PAGE, PER_PAGE);
+            pager.setup(info, (searchBooks.getTotalResults() - 1) / PER_PAGE + 1, 8);
 
-		results.setEventHandler(JSHandler.EVENT_CHANGE, updateHandler);
-	}
+            final List<Option<Void>> rv = new ArrayList<Option<Void>>();
+            for (VolumeEntry entry : searchBooks.getEntries()) {
+              StringBuilder description = new StringBuilder();
+              for (Description desc : entry.getDescriptions()) {
+                description.append(desc.getValue());
+              }
 
-	@Override
-	public AttachmentHandlerLabel getLabel()
-	{
-		return new AttachmentHandlerLabel(NAME_LABEL, DESCRIPTION_LABEL);
-	}
+              List<String> authorNames =
+                  Lists.transform(
+                      entry.getCreators(),
+                      new Function<Creator, String>() {
+                        @NonNullByDefault(false)
+                        @Override
+                        public String apply(Creator creator) {
+                          return creator.getValue();
+                        }
+                      });
+              String authors = Utils.join(authorNames.toArray(), ", ");
 
-	@Override
-	public boolean supports(IAttachment attachment)
-	{
-		if( attachment instanceof CustomAttachment )
-		{
-			CustomAttachment ca = (CustomAttachment) attachment;
-			return GoogleBookConstants.ATTACHMENT_TYPE.equals(ca.getType());
-		}
-		return false;
-	}
+              String title = entry.getTitle().getPlainText();
+              String href = entry.getInfoLink().getHref();
 
-	@Override
-	public Label getTitleLabel(RenderContext context, boolean editing)
-	{
-		return editing ? EDIT_TITLE_LABEL : ADD_TITLE_LABEL;
-	}
+              LinkRenderer titleLink =
+                  new PopupLinkRenderer(new HtmlLinkState(new SimpleBookmark(href)));
+              titleLink.setLabel(new TextLabel(title));
 
-	@Override
-	protected SectionRenderable renderAdd(RenderContext context, DialogRenderOptions renderOptions)
-	{
-		renderOptions.setShowSave(!Check.isEmpty(results.getSelectedValuesAsStrings(context)));
-		return viewFactory.createResult("add-googlebook.ftl", this);
-	}
+              LinkRenderer thumbnail = null;
+              if (entry.getThumbnailLink() != null) {
+                thumbnail = new PopupLinkRenderer(new HtmlLinkState(new SimpleBookmark(href)));
+                thumbnail.setNestedRenderable(
+                    new ImageRenderer(entry.getThumbnailLink().getHref(), new TextLabel(title)));
+              }
 
-	@Override
-	protected List<Attachment> createAttachments(SectionInfo info)
-	{
-		List<Attachment> attachments = Lists.newArrayList();
-		Set<String> bookIds = results.getSelectedValuesAsStrings(info);
-		for( String bookId : bookIds )
-		{
-			VolumeEntry bookEntry = google.getBook(bookId);
+              GoogleBookResult result = new GoogleBookResult(entry.getId());
+              result.setAuthor(authors);
+              result.setThumbnail(thumbnail);
+              result.setDescription(description.toString());
+              result.setLink(titleLink);
 
-			CustomAttachment a = new CustomAttachment();
-			a.setType(GoogleBookConstants.ATTACHMENT_TYPE);
-			a.setData(GoogleBookConstants.PROPERTY_ID, bookId);
-			a.setData(GoogleBookConstants.PROPERTY_THUMB_URL, bookEntry.getThumbnailLink().getHref());
-			List<Date> bookEntryDates = bookEntry.getDates();
-			if( !Check.isEmpty(bookEntryDates) )
-			{
-				a.setData(GoogleBookConstants.PROPERTY_PUBLISHED, bookEntryDates.get(0).getValue());
-			}
+              rv.add(result);
+            }
+            return rv;
+          }
 
-			// Hax
-			List<Format> formats = bookEntry.getFormats();
-			if( !Check.isEmpty(formats) )
-			{
-				for( Format format : formats )
-				{
-					String infoStr = format.getValue();
-					if( infoStr.contains("pages") )
-					{
-						a.setData(GoogleBookConstants.PROPERTY_FORMATS, infoStr.split(" ")[0]);
-						break;
-					}
-				}
-			}
-			a.setData(GoogleBookConstants.PROPERTY_URL, bookEntry.getInfoLink().getHref());
-			a.setDescription(bookEntry.getTitle().getPlainText());
-			attachments.add(a);
-		}
-		return attachments;
-	}
+          @Override
+          protected Iterable<Void> populateModel(SectionInfo info) {
+            return null;
+          }
+        });
 
-	@Override
-	protected SectionRenderable renderDetails(RenderContext context, DialogRenderOptions renderOptions)
-	{
-		// Common details
-		AbstractAttachmentHandlerModel model = getModel(context);
-		final Attachment a = getDetailsAttachment(context);
-		ItemSectionInfo itemInfo = context.getAttributeForClass(ItemSectionInfo.class);
-		ViewableResource resource = attachmentResourceService.getViewableResource(context, itemInfo.getViewableItem(),
-			a);
-		addAttachmentDetails(context, resource.getCommonAttachmentDetails());
+    pager.setEventHandler(JSHandler.EVENT_CHANGE, new ReloadHandler());
+  }
 
-		// Dynamic details
-		String bookId = (String) a.getData(GoogleBookConstants.PROPERTY_ID);
-		if( !Check.isEmpty(bookId) )
-		{
-			VolumeEntry bookEntry = google.getBook(bookId);
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    StatementHandler updateHandler =
+        new StatementHandler(
+            dialogState.getDialog().getFooterUpdate(tree, events.getEventHandler("updateButtons")));
 
-			// Description TODO - Perhaps a more link?
-			List<Description> descriptions = bookEntry.getDescriptions();
-			if( !Check.isEmpty(descriptions) )
-			{
-				model.addSpecificDetail(GoogleBookConstants.PROPERTY_DESCRIPTION, new Pair<Label, Object>(DESCRIPTION,
-					new WrappedLabel(new TextLabel(descriptions.get(0).getValue()), 1250, true, false)));
-			}
+    results.setEventHandler(JSHandler.EVENT_CHANGE, updateHandler);
+  }
 
-			// Authors
-			List<String> authors = Lists.transform(bookEntry.getCreators(), new Function<Creator, String>()
-			{
-				@Override
-				public String apply(Creator input)
-				{
-					return input.getValue();
-				}
+  @Override
+  public AttachmentHandlerLabel getLabel() {
+    return new AttachmentHandlerLabel(NAME_LABEL, DESCRIPTION_LABEL);
+  }
 
-			});
-			if( !Check.isEmpty(authors) )
-			{
-				addAttachmentDetail(context, authors.size() > 1 ? AUTHORS : AUTHOR, new ListLabel(authors, "<br>"));
-			}
+  @Override
+  public boolean supports(IAttachment attachment) {
+    if (attachment instanceof CustomAttachment) {
+      CustomAttachment ca = (CustomAttachment) attachment;
+      return GoogleBookConstants.ATTACHMENT_TYPE.equals(ca.getType());
+    }
+    return false;
+  }
 
-			// Publisher
-			List<String> pubs = Lists.transform(bookEntry.getPublishers(), new Function<Publisher, String>()
-			{
-				@Override
-				public String apply(Publisher input)
-				{
-					return input.getValue();
-				}
+  @Override
+  public Label getTitleLabel(RenderContext context, boolean editing) {
+    return editing ? EDIT_TITLE_LABEL : ADD_TITLE_LABEL;
+  }
 
-			});
-			if( !Check.isEmpty(authors) )
-			{
-				addAttachmentDetail(context, pubs.size() > 1 ? PUBLISHERS : PUBLISHER, new ListLabel(pubs, "<br>"));
-			}
+  @Override
+  protected SectionRenderable renderAdd(RenderContext context, DialogRenderOptions renderOptions) {
+    renderOptions.setShowSave(!Check.isEmpty(results.getSelectedValuesAsStrings(context)));
+    return viewFactory.createResult("add-googlebook.ftl", this);
+  }
 
-			// Rating
-			Rating bookEntryRating = bookEntry.getRating();
+  @Override
+  protected List<Attachment> createAttachments(SectionInfo info) {
+    List<Attachment> attachments = Lists.newArrayList();
+    Set<String> bookIds = results.getSelectedValuesAsStrings(info);
+    for (String bookId : bookIds) {
+      VolumeEntry bookEntry = google.getBook(bookId);
 
-			// Depending on a 0 int value mapping to "zero" rating IN
-			// RATING_CLASSES
-			int rating = bookEntryRating != null ? AttachmentHandlerUtils.getRating(bookEntryRating.getAverage()) : 0;
-			addAttachmentDetail(context, RATING, new DivRenderer("rating-stars "
-				+ AttachmentHandlerUtils.RATING_CLASSES.get(rating), ""));
+      CustomAttachment a = new CustomAttachment();
+      a.setType(GoogleBookConstants.ATTACHMENT_TYPE);
+      a.setData(GoogleBookConstants.PROPERTY_ID, bookId);
+      a.setData(GoogleBookConstants.PROPERTY_THUMB_URL, bookEntry.getThumbnailLink().getHref());
+      List<Date> bookEntryDates = bookEntry.getDates();
+      if (!Check.isEmpty(bookEntryDates)) {
+        a.setData(GoogleBookConstants.PROPERTY_PUBLISHED, bookEntryDates.get(0).getValue());
+      }
 
-			// Add a view link
-			String href = bookEntry.getInfoLink().getHref();
-			HtmlLinkState linkState = new HtmlLinkState(VIEW_LINK_LABEL, new SimpleBookmark(href));
-			linkState.setTarget(HtmlLinkState.TARGET_BLANK);
-			model.setViewlink(new LinkRenderer(linkState));
-		}
-		return viewFactory.createResult("edit-googlebook.ftl", this);
-	}
+      // Hax
+      List<Format> formats = bookEntry.getFormats();
+      if (!Check.isEmpty(formats)) {
+        for (Format format : formats) {
+          String infoStr = format.getValue();
+          if (infoStr.contains("pages")) {
+            a.setData(GoogleBookConstants.PROPERTY_FORMATS, infoStr.split(" ")[0]);
+            break;
+          }
+        }
+      }
+      a.setData(GoogleBookConstants.PROPERTY_URL, bookEntry.getInfoLink().getHref());
+      a.setDescription(bookEntry.getTitle().getPlainText());
+      attachments.add(a);
+    }
+    return attachments;
+  }
 
-	public TextField getQuery()
-	{
-		return query;
-	}
+  @Override
+  protected SectionRenderable renderDetails(
+      RenderContext context, DialogRenderOptions renderOptions) {
+    // Common details
+    AbstractAttachmentHandlerModel model = getModel(context);
+    final Attachment a = getDetailsAttachment(context);
+    ItemSectionInfo itemInfo = context.getAttributeForClass(ItemSectionInfo.class);
+    ViewableResource resource =
+        attachmentResourceService.getViewableResource(context, itemInfo.getViewableItem(), a);
+    addAttachmentDetails(context, resource.getCommonAttachmentDetails());
 
-	public Button getSearchButton()
-	{
-		return search;
-	}
+    // Dynamic details
+    String bookId = (String) a.getData(GoogleBookConstants.PROPERTY_ID);
+    if (!Check.isEmpty(bookId)) {
+      VolumeEntry bookEntry = google.getBook(bookId);
 
-	public MultiSelectionList<Void> getResults()
-	{
-		return results;
-	}
+      // Description TODO - Perhaps a more link?
+      List<Description> descriptions = bookEntry.getDescriptions();
+      if (!Check.isEmpty(descriptions)) {
+        model.addSpecificDetail(
+            GoogleBookConstants.PROPERTY_DESCRIPTION,
+            new Pair<Label, Object>(
+                DESCRIPTION,
+                new WrappedLabel(
+                    new TextLabel(descriptions.get(0).getValue()), 1250, true, false)));
+      }
 
-	public Pager getPager()
-	{
-		return pager;
-	}
+      // Authors
+      List<String> authors =
+          Lists.transform(
+              bookEntry.getCreators(),
+              new Function<Creator, String>() {
+                @Override
+                public String apply(Creator input) {
+                  return input.getValue();
+                }
+              });
+      if (!Check.isEmpty(authors)) {
+        addAttachmentDetail(
+            context, authors.size() > 1 ? AUTHORS : AUTHOR, new ListLabel(authors, "<br>"));
+      }
 
-	@Override
-	public Class<AbstractAttachmentHandlerModel> getModelClass()
-	{
-		return AbstractAttachmentHandlerModel.class;
-	}
+      // Publisher
+      List<String> pubs =
+          Lists.transform(
+              bookEntry.getPublishers(),
+              new Function<Publisher, String>() {
+                @Override
+                public String apply(Publisher input) {
+                  return input.getValue();
+                }
+              });
+      if (!Check.isEmpty(authors)) {
+        addAttachmentDetail(
+            context, pubs.size() > 1 ? PUBLISHERS : PUBLISHER, new ListLabel(pubs, "<br>"));
+      }
 
-	@NonNullByDefault(false)
-	public static class GoogleBookResult extends VoidKeyOption
-	{
-		private SectionRenderable thumbnail;
-		private SectionRenderable link;
-		private String description;
-		private String author;
+      // Rating
+      Rating bookEntryRating = bookEntry.getRating();
 
-		public GoogleBookResult(String bookId)
-		{
-			super(null, bookId);
-		}
+      // Depending on a 0 int value mapping to "zero" rating IN
+      // RATING_CLASSES
+      int rating =
+          bookEntryRating != null
+              ? AttachmentHandlerUtils.getRating(bookEntryRating.getAverage())
+              : 0;
+      addAttachmentDetail(
+          context,
+          RATING,
+          new DivRenderer("rating-stars " + AttachmentHandlerUtils.RATING_CLASSES.get(rating), ""));
 
-		public void setThumbnail(SectionRenderable thumbnail)
-		{
-			this.thumbnail = thumbnail;
-		}
+      // Add a view link
+      String href = bookEntry.getInfoLink().getHref();
+      HtmlLinkState linkState = new HtmlLinkState(VIEW_LINK_LABEL, new SimpleBookmark(href));
+      linkState.setTarget(HtmlLinkState.TARGET_BLANK);
+      model.setViewlink(new LinkRenderer(linkState));
+    }
+    return viewFactory.createResult("edit-googlebook.ftl", this);
+  }
 
-		public void setAuthor(String author)
-		{
-			this.author = author;
-		}
+  public TextField getQuery() {
+    return query;
+  }
 
-		public void setDescription(String description)
-		{
-			this.description = description;
-		}
+  public Button getSearchButton() {
+    return search;
+  }
 
-		public void setLink(SectionRenderable link)
-		{
-			this.link = link;
-		}
+  public MultiSelectionList<Void> getResults() {
+    return results;
+  }
 
-		public SectionRenderable getThumbnail()
-		{
-			return thumbnail;
-		}
+  public Pager getPager() {
+    return pager;
+  }
 
-		public String getAuthor()
-		{
-			return author;
-		}
+  @Override
+  public Class<AbstractAttachmentHandlerModel> getModelClass() {
+    return AbstractAttachmentHandlerModel.class;
+  }
 
-		public String getDescription()
-		{
-			return description;
-		}
+  @NonNullByDefault(false)
+  public static class GoogleBookResult extends VoidKeyOption {
+    private SectionRenderable thumbnail;
+    private SectionRenderable link;
+    private String description;
+    private String author;
 
-		public SectionRenderable getLink()
-		{
-			return link;
-		}
-	}
+    public GoogleBookResult(String bookId) {
+      super(null, bookId);
+    }
 
-	@Override
-	protected boolean validateAddPage(SectionInfo info)
-	{
-		return true;
-	}
+    public void setThumbnail(SectionRenderable thumbnail) {
+      this.thumbnail = thumbnail;
+    }
 
-	@Override
-	public String getMimeType(SectionInfo info)
-	{
-		return GoogleBookConstants.MIME_TYPE;
-	}
+    public void setAuthor(String author) {
+      this.author = author;
+    }
+
+    public void setDescription(String description) {
+      this.description = description;
+    }
+
+    public void setLink(SectionRenderable link) {
+      this.link = link;
+    }
+
+    public SectionRenderable getThumbnail() {
+      return thumbnail;
+    }
+
+    public String getAuthor() {
+      return author;
+    }
+
+    public String getDescription() {
+      return description;
+    }
+
+    public SectionRenderable getLink() {
+      return link;
+    }
+  }
+
+  @Override
+  protected boolean validateAddPage(SectionInfo info) {
+    return true;
+  }
+
+  @Override
+  public String getMimeType(SectionInfo info) {
+    return GoogleBookConstants.MIME_TYPE;
+  }
 }

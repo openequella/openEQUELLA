@@ -35,184 +35,150 @@ import com.google.inject.name.Names;
 import com.tle.common.Check;
 
 @SuppressWarnings("nls")
-public abstract class PropertiesModule extends AbstractModule
-{
-	protected static final LoadingCache<String, Properties> propertiesCache = CacheBuilder.newBuilder().build(
-		new CacheLoader<String, Properties>()
-		{
-			@Override
-			public Properties load(String filename)
-			{
-				try( InputStream propStream = PropertiesModule.class.getResourceAsStream(filename) )
-				{
-					Properties newProperties = new Properties();
-					if( propStream != null )
-					{
-						newProperties.load(propStream);
-					}
-					return newProperties;
-				}
-				catch( IOException e )
-				{
-					throw Throwables.propagate(e);
-				}
-			}
-		});
+public abstract class PropertiesModule extends AbstractModule {
+  protected static final LoadingCache<String, Properties> propertiesCache =
+      CacheBuilder.newBuilder()
+          .build(
+              new CacheLoader<String, Properties>() {
+                @Override
+                public Properties load(String filename) {
+                  try (InputStream propStream =
+                      PropertiesModule.class.getResourceAsStream(filename)) {
+                    Properties newProperties = new Properties();
+                    if (propStream != null) {
+                      newProperties.load(propStream);
+                    }
+                    return newProperties;
+                  } catch (IOException e) {
+                    throw Throwables.propagate(e);
+                  }
+                }
+              });
 
-	private final Properties properties;
+  private final Properties properties;
 
-	public PropertiesModule()
-	{
-		properties = propertiesCache.getUnchecked(getFilename());
-	}
+  public PropertiesModule() {
+    properties = propertiesCache.getUnchecked(getFilename());
+  }
 
-	protected abstract String getFilename();
+  protected abstract String getFilename();
 
-	private String getPropString(String property)
-	{
-		String envKey = "EQ_"+property.toUpperCase().replace('.', '_');
-		if (System.getenv().containsKey(envKey)) {
-			return System.getenv(envKey);
-		}
-		return (String) properties.get(property);
-	}
-
-	/**
-	 * External callers may be testing for null, so allow null to propagate.
-	 * 
-	 * @param property
-	 * @return
-	 */
-	public String getProperty(String property)
-	{
-		String rawString = getPropString(property);
-		return rawString == null ? null : rawString.trim();
-	}
-
-	protected void bindFile(String property)
-	{
-		String value = Strings.nullToEmpty(getPropString(property)).trim();
-		if( !Check.isEmpty(value) )
-		{
-			bind(File.class).annotatedWith(Names.named(property)).toInstance(new File(value));
-		}
-	}
-
-
-	protected void bindProp(String property)
-	{
-		bindProp(property, null);
-	}
-
-	protected void bindProp(String property, String valueForMissingProperty)
-	{
-		String value = Strings.nullToEmpty(getPropString(property)).trim();
-		if( Check.isEmpty(value) )
-		{
-			value = valueForMissingProperty;
-		}
-		if( value != null )
-		{
-			bind(String.class).annotatedWith(Names.named(property)).toInstance(value);
-		}
-	}
-
-	protected void bindInt(String property)
-	{
-		String value = Strings.nullToEmpty(getPropString(property)).trim();
-		if( !Check.isEmpty(value) )
-		{
-			bind(Integer.class).annotatedWith(Names.named(property)).toInstance(Integer.parseInt(value));
-		}
-	}
-
-	protected void bindInt(String property, int valueForMissingProperty)
-	{
-		String value = Strings.nullToEmpty(getPropString(property)).trim();
-		bind(Integer.class).annotatedWith(Names.named(property)).toInstance(
-			!Check.isEmpty(value) ? Integer.parseInt(value) : valueForMissingProperty);
-	}
-
-	protected void bindLong(String property)
-	{
-		String value = Strings.nullToEmpty(getPropString(property)).trim();
-		if( !Check.isEmpty(value) )
-		{
-			bind(Long.class).annotatedWith(Names.named(property)).toInstance(Long.parseLong(value));
-		}
-	}
-
-    protected void bindBoolean(String property)
-    {
-	    bindBoolean(property, null);
+  private String getPropString(String property) {
+    String envKey = "EQ_" + property.toUpperCase().replace('.', '_');
+    if (System.getenv().containsKey(envKey)) {
+      return System.getenv(envKey);
     }
+    return (String) properties.get(property);
+  }
 
-    protected void bindBoolean(String property, Boolean defaultValue)
-	{
-		String value = Strings.nullToEmpty(getPropString(property)).trim();
-	    Boolean bindVal = !Check.isEmpty(value) ? Boolean.valueOf(value) : defaultValue;
-	    if (bindVal != null)
-	    {
-	        // actually important that new Boolean() is used (on this version of guice anyway)
-		    bind(Boolean.class).annotatedWith(Names.named(property)).toInstance(new Boolean(bindVal));
-		}
-	}
+  /**
+   * External callers may be testing for null, so allow null to propagate.
+   *
+   * @param property
+   * @return
+   */
+  public String getProperty(String property) {
+    String rawString = getPropString(property);
+    return rawString == null ? null : rawString.trim();
+  }
 
-	protected void bindURL(String property)
-	{
-		String value = Strings.nullToEmpty(getPropString(property)).trim();
-		if( !Check.isEmpty(value) )
-		{
-			try
-			{
-				bind(URL.class).annotatedWith(Names.named(property)).toInstance(new URL(value));
-			}
-			catch( MalformedURLException e )
-			{
-				throw new ProvisionException("Invalid url in property: " + property, e);
-			}
-		}
-	}
+  protected void bindFile(String property) {
+    String value = Strings.nullToEmpty(getPropString(property)).trim();
+    if (!Check.isEmpty(value)) {
+      bind(File.class).annotatedWith(Names.named(property)).toInstance(new File(value));
+    }
+  }
 
-	@SuppressWarnings("unchecked")
-	protected <T> void bindClass(TypeLiteral<T> key, String property)
-	{
-		String value = Strings.nullToEmpty(getPropString(property)).trim();
-		if( !Check.isEmpty(value) )
-		{
-			try
-			{
-				Class<?> clazz = getClass().getClassLoader().loadClass(value);
-				bind(key).annotatedWith(Names.named(property)).toInstance((T) clazz);
-			}
-			catch( ClassNotFoundException e )
-			{
-				throw new ProvisionException("Class not found in property: " + property);
-			}
-		}
-	}
+  protected void bindProp(String property) {
+    bindProp(property, null);
+  }
 
-	protected <T> void bindNewInstance(String property, Class<T> type)
-	{
-		String value = Strings.nullToEmpty(getPropString(property)).trim();
-		if( !Check.isEmpty(value) )
-		{
-			try
-			{
-				bind(type).annotatedWith(Names.named(property)).toInstance(
-					type.cast(getClass().getClassLoader().loadClass(value).newInstance()));
-			}
-			// In the interests of diagnostics, we'll allow an explicit catch of
-			// generic exception
-			catch( Exception e ) // NOSONAR
-			{
-				throw new ProvisionException("Class not found in property: " + property);
-			}
-		}
-	}
+  protected void bindProp(String property, String valueForMissingProperty) {
+    String value = Strings.nullToEmpty(getPropString(property)).trim();
+    if (Check.isEmpty(value)) {
+      value = valueForMissingProperty;
+    }
+    if (value != null) {
+      bind(String.class).annotatedWith(Names.named(property)).toInstance(value);
+    }
+  }
 
-	public static LoadingCache<String, Properties> getPropertiesCache()
-	{
-		return propertiesCache;
-	}
+  protected void bindInt(String property) {
+    String value = Strings.nullToEmpty(getPropString(property)).trim();
+    if (!Check.isEmpty(value)) {
+      bind(Integer.class).annotatedWith(Names.named(property)).toInstance(Integer.parseInt(value));
+    }
+  }
+
+  protected void bindInt(String property, int valueForMissingProperty) {
+    String value = Strings.nullToEmpty(getPropString(property)).trim();
+    bind(Integer.class)
+        .annotatedWith(Names.named(property))
+        .toInstance(!Check.isEmpty(value) ? Integer.parseInt(value) : valueForMissingProperty);
+  }
+
+  protected void bindLong(String property) {
+    String value = Strings.nullToEmpty(getPropString(property)).trim();
+    if (!Check.isEmpty(value)) {
+      bind(Long.class).annotatedWith(Names.named(property)).toInstance(Long.parseLong(value));
+    }
+  }
+
+  protected void bindBoolean(String property) {
+    bindBoolean(property, null);
+  }
+
+  protected void bindBoolean(String property, Boolean defaultValue) {
+    String value = Strings.nullToEmpty(getPropString(property)).trim();
+    Boolean bindVal = !Check.isEmpty(value) ? Boolean.valueOf(value) : defaultValue;
+    if (bindVal != null) {
+      // actually important that new Boolean() is used (on this version of guice anyway)
+      bind(Boolean.class).annotatedWith(Names.named(property)).toInstance(new Boolean(bindVal));
+    }
+  }
+
+  protected void bindURL(String property) {
+    String value = Strings.nullToEmpty(getPropString(property)).trim();
+    if (!Check.isEmpty(value)) {
+      try {
+        bind(URL.class).annotatedWith(Names.named(property)).toInstance(new URL(value));
+      } catch (MalformedURLException e) {
+        throw new ProvisionException("Invalid url in property: " + property, e);
+      }
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  protected <T> void bindClass(TypeLiteral<T> key, String property) {
+    String value = Strings.nullToEmpty(getPropString(property)).trim();
+    if (!Check.isEmpty(value)) {
+      try {
+        Class<?> clazz = getClass().getClassLoader().loadClass(value);
+        bind(key).annotatedWith(Names.named(property)).toInstance((T) clazz);
+      } catch (ClassNotFoundException e) {
+        throw new ProvisionException("Class not found in property: " + property);
+      }
+    }
+  }
+
+  protected <T> void bindNewInstance(String property, Class<T> type) {
+    String value = Strings.nullToEmpty(getPropString(property)).trim();
+    if (!Check.isEmpty(value)) {
+      try {
+        bind(type)
+            .annotatedWith(Names.named(property))
+            .toInstance(type.cast(getClass().getClassLoader().loadClass(value).newInstance()));
+      }
+      // In the interests of diagnostics, we'll allow an explicit catch of
+      // generic exception
+      catch (Exception e) // NOSONAR
+      {
+        throw new ProvisionException("Class not found in property: " + property);
+      }
+    }
+  }
+
+  public static LoadingCache<String, Properties> getPropertiesCache() {
+    return propertiesCache;
+  }
 }

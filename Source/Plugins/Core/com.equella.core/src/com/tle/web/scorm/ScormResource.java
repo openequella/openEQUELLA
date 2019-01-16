@@ -46,91 +46,93 @@ import com.tle.web.viewurl.resource.AbstractWrappedResource;
 @Bind
 @Singleton
 public class ScormResource
-	implements
-		AttachmentResourceExtension<CustomAttachment>,
-		RegisterMimeTypeExtension<CustomAttachment>
-{
-	@PlugKey("scorm.details.type")
-	private static KeyLabel TYPE;
-	@PlugKey("scorm.details.mimetype")
-	private static KeyLabel MIMETYPE;
-	@PlugKey("scorm.details.name")
-	private static Label NAME;
-	@PlugKey("scorm.details.size")
-	private static Label SIZE;
+    implements AttachmentResourceExtension<CustomAttachment>,
+        RegisterMimeTypeExtension<CustomAttachment> {
+  @PlugKey("scorm.details.type")
+  private static KeyLabel TYPE;
 
-	@Inject
-	private AttachmentResourceService attachmentResourceService;
-	@Inject
-	private ViewItemUrlFactory urlFactory;
+  @PlugKey("scorm.details.mimetype")
+  private static KeyLabel MIMETYPE;
 
-	@Override
-	public ViewableResource process(SectionInfo info, ViewableResource resource, CustomAttachment attachment)
-	{
-		ViewableResource res = attachmentResourceService.createPathResource(info, resource.getViewableItem(),
-			ScormTreeNavigationSection.VIEWSCORM_JSP, attachment.getDescription(), MimeTypeConstants.MIME_SCORM,
-			attachment);
-		return new ScormViewableResource(res);
-	}
+  @PlugKey("scorm.details.name")
+  private static Label NAME;
 
-	public class ScormViewableResource extends AbstractWrappedResource
-	{
+  @PlugKey("scorm.details.size")
+  private static Label SIZE;
 
-		public ScormViewableResource(ViewableResource inner)
-		{
-			super(inner);
-		}
+  @Inject private AttachmentResourceService attachmentResourceService;
+  @Inject private ViewItemUrlFactory urlFactory;
 
-		@Override
-		public List<AttachmentDetail> getCommonAttachmentDetails()
-		{
-			List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
-			CustomAttachment attachment = (CustomAttachment) getAttachment();
+  @Override
+  public ViewableResource process(
+      SectionInfo info, ViewableResource resource, CustomAttachment attachment) {
+    ViewableResource res =
+        attachmentResourceService.createPathResource(
+            info,
+            resource.getViewableItem(),
+            ScormTreeNavigationSection.VIEWSCORM_JSP,
+            attachment.getDescription(),
+            MimeTypeConstants.MIME_SCORM,
+            attachment);
+    return new ScormViewableResource(res);
+  }
 
-			// Type
-			commonDetails.add(makeDetail(TYPE, MIMETYPE));
+  public class ScormViewableResource extends AbstractWrappedResource {
 
-			// Name
-			commonDetails.add(makeDetail(NAME, new TextLabel(attachment.getDescription())));
+    public ScormViewableResource(ViewableResource inner) {
+      super(inner);
+    }
 
-			Object size = attachment.getData("fileSize"); //$NON-NLS-1$
-			if( size != null )
-			{
-				// Size
-				commonDetails.add(makeDetail(SIZE, new TextLabel(FileSizeUtils.humanReadableFileSize((Long) size))));
-			}
+    @Override
+    public List<AttachmentDetail> getCommonAttachmentDetails() {
+      List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
+      CustomAttachment attachment = (CustomAttachment) getAttachment();
 
-			return commonDetails;
-		}
+      // Type
+      commonDetails.add(makeDetail(TYPE, MIMETYPE));
 
-		@Override
-		public ViewItemUrl createDefaultViewerUrl()
-		{
-			// Some scorm content may contain query strings.  
-			final String[] urlParts = URLUtils.decompose(getFilepath());
+      // Name
+      commonDetails.add(makeDetail(NAME, new TextLabel(attachment.getDescription())));
 
-			ViewItemUrl vurl = urlFactory.createItemUrl(inner.getInfo(), inner.getViewableItem(),
-				UrlEncodedString.createFromValue(urlParts[0]), urlParts[1], 0);
-			vurl.addFlag(ViewItemUrl.FLAG_NO_SELECTION);
-			return vurl;
-		}
+      Object size = attachment.getData("fileSize"); // $NON-NLS-1$
+      if (size != null) {
+        // Size
+        commonDetails.add(
+            makeDetail(SIZE, new TextLabel(FileSizeUtils.humanReadableFileSize((Long) size))));
+      }
 
-		@Override
-		public boolean isExternalResource()
-		{
-			return true;
-		}
+      return commonDetails;
+    }
 
-		@Override
-		public String getFilepath()
-		{
-			return ScormTreeNavigationSection.VIEWSCORM_JSP;
-		}
-	}
+    @Override
+    public ViewItemUrl createDefaultViewerUrl() {
+      // Some scorm content may contain query strings.
+      final String[] urlParts = URLUtils.decompose(getFilepath());
 
-	@Override
-	public String getMimeType(CustomAttachment attachment)
-	{
-		return ScormUtils.MIME_TYPE;
-	}
+      ViewItemUrl vurl =
+          urlFactory.createItemUrl(
+              inner.getInfo(),
+              inner.getViewableItem(),
+              UrlEncodedString.createFromValue(urlParts[0]),
+              urlParts[1],
+              0);
+      vurl.addFlag(ViewItemUrl.FLAG_NO_SELECTION);
+      return vurl;
+    }
+
+    @Override
+    public boolean isExternalResource() {
+      return true;
+    }
+
+    @Override
+    public String getFilepath() {
+      return ScormTreeNavigationSection.VIEWSCORM_JSP;
+    }
+  }
+
+  @Override
+  public String getMimeType(CustomAttachment attachment) {
+    return ScormUtils.MIME_TYPE;
+  }
 }

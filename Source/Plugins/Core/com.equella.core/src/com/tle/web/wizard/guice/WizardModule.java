@@ -40,66 +40,65 @@ import com.tle.web.wizard.section.SelectThumbnailSection;
 import com.tle.web.wizard.section.WizardBodySection;
 
 @SuppressWarnings("nls")
-public class WizardModule extends SectionsModule
-{
-	@Override
-	protected void configure()
-	{
-		NodeProvider rootNode = node(RootWizardSection.class);
-		rootNode.child(PreviewSection.class);
-		rootNode.child(wizardNav());
-		rootNode.child(SelectThumbnailSection.class);
-		bind(Object.class).annotatedWith(Names.named("/access/runwizard")).toProvider(rootNode);
+public class WizardModule extends SectionsModule {
+  @Override
+  protected void configure() {
+    NodeProvider rootNode = node(RootWizardSection.class);
+    rootNode.child(PreviewSection.class);
+    rootNode.child(wizardNav());
+    rootNode.child(SelectThumbnailSection.class);
+    bind(Object.class).annotatedWith(Names.named("/access/runwizard")).toProvider(rootNode);
 
-		ListProvider<WizardCommand> commands = new ListProvider<WizardCommand>(binder(),
-			ImmutableList.of(EditInWizard.class, ViewSummary.class, Approve.class, Reject.class, SaveAndContinue.class, Preview.class, Save.class,
-				Cancel.class, SelectThumbnail.class));
-		ListProvider<SectionId> additional = new ListProvider<SectionId>(binder());
-		additional.add(LockedByGroupSection.class);
+    ListProvider<WizardCommand> commands =
+        new ListProvider<WizardCommand>(
+            binder(),
+            ImmutableList.of(
+                EditInWizard.class,
+                ViewSummary.class,
+                Approve.class,
+                Reject.class,
+                SaveAndContinue.class,
+                Preview.class,
+                Save.class,
+                Cancel.class,
+                SelectThumbnail.class));
+    ListProvider<SectionId> additional = new ListProvider<SectionId>(binder());
+    additional.add(LockedByGroupSection.class);
 
-		bind(new TypeLiteral<List<WizardCommand>>()
-		{
-		}).toProvider(commands);
-		bind(new TypeLiteral<List<SectionId>>()
-		{
-		}).toProvider(additional);
-		bind(WizardExtendedFactory.class).annotatedWith(Names.named("TitleFactory")).to(NamedTitleFactory.class)
-			.asEagerSingleton();
-		install(new WizardTracker());
+    bind(new TypeLiteral<List<WizardCommand>>() {}).toProvider(commands);
+    bind(new TypeLiteral<List<SectionId>>() {}).toProvider(additional);
+    bind(WizardExtendedFactory.class)
+        .annotatedWith(Names.named("TitleFactory"))
+        .to(NamedTitleFactory.class)
+        .asEagerSingleton();
+    install(new WizardTracker());
 
-		requestStaticInjection(WizardState.class);
-	}
+    requestStaticInjection(WizardState.class);
+  }
 
-	private NodeProvider wizardNav()
-	{
-		NodeProvider node = node(WizardBodySection.class).placeHolder("WIZARD_NAVIGATION");
-		node.child(PagesSection.class);
-		node.child(DuplicateDataSection.class);
-		node.innerChild(SaveDialog.class);
-		return node;
-	}
+  private NodeProvider wizardNav() {
+    NodeProvider node = node(WizardBodySection.class).placeHolder("WIZARD_NAVIGATION");
+    node.child(PagesSection.class);
+    node.child(DuplicateDataSection.class);
+    node.innerChild(SaveDialog.class);
+    return node;
+  }
 
-	public static class NamedTitleFactory extends WizardExtendedFactory
-	{
-		public NamedTitleFactory()
-		{
-			setName("wizardTitles");
-		}
-	}
+  public static class NamedTitleFactory extends WizardExtendedFactory {
+    public NamedTitleFactory() {
+      setName("wizardTitles");
+    }
+  }
 
-	private static class WizardTracker extends PluginTrackerModule
-	{
-		@Override
-		protected String getPluginId()
-		{
-			return "com.tle.web.wizard";
-		}
+  private static class WizardTracker extends PluginTrackerModule {
+    @Override
+    protected String getPluginId() {
+      return "com.tle.web.wizard";
+    }
 
-		@Override
-		protected void configure()
-		{
-			bindTracker(PackageTreeBuilder.class, "packagetreebuilder", "class").setIdParam("id");
-		}
-	}
-
+    @Override
+    protected void configure() {
+      bindTracker(PackageTreeBuilder.class, "packagetreebuilder", "class").setIdParam("id");
+    }
+  }
 }

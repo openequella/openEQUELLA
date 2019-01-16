@@ -22,18 +22,13 @@ import com.tle.core.guice.Bind;
 import com.tle.web.search.actions.AbstractFavouriteSearchDialog;
 import com.tle.web.search.actions.AbstractFavouriteSearchSection;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
-public class ItemAdminFavouriteSearchDialog extends AbstractFavouriteSearchDialog
-{
-	@Inject
-	private ItemAdminFavouriteSearchSection contentSection;
+public class ItemAdminFavouriteSearchDialog extends AbstractFavouriteSearchDialog {
+  @Inject private ItemAdminFavouriteSearchSection contentSection;
 
-	@Override
-	protected AbstractFavouriteSearchSection getContentSection()
-	{
-		return contentSection;
-	}
+  @Override
+  protected AbstractFavouriteSearchSection getContentSection() {
+    return contentSection;
+  }
 }

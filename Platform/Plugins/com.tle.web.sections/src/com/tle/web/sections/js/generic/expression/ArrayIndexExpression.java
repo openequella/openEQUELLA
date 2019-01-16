@@ -26,29 +26,24 @@ import com.tle.web.sections.js.JSPropertyExpression;
 import com.tle.web.sections.js.JSUtils;
 
 @NonNullByDefault
-public class ArrayIndexExpression extends AbstractExpression implements JSPropertyExpression
-{
-	private final JSExpression indexExpr;
+public class ArrayIndexExpression extends AbstractExpression implements JSPropertyExpression {
+  private final JSExpression indexExpr;
 
-	public ArrayIndexExpression(Object index)
-	{
-		this.indexExpr = JSUtils.convertExpressions(index)[0];
-	}
+  public ArrayIndexExpression(Object index) {
+    this.indexExpr = JSUtils.convertExpressions(index)[0];
+  }
 
-	@Override
-	public String getExpression(@Nullable RenderContext info)
-	{
-		return '[' + indexExpr.getExpression(info) + ']';
-	}
+  @Override
+  public String getExpression(@Nullable RenderContext info) {
+    return '[' + indexExpr.getExpression(info) + ']';
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		SectionUtils.preRender(info, indexExpr);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    SectionUtils.preRender(info, indexExpr);
+  }
 
-	public static CombinedExpression create(JSExpression base, Object index)
-	{
-		return new CombinedExpression(base, new ArrayIndexExpression(index));
-	}
+  public static CombinedExpression create(JSExpression base, Object index) {
+    return new CombinedExpression(base, new ArrayIndexExpression(index));
+  }
 }

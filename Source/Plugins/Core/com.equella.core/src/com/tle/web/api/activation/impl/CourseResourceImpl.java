@@ -50,118 +50,105 @@ import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.remoting.rest.service.RestImportExportHelper;
 import scala.Option;
 
-/**
- * @author larry
- */
+/** @author larry */
 @SuppressWarnings("nls")
 @Bind(CourseResource.class)
 @Singleton
-public class CourseResourceImpl extends AbstractBaseEntityResource<CourseInfo, BaseEntitySecurityBean, CourseBean>
-	implements
-		CourseResource
-{
-	@Inject
-	private CourseInfoService courseService;
-	@Inject
-	private CourseBeanSerializer courseSerializer;
-	@Inject
-	private TLEAclManager aclService;
+public class CourseResourceImpl
+    extends AbstractBaseEntityResource<CourseInfo, BaseEntitySecurityBean, CourseBean>
+    implements CourseResource {
+  @Inject private CourseInfoService courseService;
+  @Inject private CourseBeanSerializer courseSerializer;
+  @Inject private TLEAclManager aclService;
 
-	private static String KEY_PFX = AbstractPluginService.getMyPluginId(CourseResource.class)+".";
+  private static String KEY_PFX = AbstractPluginService.getMyPluginId(CourseResource.class) + ".";
 
+  /** Provide the full course data in the results */
+  @Override
+  public CourseBean serialize(CourseInfo entity, Object data, boolean heavy) {
+    return super.serialize(entity, data, true);
+  }
 
-	/**
-	 * Provide the full course data in the results
-	 */
-	@Override
-	public CourseBean serialize(CourseInfo entity, Object data, boolean heavy)
-	{
-		return super.serialize(entity, data, true);
-	}
+  //	@Override
+  //	public PagingBean<CourseBean> list(UriInfo uriInfo, String code, String q)
+  //	{
+  //		final boolean isExport = RestImportExportHelper.isExport(uriInfo);
+  //		final EnumerateOptions opts = new EnumerateOptions(q, null, 0, 100000, isExport, null);
+  //		if (!Check.isEmpty(code))
+  //		{
+  //			opts.addParameter("code", code);
+  //		}
+  //		return list(opts, isExport);
+  //	}
 
-//	@Override
-//	public PagingBean<CourseBean> list(UriInfo uriInfo, String code, String q)
-//	{
-//		final boolean isExport = RestImportExportHelper.isExport(uriInfo);
-//		final EnumerateOptions opts = new EnumerateOptions(q, null, 0, 100000, isExport, null);
-//		if (!Check.isEmpty(code))
-//		{
-//			opts.addParameter("code", code);
-//		}
-//		return list(opts, isExport);
-//	}
+  @Override
+  protected void validate(String uuid, CourseBean bean, boolean isNew) throws InvalidDataException {
+    super.validate(uuid, bean, isNew);
+    final String courseCode = bean.getCode();
+    if (courseCode != null) {
+      final CourseInfo courseSameCode = courseService.getByCode(courseCode);
+      if (courseSameCode != null && (isNew || !uuid.equals(courseSameCode.getUuid()))) {
+        throw new InvalidDataException(
+            new ValidationError(
+                "code",
+                CurrentLocale.get(KEY_PFX + "course.edit.validation.codeinuse", courseCode)));
+      }
+    }
+  }
 
-	@Override
-	protected void validate(String uuid, CourseBean bean, boolean isNew) throws InvalidDataException
-	{
-		super.validate(uuid, bean, isNew);
-		final String courseCode = bean.getCode();
-		if( courseCode != null )
-		{
-			final CourseInfo courseSameCode = courseService.getByCode(courseCode);
-			if( courseSameCode != null && (isNew || !uuid.equals(courseSameCode.getUuid())) )
-			{
-				throw new InvalidDataException(new ValidationError("code",
-					CurrentLocale.get(KEY_PFX + "course.edit.validation.codeinuse", courseCode)));
-			}
-		}
-	}
+  @Override
+  public PagingBean<CourseBean> list(
+      UriInfo uriInfo,
+      String code,
+      String q,
+      boolean archived,
+      List<String> privilege,
+      String resumption,
+      int length,
+      boolean full) {
+    final boolean isExport = RestImportExportHelper.isExport(uriInfo);
+    return PagedResults.pagedResults(
+        this, q, privilege, resumption, length, full | isExport, isExport, archived);
+  }
 
-	@Override
-	public PagingBean<CourseBean> list(UriInfo uriInfo, String code, String q, boolean archived, List<String> privilege,
-									   String resumption, int length, boolean full)
-	{
-		final boolean isExport = RestImportExportHelper.isExport(uriInfo);
-		return PagedResults.pagedResults(this, q, privilege, resumption, length, full | isExport, isExport, archived);
-	}
+  @Override
+  public CourseBean getByCode(UriInfo uriInfo, String code) {
+    CourseInfo entity = courseService.getByCode(code);
+    if (entity == null) {
+      throw entityNotFound(code);
+    }
+    if (!courseService.canViewOrEdit(entity)) {
+      throw new AccessDeniedException(getString("error.entity.viewpriv"));
+    }
+    return serialize(entity, null, true);
+  }
 
-	@Override
-	public CourseBean getByCode(UriInfo uriInfo, String code)
-	{
-		CourseInfo entity = courseService.getByCode(code);
-		if( entity == null )
-		{
-			throw entityNotFound(code);
-		}
-		if( !courseService.canViewOrEdit(entity) )
-		{
-			throw new AccessDeniedException(getString("error.entity.viewpriv"));
-		}
-		return serialize(entity, null, true);
-	}
+  public List<String> citation(UriInfo uriInfo, String uuid) {
+    return courseService.getAllCitations();
+  }
 
-	public List<String> citation(UriInfo uriInfo, String uuid)
-	{
-		return courseService.getAllCitations();
-	}
+  @Override
+  public CourseInfoService getEntityService() {
+    return courseService;
+  }
 
-	@Override
-	public CourseInfoService getEntityService()
-	{
-		return courseService;
-	}
+  @Override
+  protected BaseEntitySerializer<CourseInfo, CourseBean> getSerializer() {
+    return courseSerializer;
+  }
 
-	@Override
-	protected BaseEntitySerializer<CourseInfo, CourseBean> getSerializer()
-	{
-		return courseSerializer;
-	}
+  @Override
+  protected Class<?> getResourceClass() {
+    return CourseResource.class;
+  }
 
-	@Override
-	protected Class<?> getResourceClass()
-	{
-		return CourseResource.class;
-	}
+  @Override
+  protected Node[] getAllNodes() {
+    return new Node[] {Node.ALL_COURSE_INFO};
+  }
 
-	@Override
-	protected Node[] getAllNodes()
-	{
-		return new Node[]{Node.ALL_COURSE_INFO};
-	}
-
-	@Override
-	protected BaseEntitySecurityBean createAllSecurityBean()
-	{
-		return new BaseEntitySecurityBean();
-	}
+  @Override
+  protected BaseEntitySecurityBean createAllSecurityBean() {
+    return new BaseEntitySecurityBean();
+  }
 }

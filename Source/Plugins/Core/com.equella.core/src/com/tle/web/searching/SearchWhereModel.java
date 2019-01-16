@@ -69,495 +69,441 @@ import com.tle.web.selection.SelectionSession;
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class SearchWhereModel extends DynamicHtmlListModel<SearchWhereModel.WhereEntry>
-{
-	@PlugKey("within.collections")
-	private static Label COLLECTION_GROUP;
-	@PlugKey("within.powersearches")
-	private static Label POWERSEARCH_GROUP;
-	@PlugKey("within.remoterepositories")
-	private static Label REMOTEREPO_GROUP;
-	@PlugKey("query.collection.all")
-	private static String ALL_KEY;
+public class SearchWhereModel extends DynamicHtmlListModel<SearchWhereModel.WhereEntry> {
+  @PlugKey("within.collections")
+  private static Label COLLECTION_GROUP;
 
-	@Inject
-	private FederatedSearchService fedService;
-	private static final String ALL_VAL = "all";
+  @PlugKey("within.powersearches")
+  private static Label POWERSEARCH_GROUP;
 
-	@Inject
-	private ItemDefinitionService itemDefinitionService;
-	@Inject
-	private PowerSearchService powerSearchService;
-	@Inject
-	private DynaCollectionService dynaCollectionService;
-	@Inject
-	private FederatedSearchService federatedSearchService;
-	@Inject
-	private SelectionService selectionService;
-	@Inject
-	private BundleCache bundleCache;
+  @PlugKey("within.remoterepositories")
+  private static Label REMOTEREPO_GROUP;
 
-	/**
-	 * Short-lived cache of item defs, power searches, dyna collections and
-	 * remote repos for display in the "where" box.
-	 */
-	private InstitutionCache<LoadingCache<String, CachedWhereModelEntries>> whereModelCache;
+  @PlugKey("query.collection.all")
+  private static String ALL_KEY;
 
-	public SearchWhereModel()
-	{
-		setSort(true);
-		setComparator(new OptionNameComparator()
-		{
-			private static final long serialVersionUID = 1L;
+  @Inject private FederatedSearchService fedService;
+  private static final String ALL_VAL = "all";
 
-			/*
-			 * Order should be Collections/Dynamic, Advanced Searches,
-			 * RemoteRepos c2 C P R C s - - c1 P + s - R + + s
-			 */
+  @Inject private ItemDefinitionService itemDefinitionService;
+  @Inject private PowerSearchService powerSearchService;
+  @Inject private DynaCollectionService dynaCollectionService;
+  @Inject private FederatedSearchService federatedSearchService;
+  @Inject private SelectionService selectionService;
+  @Inject private BundleCache bundleCache;
 
-			@Override
-			public int compare(Option<?> o1, Option<?> o2)
-			{
-				char c1 = o1.getValue().charAt(0);
-				char c2 = o2.getValue().charAt(0);
+  /**
+   * Short-lived cache of item defs, power searches, dyna collections and remote repos for display
+   * in the "where" box.
+   */
+  private InstitutionCache<LoadingCache<String, CachedWhereModelEntries>> whereModelCache;
 
-				if( c1 == c2 )
-				{
-					return super.compare(o1, o2);
-				}
+  public SearchWhereModel() {
+    setSort(true);
+    setComparator(
+        new OptionNameComparator() {
+          private static final long serialVersionUID = 1L;
 
-				if( (c1 == 'C' || c1 == 'D') && (c2 == 'C' || c2 == 'D') )
-				{
-					return super.compare(o1, o2);
-				}
+          /*
+           * Order should be Collections/Dynamic, Advanced Searches,
+           * RemoteRepos c2 C P R C s - - c1 P + s - R + + s
+           */
 
-				if( c1 == 'C' || c1 == 'D' )
-				{
-					return -1;
-				}
+          @Override
+          public int compare(Option<?> o1, Option<?> o2) {
+            char c1 = o1.getValue().charAt(0);
+            char c2 = o2.getValue().charAt(0);
 
-				if( c1 == 'R' )
-				{
-					return 1;
-				}
+            if (c1 == c2) {
+              return super.compare(o1, o2);
+            }
 
-				return c2 == 'R' ? -1 : 1;
-			}
-		});
-	}
+            if ((c1 == 'C' || c1 == 'D') && (c2 == 'C' || c2 == 'D')) {
+              return super.compare(o1, o2);
+            }
 
-	@Inject
-	public void setInstitutionService(InstitutionService service)
-	{
-		whereModelCache = service
-			.newInstitutionAwareCache(new CacheLoader<Institution, LoadingCache<String, CachedWhereModelEntries>>()
-			{
-				@Override
-				public LoadingCache<String, CachedWhereModelEntries> load(Institution key)
-				{
-					return CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES)
-						.build(new CacheLoader<String, CachedWhereModelEntries>()
-					{
-						@Override
-						public CachedWhereModelEntries load(String key)
-						{
-							List<VirtualisableAndValue<DynaCollection>> dynaCollections = newArrayList(
-								filter(dynaCollectionService.enumerateExpanded("searchUsage"),
-									new Predicate<VirtualisableAndValue<DynaCollection>>()
-							{
-								final Set<String> dynaCollectionUuids = newHashSet(transform(
-									dynaCollectionService.listSearchable(), new Function<BaseEntityLabel, String>()
-								{
-									@Override
-									public String apply(BaseEntityLabel input)
-									{
-										return input.getUuid();
-									}
-								}));
+            if (c1 == 'C' || c1 == 'D') {
+              return -1;
+            }
 
-								@Override
-								public boolean apply(@Nullable VirtualisableAndValue<DynaCollection> input)
-								{
-									return dynaCollectionUuids.contains(input.getVt().getUuid());
-								}
-							}));
+            if (c1 == 'R') {
+              return 1;
+            }
 
-							return new CachedWhereModelEntries(itemDefinitionService.listSearchable(),
-								powerSearchService.listSearchable(), federatedSearchService.listEnabledSearchable(),
-								dynaCollections);
-						}
-					});
-				}
-			});
-	}
+            return c2 == 'R' ? -1 : 1;
+          }
+        });
+  }
 
-	@Nullable
-	@Override
-	public WhereEntry getValue(SectionInfo info, @Nullable String value)
-	{
-		if( value == null || ALL_VAL.equals(value) )
-		{
-			return null;
-		}
-		return new WhereEntry(value);
-	}
+  @Inject
+  public void setInstitutionService(InstitutionService service) {
+    whereModelCache =
+        service.newInstitutionAwareCache(
+            new CacheLoader<Institution, LoadingCache<String, CachedWhereModelEntries>>() {
+              @Override
+              public LoadingCache<String, CachedWhereModelEntries> load(Institution key) {
+                return CacheBuilder.newBuilder()
+                    .expireAfterWrite(1, TimeUnit.MINUTES)
+                    .build(
+                        new CacheLoader<String, CachedWhereModelEntries>() {
+                          @Override
+                          public CachedWhereModelEntries load(String key) {
+                            List<VirtualisableAndValue<DynaCollection>> dynaCollections =
+                                newArrayList(
+                                    filter(
+                                        dynaCollectionService.enumerateExpanded("searchUsage"),
+                                        new Predicate<VirtualisableAndValue<DynaCollection>>() {
+                                          final Set<String> dynaCollectionUuids =
+                                              newHashSet(
+                                                  transform(
+                                                      dynaCollectionService.listSearchable(),
+                                                      new Function<BaseEntityLabel, String>() {
+                                                        @Override
+                                                        public String apply(BaseEntityLabel input) {
+                                                          return input.getUuid();
+                                                        }
+                                                      }));
 
-	@Override
-	protected Option<WhereEntry> getTopOption()
-	{
-		return new KeyOption<WhereEntry>(ALL_KEY, ALL_VAL, null)
-		{
-			@Override
-			public String getGroupName()
-			{
-				return COLLECTION_GROUP.getText();
-			}
-		};
-	}
+                                          @Override
+                                          public boolean apply(
+                                              @Nullable
+                                                  VirtualisableAndValue<DynaCollection> input) {
+                                            return dynaCollectionUuids.contains(
+                                                input.getVt().getUuid());
+                                          }
+                                        }));
 
-	@Override
-	protected Iterable<WhereEntry> populateModel(SectionInfo info)
-	{
-		List<WhereEntry> collectionOptions = new ArrayList<WhereEntry>();
+                            return new CachedWhereModelEntries(
+                                itemDefinitionService.listSearchable(),
+                                powerSearchService.listSearchable(),
+                                federatedSearchService.listEnabledSearchable(),
+                                dynaCollections);
+                          }
+                        });
+              }
+            });
+  }
 
-		CachedWhereModelEntries cached = whereModelCache.getCache().getUnchecked(CurrentUser.getUserID());
-		Iterable<BaseEntityLabel> collections = cached.collections;
-		Iterable<BaseEntityLabel> powerSearches = cached.powerSearches;
-		Iterable<BaseEntityLabel> remoteRepos = cached.remoteRepos;
-		Iterable<VirtualisableAndValue<DynaCollection>> dynaCollections = cached.virtualisedDynaCollections;
+  @Nullable
+  @Override
+  public WhereEntry getValue(SectionInfo info, @Nullable String value) {
+    if (value == null || ALL_VAL.equals(value)) {
+      return null;
+    }
+    return new WhereEntry(value);
+  }
 
-		final SelectionSession session = selectionService.getCurrentSession(info);
-		if( session != null )
-		{
-			if( !session.isAllCollections() )
-			{
-				collections = filterByUuids(collections, session.getCollectionUuids());
-			}
-			if( !session.isAllPowerSearches() )
-			{
-				powerSearches = filterByUuids(powerSearches, session.getPowerSearchIds());
-			}
+  @Override
+  protected Option<WhereEntry> getTopOption() {
+    return new KeyOption<WhereEntry>(ALL_KEY, ALL_VAL, null) {
+      @Override
+      public String getGroupName() {
+        return COLLECTION_GROUP.getText();
+      }
+    };
+  }
 
-			if( !session.isAllRemoteRepositories() )
-			{
-				remoteRepos = filterByUuids(remoteRepos, session.getRemoteRepositoryIds());
-			}
-			if( !session.isAllContributionCollections() )
-			{
-				Set<String> contributionCollectionIds = session.getContributionCollectionIds();
+  @Override
+  protected Iterable<WhereEntry> populateModel(SectionInfo info) {
+    List<WhereEntry> collectionOptions = new ArrayList<WhereEntry>();
 
-				if( !contributionCollectionIds.isEmpty() )
-				{
-					for( BaseEntityLabel repo : remoteRepos )
-					{
-						FederatedSearch fedSearch = fedService.getByUuid(repo.getUuid());
-						String collectionUuid = fedSearch.getCollectionUuid();
-						if( !contributionCollectionIds.contains(collectionUuid) )
-						{
-							remoteRepos = removeFromCollection(remoteRepos, repo.getUuid());
-						}
-					}
-				}
-				else
-				{
-					remoteRepos = Collections.emptySet();
-				}
-			}
-			if( !session.isAllDynamicCollections() )
-			{
-				dynaCollections = filter(dynaCollections, new Predicate<VirtualisableAndValue<DynaCollection>>()
-				{
-					@Override
-					public boolean apply(@Nullable VirtualisableAndValue<DynaCollection> input)
-					{
-						return session.getDynamicCollectionIds().contains(input.getVt().getUuid());
-					}
-				});
-			}
-		}
+    CachedWhereModelEntries cached =
+        whereModelCache.getCache().getUnchecked(CurrentUser.getUserID());
+    Iterable<BaseEntityLabel> collections = cached.collections;
+    Iterable<BaseEntityLabel> powerSearches = cached.powerSearches;
+    Iterable<BaseEntityLabel> remoteRepos = cached.remoteRepos;
+    Iterable<VirtualisableAndValue<DynaCollection>> dynaCollections =
+        cached.virtualisedDynaCollections;
 
-		for( BaseEntityLabel bel : collections )
-		{
-			collectionOptions.add(new WhereEntry(bel, WithinType.COLLECTION));
-		}
+    final SelectionSession session = selectionService.getCurrentSession(info);
+    if (session != null) {
+      if (!session.isAllCollections()) {
+        collections = filterByUuids(collections, session.getCollectionUuids());
+      }
+      if (!session.isAllPowerSearches()) {
+        powerSearches = filterByUuids(powerSearches, session.getPowerSearchIds());
+      }
 
-		for( VirtualisableAndValue<DynaCollection> vdc : dynaCollections )
-		{
-			DynaCollection dc = vdc.getVt();
-			collectionOptions.add(new WhereEntry(CurrentLocale.get(dc.getName()), dc.getUuid(),
-				Strings.nullToEmpty(vdc.getVirtualisedValue())));
-		}
+      if (!session.isAllRemoteRepositories()) {
+        remoteRepos = filterByUuids(remoteRepos, session.getRemoteRepositoryIds());
+      }
+      if (!session.isAllContributionCollections()) {
+        Set<String> contributionCollectionIds = session.getContributionCollectionIds();
 
-		for( BaseEntityLabel bel : powerSearches )
-		{
-			collectionOptions.add(new WhereEntry(bel, WithinType.POWER));
-		}
+        if (!contributionCollectionIds.isEmpty()) {
+          for (BaseEntityLabel repo : remoteRepos) {
+            FederatedSearch fedSearch = fedService.getByUuid(repo.getUuid());
+            String collectionUuid = fedSearch.getCollectionUuid();
+            if (!contributionCollectionIds.contains(collectionUuid)) {
+              remoteRepos = removeFromCollection(remoteRepos, repo.getUuid());
+            }
+          }
+        } else {
+          remoteRepos = Collections.emptySet();
+        }
+      }
+      if (!session.isAllDynamicCollections()) {
+        dynaCollections =
+            filter(
+                dynaCollections,
+                new Predicate<VirtualisableAndValue<DynaCollection>>() {
+                  @Override
+                  public boolean apply(@Nullable VirtualisableAndValue<DynaCollection> input) {
+                    return session.getDynamicCollectionIds().contains(input.getVt().getUuid());
+                  }
+                });
+      }
+    }
 
-		for( BaseEntityLabel bel : remoteRepos )
-		{
-			collectionOptions.add(new WhereEntry(bel, WithinType.REMOTE));
-		}
+    for (BaseEntityLabel bel : collections) {
+      collectionOptions.add(new WhereEntry(bel, WithinType.COLLECTION));
+    }
 
-		return collectionOptions;
-	}
+    for (VirtualisableAndValue<DynaCollection> vdc : dynaCollections) {
+      DynaCollection dc = vdc.getVt();
+      collectionOptions.add(
+          new WhereEntry(
+              CurrentLocale.get(dc.getName()),
+              dc.getUuid(),
+              Strings.nullToEmpty(vdc.getVirtualisedValue())));
+    }
 
-	private Iterable<BaseEntityLabel> filterByUuids(Iterable<BaseEntityLabel> entities, final Set<String> uuids)
-	{
-		return filter(entities, new Predicate<BaseEntityLabel>()
-		{
-			@Override
-			public boolean apply(@Nullable BaseEntityLabel label)
-			{
-				return uuids.contains(label.getUuid());
-			}
-		});
-	}
+    for (BaseEntityLabel bel : powerSearches) {
+      collectionOptions.add(new WhereEntry(bel, WithinType.POWER));
+    }
 
-	private Iterable<BaseEntityLabel> removeFromCollection(Iterable<BaseEntityLabel> entities, final String uuid)
-	{
-		return filter(entities, new Predicate<BaseEntityLabel>()
-		{
-			@Override
-			public boolean apply(@Nullable BaseEntityLabel label)
-			{
-				return label.getUuid() != uuid;
-			}
-		});
-	}
+    for (BaseEntityLabel bel : remoteRepos) {
+      collectionOptions.add(new WhereEntry(bel, WithinType.REMOTE));
+    }
 
-	public WhereEntry createWhere(String uuid, WithinType type)
-	{
-		return new WhereEntry(uuid, type);
-	}
+    return collectionOptions;
+  }
 
-	@Override
-	protected Option<WhereEntry> convertToOption(SectionInfo info, WhereEntry obj)
-	{
-		return obj.convert();
-	}
+  private Iterable<BaseEntityLabel> filterByUuids(
+      Iterable<BaseEntityLabel> entities, final Set<String> uuids) {
+    return filter(
+        entities,
+        new Predicate<BaseEntityLabel>() {
+          @Override
+          public boolean apply(@Nullable BaseEntityLabel label) {
+            return uuids.contains(label.getUuid());
+          }
+        });
+  }
 
-	public class WhereEntry
-	{
-		private final WithinType type;
-		private final String uuid;
-		private final String value;
-		private NameValue name;
-		private String virt;
-		private BaseEntity entity;
-		private boolean disabled = false;
-		private boolean html = false;
+  private Iterable<BaseEntityLabel> removeFromCollection(
+      Iterable<BaseEntityLabel> entities, final String uuid) {
+    return filter(
+        entities,
+        new Predicate<BaseEntityLabel>() {
+          @Override
+          public boolean apply(@Nullable BaseEntityLabel label) {
+            return label.getUuid() != uuid;
+          }
+        });
+  }
 
-		public WhereEntry(String fromString)
-		{
-			this.value = fromString;
-			char strType = fromString.charAt(0);
-			switch( strType )
-			{
-				case 'C':
-					this.type = WithinType.COLLECTION;
-					break;
-				case 'D':
-					this.type = WithinType.DYNAMIC;
-					break;
-				case 'P':
-					this.type = WithinType.POWER;
-					break;
-				case 'R':
-					this.type = WithinType.REMOTE;
-					break;
-				case 'E':
-					this.type = WithinType.EXTERNAL;
-					break;
-				default:
-					this.type = null;
-			}
-			if( type == WithinType.DYNAMIC )
-			{
-				int ind = fromString.indexOf(':');
-				uuid = fromString.substring(1, ind);
-				virt = fromString.substring(ind + 1);
-			}
-			else
-			{
-				uuid = fromString.substring(1);
-			}
-		}
+  public WhereEntry createWhere(String uuid, WithinType type) {
+    return new WhereEntry(uuid, type);
+  }
 
-		public WhereEntry(BaseEntityLabel bel, WithinType type)
-		{
-			this(bel.getUuid(), type);
-			this.name = new BundleNameValue(bel.getBundleId(), value, bundleCache);
-		}
+  @Override
+  protected Option<WhereEntry> convertToOption(SectionInfo info, WhereEntry obj) {
+    return obj.convert();
+  }
 
-		public WhereEntry(String uuid, WithinType type)
-		{
-			this.type = type;
-			this.uuid = uuid;
-			this.value = type.name().charAt(0) + uuid;
-		}
+  public class WhereEntry {
+    private final WithinType type;
+    private final String uuid;
+    private final String value;
+    private NameValue name;
+    private String virt;
+    private BaseEntity entity;
+    private boolean disabled = false;
+    private boolean html = false;
 
-		public WhereEntry(String name, String uuid, String virt)
-		{
-			this.type = WithinType.DYNAMIC;
-			this.uuid = uuid;
-			this.value = 'D' + uuid + ':' + virt;
-			this.name = new NameValue(name, value);
-			this.virt = virt;
-		}
+    public WhereEntry(String fromString) {
+      this.value = fromString;
+      char strType = fromString.charAt(0);
+      switch (strType) {
+        case 'C':
+          this.type = WithinType.COLLECTION;
+          break;
+        case 'D':
+          this.type = WithinType.DYNAMIC;
+          break;
+        case 'P':
+          this.type = WithinType.POWER;
+          break;
+        case 'R':
+          this.type = WithinType.REMOTE;
+          break;
+        case 'E':
+          this.type = WithinType.EXTERNAL;
+          break;
+        default:
+          this.type = null;
+      }
+      if (type == WithinType.DYNAMIC) {
+        int ind = fromString.indexOf(':');
+        uuid = fromString.substring(1, ind);
+        virt = fromString.substring(ind + 1);
+      } else {
+        uuid = fromString.substring(1);
+      }
+    }
 
-		public WhereEntry(String uuid, String name, WithinType type)
-		{
-			this.type = type;
-			this.uuid = uuid;
-			this.value = type.name().charAt(0) + uuid;
-			this.name = new NameValue(name, value);
-		}
+    public WhereEntry(BaseEntityLabel bel, WithinType type) {
+      this(bel.getUuid(), type);
+      this.name = new BundleNameValue(bel.getBundleId(), value, bundleCache);
+    }
 
-		public Option<WhereEntry> convert()
-		{
-			HtmlNameValueOption<WhereEntry> nameValueOption = new HtmlNameValueOption<WhereEntry>(getName(), this, html,
-				getGroupName());
-			nameValueOption.setDisabled(disabled);
-			return nameValueOption;
-		}
+    public WhereEntry(String uuid, WithinType type) {
+      this.type = type;
+      this.uuid = uuid;
+      this.value = type.name().charAt(0) + uuid;
+    }
 
-		private String getGroupName()
-		{
-			switch( type )
-			{
-				case COLLECTION:
-				case DYNAMIC:
-					return COLLECTION_GROUP.getText();
-				case POWER:
-					return POWERSEARCH_GROUP.getText();
-				case REMOTE:
-					return REMOTEREPO_GROUP.getText();
-				default:
-					return "";
-			}
-		}
+    public WhereEntry(String name, String uuid, String virt) {
+      this.type = WithinType.DYNAMIC;
+      this.uuid = uuid;
+      this.value = 'D' + uuid + ':' + virt;
+      this.name = new NameValue(name, value);
+      this.virt = virt;
+    }
 
-		public NameValue getName()
-		{
-			if( name == null )
-			{
-				name = new BundleNameValue(getEntity().getName(), value, bundleCache);
-			}
-			return name;
-		}
+    public WhereEntry(String uuid, String name, WithinType type) {
+      this.type = type;
+      this.uuid = uuid;
+      this.value = type.name().charAt(0) + uuid;
+      this.name = new NameValue(name, value);
+    }
 
-		public WithinType getType()
-		{
-			return type;
-		}
+    public Option<WhereEntry> convert() {
+      HtmlNameValueOption<WhereEntry> nameValueOption =
+          new HtmlNameValueOption<WhereEntry>(getName(), this, html, getGroupName());
+      nameValueOption.setDisabled(disabled);
+      return nameValueOption;
+    }
 
-		@SuppressWarnings("unchecked")
-		public <T extends BaseEntity> T getEntity()
-		{
-			if( entity == null )
-			{
-				switch( type )
-				{
-					case COLLECTION:
-						entity = itemDefinitionService.getByUuid(uuid);
-						break;
-					case POWER:
-						entity = powerSearchService.getByUuid(uuid);
-						break;
-					case DYNAMIC:
-						entity = dynaCollectionService.getByUuid(uuid);
-						break;
+    private String getGroupName() {
+      switch (type) {
+        case COLLECTION:
+        case DYNAMIC:
+          return COLLECTION_GROUP.getText();
+        case POWER:
+          return POWERSEARCH_GROUP.getText();
+        case REMOTE:
+          return REMOTEREPO_GROUP.getText();
+        default:
+          return "";
+      }
+    }
 
-					default:
-						break;
-				}
-			}
-			return (T) entity;
-		}
+    public NameValue getName() {
+      if (name == null) {
+        name = new BundleNameValue(getEntity().getName(), value, bundleCache);
+      }
+      return name;
+    }
 
-		public String getVirt()
-		{
-			return virt;
-		}
+    public WithinType getType() {
+      return type;
+    }
 
-		public String getValue()
-		{
-			return value;
-		}
+    @SuppressWarnings("unchecked")
+    public <T extends BaseEntity> T getEntity() {
+      if (entity == null) {
+        switch (type) {
+          case COLLECTION:
+            entity = itemDefinitionService.getByUuid(uuid);
+            break;
+          case POWER:
+            entity = powerSearchService.getByUuid(uuid);
+            break;
+          case DYNAMIC:
+            entity = dynaCollectionService.getByUuid(uuid);
+            break;
 
-		public String getUuid()
-		{
-			return uuid;
-		}
+          default:
+            break;
+        }
+      }
+      return (T) entity;
+    }
 
-		public void setDisabled(boolean disabled)
-		{
-			this.disabled = disabled;
-		}
+    public String getVirt() {
+      return virt;
+    }
 
-		public boolean isDisabled()
-		{
-			return disabled;
-		}
+    public String getValue() {
+      return value;
+    }
 
-		public void setHtml(boolean html)
-		{
-			this.html = html;
-		}
+    public String getUuid() {
+      return uuid;
+    }
 
-		public boolean isHtml()
-		{
-			return html;
-		}
-	}
+    public void setDisabled(boolean disabled) {
+      this.disabled = disabled;
+    }
 
-	private static class HtmlNameValueOption<T> extends NameValueOption<T>
-	{
-		private final boolean html;
-		private final String groupName;
+    public boolean isDisabled() {
+      return disabled;
+    }
 
-		public HtmlNameValueOption(NameValue nv, T object, String groupName)
-		{
-			super(nv, object);
-			this.html = false;
-			this.groupName = groupName;
-		}
+    public void setHtml(boolean html) {
+      this.html = html;
+    }
 
-		public HtmlNameValueOption(NameValue nv, T object, boolean html, String groupName)
-		{
-			super(nv, object);
-			this.html = html;
-			this.groupName = groupName;
-		}
+    public boolean isHtml() {
+      return html;
+    }
+  }
 
-		@Override
-		public boolean isNameHtml()
-		{
-			return html;
-		}
+  private static class HtmlNameValueOption<T> extends NameValueOption<T> {
+    private final boolean html;
+    private final String groupName;
 
-		@Override
-		public String getGroupName()
-		{
-			return groupName;
-		}
-	}
+    public HtmlNameValueOption(NameValue nv, T object, String groupName) {
+      super(nv, object);
+      this.html = false;
+      this.groupName = groupName;
+    }
 
-	private static class CachedWhereModelEntries
-	{
-		final List<BaseEntityLabel> collections;
-		final List<BaseEntityLabel> powerSearches;
-		final List<BaseEntityLabel> remoteRepos;
-		final List<VirtualisableAndValue<DynaCollection>> virtualisedDynaCollections;
+    public HtmlNameValueOption(NameValue nv, T object, boolean html, String groupName) {
+      super(nv, object);
+      this.html = html;
+      this.groupName = groupName;
+    }
 
-		public CachedWhereModelEntries(List<BaseEntityLabel> collections, List<BaseEntityLabel> powerSearches,
-			List<BaseEntityLabel> remoteRepos, List<VirtualisableAndValue<DynaCollection>> virtualisedDynaCollections)
-		{
-			super();
-			this.collections = collections;
-			this.powerSearches = powerSearches;
-			this.remoteRepos = remoteRepos;
-			this.virtualisedDynaCollections = virtualisedDynaCollections;
-		}
-	}
+    @Override
+    public boolean isNameHtml() {
+      return html;
+    }
+
+    @Override
+    public String getGroupName() {
+      return groupName;
+    }
+  }
+
+  private static class CachedWhereModelEntries {
+    final List<BaseEntityLabel> collections;
+    final List<BaseEntityLabel> powerSearches;
+    final List<BaseEntityLabel> remoteRepos;
+    final List<VirtualisableAndValue<DynaCollection>> virtualisedDynaCollections;
+
+    public CachedWhereModelEntries(
+        List<BaseEntityLabel> collections,
+        List<BaseEntityLabel> powerSearches,
+        List<BaseEntityLabel> remoteRepos,
+        List<VirtualisableAndValue<DynaCollection>> virtualisedDynaCollections) {
+      super();
+      this.collections = collections;
+      this.powerSearches = powerSearches;
+      this.remoteRepos = remoteRepos;
+      this.virtualisedDynaCollections = virtualisedDynaCollections;
+    }
+  }
 }

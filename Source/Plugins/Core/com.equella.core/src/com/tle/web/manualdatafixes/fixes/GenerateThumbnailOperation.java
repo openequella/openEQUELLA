@@ -33,63 +33,51 @@ import com.tle.core.workflow.thumbnail.service.ThumbnailService;
 import com.tle.core.workflow.video.VideoService;
 
 @SuppressWarnings("nls")
-public class GenerateThumbnailOperation extends AbstractWorkflowOperation
-{
-	private static final Logger LOGGER = Logger.getLogger(GenerateThumbnailOperation.class);
+public class GenerateThumbnailOperation extends AbstractWorkflowOperation {
+  private static final Logger LOGGER = Logger.getLogger(GenerateThumbnailOperation.class);
 
-	@Inject
-	private ThumbnailService thumbnailService;
-	@Inject
-	private VideoService videoService;
+  @Inject private ThumbnailService thumbnailService;
+  @Inject private VideoService videoService;
 
-	private final boolean forceUpdate;
+  private final boolean forceUpdate;
 
-	@AssistedInject
-	public GenerateThumbnailOperation(@Assisted boolean forceUpdate)
-	{
-		this.forceUpdate = forceUpdate;
-	}
+  @AssistedInject
+  public GenerateThumbnailOperation(@Assisted boolean forceUpdate) {
+    this.forceUpdate = forceUpdate;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		Item item = getItem();
-		int vidCtr = 0;
-		final List<FileAttachment> files = getAttachments().getList(AttachmentType.FILE);
-		for( FileAttachment attachment : files )
-		{
-			if( !"suppress".equals(attachment.getThumbnail()) )
-			{
-				String filename = attachment.getUrl();
-				final ItemFile itemFile = itemFileService.getItemFile(item);
-				attachment.setThumbnail(
-					thumbnailService.submitThumbnailRequest(item.getItemId(), itemFile, filename, forceUpdate, false));
+  @Override
+  public boolean execute() {
+    Item item = getItem();
+    int vidCtr = 0;
+    final List<FileAttachment> files = getAttachments().getList(AttachmentType.FILE);
+    for (FileAttachment attachment : files) {
+      if (!"suppress".equals(attachment.getThumbnail())) {
+        String filename = attachment.getUrl();
+        final ItemFile itemFile = itemFileService.getItemFile(item);
+        attachment.setThumbnail(
+            thumbnailService.submitThumbnailRequest(
+                item.getItemId(), itemFile, filename, forceUpdate, false));
 
-				if( videoService.canConvertVideo(filename) )
-				{
-					if( forceUpdate || !videoService.videoPreviewExists(itemFile, filename) )
-					{
-						if( videoService.makeGalleryVideoPreviews(itemFile, filename) )
-						{
-							vidCtr++;
-						}
-					}
-				}
-			}
-		}
-		if( item.getThumb().equals("initial") )
-		{
-			item.setThumb("default");
-		}
+        if (videoService.canConvertVideo(filename)) {
+          if (forceUpdate || !videoService.videoPreviewExists(itemFile, filename)) {
+            if (videoService.makeGalleryVideoPreviews(itemFile, filename)) {
+              vidCtr++;
+            }
+          }
+        }
+      }
+    }
+    if (item.getThumb().equals("initial")) {
+      item.setThumb("default");
+    }
 
-		if( vidCtr > 0 )
-		{
-			LOGGER.info("Generated thumbnails and " + vidCtr + " video previews for item: " + item.getItemId());
-		}
-		else
-		{
-			LOGGER.info("Generated thumbnails for item: " + item.getItemId());
-		}
-		return true;
-	}
+    if (vidCtr > 0) {
+      LOGGER.info(
+          "Generated thumbnails and " + vidCtr + " video previews for item: " + item.getItemId());
+    } else {
+      LOGGER.info("Generated thumbnails for item: " + item.getItemId());
+    }
+    return true;
+  }
 }

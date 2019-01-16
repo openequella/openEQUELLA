@@ -27,33 +27,25 @@ import com.tle.web.remoterepo.section.RemoteRepoResultsSection;
 import com.tle.web.remoterepo.section.RemoteRepoResultsSection.RemoteRepoResultsModel;
 import com.tle.web.sections.SectionInfo;
 
-/**
- * @author larry
- */
+/** @author larry */
 public class SruResultsSection
-	extends
-		RemoteRepoResultsSection<SruSearchEvent, SruSearchResult, RemoteRepoResultsModel>
-{
-	@Inject
-	private SruService sruService;
-	@Inject
-	private SruListEntryFactory sruFac;
+    extends RemoteRepoResultsSection<SruSearchEvent, SruSearchResult, RemoteRepoResultsModel> {
+  @Inject private SruService sruService;
+  @Inject private SruListEntryFactory sruFac;
 
-	@Override
-	protected SruSearchResults doSearch(SectionInfo info, SruSearchEvent search)
-	{
-		return sruService.search(search.getSearch(), search.getQuery(), search.getOffset(), search.getCount());
-	}
+  @Override
+  protected SruSearchResults doSearch(SectionInfo info, SruSearchEvent search) {
+    return sruService.search(
+        search.getSearch(), search.getQuery(), search.getOffset(), search.getCount());
+  }
 
-	@Override
-	protected RemoteRepoListEntryFactory<SruSearchResult> getEntryFactory()
-	{
-		return sruFac;
-	}
+  @Override
+  protected RemoteRepoListEntryFactory<SruSearchResult> getEntryFactory() {
+    return sruFac;
+  }
 
-	@Override
-	protected SruSearchEvent makeSearchEvent(SectionInfo info, FederatedSearch fedSearch)
-	{
-		return new SruSearchEvent(getRootRemoteRepoSection(), fedSearch);
-	}
+  @Override
+  protected SruSearchEvent makeSearchEvent(SectionInfo info, FederatedSearch fedSearch) {
+    return new SruSearchEvent(getRootRemoteRepoSection(), fedSearch);
+  }
 }

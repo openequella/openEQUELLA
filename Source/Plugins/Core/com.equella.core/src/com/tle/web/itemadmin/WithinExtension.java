@@ -24,13 +24,12 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.SectionRenderable;
 
-public interface WithinExtension
-{
-	void register(String parentId, SectionTree tree);
+public interface WithinExtension {
+  void register(String parentId, SectionTree tree);
 
-	void populateModel(SectionInfo info, List<WithinEntry> list);
+  void populateModel(SectionInfo info, List<WithinEntry> list);
 
-	PresetSearch createDefaultSearch(SectionInfo info, WithinEntry selected);
+  PresetSearch createDefaultSearch(SectionInfo info, WithinEntry selected);
 
-	SectionRenderable render(RenderEventContext context);
+  SectionRenderable render(RenderEventContext context);
 }

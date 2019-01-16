@@ -58,232 +58,199 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
 import com.tle.web.viewurl.ViewItemUrlFactory;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 public class RecentContribPortletRenderer
-	extends
-		PortletContentRenderer<RecentContribPortletRenderer.RecentContribPortletRendererModel>
-{
-	private static final int DEFAULT_RESULT_COUNT = 5;
+    extends PortletContentRenderer<RecentContribPortletRenderer.RecentContribPortletRendererModel> {
+  private static final int DEFAULT_RESULT_COUNT = 5;
 
-	@PlugKey("recent.invalid.query")
-	private static Label LABEL_INVALID;
+  @PlugKey("recent.invalid.query")
+  private static Label LABEL_INVALID;
 
-	@Inject
-	private ViewItemUrlFactory urlFactory;
-	@Inject
-	private BundleCache bundleCache;
-	@Inject
-	private PortletStandardWebService portletStandardService;
+  @Inject private ViewItemUrlFactory urlFactory;
+  @Inject private BundleCache bundleCache;
+  @Inject private PortletStandardWebService portletStandardService;
 
-	@ViewFactory
-	private FreemarkerFactory view;
-	@EventFactory
-	private EventGenerator events;
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @ViewFactory private FreemarkerFactory view;
+  @EventFactory private EventGenerator events;
+  @AjaxFactory private AjaxGenerator ajax;
 
-	@Component
-	private Button showMoreButton;
-	@Component
-	private Button showLessButton;
+  @Component private Button showMoreButton;
+  @Component private Button showLessButton;
 
-	@Override
-	public SectionRenderable renderHtml(RenderEventContext context) throws Exception
-	{
-		final RecentContribPortletRendererModel model = getModel(context);
+  @Override
+  public SectionRenderable renderHtml(RenderEventContext context) throws Exception {
+    final RecentContribPortletRendererModel model = getModel(context);
 
-		PortletRecentContrib extra = (PortletRecentContrib) portlet.getExtraData();
-		try
-		{
-			final List<Item> results = portletStandardService.getRecentContributions(extra);
-			List<RecentContribResult> resultList = new ArrayList<RecentContribResult>();
-			for( Item item : results )
-			{
-				if( item == null )
-				{
-					continue;
-				}
-				final Bookmark titleBookmark = urlFactory.createItemUrl(context,
-					new ItemId(item.getUuid(), item.getVersion()), 0);
-				final HtmlLinkState linkState = new HtmlLinkState(titleBookmark);
-				final LinkRenderer link = new LinkRenderer(linkState);
-				final BundleLabel label = new BundleLabel(item.getName(), bundleCache);
-				label.setDefaultString(item.getUuid());
+    PortletRecentContrib extra = (PortletRecentContrib) portlet.getExtraData();
+    try {
+      final List<Item> results = portletStandardService.getRecentContributions(extra);
+      List<RecentContribResult> resultList = new ArrayList<RecentContribResult>();
+      for (Item item : results) {
+        if (item == null) {
+          continue;
+        }
+        final Bookmark titleBookmark =
+            urlFactory.createItemUrl(context, new ItemId(item.getUuid(), item.getVersion()), 0);
+        final HtmlLinkState linkState = new HtmlLinkState(titleBookmark);
+        final LinkRenderer link = new LinkRenderer(linkState);
+        final BundleLabel label = new BundleLabel(item.getName(), bundleCache);
+        label.setDefaultString(item.getUuid());
 
-				link.setNestedRenderable(new LabelRenderer(label));
-				String description = null;
-				String titleOnly = portlet.getAttribute(RssPortletEditorSection.KEY_TITLEONLY);
-				final boolean showDescription = !(titleOnly != null && titleOnly
-					.equals(RssPortletEditorSection.KEY_TITLEONLY));
-				if( showDescription )
-				{
-					description = CurrentLocale.get(item.getDescription(), null);
-				}
-				resultList.add(new RecentContribResult(link, description, item.getDateModified()));
-			}
+        link.setNestedRenderable(new LabelRenderer(label));
+        String description = null;
+        String titleOnly = portlet.getAttribute(RssPortletEditorSection.KEY_TITLEONLY);
+        final boolean showDescription =
+            !(titleOnly != null && titleOnly.equals(RssPortletEditorSection.KEY_TITLEONLY));
+        if (showDescription) {
+          description = CurrentLocale.get(item.getDescription(), null);
+        }
+        resultList.add(new RecentContribResult(link, description, item.getDateModified()));
+      }
 
-			if( resultList.size() > DEFAULT_RESULT_COUNT )
-			{
-				if( !model.isShowMore() )
-				{
-					resultList = resultList.subList(0, DEFAULT_RESULT_COUNT);
-				}
-				model.setMoreAvailable(true);
-			}
+      if (resultList.size() > DEFAULT_RESULT_COUNT) {
+        if (!model.isShowMore()) {
+          resultList = resultList.subList(0, DEFAULT_RESULT_COUNT);
+        }
+        model.setMoreAvailable(true);
+      }
 
-			model.setResults(resultList);
-		}
-		catch( InvalidSearchQueryException e )
-		{
-			model.setError(LABEL_INVALID);
-		}
+      model.setResults(resultList);
+    } catch (InvalidSearchQueryException e) {
+      model.setError(LABEL_INVALID);
+    }
 
-		return view.createResult("recentportlet.ftl", context);
-	}
+    return view.createResult("recentportlet.ftl", context);
+  }
 
-	@EventHandlerMethod
-	public void showMore(SectionInfo info)
-	{
-		RecentContribPortletRendererModel model = getModel(info);
-		model.setShowMore(true);
-	}
+  @EventHandlerMethod
+  public void showMore(SectionInfo info) {
+    RecentContribPortletRendererModel model = getModel(info);
+    model.setShowMore(true);
+  }
 
-	@EventHandlerMethod
-	public void showLess(SectionInfo info)
-	{
-		RecentContribPortletRendererModel model = getModel(info);
-		model.setShowMore(false);
-	}
+  @EventHandlerMethod
+  public void showLess(SectionInfo info) {
+    RecentContribPortletRendererModel model = getModel(info);
+    model.setShowMore(false);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		UpdateDomFunction showMoreFunc = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("showMore"),
-			ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), id + "recentPortlet");
-		showMoreButton.setClickHandler(new OverrideHandler(showMoreFunc));
+    UpdateDomFunction showMoreFunc =
+        ajax.getAjaxUpdateDomFunction(
+            tree,
+            this,
+            events.getEventHandler("showMore"),
+            ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
+            id + "recentPortlet");
+    showMoreButton.setClickHandler(new OverrideHandler(showMoreFunc));
 
-		UpdateDomFunction showLessFunc = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("showLess"),
-			ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), id + "recentPortlet");
-		showLessButton.setClickHandler(new OverrideHandler(showLessFunc));
-	}
+    UpdateDomFunction showLessFunc =
+        ajax.getAjaxUpdateDomFunction(
+            tree,
+            this,
+            events.getEventHandler("showLess"),
+            ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
+            id + "recentPortlet");
+    showLessButton.setClickHandler(new OverrideHandler(showLessFunc));
+  }
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		return true;
-	}
+  @Override
+  public boolean canView(SectionInfo info) {
+    return true;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "prc";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "prc";
+  }
 
-	@Override
-	public Class<RecentContribPortletRendererModel> getModelClass()
-	{
-		return RecentContribPortletRendererModel.class;
-	}
+  @Override
+  public Class<RecentContribPortletRendererModel> getModelClass() {
+    return RecentContribPortletRendererModel.class;
+  }
 
-	public Button getShowMoreButton()
-	{
-		return showMoreButton;
-	}
+  public Button getShowMoreButton() {
+    return showMoreButton;
+  }
 
-	public Button getShowLessButton()
-	{
-		return showLessButton;
-	}
+  public Button getShowLessButton() {
+    return showLessButton;
+  }
 
-	public static class RecentContribPortletRendererModel
-	{
-		@Bookmarked(name = "m")
-		private boolean showMore;
-		private boolean moreAvailable;
-		private List<RecentContribResult> results;
+  public static class RecentContribPortletRendererModel {
+    @Bookmarked(name = "m")
+    private boolean showMore;
 
-		private Label error;
-		private boolean hasError = false;
+    private boolean moreAvailable;
+    private List<RecentContribResult> results;
 
-		public boolean isHasError()
-		{
-			return hasError;
-		}
+    private Label error;
+    private boolean hasError = false;
 
-		public boolean isShowMore()
-		{
-			return showMore;
-		}
+    public boolean isHasError() {
+      return hasError;
+    }
 
-		public void setShowMore(boolean showMore)
-		{
-			this.showMore = showMore;
-		}
+    public boolean isShowMore() {
+      return showMore;
+    }
 
-		public boolean isMoreAvailable()
-		{
-			return moreAvailable;
-		}
+    public void setShowMore(boolean showMore) {
+      this.showMore = showMore;
+    }
 
-		public void setMoreAvailable(boolean moreAvailable)
-		{
-			this.moreAvailable = moreAvailable;
-		}
+    public boolean isMoreAvailable() {
+      return moreAvailable;
+    }
 
-		public List<RecentContribResult> getResults()
-		{
-			return results;
-		}
+    public void setMoreAvailable(boolean moreAvailable) {
+      this.moreAvailable = moreAvailable;
+    }
 
-		public void setResults(List<RecentContribResult> results)
-		{
-			this.results = results;
-		}
+    public List<RecentContribResult> getResults() {
+      return results;
+    }
 
-		public Label getError()
-		{
-			return error;
-		}
+    public void setResults(List<RecentContribResult> results) {
+      this.results = results;
+    }
 
-		public void setError(Label message)
-		{
-			hasError = true;
-			error = message;
-		}
-	}
+    public Label getError() {
+      return error;
+    }
 
-	public static class RecentContribResult
-	{
-		private final LinkRenderer title;
-		private final String description;
-		private final Date date;
+    public void setError(Label message) {
+      hasError = true;
+      error = message;
+    }
+  }
 
-		public RecentContribResult(LinkRenderer title, String description, Date date)
-		{
-			this.title = title;
-			this.description = description;
-			this.date = date;
-		}
+  public static class RecentContribResult {
+    private final LinkRenderer title;
+    private final String description;
+    private final Date date;
 
-		public LinkRenderer getTitle()
-		{
-			return title;
-		}
+    public RecentContribResult(LinkRenderer title, String description, Date date) {
+      this.title = title;
+      this.description = description;
+      this.date = date;
+    }
 
-		public String getDescription()
-		{
-			return description;
-		}
+    public LinkRenderer getTitle() {
+      return title;
+    }
 
-		public Date getDate()
-		{
-			return date;
-		}
-	}
+    public String getDescription() {
+      return description;
+    }
+
+    public Date getDate() {
+      return date;
+    }
+  }
 }

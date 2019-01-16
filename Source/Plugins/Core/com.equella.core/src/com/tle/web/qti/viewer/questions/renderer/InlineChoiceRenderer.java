@@ -25,22 +25,19 @@ import com.tle.web.qti.viewer.QtiViewerContext;
 
 /**
  * UNUSED
- * 
+ *
  * @author Aaron
  */
 @NonNullByDefault
-public class InlineChoiceRenderer extends QtiNodeRenderer
-{
-	@AssistedInject
-	public InlineChoiceRenderer(@Assisted InlineChoice model, @Assisted QtiViewerContext context)
-	{
-		super(model, context);
-	}
+public class InlineChoiceRenderer extends QtiNodeRenderer {
+  @AssistedInject
+  public InlineChoiceRenderer(@Assisted InlineChoice model, @Assisted QtiViewerContext context) {
+    super(model, context);
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	protected String getTagName()
-	{
-		return "option";
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected String getTagName() {
+    return "option";
+  }
 }

@@ -43,103 +43,88 @@ import com.tle.web.sections.js.generic.statement.StatementBlock;
 import com.tle.web.sections.standard.js.JSONComponentMappings;
 import com.tle.web.sections.standard.js.modules.JSONModule;
 
-public class PopulateFromJSONFunction implements JSAssignable, JSCallable, FunctionDefinition
-{
-	private Map<JSPropertyExpression, JSCallable> mappings = new LinkedHashMap<JSPropertyExpression, JSCallable>();
-	private final String name;
-	private final Set<String> nullCheckNames;
-	private JSStatements extraStatements;
-	private static ScriptVariable PARAM_jsonText = new ScriptVariable("jsonText"); //$NON-NLS-1$
-	private static ScriptVariable VAR_newObj = new ScriptVariable("obj"); //$NON-NLS-1$
-	private static JSExpression[] paramDefs = new JSExpression[]{PARAM_jsonText};
+public class PopulateFromJSONFunction implements JSAssignable, JSCallable, FunctionDefinition {
+  private Map<JSPropertyExpression, JSCallable> mappings =
+      new LinkedHashMap<JSPropertyExpression, JSCallable>();
+  private final String name;
+  private final Set<String> nullCheckNames;
+  private JSStatements extraStatements;
+  private static ScriptVariable PARAM_jsonText = new ScriptVariable("jsonText"); // $NON-NLS-1$
+  private static ScriptVariable VAR_newObj = new ScriptVariable("obj"); // $NON-NLS-1$
+  private static JSExpression[] paramDefs = new JSExpression[] {PARAM_jsonText};
 
-	public PopulateFromJSONFunction(String name, JSONComponentMappings jsonMap)
-	{
-		this.name = name;
-		mappings = jsonMap.createSetMappings();
-		nullCheckNames = jsonMap.getMapAttributeNames();
-	}
+  public PopulateFromJSONFunction(String name, JSONComponentMappings jsonMap) {
+    this.name = name;
+    mappings = jsonMap.createSetMappings();
+    nullCheckNames = jsonMap.getMapAttributeNames();
+  }
 
-	@Override
-	public String getExpressionForCall(RenderContext info, JSExpression... params)
-	{
-		return JSUtils.createFunctionCall(info, name, params);
-	}
+  @Override
+  public String getExpressionForCall(RenderContext info, JSExpression... params) {
+    return JSUtils.createFunctionCall(info, name, params);
+  }
 
-	@Override
-	public int getNumberOfParams(RenderContext context)
-	{
-		return 1;
-	}
+  @Override
+  public int getNumberOfParams(RenderContext context) {
+    return 1;
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.addStatements(new FunctionDefinitionStatement(this));
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.addStatements(new FunctionDefinitionStatement(this));
+  }
 
-	@Override
-	public JSStatements createFunctionBody(RenderContext context, JSExpression[] params)
-	{
-		StatementBlock statementBlock = new StatementBlock();
+  @Override
+  public JSStatements createFunctionBody(RenderContext context, JSExpression[] params) {
+    StatementBlock statementBlock = new StatementBlock();
 
-		//$NON-NLS-1$
-		statementBlock
-			.addStatements(new DeclarationStatement(VAR_newObj, JSONModule.getParseExpression(PARAM_jsonText)));
+    //$NON-NLS-1$
+    statementBlock.addStatements(
+        new DeclarationStatement(VAR_newObj, JSONModule.getParseExpression(PARAM_jsonText)));
 
-		for( String mapName : nullCheckNames )
-		{
-			CombinedExpression mapExpr = ArrayIndexExpression.create(VAR_newObj, mapName);
-			statementBlock.addStatements(new IfStatement(new NotExpression(mapExpr), new AssignStatement(mapExpr,
-				new ObjectExpression())));
-		}
-		for( JSPropertyExpression key : mappings.keySet() )
-		{
-			statementBlock.addStatements(new FunctionCallStatement(mappings.get(key), new CombinedExpression(
-				VAR_newObj, key)));
-		}
-		if( extraStatements != null )
-		{
-			statementBlock.addStatements(extraStatements);
-		}
-		return statementBlock;
-	}
+    for (String mapName : nullCheckNames) {
+      CombinedExpression mapExpr = ArrayIndexExpression.create(VAR_newObj, mapName);
+      statementBlock.addStatements(
+          new IfStatement(
+              new NotExpression(mapExpr), new AssignStatement(mapExpr, new ObjectExpression())));
+    }
+    for (JSPropertyExpression key : mappings.keySet()) {
+      statementBlock.addStatements(
+          new FunctionCallStatement(mappings.get(key), new CombinedExpression(VAR_newObj, key)));
+    }
+    if (extraStatements != null) {
+      statementBlock.addStatements(extraStatements);
+    }
+    return statementBlock;
+  }
 
-	@Override
-	public JSExpression[] getFunctionParams(RenderContext context)
-	{
-		return paramDefs;
-	}
+  @Override
+  public JSExpression[] getFunctionParams(RenderContext context) {
+    return paramDefs;
+  }
 
-	@Override
-	public String getFunctionName(RenderContext context)
-	{
-		return name;
-	}
+  @Override
+  public String getFunctionName(RenderContext context) {
+    return name;
+  }
 
-	@Override
-	public String getExpression(RenderContext info)
-	{
-		return name;
-	}
+  @Override
+  public String getExpression(RenderContext info) {
+    return name;
+  }
 
-	public JSStatements getExtraStatements()
-	{
-		return extraStatements;
-	}
+  public JSStatements getExtraStatements() {
+    return extraStatements;
+  }
 
-	public void addExtraStatements(JSStatements extraStatements)
-	{
-		if( this.extraStatements == null )
-		{
-			this.extraStatements = extraStatements;
-		}
-		else
-		{
-			StatementBlock statementBlock = new StatementBlock();
-			statementBlock.addStatements(this.extraStatements);
-			statementBlock.addStatements(extraStatements);
-			this.extraStatements = statementBlock;
-		}
-	}
+  public void addExtraStatements(JSStatements extraStatements) {
+    if (this.extraStatements == null) {
+      this.extraStatements = extraStatements;
+    } else {
+      StatementBlock statementBlock = new StatementBlock();
+      statementBlock.addStatements(this.extraStatements);
+      statementBlock.addStatements(extraStatements);
+      this.extraStatements = statementBlock;
+    }
+  }
 }

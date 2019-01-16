@@ -30,51 +30,45 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.Label;
 
 @SuppressWarnings("nls")
-public class CloudSortOptionsSection extends AbstractSortOptionsSection<CloudSearchEvent>
-{
-	@PlugKey("sort.relevance")
-	private static Label RELEVANCE_LABEL;
-	@PlugKey("sort.lastmodified")
-	private static Label MODIFIED_LABEL;
+public class CloudSortOptionsSection extends AbstractSortOptionsSection<CloudSearchEvent> {
+  @PlugKey("sort.relevance")
+  private static Label RELEVANCE_LABEL;
 
-	@Override
-	protected void addSortOptions(List<SortOption> sorts)
-	{
-		sorts.add(new SortOption(RELEVANCE_LABEL, "relevance", null)
-		{
-			@Override
-			public SortField[] createSort()
-			{
-				return new SortField[]{new SortField("relevance", false)};
-			}
-		});
-		sorts.add(new SortOption(MODIFIED_LABEL, "modified", null)
-		{
-			@Override
-			public SortField[] createSort()
-			{
-				return new SortField[]{new SortField("modified", false)};
-			}
-		});
-		sorts.add(new SortOption(SortType.NAME));
-		sorts.add(new SortOption(SortType.RATING));
-	}
+  @PlugKey("sort.lastmodified")
+  private static Label MODIFIED_LABEL;
 
-	@Override
-	protected String getDefaultSearch(SectionInfo info)
-	{
-		return null;
-	}
+  @Override
+  protected void addSortOptions(List<SortOption> sorts) {
+    sorts.add(
+        new SortOption(RELEVANCE_LABEL, "relevance", null) {
+          @Override
+          public SortField[] createSort() {
+            return new SortField[] {new SortField("relevance", false)};
+          }
+        });
+    sorts.add(
+        new SortOption(MODIFIED_LABEL, "modified", null) {
+          @Override
+          public SortField[] createSort() {
+            return new SortField[] {new SortField("modified", false)};
+          }
+        });
+    sorts.add(new SortOption(SortType.NAME));
+    sorts.add(new SortOption(SortType.RATING));
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		boolean relSel = sortOptions.getSelectedValueAsString(context).equals("relevance");
-		if( relSel )
-		{
-			reverse.setChecked(context, false);
-		}
-		reverse.setDisabled(context, relSel);
-		return super.renderHtml(context);
-	}
+  @Override
+  protected String getDefaultSearch(SectionInfo info) {
+    return null;
+  }
+
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    boolean relSel = sortOptions.getSelectedValueAsString(context).equals("relevance");
+    if (relSel) {
+      reverse.setChecked(context, false);
+    }
+    reverse.setDisabled(context, relSel);
+    return super.renderHtml(context);
+  }
 }

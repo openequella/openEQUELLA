@@ -35,30 +35,29 @@ import com.tle.core.item.standard.filter.workflow.ArchiveOldFilter;
 import com.tle.core.item.standard.filter.workflow.WorkflowChangeFilter;
 
 @BindFactory
-public interface FilterFactory
-{
-	UserDeletedFilter userDeleted(String user);
+public interface FilterFactory {
+  UserDeletedFilter userDeleted(String user);
 
-	ChangeUserIdFilter changeUserId(@Assisted("fromUserId") String fromUserId, @Assisted("toUserId") String toUserId);
+  ChangeUserIdFilter changeUserId(
+      @Assisted("fromUserId") String fromUserId, @Assisted("toUserId") String toUserId);
 
-	ArchiveOldFilter archiveOld(ItemKey itemKey);
+  ArchiveOldFilter archiveOld(ItemKey itemKey);
 
-	RefreshCollectionItemDataFilter refreshCollectionItems(long collectionId);
+  RefreshCollectionItemDataFilter refreshCollectionItems(long collectionId);
 
-	RefreshSchemaItemDataFilter refreshSchemaItems(long schemaId);
+  RefreshSchemaItemDataFilter refreshSchemaItems(long schemaId);
 
-	DRMUpdateFilter drmUpdate(long collectionId, Collection<String> pageIds);
+  DRMUpdateFilter drmUpdate(long collectionId, Collection<String> pageIds);
 
-	RemoveDeletedItemsFilter removeDeleted(int daysOld);
+  RemoveDeletedItemsFilter removeDeleted(int daysOld);
 
-	NotifyBadUrlFilter notifyBadUrl(ReferencedURL rurl);
+  NotifyBadUrlFilter notifyBadUrl(ReferencedURL rurl);
 
-	NewItemFilter createFilter(Multimap<String, String> collectionMap);
+  NewItemFilter createFilter(Multimap<String, String> collectionMap);
 
-	/*
-	 * Workflow
-	 */
+  /*
+   * Workflow
+   */
 
-	WorkflowChangeFilter workflowChanged(long collectionId);
-
+  WorkflowChangeFilter workflowChanged(long collectionId);
 }

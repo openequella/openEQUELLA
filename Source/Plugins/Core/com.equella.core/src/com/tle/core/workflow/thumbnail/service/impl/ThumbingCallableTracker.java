@@ -41,116 +41,99 @@ import com.tle.core.guice.BindFactory;
 import com.tle.core.institution.RunAsInstitution;
 import com.tle.core.workflow.thumbnail.service.ThumbnailRequestService;
 
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-/* package protected */class ThumbingCallableTracker
-{
-	private static final Logger LOGGER = Logger.getLogger(ThumbingCallableTracker.class);
+/* package protected */ class ThumbingCallableTracker {
+  private static final Logger LOGGER = Logger.getLogger(ThumbingCallableTracker.class);
 
-	@Inject
-	private ThumbnailRequestService thumbnailRequestService;
-	@Inject
-	private ThumbingCallableFactory callableFactory;
-	@Inject
-	private RunAsInstitution runAs;
+  @Inject private ThumbnailRequestService thumbnailRequestService;
+  @Inject private ThumbingCallableFactory callableFactory;
+  @Inject private RunAsInstitution runAs;
 
-	private CompletionService<ThumbingCallableResult> completionService;
+  private CompletionService<ThumbingCallableResult> completionService;
 
-	@PostConstruct
-	public void init()
-	{
-		final ThreadPoolExecutor executor = new BlockingThreadPoolExecutor(2, 2, 5, TimeUnit.MINUTES, 2,
-			TimeUnit.MINUTES, new NamedThreadFactory("ThumbnailServiceExecutor"), new Callable<Boolean>()
-			{
-				@Override
-				public Boolean call()
-				{
-					//Wait forever
-					LOGGER.trace("Waited 2 minutes to queue a thumb job, waiting again.");
-					return true;
-				}
-			});
-		completionService = new ExecutorCompletionService<ThumbingCallableResult>(executor);
+  @PostConstruct
+  public void init() {
+    final ThreadPoolExecutor executor =
+        new BlockingThreadPoolExecutor(
+            2,
+            2,
+            5,
+            TimeUnit.MINUTES,
+            2,
+            TimeUnit.MINUTES,
+            new NamedThreadFactory("ThumbnailServiceExecutor"),
+            new Callable<Boolean>() {
+              @Override
+              public Boolean call() {
+                // Wait forever
+                LOGGER.trace("Waited 2 minutes to queue a thumb job, waiting again.");
+                return true;
+              }
+            });
+    completionService = new ExecutorCompletionService<ThumbingCallableResult>(executor);
 
-		new Thread()
-		{
-			@Override
-			public void run()
-			{
-				setName("Thumb task finisher listener");
-				watchCompleted();
-			}
-		}.start();
-	}
+    new Thread() {
+      @Override
+      public void run() {
+        setName("Thumb task finisher listener");
+        watchCompleted();
+      }
+    }.start();
+  }
 
-	public Future<ThumbingCallableResult> submitTask(Institution institution, String requestUuid, ItemId itemId,
-		String serialHandle)
-	{
-		final ThumbingCallable callable = callableFactory.getRunnable(institution, requestUuid, itemId, serialHandle);
-		final Future<ThumbingCallableResult> future = completionService.submit(callable);
-		return future;
-	}
+  public Future<ThumbingCallableResult> submitTask(
+      Institution institution, String requestUuid, ItemId itemId, String serialHandle) {
+    final ThumbingCallable callable =
+        callableFactory.getRunnable(institution, requestUuid, itemId, serialHandle);
+    final Future<ThumbingCallableResult> future = completionService.submit(callable);
+    return future;
+  }
 
-	public void watchCompleted()
-	{
-		while( true )
-		{
-			try
-			{
-				final Future<ThumbingCallableResult> future = completionService.take();
-				String thumbnailRequestUuid = null;
-				Institution institution = null;
-				try
-				{
-					final ThumbingCallableResult taskInfo = future.get();
-					institution = taskInfo.getInstitution();
-					thumbnailRequestUuid = taskInfo.getRequestUuid();
-				}
-				catch( CancellationException cancelled )
-				{
-					LOGGER.debug("Thread cancelled");
-				}
-				catch( ExecutionException e )
-				{
-					LOGGER.error("Error waiting for task completion", e);
-				}
-				finally
-				{
-					if( thumbnailRequestUuid != null && institution != null )
-					{
-						final String reqUuid = thumbnailRequestUuid;
-						runAs.executeAsSystem(institution, new Callable<Void>()
-						{
-							@Override
-							public Void call() throws Exception
-							{
-								thumbnailRequestService.delete(reqUuid);
-								return null;
-							}
-						});
-					}
-				}
-			}
-			catch( InterruptedException e )
-			{
-				LOGGER.warn("Task finish thread interrupted, ignoring");
-			}
-			catch( Throwable t )
-			{
-				LOGGER.warn("Task finish thread got unknown error, restarting", t);
-			}
-		}
-	}
+  public void watchCompleted() {
+    while (true) {
+      try {
+        final Future<ThumbingCallableResult> future = completionService.take();
+        String thumbnailRequestUuid = null;
+        Institution institution = null;
+        try {
+          final ThumbingCallableResult taskInfo = future.get();
+          institution = taskInfo.getInstitution();
+          thumbnailRequestUuid = taskInfo.getRequestUuid();
+        } catch (CancellationException cancelled) {
+          LOGGER.debug("Thread cancelled");
+        } catch (ExecutionException e) {
+          LOGGER.error("Error waiting for task completion", e);
+        } finally {
+          if (thumbnailRequestUuid != null && institution != null) {
+            final String reqUuid = thumbnailRequestUuid;
+            runAs.executeAsSystem(
+                institution,
+                new Callable<Void>() {
+                  @Override
+                  public Void call() throws Exception {
+                    thumbnailRequestService.delete(reqUuid);
+                    return null;
+                  }
+                });
+          }
+        }
+      } catch (InterruptedException e) {
+        LOGGER.warn("Task finish thread interrupted, ignoring");
+      } catch (Throwable t) {
+        LOGGER.warn("Task finish thread got unknown error, restarting", t);
+      }
+    }
+  }
 
-	@BindFactory
-	public interface ThumbingCallableFactory
-	{
-		ThumbingCallable getRunnable(@Assisted Institution institution, @Assisted("requestUuid") String requestUuid,
-			@Assisted ItemId itemId, @Assisted("serialHandle") String serialHandle);
-	}
+  @BindFactory
+  public interface ThumbingCallableFactory {
+    ThumbingCallable getRunnable(
+        @Assisted Institution institution,
+        @Assisted("requestUuid") String requestUuid,
+        @Assisted ItemId itemId,
+        @Assisted("serialHandle") String serialHandle);
+  }
 }

@@ -35,78 +35,67 @@ import com.tle.beans.entity.BaseEntity;
 import com.tle.common.adminconsole.RemoteAdminService;
 import com.tle.common.applet.client.ClientService;
 
-public abstract class BaseEntityTab<T extends BaseEntity> extends JFakePanel
-{
-	public static final Log LOGGER = LogFactory.getLog(BaseEntityTab.class);
+public abstract class BaseEntityTab<T extends BaseEntity> extends JFakePanel {
+  public static final Log LOGGER = LogFactory.getLog(BaseEntityTab.class);
 
-	protected static String getString(String key)
-	{
-		return Lookup.lookup.text(key);
-	}
+  protected static String getString(String key) {
+    return Lookup.lookup.text(key);
+  }
 
-	protected static String getKey(String key)
-    {
-    	return Lookup.lookup.key(key);
-    }
+  protected static String getKey(String key) {
+    return Lookup.lookup.key(key);
+  }
 
-	protected EditorState<T> state;
+  protected EditorState<T> state;
 
-	protected ClientService clientService;
-	protected PluginServiceImpl pluginService;
-	protected RemoteAdminService adminService;
+  protected ClientService clientService;
+  protected PluginServiceImpl pluginService;
+  protected RemoteAdminService adminService;
 
-	protected JStatusBar statusBar;
-	protected JDialog parent;
-	protected DynamicTabService dynamicTabService;
+  protected JStatusBar statusBar;
+  protected JDialog parent;
+  protected DynamicTabService dynamicTabService;
 
-	public void setDriver(Driver driver)
-	{
-		this.clientService = driver.getClientService();
-		this.pluginService = driver.getPluginService();
+  public void setDriver(Driver driver) {
+    this.clientService = driver.getClientService();
+    this.pluginService = driver.getPluginService();
 
-		this.adminService = clientService.getService(RemoteAdminService.class);
-	}
+    this.adminService = clientService.getService(RemoteAdminService.class);
+  }
 
-	public void setParent(JDialog parent)
-	{
-		this.parent = parent;
-	}
+  public void setParent(JDialog parent) {
+    this.parent = parent;
+  }
 
-	public void setStatusBar(JStatusBar statusBar)
-	{
-		this.statusBar = statusBar;
-	}
+  public void setStatusBar(JStatusBar statusBar) {
+    this.statusBar = statusBar;
+  }
 
-	public void setState(EditorState<T> state)
-	{
-		this.state = state;
-	}
+  public void setState(EditorState<T> state) {
+    this.state = state;
+  }
 
-	public void setDynamicTabService(DynamicTabService dynamicTabService)
-	{
-		this.dynamicTabService = dynamicTabService;
-	}
+  public void setDynamicTabService(DynamicTabService dynamicTabService) {
+    this.dynamicTabService = dynamicTabService;
+  }
 
-	public abstract void save();
+  public abstract void save();
 
-	public void afterSave()
-	{
-		// Nothing by default
-	}
+  public void afterSave() {
+    // Nothing by default
+  }
 
-	public abstract void load();
+  public abstract void load();
 
-	public abstract void init(Component parent);
+  public abstract void init(Component parent);
 
-	/**
-	 * @return the title that should appear on the tab.
-	 */
-	public abstract String getTitle();
+  /** @return the title that should appear on the tab. */
+  public abstract String getTitle();
 
-	/**
-	 * The tab must validate it's data.
-	 * 
-	 * @throws EditorException if something is invalid.
-	 */
-	public abstract void validation() throws EditorException;
+  /**
+   * The tab must validate it's data.
+   *
+   * @throws EditorException if something is invalid.
+   */
+  public abstract void validation() throws EditorException;
 }

@@ -32,60 +32,49 @@ import com.tle.web.viewurl.ItemSectionInfo;
 
 @SuppressWarnings("nls")
 @Bind
-public class PurgeSection extends GenericMinorActionSection
-{
-	@PlugKey("summary.sidebar.actions.purge.title")
-	private static Label LINK_LABEL;
-	@PlugKey("summary.sidebar.actions.purge.confirm")
-	private static Label CONFIRM_LABEL;
-	@PlugKey("summary.sidebar.actions.purge.receipt")
-	private static Label RECEIPT_LABEL;
+public class PurgeSection extends GenericMinorActionSection {
+  @PlugKey("summary.sidebar.actions.purge.title")
+  private static Label LINK_LABEL;
 
-	@Inject
-	private SelectionService selectionService;
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private ItemOperationFactory workflowFactory;
+  @PlugKey("summary.sidebar.actions.purge.confirm")
+  private static Label CONFIRM_LABEL;
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return LINK_LABEL;
-	}
+  @PlugKey("summary.sidebar.actions.purge.receipt")
+  private static Label RECEIPT_LABEL;
 
-	@Override
-	protected Label getConfirmation()
-	{
-		return CONFIRM_LABEL;
-	}
+  @Inject private SelectionService selectionService;
+  @Inject private InstitutionService institutionService;
+  @Inject private ItemOperationFactory workflowFactory;
 
-	@Override
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		return itemInfo.hasPrivilege("PURGE_ITEM") && status.getStatusName().equals(ItemStatus.DELETED);
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return LINK_LABEL;
+  }
 
-	@Override
-	protected void execute(SectionInfo info)
-	{
-		getItemInfo(info).modify(workflowFactory.purge(true));
-		setReceipt(RECEIPT_LABEL);
+  @Override
+  protected Label getConfirmation() {
+    return CONFIRM_LABEL;
+  }
 
-		if( selectionService.getCurrentSession(info) == null )
-		{
-			info.forwardToUrl(institutionService.institutionalise(WebConstants.DEFAULT_HOME_PAGE));
-		}
-		else
-		{
-			selectionService.forwardToSelectable(info, null);
-		}
-	}
+  @Override
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    return itemInfo.hasPrivilege("PURGE_ITEM") && status.getStatusName().equals(ItemStatus.DELETED);
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return LINK_LABEL.getText();
-	}
+  @Override
+  protected void execute(SectionInfo info) {
+    getItemInfo(info).modify(workflowFactory.purge(true));
+    setReceipt(RECEIPT_LABEL);
 
+    if (selectionService.getCurrentSession(info) == null) {
+      info.forwardToUrl(institutionService.institutionalise(WebConstants.DEFAULT_HOME_PAGE));
+    } else {
+      selectionService.forwardToSelectable(info, null);
+    }
+  }
+
+  @Override
+  public String getLinkText() {
+    return LINK_LABEL.getText();
+  }
 }

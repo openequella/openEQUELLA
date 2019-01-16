@@ -27,34 +27,30 @@ import com.tle.web.sections.js.JSUtils;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public class ParentFrameFunction extends AbstractCallable
-{
-	private final JSCallAndReference parentFunction;
+public class ParentFrameFunction extends AbstractCallable {
+  private final JSCallAndReference parentFunction;
 
-	public ParentFrameFunction(JSCallAndReference parentFunction)
-	{
-		if( !parentFunction.isStatic() )
-		{
-			throw new SectionsRuntimeException("You can only use static functions with parent frame functions");
-		}
-		this.parentFunction = parentFunction;
-	}
+  public ParentFrameFunction(JSCallAndReference parentFunction) {
+    if (!parentFunction.isStatic()) {
+      throw new SectionsRuntimeException(
+          "You can only use static functions with parent frame functions");
+    }
+    this.parentFunction = parentFunction;
+  }
 
-	@Override
-	protected String getCallExpression(RenderContext info, JSExpression[] params)
-	{
-		return JSUtils.createFunctionCall(info, "self.parent." + parentFunction.getExpression(info), params);
-	}
+  @Override
+  protected String getCallExpression(RenderContext info, JSExpression[] params) {
+    return JSUtils.createFunctionCall(
+        info, "self.parent." + parentFunction.getExpression(info), params);
+  }
 
-	@Override
-	public int getNumberOfParams(@Nullable RenderContext context)
-	{
-		return parentFunction.getNumberOfParams(context);
-	}
+  @Override
+  public int getNumberOfParams(@Nullable RenderContext context) {
+    return parentFunction.getNumberOfParams(context);
+  }
 
-	@Override
-	public void preRender(PreRenderContext writer)
-	{
-		// nothing.. it happens on the parent
-	}
+  @Override
+  public void preRender(PreRenderContext writer) {
+    // nothing.. it happens on the parent
+  }
 }

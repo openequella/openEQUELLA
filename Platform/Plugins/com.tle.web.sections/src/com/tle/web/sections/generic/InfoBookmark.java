@@ -30,143 +30,115 @@ import hurl.build.UriBuilder;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * A {@link Bookmark} implementation which generates a URI based on a
- * {@link BookmarkEvent}.
- * 
+ * A {@link Bookmark} implementation which generates a URI based on a {@link BookmarkEvent}.
+ *
  * @author jmaginnis
  */
-public class InfoBookmark implements Bookmark
-{
-	protected SectionInfo info;
-	private String href;
-	private String query;
-	private String path;
-	private URI baseURI;
-	private Map<String, String[]> bookmarkParams;
-	private BookmarkEvent bookmarkEvent;
+public class InfoBookmark implements Bookmark {
+  protected SectionInfo info;
+  private String href;
+  private String query;
+  private String path;
+  private URI baseURI;
+  private Map<String, String[]> bookmarkParams;
+  private BookmarkEvent bookmarkEvent;
 
-	public InfoBookmark(SectionInfo info)
-	{
-		this(info, new BookmarkEvent());
-	}
+  public InfoBookmark(SectionInfo info) {
+    this(info, new BookmarkEvent());
+  }
 
-	public InfoBookmark(SectionInfo info, URI baseURI)
-	{
-		this(info, new BookmarkEvent());
-		this.baseURI = baseURI;
-	}
+  public InfoBookmark(SectionInfo info, URI baseURI) {
+    this(info, new BookmarkEvent());
+    this.baseURI = baseURI;
+  }
 
-	public InfoBookmark(SectionInfo info, BookmarkEvent bookmarkEvent)
-	{
-		this.info = info;
-		this.bookmarkEvent = bookmarkEvent;
-	}
+  public InfoBookmark(SectionInfo info, BookmarkEvent bookmarkEvent) {
+    this.info = info;
+    this.bookmarkEvent = bookmarkEvent;
+  }
 
-	@Override
-	public String getHref()
-	{
-		if( href == null )
-		{
-			String path = getPath();
-			String query = getQuery();
+  @Override
+  public String getHref() {
+    if (href == null) {
+      String path = getPath();
+      String query = getQuery();
 
-			int queryLength = query.length();
-			if( queryLength == 0 )
-			{
-				return path;
-			}
-			href = path + "?" + query; //$NON-NLS-1$
-		}
-		return href;
-	}
+      int queryLength = query.length();
+      if (queryLength == 0) {
+        return path;
+      }
+      href = path + "?" + query; // $NON-NLS-1$
+    }
+    return href;
+  }
 
-	public static URI getBaseHref(SectionInfo info)
-	{
-		URI baseHref = info.getAttribute(SectionInfo.KEY_BASE_HREF);
-		if( baseHref == null )
-		{
-			baseHref = createFromRequest(info.getRequest());
-		}
-		return baseHref;
-	}
+  public static URI getBaseHref(SectionInfo info) {
+    URI baseHref = info.getAttribute(SectionInfo.KEY_BASE_HREF);
+    if (baseHref == null) {
+      baseHref = createFromRequest(info.getRequest());
+    }
+    return baseHref;
+  }
 
-	private static URI createFromRequest(HttpServletRequest request)
-	{
-		UriBuilder uriBuilder = UriBuilder.create(request.getRequestURI());
-		uriBuilder.setScheme(request.getScheme());
-		uriBuilder.setHost(request.getServerName());
-		uriBuilder.setPort(request.getServerPort());
-		return uriBuilder.build();
-	}
+  private static URI createFromRequest(HttpServletRequest request) {
+    UriBuilder uriBuilder = UriBuilder.create(request.getRequestURI());
+    uriBuilder.setScheme(request.getScheme());
+    uriBuilder.setHost(request.getServerName());
+    uriBuilder.setPort(request.getServerPort());
+    return uriBuilder.build();
+  }
 
-	public URI getRelativeURI()
-	{
-		String path = info.getAttribute(SectionInfo.KEY_PATH);
-		try
-		{
-			return new URI(null, null, path.substring(1), null);
-		}
-		catch( URISyntaxException e )
-		{
-			throw new IllegalArgumentException();
-		}
-	}
+  public URI getRelativeURI() {
+    String path = info.getAttribute(SectionInfo.KEY_PATH);
+    try {
+      return new URI(null, null, path.substring(1), null);
+    } catch (URISyntaxException e) {
+      throw new IllegalArgumentException();
+    }
+  }
 
-	public URI getBaseURI()
-	{
-		if (baseURI == null)
-		{
-			baseURI = getBaseHref(info);
-		}
-		return baseURI;
-	}
+  public URI getBaseURI() {
+    if (baseURI == null) {
+      baseURI = getBaseHref(info);
+    }
+    return baseURI;
+  }
 
-	public URI getFullURI()
-	{
-		return getBaseURI().resolve(getRelativeURI());
-	}
+  public URI getFullURI() {
+    return getBaseURI().resolve(getRelativeURI());
+  }
 
+  public String getPath() {
+    if (path == null) {
+      path = getFullURI().toString();
+    }
+    return path;
+  }
 
-	public String getPath()
-	{
-		if( path == null )
-		{
-			path = getFullURI().toString();
-		}
-		return path;
-	}
+  public String getQuery() {
+    if (query == null) {
+      query = QueryParams.paramString(getBookmarkParams());
+    }
+    return query;
+  }
 
-	public String getQuery()
-	{
-		if( query == null )
-		{
-			query = QueryParams.paramString(getBookmarkParams());
-		}
-		return query;
-	}
+  public Map<String, String[]> getBookmarkParams() {
+    if (bookmarkParams == null) {
+      info.processEvent(bookmarkEvent);
+      bookmarkParams = bookmarkEvent.getBookmarkState();
+    }
+    return bookmarkParams;
+  }
 
-	public Map<String, String[]> getBookmarkParams()
-	{
-		if( bookmarkParams == null )
-		{
-			info.processEvent(bookmarkEvent);
-			bookmarkParams = bookmarkEvent.getBookmarkState();
-		}
-		return bookmarkParams;
-	}
+  public void setQuery(String query) {
+    this.query = query;
+  }
 
-	public void setQuery(String query)
-	{
-		this.query = query;
-	}
+  public void setPath(String path) {
+    this.path = path;
+  }
 
-	public void setPath(String path)
-	{
-		this.path = path;
-	}
-
-	public SectionInfo getInfo()
-	{
-		return info;
-	}
+  public SectionInfo getInfo() {
+    return info;
+  }
 }

@@ -24,19 +24,18 @@ import com.tle.beans.item.ItemStatus;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.events.RenderEventContext;
 
-public class FilterByItemStatusTaskSection extends FilterByItemStatusSection
-{
-	private static List<ItemStatus> MOD_STATUSES = Arrays.asList(ItemStatus.LIVE, ItemStatus.MODERATING, ItemStatus.REVIEW);
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		getModel(context).setHideCheckBox(true);
-		return super.renderHtml(context);
-	}
+public class FilterByItemStatusTaskSection extends FilterByItemStatusSection {
+  private static List<ItemStatus> MOD_STATUSES =
+      Arrays.asList(ItemStatus.LIVE, ItemStatus.MODERATING, ItemStatus.REVIEW);
 
-	@Override
-	protected List<ItemStatus> getStatusList()
-	{
-		return MOD_STATUSES;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    getModel(context).setHideCheckBox(true);
+    return super.renderHtml(context);
+  }
+
+  @Override
+  protected List<ItemStatus> getStatusList() {
+    return MOD_STATUSES;
+  }
 }

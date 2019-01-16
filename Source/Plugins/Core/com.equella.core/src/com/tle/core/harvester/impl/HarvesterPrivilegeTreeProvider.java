@@ -29,21 +29,22 @@ import com.tle.web.resources.ResourcesService;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class HarvesterPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeProvider<HarvesterProfile>
-{
-	@Inject
-	public HarvesterPrivilegeTreeProvider(HarvesterProfileService harvesterService)
-	{
-		super(harvesterService, Node.ALL_HARVESTER_PROFILES,
-			ResourcesService.getResourceHelper(HarvesterPrivilegeTreeProvider.class)
-				.key("securitytree.allharvesterprofiles"),
-			Node.HARVESTER_PROFILE, ResourcesService.getResourceHelper(HarvesterPrivilegeTreeProvider.class)
-				.key("securitytree.targetallharvesterprofiles"));
-	}
+public class HarvesterPrivilegeTreeProvider
+    extends AbstractEntityPrivilegeTreeProvider<HarvesterProfile> {
+  @Inject
+  public HarvesterPrivilegeTreeProvider(HarvesterProfileService harvesterService) {
+    super(
+        harvesterService,
+        Node.ALL_HARVESTER_PROFILES,
+        ResourcesService.getResourceHelper(HarvesterPrivilegeTreeProvider.class)
+            .key("securitytree.allharvesterprofiles"),
+        Node.HARVESTER_PROFILE,
+        ResourcesService.getResourceHelper(HarvesterPrivilegeTreeProvider.class)
+            .key("securitytree.targetallharvesterprofiles"));
+  }
 
-	@Override
-	protected HarvesterProfile createEntity()
-	{
-		return new HarvesterProfile();
-	}
+  @Override
+  protected HarvesterProfile createEntity() {
+    return new HarvesterProfile();
+  }
 }

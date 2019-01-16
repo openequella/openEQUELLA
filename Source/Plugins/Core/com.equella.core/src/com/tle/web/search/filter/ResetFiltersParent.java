@@ -25,9 +25,8 @@ import com.tle.web.sections.TreeIndexed;
 
 @NonNullByDefault
 @TreeIndexed
-public interface ResetFiltersParent extends SectionId
-{
-	void addResetDiv(SectionTree tree, List<String> ajaxList);
+public interface ResetFiltersParent extends SectionId {
+  void addResetDiv(SectionTree tree, List<String> ajaxList);
 
-	ResetFiltersSection<?> getResetFiltersSection();
+  ResetFiltersSection<?> getResetFiltersSection();
 }

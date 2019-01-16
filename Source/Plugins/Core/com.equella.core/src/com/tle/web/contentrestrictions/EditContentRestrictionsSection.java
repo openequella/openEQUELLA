@@ -63,354 +63,303 @@ import com.tle.web.template.Decorations;
 @SuppressWarnings("nls")
 @TreeIndexed
 public class EditContentRestrictionsSection
-	extends
-		AbstractPrototypeSection<EditContentRestrictionsSection.EditContentRestrictionsSectionModel>
-	implements
-		HtmlRenderer,
-		ModalContentRestrictionsSection
-{
+    extends AbstractPrototypeSection<
+        EditContentRestrictionsSection.EditContentRestrictionsSectionModel>
+    implements HtmlRenderer, ModalContentRestrictionsSection {
 
-	@PlugKey("addquota.dialog.button.ok")
-	@Component(name = "sv", stateful = false)
-	private Button saveButton;
-	@PlugKey("addquota.dialog.button.cancel")
-	@Component(name = "cl", stateful = false)
-	private Button cancelButton;
+  @PlugKey("addquota.dialog.button.ok")
+  @Component(name = "sv", stateful = false)
+  private Button saveButton;
 
-	@PlugKey("contentrestrictions.title")
-	private static Label TITLE_LABEL;
-	@PlugKey("contentrestrictions.title.return")
-	private static Label BREADCRUMB_TITLE_LABEL;
+  @PlugKey("addquota.dialog.button.cancel")
+  @Component(name = "cl", stateful = false)
+  private Button cancelButton;
 
-	@PlugKey("addquota.dialog.error.validation.invalidquota")
-	private static Label LABEL_INVALID_QUOTA;
-	@PlugKey("addquota.dialog.error.validation.impossiblequota")
-	private static Label LABEL_IMPOSSIBLE_QUOTA;
-	@PlugKey("addquota.dialog.label.expression")
-	private static Label LABEL_EMPTY_EXPRESSION;
+  @PlugKey("contentrestrictions.title")
+  private static Label TITLE_LABEL;
 
-	@PlugKey("addquota.dialog.heading.label.add")
-	private static Label LABEL_HEADING_ADD;
+  @PlugKey("contentrestrictions.title.return")
+  private static Label BREADCRUMB_TITLE_LABEL;
 
-	@PlugKey("addquota.dialog.heading.label.edit")
-	private static Label LABEL_HEADING_EDIT;
+  @PlugKey("addquota.dialog.error.validation.invalidquota")
+  private static Label LABEL_INVALID_QUOTA;
 
-	@Component(name = "qs")
-	private TextField quotaSizeField;
+  @PlugKey("addquota.dialog.error.validation.impossiblequota")
+  private static Label LABEL_IMPOSSIBLE_QUOTA;
 
-	@EventFactory
-	private EventGenerator events;
-	@ViewFactory
-	private FreemarkerFactory view;
+  @PlugKey("addquota.dialog.label.expression")
+  private static Label LABEL_EMPTY_EXPRESSION;
 
-	@TreeLookup
-	private RootContentRestrictionsSection rootSection;
+  @PlugKey("addquota.dialog.heading.label.add")
+  private static Label LABEL_HEADING_ADD;
 
-	@Inject
-	private ExpressionSelectorDialog userSelector;
+  @PlugKey("addquota.dialog.heading.label.edit")
+  private static Label LABEL_HEADING_EDIT;
 
-	@Inject
-	private ComponentFactory componentFactory;
+  @Component(name = "qs")
+  private TextField quotaSizeField;
 
-	@Inject
-	private UserSessionService sessionService;
-	@Inject
-	private UserService userService;
+  @EventFactory private EventGenerator events;
+  @ViewFactory private FreemarkerFactory view;
 
-	private SubmitValuesHandler cancelFunc;
+  @TreeLookup private RootContentRestrictionsSection rootSection;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Inject private ExpressionSelectorDialog userSelector;
 
-		saveButton.setClickHandler(events.getNamedHandler("save"));
+  @Inject private ComponentFactory componentFactory;
 
-		cancelFunc = events.getNamedHandler("cancel");
-		cancelButton.setClickHandler(cancelFunc);
+  @Inject private UserSessionService sessionService;
+  @Inject private UserService userService;
 
-		userSelector.setTitle(null); // set null to use the default title
-		userSelector.setOkCallback(events.getSubmitValuesFunction("userExpression"));
-		componentFactory.registerComponent(id, "userSelector", tree, userSelector);
-	}
+  private SubmitValuesHandler cancelFunc;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		SelectedQuota selected = loadSession(context);
-		EditContentRestrictionsSectionModel model = getModel(context);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		if( selected.getQuotaIndex() == -1 )
-		{
-			model.setHeading(LABEL_HEADING_ADD);
-		}
-		else
-		{
-			model.setHeading(LABEL_HEADING_EDIT);
-		}
+    saveButton.setClickHandler(events.getNamedHandler("save"));
 
-		String userExpression = selected.getExpression();
-		if( Check.isEmpty(userExpression) )
-		{
-			model.setExpressionPretty("");
-		}
-		else
-		{
-			model.setExpressionPretty(new ExpressionFormatter(userService).convertToInfix(userExpression));
-		}
+    cancelFunc = events.getNamedHandler("cancel");
+    cancelButton.setClickHandler(cancelFunc);
 
-		quotaSizeField.setValue(context, Long.toString(selected.getQuota() / GeneralConstants.BYTES_PER_MEGABYTE));
+    userSelector.setTitle(null); // set null to use the default title
+    userSelector.setOkCallback(events.getSubmitValuesFunction("userExpression"));
+    componentFactory.registerComponent(id, "userSelector", tree, userSelector);
+  }
 
-		model.setErrors(selected.getValidationErrors());
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    SelectedQuota selected = loadSession(context);
+    EditContentRestrictionsSectionModel model = getModel(context);
 
-		final GenericTemplateResult templateResult = new GenericTemplateResult();
-		templateResult.addNamedResult("body", view.createResult("adduserandquota.ftl", this));
-		return templateResult;
-	}
+    if (selected.getQuotaIndex() == -1) {
+      model.setHeading(LABEL_HEADING_ADD);
+    } else {
+      model.setHeading(LABEL_HEADING_EDIT);
+    }
 
-	@EventHandlerMethod
-	public void userExpression(SectionInfo info, String selectorId, String expression)
-	{
-		SelectedQuota selected = loadSession(info);
-		selected.setExpression(expression);
-		if( !Check.isEmpty(expression) )
-		{
-			selected.getValidationErrors().remove("expression");
-		}
-	}
+    String userExpression = selected.getExpression();
+    if (Check.isEmpty(userExpression)) {
+      model.setExpressionPretty("");
+    } else {
+      model.setExpressionPretty(
+          new ExpressionFormatter(userService).convertToInfix(userExpression));
+    }
 
-	@EventHandlerMethod
-	public void save(SectionInfo info)
-	{
-		SelectedQuota selected = loadSession(info);
-		if( selected.getValidationErrors().isEmpty() )
-		{
-			cancelSession(info);
-			rootSection.addUserAndQuota(info, selected);
-		}
-	}
+    quotaSizeField.setValue(
+        context, Long.toString(selected.getQuota() / GeneralConstants.BYTES_PER_MEGABYTE));
 
-	private void validate(SectionInfo info, SelectedQuota selected)
-	{
-		Map<String, Object> errors = selected.getValidationErrors();
-		errors.clear();
+    model.setErrors(selected.getValidationErrors());
 
-		String expression = userSelector.getExpression(info);
-		if( Check.isEmpty(expression) || expression.trim().isEmpty() )
-		{
-			errors.put("expression", LABEL_EMPTY_EXPRESSION);
-		}
+    final GenericTemplateResult templateResult = new GenericTemplateResult();
+    templateResult.addNamedResult("body", view.createResult("adduserandquota.ftl", this));
+    return templateResult;
+  }
 
-		// try to parse quota size
-		long qs = 0;
-		try
-		{
-			qs = Long.parseLong(quotaSizeField.getValue(info));
-		}
-		catch( Exception e )
-		{
-			errors.put("userquota", LABEL_INVALID_QUOTA);
-		}
+  @EventHandlerMethod
+  public void userExpression(SectionInfo info, String selectorId, String expression) {
+    SelectedQuota selected = loadSession(info);
+    selected.setExpression(expression);
+    if (!Check.isEmpty(expression)) {
+      selected.getValidationErrors().remove("expression");
+    }
+  }
 
-		if( qs < 0 )
-		{
-			errors.put("userquota", LABEL_IMPOSSIBLE_QUOTA);
-		}
-		// if the multiplier is an overrun because the input is impossibly
-		// large, then qs would be negative
-		qs *= GeneralConstants.BYTES_PER_MEGABYTE;
+  @EventHandlerMethod
+  public void save(SectionInfo info) {
+    SelectedQuota selected = loadSession(info);
+    if (selected.getValidationErrors().isEmpty()) {
+      cancelSession(info);
+      rootSection.addUserAndQuota(info, selected);
+    }
+  }
 
-		if( qs < 0 )
-		{
-			errors.put("userquota", LABEL_IMPOSSIBLE_QUOTA);
-		}
-	}
+  private void validate(SectionInfo info, SelectedQuota selected) {
+    Map<String, Object> errors = selected.getValidationErrors();
+    errors.clear();
 
-	@EventHandlerMethod
-	public void cancel(SectionInfo info)
-	{
-		cancelSession(info);
-	}
+    String expression = userSelector.getExpression(info);
+    if (Check.isEmpty(expression) || expression.trim().isEmpty()) {
+      errors.put("expression", LABEL_EMPTY_EXPRESSION);
+    }
 
-	private void cancelSession(SectionInfo info)
-	{
-		EditContentRestrictionsSectionModel model = getModel(info);
-		sessionService.removeAttribute(model.getSessionId());
-		model.setSessionId(null);
-	}
+    // try to parse quota size
+    long qs = 0;
+    try {
+      qs = Long.parseLong(quotaSizeField.getValue(info));
+    } catch (Exception e) {
+      errors.put("userquota", LABEL_INVALID_QUOTA);
+    }
 
-	private SelectedQuota loadSession(SectionInfo info)
-	{
-		SelectedQuota selected = sessionService.getAttribute(getModel(info).getSessionId());
-		return selected; // NOSONAR (keeping local variable for readability)
-	}
+    if (qs < 0) {
+      errors.put("userquota", LABEL_IMPOSSIBLE_QUOTA);
+    }
+    // if the multiplier is an overrun because the input is impossibly
+    // large, then qs would be negative
+    qs *= GeneralConstants.BYTES_PER_MEGABYTE;
 
-	@DirectEvent(priority = SectionEvent.PRIORITY_MODAL_LOGIC)
-	public void checkModal(SectionInfo info)
-	{
-		EditContentRestrictionsSectionModel model = getModel(info);
-		if( !Check.isEmpty(model.getSessionId()) )
-		{
-			rootSection.setModalSection(info, this);
-		}
-	}
+    if (qs < 0) {
+      errors.put("userquota", LABEL_IMPOSSIBLE_QUOTA);
+    }
+  }
 
-	public void editUserQuota(SectionInfo info, SelectedQuota selected)
-	{
-		final EditContentRestrictionsSectionModel model = getModel(info);
-		String string = UUID.randomUUID().toString();
-		model.setSessionId(string);
-		sessionService.setAttribute(model.getSessionId(), selected);
-	}
+  @EventHandlerMethod
+  public void cancel(SectionInfo info) {
+    cancelSession(info);
+  }
 
-	@DirectEvent
-	public void loadFromSession(SectionInfo info)
-	{
-		EditContentRestrictionsSectionModel model = getModel(info);
-		model.setRendered(true);
+  private void cancelSession(SectionInfo info) {
+    EditContentRestrictionsSectionModel model = getModel(info);
+    sessionService.removeAttribute(model.getSessionId());
+    model.setSessionId(null);
+  }
 
-		if( !Check.isEmpty(model.getSessionId()) )
-		{
-			SelectedQuota selected = loadSession(info);
-			userSelector.setExpression(info, selected.getExpression());
-			quotaSizeField.setValue(info, Long.toString(selected.getQuota() / GeneralConstants.BYTES_PER_MEGABYTE));
-		}
-	}
+  private SelectedQuota loadSession(SectionInfo info) {
+    SelectedQuota selected = sessionService.getAttribute(getModel(info).getSessionId());
+    return selected; // NOSONAR (keeping local variable for readability)
+  }
 
-	@DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
-	public void includeHandler(SectionInfo info)
-	{
-		EditContentRestrictionsSectionModel model = getModel(info);
-		if( model.isRendered() )
-		{
-			final String sessionId = model.getSessionId();
-			if( sessionId != null )
-			{
-				SelectedQuota selected = loadSession(info);
-				validate(info, selected);
-				if( !selected.getValidationErrors().containsKey("expression") )
-				{
-					selected.setExpression(userSelector.getExpression(info));
-				}
+  @DirectEvent(priority = SectionEvent.PRIORITY_MODAL_LOGIC)
+  public void checkModal(SectionInfo info) {
+    EditContentRestrictionsSectionModel model = getModel(info);
+    if (!Check.isEmpty(model.getSessionId())) {
+      rootSection.setModalSection(info, this);
+    }
+  }
 
-				if( !selected.getValidationErrors().containsKey("userquota") )
-				{
-					selected.setQuota(Long.parseLong(quotaSizeField.getValue(info))
-						* GeneralConstants.BYTES_PER_MEGABYTE);
-				}
-				sessionService.setAttribute(model.getSessionId(), selected);
-			}
-		}
-	}
+  public void editUserQuota(SectionInfo info, SelectedQuota selected) {
+    final EditContentRestrictionsSectionModel model = getModel(info);
+    String string = UUID.randomUUID().toString();
+    model.setSessionId(string);
+    sessionService.setAttribute(model.getSessionId(), selected);
+  }
 
-	public Button getSaveButton()
-	{
-		return saveButton;
-	}
+  @DirectEvent
+  public void loadFromSession(SectionInfo info) {
+    EditContentRestrictionsSectionModel model = getModel(info);
+    model.setRendered(true);
 
-	public Button getCancelButton()
-	{
-		return cancelButton;
-	}
+    if (!Check.isEmpty(model.getSessionId())) {
+      SelectedQuota selected = loadSession(info);
+      userSelector.setExpression(info, selected.getExpression());
+      quotaSizeField.setValue(
+          info, Long.toString(selected.getQuota() / GeneralConstants.BYTES_PER_MEGABYTE));
+    }
+  }
 
-	public TextField getQuotaSizeField()
-	{
-		return quotaSizeField;
-	}
+  @DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
+  public void includeHandler(SectionInfo info) {
+    EditContentRestrictionsSectionModel model = getModel(info);
+    if (model.isRendered()) {
+      final String sessionId = model.getSessionId();
+      if (sessionId != null) {
+        SelectedQuota selected = loadSession(info);
+        validate(info, selected);
+        if (!selected.getValidationErrors().containsKey("expression")) {
+          selected.setExpression(userSelector.getExpression(info));
+        }
 
-	public ExpressionSelectorDialog getUserSelector()
-	{
-		return userSelector;
-	}
+        if (!selected.getValidationErrors().containsKey("userquota")) {
+          selected.setQuota(
+              Long.parseLong(quotaSizeField.getValue(info)) * GeneralConstants.BYTES_PER_MEGABYTE);
+        }
+        sessionService.setAttribute(model.getSessionId(), selected);
+      }
+    }
+  }
 
-	@Override
-	public Class<EditContentRestrictionsSectionModel> getModelClass()
-	{
-		return EditContentRestrictionsSectionModel.class;
-	}
+  public Button getSaveButton() {
+    return saveButton;
+  }
 
-	@NonNullByDefault(false)
-	public static class EditContentRestrictionsSectionModel
-	{
-		@Bookmarked(name = "s")
-		private String sessionId;
-		@Bookmarked(stateful = false)
-		private boolean rendered;
-		private Label heading;
-		private Map<String, Object> errors = Maps.newHashMap();
+  public Button getCancelButton() {
+    return cancelButton;
+  }
 
-		public String getSessionId()
-		{
-			return sessionId;
-		}
+  public TextField getQuotaSizeField() {
+    return quotaSizeField;
+  }
 
-		public void setSessionId(String sessionId)
-		{
-			this.sessionId = sessionId;
-		}
+  public ExpressionSelectorDialog getUserSelector() {
+    return userSelector;
+  }
 
-		public boolean isRendered()
-		{
-			return rendered;
-		}
+  @Override
+  public Class<EditContentRestrictionsSectionModel> getModelClass() {
+    return EditContentRestrictionsSectionModel.class;
+  }
 
-		public void setRendered(boolean rendered)
-		{
-			this.rendered = rendered;
-		}
+  @NonNullByDefault(false)
+  public static class EditContentRestrictionsSectionModel {
+    @Bookmarked(name = "s")
+    private String sessionId;
 
-		public Label getHeading()
-		{
-			return heading;
-		}
+    @Bookmarked(stateful = false)
+    private boolean rendered;
 
-		public void setHeading(Label heading)
-		{
-			this.heading = heading;
-		}
+    private Label heading;
+    private Map<String, Object> errors = Maps.newHashMap();
 
-		public Map<String, Object> getErrors()
-		{
-			return errors;
-		}
+    public String getSessionId() {
+      return sessionId;
+    }
 
-		public void setErrors(Map<String, Object> errors)
-		{
-			this.errors = errors;
-		}
+    public void setSessionId(String sessionId) {
+      this.sessionId = sessionId;
+    }
 
-		public String getExpressionPretty()
-		{
-			return expressionPretty;
-		}
+    public boolean isRendered() {
+      return rendered;
+    }
 
-		public void setExpressionPretty(String expressionPretty)
-		{
-			this.expressionPretty = expressionPretty;
-		}
+    public void setRendered(boolean rendered) {
+      this.rendered = rendered;
+    }
 
-		private String expressionPretty;
-	}
+    public Label getHeading() {
+      return heading;
+    }
 
-	@Override
-	public void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		ContentLayout.setLayout(info, ContentLayout.ONE_COLUMN);
-		SelectedQuota selected = loadSession(info);
-		
-		if( selected.getQuotaIndex() == -1 )
-		{
-			decorations.setTitle(LABEL_HEADING_ADD);
-		}
-		else
-		{
-			decorations.setTitle(LABEL_HEADING_EDIT);
-		}
-		
-		HtmlLinkState linkState = new HtmlLinkState(new SimpleBookmark("access/contentrestrictions.do"));
-		linkState.setLabel(TITLE_LABEL);
-		linkState.setTitle(BREADCRUMB_TITLE_LABEL);
-		linkState.setClickHandler(cancelFunc);
-		crumbs.add(linkState);
-	}
+    public void setHeading(Label heading) {
+      this.heading = heading;
+    }
+
+    public Map<String, Object> getErrors() {
+      return errors;
+    }
+
+    public void setErrors(Map<String, Object> errors) {
+      this.errors = errors;
+    }
+
+    public String getExpressionPretty() {
+      return expressionPretty;
+    }
+
+    public void setExpressionPretty(String expressionPretty) {
+      this.expressionPretty = expressionPretty;
+    }
+
+    private String expressionPretty;
+  }
+
+  @Override
+  public void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    ContentLayout.setLayout(info, ContentLayout.ONE_COLUMN);
+    SelectedQuota selected = loadSession(info);
+
+    if (selected.getQuotaIndex() == -1) {
+      decorations.setTitle(LABEL_HEADING_ADD);
+    } else {
+      decorations.setTitle(LABEL_HEADING_EDIT);
+    }
+
+    HtmlLinkState linkState =
+        new HtmlLinkState(new SimpleBookmark("access/contentrestrictions.do"));
+    linkState.setLabel(TITLE_LABEL);
+    linkState.setTitle(BREADCRUMB_TITLE_LABEL);
+    linkState.setClickHandler(cancelFunc);
+    crumbs.add(linkState);
+  }
 }

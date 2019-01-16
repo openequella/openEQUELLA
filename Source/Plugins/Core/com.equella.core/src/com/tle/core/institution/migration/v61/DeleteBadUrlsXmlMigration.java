@@ -27,12 +27,11 @@ import com.tle.core.institution.convert.ConverterParams;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class DeleteBadUrlsXmlMigration extends AbstractItemXmlMigrator
-{
-	@Override
-	public boolean migrate(ConverterParams params, PropBagEx xml, SubTemporaryFile file, String filename)
-		throws Exception
-	{
-		return xml.deleteNode("badUrls");
-	}
+public class DeleteBadUrlsXmlMigration extends AbstractItemXmlMigrator {
+  @Override
+  public boolean migrate(
+      ConverterParams params, PropBagEx xml, SubTemporaryFile file, String filename)
+      throws Exception {
+    return xml.deleteNode("badUrls");
+  }
 }

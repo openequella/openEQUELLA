@@ -49,117 +49,103 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
-/**
- * @author larry
- */
+/** @author larry */
 @Bind
 @Path("connector")
 @Api(value = "External connectors", description = "connector")
 @Produces({"application/json"})
 @Singleton
 @SuppressWarnings("nls")
-public class ConnectorResource
-{
-	@Inject
-	private ConnectorService connectorService;
-	@Inject
-	private ConnectorRepositoryService connectorRepositoryService;
-	@Inject
-	private UrlLinkService urlLinkService;
-	@Inject
-	private ConnectorBeanSerializer serializer;
+public class ConnectorResource {
+  @Inject private ConnectorService connectorService;
+  @Inject private ConnectorRepositoryService connectorRepositoryService;
+  @Inject private UrlLinkService urlLinkService;
+  @Inject private ConnectorBeanSerializer serializer;
 
-	/**
-	 * Provided the user has at least the basic CONNECTOR privilege, get a list
-	 * of all connectors, and from that list exclude any of those Connectors for
-	 * which the user lacks the PRIV_VIEWCONTENT_VIA_CONNECTOR privilege.
-	 * 
-	 * @param uuid Item uuid, not relevant to the query per se, but used in
-	 *            composing result set
-	 * @param version Item version, not relevant to the query per se, but used
-	 *            in composing result set
-	 * @return
-	 */
-	@GET
-	@Path("/{uuid}/{version}")
-	@ApiOperation(value = "List of connectors and usage links")
-	public List<ConnectorBean> getConnectorQueriesForItem(@ApiParam("Item UUID") @PathParam("uuid") String uuid,
-		@ApiParam("Item version") @PathParam("version") int version)
-	{
-		List<ConnectorBean> connectorBeans = Lists.newArrayList();
-		Iterable<BaseEntityLabel> connectorDescriptors = connectorService.listForViewing();
-		UriBuilder uriBuilder = urlLinkService.getMethodUriBuilder(getClass(), "getUsagesOfItemForConnector");
-		for( BaseEntityLabel bent : connectorDescriptors )
-		{
-			Connector connector = connectorService.get(bent.getId());
-			ConnectorBean bean = serializer.serialize(connector, null, true);
-			Map<String, URI> links = Maps.newHashMap();
-			URI uri = uriBuilder.build(uuid, version, bent.getUuid());
-			links.put("usage", uri);
-			bean.set("links", links);
-			connectorBeans.add(bean);
-		}
-		return connectorBeans;
-	}
+  /**
+   * Provided the user has at least the basic CONNECTOR privilege, get a list of all connectors, and
+   * from that list exclude any of those Connectors for which the user lacks the
+   * PRIV_VIEWCONTENT_VIA_CONNECTOR privilege.
+   *
+   * @param uuid Item uuid, not relevant to the query per se, but used in composing result set
+   * @param version Item version, not relevant to the query per se, but used in composing result set
+   * @return
+   */
+  @GET
+  @Path("/{uuid}/{version}")
+  @ApiOperation(value = "List of connectors and usage links")
+  public List<ConnectorBean> getConnectorQueriesForItem(
+      @ApiParam("Item UUID") @PathParam("uuid") String uuid,
+      @ApiParam("Item version") @PathParam("version") int version) {
+    List<ConnectorBean> connectorBeans = Lists.newArrayList();
+    Iterable<BaseEntityLabel> connectorDescriptors = connectorService.listForViewing();
+    UriBuilder uriBuilder =
+        urlLinkService.getMethodUriBuilder(getClass(), "getUsagesOfItemForConnector");
+    for (BaseEntityLabel bent : connectorDescriptors) {
+      Connector connector = connectorService.get(bent.getId());
+      ConnectorBean bean = serializer.serialize(connector, null, true);
+      Map<String, URI> links = Maps.newHashMap();
+      URI uri = uriBuilder.build(uuid, version, bent.getUuid());
+      links.put("usage", uri);
+      bean.set("links", links);
+      connectorBeans.add(bean);
+    }
+    return connectorBeans;
+  }
 
-	/**
-	 * For a given item (identified by its UUID), version and Connector
-	 * (identified by its UUID), retrieve the list of usages, ie the courses and
-	 * related details
-	 * 
-	 * @param uuid
-	 * @param version
-	 * @param connectoruuid
-	 * @return
-	 */
-	@GET
-	@Path("/{uuid}/{version}/use/{connectoruuid}")
-	@ApiOperation(value = "List usages of item within connector")
-	public SearchBean<ConnectorContentBean> getUsagesOfItemForConnector(
-		// @ApiParam(value="The first record of the search results to return",
-		// required = false, defaultValue="0") @QueryParam("start")
-		// int start,
-		// @ApiParam(value="The number of results to return", required = false,
-		// defaultValue = "10", allowableValues = "range[1,100]")
-		// @QueryParam("length")
-		// int length,
-		@ApiParam("Item UUID") @PathParam("uuid") String uuid,
-		@ApiParam("Item version") @PathParam("version") int version,
-		@ApiParam("Connector UUID") @PathParam("connectoruuid") String connectoruuid)
-	{
-		List<ConnectorContentBean> allUsageBeans = new ArrayList<ConnectorContentBean>();
-		List<ConnectorContent> allUsages = null;
-		Connector connector = connectorService.get(connectorService.identifyByUuid(connectoruuid));
-		String username = CurrentUser.getUsername();
-		try
-		{
-			allUsages = connectorRepositoryService.findUsages(connector, username, uuid, version, false, false);
-		}
-		catch( LmsUserNotFoundException lunfe )
-		{
-			throw new RuntimeException(
-				"Failed to query course for " + connector.getLmsType() + " by " + username, lunfe); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-		if( !Check.isEmpty(allUsages) )
-		{
-			for( ConnectorContent usageContent : allUsages )
-			{
-				ConnectorContentBean bean = new ConnectorContentBean();
-				bean.setCourse(usageContent.getCourse());
-				bean.setCourseCode(usageContent.getCourseCode());
-				bean.setCourseId(usageContent.getCourseId());
-				bean.setId(usageContent.getId());
-				bean.setDateAdded(usageContent.getDateAdded());
-				bean.setFolder(usageContent.getFolder());
-				bean.setExternalTitle(usageContent.getExternalTitle());
-				bean.setExternalDescription(usageContent.getExternalDescription());
-				allUsageBeans.add(bean);
-			}
-		}
-		SearchBean<ConnectorContentBean> results = new SearchBean<ConnectorContentBean>();
-		results.setResults(allUsageBeans);
-		results.setAvailable(allUsageBeans.size());
-		results.setLength(allUsageBeans.size());
-		return results;
-	}
+  /**
+   * For a given item (identified by its UUID), version and Connector (identified by its UUID),
+   * retrieve the list of usages, ie the courses and related details
+   *
+   * @param uuid
+   * @param version
+   * @param connectoruuid
+   * @return
+   */
+  @GET
+  @Path("/{uuid}/{version}/use/{connectoruuid}")
+  @ApiOperation(value = "List usages of item within connector")
+  public SearchBean<ConnectorContentBean> getUsagesOfItemForConnector(
+      // @ApiParam(value="The first record of the search results to return",
+      // required = false, defaultValue="0") @QueryParam("start")
+      // int start,
+      // @ApiParam(value="The number of results to return", required = false,
+      // defaultValue = "10", allowableValues = "range[1,100]")
+      // @QueryParam("length")
+      // int length,
+      @ApiParam("Item UUID") @PathParam("uuid") String uuid,
+      @ApiParam("Item version") @PathParam("version") int version,
+      @ApiParam("Connector UUID") @PathParam("connectoruuid") String connectoruuid) {
+    List<ConnectorContentBean> allUsageBeans = new ArrayList<ConnectorContentBean>();
+    List<ConnectorContent> allUsages = null;
+    Connector connector = connectorService.get(connectorService.identifyByUuid(connectoruuid));
+    String username = CurrentUser.getUsername();
+    try {
+      allUsages =
+          connectorRepositoryService.findUsages(connector, username, uuid, version, false, false);
+    } catch (LmsUserNotFoundException lunfe) {
+      throw new RuntimeException(
+          "Failed to query course for " + connector.getLmsType() + " by " + username,
+          lunfe); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+    if (!Check.isEmpty(allUsages)) {
+      for (ConnectorContent usageContent : allUsages) {
+        ConnectorContentBean bean = new ConnectorContentBean();
+        bean.setCourse(usageContent.getCourse());
+        bean.setCourseCode(usageContent.getCourseCode());
+        bean.setCourseId(usageContent.getCourseId());
+        bean.setId(usageContent.getId());
+        bean.setDateAdded(usageContent.getDateAdded());
+        bean.setFolder(usageContent.getFolder());
+        bean.setExternalTitle(usageContent.getExternalTitle());
+        bean.setExternalDescription(usageContent.getExternalDescription());
+        allUsageBeans.add(bean);
+      }
+    }
+    SearchBean<ConnectorContentBean> results = new SearchBean<ConnectorContentBean>();
+    results.setResults(allUsageBeans);
+    results.setAvailable(allUsageBeans.size());
+    results.setLength(allUsageBeans.size());
+    return results;
+  }
 }

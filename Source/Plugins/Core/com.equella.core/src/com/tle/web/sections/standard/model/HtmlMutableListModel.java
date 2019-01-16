@@ -22,11 +22,10 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.web.sections.SectionInfo;
 
 @NonNullByDefault
-public interface HtmlMutableListModel<T>
-{
-	List<String> getValues(SectionInfo info);
+public interface HtmlMutableListModel<T> {
+  List<String> getValues(SectionInfo info);
 
-	List<Option<T>> getOptions(SectionInfo info);
+  List<Option<T>> getOptions(SectionInfo info);
 
-	void setValues(SectionInfo info, List<String> strings);
+  void setValues(SectionInfo info, List<String> strings);
 }

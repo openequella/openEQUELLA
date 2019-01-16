@@ -22,27 +22,24 @@ import com.tle.web.DebugSettings;
 import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.render.PreRenderable;
 
-public class JQueryResizable implements JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
+public class JQueryResizable implements JavascriptModule {
+  private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.ui.resizable.js", JQueryMouse.PRERENDER).hasMin();
+  public static final PreRenderable PRERENDER =
+      new JQueryLibraryInclude("jquery.ui.resizable.js", JQueryMouse.PRERENDER).hasMin();
 
-	@Override
-	public String getDisplayName()
-	{
-		return CurrentLocale.get("com.tle.web.sections.jquery.modules.resizable.name");
-	}
+  @Override
+  public String getDisplayName() {
+    return CurrentLocale.get("com.tle.web.sections.jquery.modules.resizable.name");
+  }
 
-	@Override
-	public String getId()
-	{
-		return "resizable";
-	}
+  @Override
+  public String getId() {
+    return "resizable";
+  }
 
-	@Override
-	public Object getPreRenderer()
-	{
-		return PRERENDER;
-	}
+  @Override
+  public Object getPreRenderer() {
+    return PRERENDER;
+  }
 }

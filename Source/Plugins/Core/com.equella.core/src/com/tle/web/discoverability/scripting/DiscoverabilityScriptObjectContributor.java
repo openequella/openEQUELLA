@@ -27,21 +27,17 @@ import com.tle.web.discoverability.scripting.impl.MetaScriptWrapper;
 import com.tle.web.discoverability.scripting.objects.MetaScriptObject;
 import com.tle.web.sections.events.PreRenderContext;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class DiscoverabilityScriptObjectContributor implements ScriptObjectContributor
-{
-	@Override
-	public void addScriptObjects(Map<String, Object> objects, ScriptContextCreationParams params)
-	{
+public class DiscoverabilityScriptObjectContributor implements ScriptObjectContributor {
+  @Override
+  public void addScriptObjects(Map<String, Object> objects, ScriptContextCreationParams params) {
 
-		final PreRenderContext render = (PreRenderContext) params.getAttributes().get("context"); //$NON-NLS-1$
-		if( render != null )
-		{
-			objects.put(MetaScriptObject.DEFAULT_VARIABLE, new MetaScriptWrapper(render));
-		}
-	}
+    final PreRenderContext render =
+        (PreRenderContext) params.getAttributes().get("context"); // $NON-NLS-1$
+    if (render != null) {
+      objects.put(MetaScriptObject.DEFAULT_VARIABLE, new MetaScriptWrapper(render));
+    }
+  }
 }

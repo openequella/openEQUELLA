@@ -22,30 +22,25 @@ import com.tle.plugins.ump.UserDirectory;
 import com.tle.plugins.ump.UserManagementLogonFilter;
 
 @SuppressWarnings("nls")
-public class UserManagementModule extends OptionalConfigModule
-{
-	@Override
-	protected void configure()
-	{
-		bindBoolean("userService.useXForwardedFor");
-		install(new UserManagementTrackerModule());
-	}
+public class UserManagementModule extends OptionalConfigModule {
+  @Override
+  protected void configure() {
+    bindBoolean("userService.useXForwardedFor");
+    install(new UserManagementTrackerModule());
+  }
 
-	public static class UserManagementTrackerModule extends PluginTrackerModule
-	{
-		@Override
-		protected String getPluginId()
-		{
-			return "com.tle.core.usermanagement";
-		}
+  public static class UserManagementTrackerModule extends PluginTrackerModule {
+    @Override
+    protected String getPluginId() {
+      return "com.tle.core.usermanagement";
+    }
 
-		@Override
-		protected void configure()
-		{
-			bindTracker(UserDirectory.class, "userManager", null).setIdParam("settingsClass").orderByParameter("order",
-				true);
-			bindTracker(UserManagementLogonFilter.class, "logonFilter", "bean").orderByParameter("order");
-		}
-	}
-
+    @Override
+    protected void configure() {
+      bindTracker(UserDirectory.class, "userManager", null)
+          .setIdParam("settingsClass")
+          .orderByParameter("order", true);
+      bindTracker(UserManagementLogonFilter.class, "logonFilter", "bean").orderByParameter("order");
+    }
+  }
 }

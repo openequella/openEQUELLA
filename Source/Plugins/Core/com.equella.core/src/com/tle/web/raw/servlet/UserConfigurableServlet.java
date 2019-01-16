@@ -42,82 +42,68 @@ import com.google.common.io.Resources;
 import com.tle.core.guice.Bind;
 
 /**
- * Mostly for OER who need to be able to edit a file (configurable.txt) and have
- * it served up by EQUELLA. E.g. you could set the contents of said file to
- * "NOT READY" and a load balancer would ignore this node.
- * 
+ * Mostly for OER who need to be able to edit a file (configurable.txt) and have it served up by
+ * EQUELLA. E.g. you could set the contents of said file to "NOT READY" and a load balancer would
+ * ignore this node.
+ *
  * @author Aaron
  */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class UserConfigurableServlet extends HttpServlet
-{
-	private static final Logger LOGGER = Logger.getLogger(UserConfigurableServlet.class);
+public class UserConfigurableServlet extends HttpServlet {
+  private static final Logger LOGGER = Logger.getLogger(UserConfigurableServlet.class);
 
-	private static final String NO_CONTENT = "\0";
+  private static final String NO_CONTENT = "\0";
 
-	private final Cache<String, String> responseCache = CacheBuilder.newBuilder()
-		.expireAfterWrite(15, TimeUnit.SECONDS).build();
-	private final CacheLoader cacheLoader = new CacheLoader();
+  private final Cache<String, String> responseCache =
+      CacheBuilder.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).build();
+  private final CacheLoader cacheLoader = new CacheLoader();
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
-	{
-		final String content;
-		try
-		{
-			content = responseCache.get("", cacheLoader);
-		}
-		catch( ExecutionException e )
-		{
-			resp.setStatus(500);
-			LOGGER.error("Error serving content", e);
-			return;
-		}
+  @Override
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
+    final String content;
+    try {
+      content = responseCache.get("", cacheLoader);
+    } catch (ExecutionException e) {
+      resp.setStatus(500);
+      LOGGER.error("Error serving content", e);
+      return;
+    }
 
-		if( NO_CONTENT.equals(content) )
-		{
-			resp.setStatus(404);
-		}
-		else
-		{
-			resp.setContentType("text/plain");
-			resp.setStatus(200);
-			CharStreams.copy(new StringReader(content), resp.getWriter());
-		}
-	}
+    if (NO_CONTENT.equals(content)) {
+      resp.setStatus(404);
+    } else {
+      resp.setContentType("text/plain");
+      resp.setStatus(200);
+      CharStreams.copy(new StringReader(content), resp.getWriter());
+    }
+  }
 
-	private class CacheLoader implements Callable<String>
-	{
-		private long lastMod;
-		private String lastContent = NO_CONTENT;
+  private class CacheLoader implements Callable<String> {
+    private long lastMod;
+    private String lastContent = NO_CONTENT;
 
-		@Override
-		public String call() throws Exception
-		{
-			try
-			{
-				final URL resource = Resources.getResource("configurable.txt");
-				final File f = new File(resource.toURI());
-				if( !f.exists() )
-				{
-					return NO_CONTENT;
-				}
-				if( lastMod == 0 || lastMod < f.lastModified() )
-				{
-					final CharSource charSource = Resources.asCharSource(resource, Charset.forName("utf-8"));
-					final StringWriter sw = new StringWriter();
-					charSource.copyTo(sw);
-					lastContent = sw.toString();
-					lastMod = f.lastModified();
-				}
-				return lastContent;
-			}
-			catch( Exception e )
-			{
-				return NO_CONTENT;
-			}
-		}
-	}
+    @Override
+    public String call() throws Exception {
+      try {
+        final URL resource = Resources.getResource("configurable.txt");
+        final File f = new File(resource.toURI());
+        if (!f.exists()) {
+          return NO_CONTENT;
+        }
+        if (lastMod == 0 || lastMod < f.lastModified()) {
+          final CharSource charSource = Resources.asCharSource(resource, Charset.forName("utf-8"));
+          final StringWriter sw = new StringWriter();
+          charSource.copyTo(sw);
+          lastContent = sw.toString();
+          lastMod = f.lastModified();
+        }
+        return lastContent;
+      } catch (Exception e) {
+        return NO_CONTENT;
+      }
+    }
+  }
 }

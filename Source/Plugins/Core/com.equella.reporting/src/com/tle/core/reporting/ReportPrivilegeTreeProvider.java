@@ -28,20 +28,21 @@ import com.tle.web.resources.ResourcesService;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class ReportPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeProvider<Report>
-{
-	@Inject
-	public ReportPrivilegeTreeProvider(ReportingService reportingService)
-	{
-		super(reportingService, Node.ALL_REPORTS,
-			ResourcesService.getResourceHelper(ReportPrivilegeTreeProvider.class).key("securitytree.allreports"),
-			Node.REPORT,
-			ResourcesService.getResourceHelper(ReportPrivilegeTreeProvider.class).key("securitytree.targetallreports"));
-	}
+public class ReportPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeProvider<Report> {
+  @Inject
+  public ReportPrivilegeTreeProvider(ReportingService reportingService) {
+    super(
+        reportingService,
+        Node.ALL_REPORTS,
+        ResourcesService.getResourceHelper(ReportPrivilegeTreeProvider.class)
+            .key("securitytree.allreports"),
+        Node.REPORT,
+        ResourcesService.getResourceHelper(ReportPrivilegeTreeProvider.class)
+            .key("securitytree.targetallreports"));
+  }
 
-	@Override
-	protected Report createEntity()
-	{
-		return new Report();
-	}
+  @Override
+  protected Report createEntity() {
+    return new Report();
+  }
 }

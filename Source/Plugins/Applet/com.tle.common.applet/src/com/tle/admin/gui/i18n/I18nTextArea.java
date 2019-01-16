@@ -24,42 +24,35 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.text.JTextComponent;
 
-/**
- * @author Nicholas Read
- */
-public class I18nTextArea extends I18nTextField
-{
-	private static final long serialVersionUID = 1L;
-	private JTextArea ta;
+/** @author Nicholas Read */
+public class I18nTextArea extends I18nTextField {
+  private static final long serialVersionUID = 1L;
+  private JTextArea ta;
 
-	public I18nTextArea(Set<Locale> defaultLocales)
-	{
-		super(defaultLocales);
-	}
+  public I18nTextArea(Set<Locale> defaultLocales) {
+    super(defaultLocales);
+  }
 
-	@Override
-	protected JTextComponent getTextComponent()
-	{
-		ta = new JTextArea();
-		ta.setLineWrap(true);
-		ta.setWrapStyleWord(true);
-		return ta;
-	}
+  @Override
+  protected JTextComponent getTextComponent() {
+    ta = new JTextArea();
+    ta.setLineWrap(true);
+    ta.setWrapStyleWord(true);
+    return ta;
+  }
 
-	public void setTextRows(int rows)
-	{
-		ta.setRows(rows);
-	}
+  public void setTextRows(int rows) {
+    ta.setRows(rows);
+  }
 
-	@Override
-	protected void initialiseLayout(String layoutConstraints, String cellConstraint, boolean addTextComponent)
-	{
-		super.initialiseLayout(layoutConstraints, "grow", addTextComponent); //$NON-NLS-1$
-	}
+  @Override
+  protected void initialiseLayout(
+      String layoutConstraints, String cellConstraint, boolean addTextComponent) {
+    super.initialiseLayout(layoutConstraints, "grow", addTextComponent); // $NON-NLS-1$
+  }
 
-	@Override
-	protected Component prepareTextComponent(JTextComponent component)
-	{
-		return new JScrollPane(component);
-	}
+  @Override
+  protected Component prepareTextComponent(JTextComponent component) {
+    return new JScrollPane(component);
+  }
 }

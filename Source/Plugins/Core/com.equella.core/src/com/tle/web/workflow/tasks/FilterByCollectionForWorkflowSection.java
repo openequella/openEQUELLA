@@ -37,124 +37,100 @@ import com.tle.web.viewurl.attachments.impl.ItemNavigationServiceImpl;
 @SuppressWarnings("nls")
 @NonNullByDefault
 public class FilterByCollectionForWorkflowSection
-	extends
-		AbstractFilterByCollectionSection<FilterByCollectionForWorkflowSection.FilterByCollectionForWorkflowModel>
+    extends AbstractFilterByCollectionSection<
+        FilterByCollectionForWorkflowSection.FilterByCollectionForWorkflowModel> {
 
-{
-	private static PluginResourceHelper r = ResourcesService.getResourceHelper(FilterByCollectionForWorkflowSection.class);
-	@TreeLookup
-	private WorkflowSelection workflowSelection;
+  private static PluginResourceHelper r =
+      ResourcesService.getResourceHelper(FilterByCollectionForWorkflowSection.class);
+  @TreeLookup private WorkflowSelection workflowSelection;
 
-	@Override
-	public DynamicHtmlListModel<WhereEntry> getCollectionModel()
-	{
-		return new WorkflowCollectionFilterModel();
-	}
+  @Override
+  public DynamicHtmlListModel<WhereEntry> getCollectionModel() {
+    return new WorkflowCollectionFilterModel();
+  }
 
-	public class WorkflowCollectionFilterModel extends DynamicHtmlListModel<WhereEntry>
-	{
-		@Nullable
-		@Override
-		public WhereEntry getValue(SectionInfo info, @Nullable String value)
-		{
-			if( value == null || ALL_KEY.equals(value) )
-			{
-				return null;
-			}
-			return new WhereEntry(value);
-		}
+  public class WorkflowCollectionFilterModel extends DynamicHtmlListModel<WhereEntry> {
+    @Nullable
+    @Override
+    public WhereEntry getValue(SectionInfo info, @Nullable String value) {
+      if (value == null || ALL_KEY.equals(value)) {
+        return null;
+      }
+      return new WhereEntry(value);
+    }
 
-		@Override
-		protected Option<WhereEntry> getTopOption()
-		{
-			return new KeyOption<WhereEntry>( r.key("filter.query.collection.all"), ALL_KEY, null);
-		}
+    @Override
+    protected Option<WhereEntry> getTopOption() {
+      return new KeyOption<WhereEntry>(r.key("filter.query.collection.all"), ALL_KEY, null);
+    }
 
-		@Override
-		protected Iterable<WhereEntry> populateModel(SectionInfo info)
-		{
-			List<WhereEntry> collectionOptions = new ArrayList<WhereEntry>();
+    @Override
+    protected Iterable<WhereEntry> populateModel(SectionInfo info) {
+      List<WhereEntry> collectionOptions = new ArrayList<WhereEntry>();
 
-			List<BaseEntityLabel> listSearchable = itemDefinitionService.listSearchable();
+      List<BaseEntityLabel> listSearchable = itemDefinitionService.listSearchable();
 
-			Workflow workflow = getWorkflow(info);
+      Workflow workflow = getWorkflow(info);
 
-			List<ItemDefinition> workflowCollections;
+      List<ItemDefinition> workflowCollections;
 
-			if( workflow != null )
-			{
-				workflowCollections = itemDefinitionService.enumerateForWorkflow(workflow.getId());
+      if (workflow != null) {
+        workflowCollections = itemDefinitionService.enumerateForWorkflow(workflow.getId());
 
-				for( ItemDefinition itemDef : workflowCollections )
-				{
-					collectionOptions.add(new WhereEntry(itemDef.getUuid()));
-				}
-			}
+        for (ItemDefinition itemDef : workflowCollections) {
+          collectionOptions.add(new WhereEntry(itemDef.getUuid()));
+        }
+      } else {
+        for (BaseEntityLabel bel : listSearchable) {
+          collectionOptions.add(new WhereEntry(bel));
+        }
+      }
 
-			else
-			{
-				for( BaseEntityLabel bel : listSearchable )
-				{
-					collectionOptions.add(new WhereEntry(bel));
-				}
-			}
+      return collectionOptions;
+    }
 
-			return collectionOptions;
-		}
+    @Override
+    protected Option<WhereEntry> convertToOption(SectionInfo info, WhereEntry obj) {
+      return obj.convert();
+    }
+  }
 
-		@Override
-		protected Option<WhereEntry> convertToOption(SectionInfo info, WhereEntry obj)
-		{
-			return obj.convert();
-		}
-	}
+  @Nullable
+  private Workflow getWorkflow(SectionInfo info) {
+    FilterByCollectionForWorkflowModel model = getModel(info);
+    Workflow workflow = model.getWorkflow();
+    if (workflow == null) {
+      workflow = workflowSelection.getWorkflow(info);
+      model.setWorkflow(workflow);
+    }
 
-	@Nullable
-	private Workflow getWorkflow(SectionInfo info)
-	{
-		FilterByCollectionForWorkflowModel model = getModel(info);
-		Workflow workflow = model.getWorkflow();
-		if( workflow == null )
-		{
-			workflow = workflowSelection.getWorkflow(info);
-			model.setWorkflow(workflow);
-		}
+    return workflow;
+  }
 
-		return workflow;
-	}
+  @Override
+  public Class<FilterByCollectionForWorkflowModel> getModelClass() {
+    return FilterByCollectionForWorkflowModel.class;
+  }
 
-	@Override
-	public Class<FilterByCollectionForWorkflowModel> getModelClass()
-	{
-		return FilterByCollectionForWorkflowModel.class;
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new FilterByCollectionForWorkflowModel(false);
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new FilterByCollectionForWorkflowModel(false);
-	}
+  protected static class FilterByCollectionForWorkflowModel
+      extends AbstractFilterByCollectionSection.AbstractFilterByCollectionModel {
+    public FilterByCollectionForWorkflowModel(boolean disabled) {
+      super(disabled);
+    }
 
-	protected static class FilterByCollectionForWorkflowModel
-		extends
-			AbstractFilterByCollectionSection.AbstractFilterByCollectionModel
-	{
-		public FilterByCollectionForWorkflowModel(boolean disabled)
-		{
-			super(disabled);
-		}
+    private Workflow workflow;
 
-		private Workflow workflow;
+    public Workflow getWorkflow() {
+      return workflow;
+    }
 
-		public Workflow getWorkflow()
-		{
-			return workflow;
-		}
-
-		public void setWorkflow(Workflow workflow)
-		{
-			this.workflow = workflow;
-		}
-
-	}
+    public void setWorkflow(Workflow workflow) {
+      this.workflow = workflow;
+    }
+  }
 }

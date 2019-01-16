@@ -49,166 +49,162 @@ import com.tle.web.sections.standard.model.Option;
 import com.tle.web.sections.standard.model.SimpleHtmlListModel;
 import com.tle.web.sections.standard.renderers.LabelTagRenderer;
 
-/**
- * @author larry
- */
+/** @author larry */
 @SuppressWarnings("nls")
 public class FlickrSortOptionsSection extends AbstractPrototypeSection<Object>
-	implements
-		HtmlRenderer,
-		SearchEventListener<FlickrSearchEvent>
-{
-	protected static final String RELEVANCE_KEY = "sort.relevance";
-	protected static final String INTERESTINGNESS_DESC_KEY = "sort.interestingness.desc";
-	protected static final String DATE_TAKEN_DESC_KEY = "sort.date.taken.desc";
-	protected static final String DATE_POSTED_DESC_KEY = "sort.date.posted.desc";
+    implements HtmlRenderer, SearchEventListener<FlickrSearchEvent> {
+  protected static final String RELEVANCE_KEY = "sort.relevance";
+  protected static final String INTERESTINGNESS_DESC_KEY = "sort.interestingness.desc";
+  protected static final String DATE_TAKEN_DESC_KEY = "sort.date.taken.desc";
+  protected static final String DATE_POSTED_DESC_KEY = "sort.date.posted.desc";
 
-	@ViewFactory(fixed = true)
-	private FreemarkerFactory viewFactory;
+  @ViewFactory(fixed = true)
+  private FreemarkerFactory viewFactory;
 
-	@PlugKey("sort.results.reverse")
-	private static Label LABEL_REVERSE;
-	@PlugKey("")
-	private static String KEY_SORTPFX;
+  @PlugKey("sort.results.reverse")
+  private static Label LABEL_REVERSE;
 
-	@Component(name = "so", parameter = "sort", supported = true)
-	private SingleSelectionList<FlickrSortType> sortOptions;
+  @PlugKey("")
+  private static String KEY_SORTPFX;
 
-	@Component(name = "r", parameter = "rs", supported = true)
-	protected Checkbox reverse;
+  @Component(name = "so", parameter = "sort", supported = true)
+  private SingleSelectionList<FlickrSortType> sortOptions;
 
-	@TreeLookup
-	private FlickrSearchResultsSection searchResults;
+  @Component(name = "r", parameter = "rs", supported = true)
+  protected Checkbox reverse;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		sortOptions.setListModel(new SimpleHtmlListModel<FlickrSortType>(Arrays.asList(FlickrSortType.values()))
-		{
-			@Override
-			protected Option<FlickrSortType> convertToOption(FlickrSortType obj)
-			{
-				return new KeyOption<FlickrSortOptionsSection.FlickrSortType>(KEY_SORTPFX + obj.getField(), obj
-					.getDirectionConstant().toString(), obj);
-			}
-		});
-		sortOptions.setAlwaysSelect(true);
-		reverse.setLabel(LABEL_REVERSE);
-		tree.setLayout(id, SearchResultsActionsSection.AREA_SORT);
-	}
+  @TreeLookup private FlickrSearchResultsSection searchResults;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		SimpleFunction disFunc = new SimpleFunction("disRev", reverse, new FunctionCallStatement(
-			reverse.createDisableFunction(), new EqualityExpression(sortOptions.createGetExpression(),
-				new StringExpression(FlickrSortType.RELEVANCE.getDirectionConstant().toString()))));
-		sortOptions.addEventStatements(JSHandler.EVENT_CHANGE, searchResults.getRestartSearchHandler(tree),
-			new FunctionCallStatement(disFunc));
-		sortOptions.addEventStatements(JSHandler.EVENT_READY, new FunctionCallStatement(disFunc));
-		reverse.setClickHandler(new StatementHandler(searchResults.getResultsUpdater(tree, null)));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    sortOptions.setListModel(
+        new SimpleHtmlListModel<FlickrSortType>(Arrays.asList(FlickrSortType.values())) {
+          @Override
+          protected Option<FlickrSortType> convertToOption(FlickrSortType obj) {
+            return new KeyOption<FlickrSortOptionsSection.FlickrSortType>(
+                KEY_SORTPFX + obj.getField(), obj.getDirectionConstant().toString(), obj);
+          }
+        });
+    sortOptions.setAlwaysSelect(true);
+    reverse.setLabel(LABEL_REVERSE);
+    tree.setLayout(id, SearchResultsActionsSection.AREA_SORT);
+  }
 
-	/**
-	 * Because RELEVANCE has no reversible sort option in the Flickr service,
-	 * disable the reverse button when RELEVANCE is the current selection.
-	 */
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		return viewFactory.createResult("sort/flickrsortoptions.ftl", context);
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    SimpleFunction disFunc =
+        new SimpleFunction(
+            "disRev",
+            reverse,
+            new FunctionCallStatement(
+                reverse.createDisableFunction(),
+                new EqualityExpression(
+                    sortOptions.createGetExpression(),
+                    new StringExpression(
+                        FlickrSortType.RELEVANCE.getDirectionConstant().toString()))));
+    sortOptions.addEventStatements(
+        JSHandler.EVENT_CHANGE,
+        searchResults.getRestartSearchHandler(tree),
+        new FunctionCallStatement(disFunc));
+    sortOptions.addEventStatements(JSHandler.EVENT_READY, new FunctionCallStatement(disFunc));
+    reverse.setClickHandler(new StatementHandler(searchResults.getResultsUpdater(tree, null)));
+  }
 
-	public SingleSelectionList<FlickrSortType> getSortOptions()
-	{
-		return sortOptions;
-	}
+  /**
+   * Because RELEVANCE has no reversible sort option in the Flickr service, disable the reverse
+   * button when RELEVANCE is the current selection.
+   */
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    return viewFactory.createResult("sort/flickrsortoptions.ftl", context);
+  }
 
-	/**
-	 * FlickrSortType maps our selected value to an index, but we also need to
-	 * see if the 'Reverse order' checkbox has been selected, in which case our
-	 * intended selected value is the opposite pair in the FlickrSortType list
-	 * (provided of course that an opposite String actually exists - where it
-	 * doesn't, reverse has no effect).
-	 * 
-	 * @see com.tle.web.sections.equella.search.event.SearchEventListener#prepareSearch(com.tle.web.sections.SectionInfo,
-	 *      com.tle.web.sections.equella.search.event.AbstractSearchEvent)
-	 */
-	@Override
-	public void prepareSearch(SectionInfo info, FlickrSearchEvent event) throws Exception
-	{
-		FlickrSortType selectedOption = sortOptions.getSelectedValue(info);
-		int sortInt = selectedOption.getDirectionConstant();
-		if( reverse.isChecked(info) )
-		{
-			sortInt = selectedOption.getReverseConstant();
-		}
-		event.setSort(sortInt);
-	}
+  public SingleSelectionList<FlickrSortType> getSortOptions() {
+    return sortOptions;
+  }
 
-	public Checkbox getReverse()
-	{
-		return reverse;
-	}
+  /**
+   * FlickrSortType maps our selected value to an index, but we also need to see if the 'Reverse
+   * order' checkbox has been selected, in which case our intended selected value is the opposite
+   * pair in the FlickrSortType list (provided of course that an opposite String actually exists -
+   * where it doesn't, reverse has no effect).
+   *
+   * @see
+   *     com.tle.web.sections.equella.search.event.SearchEventListener#prepareSearch(com.tle.web.sections.SectionInfo,
+   *     com.tle.web.sections.equella.search.event.AbstractSearchEvent)
+   */
+  @Override
+  public void prepareSearch(SectionInfo info, FlickrSearchEvent event) throws Exception {
+    FlickrSortType selectedOption = sortOptions.getSelectedValue(info);
+    int sortInt = selectedOption.getDirectionConstant();
+    if (reverse.isChecked(info)) {
+      sortInt = selectedOption.getReverseConstant();
+    }
+    event.setSort(sortInt);
+  }
 
-	public enum FlickrSortType
-	{
-		/**
-		 * The flickr values translate into static SearchParameters constant
-		 * integers as follows: DATE_POSTED_DESC = 0;<br />
-		 * DATE_POSTED_ASC = 1;<br />
-		 * DATE_TAKEN_DESC = 2;<br />
-		 * DATE_TAKEN_ASC = 3;<br />
-		 * INTERESTINGNESS_DESC = 4;<br />
-		 * INTERESTINGNESS_ASC = 5;<br />
-		 * RELEVANCE = 6;
-		 */
-		RELEVANCE(RELEVANCE_KEY, new Pair<Integer, Integer>(SearchParameters.RELEVANCE, null)), // there
-																								// is
-																								// no
-																								// ascending
-																								// option
-																								// for
-																								// RELEVANCE
-		INTERESTINGNESS_DESC(INTERESTINGNESS_DESC_KEY, new Pair<Integer, Integer>(
-			SearchParameters.INTERESTINGNESS_DESC, SearchParameters.INTERESTINGNESS_ASC)), DATE_TAKEN_DESC(
-			DATE_TAKEN_DESC_KEY, new Pair<Integer, Integer>(SearchParameters.DATE_TAKEN_DESC,
-				SearchParameters.DATE_TAKEN_ASC)), DATE_POSTED_DESC(DATE_POSTED_DESC_KEY, new Pair<Integer, Integer>(
-			SearchParameters.DATE_POSTED_DESC, SearchParameters.DATE_POSTED_ASC));
+  public Checkbox getReverse() {
+    return reverse;
+  }
 
-		private String field;
-		private Pair<Integer, Integer> flickrSortConstants;
+  public enum FlickrSortType {
+    /**
+     * The flickr values translate into static SearchParameters constant integers as follows:
+     * DATE_POSTED_DESC = 0;<br>
+     * DATE_POSTED_ASC = 1;<br>
+     * DATE_TAKEN_DESC = 2;<br>
+     * DATE_TAKEN_ASC = 3;<br>
+     * INTERESTINGNESS_DESC = 4;<br>
+     * INTERESTINGNESS_ASC = 5;<br>
+     * RELEVANCE = 6;
+     */
+    RELEVANCE(RELEVANCE_KEY, new Pair<Integer, Integer>(SearchParameters.RELEVANCE, null)), // there
+    // is
+    // no
+    // ascending
+    // option
+    // for
+    // RELEVANCE
+    INTERESTINGNESS_DESC(
+        INTERESTINGNESS_DESC_KEY,
+        new Pair<Integer, Integer>(
+            SearchParameters.INTERESTINGNESS_DESC, SearchParameters.INTERESTINGNESS_ASC)),
+    DATE_TAKEN_DESC(
+        DATE_TAKEN_DESC_KEY,
+        new Pair<Integer, Integer>(
+            SearchParameters.DATE_TAKEN_DESC, SearchParameters.DATE_TAKEN_ASC)),
+    DATE_POSTED_DESC(
+        DATE_POSTED_DESC_KEY,
+        new Pair<Integer, Integer>(
+            SearchParameters.DATE_POSTED_DESC, SearchParameters.DATE_POSTED_ASC));
 
-		private FlickrSortType(String field, Pair<Integer, Integer> flickrSortConstants)
-		{
-			this.field = field;
-			this.flickrSortConstants = flickrSortConstants;
-		}
+    private String field;
+    private Pair<Integer, Integer> flickrSortConstants;
 
-		public String getField()
-		{
-			return field;
-		}
+    private FlickrSortType(String field, Pair<Integer, Integer> flickrSortConstants) {
+      this.field = field;
+      this.flickrSortConstants = flickrSortConstants;
+    }
 
-		public Pair<Integer, Integer> getFlickrSortConstants()
-		{
-			return flickrSortConstants;
-		}
+    public String getField() {
+      return field;
+    }
 
-		public Integer getDirectionConstant()
-		{
-			return flickrSortConstants.getFirst();
-		}
+    public Pair<Integer, Integer> getFlickrSortConstants() {
+      return flickrSortConstants;
+    }
 
-		public Integer getReverseConstant()
-		{
-			return flickrSortConstants.getSecond();
-		}
-	}
+    public Integer getDirectionConstant() {
+      return flickrSortConstants.getFirst();
+    }
 
-	public LabelTagRenderer getLabelTag()
-	{
-		return new LabelTagRenderer(sortOptions, null, null);
-	}
+    public Integer getReverseConstant() {
+      return flickrSortConstants.getSecond();
+    }
+  }
+
+  public LabelTagRenderer getLabelTag() {
+    return new LabelTagRenderer(sortOptions, null, null);
+  }
 }

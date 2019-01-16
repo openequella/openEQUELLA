@@ -26,30 +26,25 @@ import com.tle.qti.data.QTIQuiz;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.SimpleSectionResult;
 
-public class QTIQuizRenderer
-{
-	private QTIQuiz quiz;
+public class QTIQuizRenderer {
+  private QTIQuiz quiz;
 
-	public QTIQuizRenderer(QTIQuiz quiz)
-	{
-		this.quiz = quiz;
-	}
+  public QTIQuizRenderer(QTIQuiz quiz) {
+    this.quiz = quiz;
+  }
 
-	public SectionRenderable getTitle()
-	{
-		return new SimpleSectionResult(quiz.getTitle());
-	}
+  public SectionRenderable getTitle() {
+    return new SimpleSectionResult(quiz.getTitle());
+  }
 
-	public List<QTIItemRenderer> getQuestions()
-	{
-		ArrayList<QTIItemRenderer> renderedQuestions = new ArrayList<QTIItemRenderer>();
-		Map<String, QTIItem> questions = quiz.getQuestions();
-		Collection<QTIItem> values = questions.values();
-		for( QTIItem qtiItem : values )
-		{
-			renderedQuestions.add(new QTIItemRenderer(qtiItem));
-		}
+  public List<QTIItemRenderer> getQuestions() {
+    ArrayList<QTIItemRenderer> renderedQuestions = new ArrayList<QTIItemRenderer>();
+    Map<String, QTIItem> questions = quiz.getQuestions();
+    Collection<QTIItem> values = questions.values();
+    for (QTIItem qtiItem : values) {
+      renderedQuestions.add(new QTIItemRenderer(qtiItem));
+    }
 
-		return renderedQuestions;
-	}
+    return renderedQuestions;
+  }
 }

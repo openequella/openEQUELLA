@@ -38,115 +38,96 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 
-/**
- * @author aholland / agibb
- */
+/** @author aholland / agibb */
 @Bind
 public class TasksPortletRenderer
-	extends
-		PortletContentRenderer<TasksPortletRenderer.WorkflowTasksPortletRendererModel>
-{
-	@ViewFactory
-	private FreemarkerFactory view;
-	@Inject
-	private FreeTextService freeTextService;
-	@Inject
-	private TaskListFilters filters;
+    extends PortletContentRenderer<TasksPortletRenderer.WorkflowTasksPortletRendererModel> {
+  @ViewFactory private FreemarkerFactory view;
+  @Inject private FreeTextService freeTextService;
+  @Inject private TaskListFilters filters;
 
-	@EventFactory
-	private EventGenerator events;
+  @EventFactory private EventGenerator events;
 
-	@Override
-	public SectionRenderable renderHtml(RenderEventContext context) throws Exception
-	{
-		Collection<TaskListSubsearch> taskFilters = filters.getFilters();
-		List<Search> searches = new ArrayList<Search>();
+  @Override
+  public SectionRenderable renderHtml(RenderEventContext context) throws Exception {
+    Collection<TaskListSubsearch> taskFilters = filters.getFilters();
+    List<Search> searches = new ArrayList<Search>();
 
-		for( TaskListSubsearch filter : taskFilters )
-		{
-			searches.add(filter.getSearch());
-		}
+    for (TaskListSubsearch filter : taskFilters) {
+      searches.add(filter.getSearch());
+    }
 
-		int[] counts = freeTextService.countsFromFilters(searches);
-		int i = 0;
-		List<TaskRow> taskRows = getModel(context).getTasks();
-		for( TaskListSubsearch filter : taskFilters )
-		{
-			TaskRow taskRow = new TaskRow(filter.getName(), counts[i++], new HtmlLinkState(events.getNamedHandler(
-				"execSearch", filter.getIdentifier())), filter.isSecondLevel()); //$NON-NLS-1$
-			taskRows.add(taskRow);
-		}
+    int[] counts = freeTextService.countsFromFilters(searches);
+    int i = 0;
+    List<TaskRow> taskRows = getModel(context).getTasks();
+    for (TaskListSubsearch filter : taskFilters) {
+      TaskRow taskRow =
+          new TaskRow(
+              filter.getName(),
+              counts[i++],
+              new HtmlLinkState(events.getNamedHandler("execSearch", filter.getIdentifier())),
+              filter.isSecondLevel()); // $NON-NLS-1$
+      taskRows.add(taskRow);
+    }
 
-		return view.createResult("portal/tasks.ftl", context); //$NON-NLS-1$
-	}
+    return view.createResult("portal/tasks.ftl", context); // $NON-NLS-1$
+  }
 
-	@EventHandlerMethod
-	public void execSearch(SectionInfo info, String filter)
-	{
-		filters.execSearch(info, filter);
-	}
+  @EventHandlerMethod
+  public void execSearch(SectionInfo info, String filter) {
+    filters.execSearch(info, filter);
+  }
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		return true;
-	}
+  @Override
+  public boolean canView(SectionInfo info) {
+    return true;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "ptl"; //$NON-NLS-1$
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "ptl"; //$NON-NLS-1$
+  }
 
-	@Override
-	public Class<WorkflowTasksPortletRendererModel> getModelClass()
-	{
-		return WorkflowTasksPortletRendererModel.class;
-	}
+  @Override
+  public Class<WorkflowTasksPortletRendererModel> getModelClass() {
+    return WorkflowTasksPortletRendererModel.class;
+  }
 
-	public static class WorkflowTasksPortletRendererModel
-	{
-		private final List<TaskRow> tasks = new ArrayList<TaskRow>();
+  public static class WorkflowTasksPortletRendererModel {
+    private final List<TaskRow> tasks = new ArrayList<TaskRow>();
 
-		public List<TaskRow> getTasks()
-		{
-			return tasks;
-		}
-	}
+    public List<TaskRow> getTasks() {
+      return tasks;
+    }
+  }
 
-	public static class TaskRow
-	{
-		private final Label label;
-		private final int count;
-		private final boolean secondLevel;
-		private final HtmlComponentState link;
+  public static class TaskRow {
+    private final Label label;
+    private final int count;
+    private final boolean secondLevel;
+    private final HtmlComponentState link;
 
-		public TaskRow(Label label, int count, HtmlComponentState link, boolean secondLevel)
-		{
-			this.label = label;
-			this.count = count;
-			this.link = link;
-			this.secondLevel = secondLevel;
-		}
+    public TaskRow(Label label, int count, HtmlComponentState link, boolean secondLevel) {
+      this.label = label;
+      this.count = count;
+      this.link = link;
+      this.secondLevel = secondLevel;
+    }
 
-		public Label getLabel()
-		{
-			return label;
-		}
+    public Label getLabel() {
+      return label;
+    }
 
-		public int getCount()
-		{
-			return count;
-		}
+    public int getCount() {
+      return count;
+    }
 
-		public HtmlComponentState getLink()
-		{
-			return link;
-		}
+    public HtmlComponentState getLink() {
+      return link;
+    }
 
-		public boolean isSecondLevel()
-		{
-			return secondLevel;
-		}
-	}
+    public boolean isSecondLevel() {
+      return secondLevel;
+    }
+  }
 }

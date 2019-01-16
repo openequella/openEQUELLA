@@ -40,90 +40,82 @@ import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.i18n.BundleCache;
 
 @SuppressWarnings("nls")
-public class FreemarkerConfig extends AbstractTemplatingConfig
-{
-	private static final long serialVersionUID = 1L;
+public class FreemarkerConfig extends AbstractTemplatingConfig {
+  private static final long serialVersionUID = 1L;
 
-	private EquellaSyntaxTextArea script;
+  private EquellaSyntaxTextArea script;
 
-	@Override
-	public void setup()
-	{
-		setLayout(new MigLayout("fill, wrap 1", "[grow]", "[][fill,sg1][][fill,sg1][]"));
-		final JLabel titleLabel = new JLabel(getTitleLabelKey());
-		title = new I18nTextField(BundleCache.getLanguages());
+  @Override
+  public void setup() {
+    setLayout(new MigLayout("fill, wrap 1", "[grow]", "[][fill,sg1][][fill,sg1][]"));
+    final JLabel titleLabel = new JLabel(getTitleLabelKey());
+    title = new I18nTextField(BundleCache.getLanguages());
 
-		add(titleLabel, "split 2");
-		add(title, "grow, push");
+    add(titleLabel, "split 2");
+    add(title, "grow, push");
 
-		add(new JLabel(CurrentLocale.get(getEditorLabelKey())));
-		editor = new EquellaSyntaxTextArea(SyntaxConstants.SYNTAX_STYLE_HTML, 500, 2000);
-		add(new RTextScrollPane(editor), "grow, push");
+    add(new JLabel(CurrentLocale.get(getEditorLabelKey())));
+    editor = new EquellaSyntaxTextArea(SyntaxConstants.SYNTAX_STYLE_HTML, 500, 2000);
+    add(new RTextScrollPane(editor), "grow, push");
 
-		add(new JLabel(getString("summarysections.freemarker.label.script")));
-		script = new EquellaSyntaxTextArea(500, 2000);
-		add(new RTextScrollPane(script), "grow, push");
+    add(new JLabel(getString("summarysections.freemarker.label.script")));
+    script = new EquellaSyntaxTextArea(500, 2000);
+    add(new RTextScrollPane(script), "grow, push");
 
-		final JButton showFiles = new JButton(
-			getString("summarydisplay.abstracttemplating.showfiles"));
-		showFiles.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				EntityStagingFileViewer file = new EntityStagingFileViewer(state, clientService
-					.getService(RemoteItemDefinitionService.class), "displaytemplate/");
-				changeDetector.watch(file.getFileTreeModel());
+    final JButton showFiles = new JButton(getString("summarydisplay.abstracttemplating.showfiles"));
+    showFiles.addActionListener(
+        new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            EntityStagingFileViewer file =
+                new EntityStagingFileViewer(
+                    state,
+                    clientService.getService(RemoteItemDefinitionService.class),
+                    "displaytemplate/");
+            changeDetector.watch(file.getFileTreeModel());
 
-				add(file, "grow, push");
-				remove(showFiles);
-				revalidate();
+            add(file, "grow, push");
+            remove(showFiles);
+            revalidate();
 
-				showFiles.removeActionListener(this);
-			}
-		});
-		add(showFiles);
+            showFiles.removeActionListener(this);
+          }
+        });
+    add(showFiles);
 
-		changeDetector = new ChangeDetector();
-		changeDetector.watch(editor);
-		changeDetector.watch(script);
-		changeDetector.watch(title);
-	}
+    changeDetector = new ChangeDetector();
+    changeDetector.watch(editor);
+    changeDetector.watch(script);
+    changeDetector.watch(title);
+  }
 
-	@Override
-	public void save(SummarySectionsConfig element)
-	{
-		PropBagEx xml = new PropBagEx();
-		xml.setNode("markup", editor.getText());
-		xml.setNode("script", script.getText());
-		element.setConfiguration(xml.toString());
-		LanguageBundle titleBundle = title.save();
-		element.setBundleTitle(titleBundle);
-	}
+  @Override
+  public void save(SummarySectionsConfig element) {
+    PropBagEx xml = new PropBagEx();
+    xml.setNode("markup", editor.getText());
+    xml.setNode("script", script.getText());
+    element.setConfiguration(xml.toString());
+    LanguageBundle titleBundle = title.save();
+    element.setBundleTitle(titleBundle);
+  }
 
-	@Override
-	public void load(SummarySectionsConfig element)
-	{
-		String config = element.getConfiguration();
-		title.load(element.getBundleTitle());
-		if( !Check.isEmpty(config) )
-		{
-			try
-			{
-				PropBagEx xml = new PropBagEx(config);
-				editor.setText(xml.getNode("markup"));
-				script.setText(xml.getNode("script"));
-			}
-			catch( Exception e )
-			{
-				editor.setText(config);
-			}
-		}
-	}
+  @Override
+  public void load(SummarySectionsConfig element) {
+    String config = element.getConfiguration();
+    title.load(element.getBundleTitle());
+    if (!Check.isEmpty(config)) {
+      try {
+        PropBagEx xml = new PropBagEx(config);
+        editor.setText(xml.getNode("markup"));
+        script.setText(xml.getNode("script"));
+      } catch (Exception e) {
+        editor.setText(config);
+      }
+    }
+  }
 
-	@Override
-	public String getEditorLabelKey()
-	{
-		return getKey("summarysections.freemarker.label.markup");
-	}
+  @Override
+  public String getEditorLabelKey() {
+    return getKey("summarysections.freemarker.label.markup");
+  }
 }

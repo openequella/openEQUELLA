@@ -24,23 +24,20 @@ import com.tle.core.item.serializer.AttachmentSerializer;
 import com.tle.core.item.serializer.ItemDeserializerEditor;
 import com.tle.core.item.serializer.ItemSerializerProvider;
 
-public class ItemSerializerModule extends PluginTrackerModule
-{
-	@Override
-	protected String getPluginId()
-	{
-		return "com.tle.web.api.item.equella.serializer";
-	}
+public class ItemSerializerModule extends PluginTrackerModule {
+  @Override
+  protected String getPluginId() {
+    return "com.tle.web.api.item.equella.serializer";
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	protected void configure()
-	{
-		bindTracker(ItemSerializerProvider.class, "serializer", "bean");
-		bindTracker(ItemDeserializerEditor.class, "deserializer", "bean");
-		bindTracker(AttachmentSerializer.class, "attachmentSerializer", "bean").setIdParam("type");
-		bindTracker(AbstractAttachmentEditor.class, "attachmentEditor", "bean").setIdParam("class");
-		bindTracker(ItemMetadataListener.class, "metadataListener", "bean");
-		bindTracker(ItemAttachmentListener.class, "attachmentListener", "bean");
-	}
+  @Override
+  @SuppressWarnings("nls")
+  protected void configure() {
+    bindTracker(ItemSerializerProvider.class, "serializer", "bean");
+    bindTracker(ItemDeserializerEditor.class, "deserializer", "bean");
+    bindTracker(AttachmentSerializer.class, "attachmentSerializer", "bean").setIdParam("type");
+    bindTracker(AbstractAttachmentEditor.class, "attachmentEditor", "bean").setIdParam("class");
+    bindTracker(ItemMetadataListener.class, "metadataListener", "bean");
+    bindTracker(ItemAttachmentListener.class, "attachmentListener", "bean");
+  }
 }

@@ -25,10 +25,8 @@ import com.tle.core.taxonomy.TaxonomyDao;
 
 @Bind(TaxonomyDao.class)
 @Singleton
-public class TaxonomyDaoImpl extends AbstractEntityDaoImpl<Taxonomy> implements TaxonomyDao
-{
-	public TaxonomyDaoImpl()
-	{
-		super(Taxonomy.class);
-	}
+public class TaxonomyDaoImpl extends AbstractEntityDaoImpl<Taxonomy> implements TaxonomyDao {
+  public TaxonomyDaoImpl() {
+    super(Taxonomy.class);
+  }
 }

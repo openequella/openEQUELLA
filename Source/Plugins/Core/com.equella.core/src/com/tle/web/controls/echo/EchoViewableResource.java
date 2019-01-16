@@ -48,153 +48,153 @@ import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.resource.AbstractWrappedResource;
 
 @SuppressWarnings("nls")
-public class EchoViewableResource extends AbstractWrappedResource
-{
-	static
-	{
-		PluginResourceHandler.init(EchoViewableResource.class);
-	}
+public class EchoViewableResource extends AbstractWrappedResource {
+  static {
+    PluginResourceHandler.init(EchoViewableResource.class);
+  }
 
-	@PlugKey("echo.details.type")
-	private static Label TYPE;
-	@PlugKey("echo.details.mimetype")
-	private static Label MIMETYPE;
-	@PlugKey("echo.details.title")
-	private static Label NAME;
-	@PlugKey("echo.details.course")
-	private static Label COURSE;
-	@PlugKey("echo.details.section")
-	private static Label SECTION;
-	@PlugKey("echo.details.duration")
-	private static Label DURATION;
-	@PlugKey("echo.details.presenters")
-	private static Label PRESENTERS;
-	@PlugKey("echo.details.published")
-	private static Label PUBLISHED;
-	@PlugKey("echo.details.modified")
-	private static Label CAPTURED;
+  @PlugKey("echo.details.type")
+  private static Label TYPE;
 
-	private final CustomAttachment echoAttachment;
+  @PlugKey("echo.details.mimetype")
+  private static Label MIMETYPE;
 
-	private final EchoService echoService;
+  @PlugKey("echo.details.title")
+  private static Label NAME;
 
-	@Override
-	public String getMimeType()
-	{
-		return EchoUtils.MIME_TYPE;
-	}
+  @PlugKey("echo.details.course")
+  private static Label COURSE;
 
-	@Override
-	public Bookmark createCanonicalUrl()
-	{
-		throw new UnsupportedOperationException("Must use Echo Viewer");
-	}
+  @PlugKey("echo.details.section")
+  private static Label SECTION;
 
-	@Override
-	public boolean isExternalResource()
-	{
-		return true;
-	}
+  @PlugKey("echo.details.duration")
+  private static Label DURATION;
 
-	@Override
-	public boolean hasContentStream()
-	{
-		return false;
-	}
+  @PlugKey("echo.details.presenters")
+  private static Label PRESENTERS;
 
-	public EchoViewableResource(ViewableResource resource, CustomAttachment attachment, EchoService echoService,
-		SelectionService selection, SectionInfo info)
-	{
-		super(resource);
-		this.echoAttachment = attachment;
-		this.echoService = echoService;
+  @PlugKey("echo.details.published")
+  private static Label PUBLISHED;
 
-		if( selection.getCurrentSession(info) != null )
-		{
-			resource.setAttribute(ViewableResource.PREFERRED_LINK_TARGET, "_blank");
-		}
-	}
+  @PlugKey("echo.details.modified")
+  private static Label CAPTURED;
 
-	@Override
-	public List<AttachmentDetail> getCommonAttachmentDetails()
-	{
-		List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
+  private final CustomAttachment echoAttachment;
 
-		// Type
-		commonDetails.add(makeDetail(TYPE, MIMETYPE));
+  private final EchoService echoService;
 
-		EchoAttachmentData ed = getEchoAttachmentData();
+  @Override
+  public String getMimeType() {
+    return EchoUtils.MIME_TYPE;
+  }
 
-		if( ed != null )
-		{
-			EchoData echoData = ed.getEchoData();
+  @Override
+  public Bookmark createCanonicalUrl() {
+    throw new UnsupportedOperationException("Must use Echo Viewer");
+  }
 
-			// Echo Name
-			addDetail(commonDetails, echoData.getEchoTitle(), NAME);
+  @Override
+  public boolean isExternalResource() {
+    return true;
+  }
 
-			// Course Name
-			addDetail(commonDetails, echoData.getCourseName(), COURSE);
+  @Override
+  public boolean hasContentStream() {
+    return false;
+  }
 
-			// Section Name
-			addDetail(commonDetails, echoData.getSectionName(), SECTION);
+  public EchoViewableResource(
+      ViewableResource resource,
+      CustomAttachment attachment,
+      EchoService echoService,
+      SelectionService selection,
+      SectionInfo info) {
+    super(resource);
+    this.echoAttachment = attachment;
+    this.echoService = echoService;
 
-			// Duration
-			addDetail(commonDetails, EchoUtils.formatDuration(echoData.getEchoDuration()), DURATION);
+    if (selection.getCurrentSession(info) != null) {
+      resource.setAttribute(ViewableResource.PREFERRED_LINK_TARGET, "_blank");
+    }
+  }
 
-			// Presenters
-			List<SectionRenderable> presenterList = Lists.transform(ed.getPresenters(),
-				new Function<EchoPresenter, SectionRenderable>()
-				{
-					@Override
-					public SectionRenderable apply(EchoPresenter input)
-					{
-						TextLabel userLabel = new TextLabel(input.getFirstname() + " " + input.getLastname());
-						String emailAddress = input.getEmail();
-						if( Check.isEmpty(emailAddress) )
-						{
-							return new LabelRenderer(userLabel);
-						}
-						return new LinkRenderer(new HtmlLinkState(userLabel, new SimpleBookmark("mailto:"
-							+ emailAddress)));
-					}
-				});
-			commonDetails.add(makeDetail(PRESENTERS, new DelimitedRenderer(", ", presenterList.toArray())));
+  @Override
+  public List<AttachmentDetail> getCommonAttachmentDetails() {
+    List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
 
-			// Published
-			TagRenderer published = JQueryTimeAgo.timeAgoTag(echoData.getEchoPublishedDate());
-			commonDetails.add(makeDetail(PUBLISHED, published));
+    // Type
+    commonDetails.add(makeDetail(TYPE, MIMETYPE));
 
-			// Captured
-			TagRenderer modified = JQueryTimeAgo.timeAgoTag(echoData.getEchoCapturedDate());
-			commonDetails.add(makeDetail(CAPTURED, modified));
-		}
+    EchoAttachmentData ed = getEchoAttachmentData();
 
-		return commonDetails;
-	}
+    if (ed != null) {
+      EchoData echoData = ed.getEchoData();
 
-	private EchoAttachmentData getEchoAttachmentData()
-	{
-		EchoAttachmentData ed = null;
-		try
-		{
-			ed = echoService.getMapper().readValue((String) echoAttachment.getData(EchoUtils.PROPERTY_ECHO_DATA),
-				EchoAttachmentData.class);
+      // Echo Name
+      addDetail(commonDetails, echoData.getEchoTitle(), NAME);
 
-		}
-		catch( Exception e )
-		{
-			throw new RuntimeException(e);
-		}
+      // Course Name
+      addDetail(commonDetails, echoData.getCourseName(), COURSE);
 
-		return ed;
-	}
+      // Section Name
+      addDetail(commonDetails, echoData.getSectionName(), SECTION);
 
-	private void addDetail(List<AttachmentDetail> commonDetails, String detail, Label label)
-	{
-		if( !Check.isEmpty(detail) )
-		{
-			commonDetails.add(makeDetail(label, new TextLabel(detail)));
-		}
-	}
+      // Duration
+      addDetail(commonDetails, EchoUtils.formatDuration(echoData.getEchoDuration()), DURATION);
 
+      // Presenters
+      List<SectionRenderable> presenterList =
+          Lists.transform(
+              ed.getPresenters(),
+              new Function<EchoPresenter, SectionRenderable>() {
+                @Override
+                public SectionRenderable apply(EchoPresenter input) {
+                  TextLabel userLabel =
+                      new TextLabel(input.getFirstname() + " " + input.getLastname());
+                  String emailAddress = input.getEmail();
+                  if (Check.isEmpty(emailAddress)) {
+                    return new LabelRenderer(userLabel);
+                  }
+                  return new LinkRenderer(
+                      new HtmlLinkState(userLabel, new SimpleBookmark("mailto:" + emailAddress)));
+                }
+              });
+      commonDetails.add(
+          makeDetail(PRESENTERS, new DelimitedRenderer(", ", presenterList.toArray())));
+
+      // Published
+      TagRenderer published = JQueryTimeAgo.timeAgoTag(echoData.getEchoPublishedDate());
+      commonDetails.add(makeDetail(PUBLISHED, published));
+
+      // Captured
+      TagRenderer modified = JQueryTimeAgo.timeAgoTag(echoData.getEchoCapturedDate());
+      commonDetails.add(makeDetail(CAPTURED, modified));
+    }
+
+    return commonDetails;
+  }
+
+  private EchoAttachmentData getEchoAttachmentData() {
+    EchoAttachmentData ed = null;
+    try {
+      ed =
+          echoService
+              .getMapper()
+              .readValue(
+                  (String) echoAttachment.getData(EchoUtils.PROPERTY_ECHO_DATA),
+                  EchoAttachmentData.class);
+
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+
+    return ed;
+  }
+
+  private void addDetail(List<AttachmentDetail> commonDetails, String detail, Label label) {
+    if (!Check.isEmpty(detail)) {
+      commonDetails.add(makeDetail(label, new TextLabel(detail)));
+    }
+  }
 }

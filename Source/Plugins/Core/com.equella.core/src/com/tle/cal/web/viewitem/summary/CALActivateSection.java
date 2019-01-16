@@ -29,35 +29,28 @@ import com.tle.web.sections.TreeIndexed;
 
 @TreeIndexed
 @Bind
-public class CALActivateSection extends AbstractActivateSection
-{
-	@Inject
-	private CALWebServiceImpl calWebService;
-	@Inject
-	private CALPercentageOverrideSection overrideSection;
+public class CALActivateSection extends AbstractActivateSection {
+  @Inject private CALWebServiceImpl calWebService;
+  @Inject private CALPercentageOverrideSection overrideSection;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.registerSections(overrideSection, id);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.registerSections(overrideSection, id);
+  }
 
-	@Override
-	protected CALPercentageOverrideSection getOverrideSection()
-	{
-		return overrideSection;
-	}
+  @Override
+  protected CALPercentageOverrideSection getOverrideSection() {
+    return overrideSection;
+  }
 
-	@Override
-	protected String getActivationType()
-	{
-		return CALConstants.ACTIVATION_TYPE;
-	}
+  @Override
+  protected String getActivationType() {
+    return CALConstants.ACTIVATION_TYPE;
+  }
 
-	@Override
-	protected CopyrightWebService<? extends Holding> getCopyrightServiceImpl()
-	{
-		return calWebService;
-	}
+  @Override
+  protected CopyrightWebService<? extends Holding> getCopyrightServiceImpl() {
+    return calWebService;
+  }
 }

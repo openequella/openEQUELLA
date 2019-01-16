@@ -21,18 +21,17 @@ import com.tle.integration.lti.canvasextension.CanvasContentItemPlacementReturn;
 import com.tle.integration.lti.canvasextension.CanvasSignon;
 import com.tle.web.sections.equella.guice.SectionsModule;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public class CanvasIntegrationModule extends SectionsModule
-{
-	@Override
-	protected void configure()
-	{
-		bind(Object.class).annotatedWith(Names.named("/canvassignon")).toProvider(node(CanvasSignon.class));
+public class CanvasIntegrationModule extends SectionsModule {
+  @Override
+  protected void configure() {
+    bind(Object.class)
+        .annotatedWith(Names.named("/canvassignon"))
+        .toProvider(node(CanvasSignon.class));
 
-		bind(Object.class).annotatedWith(Names.named("/canvascipreturn"))
-			.toProvider(node(CanvasContentItemPlacementReturn.class));
-	}
+    bind(Object.class)
+        .annotatedWith(Names.named("/canvascipreturn"))
+        .toProvider(node(CanvasContentItemPlacementReturn.class));
+  }
 }

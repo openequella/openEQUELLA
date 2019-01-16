@@ -24,27 +24,19 @@ import javax.ws.rs.core.UriBuilder;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 
-/**
- * 
- */
+/** */
 @Bind(UrlLinkService.class)
-public class UrlLinkServiceImpl implements UrlLinkService
-{
-	@Inject
-	private InstitutionService institutionService;
+public class UrlLinkServiceImpl implements UrlLinkService {
+  @Inject private InstitutionService institutionService;
 
-	@Override
-	public UriBuilder getMethodUriBuilder(Class<?> resource, String method)
-	{
-		try
-		{
-			UriBuilder builder = UriBuilder.fromUri(institutionService.getInstitutionUrl().toURI());
-			builder.path("api");
-			return builder.path(resource).path(resource, method);
-		}
-		catch( URISyntaxException e )
-		{
-			throw new RuntimeException(e);
-		}
-	}
+  @Override
+  public UriBuilder getMethodUriBuilder(Class<?> resource, String method) {
+    try {
+      UriBuilder builder = UriBuilder.fromUri(institutionService.getInstitutionUrl().toURI());
+      builder.path("api");
+      return builder.path(resource).path(resource, method);
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

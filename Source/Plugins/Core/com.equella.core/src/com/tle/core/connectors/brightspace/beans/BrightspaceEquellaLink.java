@@ -20,167 +20,149 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @XmlRootElement
-public class BrightspaceEquellaLink
-{
-	@JsonProperty("OrgUnitName")
-	private String orgUnitName;
-	@JsonProperty("OrgUnitId")
-	private int orgUnitId;
-	@JsonProperty("OrgUnitCode")
-	private String orgUnitCode;
-	@JsonProperty("ParentModuleName")
-	private String parentModuleName;
-	@JsonProperty("ParentModuelId")
-	private int parentModuleId;
-	@JsonProperty("TopicName")
-	private String topicName;
-	@JsonProperty("TopicId")
-	private int topicId;
-	@JsonProperty("LastModifiedDate")
-	private String lastModifiedDate;
-	@JsonProperty("Visible")
-	private Boolean visible;
-	@JsonProperty("D2LTopicLink")
-	private String d2lTopicLink;
-	@JsonProperty("LTILinkId")
-	private int ltiLinkId;
-	@JsonProperty("LTILink")
-	private String ltiLink;
-	@JsonProperty("TotalEquellaLinkUsageCount")
-	private int totalEquellaLinkUsageCount;
+public class BrightspaceEquellaLink {
+  @JsonProperty("OrgUnitName")
+  private String orgUnitName;
 
-	public String getOrgUnitName()
-	{
-		return orgUnitName;
-	}
+  @JsonProperty("OrgUnitId")
+  private int orgUnitId;
 
-	public void setOrgUnitName(String orgUnitName)
-	{
-		this.orgUnitName = orgUnitName;
-	}
+  @JsonProperty("OrgUnitCode")
+  private String orgUnitCode;
 
-	public int getOrgUnitId()
-	{
-		return orgUnitId;
-	}
+  @JsonProperty("ParentModuleName")
+  private String parentModuleName;
 
-	public void setOrgUnitId(int orgUnitId)
-	{
-		this.orgUnitId = orgUnitId;
-	}
+  @JsonProperty("ParentModuelId")
+  private int parentModuleId;
 
-	public String getOrgUnitCode()
-	{
-		return orgUnitCode;
-	}
+  @JsonProperty("TopicName")
+  private String topicName;
 
-	public void setOrgUnitCode(String orgUnitCode)
-	{
-		this.orgUnitCode = orgUnitCode;
-	}
+  @JsonProperty("TopicId")
+  private int topicId;
 
-	public String getParentModuleName()
-	{
-		return parentModuleName;
-	}
+  @JsonProperty("LastModifiedDate")
+  private String lastModifiedDate;
 
-	public void setParentModuleName(String parentModuleName)
-	{
-		this.parentModuleName = parentModuleName;
-	}
+  @JsonProperty("Visible")
+  private Boolean visible;
 
-	public int getParentModuleId()
-	{
-		return parentModuleId;
-	}
+  @JsonProperty("D2LTopicLink")
+  private String d2lTopicLink;
 
-	public void setParentModuleId(int parentModuleId)
-	{
-		this.parentModuleId = parentModuleId;
-	}
+  @JsonProperty("LTILinkId")
+  private int ltiLinkId;
 
-	public String getTopicName()
-	{
-		return topicName;
-	}
+  @JsonProperty("LTILink")
+  private String ltiLink;
 
-	public void setTopicName(String topicName)
-	{
-		this.topicName = topicName;
-	}
+  @JsonProperty("TotalEquellaLinkUsageCount")
+  private int totalEquellaLinkUsageCount;
 
-	public int getTopicId()
-	{
-		return topicId;
-	}
+  public String getOrgUnitName() {
+    return orgUnitName;
+  }
 
-	public void setTopicId(int topicId)
-	{
-		this.topicId = topicId;
-	}
+  public void setOrgUnitName(String orgUnitName) {
+    this.orgUnitName = orgUnitName;
+  }
 
-	public String getLastModifiedDate()
-	{
-		return lastModifiedDate;
-	}
+  public int getOrgUnitId() {
+    return orgUnitId;
+  }
 
-	public void setLastModifiedDate(String lastModifiedDate)
-	{
-		this.lastModifiedDate = lastModifiedDate;
-	}
+  public void setOrgUnitId(int orgUnitId) {
+    this.orgUnitId = orgUnitId;
+  }
 
-	public Boolean getVisible()
-	{
-		return visible;
-	}
+  public String getOrgUnitCode() {
+    return orgUnitCode;
+  }
 
-	public void setVisible(Boolean visible)
-	{
-		this.visible = visible;
-	}
+  public void setOrgUnitCode(String orgUnitCode) {
+    this.orgUnitCode = orgUnitCode;
+  }
 
-	public String getD2lTopicLink()
-	{
-		return d2lTopicLink;
-	}
+  public String getParentModuleName() {
+    return parentModuleName;
+  }
 
-	public void setD2lTopicLink(String d2lTopicLink)
-	{
-		this.d2lTopicLink = d2lTopicLink;
-	}
+  public void setParentModuleName(String parentModuleName) {
+    this.parentModuleName = parentModuleName;
+  }
 
-	public int getLtiLinkId()
-	{
-		return ltiLinkId;
-	}
+  public int getParentModuleId() {
+    return parentModuleId;
+  }
 
-	public void setLtiLinkId(int ltiLinkId)
-	{
-		this.ltiLinkId = ltiLinkId;
-	}
+  public void setParentModuleId(int parentModuleId) {
+    this.parentModuleId = parentModuleId;
+  }
 
-	public String getLtiLink()
-	{
-		return ltiLink;
-	}
+  public String getTopicName() {
+    return topicName;
+  }
 
-	public void setLtiLink(String ltiLink)
-	{
-		this.ltiLink = ltiLink;
-	}
+  public void setTopicName(String topicName) {
+    this.topicName = topicName;
+  }
 
-	public int getTotalEquellaLinkUsageCount()
-	{
-		return totalEquellaLinkUsageCount;
-	}
+  public int getTopicId() {
+    return topicId;
+  }
 
-	public void setTotalEquellaLinkUsageCount(int totalEquellaLinkUsageCount)
-	{
-		this.totalEquellaLinkUsageCount = totalEquellaLinkUsageCount;
-	}
+  public void setTopicId(int topicId) {
+    this.topicId = topicId;
+  }
+
+  public String getLastModifiedDate() {
+    return lastModifiedDate;
+  }
+
+  public void setLastModifiedDate(String lastModifiedDate) {
+    this.lastModifiedDate = lastModifiedDate;
+  }
+
+  public Boolean getVisible() {
+    return visible;
+  }
+
+  public void setVisible(Boolean visible) {
+    this.visible = visible;
+  }
+
+  public String getD2lTopicLink() {
+    return d2lTopicLink;
+  }
+
+  public void setD2lTopicLink(String d2lTopicLink) {
+    this.d2lTopicLink = d2lTopicLink;
+  }
+
+  public int getLtiLinkId() {
+    return ltiLinkId;
+  }
+
+  public void setLtiLinkId(int ltiLinkId) {
+    this.ltiLinkId = ltiLinkId;
+  }
+
+  public String getLtiLink() {
+    return ltiLink;
+  }
+
+  public void setLtiLink(String ltiLink) {
+    this.ltiLink = ltiLink;
+  }
+
+  public int getTotalEquellaLinkUsageCount() {
+    return totalEquellaLinkUsageCount;
+  }
+
+  public void setTotalEquellaLinkUsageCount(int totalEquellaLinkUsageCount) {
+    this.totalEquellaLinkUsageCount = totalEquellaLinkUsageCount;
+  }
 }

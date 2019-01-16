@@ -26,11 +26,12 @@ import com.tle.web.resources.ResourcesService;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class ItemAdminPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider
-{
-	public ItemAdminPrivilegeTreeProvider()
-	{
-		super(Type.MANAGEMENT_PAGE, ResourcesService.getResourceHelper(ItemAdminPrivilegeTreeProvider.class).key(
-			"securitytree.itemadmin"), new SettingsTarget("itemadmin"));
-	}
+public class ItemAdminPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider {
+  public ItemAdminPrivilegeTreeProvider() {
+    super(
+        Type.MANAGEMENT_PAGE,
+        ResourcesService.getResourceHelper(ItemAdminPrivilegeTreeProvider.class)
+            .key("securitytree.itemadmin"),
+        new SettingsTarget("itemadmin"));
+  }
 }

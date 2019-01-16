@@ -21,13 +21,12 @@ import java.util.List;
 import com.tle.beans.entity.Schema;
 import com.tle.core.entity.dao.AbstractEntityDao;
 
-public interface SchemaDao extends AbstractEntityDao<Schema>
-{
-	List<String> getExportSchemaTypes();
+public interface SchemaDao extends AbstractEntityDao<Schema> {
+  List<String> getExportSchemaTypes();
 
-	List<String> getImportSchemaTypes(long id);
+  List<String> getImportSchemaTypes(long id);
 
-	List<Schema> getSchemasForExportSchemaType(String type);
+  List<Schema> getSchemasForExportSchemaType(String type);
 
-	List<String> getAllCitations();
+  List<String> getAllCitations();
 }

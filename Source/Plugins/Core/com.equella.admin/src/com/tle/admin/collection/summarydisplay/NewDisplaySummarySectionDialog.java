@@ -30,44 +30,42 @@ import com.tle.common.i18n.LangUtils;
 import com.tle.core.plugins.PluginService;
 
 @SuppressWarnings("nls")
-public class NewDisplaySummarySectionDialog extends AbstractChoiceDialog<SummarySectionsConfig>
-{
-	private final Map<String, String> defaultNames = new HashMap<String, String>();
+public class NewDisplaySummarySectionDialog extends AbstractChoiceDialog<SummarySectionsConfig> {
+  private final Map<String, String> defaultNames = new HashMap<String, String>();
 
-	private static String KEY_PFX = AbstractPluginService.getMyPluginId(NewDisplaySummarySectionDialog.class) + ".";
+  private static String KEY_PFX =
+      AbstractPluginService.getMyPluginId(NewDisplaySummarySectionDialog.class) + ".";
 
-	protected static String getString(String key)
-	{
-		return CurrentLocale.get(getKey(key));
-	}
+  protected static String getString(String key) {
+    return CurrentLocale.get(getKey(key));
+  }
 
-	protected static String getKey(String key)
-	{
-		return KEY_PFX+key;
-	}
+  protected static String getKey(String key) {
+    return KEY_PFX + key;
+  }
 
-	public NewDisplaySummarySectionDialog(final PluginService pluginService)
-	{
-		super(getString("summarysections.adddialog.instructions"), getString("summarysections.adddialog.title"));
+  public NewDisplaySummarySectionDialog(final PluginService pluginService) {
+    super(
+        getString("summarysections.adddialog.instructions"),
+        getString("summarysections.adddialog.title"));
 
-		for( Extension ext : pluginService.getConnectedExtensions("com.tle.admin.collection.tool", "summaryDisplay") )
-		{
-			final String id = ext.getParameter("id").valueAsString();
-			addChoice(id, CurrentLocale.get(ext.getParameter("nameKey").valueAsString()));
-			defaultNames.put(id, ext.getParameter("defaultNameKey").valueAsString());
-		}
-	}
+    for (Extension ext :
+        pluginService.getConnectedExtensions("com.tle.admin.collection.tool", "summaryDisplay")) {
+      final String id = ext.getParameter("id").valueAsString();
+      addChoice(id, CurrentLocale.get(ext.getParameter("nameKey").valueAsString()));
+      defaultNames.put(id, ext.getParameter("defaultNameKey").valueAsString());
+    }
+  }
 
-	@Override
-	protected void addClicked(String key)
-	{
-		selection = new SummarySectionsConfig(key);
-		String title = CurrentLocale.get(defaultNames.get(key));
-		selection.setTitle(title);
-		LanguageBundle bundleTitle = new LanguageBundle();
-		LangUtils.setString(bundleTitle, CurrentLocale.getLocale(), title);
-		selection.setBundleTitle(bundleTitle);
-		selection.setUuid(UUID.randomUUID().toString());
-		dialog.dispose();
-	}
+  @Override
+  protected void addClicked(String key) {
+    selection = new SummarySectionsConfig(key);
+    String title = CurrentLocale.get(defaultNames.get(key));
+    selection.setTitle(title);
+    LanguageBundle bundleTitle = new LanguageBundle();
+    LangUtils.setString(bundleTitle, CurrentLocale.getLocale(), title);
+    selection.setBundleTitle(bundleTitle);
+    selection.setUuid(UUID.randomUUID().toString());
+    dialog.dispose();
+  }
 }

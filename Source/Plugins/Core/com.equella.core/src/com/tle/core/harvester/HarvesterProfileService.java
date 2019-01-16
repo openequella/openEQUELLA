@@ -24,9 +24,7 @@ import com.tle.core.entity.EntityEditingBean;
 import com.tle.core.entity.service.AbstractEntityService;
 
 public interface HarvesterProfileService
-	extends
-		AbstractEntityService<EntityEditingBean, HarvesterProfile>,
-		RemoteHarvesterProfileService
-{
-	void updateLastRun(HarvesterProfile profile, Date lastRun);
+    extends AbstractEntityService<EntityEditingBean, HarvesterProfile>,
+        RemoteHarvesterProfileService {
+  void updateLastRun(HarvesterProfile profile, Date lastRun);
 }

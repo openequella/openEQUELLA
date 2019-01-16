@@ -60,385 +60,326 @@ import com.tle.web.template.Decorations;
 import com.tle.web.viewurl.ViewItemUrl;
 
 @SuppressWarnings("nls")
-public class RootSelectionSection extends AbstractRootModalSessionSection<RootSelectionSection.RootSelectionModel>
-{
-	public static enum Layout
-	{
-		NORMAL("selection/layout.ftl"), SKINNY("selection/skinny-layout.ftl"), COURSE("selection/course-layout.ftl");
+public class RootSelectionSection
+    extends AbstractRootModalSessionSection<RootSelectionSection.RootSelectionModel> {
+  public static enum Layout {
+    NORMAL("selection/layout.ftl"),
+    SKINNY("selection/skinny-layout.ftl"),
+    COURSE("selection/course-layout.ftl");
 
-		private final String ftl;
+    private final String ftl;
 
-		private Layout(String ftl)
-		{
-			this.ftl = ftl;
-		}
+    private Layout(String ftl) {
+      this.ftl = ftl;
+    }
 
-		public String getFtl()
-		{
-			return ftl;
-		}
-	}
+    public String getFtl() {
+      return ftl;
+    }
+  }
 
-	@PlugURL("images/close.png")
-	private static String CLOSE_PNG_URL;
-	@PlugKey("button.close")
-	private static Label CLOSE_BUTTON_LABEL;
-	@PlugKey("header.product")
-	private static Label LABEL_PRODUCT;
+  @PlugURL("images/close.png")
+  private static String CLOSE_PNG_URL;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("button.close")
+  private static Label CLOSE_BUTTON_LABEL;
 
-	@Inject
-	private SelectionService selectionService;
+  @PlugKey("header.product")
+  private static Label LABEL_PRODUCT;
 
-	@TreeLookup
-	private ModalErrorSection errorSection;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
 
-	@Inject
-	@Component(name = "n")
-	private NavBar navBar;
-	@Component(name = "a", parameter = "a", ignoreForContext = ViewItemUrl.VIEWONLY_CONTEXT)
-	private SingleSelectionList<SelectionNavAction> navActions;
-	@Inject
-	private PluginTracker<SelectionNavAction> navActionTracker;
+  @Inject private SelectionService selectionService;
 
-	@Override
-	protected void setupModelForRender(SectionInfo info, RootSelectionModel model)
-	{
-		try
-		{
-			final SelectionSession session = selectionService.getCurrentSession(info);
-			final Decorations decorations = Decorations.getDecorations(info);
-			final Layout layout = session.getLayout();
+  @TreeLookup private ModalErrorSection errorSection;
 
-			model.setLayout(layout);
-			model.setDecorations(decorations);
-			model.setSelectItems(session.isSelectItem());
-			model.setSelectAttachments(session.isSelectAttachments());
+  @Inject
+  @Component(name = "n")
+  private NavBar navBar;
 
-			NavBarBuilder buildMiddle = navBar.getState(info).buildMiddle();
+  @Component(name = "a", parameter = "a", ignoreForContext = ViewItemUrl.VIEWONLY_CONTEXT)
+  private SingleSelectionList<SelectionNavAction> navActions;
 
-			List<Option<SelectionNavAction>> actions = navActions.getListModel().getOptions(info);
-			if( !actions.isEmpty() )
-			{
-				for( Iterator<Option<SelectionNavAction>> iter = actions.iterator(); iter.hasNext(); )
-				{
-					SelectionNavAction navAction = iter.next().getObject();
-					HtmlLinkState actionLink = new HtmlLinkState(navAction.getLabelForNavAction(info));
-					actionLink.setClickHandler(new OverrideHandler(events.getNamedHandler("navActionsSelected",
-						navAction.getActionType())));
+  @Inject private PluginTracker<SelectionNavAction> navActionTracker;
 
-					buildMiddle.action("link", actionLink);
+  @Override
+  protected void setupModelForRender(SectionInfo info, RootSelectionModel model) {
+    try {
+      final SelectionSession session = selectionService.getCurrentSession(info);
+      final Decorations decorations = Decorations.getDecorations(info);
+      final Layout layout = session.getLayout();
 
-					if( iter.hasNext() )
-					{
-						buildMiddle.divider();
-					}
-				}
-			}
+      model.setLayout(layout);
+      model.setDecorations(decorations);
+      model.setSelectItems(session.isSelectItem());
+      model.setSelectAttachments(session.isSelectAttachments());
 
-			if( !session.isCancelDisabled() )
-			{
-				final HtmlLinkState close = new HtmlLinkState(CLOSE_BUTTON_LABEL, events.getNamedHandler("cancelled"));
-				final ImageButtonRenderer renderer = new ImageButtonRenderer(close);
-				renderer.setNestedRenderable(new LabelRenderer(CLOSE_BUTTON_LABEL));
-				renderer.setSource(CLOSE_PNG_URL);
-				renderer.addClass("close");
-				NavBarBuilder buildRight = navBar.getState(info).buildRight();
-				buildRight.content(renderer);
-			}
+      NavBarBuilder buildMiddle = navBar.getState(info).buildMiddle();
 
-			SelectionNavAction selectedValue = navActions.getSelectedValue(info);
-			if( selectedValue != null )
-			{
-				if( selectedValue.isShowBreadcrumbs() )
-				{
-					model.setBreadcrumbs(Breadcrumbs.get(info));
-				}
-			}
-			else if( actions.size() == 0 )
-			{
-				model.setHideDividers("no-dividers");
-			}
+      List<Option<SelectionNavAction>> actions = navActions.getListModel().getOptions(info);
+      if (!actions.isEmpty()) {
+        for (Iterator<Option<SelectionNavAction>> iter = actions.iterator(); iter.hasNext(); ) {
+          SelectionNavAction navAction = iter.next().getObject();
+          HtmlLinkState actionLink = new HtmlLinkState(navAction.getLabelForNavAction(info));
+          actionLink.setClickHandler(
+              new OverrideHandler(
+                  events.getNamedHandler("navActionsSelected", navAction.getActionType())));
 
-			navBar.getState(info).addClass("navbar-equella-selection " + layout.toString().toLowerCase());
-		}
-		catch( Exception e )
-		{
-			throw new RootSelectionException(e);
-		}
-	}
+          buildMiddle.action("link", actionLink);
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+          if (iter.hasNext()) {
+            buildMiddle.divider();
+          }
+        }
+      }
 
-		navActions.setAlwaysSelect(true);
-		navActions.setListModel(new NavActionsListModel());
+      if (!session.isCancelDisabled()) {
+        final HtmlLinkState close =
+            new HtmlLinkState(CLOSE_BUTTON_LABEL, events.getNamedHandler("cancelled"));
+        final ImageButtonRenderer renderer = new ImageButtonRenderer(close);
+        renderer.setNestedRenderable(new LabelRenderer(CLOSE_BUTTON_LABEL));
+        renderer.setSource(CLOSE_PNG_URL);
+        renderer.addClass("close");
+        NavBarBuilder buildRight = navBar.getState(info).buildRight();
+        buildRight.content(renderer);
+      }
 
-		NavBarBuilder navLeft = navBar.buildLeft();
-		navLeft.content(new SpanRenderer("logo", LABEL_PRODUCT));
-	}
+      SelectionNavAction selectedValue = navActions.getSelectedValue(info);
+      if (selectedValue != null) {
+        if (selectedValue.isShowBreadcrumbs()) {
+          model.setBreadcrumbs(Breadcrumbs.get(info));
+        }
+      } else if (actions.size() == 0) {
+        model.setHideDividers("no-dividers");
+      }
 
-	@EventHandlerMethod
-	public void cancelled(SectionInfo info)
-	{
-		selectionService.getCurrentSession(info).clearResources();
-		selectionService.returnFromSession(info);
-	}
+      navBar.getState(info).addClass("navbar-equella-selection " + layout.toString().toLowerCase());
+    } catch (Exception e) {
+      throw new RootSelectionException(e);
+    }
+  }
 
-	@EventHandlerMethod
-	public void navActionsSelected(SectionInfo info, String actionType)
-	{
-		List<Option<SelectionNavAction>> actions = navActions.getListModel().getOptions(info);
-		for( Option<SelectionNavAction> action : actions )
-		{
-			SelectionNavAction selectedValue = action.getObject();
-			if( selectedValue.getActionType().equals(actionType) )
-			{
-				final SectionInfo fwd = selectedValue.createForwardForNavAction(info,
-					selectionService.getCurrentSession(info));
-				navActions.setSelectedValue(fwd, selectedValue);
-				info.forwardAsBookmark(fwd);
-				return;
-			}
-		}
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	protected SectionResult getFinalRenderable(RenderEventContext context, RootSelectionModel model)
-	{
-		if( !model.isNoTemplate() )
-		{
-			return viewFactory.createTemplateResult(model.getLayout().getFtl(), context);
-		}
-		return model.getParts().getNamedResult(context, "body");
-	}
+    navActions.setAlwaysSelect(true);
+    navActions.setListModel(new NavActionsListModel());
 
-	@Override
-	public void forwardCreated(SectionInfo info, SectionInfo forward)
-	{
-		super.forwardCreated(info, forward);
-		final SelectionSession session = selectionService.getCurrentSession(info);
-		if( session != null )
-		{
-			// Preserve the selected action
-			navActions.setSelectedValue(forward, navActions.getSelectedValue(info));
-		}
-	}
+    NavBarBuilder navLeft = navBar.buildLeft();
+    navLeft.content(new SpanRenderer("logo", LABEL_PRODUCT));
+  }
 
-	@Override
-	protected SectionId getErrorSection()
-	{
-		return errorSection;
-	}
+  @EventHandlerMethod
+  public void cancelled(SectionInfo info) {
+    selectionService.getCurrentSession(info).clearResources();
+    selectionService.returnFromSession(info);
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "_sl";
-	}
+  @EventHandlerMethod
+  public void navActionsSelected(SectionInfo info, String actionType) {
+    List<Option<SelectionNavAction>> actions = navActions.getListModel().getOptions(info);
+    for (Option<SelectionNavAction> action : actions) {
+      SelectionNavAction selectedValue = action.getObject();
+      if (selectedValue.getActionType().equals(actionType)) {
+        final SectionInfo fwd =
+            selectedValue.createForwardForNavAction(info, selectionService.getCurrentSession(info));
+        navActions.setSelectedValue(fwd, selectedValue);
+        info.forwardAsBookmark(fwd);
+        return;
+      }
+    }
+  }
 
-	@Override
-	protected Object getSessionKey()
-	{
-		return SelectionSession.class;
-	}
+  @Override
+  protected SectionResult getFinalRenderable(RenderEventContext context, RootSelectionModel model) {
+    if (!model.isNoTemplate()) {
+      return viewFactory.createTemplateResult(model.getLayout().getFtl(), context);
+    }
+    return model.getParts().getNamedResult(context, "body");
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new RootSelectionModel(info, this);
-	}
+  @Override
+  public void forwardCreated(SectionInfo info, SectionInfo forward) {
+    super.forwardCreated(info, forward);
+    final SelectionSession session = selectionService.getCurrentSession(info);
+    if (session != null) {
+      // Preserve the selected action
+      navActions.setSelectedValue(forward, navActions.getSelectedValue(info));
+    }
+  }
 
-	public NavBar getNavBar()
-	{
-		return navBar;
-	}
+  @Override
+  protected SectionId getErrorSection() {
+    return errorSection;
+  }
 
-	public class NavActionsListModel extends DynamicHtmlListModel<SelectionNavAction>
-	{
-		protected NavActionsListModel()
-		{
-			setSort(false);
-		}
+  @Override
+  public String getDefaultPropertyName() {
+    return "_sl";
+  }
 
-		@Override
-		public String getDefaultValue(SectionInfo info)
-		{
-			final SelectionSession session = selectionService.getCurrentSession(info);
-			final String homeSelectable = session.getHomeSelectable();
-			if( homeSelectable != null )
-			{
-				return homeSelectable;
-			}
-			return super.getDefaultValue(info);
-		}
+  @Override
+  protected Object getSessionKey() {
+    return SelectionSession.class;
+  }
 
-		@Override
-		protected Iterable<SelectionNavAction> populateModel(SectionInfo info)
-		{
-			final SelectionSession session = selectionService.getCurrentSession(info);
-			List<SelectionNavAction> actions = Lists.newArrayList();
-			for( SelectionNavAction navAction : navActionTracker.getBeanMap().values() )
-			{
-				if( navAction.isActionAvailable(info, session) )
-				{
-					actions.add(navAction);
-				}
-			}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new RootSelectionModel(info, this);
+  }
 
-			actions = reorderList(actions);
-			return actions;
-		}
+  public NavBar getNavBar() {
+    return navBar;
+  }
 
-		@Override
-		protected Option<SelectionNavAction> convertToOption(SectionInfo info, SelectionNavAction action)
-		{
-			return new LabelOption<SelectionNavAction>(action.getLabelForNavAction(info), action.getActionType(),
-				action);
-		}
+  public class NavActionsListModel extends DynamicHtmlListModel<SelectionNavAction> {
+    protected NavActionsListModel() {
+      setSort(false);
+    }
 
-		private List<SelectionNavAction> reorderList(List<SelectionNavAction> actions)
-		{
-			List<SelectionNavAction> navActionList = new ArrayList<>();
-			boolean found = false;
-			for( SelectionNavAction action : actions )
-			{
-				if( action.getActionType().equals("home") )
-				{
-					navActionList.add(action);
-					actions.remove(action);
-					found = true;
-					break;
-				}
-			}
+    @Override
+    public String getDefaultValue(SectionInfo info) {
+      final SelectionSession session = selectionService.getCurrentSession(info);
+      final String homeSelectable = session.getHomeSelectable();
+      if (homeSelectable != null) {
+        return homeSelectable;
+      }
+      return super.getDefaultValue(info);
+    }
 
-			if( !found )
-			{
-				for( SelectionNavAction action : actions )
-				{
-					if( action.getActionType().equals("coursesearch") )
-					{
-						navActionList.add(action);
-						actions.remove(action);
-						break;
-					}
-				}
+    @Override
+    protected Iterable<SelectionNavAction> populateModel(SectionInfo info) {
+      final SelectionSession session = selectionService.getCurrentSession(info);
+      List<SelectionNavAction> actions = Lists.newArrayList();
+      for (SelectionNavAction navAction : navActionTracker.getBeanMap().values()) {
+        if (navAction.isActionAvailable(info, session)) {
+          actions.add(navAction);
+        }
+      }
 
-				for( SelectionNavAction action : actions )
-				{
-					if( action.getActionType().equals("skinnybrowse") )
-					{
-						navActionList.add(action);
-						actions.remove(action);
-						break;
-					}
-				}
+      actions = reorderList(actions);
+      return actions;
+    }
 
-				for( SelectionNavAction action : actions )
-				{
-					if( action.getActionType().equals("skinnyfavourites") )
-					{
-						navActionList.add(action);
-						actions.remove(action);
-						break;
-					}
-				}
+    @Override
+    protected Option<SelectionNavAction> convertToOption(
+        SectionInfo info, SelectionNavAction action) {
+      return new LabelOption<SelectionNavAction>(
+          action.getLabelForNavAction(info), action.getActionType(), action);
+    }
 
-				for( SelectionNavAction action : actions )
-				{
-					if( action.getActionType().equals("myresources") )
-					{
-						navActionList.add(action);
-						actions.remove(action);
-						break;
-					}
-				}
-			}
+    private List<SelectionNavAction> reorderList(List<SelectionNavAction> actions) {
+      List<SelectionNavAction> navActionList = new ArrayList<>();
+      boolean found = false;
+      for (SelectionNavAction action : actions) {
+        if (action.getActionType().equals("home")) {
+          navActionList.add(action);
+          actions.remove(action);
+          found = true;
+          break;
+        }
+      }
 
-			navActionList.addAll(actions);
-			return navActionList;
-		}
-	}
+      if (!found) {
+        for (SelectionNavAction action : actions) {
+          if (action.getActionType().equals("coursesearch")) {
+            navActionList.add(action);
+            actions.remove(action);
+            break;
+          }
+        }
 
-	public static class RootSelectionModel extends AbstractRootModalSessionSection.RootModalSessionModel
-	{
-		private Decorations decorations;
-		private Breadcrumbs breadcrumbs;
-		private Layout layout;
-		private boolean selectItems;
-		private boolean selectAttachments;
-		private String hideDividers;
+        for (SelectionNavAction action : actions) {
+          if (action.getActionType().equals("skinnybrowse")) {
+            navActionList.add(action);
+            actions.remove(action);
+            break;
+          }
+        }
 
-		public String getHideDividers()
-		{
-			return hideDividers;
-		}
+        for (SelectionNavAction action : actions) {
+          if (action.getActionType().equals("skinnyfavourites")) {
+            navActionList.add(action);
+            actions.remove(action);
+            break;
+          }
+        }
 
-		public void setHideDividers(String hideDividers)
-		{
-			this.hideDividers = hideDividers;
-		}
+        for (SelectionNavAction action : actions) {
+          if (action.getActionType().equals("myresources")) {
+            navActionList.add(action);
+            actions.remove(action);
+            break;
+          }
+        }
+      }
 
-		public RootSelectionModel(SectionInfo info, AbstractRootModalSessionSection<?> section)
-		{
-			super(info, section);
-		}
+      navActionList.addAll(actions);
+      return navActionList;
+    }
+  }
 
-		public Decorations getDecorations()
-		{
-			return decorations;
-		}
+  public static class RootSelectionModel
+      extends AbstractRootModalSessionSection.RootModalSessionModel {
+    private Decorations decorations;
+    private Breadcrumbs breadcrumbs;
+    private Layout layout;
+    private boolean selectItems;
+    private boolean selectAttachments;
+    private String hideDividers;
 
-		public void setDecorations(Decorations decorations)
-		{
-			this.decorations = decorations;
-		}
+    public String getHideDividers() {
+      return hideDividers;
+    }
 
-		public Layout getLayout()
-		{
-			return layout;
-		}
+    public void setHideDividers(String hideDividers) {
+      this.hideDividers = hideDividers;
+    }
 
-		public void setLayout(Layout layout)
-		{
-			this.layout = layout;
-		}
+    public RootSelectionModel(SectionInfo info, AbstractRootModalSessionSection<?> section) {
+      super(info, section);
+    }
 
-		public boolean isSelectItems()
-		{
-			return selectItems;
-		}
+    public Decorations getDecorations() {
+      return decorations;
+    }
 
-		public void setSelectItems(boolean selectItems)
-		{
-			this.selectItems = selectItems;
-		}
+    public void setDecorations(Decorations decorations) {
+      this.decorations = decorations;
+    }
 
-		public boolean isSelectAttachments()
-		{
-			return selectAttachments;
-		}
+    public Layout getLayout() {
+      return layout;
+    }
 
-		public void setSelectAttachments(boolean selectAttachments)
-		{
-			this.selectAttachments = selectAttachments;
-		}
+    public void setLayout(Layout layout) {
+      this.layout = layout;
+    }
 
-		public Breadcrumbs getBreadcrumbs()
-		{
-			return breadcrumbs;
-		}
+    public boolean isSelectItems() {
+      return selectItems;
+    }
 
-		public void setBreadcrumbs(Breadcrumbs breadcrumbs)
-		{
-			this.breadcrumbs = breadcrumbs;
-		}
+    public void setSelectItems(boolean selectItems) {
+      this.selectItems = selectItems;
+    }
 
-	}
+    public boolean isSelectAttachments() {
+      return selectAttachments;
+    }
+
+    public void setSelectAttachments(boolean selectAttachments) {
+      this.selectAttachments = selectAttachments;
+    }
+
+    public Breadcrumbs getBreadcrumbs() {
+      return breadcrumbs;
+    }
+
+    public void setBreadcrumbs(Breadcrumbs breadcrumbs) {
+      this.breadcrumbs = breadcrumbs;
+    }
+  }
 }

@@ -32,49 +32,40 @@ import com.tle.web.sections.generic.AbstractPrototypeSection;
 
 @Bind
 public class FavouritesSearchResults extends AbstractPrototypeSection<SearchResultsModel>
-	implements
-		StandardSearchResultType
-{
-	private static PluginResourceHelper helper = ResourcesService.getResourceHelper(FavouritesSearchResults.class);
+    implements StandardSearchResultType {
+  private static PluginResourceHelper helper =
+      ResourcesService.getResourceHelper(FavouritesSearchResults.class);
 
-	@Inject
-	private FavouritesItemList favouritesItemList;
+  @Inject private FavouritesItemList favouritesItemList;
 
-	@Override
-	public AbstractItemList<StandardItemListEntry, ?> getCustomItemList()
-	{
-		return favouritesItemList;
-	}
+  @Override
+  public AbstractItemList<StandardItemListEntry, ?> getCustomItemList() {
+    return favouritesItemList;
+  }
 
-	@Override
-	public String getKey()
-	{
-		return helper.key("result.type.standard");
-	}
+  @Override
+  public String getKey() {
+    return helper.key("result.type.standard");
+  }
 
-	@Override
-	public String getValue()
-	{
-		return "standard";
-	}
+  @Override
+  public String getValue() {
+    return "standard";
+  }
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-		tree.registerInnerSection(favouritesItemList, parentId);
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+    tree.registerInnerSection(favouritesItemList, parentId);
+  }
 
-	@Override
-	public void addResultTypeDefaultRestrictions(DefaultSearch defaultSearch)
-	{
-		// nothing
-	}
+  @Override
+  public void addResultTypeDefaultRestrictions(DefaultSearch defaultSearch) {
+    // nothing
+  }
 
-	@Override
-	public boolean isDisabled()
-	{
-		return false;
-	}
-
+  @Override
+  public boolean isDisabled() {
+    return false;
+  }
 }

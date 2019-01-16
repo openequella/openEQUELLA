@@ -33,155 +33,129 @@ import com.tle.upgrademanager.helpers.AjaxMessage;
 import com.tle.upgrademanager.helpers.AjaxState;
 import com.tle.upgrademanager.helpers.Deployer;
 
-public class JarResolver extends ForeignCommand
-{
+public class JarResolver extends ForeignCommand {
 
-	public JarResolver(PropBagEx commandBag, PropBagEx resultBag)
-	{
-		super(commandBag, resultBag);
-	}
+  public JarResolver(PropBagEx commandBag, PropBagEx resultBag) {
+    super(commandBag, resultBag);
+  }
 
-	@Override
-	public void execute() throws InstallerException
-	{
-		String installDir = resultBag.getNode("install.path");
-		final String serviceManagerPath = installDir + "/manager"; //$NON-NLS-1$ 
+  @Override
+  public void execute() throws InstallerException {
+    String installDir = resultBag.getNode("install.path");
+    final String serviceManagerPath = installDir + "/manager"; // $NON-NLS-1$
 
-		File updatesDir = new File(serviceManagerPath, "updates"); //$NON-NLS-1$
-		if( !updatesDir.exists() || !updatesDir.isDirectory() )
-		{
-			throw new InstallerException("Upgrade Zip folder (" + updatesDir.toString() + ")not found");
-		}
+    File updatesDir = new File(serviceManagerPath, "updates"); // $NON-NLS-1$
+    if (!updatesDir.exists() || !updatesDir.isDirectory()) {
+      throw new InstallerException("Upgrade Zip folder (" + updatesDir.toString() + ")not found");
+    }
 
-		File[] zipFiles = updatesDir.listFiles(new FilenameFilter()
-		{
-			@Override
-			public boolean accept(File dir, String name)
-			{
-				return name.startsWith("tle-upgrade-") && name.endsWith(".zip"); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-		});
+    File[] zipFiles =
+        updatesDir.listFiles(
+            new FilenameFilter() {
+              @Override
+              public boolean accept(File dir, String name) {
+                return name.startsWith("tle-upgrade-")
+                    && name.endsWith(".zip"); // $NON-NLS-1$ //$NON-NLS-2$
+              }
+            });
 
-		if( zipFiles.length > 0 )
-		{
-			File zipFile = zipFiles[0];
+    if (zipFiles.length > 0) {
+      File zipFile = zipFiles[0];
 
-			Properties config = new Properties();
-			try( InputStream fis = new FileInputStream(new File(serviceManagerPath, "config.properties")) ) //$NON-NLS-1$
-			{
-				config.load(fis);
-			}
-			catch( Exception ex )
-			{
-				throw new InstallerException("Could not load properties file", ex);
-			}
+      Properties config = new Properties();
+      try (InputStream fis =
+          new FileInputStream(new File(serviceManagerPath, "config.properties"))) // $NON-NLS-1$
+      {
+        config.load(fis);
+      } catch (Exception ex) {
+        throw new InstallerException("Could not load properties file", ex);
+      }
 
-			Deployer deployer;
-			try
-			{
-				deployer = new Deployer(null, new FakeAjaxState(getProgress()), new ManagerConfig(new File(installDir),
-					null));
-				deployer.unzipUpgrade(zipFile);
-			}
-			catch( IOException ex )
-			{
-				throw new InstallerException("Error while trying to deploy JAR file", ex);
-			}
-			try
-			{
-				deployer.getDatabaseUpgrader().install();
-			}
-			catch( Exception ex )
-			{
-				throw new InstallerException("Error while attempting to migrate the installation", ex);
-			}
-		}
-		else
-		{
-			throw new InstallerException("Could not find any EQUELLA updates");
-		}
-	}
+      Deployer deployer;
+      try {
+        deployer =
+            new Deployer(
+                null,
+                new FakeAjaxState(getProgress()),
+                new ManagerConfig(new File(installDir), null));
+        deployer.unzipUpgrade(zipFile);
+      } catch (IOException ex) {
+        throw new InstallerException("Error while trying to deploy JAR file", ex);
+      }
+      try {
+        deployer.getDatabaseUpgrader().install();
+      } catch (Exception ex) {
+        throw new InstallerException("Error while attempting to migrate the installation", ex);
+      }
+    } else {
+      throw new InstallerException("Could not find any EQUELLA updates");
+    }
+  }
 
-	@Override
-	public String toString()
-	{
-		return "Preparing web application.";
-	}
+  @Override
+  public String toString() {
+    return "Preparing web application.";
+  }
 
-	/**
-	 * A dummy ajax state class that'll print messages out via
-	 * System.out.println();
-	 */
-	public static class FakeAjaxState implements AjaxState
-	{
-		private final Progress progrezz;
+  /** A dummy ajax state class that'll print messages out via System.out.println(); */
+  public static class FakeAjaxState implements AjaxState {
+    private final Progress progrezz;
 
-		public FakeAjaxState(Progress progrezz)
-		{
-			this.progrezz = progrezz;
-		}
+    public FakeAjaxState(Progress progrezz) {
+      this.progrezz = progrezz;
+    }
 
-		@Override
-		public void addBasic(String id, String message)
-		{
-			System.out.println("Basic: " + message);
-			progrezz.addMessage(message);
-		}
+    @Override
+    public void addBasic(String id, String message) {
+      System.out.println("Basic: " + message);
+      progrezz.addMessage(message);
+    }
 
-		@Override
-		public void addConsole(String id, String message)
-		{
-			System.out.println("Console: " + message);
-			progrezz.addMessage(message);
-		}
+    @Override
+    public void addConsole(String id, String message) {
+      System.out.println("Console: " + message);
+      progrezz.addMessage(message);
+    }
 
-		@Override
-		public void addError(String id, String message)
-		{
-			System.out.println("ERROR: " + message);
-			progrezz.addMessage(message);
-		}
+    @Override
+    public void addError(String id, String message) {
+      System.out.println("ERROR: " + message);
+      progrezz.addMessage(message);
+    }
 
-		@Override
-		public void addHeading(String id, String message)
-		{
-			System.out.println("Heading: " + message);
-			progrezz.addMessage(message);
-		}
+    @Override
+    public void addHeading(String id, String message) {
+      System.out.println("Heading: " + message);
+      progrezz.addMessage(message);
+    }
 
-		@Override
-		public void finish(String id, String nothing, String nothing2)
-		{
-			System.out.println("Finished!");
-			progrezz.addMessage("Finished!");
-		}
+    @Override
+    public void finish(String id, String nothing, String nothing2) {
+      System.out.println("Finished!");
+      progrezz.addMessage("Finished!");
+    }
 
-		@Override
-		public List<AjaxMessage> getListOfAllMessages(String id)
-		{
-			// dummy method!
-			return null;
-		}
+    @Override
+    public List<AjaxMessage> getListOfAllMessages(String id) {
+      // dummy method!
+      return null;
+    }
 
-		@Override
-		public void start(String id, String message)
-		{
-			System.out.println("Start!");
-			progrezz.addMessage("Start!");
-		}
+    @Override
+    public void start(String id, String message) {
+      System.out.println("Start!");
+      progrezz.addMessage("Start!");
+    }
 
-		@Override
-		public void start(String id)
-		{
-			System.out.println("Start!");
-			progrezz.addMessage("Start!");
-		}
+    @Override
+    public void start(String id) {
+      System.out.println("Start!");
+      progrezz.addMessage("Start!");
+    }
 
-		@Override
-		public void addErrorRaw(String id, String message)
-		{
-			addError(id, message);
-		}
-	}
-
+    @Override
+    public void addErrorRaw(String id, String message) {
+      addError(id, message);
+    }
+  }
 }

@@ -21,45 +21,42 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public interface ContentStream
-{
-	InputStream getInputStream() throws IOException;
+public interface ContentStream {
+  InputStream getInputStream() throws IOException;
 
-	File getDirectFile();
+  File getDirectFile();
 
-	long getLastModified();
+  long getLastModified();
 
-	/**
-	 * This can return -1 if unknown, and can also change after
-	 * {@link #getInputStream()} has been called.
-	 * 
-	 * @return
-	 */
-	long getContentLength();
+  /**
+   * This can return -1 if unknown, and can also change after {@link #getInputStream()} has been
+   * called.
+   *
+   * @return
+   */
+  long getContentLength();
 
-	/**
-	 * If {@link #getContentLength()} returns -1 the you may be able to use this
-	 * to get a rough estimate. E.g. a viewer may return the raw file length
-	 * without the viewer's decorations.
-	 * 
-	 * @return -1 if no estimate available
-	 */
-	long getEstimatedContentLength();
+  /**
+   * If {@link #getContentLength()} returns -1 the you may be able to use this to get a rough
+   * estimate. E.g. a viewer may return the raw file length without the viewer's decorations.
+   *
+   * @return -1 if no estimate available
+   */
+  long getEstimatedContentLength();
 
-	String getMimeType();
+  String getMimeType();
 
-	String getContentDisposition();
+  String getContentDisposition();
 
-	boolean exists();
+  boolean exists();
 
-	String getFilenameWithoutPath();
+  String getFilenameWithoutPath();
 
-	String getCacheControl();
+  String getCacheControl();
 
-	void setCacheControl(String cacheControl);
+  void setCacheControl(String cacheControl);
 
-	boolean mustWrite();
+  boolean mustWrite();
 
-	void write(OutputStream out) throws IOException;
-
+  void write(OutputStream out) throws IOException;
 }

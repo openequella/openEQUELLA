@@ -33,34 +33,31 @@ import com.tle.ims.service.IMSService;
 
 @Bind
 @Singleton
-public class IMSMetadataMapper extends AbstractXPathPackageMapper
-{
-	@Inject
-	private IMSService imsService;
+public class IMSMetadataMapper extends AbstractXPathPackageMapper {
+  @Inject private IMSService imsService;
 
-	@Override
-	public boolean isSupportedPackage(FileHandle handle, String packageExtractedFolder)
-	{
-		try( InputStream inp = imsService.getImsManifestAsStream(handle, packageExtractedFolder, false) )
-		{
-			return inp != null;
-		}
-		catch( IOException e )
-		{
-			throw Throwables.propagate(e);
-		}
-	}
+  @Override
+  public boolean isSupportedPackage(FileHandle handle, String packageExtractedFolder) {
+    try (InputStream inp =
+        imsService.getImsManifestAsStream(handle, packageExtractedFolder, false)) {
+      return inp != null;
+    } catch (IOException e) {
+      throw Throwables.propagate(e);
+    }
+  }
 
-	@Override
-	protected InputStream getXmlStream(FileHandle handle, String packageExtractedFolder) throws IOException
-	{
-		return imsService.getImsManifestAsStream(handle, packageExtractedFolder, true);
-	}
+  @Override
+  protected InputStream getXmlStream(FileHandle handle, String packageExtractedFolder)
+      throws IOException {
+    return imsService.getImsManifestAsStream(handle, packageExtractedFolder, true);
+  }
 
-	@Override
-	public List<String> getSupportedFormatsForDisplay()
-	{
-		return Arrays.asList(new String[]{CurrentLocale.get("com.tle.web.ims.imspackage"), //$NON-NLS-1$
-				CurrentLocale.get("com.tle.web.ims.scormpackage")}); //$NON-NLS-1$
-	}
+  @Override
+  public List<String> getSupportedFormatsForDisplay() {
+    return Arrays.asList(
+        new String[] {
+          CurrentLocale.get("com.tle.web.ims.imspackage"), // $NON-NLS-1$
+          CurrentLocale.get("com.tle.web.ims.scormpackage")
+        }); //$NON-NLS-1$
+  }
 }

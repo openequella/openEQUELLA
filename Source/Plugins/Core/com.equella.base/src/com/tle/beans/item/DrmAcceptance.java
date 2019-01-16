@@ -34,65 +34,57 @@ import com.tle.beans.IdCloneable;
 
 @Entity
 @AccessType("field")
-public class DrmAcceptance implements Serializable, ForeignItemKey, IdCloneable
-{
-	private static final long serialVersionUID = 1L;
+public class DrmAcceptance implements Serializable, ForeignItemKey, IdCloneable {
+  private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-	@JoinColumn(nullable = false)
-	@ManyToOne(fetch = FetchType.LAZY)
-	@Index(name = "drmAcceptItem")
-	private Item item;
-	private String user;
-	private Date date;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	public DrmAcceptance()
-	{
-		super();
-	}
+  @JoinColumn(nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @Index(name = "drmAcceptItem")
+  private Item item;
 
-	@Override
-	public long getId()
-	{
-		return id;
-	}
+  private String user;
+  private Date date;
 
-	@Override
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  public DrmAcceptance() {
+    super();
+  }
 
-	public Item getItem()
-	{
-		return item;
-	}
+  @Override
+  public long getId() {
+    return id;
+  }
 
-	@Override
-	public void setItem(Item item)
-	{
-		this.item = item;
-	}
+  @Override
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public Date getDate()
-	{
-		return date;
-	}
+  public Item getItem() {
+    return item;
+  }
 
-	public void setDate(Date date)
-	{
-		this.date = date;
-	}
+  @Override
+  public void setItem(Item item) {
+    this.item = item;
+  }
 
-	public String getUser()
-	{
-		return user;
-	}
+  public Date getDate() {
+    return date;
+  }
 
-	public void setUser(String user)
-	{
-		this.user = user;
-	}
+  public void setDate(Date date) {
+    this.date = date;
+  }
+
+  public String getUser() {
+    return user;
+  }
+
+  public void setUser(String user) {
+    this.user = user;
+  }
 }

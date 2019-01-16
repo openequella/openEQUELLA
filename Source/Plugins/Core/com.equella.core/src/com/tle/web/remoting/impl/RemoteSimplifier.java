@@ -21,27 +21,23 @@ import com.tle.beans.item.Item;
 import com.tle.core.hibernate.equella.service.InitialiserCallback;
 import com.tle.core.hibernate.equella.service.Property;
 
-public class RemoteSimplifier implements InitialiserCallback
-{
-	@Override
-	public void entitySimplified(Object old, Object newObj)
-	{
-		if( old instanceof Item )
-		{
-			Item item = (Item) old;
-			Item newItem = (Item) newObj;
-			newItem.setId(item.getId());
-			newItem.setUuid(item.getUuid());
-			newItem.setVersion(item.getVersion());
-			newItem.setName(LanguageBundle.clone(item.getName()));
-			newItem.setDescription(LanguageBundle.clone(item.getDescription()));
-			newItem.setStatus(item.getStatus());
-		}
-	}
+public class RemoteSimplifier implements InitialiserCallback {
+  @Override
+  public void entitySimplified(Object old, Object newObj) {
+    if (old instanceof Item) {
+      Item item = (Item) old;
+      Item newItem = (Item) newObj;
+      newItem.setId(item.getId());
+      newItem.setUuid(item.getUuid());
+      newItem.setVersion(item.getVersion());
+      newItem.setName(LanguageBundle.clone(item.getName()));
+      newItem.setDescription(LanguageBundle.clone(item.getDescription()));
+      newItem.setStatus(item.getStatus());
+    }
+  }
 
-	@Override
-	public void set(Object obj, Property property, Object value)
-	{
-		property.set(obj, value);
-	}
+  @Override
+  public void set(Object obj, Property property, Object value) {
+    property.set(obj, value);
+  }
 }

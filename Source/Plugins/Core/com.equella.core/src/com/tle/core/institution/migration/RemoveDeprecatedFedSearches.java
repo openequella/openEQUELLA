@@ -30,20 +30,17 @@ import com.tle.core.institution.convert.XmlMigrator;
 
 @Bind
 @Singleton
-public class RemoveDeprecatedFedSearches extends XmlMigrator
-{
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) throws Exception
-	{
-		final SubTemporaryFile fedSearchFolder = new SubTemporaryFile(staging, "federatedsearch");
-		final List<String> fedSearches = xmlHelper.getXmlFileList(fedSearchFolder);
-		for( String fedSearch : fedSearches )
-		{
-			PropBagEx xml = xmlHelper.readToPropBagEx(fedSearchFolder, fedSearch);
-			if( xml.getNode("type").equals("DiscoverSearchEngine") )
-			{
-				fileSystemService.removeFile(fedSearchFolder, fedSearch);
-			}
-		}
-	}
+public class RemoveDeprecatedFedSearches extends XmlMigrator {
+  @Override
+  public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
+      throws Exception {
+    final SubTemporaryFile fedSearchFolder = new SubTemporaryFile(staging, "federatedsearch");
+    final List<String> fedSearches = xmlHelper.getXmlFileList(fedSearchFolder);
+    for (String fedSearch : fedSearches) {
+      PropBagEx xml = xmlHelper.readToPropBagEx(fedSearchFolder, fedSearch);
+      if (xml.getNode("type").equals("DiscoverSearchEngine")) {
+        fileSystemService.removeFile(fedSearchFolder, fedSearch);
+      }
+    }
+  }
 }

@@ -39,60 +39,63 @@ import edu.harvard.hul.ois.mets.Loctype;
 import edu.harvard.hul.ois.mets.helper.MetsElement;
 import edu.harvard.hul.ois.mets.helper.MetsIDElement;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class LinkMetsAttachmentImporterExporter extends AbstractMetsAttachmentImportExporter
-{
-	@Override
-	public boolean canExport(Item item, Attachment attachment)
-	{
-		return attachment.getAttachmentType() == AttachmentType.LINK;
-	}
+public class LinkMetsAttachmentImporterExporter extends AbstractMetsAttachmentImportExporter {
+  @Override
+  public boolean canExport(Item item, Attachment attachment) {
+    return attachment.getAttachmentType() == AttachmentType.LINK;
+  }
 
-	@Override
-	public List<MetsIDElementInfo<? extends MetsIDElement>> export(SectionInfo info, Item item, Attachment attachment)
-	{
-		final List<MetsIDElementInfo<? extends MetsIDElement>> res = new ArrayList<MetsIDElementInfo<? extends MetsIDElement>>();
+  @Override
+  public List<MetsIDElementInfo<? extends MetsIDElement>> export(
+      SectionInfo info, Item item, Attachment attachment) {
+    final List<MetsIDElementInfo<? extends MetsIDElement>> res =
+        new ArrayList<MetsIDElementInfo<? extends MetsIDElement>>();
 
-		final LinkAttachment link = (LinkAttachment) attachment;
+    final LinkAttachment link = (LinkAttachment) attachment;
 
-		final PropBagEx xmlData = new PropBagEx();
-		xmlData.setNode("url", link.getUrl());
-		xmlData.setNode("uuid", link.getUuid());
-		xmlData.setNode("description", link.getDescription());
+    final PropBagEx xmlData = new PropBagEx();
+    xmlData.setNode("url", link.getUrl());
+    xmlData.setNode("uuid", link.getUuid());
+    xmlData.setNode("description", link.getDescription());
 
-		final FLocat location = new FLocat();
-		location.setID("link:" + attachment.getUuid());
-		location.setXlinkHref(attachment.getUrl());
-		location.setXlinkTitle(attachment.getDescription());
-		location.setLOCTYPE(Loctype.URL);
+    final FLocat location = new FLocat();
+    location.setID("link:" + attachment.getUuid());
+    location.setXlinkHref(attachment.getUrl());
+    location.setXlinkTitle(attachment.getDescription());
+    location.setLOCTYPE(Loctype.URL);
 
-		res.add(new MetsIDElementInfo<FLocat>(location, "equella/link", xmlData));
-		return res;
-	}
+    res.add(new MetsIDElementInfo<FLocat>(location, "equella/link", xmlData));
+    return res;
+  }
 
-	@Override
-	public boolean canImport(File parentElem, MetsElement elem, PropBagEx xmlData, ItemNavigationNode parentNode)
-	{
-		final boolean prefixMatch = idPrefixMatch(elem, "link:");
-		final String url = xmlData.getNode("url");
-		return prefixMatch && !Strings.isNullOrEmpty(url);
-	}
+  @Override
+  public boolean canImport(
+      File parentElem, MetsElement elem, PropBagEx xmlData, ItemNavigationNode parentNode) {
+    final boolean prefixMatch = idPrefixMatch(elem, "link:");
+    final String url = xmlData.getNode("url");
+    return prefixMatch && !Strings.isNullOrEmpty(url);
+  }
 
-	@Override
-	public void doImport(Item item, FileHandle staging, String packageFile, File parentElem, MetsElement elem,
-		PropBagEx xmlData, ItemNavigationNode parentNode, AttachmentAdder attachmentAdder)
-	{
-		final LinkAttachment link = new LinkAttachment();
-		link.setUrl(xmlData.getNode("url"));
-		link.setUuid(xmlData.getNode("uuid"));
-		final String description = xmlData.getNode("description");
-		link.setDescription(description);
+  @Override
+  public void doImport(
+      Item item,
+      FileHandle staging,
+      String packageFile,
+      File parentElem,
+      MetsElement elem,
+      PropBagEx xmlData,
+      ItemNavigationNode parentNode,
+      AttachmentAdder attachmentAdder) {
+    final LinkAttachment link = new LinkAttachment();
+    link.setUrl(xmlData.getNode("url"));
+    link.setUuid(xmlData.getNode("uuid"));
+    final String description = xmlData.getNode("description");
+    link.setDescription(description);
 
-		attachmentAdder.addAttachment(parentNode, link, description);
-	}
+    attachmentAdder.addAttachment(parentNode, link, description);
+  }
 }

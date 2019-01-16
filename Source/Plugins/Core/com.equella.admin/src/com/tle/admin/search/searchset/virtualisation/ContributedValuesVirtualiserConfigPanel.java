@@ -26,42 +26,34 @@ import com.tle.common.search.searchset.SearchSet;
 import com.tle.core.plugins.AbstractPluginService;
 
 @SuppressWarnings("nls")
-public class ContributedValuesVirtualiserConfigPanel extends DynamicChoicePanel<SearchSet>
-{
-	private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
+public class ContributedValuesVirtualiserConfigPanel extends DynamicChoicePanel<SearchSet> {
+  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
 
-	protected String getString(String key)
-	{
-		return CurrentLocale.get(getKey(key));
-	}
+  protected String getString(String key) {
+    return CurrentLocale.get(getKey(key));
+  }
 
-	protected String getKey(String key)
-	{
-		return KEY_PFX+key;
-	}
+  protected String getKey(String key) {
+    return KEY_PFX + key;
+  }
 
-	public ContributedValuesVirtualiserConfigPanel()
-	{
-		super(new GridLayout(1, 1));
-		add(new JLabel("<html>"
-			+ getString("searchset.virtualisation.contributedvalues.text")));
-	}
+  public ContributedValuesVirtualiserConfigPanel() {
+    super(new GridLayout(1, 1));
+    add(new JLabel("<html>" + getString("searchset.virtualisation.contributedvalues.text")));
+  }
 
-	@Override
-	public void load(SearchSet searchSet)
-	{
-		// Nothing to load
-	}
+  @Override
+  public void load(SearchSet searchSet) {
+    // Nothing to load
+  }
 
-	@Override
-	public void save(SearchSet searchSet)
-	{
-		// Nothing to save
-	}
+  @Override
+  public void save(SearchSet searchSet) {
+    // Nothing to save
+  }
 
-	@Override
-	public void removeSavedState(SearchSet searchSet)
-	{
-		// Nothing to remove
-	}
+  @Override
+  public void removeSavedState(SearchSet searchSet) {
+    // Nothing to remove
+  }
 }

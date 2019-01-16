@@ -35,130 +35,114 @@ import com.tle.beans.entity.BaseEntity;
 
 @Entity
 @AccessType("field")
-public class LtiConsumer extends BaseEntity
-{
-	@Index(name = "consumerKey")
-	@Column(length = 255, nullable = false)
-	private String consumerKey;
-	@Lob
-	private String consumerSecret;
+public class LtiConsumer extends BaseEntity {
+  @Index(name = "consumerKey")
+  @Column(length = 255, nullable = false)
+  private String consumerKey;
 
-	@Column(length = 50)
-	private String prefix;
-	@Column(length = 50)
-	private String postfix;
-	@Column(length = 255)
-	private String allowedExpression;
-	@ElementCollection(fetch = FetchType.LAZY)
-	private Set<String> instructorRoles;
-	@ElementCollection(fetch = FetchType.LAZY)
-	private Set<String> otherRoles;
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "lti_consumer_id", nullable = false)
-	private Set<LtiConsumerCustomRole> customRoles = new HashSet<LtiConsumerCustomRole>();
-	@Column
-	private int unknownUser;
-	@ElementCollection(fetch = FetchType.LAZY)
-	private Set<String> unknownGroups;
+  @Lob private String consumerSecret;
 
-	public String getConsumerKey()
-	{
-		return consumerKey;
-	}
+  @Column(length = 50)
+  private String prefix;
 
-	public void setConsumerKey(String consumerKey)
-	{
-		this.consumerKey = consumerKey;
-	}
+  @Column(length = 50)
+  private String postfix;
 
-	public String getConsumerSecret()
-	{
-		return consumerSecret;
-	}
+  @Column(length = 255)
+  private String allowedExpression;
 
-	public void setConsumerSecret(String consumerSecret)
-	{
-		this.consumerSecret = consumerSecret;
-	}
+  @ElementCollection(fetch = FetchType.LAZY)
+  private Set<String> instructorRoles;
 
-	public int getUnknownUser()
-	{
-		return unknownUser;
-	}
+  @ElementCollection(fetch = FetchType.LAZY)
+  private Set<String> otherRoles;
 
-	public void setUnknownUser(int unknownUser)
-	{
-		this.unknownUser = unknownUser;
-	}
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "lti_consumer_id", nullable = false)
+  private Set<LtiConsumerCustomRole> customRoles = new HashSet<LtiConsumerCustomRole>();
 
-	public String getPrefix()
-	{
-		return prefix;
-	}
+  @Column private int unknownUser;
 
-	public void setPrefix(String prefix)
-	{
-		this.prefix = prefix;
-	}
+  @ElementCollection(fetch = FetchType.LAZY)
+  private Set<String> unknownGroups;
 
-	public String getPostfix()
-	{
-		return postfix;
-	}
+  public String getConsumerKey() {
+    return consumerKey;
+  }
 
-	public void setPostfix(String postfix)
-	{
-		this.postfix = postfix;
-	}
+  public void setConsumerKey(String consumerKey) {
+    this.consumerKey = consumerKey;
+  }
 
-	public Set<String> getOtherRoles()
-	{
-		return otherRoles;
-	}
+  public String getConsumerSecret() {
+    return consumerSecret;
+  }
 
-	public void setOtherRoles(Set<String> otherRoles)
-	{
-		this.otherRoles = otherRoles;
-	}
+  public void setConsumerSecret(String consumerSecret) {
+    this.consumerSecret = consumerSecret;
+  }
 
-	public String getAllowedExpression()
-	{
-		return allowedExpression;
-	}
+  public int getUnknownUser() {
+    return unknownUser;
+  }
 
-	public void setAllowedExpression(String allowedExpression)
-	{
-		this.allowedExpression = allowedExpression;
-	}
+  public void setUnknownUser(int unknownUser) {
+    this.unknownUser = unknownUser;
+  }
 
-	public Set<String> getInstructorRoles()
-	{
-		return instructorRoles;
-	}
+  public String getPrefix() {
+    return prefix;
+  }
 
-	public void setInstructorRoles(Set<String> instructorRoles)
-	{
-		this.instructorRoles = instructorRoles;
-	}
+  public void setPrefix(String prefix) {
+    this.prefix = prefix;
+  }
 
-	public Set<String> getUnknownGroups()
-	{
-		return unknownGroups;
-	}
+  public String getPostfix() {
+    return postfix;
+  }
 
-	public void setUnknownGroups(Set<String> unknownGroups)
-	{
-		this.unknownGroups = unknownGroups;
-	}
+  public void setPostfix(String postfix) {
+    this.postfix = postfix;
+  }
 
-	public Set<LtiConsumerCustomRole> getCustomRoles()
-	{
-		return customRoles;
-	}
+  public Set<String> getOtherRoles() {
+    return otherRoles;
+  }
 
-	public void setCustomRoles(Set<LtiConsumerCustomRole> customRoles)
-	{
-		this.customRoles = customRoles;
-	}
+  public void setOtherRoles(Set<String> otherRoles) {
+    this.otherRoles = otherRoles;
+  }
 
+  public String getAllowedExpression() {
+    return allowedExpression;
+  }
+
+  public void setAllowedExpression(String allowedExpression) {
+    this.allowedExpression = allowedExpression;
+  }
+
+  public Set<String> getInstructorRoles() {
+    return instructorRoles;
+  }
+
+  public void setInstructorRoles(Set<String> instructorRoles) {
+    this.instructorRoles = instructorRoles;
+  }
+
+  public Set<String> getUnknownGroups() {
+    return unknownGroups;
+  }
+
+  public void setUnknownGroups(Set<String> unknownGroups) {
+    this.unknownGroups = unknownGroups;
+  }
+
+  public Set<LtiConsumerCustomRole> getCustomRoles() {
+    return customRoles;
+  }
+
+  public void setCustomRoles(Set<LtiConsumerCustomRole> customRoles) {
+    this.customRoles = customRoles;
+  }
 }

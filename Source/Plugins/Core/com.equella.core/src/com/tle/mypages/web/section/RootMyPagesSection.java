@@ -23,29 +23,24 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.ResultListCollector;
 
-/**
- * @author aholland
- */
-public class RootMyPagesSection extends AbstractMyPagesSection<RootMyPagesModel> implements HtmlRenderer
-{
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		RootMyPagesModel model = getModel(context);
-		model.setSections(renderChildren(context, new ResultListCollector()).getResultList());
+/** @author aholland */
+public class RootMyPagesSection extends AbstractMyPagesSection<RootMyPagesModel>
+    implements HtmlRenderer {
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    RootMyPagesModel model = getModel(context);
+    model.setSections(renderChildren(context, new ResultListCollector()).getResultList());
 
-		return viewFactory.createResult("mypagesmodal.ftl", context);
-	}
+    return viewFactory.createResult("mypagesmodal.ftl", context);
+  }
 
-	@Override
-	public Class<RootMyPagesModel> getModelClass()
-	{
-		return RootMyPagesModel.class;
-	}
+  @Override
+  public Class<RootMyPagesModel> getModelClass() {
+    return RootMyPagesModel.class;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return MyPagesConstants.SECTION_ROOT;
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return MyPagesConstants.SECTION_ROOT;
+  }
 }

@@ -37,56 +37,48 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class WorkflowNodeNewFieldMigration extends AbstractHibernateSchemaMigration
-{
-	private static String prefix = PluginServiceImpl.getMyPluginId(WorkflowNodeNewFieldMigration.class) + ".";
+public class WorkflowNodeNewFieldMigration extends AbstractHibernateSchemaMigration {
+  private static String prefix =
+      PluginServiceImpl.getMyPluginId(WorkflowNodeNewFieldMigration.class) + ".";
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(prefix + "script.migration.addproceednext.title");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(prefix + "script.migration.addproceednext.title");
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-		throws Exception
-	{
-		result.incrementStatus();
-	}
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception {
+    result.incrementStatus();
+  }
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return 1;
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return 1;
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		return null;
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    return null;
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		return helper.getAddColumnsSQL("workflow_node", "proceed_next");
-	}
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    return helper.getAddColumnsSQL("workflow_node", "proceed_next");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{FakeWorkflowNode.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {FakeWorkflowNode.class};
+  }
 
-	@Entity(name = "WorkflowNode")
-	@AccessType("field")
-	public static class FakeWorkflowNode
-	{
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		long id;
+  @Entity(name = "WorkflowNode")
+  @AccessType("field")
+  public static class FakeWorkflowNode {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    long id;
 
-		boolean proceedNext;
-	}
-
+    boolean proceedNext;
+  }
 }

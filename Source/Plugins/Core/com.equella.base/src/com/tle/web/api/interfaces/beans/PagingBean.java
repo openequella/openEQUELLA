@@ -21,61 +21,50 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class PagingBean<T>
-{
-	private int start;
-	private int length;
-	private int available;
-	private List<T> results;
-	private String resumptionToken;
+public class PagingBean<T> {
+  private int start;
+  private int length;
+  private int available;
+  private List<T> results;
+  private String resumptionToken;
 
-	public int getStart()
-	{
-		return start;
-	}
+  public int getStart() {
+    return start;
+  }
 
-	public void setStart(int start)
-	{
-		this.start = start;
-	}
+  public void setStart(int start) {
+    this.start = start;
+  }
 
-	public int getLength()
-	{
-		return length;
-	}
+  public int getLength() {
+    return length;
+  }
 
-	public void setLength(int length)
-	{
-		this.length = length;
-	}
+  public void setLength(int length) {
+    this.length = length;
+  }
 
-	public int getAvailable()
-	{
-		return available;
-	}
+  public int getAvailable() {
+    return available;
+  }
 
-	public void setAvailable(int available)
-	{
-		this.available = available;
-	}
+  public void setAvailable(int available) {
+    this.available = available;
+  }
 
-	public List<T> getResults()
-	{
-		return results;
-	}
+  public List<T> getResults() {
+    return results;
+  }
 
-	public void setResults(List<T> results)
-	{
-		this.results = results;
-	}
+  public void setResults(List<T> results) {
+    this.results = results;
+  }
 
-	public String getResumptionToken()
-	{
-		return resumptionToken;
-	}
+  public String getResumptionToken() {
+    return resumptionToken;
+  }
 
-	public void setResumptionToken(String resumptionToken)
-	{
-		this.resumptionToken = resumptionToken;
-	}
+  public void setResumptionToken(String resumptionToken) {
+    this.resumptionToken = resumptionToken;
+  }
 }

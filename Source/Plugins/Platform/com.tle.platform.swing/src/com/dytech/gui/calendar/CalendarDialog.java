@@ -37,196 +37,170 @@ import javax.swing.SwingUtilities;
 import com.dytech.gui.ComponentHelper;
 import com.dytech.gui.TableLayout;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @SuppressWarnings("nls")
-public class CalendarDialog extends JDialog implements ActionListener
-{
-	private Date result;
+public class CalendarDialog extends JDialog implements ActionListener {
+  private Date result;
 
-	private JButton select;
-	private JButton close;
-	private JCalendar calendar;
+  private JButton select;
+  private JButton close;
+  private JCalendar calendar;
 
-	public CalendarDialog() throws HeadlessException
-	{
-		super();
-		setup();
-	}
+  public CalendarDialog() throws HeadlessException {
+    super();
+    setup();
+  }
 
-	public CalendarDialog(Dialog owner) throws HeadlessException
-	{
-		super(owner);
-		setup();
-	}
+  public CalendarDialog(Dialog owner) throws HeadlessException {
+    super(owner);
+    setup();
+  }
 
-	public CalendarDialog(Dialog owner, boolean modal) throws HeadlessException
-	{
-		super(owner, modal);
-		setup();
-	}
+  public CalendarDialog(Dialog owner, boolean modal) throws HeadlessException {
+    super(owner, modal);
+    setup();
+  }
 
-	public CalendarDialog(Frame owner) throws HeadlessException
-	{
-		super(owner);
-		setup();
-	}
+  public CalendarDialog(Frame owner) throws HeadlessException {
+    super(owner);
+    setup();
+  }
 
-	public CalendarDialog(Frame owner, boolean modal) throws HeadlessException
-	{
-		super(owner, modal);
-		setup();
-	}
+  public CalendarDialog(Frame owner, boolean modal) throws HeadlessException {
+    super(owner, modal);
+    setup();
+  }
 
-	public CalendarDialog(Dialog owner, String title) throws HeadlessException
-	{
-		super(owner, title);
-		setup();
-	}
+  public CalendarDialog(Dialog owner, String title) throws HeadlessException {
+    super(owner, title);
+    setup();
+  }
 
-	public CalendarDialog(Dialog owner, String title, boolean modal) throws HeadlessException
-	{
-		super(owner, title, modal);
-		setup();
-	}
+  public CalendarDialog(Dialog owner, String title, boolean modal) throws HeadlessException {
+    super(owner, title, modal);
+    setup();
+  }
 
-	public CalendarDialog(Frame owner, String title) throws HeadlessException
-	{
-		super(owner, title);
-		setup();
-	}
+  public CalendarDialog(Frame owner, String title) throws HeadlessException {
+    super(owner, title);
+    setup();
+  }
 
-	public CalendarDialog(Frame owner, String title, boolean modal) throws HeadlessException
-	{
-		super(owner, title, modal);
-		setup();
-	}
+  public CalendarDialog(Frame owner, String title, boolean modal) throws HeadlessException {
+    super(owner, title, modal);
+    setup();
+  }
 
-	public CalendarDialog(Dialog owner, String title, boolean modal, GraphicsConfiguration gc) throws HeadlessException
-	{
-		super(owner, title, modal, gc);
-		setup();
-	}
+  public CalendarDialog(Dialog owner, String title, boolean modal, GraphicsConfiguration gc)
+      throws HeadlessException {
+    super(owner, title, modal, gc);
+    setup();
+  }
 
-	public CalendarDialog(Frame owner, String title, boolean modal, GraphicsConfiguration gc)
-	{
-		super(owner, title, modal, gc);
-		setup();
-	}
+  public CalendarDialog(Frame owner, String title, boolean modal, GraphicsConfiguration gc) {
+    super(owner, title, modal, gc);
+    setup();
+  }
 
-	private void setup()
-	{
-		calendar = new JCalendar();
+  private void setup() {
+    calendar = new JCalendar();
 
-		select = new JButton("Select Date");
-		close = new JButton("Close");
+    select = new JButton("Select Date");
+    close = new JButton("Close");
 
-		select.addActionListener(this);
-		close.addActionListener(this);
+    select.addActionListener(this);
+    close.addActionListener(this);
 
-		final int width1 = select.getPreferredSize().width;
-		final int width2 = close.getPreferredSize().width;
-		final int height = select.getPreferredSize().height;
+    final int width1 = select.getPreferredSize().width;
+    final int width2 = close.getPreferredSize().width;
+    final int height = select.getPreferredSize().height;
 
-		final int[] rows = {TableLayout.FILL, height};
-		final int[] cols = {TableLayout.FILL, width1, width2};
+    final int[] rows = {TableLayout.FILL, height};
+    final int[] cols = {TableLayout.FILL, width1, width2};
 
-		JPanel all = new JPanel(new TableLayout(rows, cols, 5, 5));
-		all.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    JPanel all = new JPanel(new TableLayout(rows, cols, 5, 5));
+    all.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-		all.add(calendar, new Rectangle(0, 0, 3, 1));
-		all.add(select, new Rectangle(1, 1, 1, 1));
-		all.add(close, new Rectangle(2, 1, 1, 1));
+    all.add(calendar, new Rectangle(0, 0, 3, 1));
+    all.add(select, new Rectangle(1, 1, 1, 1));
+    all.add(close, new Rectangle(2, 1, 1, 1));
 
-		getContentPane().add(all);
-		setSize(450, 300);
+    getContentPane().add(all);
+    setSize(450, 300);
 
-		ComponentHelper.centreOnScreen(this);
-	}
+    ComponentHelper.centreOnScreen(this);
+  }
 
-	public static Date showCalendarDialog(Component parentComponent, String title, Date initial)
-	{
-		if( parentComponent == null )
-		{
-			throw new IllegalArgumentException("parentComponent must not be null");
-		}
+  public static Date showCalendarDialog(Component parentComponent, String title, Date initial) {
+    if (parentComponent == null) {
+      throw new IllegalArgumentException("parentComponent must not be null");
+    }
 
-		Window window = null;
-		if( parentComponent instanceof Window )
-		{
-			window = (Window) parentComponent;
-		}
-		else
-		{
-			window = SwingUtilities.getWindowAncestor(parentComponent);
-		}
+    Window window = null;
+    if (parentComponent instanceof Window) {
+      window = (Window) parentComponent;
+    } else {
+      window = SwingUtilities.getWindowAncestor(parentComponent);
+    }
 
-		CalendarDialog dialog = null;
-		if( window instanceof Frame )
-		{
-			dialog = new CalendarDialog((Frame) window, title, true);
-		}
-		else
-		{
-			dialog = new CalendarDialog((Dialog) window, title, true);
-		}
+    CalendarDialog dialog = null;
+    if (window instanceof Frame) {
+      dialog = new CalendarDialog((Frame) window, title, true);
+    } else {
+      dialog = new CalendarDialog((Dialog) window, title, true);
+    }
 
-		if( initial != null )
-		{
-			dialog.setDate(initial);
-		}
+    if (initial != null) {
+      dialog.setDate(initial);
+    }
 
-		dialog.setVisible(true);
+    dialog.setVisible(true);
 
-		return dialog.getDate();
-	}
+    return dialog.getDate();
+  }
 
-	public void setDate(Date d)
-	{
-		calendar.setDate(d);
-	}
+  public void setDate(Date d) {
+    calendar.setDate(d);
+  }
 
-	public void setDate(int month, int year)
-	{
-		calendar.setDate(month, year);
-	}
+  public void setDate(int month, int year) {
+    calendar.setDate(month, year);
+  }
 
-	public Date getDate()
-	{
-		return result;
-	}
+  public Date getDate() {
+    return result;
+  }
 
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		if( e.getSource() == select )
-		{
-			Date selection = calendar.getDate();
-			if( selection == null )
-			{
-				String message = "You have not selected a day. Do you really want continue?";
-				String[] buttons = {"Close Window", "Do Not Close"};
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    if (e.getSource() == select) {
+      Date selection = calendar.getDate();
+      if (selection == null) {
+        String message = "You have not selected a day. Do you really want continue?";
+        String[] buttons = {"Close Window", "Do Not Close"};
 
-				final int choice = JOptionPane.showOptionDialog(this, message, "No Day Selected",
-					JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, buttons, buttons[1]);
+        final int choice =
+            JOptionPane.showOptionDialog(
+                this,
+                message,
+                "No Day Selected",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE,
+                null,
+                buttons,
+                buttons[1]);
 
-				if( choice == JOptionPane.YES_OPTION )
-				{
-					result = null;
-					dispose();
-				}
-			}
-			else
-			{
-				result = selection;
-				dispose();
-			}
-		}
-		else if( e.getSource() == close )
-		{
-			result = null;
-			dispose();
-		}
-	}
+        if (choice == JOptionPane.YES_OPTION) {
+          result = null;
+          dispose();
+        }
+      } else {
+        result = selection;
+        dispose();
+      }
+    } else if (e.getSource() == close) {
+      result = null;
+      dispose();
+    }
+  }
 }

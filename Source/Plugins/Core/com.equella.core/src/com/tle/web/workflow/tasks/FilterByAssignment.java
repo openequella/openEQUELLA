@@ -42,100 +42,87 @@ import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.annotations.Component;
 
 public class FilterByAssignment extends AbstractPrototypeSection<Object>
-	implements
-		HtmlRenderer,
-		ResetFiltersListener,
-		SearchEventListener<FreetextSearchEvent>
-{
-	public enum Assign
-	{
-		ANY, ME, OTHERS, NOONE
-	}
+    implements HtmlRenderer, ResetFiltersListener, SearchEventListener<FreetextSearchEvent> {
+  public enum Assign {
+    ANY,
+    ME,
+    OTHERS,
+    NOONE
+  }
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Component(parameter = "unan", supported = true)
-	@PlugKey("unanimous.must")
-	private Checkbox mustCheckbox;
+  @Component(parameter = "unan", supported = true)
+  @PlugKey("unanimous.must")
+  private Checkbox mustCheckbox;
 
-	@Component(parameter = "asgn", supported = true)
-	private SingleSelectionList<Assign> assignList;
+  @Component(parameter = "asgn", supported = true)
+  private SingleSelectionList<Assign> assignList;
 
-	@TreeLookup
-	private AbstractSearchResultsSection<?, ?, ?, ?> resultsSection;
+  @TreeLookup private AbstractSearchResultsSection<?, ?, ?, ?> resultsSection;
 
-	@PlugKey("assign.")
-	private static String KEY_ASSIGN;
+  @PlugKey("assign.")
+  private static String KEY_ASSIGN;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		assignList.setListModel(new EnumListModel<Assign>(KEY_ASSIGN, Assign.values()));
-		assignList.addChangeEventHandler(resultsSection.getRestartSearchHandler(tree));
-		mustCheckbox.setClickHandler(new StatementHandler(resultsSection.getRestartSearchHandler(tree)));
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    assignList.setListModel(new EnumListModel<Assign>(KEY_ASSIGN, Assign.values()));
+    assignList.addChangeEventHandler(resultsSection.getRestartSearchHandler(tree));
+    mustCheckbox.setClickHandler(
+        new StatementHandler(resultsSection.getRestartSearchHandler(tree)));
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		return viewFactory.createResult("assignfilter.ftl", this);
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    return viewFactory.createResult("assignfilter.ftl", this);
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception
-	{
-		if( mustCheckbox.isChecked(info) )
-		{
-			event.filterByTerm(false, FreeTextQuery.FIELD_WORKFLOW_UNANIMOUS, "true"); //$NON-NLS-1$
-		}
-		Assign assign = assignList.getSelectedValue(info);
-		if( assign != null )
-		{
-			String currentUserId = CurrentUser.getUserID();
-			switch( assign )
-			{
-				case OTHERS:
-					event
-						.filterByTerms(true, FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, Arrays.asList(currentUserId, ""));
-					break;
-				case ME:
-					event.filterByTerm(false, FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, currentUserId);
-					break;
-				case NOONE:
-					event.filterByTerm(false, FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, "");
-					break;
+  @SuppressWarnings("nls")
+  @Override
+  public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception {
+    if (mustCheckbox.isChecked(info)) {
+      event.filterByTerm(false, FreeTextQuery.FIELD_WORKFLOW_UNANIMOUS, "true"); // $NON-NLS-1$
+    }
+    Assign assign = assignList.getSelectedValue(info);
+    if (assign != null) {
+      String currentUserId = CurrentUser.getUserID();
+      switch (assign) {
+        case OTHERS:
+          event.filterByTerms(
+              true, FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, Arrays.asList(currentUserId, ""));
+          break;
+        case ME:
+          event.filterByTerm(false, FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, currentUserId);
+          break;
+        case NOONE:
+          event.filterByTerm(false, FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, "");
+          break;
 
-				default:
-					break;
-			}
-		}
-	}
+        default:
+          break;
+      }
+    }
+  }
 
-	public SingleSelectionList<Assign> getAssignList()
-	{
-		return assignList;
-	}
+  public SingleSelectionList<Assign> getAssignList() {
+    return assignList;
+  }
 
-	public Checkbox getMustCheckbox()
-	{
-		return mustCheckbox;
-	}
+  public Checkbox getMustCheckbox() {
+    return mustCheckbox;
+  }
 
-	@Override
-	public void reset(SectionInfo info)
-	{
-		assignList.setSelectedStringValue(info, null);
-		mustCheckbox.setChecked(info, false);
-	}
+  @Override
+  public void reset(SectionInfo info) {
+    assignList.setSelectedStringValue(info, null);
+    mustCheckbox.setChecked(info, false);
+  }
 }

@@ -46,144 +46,135 @@ import com.tle.core.migration.MigrationResult;
 
 @Bind
 @Singleton
-public class AttachmentMigration extends AbstractHibernateSchemaMigration
-{
-	private static final int BATCH_SIZE = 1000;
-	private static final String TABLE_NAME = "attachment";
-	private static final String[] NEW_COLUMNS = new String[]{"md5sum", "item_id", "attindex"};
-	private static final Log LOGGER = LogFactory.getLog(AttachmentMigration.class);
+public class AttachmentMigration extends AbstractHibernateSchemaMigration {
+  private static final int BATCH_SIZE = 1000;
+  private static final String TABLE_NAME = "attachment";
+  private static final String[] NEW_COLUMNS = new String[] {"md5sum", "item_id", "attindex"};
+  private static final Log LOGGER = LogFactory.getLog(AttachmentMigration.class);
 
-	@SuppressWarnings("nls")
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo("com.tle.core.entity.services.attachment.schema.title");
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo("com.tle.core.entity.services.attachment.schema.title");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class[]{FakeItem.class, FakeAttachment.class, FakeAttachmentMapping.class, ItemAttachmentsPK.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class[] {
+      FakeItem.class, FakeAttachment.class, FakeAttachmentMapping.class, ItemAttachmentsPK.class
+    };
+  }
 
-	@Override
-	public boolean isBackwardsCompatible()
-	{
-		return false;
-	}
+  @Override
+  public boolean isBackwardsCompatible() {
+    return false;
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		List<String> sql = new ArrayList<String>();
-		sql.addAll(helper.getAddColumnsSQL(TABLE_NAME, NEW_COLUMNS));
-		return sql;
-	}
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    List<String> sql = new ArrayList<String>();
+    sql.addAll(helper.getAddColumnsSQL(TABLE_NAME, NEW_COLUMNS));
+    return sql;
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		List<String> dropModify = new ArrayList<String>();
-		dropModify.addAll(helper.getAddNotNullSQL(TABLE_NAME, "item_id", "attindex"));
-		dropModify.addAll(helper.getAddIndexesAndConstraintsForColumns(TABLE_NAME, NEW_COLUMNS));
-		dropModify.addAll(helper.getDropTableSql("item_attachments"));
-		return dropModify;
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    List<String> dropModify = new ArrayList<String>();
+    dropModify.addAll(helper.getAddNotNullSQL(TABLE_NAME, "item_id", "attindex"));
+    dropModify.addAll(helper.getAddIndexesAndConstraintsForColumns(TABLE_NAME, NEW_COLUMNS));
+    dropModify.addAll(helper.getDropTableSql("item_attachments"));
+    return dropModify;
+  }
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return 1;
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return 1;
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-	{
-		// get the attachments and create a md5sum for all of them
-		Query query = session
-			.createQuery("from ItemAttachments i inner join fetch i.attachments inner join fetch i.item");
-		List<FakeAttachmentMapping> list = query.list();
-		session.clear();
-		int i = 0;
-		for( final FakeAttachmentMapping itemAttach : list )
-		{
-			final FakeAttachment attachment = itemAttach.attachments;
-			FakeItem item = itemAttach.item;
+  @SuppressWarnings("unchecked")
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) {
+    // get the attachments and create a md5sum for all of them
+    Query query =
+        session.createQuery(
+            "from ItemAttachments i inner join fetch i.attachments inner join fetch i.item");
+    List<FakeAttachmentMapping> list = query.list();
+    session.clear();
+    int i = 0;
+    for (final FakeAttachmentMapping itemAttach : list) {
+      final FakeAttachment attachment = itemAttach.attachments;
+      FakeItem item = itemAttach.item;
 
-			attachment.attindex = itemAttach.id.attindex;
-			attachment.item = item;
-			if( Check.isEmpty(attachment.uuid) )
-			{
-				attachment.uuid = UUID.randomUUID().toString();
-			}
-			session.update(attachment);
-			i++;
-			if( i % BATCH_SIZE == 0 )
-			{
-				session.flush();
-				session.clear();
-			}
-			result.incrementStatus();
-		}
-		session.flush();
-		session.clear();
+      attachment.attindex = itemAttach.id.attindex;
+      attachment.item = item;
+      if (Check.isEmpty(attachment.uuid)) {
+        attachment.uuid = UUID.randomUUID().toString();
+      }
+      session.update(attachment);
+      i++;
+      if (i % BATCH_SIZE == 0) {
+        session.flush();
+        session.clear();
+      }
+      result.incrementStatus();
+    }
+    session.flush();
+    session.clear();
 
-		int orphans = session.createQuery("delete from Attachment where item is null").executeUpdate();
-		if( orphans > 0 )
-		{
-			LOGGER.warn("Found " + orphans + " orphaned attachments");
-		}
-	}
+    int orphans = session.createQuery("delete from Attachment where item is null").executeUpdate();
+    if (orphans > 0) {
+      LOGGER.warn("Found " + orphans + " orphaned attachments");
+    }
+  }
 
-	@Entity(name = "Item")
-	@AccessType("field")
-	public static class FakeItem
-	{
-		@Id
-		long id;
-		String uuid;
-		int version;
-	}
+  @Entity(name = "Item")
+  @AccessType("field")
+  public static class FakeItem {
+    @Id long id;
+    String uuid;
+    int version;
+  }
 
-	@Entity(name = "Attachment")
-	@AccessType("field")
-	public static class FakeAttachment
-	{
-		@Id
-		long id;
-		@Column(updatable = false)
-		String type;
-		@Column(length = 40)
-		String uuid;
-		@Column(length = 32)
-		String md5sum;
-		@Column(updatable = false)
-		String url;
-		@ManyToOne
-		FakeItem item;
-		Integer attindex;
-	}
+  @Entity(name = "Attachment")
+  @AccessType("field")
+  public static class FakeAttachment {
+    @Id long id;
 
-	@Entity(name = "ItemAttachments")
-	public static class FakeAttachmentMapping
-	{
-		@EmbeddedId
-		ItemAttachmentsPK id;
-		@ManyToOne
-		@JoinColumn(insertable = false, updatable = false)
-		FakeItem item;
-		@OneToOne
-		FakeAttachment attachments;
-	}
+    @Column(updatable = false)
+    String type;
 
-	@Embeddable
-	public static class ItemAttachmentsPK implements Serializable
-	{
-		private static final long serialVersionUID = 1L;
+    @Column(length = 40)
+    String uuid;
 
-		@Column(name = "item_id")
-		long itemId;
-		int attindex;
-	}
+    @Column(length = 32)
+    String md5sum;
+
+    @Column(updatable = false)
+    String url;
+
+    @ManyToOne FakeItem item;
+    Integer attindex;
+  }
+
+  @Entity(name = "ItemAttachments")
+  public static class FakeAttachmentMapping {
+    @EmbeddedId ItemAttachmentsPK id;
+
+    @ManyToOne
+    @JoinColumn(insertable = false, updatable = false)
+    FakeItem item;
+
+    @OneToOne FakeAttachment attachments;
+  }
+
+  @Embeddable
+  public static class ItemAttachmentsPK implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @Column(name = "item_id")
+    long itemId;
+
+    int attindex;
+  }
 }

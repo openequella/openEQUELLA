@@ -24,11 +24,11 @@ import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.standard.Button;
 
 @TreeIndexed
-public interface DRMFilter extends Section
-{
-	void setSkip(SectionInfo info, boolean skip);
+public interface DRMFilter extends Section {
+  void setSkip(SectionInfo info, boolean skip);
 
-	void initAcceptButton(SectionInfo info, Button acceptButton, JSHandler handler, JSHandler previewHandler);
+  void initAcceptButton(
+      SectionInfo info, Button acceptButton, JSHandler handler, JSHandler previewHandler);
 
-	JSCallable getLicenseFunction();
+  JSCallable getLicenseFunction();
 }

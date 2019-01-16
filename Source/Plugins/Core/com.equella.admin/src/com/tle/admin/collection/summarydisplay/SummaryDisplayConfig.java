@@ -24,23 +24,22 @@ import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.common.applet.client.ClientService;
 
-public interface SummaryDisplayConfig
-{
-	void setClientService(ClientService service);
+public interface SummaryDisplayConfig {
+  void setClientService(ClientService service);
 
-	void setState(EditorState<ItemDefinition> state);
+  void setState(EditorState<ItemDefinition> state);
 
-	void load(SummarySectionsConfig sectionElement);
+  void load(SummarySectionsConfig sectionElement);
 
-	void save(SummarySectionsConfig sectionElement);
+  void save(SummarySectionsConfig sectionElement);
 
-	void setup();
+  void setup();
 
-	Component getComponent();
+  Component getComponent();
 
-	void setSchemaModel(SchemaModel model);
+  void setSchemaModel(SchemaModel model);
 
-	boolean hasDetectedChanges();
+  boolean hasDetectedChanges();
 
-	void clearChanges();
+  void clearChanges();
 }

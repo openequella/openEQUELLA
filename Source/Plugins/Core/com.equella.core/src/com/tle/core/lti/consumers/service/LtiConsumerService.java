@@ -20,11 +20,10 @@ import com.tle.common.lti.consumers.entity.LtiConsumer;
 import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.lti.consumers.service.session.LtiConsumerEditingBean;
 
-public interface LtiConsumerService extends AbstractEntityService<LtiConsumerEditingBean, LtiConsumer>
-{
-	@SuppressWarnings("nls")
-	public static final String ENTITY_TYPE = "LTI_CONSUMER";
+public interface LtiConsumerService
+    extends AbstractEntityService<LtiConsumerEditingBean, LtiConsumer> {
+  @SuppressWarnings("nls")
+  public static final String ENTITY_TYPE = "LTI_CONSUMER";
 
-	LtiConsumer findByConsumerKey(String consumerKey);
-
+  LtiConsumer findByConsumerKey(String consumerKey);
 }

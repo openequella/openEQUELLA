@@ -25,14 +25,11 @@ import com.tle.web.search.actions.AbstractShareSearchQuerySection;
 
 @NonNullByDefault
 @Bind
-public class CloudShareSearchQueryDialog extends AbstractShareSearchQueryDialog
-{
-	@Inject
-	private CloudShareSearchQuerySection contentSection;
+public class CloudShareSearchQueryDialog extends AbstractShareSearchQueryDialog {
+  @Inject private CloudShareSearchQuerySection contentSection;
 
-	@Override
-	protected AbstractShareSearchQuerySection getContentSection()
-	{
-		return contentSection;
-	}
+  @Override
+  protected AbstractShareSearchQuerySection getContentSection() {
+    return contentSection;
+  }
 }

@@ -24,34 +24,28 @@ import com.tle.common.taxonomy.RemoteTaxonomyService;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.core.remoting.RemoteAbstractEntityService;
 
-public class TaxonomyTool extends BaseEntityTool<Taxonomy>
-{
-	public TaxonomyTool()
-	{
-		super(Taxonomy.class, RemoteTaxonomyService.ENTITY_TYPE);
-	}
+public class TaxonomyTool extends BaseEntityTool<Taxonomy> {
+  public TaxonomyTool() {
+    super(Taxonomy.class, RemoteTaxonomyService.ENTITY_TYPE);
+  }
 
-	@Override
-	protected RemoteAbstractEntityService<Taxonomy> getService(ClientService client)
-	{
-		return client.getService(RemoteTaxonomyService.class);
-	}
+  @Override
+  protected RemoteAbstractEntityService<Taxonomy> getService(ClientService client) {
+    return client.getService(RemoteTaxonomyService.class);
+  }
 
-	@Override
-	protected String getErrorPath()
-	{
-		return "taxonomy"; //$NON-NLS-1$
-	}
+  @Override
+  protected String getErrorPath() {
+    return "taxonomy"; //$NON-NLS-1$
+  }
 
-	@Override
-	protected BaseEntityEditor<Taxonomy> createEditor(boolean readonly)
-	{
-		return new TaxonomyEditor(this, readonly);
-	}
+  @Override
+  protected BaseEntityEditor<Taxonomy> createEditor(boolean readonly) {
+    return new TaxonomyEditor(this, readonly);
+  }
 
-	@Override
-	protected String getEntityName()
-	{
-		return getString("taxonomy.entityname"); //$NON-NLS-1$
-	}
+  @Override
+  protected String getEntityName() {
+    return getString("taxonomy.entityname"); // $NON-NLS-1$
+  }
 }

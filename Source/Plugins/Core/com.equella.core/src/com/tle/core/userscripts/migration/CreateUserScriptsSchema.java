@@ -34,30 +34,25 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class CreateUserScriptsSchema extends AbstractCreateMigration
-{
-	private static final String KEY_PFX = PluginServiceImpl.getMyPluginId(CreateUserScriptsSchema.class) + ".";
+public class CreateUserScriptsSchema extends AbstractCreateMigration {
+  private static final String KEY_PFX =
+      PluginServiceImpl.getMyPluginId(CreateUserScriptsSchema.class) + ".";
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(KEY_PFX + "scripts.migration.createentity");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(KEY_PFX + "scripts.migration.createentity");
+  }
 
-	@Override
-	protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper)
-	{
-		return new TablesOnlyFilter("user_script");
-	}
+  @Override
+  protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
+    return new TablesOnlyFilter("user_script");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		final Set<Class<?>> domainClasses = Sets.newHashSet(ClassDependencies.baseEntity());
-		domainClasses.add(Institution.class);
-		domainClasses.add(UserScript.class);
-		return domainClasses.toArray(new Class<?>[domainClasses.size()]);
-
-	}
-
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    final Set<Class<?>> domainClasses = Sets.newHashSet(ClassDependencies.baseEntity());
+    domainClasses.add(Institution.class);
+    domainClasses.add(UserScript.class);
+    return domainClasses.toArray(new Class<?>[domainClasses.size()]);
+  }
 }

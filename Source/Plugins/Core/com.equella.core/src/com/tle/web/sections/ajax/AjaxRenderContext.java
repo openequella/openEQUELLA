@@ -24,30 +24,29 @@ import com.tle.web.sections.events.BookmarkEvent;
 import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.render.PreRenderable;
 
-public interface AjaxRenderContext extends PreRenderContext
-{
-	Writer startCapture(Writer out, String divId, Map<String, Object> captureParams, boolean collection);
+public interface AjaxRenderContext extends PreRenderContext {
+  Writer startCapture(
+      Writer out, String divId, Map<String, Object> captureParams, boolean collection);
 
-	void endCapture(String divId);
+  void endCapture(String divId);
 
-	FullDOMResult getFullDOMResult();
+  FullDOMResult getFullDOMResult();
 
-	void setFormBookmarkEvent(BookmarkEvent event);
+  void setFormBookmarkEvent(BookmarkEvent event);
 
-	void setJSONResponseCallback(JSONResponseCallback jsonResponseCallback);
+  void setJSONResponseCallback(JSONResponseCallback jsonResponseCallback);
 
-	JSONResponseCallback getJSONResponseCallback();
+  JSONResponseCallback getJSONResponseCallback();
 
-	void addAjaxDivs(String... divIds);
+  void addAjaxDivs(String... divIds);
 
-	void addAjaxDivs(Collection<String> ajaxIds);
+  void addAjaxDivs(Collection<String> ajaxIds);
 
-	boolean isCurrentlyCapturing();
+  boolean isCurrentlyCapturing();
 
-	boolean isRenderingAjaxDiv(String divId);
+  boolean isRenderingAjaxDiv(String divId);
 
-	Map<String, FullAjaxCaptureResult> getAllCaptures();
+  Map<String, FullAjaxCaptureResult> getAllCaptures();
 
-	void captureResources(PreRenderable... preRenderables);
-
+  void captureResources(PreRenderable... preRenderables);
 }

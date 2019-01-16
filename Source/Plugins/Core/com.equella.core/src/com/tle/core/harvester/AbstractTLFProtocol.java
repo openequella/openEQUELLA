@@ -48,421 +48,372 @@ import com.tle.core.harvester.search.HarvesterSearch;
 import com.tle.core.services.FileSystemService;
 
 /**
- * With the addition of the SHEX and MEX harvesters which differ from the LORAX
- * harvester only in minor details, this class represents a common TLF Protocol
- * to house the common code. The source for this code is the LORAXProtocol
- * class. That class meanwhile is altered into a subclass of this class.
- * 
+ * With the addition of the SHEX and MEX harvesters which differ from the LORAX harvester only in
+ * minor details, this class represents a common TLF Protocol to house the common code. The source
+ * for this code is the LORAXProtocol class. That class meanwhile is altered into a subclass of this
+ * class.
+ *
  * @author Nicholas Read
  */
 @SuppressWarnings("nls")
-public abstract class AbstractTLFProtocol extends AbstractHarvesterProtocol
-{
-	protected final DateFormat QUERY_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
-	protected final DateFormat VERSION_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+public abstract class AbstractTLFProtocol extends AbstractHarvesterProtocol {
+  protected final DateFormat QUERY_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
+  protected final DateFormat VERSION_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
-	private static final String RESULT_NODE = "contentChange";
-	private static final String RESULT_IDENTIFIER_NODE = "identifier";
-	private static final String RESULT_DATE_NODE = "changeDate";
-	/**
-	 * SOAP call may have a SOAPAction property, which is simply the method name
-	 * suffixed, hence method name chaseHeadlessRooster, SOAPAction
-	 * chaseHeaDlessRoosterRequest
-	 */
-	private final static String ACTION_SUFFIX = "Request";
-	private final static String SOAP_ENVELOPE_TAG = "soap";
+  private static final String RESULT_NODE = "contentChange";
+  private static final String RESULT_IDENTIFIER_NODE = "identifier";
+  private static final String RESULT_DATE_NODE = "changeDate";
+  /**
+   * SOAP call may have a SOAPAction property, which is simply the method name suffixed, hence
+   * method name chaseHeadlessRooster, SOAPAction chaseHeaDlessRoosterRequest
+   */
+  private static final String ACTION_SUFFIX = "Request";
 
-	@Inject
-	private FileSystemService fileSystemService;
+  private static final String SOAP_ENVELOPE_TAG = "soap";
 
-	private String username;
-	private String password;
-	private boolean harvestResources;
-	private boolean harvestLearningObjects;
-	private boolean onlyCheckForLiveVersions;
+  @Inject private FileSystemService fileSystemService;
 
-	protected abstract String getServerURLString();
+  private String username;
+  private String password;
+  private boolean harvestResources;
+  private boolean harvestLearningObjects;
+  private boolean onlyCheckForLiveVersions;
 
-	protected abstract String getWebServiceString();
+  protected abstract String getServerURLString();
 
-	/**
-	 * sometimes the same as the URL, sometimes not
-	 * 
-	 * @return
-	 */
-	protected abstract String getRequestNamespace();
+  protected abstract String getWebServiceString();
 
-	protected abstract String getQuerySyntax();
+  /**
+   * sometimes the same as the URL, sometimes not
+   *
+   * @return
+   */
+  protected abstract String getRequestNamespace();
 
-	protected abstract String getRetrieveContentMethod();
+  protected abstract String getQuerySyntax();
 
-	protected abstract String getQueryContentMethod();
+  protected abstract String getRetrieveContentMethod();
 
-	protected abstract String getContentType();
+  protected abstract String getQueryContentMethod();
 
-	protected abstract String getEnvelopeTagValue();
+  protected abstract String getContentType();
 
-	/**
-	 * sublclasses may have another, or perhaps no suffix at all (empty string)
-	 * 
-	 * @return
-	 */
-	protected String getActionSuffix()
-	{
-		return ACTION_SUFFIX;
-	}
+  protected abstract String getEnvelopeTagValue();
 
-	protected abstract Logger getLogger();
+  /**
+   * sublclasses may have another, or perhaps no suffix at all (empty string)
+   *
+   * @return
+   */
+  protected String getActionSuffix() {
+    return ACTION_SUFFIX;
+  }
 
-	@Override
-	public int setupAndRun(HarvesterProfile profile, boolean testOnly) throws Exception
-	{
-		String url = getServerURLString();
-		URL server = new URL(url);
-		this.host = server.getHost();
-		this.port = server.getPort();
-		this.context = server.getPath() + getWebServiceString();
+  protected abstract Logger getLogger();
 
-		username = profile.getAttribute("user");
-		password = profile.getAttribute("pass");
+  @Override
+  public int setupAndRun(HarvesterProfile profile, boolean testOnly) throws Exception {
+    String url = getServerURLString();
+    URL server = new URL(url);
+    this.host = server.getHost();
+    this.port = server.getPort();
+    this.context = server.getPath() + getWebServiceString();
 
-		setNamespace(getRequestNamespace());
+    username = profile.getAttribute("user");
+    password = profile.getAttribute("pass");
 
-		// What should we harvest?
-		harvestResources = profile.getAttribute("harvestResources", false);
-		harvestLearningObjects = profile.getAttribute("harvestLearningObjects", true);
-		onlyCheckForLiveVersions = profile.getAttribute("liveOnly", true);
+    setNamespace(getRequestNamespace());
 
-		return super.setupAndRun(profile, testOnly);
-	}
+    // What should we harvest?
+    harvestResources = profile.getAttribute("harvestResources", false);
+    harvestLearningObjects = profile.getAttribute("harvestLearningObjects", true);
+    onlyCheckForLiveVersions = profile.getAttribute("liveOnly", true);
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.dytech.edge.lexharvester.repositories.ContentRepository#
-	 * getTLESearchRequest(
-	 * com.dytech.edge.lexharvester.repositories.LearningObject)
-	 */
-	@Override
-	public Search getTLESearchRequest(LearningObject lobject)
-	{
-		HarvesterSearch search = new HarvesterSearch();
+    return super.setupAndRun(profile, testOnly);
+  }
 
-		FreeTextBooleanQuery ftquery = WhereParser.parse("WHERE /xml/item/itembody/tlfid = '" + lobject.getIdentifier()
-			+ '\'');
-		search.setFreeTextQuery(ftquery);
-		if( onlyCheckForLiveVersions )
-		{
-			search.setItemStatuses(ItemStatus.LIVE, ItemStatus.REVIEW);
-		}
+  /*
+   * (non-Javadoc)
+   * @see com.dytech.edge.lexharvester.repositories.ContentRepository#
+   * getTLESearchRequest(
+   * com.dytech.edge.lexharvester.repositories.LearningObject)
+   */
+  @Override
+  public Search getTLESearchRequest(LearningObject lobject) {
+    HarvesterSearch search = new HarvesterSearch();
 
-		return search;
-	}
+    FreeTextBooleanQuery ftquery =
+        WhereParser.parse("WHERE /xml/item/itembody/tlfid = '" + lobject.getIdentifier() + '\'');
+    search.setFreeTextQuery(ftquery);
+    if (onlyCheckForLiveVersions) {
+      search.setItemStatuses(ItemStatus.LIVE, ItemStatus.REVIEW);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.dytech.edge.lexharvester.repositories.ContentRepository#
-	 * createAttachmentName(
-	 * com.dytech.edge.lexharvester.repositories.LearningObject)
-	 */
-	@Override
-	public String createAttachmentName(LearningObject lobject)
-	{
-		String name = lobject.getTitle();
+    return search;
+  }
 
-		StringBuilder buffer = new StringBuilder();
+  /*
+   * (non-Javadoc)
+   * @see com.dytech.edge.lexharvester.repositories.ContentRepository#
+   * createAttachmentName(
+   * com.dytech.edge.lexharvester.repositories.LearningObject)
+   */
+  @Override
+  public String createAttachmentName(LearningObject lobject) {
+    String name = lobject.getTitle();
 
-		final int count = name.length();
-		for( int i = 0; i < count; i++ )
-		{
-			char c = name.charAt(i);
-			if( Character.isLetterOrDigit(c) || Character.isWhitespace(c) )
-			{
-				buffer.append(c);
-			}
-		}
+    StringBuilder buffer = new StringBuilder();
 
-		String result = buffer.toString();
-		result = result.trim();
+    final int count = name.length();
+    for (int i = 0; i < count; i++) {
+      char c = name.charAt(i);
+      if (Character.isLetterOrDigit(c) || Character.isWhitespace(c)) {
+        buffer.append(c);
+      }
+    }
 
-		if( result.length() == 0 )
-		{
-			result = "Unspecified Name";
-		}
+    String result = buffer.toString();
+    result = result.trim();
 
-		return result + ".zip";
-	}
+    if (result.length() == 0) {
+      result = "Unspecified Name";
+    }
 
-	protected PropBagEx generateQuery(Date since)
-	{
-		PropBagEx query = new PropBagEx();
-		query = query.newSubtree("QUERY");
-		query.setNode("@xmlns", "");
+    return result + ".zip";
+  }
 
-		PropBagEx and = query.newSubtree("AND");
-		and.setNode("Title", "*");
-		and.setNode("VersionDate", QUERY_DATE_FORMAT.format(since));
-		and.setNode("VersionDate/@op", ">=");
+  protected PropBagEx generateQuery(Date since) {
+    PropBagEx query = new PropBagEx();
+    query = query.newSubtree("QUERY");
+    query.setNode("@xmlns", "");
 
-		// LEX have two types of objects; Learning Objects and Resources. Most
-		// installations are only going to want Learning Objects. The catalog
-		// types are:
-		//
-		// - TLF-LearningObject
-		// - TLF-Resource
-		//
-		// Not specifying a catalog type will get all of them.
+    PropBagEx and = query.newSubtree("AND");
+    and.setNode("Title", "*");
+    and.setNode("VersionDate", QUERY_DATE_FORMAT.format(since));
+    and.setNode("VersionDate/@op", ">=");
 
-		if( harvestResources && harvestLearningObjects )
-		{
-			getLogger().info(CurrentLocale.get(KEY_PFX + "log.lorax.both"));
-		}
-		else if( harvestLearningObjects )
-		{
-			getLogger().info(CurrentLocale.get(KEY_PFX + "log.lorax.learning"));
-			and.setNode("Catalog", "TLF-LearningObject");
-		}
-		else if( harvestResources )
-		{
-			getLogger().info(CurrentLocale.get(KEY_PFX + "log.lorax.resources"));
-			and.setNode("Catalog", "TLF-Resource");
-		}
+    // LEX have two types of objects; Learning Objects and Resources. Most
+    // installations are only going to want Learning Objects. The catalog
+    // types are:
+    //
+    // - TLF-LearningObject
+    // - TLF-Resource
+    //
+    // Not specifying a catalog type will get all of them.
 
-		return query;
-	}
+    if (harvestResources && harvestLearningObjects) {
+      getLogger().info(CurrentLocale.get(KEY_PFX + "log.lorax.both"));
+    } else if (harvestLearningObjects) {
+      getLogger().info(CurrentLocale.get(KEY_PFX + "log.lorax.learning"));
+      and.setNode("Catalog", "TLF-LearningObject");
+    } else if (harvestResources) {
+      getLogger().info(CurrentLocale.get(KEY_PFX + "log.lorax.resources"));
+      and.setNode("Catalog", "TLF-Resource");
+    }
 
-	/**
-	 * Similiar to <code>constructCall</code>, but does some extra things that
-	 * Lex needs.
-	 */
-	protected SoapCall myConstructCall(String method, String actionSuffix)
-	{
-		SoapCall call = constructCall(method);
-		call.setSOAPAction(getNamespace() + '/' + method + actionSuffix);
-		call.setEnvelopeTag(SOAP_ENVELOPE_TAG);
-		// The default is populated; this is to overwrite if supplied
-		if( !Check.isEmpty(getEnvelopeTagValue()) )
-		{
-			call.setEnvelopeTagValue(getEnvelopeTagValue());
-		}
-		call.setDotNetCompatability(true);
-		return call;
-	}
+    return query;
+  }
 
-	/**
-	 * Add the username and password parameters to the given soap call.
-	 */
-	protected SoapCall addCredentials(SoapCall call, boolean lowercase)
-	{
-		String un = "Username";
-		String pw = "Password";
-		if( lowercase )
-		{
-			un = un.toLowerCase();
-			pw = pw.toLowerCase();
-		}
-		addParameter(call, un, username);
-		addParameter(call, pw, password);
-		return call;
-	}
+  /** Similiar to <code>constructCall</code>, but does some extra things that Lex needs. */
+  protected SoapCall myConstructCall(String method, String actionSuffix) {
+    SoapCall call = constructCall(method);
+    call.setSOAPAction(getNamespace() + '/' + method + actionSuffix);
+    call.setEnvelopeTag(SOAP_ENVELOPE_TAG);
+    // The default is populated; this is to overwrite if supplied
+    if (!Check.isEmpty(getEnvelopeTagValue())) {
+      call.setEnvelopeTagValue(getEnvelopeTagValue());
+    }
+    call.setDotNetCompatability(true);
+    return call;
+  }
 
-	private String host;
-	private int port;
-	private String context;
-	private String namespace;
+  /** Add the username and password parameters to the given soap call. */
+  protected SoapCall addCredentials(SoapCall call, boolean lowercase) {
+    String un = "Username";
+    String pw = "Password";
+    if (lowercase) {
+      un = un.toLowerCase();
+      pw = pw.toLowerCase();
+    }
+    addParameter(call, un, username);
+    addParameter(call, pw, password);
+    return call;
+  }
 
-	protected final void setNamespace(String namespace)
-	{
-		this.namespace = namespace;
-	}
+  private String host;
+  private int port;
+  private String context;
+  private String namespace;
 
-	protected final String getNamespace()
-	{
-		return namespace;
-	}
+  protected final void setNamespace(String namespace) {
+    this.namespace = namespace;
+  }
 
-	/**
-	 * Helper method to construct a SOAP call.
-	 * 
-	 * @param methodName Name of the method being called.
-	 * @return The new SoapCall object.
-	 */
-	protected final SoapCall constructCall(String methodName)
-	{
-		if( namespace == null )
-		{
-			return new SoapCall(host, port, context, methodName);
-		}
-		else
-		{
-			return new SoapCall(host, port, context, methodName, namespace);
-		}
-	}
+  protected final String getNamespace() {
+    return namespace;
+  }
 
-	/**
-	 * Helper method to add a new String parameter to a SOAP call.
-	 * 
-	 * @param call The SoapCall to add the parameter to.
-	 * @param name The name of the parameter.
-	 * @param value The value of the parameter.
-	 * @throws SoapCallException only if something goes terribly wrong.
-	 */
-	protected final void addParameter(SoapCall call, String name, String value)
-	{
-		call.addParameter(new RequestParameter(name, value));
-	}
+  /**
+   * Helper method to construct a SOAP call.
+   *
+   * @param methodName Name of the method being called.
+   * @return The new SoapCall object.
+   */
+  protected final SoapCall constructCall(String methodName) {
+    if (namespace == null) {
+      return new SoapCall(host, port, context, methodName);
+    } else {
+      return new SoapCall(host, port, context, methodName, namespace);
+    }
+  }
 
-	/**
-	 * Helper method to add a new String parameter to a SOAP call.
-	 * 
-	 * @param call The SoapCall to add the parameter to.
-	 * @param name The name of the parameter.
-	 * @param value The value of the parameter.
-	 * @throws SoapCallException only if something goes terribly wrong.
-	 */
-	protected final void addParameter(SoapCall call, String name, int value)
-	{
-		call.addParameter(new RequestParameter(name, value));
-	}
+  /**
+   * Helper method to add a new String parameter to a SOAP call.
+   *
+   * @param call The SoapCall to add the parameter to.
+   * @param name The name of the parameter.
+   * @param value The value of the parameter.
+   * @throws SoapCallException only if something goes terribly wrong.
+   */
+  protected final void addParameter(SoapCall call, String name, String value) {
+    call.addParameter(new RequestParameter(name, value));
+  }
 
-	/**
-	 * Helper method to add a new String parameter to a SOAP call.
-	 * 
-	 * @param call The SoapCall to add the parameter to.
-	 * @param name The name of the parameter.
-	 * @param value The value of the parameter.
-	 * @throws SoapCallException only if something goes terribly wrong.
-	 */
-	protected final void addParameter(SoapCall call, String name, String[] values)
-	{
-		call.addParameter(new RequestParameter(name, values));
-	}
+  /**
+   * Helper method to add a new String parameter to a SOAP call.
+   *
+   * @param call The SoapCall to add the parameter to.
+   * @param name The name of the parameter.
+   * @param value The value of the parameter.
+   * @throws SoapCallException only if something goes terribly wrong.
+   */
+  protected final void addParameter(SoapCall call, String name, int value) {
+    call.addParameter(new RequestParameter(name, value));
+  }
 
-	/**
-	 * Helper method to add a new boolean parameter to a SOAP call.
-	 * 
-	 * @param call The SoapCall to add the parameter to.
-	 * @param name The name of the parameter.
-	 * @param value The value of the parameter.
-	 * @throws SoapCallException only if something goes terribly wrong.
-	 */
-	protected final void addParameter(SoapCall call, String name, boolean value)
-	{
-		call.addParameter(new RequestParameter(name, value));
-	}
+  /**
+   * Helper method to add a new String parameter to a SOAP call.
+   *
+   * @param call The SoapCall to add the parameter to.
+   * @param name The name of the parameter.
+   * @param value The value of the parameter.
+   * @throws SoapCallException only if something goes terribly wrong.
+   */
+  protected final void addParameter(SoapCall call, String name, String[] values) {
+    call.addParameter(new RequestParameter(name, values));
+  }
 
-	/**
-	 * Helper method to add a new XML parameter to a SOAP call.
-	 * 
-	 * @param call The SoapCall to add the parameter to.
-	 * @param name The name of the parameter.
-	 * @param value The value of the parameter.
-	 * @throws SoapCallException only if something goes terribly wrong.
-	 */
-	protected final void addParameter(SoapCall call, String name, PropBagEx value, String def)
-	{
-		call.addParameter(new RequestParameter(name, value.toString(), RequestParameter.RP_COMPLEX, def));
-	}
+  /**
+   * Helper method to add a new boolean parameter to a SOAP call.
+   *
+   * @param call The SoapCall to add the parameter to.
+   * @param name The name of the parameter.
+   * @param value The value of the parameter.
+   * @throws SoapCallException only if something goes terribly wrong.
+   */
+  protected final void addParameter(SoapCall call, String name, boolean value) {
+    call.addParameter(new RequestParameter(name, value));
+  }
 
-	@Override
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.dytech.edge.lexharvester.repositories.ContentRepository#postProcessing
-	 * ( com.dytech.devlib.PropBagEx,
-	 * com.dytech.edge.lexharvester.repositories.LearningObject)
-	 */
-	public void postProcessing(PropBagEx xml, LearningObject lobject)
-	{
-		PropBagEx itembody = xml.aquireSubtree("item/itembody");
-		itembody.setNode("packagefile", createAttachmentName(lobject));
-		itembody.setNode("tlfid", lobject.getIdentifier());
-		itembody.setNode("type", "IMS Package");
-	}
+  /**
+   * Helper method to add a new XML parameter to a SOAP call.
+   *
+   * @param call The SoapCall to add the parameter to.
+   * @param name The name of the parameter.
+   * @param value The value of the parameter.
+   * @throws SoapCallException only if something goes terribly wrong.
+   */
+  protected final void addParameter(SoapCall call, String name, PropBagEx value, String def) {
+    call.addParameter(
+        new RequestParameter(name, value.toString(), RequestParameter.RP_COMPLEX, def));
+  }
 
-	/**
-	 * Common to SHEX & MEX, overriden by LORAX
-	 */
-	@Override
-	public Collection<LearningObject> getUpdatedLearningObjects(Date since) throws Exception
-	{
-		SoapCall call = myConstructCall(getQueryContentMethod(), getActionSuffix());
-		addCredentials(call, true);
+  @Override
+  /*
+   * (non-Javadoc)
+   * @see
+   * com.dytech.edge.lexharvester.repositories.ContentRepository#postProcessing
+   * ( com.dytech.devlib.PropBagEx,
+   * com.dytech.edge.lexharvester.repositories.LearningObject)
+   */
+  public void postProcessing(PropBagEx xml, LearningObject lobject) {
+    PropBagEx itembody = xml.aquireSubtree("item/itembody");
+    itembody.setNode("packagefile", createAttachmentName(lobject));
+    itembody.setNode("tlfid", lobject.getIdentifier());
+    itembody.setNode("type", "IMS Package");
+  }
 
-		addParameter(call, "changedSince", VERSION_DATE_FORMAT.format(since));
+  /** Common to SHEX & MEX, overriden by LORAX */
+  @Override
+  public Collection<LearningObject> getUpdatedLearningObjects(Date since) throws Exception {
+    SoapCall call = myConstructCall(getQueryContentMethod(), getActionSuffix());
+    addCredentials(call, true);
 
-		ElementResultSoapHandler handler = new ElementResultSoapHandler(2);
-		call.callWithSoapSAX(handler, getContentType());
-		PropBagEx queryXml = new PropBagEx(handler.getElementResult());
+    addParameter(call, "changedSince", VERSION_DATE_FORMAT.format(since));
 
-		PropBagEx resultRootNode = queryXml.getSubtree(getQueryContentMethod() + "Result");
+    ElementResultSoapHandler handler = new ElementResultSoapHandler(2);
+    call.callWithSoapSAX(handler, getContentType());
+    PropBagEx queryXml = new PropBagEx(handler.getElementResult());
 
-		Collection<LearningObject> results = new ArrayList<LearningObject>();
+    PropBagEx resultRootNode = queryXml.getSubtree(getQueryContentMethod() + "Result");
 
-		if( resultRootNode != null )
-		{
-			for( PropBagEx result : resultRootNode.iterator(RESULT_NODE) )
-			{
-				String identifier = result.getNode(RESULT_IDENTIFIER_NODE);
-				String created = result.getNode(RESULT_DATE_NODE);
+    Collection<LearningObject> results = new ArrayList<LearningObject>();
 
-				// In theory, a contentChange node can be empty
-				if( !Check.isEmpty(identifier) || !Check.isEmpty(created) )
-				{
-					Date creationDate = null;
-					try
-					{
-						creationDate = VERSION_DATE_FORMAT.parse(created);
-					}
-					catch( ParseException ex )
-					{
-						getLogger().error(
-							CurrentLocale.get("com.tle.core.harvester.learning.badformat", RESULT_DATE_NODE, created));
-						throw ex;
-					}
+    if (resultRootNode != null) {
+      for (PropBagEx result : resultRootNode.iterator(RESULT_NODE)) {
+        String identifier = result.getNode(RESULT_IDENTIFIER_NODE);
+        String created = result.getNode(RESULT_DATE_NODE);
 
-					results.add(new LearningObject(identifier, identifier, creationDate, true));
-				}
-			}
-		}
-		return results;
-	}
+        // In theory, a contentChange node can be empty
+        if (!Check.isEmpty(identifier) || !Check.isEmpty(created)) {
+          Date creationDate = null;
+          try {
+            creationDate = VERSION_DATE_FORMAT.parse(created);
+          } catch (ParseException ex) {
+            getLogger()
+                .error(
+                    CurrentLocale.get(
+                        "com.tle.core.harvester.learning.badformat", RESULT_DATE_NODE, created));
+            throw ex;
+          }
 
-	/**
-	 * Common to SHEX & MEX, overriden by LORAX
-	 */
-	@Override
-	public void downloadLO(LearningObject lobject, String stagingID) throws Exception
-	{
-		PropBagEx responseXml = null;
-		OutputStream out = null;
+          results.add(new LearningObject(identifier, identifier, creationDate, true));
+        }
+      }
+    }
+    return results;
+  }
 
-		StagingFile staging = new StagingFile(stagingID);
-		String filename = createAttachmentName(lobject);
-		try
-		{
-			out = getOutputStream(staging, filename);
-			SoapCall call = myConstructCall(getRetrieveContentMethod(), getActionSuffix());
-			addCredentials(call, true);
-			addParameter(call, "identifier", lobject.getIdentifier());
-			ElementResultSoapHandler handler = new ElementResultSoapHandler(2);
-			call.callWithSoapSAX(handler, getContentType());
-			responseXml = new PropBagEx(handler.getElementResult());
-			String base64Data = responseXml.getNode("retrieveContentResult");
-			out.write(Base64.decode(base64Data));
-		}
-		catch( Exception ex )
-		{
-			getLogger().error(
-				CurrentLocale.get("com.tle.core.harvester.error.lorax.download", lobject.getIdentifier()), ex);
-			throw ex;
-		}
-		finally
-		{
-			Closeables.close(out, true); // Quietly
-		}
-		fileSystemService.unzipFile(staging, filename, "_" + filename);
-		fileSystemService.removeFile(staging, filename);
-		fileSystemService.rename(staging, "_" + filename, filename);
+  /** Common to SHEX & MEX, overriden by LORAX */
+  @Override
+  public void downloadLO(LearningObject lobject, String stagingID) throws Exception {
+    PropBagEx responseXml = null;
+    OutputStream out = null;
 
-	}
+    StagingFile staging = new StagingFile(stagingID);
+    String filename = createAttachmentName(lobject);
+    try {
+      out = getOutputStream(staging, filename);
+      SoapCall call = myConstructCall(getRetrieveContentMethod(), getActionSuffix());
+      addCredentials(call, true);
+      addParameter(call, "identifier", lobject.getIdentifier());
+      ElementResultSoapHandler handler = new ElementResultSoapHandler(2);
+      call.callWithSoapSAX(handler, getContentType());
+      responseXml = new PropBagEx(handler.getElementResult());
+      String base64Data = responseXml.getNode("retrieveContentResult");
+      out.write(Base64.decode(base64Data));
+    } catch (Exception ex) {
+      getLogger()
+          .error(
+              CurrentLocale.get(
+                  "com.tle.core.harvester.error.lorax.download", lobject.getIdentifier()),
+              ex);
+      throw ex;
+    } finally {
+      Closeables.close(out, true); // Quietly
+    }
+    fileSystemService.unzipFile(staging, filename, "_" + filename);
+    fileSystemService.removeFile(staging, filename);
+    fileSystemService.rename(staging, "_" + filename, filename);
+  }
 }

@@ -21,7 +21,6 @@ import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.web.sections.SectionId;
 
 @NonNullByDefault
-public interface DisplaySectionConfiguration extends SectionId
-{
-	void associateConfiguration(SummarySectionsConfig config);
+public interface DisplaySectionConfiguration extends SectionId {
+  void associateConfiguration(SummarySectionsConfig config);
 }

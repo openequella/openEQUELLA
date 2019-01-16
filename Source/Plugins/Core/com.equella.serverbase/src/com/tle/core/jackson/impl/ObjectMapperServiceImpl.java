@@ -34,23 +34,18 @@ import com.tle.core.plugins.PluginTracker.ParamFilter;
 @Bind(ObjectMapperService.class)
 @Singleton
 @SuppressWarnings("nls")
-public class ObjectMapperServiceImpl implements ObjectMapperService
-{
-	@Inject
-	private PluginTracker<MapperExtension> mapperTracker;
+public class ObjectMapperServiceImpl implements ObjectMapperService {
+  @Inject private PluginTracker<MapperExtension> mapperTracker;
 
-	@Override
-	public ObjectMapper createObjectMapper(String... named)
-	{
-		ObjectMapper mapper = new ObjectMapper();
-		if( named.length != 0 )
-		{
-			List<Extension> extensions = mapperTracker.getExtensions(new ParamFilter("mapper", named));
-			for( Extension mapperExtension : extensions )
-			{
-				mapperTracker.getBeanByExtension(mapperExtension).extendMapper(mapper);
-			}
-		}
-		return mapper;
-	}
+  @Override
+  public ObjectMapper createObjectMapper(String... named) {
+    ObjectMapper mapper = new ObjectMapper();
+    if (named.length != 0) {
+      List<Extension> extensions = mapperTracker.getExtensions(new ParamFilter("mapper", named));
+      for (Extension mapperExtension : extensions) {
+        mapperTracker.getBeanByExtension(mapperExtension).extendMapper(mapper);
+      }
+    }
+    return mapper;
+  }
 }

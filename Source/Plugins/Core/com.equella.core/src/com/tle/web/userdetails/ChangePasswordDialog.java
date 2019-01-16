@@ -53,179 +53,157 @@ import com.tle.web.sections.standard.dialog.model.DialogModel;
 @SuppressWarnings("nls")
 @Bind
 @NonNullByDefault
-public class ChangePasswordDialog extends AbstractOkayableDialog<ChangePasswordDialog.ChangePasswordDialogModel>
-{
-	@PlugKey("internal.change")
-	private static Label LABEL_TITLE;
-	@PlugKey("internal.passsuccess")
-	private static Label PASSWORD_SUCCESS;
-	@PlugKey("internal.nomatch")
-	private static Label PASSWORD_NOMATCH;
-	@PlugKey("common.invalidpassword")
-	private static Label PASSWORD_INVALID;
+public class ChangePasswordDialog
+    extends AbstractOkayableDialog<ChangePasswordDialog.ChangePasswordDialogModel> {
+  @PlugKey("internal.change")
+  private static Label LABEL_TITLE;
 
+  @PlugKey("internal.passsuccess")
+  private static Label PASSWORD_SUCCESS;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @PlugKey("internal.nomatch")
+  private static Label PASSWORD_NOMATCH;
 
-	@Inject
-	private TLEUserService tleUserService;
+  @PlugKey("common.invalidpassword")
+  private static Label PASSWORD_INVALID;
 
-	@Component(stateful = false)
-	private TextField oldPassword;
-	@Component(stateful = false)
-	private TextField newPassword;
-	@Component(stateful = false)
-	private TextField confirmPassword;
-	@Inject
-	private ReceiptService receiptService;
-	private JSCallable reloadParent;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	public ChangePasswordDialogModel instantiateDialogModel(SectionInfo info)
-	{
-		return new ChangePasswordDialogModel();
-	}
+  @Inject private TLEUserService tleUserService;
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return LABEL_TITLE;
-	}
+  @Component(stateful = false)
+  private TextField oldPassword;
 
-	@Override
-	protected String getContentBodyClass(RenderContext context)
-	{
-		return "cp";
-	}
+  @Component(stateful = false)
+  private TextField newPassword;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		setAjax(true);
-		reloadParent = addParentCallable(new ReloadFunction(false));
-	}
+  @Component(stateful = false)
+  private TextField confirmPassword;
 
-	@Override
-	protected JSHandler createOkHandler(SectionTree tree)
-	{
-		return events.getNamedHandler("savePassword");
-	}
+  @Inject private ReceiptService receiptService;
+  private JSCallable reloadParent;
 
-	@Override
-	public String getHeight()
-	{
-		return "auto";
-	}
+  @Override
+  public ChangePasswordDialogModel instantiateDialogModel(SectionInfo info) {
+    return new ChangePasswordDialogModel();
+  }
 
-	@EventHandlerMethod
-	public void savePassword(SectionInfo info)
-	{
-		ChangePasswordDialogModel model = getModel(info);
-		Map<String, String> errorList = model.getErrorList();
-		errorList.clear();
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return LABEL_TITLE;
+  }
 
-		TLEUser old = tleUserService.get(CurrentUser.getUserID());
+  @Override
+  protected String getContentBodyClass(RenderContext context) {
+    return "cp";
+  }
 
-		String newPasswordText = newPassword.getValue(info);
-		if( !newPasswordText.equals(confirmPassword.getValue(info)) )
-		{
-			errorList.put("confirmpass", PASSWORD_NOMATCH.getText()); //$NON-NLS-2$
-		}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    setAjax(true);
+    reloadParent = addParentCallable(new ReloadFunction(false));
+  }
 
-		boolean b = tleUserService.checkPasswordMatch(old, oldPassword.getValue(info));
-		if( !b )
-		{
-			errorList.put("oldpass", PASSWORD_INVALID.getText()); //$NON-NLS-2$
-		}
+  @Override
+  protected JSHandler createOkHandler(SectionTree tree) {
+    return events.getNamedHandler("savePassword");
+  }
 
-		boolean blankPass = checkBlank(info, oldPassword, "oldpass");
-		blankPass |= checkBlank(info, newPassword, "password");
-		blankPass |= checkBlank(info, confirmPassword, "confirmpass");
+  @Override
+  public String getHeight() {
+    return "auto";
+  }
 
-		if( !blankPass )
-		{
-			try
-			{
-				tleUserService.validatePassword(newPasswordText, true);
-			}
-			catch( InvalidDataException ex )
-			{
-				for( ValidationError error : ex.getErrors() )
-				{
-					errorList.put(error.getField(), error.getMessage());
-				}
-			}
+  @EventHandlerMethod
+  public void savePassword(SectionInfo info) {
+    ChangePasswordDialogModel model = getModel(info);
+    Map<String, String> errorList = model.getErrorList();
+    errorList.clear();
 
-			if( errorList.size() == 0 )
-			{
-				old.setPassword(newPasswordText);
-				tleUserService.editSelf(old, true);
+    TLEUser old = tleUserService.get(CurrentUser.getUserID());
 
-				// We probably need a nicer way of doing this
-				UserState userState = CurrentUser.getUserState();
-				if( userState instanceof ModifiableUserState )
-				{
-					ModifiableUserState s = (ModifiableUserState) userState;
-					s.setLoggedInUser(old);
-					CurrentUser.setUserState(s);
-				}
-				receiptService.setReceipt(PASSWORD_SUCCESS);
-				closeDialog(info, reloadParent);
-			}
-		}
-	}
+    String newPasswordText = newPassword.getValue(info);
+    if (!newPasswordText.equals(confirmPassword.getValue(info))) {
+      errorList.put("confirmpass", PASSWORD_NOMATCH.getText()); // $NON-NLS-2$
+    }
 
-	private boolean checkBlank(SectionInfo info, TextField field, String key)
-	{
-		if( Check.isEmpty(field.getValue(info)) )
-		{
-			getModel(info).getErrorList().put(key, CurrentLocale.get("com.tle.web.userdetails.internal.blank"));
-			return true;
-		}
-		return false;
-	}
+    boolean b = tleUserService.checkPasswordMatch(old, oldPassword.getValue(info));
+    if (!b) {
+      errorList.put("oldpass", PASSWORD_INVALID.getText()); // $NON-NLS-2$
+    }
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		return viewFactory.createResult("edit/password-dialog.ftl", this);
-	}
+    boolean blankPass = checkBlank(info, oldPassword, "oldpass");
+    blankPass |= checkBlank(info, newPassword, "password");
+    blankPass |= checkBlank(info, confirmPassword, "confirmpass");
 
-	public TextField getOldPassword()
-	{
-		return oldPassword;
-	}
+    if (!blankPass) {
+      try {
+        tleUserService.validatePassword(newPasswordText, true);
+      } catch (InvalidDataException ex) {
+        for (ValidationError error : ex.getErrors()) {
+          errorList.put(error.getField(), error.getMessage());
+        }
+      }
 
-	public TextField getNewPassword()
-	{
-		return newPassword;
-	}
+      if (errorList.size() == 0) {
+        old.setPassword(newPasswordText);
+        tleUserService.editSelf(old, true);
 
-	public TextField getConfirmPassword()
-	{
-		return confirmPassword;
-	}
+        // We probably need a nicer way of doing this
+        UserState userState = CurrentUser.getUserState();
+        if (userState instanceof ModifiableUserState) {
+          ModifiableUserState s = (ModifiableUserState) userState;
+          s.setLoggedInUser(old);
+          CurrentUser.setUserState(s);
+        }
+        receiptService.setReceipt(PASSWORD_SUCCESS);
+        closeDialog(info, reloadParent);
+      }
+    }
+  }
 
-	public static final class ChangePasswordDialogModel extends DialogModel
-	{
-		private final Map<String, String> errorList = new HashMap<String, String>();
-		private boolean successful = false;
+  private boolean checkBlank(SectionInfo info, TextField field, String key) {
+    if (Check.isEmpty(field.getValue(info))) {
+      getModel(info)
+          .getErrorList()
+          .put(key, CurrentLocale.get("com.tle.web.userdetails.internal.blank"));
+      return true;
+    }
+    return false;
+  }
 
-		public Map<String, String> getErrorList()
-		{
-			return errorList;
-		}
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    return viewFactory.createResult("edit/password-dialog.ftl", this);
+  }
 
-		public void setSuccessful(boolean successful)
-		{
-			this.successful = successful;
-		}
+  public TextField getOldPassword() {
+    return oldPassword;
+  }
 
-		public boolean isSuccessful()
-		{
-			return successful;
-		}
-	}
+  public TextField getNewPassword() {
+    return newPassword;
+  }
+
+  public TextField getConfirmPassword() {
+    return confirmPassword;
+  }
+
+  public static final class ChangePasswordDialogModel extends DialogModel {
+    private final Map<String, String> errorList = new HashMap<String, String>();
+    private boolean successful = false;
+
+    public Map<String, String> getErrorList() {
+      return errorList;
+    }
+
+    public void setSuccessful(boolean successful) {
+      this.successful = successful;
+    }
+
+    public boolean isSuccessful() {
+      return successful;
+    }
+  }
 }

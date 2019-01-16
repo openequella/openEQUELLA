@@ -29,50 +29,39 @@ import com.tle.web.cloud.view.CloudViewableItem;
 import com.tle.web.itemlist.standard.AbstractItemlikeListAttachmentDisplaySection;
 import com.tle.web.viewable.ViewableItem;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
 public class CloudSearchListAttachmentSection
-	extends
-		AbstractItemlikeListAttachmentDisplaySection<CloudItem, CloudSearchListEntry>
-{
-	@Inject
-	private CloudService cloudService;
+    extends AbstractItemlikeListAttachmentDisplaySection<CloudItem, CloudSearchListEntry> {
+  @Inject private CloudService cloudService;
 
-	@Override
-	protected boolean canSeeAttachments(CloudItem item)
-	{
-		return true;
-	}
+  @Override
+  protected boolean canSeeAttachments(CloudItem item) {
+    return true;
+  }
 
-	@Override
-	protected SearchDetails getSearchDetails(CloudItem item)
-	{
-		return null;
-	}
+  @Override
+  protected SearchDetails getSearchDetails(CloudItem item) {
+    return null;
+  }
 
-	@Override
-	protected CloudItem getItem(CloudSearchListEntry entry)
-	{
-		return entry.getItem();
-	}
+  @Override
+  protected CloudItem getItem(CloudSearchListEntry entry) {
+    return entry.getItem();
+  }
 
-	@Override
-	protected CloudItem getItem(ItemId itemId)
-	{
-		return cloudService.getItem(itemId.getUuid(), itemId.getVersion());
-	}
+  @Override
+  protected CloudItem getItem(ItemId itemId) {
+    return cloudService.getItem(itemId.getUuid(), itemId.getVersion());
+  }
 
-	@Override
-	protected ViewableItem<CloudItem> getViewableItem(CloudItem item)
-	{
-		return new CloudViewableItem(item);
-	}
+  @Override
+  protected ViewableItem<CloudItem> getViewableItem(CloudItem item) {
+    return new CloudViewableItem(item);
+  }
 
-	@Override
-	public String getItemExtensionType()
-	{
-		return CloudConstants.ITEM_EXTENSION;
-	}
+  @Override
+  public String getItemExtensionType() {
+    return CloudConstants.ITEM_EXTENSION;
+  }
 }

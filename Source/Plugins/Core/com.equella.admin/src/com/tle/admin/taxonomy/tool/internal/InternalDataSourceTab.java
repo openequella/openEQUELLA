@@ -47,159 +47,145 @@ import com.tle.common.taxonomy.terms.RemoteTermService;
 import com.tle.core.plugins.PluginService;
 
 @SuppressWarnings("nls")
-public class InternalDataSourceTab extends JPanel implements Changeable
-{
-	private final ClientService clientService;
-	private final PluginService pluginService;
+public class InternalDataSourceTab extends JPanel implements Changeable {
+  private final ClientService clientService;
+  private final PluginService pluginService;
 
-	private AbstractTreeEditor<TermTreeNode> tree;
-	private Taxonomy taxonomy;
+  private AbstractTreeEditor<TermTreeNode> tree;
+  private Taxonomy taxonomy;
 
-	private static String KEY_PFX = AbstractPluginService.getMyPluginId(InternalDataSourceTab.class) + ".";
+  private static String KEY_PFX =
+      AbstractPluginService.getMyPluginId(InternalDataSourceTab.class) + ".";
 
-	protected static String getString(String key)
-	{
-		return CurrentLocale.get(getKey(key));
-	}
+  protected static String getString(String key) {
+    return CurrentLocale.get(getKey(key));
+  }
 
-	protected static String getKey(String key)
-	{
-		return KEY_PFX+key;
-	}
+  protected static String getKey(String key) {
+    return KEY_PFX + key;
+  }
 
-	public InternalDataSourceTab(ClientService clientService, PluginService pluginService)
-	{
-		super(new GridLayout(1, 1));
+  public InternalDataSourceTab(ClientService clientService, PluginService pluginService) {
+    super(new GridLayout(1, 1));
 
-		this.clientService = clientService;
-		this.pluginService = pluginService;
+    this.clientService = clientService;
+    this.pluginService = pluginService;
 
-		add(new JLabel("<html><b>" + s("mustbesaved"), SwingConstants.CENTER));
+    add(new JLabel("<html><b>" + s("mustbesaved"), SwingConstants.CENTER));
 
-		addComponentListener(ensureTaxonomySavedListener);
-	}
+    addComponentListener(ensureTaxonomySavedListener);
+  }
 
-	@Override
-	public void clearChanges()
-	{
-		// Nothing to do here
-	}
+  @Override
+  public void clearChanges() {
+    // Nothing to do here
+  }
 
-	@Override
-	public boolean hasDetectedChanges()
-	{
-		return false;
-	}
+  @Override
+  public boolean hasDetectedChanges() {
+    return false;
+  }
 
-	public void load(Taxonomy state)
-	{
-		this.taxonomy = state;
-		attemptToShowFullUi();
-	}
+  public void load(Taxonomy state) {
+    this.taxonomy = state;
+    attemptToShowFullUi();
+  }
 
-	public void save(Taxonomy state)
-	{
-		this.taxonomy = state;
-	}
+  public void save(Taxonomy state) {
+    this.taxonomy = state;
+  }
 
-	public void afterSave()
-	{
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				attemptToShowFullUi();
-			}
-		});
-	}
+  public void afterSave() {
+    SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            attemptToShowFullUi();
+          }
+        });
+  }
 
-	private final transient ComponentListener ensureTaxonomySavedListener = new ComponentAdapter()
-	{
-		@Override
-		public void componentShown(ComponentEvent e)
-		{
-			attemptToShowFullUi();
-		}
-	};
+  private final transient ComponentListener ensureTaxonomySavedListener =
+      new ComponentAdapter() {
+        @Override
+        public void componentShown(ComponentEvent e) {
+          attemptToShowFullUi();
+        }
+      };
 
-	private void attemptToShowFullUi()
-	{
-		if( tree != null )
-		{
-			return;
-		}
+  private void attemptToShowFullUi() {
+    if (tree != null) {
+      return;
+    }
 
-		GlassSwingWorker<?> worker = new GlassSwingWorker<Boolean>()
-		{
-			private Map<String, Pair<String, String>> predefinedTermDataKeys;
+    GlassSwingWorker<?> worker =
+        new GlassSwingWorker<Boolean>() {
+          private Map<String, Pair<String, String>> predefinedTermDataKeys;
 
-			@Override
-			public Boolean construct() throws Exception
-			{
-				boolean valid = taxonomy != null
-					&& clientService.getService(RemoteTaxonomyService.class).identifyByUuid(taxonomy.getUuid()) != 0;
-				if( valid )
-				{
-					predefinedTermDataKeys = new HashMap<String, Pair<String, String>>();
-					for( Extension ext : pluginService.getConnectedExtensions("com.tle.admin.taxonomy.tool",
-						"predefinedTermDataKey") )
-					{
-						final String key = ext.getParameter("key").valueAsString();
-						final String name = CurrentLocale.get(ext.getParameter("name").valueAsString());
-						final String desc = CurrentLocale.get(ext.getParameter("description").valueAsString());
+          @Override
+          public Boolean construct() throws Exception {
+            boolean valid =
+                taxonomy != null
+                    && clientService
+                            .getService(RemoteTaxonomyService.class)
+                            .identifyByUuid(taxonomy.getUuid())
+                        != 0;
+            if (valid) {
+              predefinedTermDataKeys = new HashMap<String, Pair<String, String>>();
+              for (Extension ext :
+                  pluginService.getConnectedExtensions(
+                      "com.tle.admin.taxonomy.tool", "predefinedTermDataKey")) {
+                final String key = ext.getParameter("key").valueAsString();
+                final String name = CurrentLocale.get(ext.getParameter("name").valueAsString());
+                final String desc =
+                    CurrentLocale.get(ext.getParameter("description").valueAsString());
 
-						predefinedTermDataKeys.put(key, new Pair<String, String>(name, desc));
-					}
-				}
-				return valid;
-			}
+                predefinedTermDataKeys.put(key, new Pair<String, String>(name, desc));
+              }
+            }
+            return valid;
+          }
 
-			@Override
-			public void finished()
-			{
-				if( !get() )
-				{
-					return;
-				}
+          @Override
+          public void finished() {
+            if (!get()) {
+              return;
+            }
 
-				final JPanel p = InternalDataSourceTab.this;
+            final JPanel p = InternalDataSourceTab.this;
 
-				// Remove this listener and clear the panel
-				p.removeComponentListener(ensureTaxonomySavedListener);
-				p.removeAll();
+            // Remove this listener and clear the panel
+            p.removeComponentListener(ensureTaxonomySavedListener);
+            p.removeAll();
 
-				final RemoteTermService termService = clientService.getService(RemoteTermService.class);
+            final RemoteTermService termService = clientService.getService(RemoteTermService.class);
 
-				tree = new AbstractTreeEditor<TermTreeNode>()
-				{
-					@Override
-					protected AbstractTreeEditorTree<TermTreeNode> createTree()
-					{
-						return new TermTree(taxonomy, true, termService);
-					}
+            tree =
+                new AbstractTreeEditor<TermTreeNode>() {
+                  @Override
+                  protected AbstractTreeEditorTree<TermTreeNode> createTree() {
+                    return new TermTree(taxonomy, true, termService);
+                  }
 
-					@Override
-					protected AbstractTreeNodeEditor createEditor(TermTreeNode node)
-					{
-						return new TermEditor(termService, predefinedTermDataKeys, taxonomy, node);
-					}
-				};
+                  @Override
+                  protected AbstractTreeNodeEditor createEditor(TermTreeNode node) {
+                    return new TermEditor(termService, predefinedTermDataKeys, taxonomy, node);
+                  }
+                };
 
-				p.setLayout(new MigLayout("wrap 1, fill"));
-				p.add(new JLabel("<html>" + s("immediatechanges")));
-				p.add(tree, "push, grow");
+            p.setLayout(new MigLayout("wrap 1, fill"));
+            p.add(new JLabel("<html>" + s("immediatechanges")));
+            p.add(tree, "push, grow");
 
-				p.revalidate();
-				p.repaint();
-			}
-		};
-		worker.setComponent(InternalDataSourceTab.this);
-		worker.start();
-	}
+            p.revalidate();
+            p.repaint();
+          }
+        };
+    worker.setComponent(InternalDataSourceTab.this);
+    worker.start();
+  }
 
-	static String s(String keyEnd)
-	{
-		return getString("internal.tab." + keyEnd);
-	}
+  static String s(String keyEnd) {
+    return getString("internal.tab." + keyEnd);
+  }
 }

@@ -23,22 +23,25 @@ import java.util.concurrent.TimeUnit;
 
 import com.tle.common.NamedThreadFactory;
 
-public final class DefaultExecutor
-{
-	private static final int MAX_THREADS = 150;
+public final class DefaultExecutor {
+  private static final int MAX_THREADS = 150;
 
-	public static final ExecutorService executor;
+  public static final ExecutorService executor;
 
-	private DefaultExecutor()
-	{
-		throw new Error();
-	}
+  private DefaultExecutor() {
+    throw new Error();
+  }
 
-	static
-	{
-		ThreadPoolExecutor tpe = new ThreadPoolExecutor(MAX_THREADS, MAX_THREADS, 60L, TimeUnit.SECONDS,
-			new LinkedBlockingQueue<Runnable>(), new NamedThreadFactory("DefaultExecutor.executor"));
-		tpe.allowCoreThreadTimeOut(true);
-		executor = tpe;
-	}
+  static {
+    ThreadPoolExecutor tpe =
+        new ThreadPoolExecutor(
+            MAX_THREADS,
+            MAX_THREADS,
+            60L,
+            TimeUnit.SECONDS,
+            new LinkedBlockingQueue<Runnable>(),
+            new NamedThreadFactory("DefaultExecutor.executor"));
+    tpe.allowCoreThreadTimeOut(true);
+    executor = tpe;
+  }
 }

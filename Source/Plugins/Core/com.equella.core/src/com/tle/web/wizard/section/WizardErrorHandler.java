@@ -28,35 +28,28 @@ import com.tle.web.sections.events.SectionEvent;
 
 @Bind
 @Singleton
-public class WizardErrorHandler implements SectionsExceptionHandler
-{
+public class WizardErrorHandler implements SectionsExceptionHandler {
 
-	@Override
-	public boolean canHandle(SectionInfo info, Throwable ex, SectionEvent<?> event)
-	{
-		return ex instanceof WizardException;
-	}
+  @Override
+  public boolean canHandle(SectionInfo info, Throwable ex, SectionEvent<?> event) {
+    return ex instanceof WizardException;
+  }
 
-	@Override
-	public void handle(Throwable exception, SectionInfo info, SectionsController controller, SectionEvent<?> event)
-	{
-		if( exception instanceof WizardException )
-		{
-			WizardException we = (WizardException) exception;
-			Throwable cause = we.getCause();
-			if( cause == null )
-			{
-				cause = we;
-			}
-			RootWizardSection rootWizard = info.lookupSection(RootWizardSection.class);
-			rootWizard.setException(info, cause);
-			info.preventGET();
-			info.renderNow();
-		}
-		else
-		{
-			Throwables.propagate(exception);
-		}
-	}
-
+  @Override
+  public void handle(
+      Throwable exception, SectionInfo info, SectionsController controller, SectionEvent<?> event) {
+    if (exception instanceof WizardException) {
+      WizardException we = (WizardException) exception;
+      Throwable cause = we.getCause();
+      if (cause == null) {
+        cause = we;
+      }
+      RootWizardSection rootWizard = info.lookupSection(RootWizardSection.class);
+      rootWizard.setException(info, cause);
+      info.preventGET();
+      info.renderNow();
+    } else {
+      Throwables.propagate(exception);
+    }
+  }
 }

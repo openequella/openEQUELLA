@@ -29,38 +29,36 @@ import com.tle.web.viewurl.ItemSectionInfo;
 
 @SuppressWarnings("nls")
 @Bind
-public class ReviewSection extends GenericMinorActionSection
-{
-	@PlugKey("summary.sidebar.actions.review.title")
-	private static Label LINK_LABEL;
-	@PlugKey("summary.sidebar.actions.review.receipt")
-	private static Label RECEIPT_LABEL;
-	@Inject
-	private ItemOperationFactory workflowFactory;
+public class ReviewSection extends GenericMinorActionSection {
+  @PlugKey("summary.sidebar.actions.review.title")
+  private static Label LINK_LABEL;
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return LINK_LABEL;
-	}
+  @PlugKey("summary.sidebar.actions.review.receipt")
+  private static Label RECEIPT_LABEL;
 
-	@Override
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		return !status.isLocked() && itemInfo.hasPrivilege("REVIEW_ITEM") && itemInfo.getItemdef().getWorkflow() != null
-			&& status.getStatusName().equals(ItemStatus.LIVE);
-	}
+  @Inject private ItemOperationFactory workflowFactory;
 
-	@Override
-	protected void execute(SectionInfo info)
-	{
-		getItemInfo(info).modify(workflowFactory.review(true));
-		setReceipt(RECEIPT_LABEL);
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return LINK_LABEL;
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return LINK_LABEL.getText();
-	}
+  @Override
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    return !status.isLocked()
+        && itemInfo.hasPrivilege("REVIEW_ITEM")
+        && itemInfo.getItemdef().getWorkflow() != null
+        && status.getStatusName().equals(ItemStatus.LIVE);
+  }
+
+  @Override
+  protected void execute(SectionInfo info) {
+    getItemInfo(info).modify(workflowFactory.review(true));
+    setReceipt(RECEIPT_LABEL);
+  }
+
+  @Override
+  public String getLinkText() {
+    return LINK_LABEL.getText();
+  }
 }

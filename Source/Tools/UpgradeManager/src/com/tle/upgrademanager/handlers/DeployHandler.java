@@ -28,41 +28,35 @@ import com.tle.upgrademanager.helpers.AjaxState;
 import com.tle.upgrademanager.helpers.Deployer;
 
 @SuppressWarnings("nls")
-public class DeployHandler extends UrlDispatchHandler
-{
-	private static final Log LOGGER = LogFactory.getLog(DeployHandler.class);
+public class DeployHandler extends UrlDispatchHandler {
+  private static final Log LOGGER = LogFactory.getLog(DeployHandler.class);
 
-	private final ManagerConfig config;
-	private final AjaxState ajax;
+  private final ManagerConfig config;
+  private final AjaxState ajax;
 
-	public DeployHandler(ManagerConfig config, AjaxState ajax)
-	{
-		this.config = config;
-		this.ajax = ajax;
-	}
+  public DeployHandler(ManagerConfig config, AjaxState ajax) {
+    this.config = config;
+    this.ajax = ajax;
+  }
 
-	public void download(HttpExchange exchange) throws IOException
-	{
-		HttpExchangeUtils.respondRedirect(exchange, "/pages/"); //$NON-NLS-1$
-	}
+  public void download(HttpExchange exchange) throws IOException {
+    HttpExchangeUtils.respondRedirect(exchange, "/pages/"); // $NON-NLS-1$
+  }
 
-	public void deploy(HttpExchange exchange) throws IOException
-	{
-		final String ajaxId = UUID.randomUUID().toString();
-		final String path = "/deploy/deploy/"; //$NON-NLS-1$
-		final String filename = exchange.getRequestURI().getPath().substring(path.length());
+  public void deploy(HttpExchange exchange) throws IOException {
+    final String ajaxId = UUID.randomUUID().toString();
+    final String path = "/deploy/deploy/"; // $NON-NLS-1$
+    final String filename = exchange.getRequestURI().getPath().substring(path.length());
 
-		new Thread()
-		{
-			@Override
-			public void run()
-			{
-				LOGGER.debug("Running deployer on version " + filename);
-				Deployer deploy = new Deployer(ajaxId, ajax, config);
-				deploy.deploy(filename);
-			}
-		}.start();
+    new Thread() {
+      @Override
+      public void run() {
+        LOGGER.debug("Running deployer on version " + filename);
+        Deployer deploy = new Deployer(ajaxId, ajax, config);
+        deploy.deploy(filename);
+      }
+    }.start();
 
-		HttpExchangeUtils.respondRedirect(exchange, "/pages/progress/" + ajaxId); //$NON-NLS-1$
-	}
+    HttpExchangeUtils.respondRedirect(exchange, "/pages/progress/" + ajaxId); // $NON-NLS-1$
+  }
 }

@@ -33,49 +33,46 @@ import com.tle.web.sections.render.TagState;
 
 /**
  * Perhaps add support for a SettingState ?
- * 
+ *
  * @author Aaron
  */
 @SuppressWarnings("nls")
-public class SettingsRenderer extends TagRenderer
-{
-	private static final CssInclude SETTINGS_CSS = include(
-		ResourcesService.getResourceHelper(SettingsRenderer.class).url("css/settings.css")).hasRtl().make();
+public class SettingsRenderer extends TagRenderer {
+  private static final CssInclude SETTINGS_CSS =
+      include(ResourcesService.getResourceHelper(SettingsRenderer.class).url("css/settings.css"))
+          .hasRtl()
+          .make();
 
-	private final Label label;
+  private final Label label;
 
-	public SettingsRenderer(Label label, SectionRenderable contents, String extraClass)
-	{
-		super("div", new TagState());
-		this.label = label;
-		addClass("settingRow");
-		if( !Check.isEmpty(extraClass) )
-		{
-			addClass(extraClass);
-		}
-		setNestedRenderable(contents);
-	}
+  public SettingsRenderer(Label label, SectionRenderable contents, String extraClass) {
+    super("div", new TagState());
+    this.label = label;
+    addClass("settingRow");
+    if (!Check.isEmpty(extraClass)) {
+      addClass(extraClass);
+    }
+    setNestedRenderable(contents);
+  }
 
-	@Override
-	protected void writeMiddle(SectionWriter writer) throws IOException
-	{
-		writer.writeTag("div", "class", "settingLabel");
-		writer.render(new LabelRenderer(label));
-		writer.endTag("div");
+  @Override
+  protected void writeMiddle(SectionWriter writer) throws IOException {
+    writer.writeTag("div", "class", "settingLabel");
+    writer.render(new LabelRenderer(label));
+    writer.endTag("div");
 
-		writer.writeTag("div", "class", "settingField");
+    writer.writeTag("div", "class", "settingField");
 
-		writer.writeTag("div");
-		writer.render(getNestedRenderable());
-		writer.endTag("div");
+    writer.writeTag("div");
+    writer.render(getNestedRenderable());
+    writer.endTag("div");
 
-		writer.endTag("div");
-	}
+    writer.endTag("div");
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		super.preRender(info);
-		info.preRender(SETTINGS_CSS);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    super.preRender(info);
+    info.preRender(SETTINGS_CSS);
+  }
 }

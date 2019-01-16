@@ -24,23 +24,21 @@ import com.tle.core.item.service.ItemService;
 import com.tle.core.scripting.service.StandardScriptContextParams;
 import com.tle.common.usermanagement.user.CurrentUser;
 
-/**
- * @author aholland
- */
-public class WorkflowScriptContextParams extends StandardScriptContextParams
-{
-	private final ItemService service;
+/** @author aholland */
+public class WorkflowScriptContextParams extends StandardScriptContextParams {
+  private final ItemService service;
 
-	public WorkflowScriptContextParams(ItemService service, ItemPack itemPack, FileHandle fileHandle,
-		Map<String, Object> attributes)
-	{
-		super(itemPack, fileHandle, true, attributes);
-		this.service = service;
-	}
+  public WorkflowScriptContextParams(
+      ItemService service,
+      ItemPack itemPack,
+      FileHandle fileHandle,
+      Map<String, Object> attributes) {
+    super(itemPack, fileHandle, true, attributes);
+    this.service = service;
+  }
 
-	@Override
-	public boolean isAnOwner()
-	{
-		return service.isAnOwner(getItemPack().getItem(), CurrentUser.getDetails().getUniqueID());
-	}
+  @Override
+  public boolean isAnOwner() {
+    return service.isAnOwner(getItemPack().getItem(), CurrentUser.getDetails().getUniqueID());
+  }
 }

@@ -28,26 +28,20 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.SectionRenderable;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 public class RemoteRepoListSection<R extends RemoteRepoSearchResult>
-	extends
-		AbstractListSection<RemoteRepoListEntry<R>, AbstractListSection.Model<RemoteRepoListEntry<R>>>
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+    extends AbstractListSection<
+        RemoteRepoListEntry<R>, AbstractListSection.Model<RemoteRepoListEntry<R>>> {
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	protected SectionRenderable getRenderable(RenderEventContext context)
-	{
-		return viewFactory.createResult("fedsearch-list.ftl", this); //$NON-NLS-1$
-	}
+  @Override
+  protected SectionRenderable getRenderable(RenderEventContext context) {
+    return viewFactory.createResult("fedsearch-list.ftl", this); // $NON-NLS-1$
+  }
 
-	@Override
-	protected List<RemoteRepoListEntry<R>> initEntries(RenderContext context)
-	{
-		return getModel(context).getItems();
-	}
+  @Override
+  protected List<RemoteRepoListEntry<R>> initEntries(RenderContext context) {
+    return getModel(context).getItems();
+  }
 }

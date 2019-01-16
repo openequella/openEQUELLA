@@ -38,124 +38,103 @@ import org.hibernate.annotations.AccessType;
 import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.SecurityConstants.Recipient;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @Entity
 @AccessType("field")
-public class AccessExpression implements Cloneable
-{
-	private static final List<String> OPERATORS = Arrays.asList("not", "or", "and"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	private static final List<Recipient> SET_AS_EVERYONE = Arrays.asList(IP_ADDRESS, HTTP_REFERRER);
+public class AccessExpression implements Cloneable {
+  private static final List<String> OPERATORS =
+      Arrays.asList("not", "or", "and"); // $NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+  private static final List<Recipient> SET_AS_EVERYONE = Arrays.asList(IP_ADDRESS, HTTP_REFERRER);
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-	@ElementCollection(fetch = FetchType.LAZY)
-	@Column(name = "element")
-	private List<String> expressionParts;
-	private boolean dynamic;
-	@Column(length = 1024)
-	private String expression;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	public AccessExpression()
-	{
-		super();
-	}
+  @ElementCollection(fetch = FetchType.LAZY)
+  @Column(name = "element")
+  private List<String> expressionParts;
 
-	public AccessExpression(AccessExpression expr)
-	{
-		this.id = expr.id;
-		this.expressionParts = expr.expressionParts;
-		this.dynamic = expr.dynamic;
-		this.expression = expr.expression;
-	}
+  private boolean dynamic;
 
-	public long getId()
-	{
-		return id;
-	}
+  @Column(length = 1024)
+  private String expression;
 
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  public AccessExpression() {
+    super();
+  }
 
-	public boolean isDynamic()
-	{
-		return dynamic;
-	}
+  public AccessExpression(AccessExpression expr) {
+    this.id = expr.id;
+    this.expressionParts = expr.expressionParts;
+    this.dynamic = expr.dynamic;
+    this.expression = expr.expression;
+  }
 
-	public void setDynamic(boolean dynamic)
-	{
-		this.dynamic = dynamic;
-	}
+  public long getId() {
+    return id;
+  }
 
-	public String getExpression()
-	{
-		return expression;
-	}
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public void setExpression(String expression)
-	{
-		this.expression = expression;
-	}
+  public boolean isDynamic() {
+    return dynamic;
+  }
 
-	public List<String> getExpressionParts()
-	{
-		return expressionParts;
-	}
+  public void setDynamic(boolean dynamic) {
+    this.dynamic = dynamic;
+  }
 
-	public void setExpressionParts(List<String> expressionParts)
-	{
-		this.expressionParts = expressionParts;
-	}
+  public String getExpression() {
+    return expression;
+  }
 
-	public void parseExpression()
-	{
-		if( expressionParts == null )
-		{
-			expressionParts = new ArrayList<String>();
-		}
-		else
-		{
-			expressionParts.clear();
-		}
+  public void setExpression(String expression) {
+    this.expression = expression;
+  }
 
-		for( String part : expression.split("\\s") ) //$NON-NLS-1$
-		{
-			if( !OPERATORS.contains(part.toLowerCase()) )
-			{
-				Recipient type = SecurityConstants.getRecipientType(part);
+  public List<String> getExpressionParts() {
+    return expressionParts;
+  }
 
-				if( type == OWNER )
-				{
-					dynamic = true;
-				}
+  public void setExpressionParts(List<String> expressionParts) {
+    this.expressionParts = expressionParts;
+  }
 
-				if( SET_AS_EVERYONE.contains(type) )
-				{
-					expressionParts.add(SecurityConstants.getRecipient(EVERYONE));
-				}
-				else
-				{
-					expressionParts.add(part);
-				}
-			}
-		}
-	}
+  public void parseExpression() {
+    if (expressionParts == null) {
+      expressionParts = new ArrayList<String>();
+    } else {
+      expressionParts.clear();
+    }
 
-	// Explicit catch of CloneNotSupportedException from super.clone()
-	@Override
-	public Object clone() // NOSONAR
-	{
-		try
-		{
-			return super.clone();
-		}
-		catch( CloneNotSupportedException e )
-		{
-			throw new RuntimeException(e);
-		}
-	}
+    for (String part : expression.split("\\s")) // $NON-NLS-1$
+    {
+      if (!OPERATORS.contains(part.toLowerCase())) {
+        Recipient type = SecurityConstants.getRecipientType(part);
+
+        if (type == OWNER) {
+          dynamic = true;
+        }
+
+        if (SET_AS_EVERYONE.contains(type)) {
+          expressionParts.add(SecurityConstants.getRecipient(EVERYONE));
+        } else {
+          expressionParts.add(part);
+        }
+      }
+    }
+  }
+
+  // Explicit catch of CloneNotSupportedException from super.clone()
+  @Override
+  public Object clone() // NOSONAR
+      {
+    try {
+      return super.clone();
+    } catch (CloneNotSupportedException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

@@ -39,49 +39,38 @@ import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
 
-public class AutoTestSetupSection extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	@Component
-	private Button clearButton;
+public class AutoTestSetupSection extends AbstractPrototypeSection<Object> implements HtmlRenderer {
+  @Component private Button clearButton;
 
-	@EventFactory
-	private EventGenerator events;
+  @EventFactory private EventGenerator events;
 
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private FreetextIndex freetextIndex;
-	@Inject
-	private InstitutionService institutionService;
+  @Inject private FileSystemService fileSystemService;
+  @Inject private FreetextIndex freetextIndex;
+  @Inject private InstitutionService institutionService;
 
-	@SuppressWarnings("nls")
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		clearButton.setClickHandler(events.getNamedHandler("clearData"));
-		clearButton.setLabel(new TextLabel("Clear filestore and freetext"));
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    clearButton.setClickHandler(events.getNamedHandler("clearData"));
+    clearButton.setLabel(new TextLabel("Clear filestore and freetext"));
+  }
 
-	@EventHandlerMethod
-	public void clearData(SectionInfo info)
-	{
-		fileSystemService.removeFile(new AllStagingFile());
-		fileSystemService.removeFile(new AllInstitutionsFile());
-		fileSystemService.removeFile(new AllImportFile());
-		fileSystemService.removeFile(new AllExportFile());
-		freetextIndex.deleteIndexes();
-	}
+  @EventHandlerMethod
+  public void clearData(SectionInfo info) {
+    fileSystemService.removeFile(new AllStagingFile());
+    fileSystemService.removeFile(new AllInstitutionsFile());
+    fileSystemService.removeFile(new AllImportFile());
+    fileSystemService.removeFile(new AllExportFile());
+    freetextIndex.deleteIndexes();
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( institutionService.getAllInstitutions().size() > 0 )
-		{
-			return new SimpleSectionResult("You must have no institutions before using this");
-		}
-		return renderSection(context, clearButton);
-	}
-
+  @SuppressWarnings("nls")
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (institutionService.getAllInstitutions().size() > 0) {
+      return new SimpleSectionResult("You must have no institutions before using this");
+    }
+    return renderSection(context, clearButton);
+  }
 }

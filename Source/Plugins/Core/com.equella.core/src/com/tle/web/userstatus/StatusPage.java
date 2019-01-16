@@ -37,84 +37,70 @@ import com.tle.web.template.Decorations;
 
 @Bind
 @SuppressWarnings("nls")
-public class StatusPage extends AbstractPrototypeSection<StatusPage.StatusModel> implements HtmlRenderer
-{
-	@Inject
-	private UserService userService;
+public class StatusPage extends AbstractPrototypeSection<StatusPage.StatusModel>
+    implements HtmlRenderer {
+  @Inject private UserService userService;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	public static class StatusModel
-	{
-		private UserState userState;
-		private Collection<GroupBean> groups;
-		private Collection<RoleBean> roles;
+  public static class StatusModel {
+    private UserState userState;
+    private Collection<GroupBean> groups;
+    private Collection<RoleBean> roles;
 
-		public UserState getUserState()
-		{
-			return userState;
-		}
+    public UserState getUserState() {
+      return userState;
+    }
 
-		public void setUserState(UserState userState)
-		{
-			this.userState = userState;
-		}
+    public void setUserState(UserState userState) {
+      this.userState = userState;
+    }
 
-		public Collection<GroupBean> getGroups()
-		{
-			return groups;
-		}
+    public Collection<GroupBean> getGroups() {
+      return groups;
+    }
 
-		public void setGroups(Collection<GroupBean> groups)
-		{
-			this.groups = groups;
-		}
+    public void setGroups(Collection<GroupBean> groups) {
+      this.groups = groups;
+    }
 
-		public Collection<RoleBean> getRoles()
-		{
-			return roles;
-		}
+    public Collection<RoleBean> getRoles() {
+      return roles;
+    }
 
-		public void setRoles(Collection<RoleBean> roles)
-		{
-			this.roles = roles;
-		}
+    public void setRoles(Collection<RoleBean> roles) {
+      this.roles = roles;
+    }
+  }
 
-	}
+  @Override
+  public Class<StatusModel> getModelClass() {
+    return StatusModel.class;
+  }
 
-	@Override
-	public Class<StatusModel> getModelClass()
-	{
-		return StatusModel.class;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    Decorations.getDecorations(context).setTitle(new TextLabel("User Status"));
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		Decorations.getDecorations(context).setTitle(new TextLabel("User Status"));
+    StatusModel model = getModel(context);
+    UserState state = CurrentUser.getUserState();
+    model.setUserState(state);
+    model.setGroups(userService.getInformationForGroups(state.getUsersGroups()).values());
+    model.setRoles(userService.getInformationForRoles(state.getUsersRoles()).values());
+    return viewFactory.createResult("debug/statuspage.ftl", context);
+  }
 
-		StatusModel model = getModel(context);
-		UserState state = CurrentUser.getUserState();
-		model.setUserState(state);
-		model.setGroups(userService.getInformationForGroups(state.getUsersGroups()).values());
-		model.setRoles(userService.getInformationForRoles(state.getUsersRoles()).values());
-		return viewFactory.createResult("debug/statuspage.ftl", context);
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "";
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "";
-	}
-
-	/**
-	 * Remove when this is spring 2.5
-	 * 
-	 * @param userService
-	 */
-	public void setUserService(UserService userService)
-	{
-		this.userService = userService;
-	}
+  /**
+   * Remove when this is spring 2.5
+   *
+   * @param userService
+   */
+  public void setUserService(UserService userService) {
+    this.userService = userService;
+  }
 }

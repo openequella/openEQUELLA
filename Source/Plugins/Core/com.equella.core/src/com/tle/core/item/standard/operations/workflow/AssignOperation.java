@@ -24,31 +24,25 @@ import com.tle.core.item.standard.workflow.nodes.TaskStatus;
 import com.tle.core.security.impl.SecureInModeration;
 
 @SecureInModeration
-public class AssignOperation extends SpecificTaskOperation
-{
-	@AssistedInject
-	public AssignOperation(@Assisted String taskId)
-	{
-		super(taskId);
-	}
+public class AssignOperation extends SpecificTaskOperation {
+  @AssistedInject
+  public AssignOperation(@Assisted String taskId) {
+    super(taskId);
+  }
 
-	@Override
-	public boolean execute()
-	{
-		TaskStatus status = getTaskStatus();
-		String assignedTo = status.getAssignedTo();
-		HistoryEvent event = createHistory(Type.assign);
-		if( assignedTo != null && assignedTo.equals(getUserId()) )
-		{
-			status.setAssignedTo(null);
-			event.setUser(null);
-		}
-		else
-		{
-			status.setAssignedTo(getUserId());
-		}
-		setStepFromTask(event);
-		updateModeration();
-		return true;
-	}
+  @Override
+  public boolean execute() {
+    TaskStatus status = getTaskStatus();
+    String assignedTo = status.getAssignedTo();
+    HistoryEvent event = createHistory(Type.assign);
+    if (assignedTo != null && assignedTo.equals(getUserId())) {
+      status.setAssignedTo(null);
+      event.setUser(null);
+    } else {
+      status.setAssignedTo(getUserId());
+    }
+    setStepFromTask(event);
+    updateModeration();
+    return true;
+  }
 }

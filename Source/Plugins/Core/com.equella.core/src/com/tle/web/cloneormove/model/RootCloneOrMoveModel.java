@@ -21,57 +21,48 @@ import java.util.List;
 import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.render.SectionRenderable;
 
-/**
- * @author aholland
- */
-public class RootCloneOrMoveModel
-{
-	@Bookmarked(name = "u")
-	private String uuid;
-	@Bookmarked(name = "v")
-	private int version;
-	@Bookmarked(name = "m")
-	private boolean isMove;
+/** @author aholland */
+public class RootCloneOrMoveModel {
+  @Bookmarked(name = "u")
+  private String uuid;
 
-	private List<SectionRenderable> sections;
+  @Bookmarked(name = "v")
+  private int version;
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  @Bookmarked(name = "m")
+  private boolean isMove;
 
-	public void setUuid(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  private List<SectionRenderable> sections;
 
-	public int getVersion()
-	{
-		return version;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public void setVersion(int version)
-	{
-		this.version = version;
-	}
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-	public boolean getIsMove()
-	{
-		return isMove;
-	}
+  public int getVersion() {
+    return version;
+  }
 
-	public void setIsMove(boolean isMove)
-	{
-		this.isMove = isMove;
-	}
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-	public List<SectionRenderable> getSections()
-	{
-		return sections;
-	}
+  public boolean getIsMove() {
+    return isMove;
+  }
 
-	public void setSections(List<SectionRenderable> sections)
-	{
-		this.sections = sections;
-	}
+  public void setIsMove(boolean isMove) {
+    this.isMove = isMove;
+  }
+
+  public List<SectionRenderable> getSections() {
+    return sections;
+  }
+
+  public void setSections(List<SectionRenderable> sections) {
+    this.sections = sections;
+  }
 }

@@ -44,139 +44,118 @@ import com.tle.web.sections.standard.HiddenState;
 import com.tle.web.sections.standard.annotations.Component;
 
 public class FilterByArchivedSection extends AbstractPrototypeSection<FilterByArchivedSection.Model>
-	implements
-		SearchEventListener<ConnectorManagementSearchEvent>,
-		HtmlRenderer,
-		ResetFiltersListener
-{
-	@ViewFactory
-	protected FreemarkerFactory viewFactory;
-	@EventFactory
-	protected EventGenerator events;
-	@TreeLookup
-	private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
-	@TreeLookup
-	private ConnectorManagementQuerySection querySection;
-	@Inject
-	private ConnectorRepositoryService repositoryService;
+    implements SearchEventListener<ConnectorManagementSearchEvent>,
+        HtmlRenderer,
+        ResetFiltersListener {
+  @ViewFactory protected FreemarkerFactory viewFactory;
+  @EventFactory protected EventGenerator events;
+  @TreeLookup private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
+  @TreeLookup private ConnectorManagementQuerySection querySection;
+  @Inject private ConnectorRepositoryService repositoryService;
 
-	@Component(parameter = "archived", supported = true)
-	private HiddenState checkState;
-	@Component
-	private Checkbox includeArchived;
+  @Component(parameter = "archived", supported = true)
+  private HiddenState checkState;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
-	}
+  @Component private Checkbox includeArchived;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		includeArchived.setClickHandler(new StatementHandler(searchResults.getResultsUpdater(tree,
-			events.getEventHandler("setChecked"), "filterbycourse"))); //$NON-NLS-1$ //$NON-NLS-2$
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( getModel(context).isDisabled() )
-		{
-			return null;
-		}
-		if( isArchived(context) )
-		{
-			includeArchived.setChecked(context, true);
-		}
-		Connector connector = querySection.getConnector(context);
-		if( connector == null )
-		{
-			return null;
-		}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    includeArchived.setClickHandler(
+        new StatementHandler(
+            searchResults.getResultsUpdater(
+                tree,
+                events.getEventHandler("setChecked"),
+                "filterbycourse"))); //$NON-NLS-1$ //$NON-NLS-2$
+  }
 
-		ConnectorTerminology terminology = repositoryService.getConnectorTerminology(connector.getLmsType());
-		includeArchived.setLabel(context, new KeyLabel(terminology.getShowArchived()));
+  @SuppressWarnings("nls")
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (getModel(context).isDisabled()) {
+      return null;
+    }
+    if (isArchived(context)) {
+      includeArchived.setChecked(context, true);
+    }
+    Connector connector = querySection.getConnector(context);
+    if (connector == null) {
+      return null;
+    }
 
-		return viewFactory.createResult("filter/filterbyarchive.ftl", context);
-	}
+    ConnectorTerminology terminology =
+        repositoryService.getConnectorTerminology(connector.getLmsType());
+    includeArchived.setLabel(context, new KeyLabel(terminology.getShowArchived()));
 
-	@EventHandlerMethod
-	public void setChecked(SectionInfo info)
-	{
-		boolean checked = includeArchived.isChecked(info);
-		checkState.setValue(info, checked ? 2 : 1);
-	}
+    return viewFactory.createResult("filter/filterbyarchive.ftl", context);
+  }
 
-	public boolean isArchived(SectionInfo info)
-	{
-		if( checkState.getIntValue(info, 0) % 2 == 0 )
-		{
-			return true;
-		}
-		return false;
-	}
+  @EventHandlerMethod
+  public void setChecked(SectionInfo info) {
+    boolean checked = includeArchived.isChecked(info);
+    checkState.setValue(info, checked ? 2 : 1);
+  }
 
-	@Override
-	public void prepareSearch(SectionInfo info, ConnectorManagementSearchEvent connectorEvent) throws Exception
-	{
-		if( getModel(info).isDisabled() )
-		{
-			return;
-		}
-		ConnectorContentSearch search = connectorEvent.getSearch();
-		boolean archived = isArchived(info);
-		search.setArchived(archived);
-		connectorEvent.setUserFiltered(!archived);
-	}
+  public boolean isArchived(SectionInfo info) {
+    if (checkState.getIntValue(info, 0) % 2 == 0) {
+      return true;
+    }
+    return false;
+  }
 
-	public void disable(SectionInfo info)
-	{
-		getModel(info).setDisabled(true);
-	}
+  @Override
+  public void prepareSearch(SectionInfo info, ConnectorManagementSearchEvent connectorEvent)
+      throws Exception {
+    if (getModel(info).isDisabled()) {
+      return;
+    }
+    ConnectorContentSearch search = connectorEvent.getSearch();
+    boolean archived = isArchived(info);
+    search.setArchived(archived);
+    connectorEvent.setUserFiltered(!archived);
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model(false);
-	}
+  public void disable(SectionInfo info) {
+    getModel(info).setDisabled(true);
+  }
 
-	protected static class Model
-	{
-		private boolean disabled;
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model(false);
+  }
 
-		public Model(boolean disabled)
-		{
-			this.disabled = disabled;
-		}
+  protected static class Model {
+    private boolean disabled;
 
-		public boolean isDisabled()
-		{
-			return disabled;
-		}
+    public Model(boolean disabled) {
+      this.disabled = disabled;
+    }
 
-		public void setDisabled(boolean disabled)
-		{
-			this.disabled = disabled;
-		}
-	}
+    public boolean isDisabled() {
+      return disabled;
+    }
 
-	@Override
-	public void reset(SectionInfo info)
-	{
-		checkState.setValue(info, 0);
-	}
+    public void setDisabled(boolean disabled) {
+      this.disabled = disabled;
+    }
+  }
 
-	public Checkbox getIncludeArchived()
-	{
-		return includeArchived;
-	}
+  @Override
+  public void reset(SectionInfo info) {
+    checkState.setValue(info, 0);
+  }
 
-	public HiddenState getCheckState()
-	{
-		return checkState;
-	}
+  public Checkbox getIncludeArchived() {
+    return includeArchived;
+  }
+
+  public HiddenState getCheckState() {
+    return checkState;
+  }
 }

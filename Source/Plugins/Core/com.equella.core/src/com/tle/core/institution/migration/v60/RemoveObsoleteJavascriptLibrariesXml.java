@@ -34,40 +34,36 @@ import com.tle.core.xml.XmlDocument.NodeListIterable.NodeListIterator;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class RemoveObsoleteJavascriptLibrariesXml extends XmlMigrator
-{
-	private static final String SCRIPT_CONTROL_XPATH = "//com.dytech.edge.wizard.beans.control.CustomControl";
+public class RemoveObsoleteJavascriptLibrariesXml extends XmlMigrator {
+  private static final String SCRIPT_CONTROL_XPATH =
+      "//com.dytech.edge.wizard.beans.control.CustomControl";
 
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
-	{
-		final SubTemporaryFile itemDefFolder = new SubTemporaryFile(staging, "itemdefinition");
-		final List<String> entries = xmlHelper.getXmlFileList(itemDefFolder);
+  @Override
+  public void execute(
+      TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) {
+    final SubTemporaryFile itemDefFolder = new SubTemporaryFile(staging, "itemdefinition");
+    final List<String> entries = xmlHelper.getXmlFileList(itemDefFolder);
 
-		for( String collection : entries )
-		{
-			boolean modified = false;
-			PropBagEx itemDef = xmlHelper.readToPropBagEx(itemDefFolder, collection);
-			PropBagEx wizard = itemDef.getSubtree("slow/wizard");
+    for (String collection : entries) {
+      boolean modified = false;
+      PropBagEx itemDef = xmlHelper.readToPropBagEx(itemDefFolder, collection);
+      PropBagEx wizard = itemDef.getSubtree("slow/wizard");
 
-			if( wizard != null )
-			{
-				XmlDocument wizardXml = new XmlDocument(wizard.toString());
-				NodeListIterator it = wizardXml.nodeList(SCRIPT_CONTROL_XPATH).iterator();
-				while( it.hasNext() )
-				{
-					Node currentNode = it.next();
-					modified |= RemoveObsoleteJavascriptLibraries.deleteLibraries(currentNode, wizardXml);
-					it.remove();
-				}
-				if( modified )
-				{
-					String newWizard = wizardXml.toString();
-					itemDef.deleteSubtree(wizard);
-					itemDef.append("slow", new PropBagEx(newWizard));
-					xmlHelper.writeFromPropBagEx(staging, collection, itemDef);
-				}
-			}
-		}
-	}
+      if (wizard != null) {
+        XmlDocument wizardXml = new XmlDocument(wizard.toString());
+        NodeListIterator it = wizardXml.nodeList(SCRIPT_CONTROL_XPATH).iterator();
+        while (it.hasNext()) {
+          Node currentNode = it.next();
+          modified |= RemoveObsoleteJavascriptLibraries.deleteLibraries(currentNode, wizardXml);
+          it.remove();
+        }
+        if (modified) {
+          String newWizard = wizardXml.toString();
+          itemDef.deleteSubtree(wizard);
+          itemDef.append("slow", new PropBagEx(newWizard));
+          xmlHelper.writeFromPropBagEx(staging, collection, itemDef);
+        }
+      }
+    }
+  }
 }

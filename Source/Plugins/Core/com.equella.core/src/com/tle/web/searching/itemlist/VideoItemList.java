@@ -31,29 +31,24 @@ import com.tle.web.sections.render.SectionRenderable;
 
 @SuppressWarnings("nls")
 @Bind
-public class VideoItemList extends StandardItemList
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+public class VideoItemList extends StandardItemList {
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	public static final String VIDEO_FLAG = "video.result";
+  public static final String VIDEO_FLAG = "video.result";
 
-	@Override
-	protected SectionRenderable getRenderable(RenderEventContext context)
-	{
-		return viewFactory.createResult("videolist.ftl", this);
-	}
+  @Override
+  protected SectionRenderable getRenderable(RenderEventContext context) {
+    return viewFactory.createResult("videolist.ftl", this);
+  }
 
-	@Override
-	protected void customiseListEntries(RenderContext context, List<StandardItemListEntry> entries)
-	{
-		getListSettings(context).setAttribute(VIDEO_FLAG, true);
-		super.customiseListEntries(context, entries);
-	}
+  @Override
+  protected void customiseListEntries(RenderContext context, List<StandardItemListEntry> entries) {
+    getListSettings(context).setAttribute(VIDEO_FLAG, true);
+    super.customiseListEntries(context, entries);
+  }
 
-	@Override
-	protected Set<String> getExtensionTypes()
-	{
-		return Collections.singleton("video");
-	}
+  @Override
+  protected Set<String> getExtensionTypes() {
+    return Collections.singleton("video");
+  }
 }

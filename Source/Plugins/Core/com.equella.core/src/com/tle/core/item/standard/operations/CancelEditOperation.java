@@ -28,43 +28,36 @@ import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.item.service.ItemLockingService;
 
 @SuppressWarnings("nls")
-public class CancelEditOperation extends AbstractStandardWorkflowOperation
-{
-	@Inject
-	private ItemLockingService lockingService;
-	@Inject
-	private StagingService stagingService;
+public class CancelEditOperation extends AbstractStandardWorkflowOperation {
+  @Inject private ItemLockingService lockingService;
+  @Inject private StagingService stagingService;
 
-	private final String stagingId;
-	private final boolean unlock;
+  private final String stagingId;
+  private final boolean unlock;
 
-	@AssistedInject
-	protected CancelEditOperation(@Assisted("stagingId") @Nullable String stagingId, @Assisted("unlock") boolean unlock)
-	{
-		this.stagingId = stagingId;
-		this.unlock = unlock;
-	}
+  @AssistedInject
+  protected CancelEditOperation(
+      @Assisted("stagingId") @Nullable String stagingId, @Assisted("unlock") boolean unlock) {
+    this.stagingId = stagingId;
+    this.unlock = unlock;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		final ItemPack<Item> itemPack = getItemPack();
-		if( itemPack != null )
-		{
-			itemPack.setStagingID(stagingId);
-		}
-		itemService.executeExtensionOperationsNow(params, "preCancel");
+  @Override
+  public boolean execute() {
+    final ItemPack<Item> itemPack = getItemPack();
+    if (itemPack != null) {
+      itemPack.setStagingID(stagingId);
+    }
+    itemService.executeExtensionOperationsNow(params, "preCancel");
 
-		if( stagingId != null )
-		{
-			stagingService.removeStagingArea(new StagingFile(stagingId), true);
-		}
+    if (stagingId != null) {
+      stagingService.removeStagingArea(new StagingFile(stagingId), true);
+    }
 
-		final Item item = getItem();
-		if( item != null && unlock )
-		{
-			lockingService.unlock(item, false);
-		}
-		return false;
-	}
+    final Item item = getItem();
+    if (item != null && unlock) {
+      lockingService.unlock(item, false);
+    }
+    return false;
+  }
 }

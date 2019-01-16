@@ -44,131 +44,107 @@ import com.tle.web.sections.standard.renderers.AbstractElementRenderer;
 
 @SuppressWarnings("nls")
 public abstract class AbstractFauxDropDownRenderer extends AbstractElementRenderer
-	implements
-		JSMutableListComponent,
-		JSDisableable
-{
-	private final ElementId hiddenId;
+    implements JSMutableListComponent, JSDisableable {
+  private final ElementId hiddenId;
 
-	protected final List<Option<?>> options;
-	protected final Set<String> selectedValues;
-	protected final boolean multiple;
+  protected final List<Option<?>> options;
+  protected final Set<String> selectedValues;
+  protected final boolean multiple;
 
-	protected final SimpleFunction clickFunc;
+  protected final SimpleFunction clickFunc;
 
-	public AbstractFauxDropDownRenderer(HtmlListState state)
-	{
-		super(state);
-		multiple = state.isMultiple();
-		options = state.getOptions();
-		selectedValues = state.getSelectedValues();
-		hiddenId = state;
-		ScriptVariable valueVar = new ScriptVariable("val");
-		JSStatements changeBody = Js.statement(Jq.$val(hiddenId, valueVar));
+  public AbstractFauxDropDownRenderer(HtmlListState state) {
+    super(state);
+    multiple = state.isMultiple();
+    options = state.getOptions();
+    selectedValues = state.getSelectedValues();
+    hiddenId = state;
+    ScriptVariable valueVar = new ScriptVariable("val");
+    JSStatements changeBody = Js.statement(Jq.$val(hiddenId, valueVar));
 
-		JSHandler lsChangeHandler = state.getHandler(JSHandler.EVENT_CHANGE);
-		if( lsChangeHandler != null )
-		{
-			changeBody = StatementBlock.get(changeBody, lsChangeHandler);
-		}
-		clickFunc = new SimpleFunction(JSHandler.EVENT_CHANGE, state, changeBody, valueVar);
-	}
+    JSHandler lsChangeHandler = state.getHandler(JSHandler.EVENT_CHANGE);
+    if (lsChangeHandler != null) {
+      changeBody = StatementBlock.get(changeBody, lsChangeHandler);
+    }
+    clickFunc = new SimpleFunction(JSHandler.EVENT_CHANGE, state, changeBody, valueVar);
+  }
 
-	@Override
-	protected void writeMiddle(SectionWriter writer) throws IOException
-	{
-		writer.render(new HiddenInput(hiddenId, state.getName(), getSelectedValue()));
-	}
+  @Override
+  protected void writeMiddle(SectionWriter writer) throws IOException {
+    writer.render(new HiddenInput(hiddenId, state.getName(), getSelectedValue()));
+  }
 
-	@Override
-	protected void processHandler(SectionWriter writer, Map<String, String> attrs, String event, JSHandler handler)
-	{
-		if( !event.equals(JSHandler.EVENT_CHANGE) )
-		{
-			super.processHandler(writer, attrs, event, handler);
-		}
-	}
+  @Override
+  protected void processHandler(
+      SectionWriter writer, Map<String, String> attrs, String event, JSHandler handler) {
+    if (!event.equals(JSHandler.EVENT_CHANGE)) {
+      super.processHandler(writer, attrs, event, handler);
+    }
+  }
 
-	protected String getSelectedValue()
-	{
-		Iterator<String> iter = selectedValues.iterator();
-		if( !iter.hasNext() )
-		{
-			return "";
-		}
-		return iter.next();
-	}
+  protected String getSelectedValue() {
+    Iterator<String> iter = selectedValues.iterator();
+    if (!iter.hasNext()) {
+      return "";
+    }
+    return iter.next();
+  }
 
-	@Override
-	public JSExpression createGetExpression()
-	{
-		return Jq.$val(hiddenId);
-	}
+  @Override
+  public JSExpression createGetExpression() {
+    return Jq.$val(hiddenId);
+  }
 
-	@Override
-	public JSExpression createGetNameExpression()
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public JSExpression createGetNameExpression() {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public JSCallable createSetFunction()
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public JSCallable createSetFunction() {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public JSCallable createResetFunction()
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public JSCallable createResetFunction() {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public JSCallable createRemoveFunction()
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public JSCallable createRemoveFunction() {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public JSCallable createAddFunction()
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public JSCallable createAddFunction() {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public JSExpression createNotEmptyExpression()
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public JSExpression createNotEmptyExpression() {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public JSCallable createDisableFunction()
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public JSCallable createDisableFunction() {
+    throw new UnsupportedOperationException();
+  }
 
-	protected Option<?> getSelectedOption()
-	{
-		HtmlListState state = (HtmlListState) getTagState();
-		Set<String> selectedValueSet = state.getSelectedValues();
-		List<Option<?>> optionList = state.getOptions();
-		if( !Check.isEmpty(selectedValueSet) )
-		{
-			for( Option<?> option : optionList )
-			{
-				if( selectedValueSet.contains(option.getValue()) )
-				{
-					return option;
-				}
-			}
-		}
-		if( optionList.size() > 0 )
-		{
-			return optionList.get(0);
-		}
-		else
-		{
-			throw Throwables.propagate(new IllegalArgumentException("Must have at least 1 option!"));
-		}
-	}
+  protected Option<?> getSelectedOption() {
+    HtmlListState state = (HtmlListState) getTagState();
+    Set<String> selectedValueSet = state.getSelectedValues();
+    List<Option<?>> optionList = state.getOptions();
+    if (!Check.isEmpty(selectedValueSet)) {
+      for (Option<?> option : optionList) {
+        if (selectedValueSet.contains(option.getValue())) {
+          return option;
+        }
+      }
+    }
+    if (optionList.size() > 0) {
+      return optionList.get(0);
+    } else {
+      throw Throwables.propagate(new IllegalArgumentException("Must have at least 1 option!"));
+    }
+  }
 }

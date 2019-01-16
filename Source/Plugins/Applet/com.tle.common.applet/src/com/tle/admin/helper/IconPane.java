@@ -32,109 +32,92 @@ import com.dytech.gui.JImage;
 
 /**
  * Created Jan 14, 2004
- * 
+ *
  * @author Nicholas Read
  */
-public class IconPane extends JPanel implements MouseListener
-{
-	private static final long serialVersionUID = 1L;
-	private ListSelectionListener listener;
-	private IconContainer icons;
-	private JImage selection;
+public class IconPane extends JPanel implements MouseListener {
+  private static final long serialVersionUID = 1L;
+  private ListSelectionListener listener;
+  private IconContainer icons;
+  private JImage selection;
 
-	public IconPane(IconContainer icons)
-	{
-		this.icons = icons;
+  public IconPane(IconContainer icons) {
+    this.icons = icons;
 
-		setup();
-	}
+    setup();
+  }
 
-	private void setup()
-	{
-		setLayout(new FlowLayout(FlowLayout.LEFT));
-		setBackground(Color.WHITE);
-		setMaximumSize(new Dimension(0, 1000));
-		setPreferredSize(new Dimension(0, 1000));
-		setMinimumSize(new Dimension(0, 1000));
+  private void setup() {
+    setLayout(new FlowLayout(FlowLayout.LEFT));
+    setBackground(Color.WHITE);
+    setMaximumSize(new Dimension(0, 1000));
+    setPreferredSize(new Dimension(0, 1000));
+    setMinimumSize(new Dimension(0, 1000));
 
-		Iterator<JImage> i = icons.iterateImages();
-		while( i.hasNext() )
-		{
-			JImage image = i.next();
-			add(image);
-			image.setBorder(BorderFactory.createLineBorder(Color.WHITE, 3));
-			image.addMouseListener(this);
-		}
-	}
+    Iterator<JImage> i = icons.iterateImages();
+    while (i.hasNext()) {
+      JImage image = i.next();
+      add(image);
+      image.setBorder(BorderFactory.createLineBorder(Color.WHITE, 3));
+      image.addMouseListener(this);
+    }
+  }
 
-	public void setSelectionListener(ListSelectionListener l)
-	{
-		listener = l;
-	}
+  public void setSelectionListener(ListSelectionListener l) {
+    listener = l;
+  }
 
-	public JImage getSelectedImage()
-	{
-		return selection;
-	}
+  public JImage getSelectedImage() {
+    return selection;
+  }
 
-	public String getSelectedPath()
-	{
-		return icons.getPath(selection);
-	}
+  public String getSelectedPath() {
+    return icons.getPath(selection);
+  }
 
-	public void unregisterIcons()
-	{
-		if( selection != null )
-		{
-			selection.setBorder(null);
-		}
+  public void unregisterIcons() {
+    if (selection != null) {
+      selection.setBorder(null);
+    }
 
-		Iterator<JImage> i = icons.iterateImages();
-		while( i.hasNext() )
-		{
-			JImage image = i.next();
-			image.removeMouseListener(this);
-		}
-	}
+    Iterator<JImage> i = icons.iterateImages();
+    while (i.hasNext()) {
+      JImage image = i.next();
+      image.removeMouseListener(this);
+    }
+  }
 
-	@Override
-	public void mouseClicked(MouseEvent e)
-	{
-		if( selection != null )
-		{
-			selection.setBorder(BorderFactory.createLineBorder(Color.WHITE, 3));
-		}
+  @Override
+  public void mouseClicked(MouseEvent e) {
+    if (selection != null) {
+      selection.setBorder(BorderFactory.createLineBorder(Color.WHITE, 3));
+    }
 
-		selection = (JImage) e.getSource();
-		selection.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
+    selection = (JImage) e.getSource();
+    selection.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
 
-		if( listener != null )
-		{
-			listener.valueChanged(new ListSelectionEvent(this, 0, 0, false));
-		}
-	}
+    if (listener != null) {
+      listener.valueChanged(new ListSelectionEvent(this, 0, 0, false));
+    }
+  }
 
-	@Override
-	public void mouseEntered(MouseEvent e)
-	{
-		// We don't care about this event
-	}
+  @Override
+  public void mouseEntered(MouseEvent e) {
+    // We don't care about this event
+  }
 
-	@Override
-	public void mouseExited(MouseEvent e)
-	{
-		// We don't care about this event
-	}
+  @Override
+  public void mouseExited(MouseEvent e) {
+    // We don't care about this event
+  }
 
-	@Override
-	public void mousePressed(MouseEvent e)
-	{
-		// We don't care about this event
-	}
+  @Override
+  public void mousePressed(MouseEvent e) {
+    // We don't care about this event
+  }
 
-	@Override
-	public void mouseReleased(MouseEvent e)
-	{
-		// We don't care about this event
-	}
+  @Override
+  public void mouseReleased(MouseEvent e) {
+    // We don't care about this event
+  }
 }

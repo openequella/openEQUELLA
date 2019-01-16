@@ -36,57 +36,51 @@ import com.tle.web.template.Decorations;
 
 @SuppressWarnings("nls")
 @Bind
-public class RootHtmlEditorSettingsSection extends OneColumnLayout<OneColumnLayoutModel>
-{
-	@PlugKey("htmledit.settings.title")
-	private static Label TITLE_LABEL;
-	@PlugKey("settings.plugins.error.noaccess")
-	private static Label LABEL_NOACCESS;
+public class RootHtmlEditorSettingsSection extends OneColumnLayout<OneColumnLayoutModel> {
+  @PlugKey("htmledit.settings.title")
+  private static Label TITLE_LABEL;
 
-	@Inject
-	private HtmlEditorSettingsPrivilegeTreeProvider securityProvider;
+  @PlugKey("settings.plugins.error.noaccess")
+  private static Label LABEL_NOACCESS;
 
-	private boolean canView()
-	{
-		return securityProvider.isAuthorised();
-	}
+  @Inject private HtmlEditorSettingsPrivilegeTreeProvider securityProvider;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !canView() )
-		{
-			throw new AccessDeniedException(LABEL_NOACCESS.getText());
-		}
+  private boolean canView() {
+    return securityProvider.isAuthorised();
+  }
 
-		return super.renderHtml(context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (!canView()) {
+      throw new AccessDeniedException(LABEL_NOACCESS.getText());
+    }
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		OneColumnLayoutModel model = getModel(info);
-		SectionId modalSection = model.getModalSection();
-		crumbs.add(SettingsUtils.getBreadcrumb(info));
+    return super.renderHtml(context);
+  }
 
-		if( modalSection != null )
-		{
-			crumbs.add(SettingsList.asLinkOrNull(SettingsList.htmlEditorSettings()));
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    OneColumnLayoutModel model = getModel(info);
+    SectionId modalSection = model.getModalSection();
+    crumbs.add(SettingsUtils.getBreadcrumb(info));
 
-			SectionId section = info.getSectionForId(modalSection);
-			if( section instanceof ModalHtmlEditorSettingsSection )
-			{
-				((ModalHtmlEditorSettingsSection) section).addBreadcrumbsAndTitle(info, decorations, crumbs);
-				return;
-			}
-		}
-		decorations.setTitle(TITLE_LABEL);
-		decorations.setContentBodyClass("htmleditor");
-	}
+    if (modalSection != null) {
+      crumbs.add(SettingsList.asLinkOrNull(SettingsList.htmlEditorSettings()));
 
-	@Override
-	public Class<OneColumnLayoutModel> getModelClass()
-	{
-		return OneColumnLayoutModel.class;
-	}
+      SectionId section = info.getSectionForId(modalSection);
+      if (section instanceof ModalHtmlEditorSettingsSection) {
+        ((ModalHtmlEditorSettingsSection) section)
+            .addBreadcrumbsAndTitle(info, decorations, crumbs);
+        return;
+      }
+    }
+    decorations.setTitle(TITLE_LABEL);
+    decorations.setContentBodyClass("htmleditor");
+  }
+
+  @Override
+  public Class<OneColumnLayoutModel> getModelClass() {
+    return OneColumnLayoutModel.class;
+  }
 }

@@ -29,20 +29,21 @@ import com.tle.web.resources.ResourcesService;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class WorkflowPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeProvider<Workflow>
-{
-	@Inject
-	public WorkflowPrivilegeTreeProvider(WorkflowService workflowService)
-	{
-		super(workflowService, Node.ALL_WORKFLOWS,
-			ResourcesService.getResourceHelper(WorkflowPrivilegeTreeProvider.class).key("securitytree.allworkflows"),
-			Node.WORKFLOW, ResourcesService.getResourceHelper(WorkflowPrivilegeTreeProvider.class)
-				.key("securitytree.targetallworkflows"));
-	}
+public class WorkflowPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeProvider<Workflow> {
+  @Inject
+  public WorkflowPrivilegeTreeProvider(WorkflowService workflowService) {
+    super(
+        workflowService,
+        Node.ALL_WORKFLOWS,
+        ResourcesService.getResourceHelper(WorkflowPrivilegeTreeProvider.class)
+            .key("securitytree.allworkflows"),
+        Node.WORKFLOW,
+        ResourcesService.getResourceHelper(WorkflowPrivilegeTreeProvider.class)
+            .key("securitytree.targetallworkflows"));
+  }
 
-	@Override
-	protected Workflow createEntity()
-	{
-		return new Workflow();
-	}
+  @Override
+  protected Workflow createEntity() {
+    return new Workflow();
+  }
 }

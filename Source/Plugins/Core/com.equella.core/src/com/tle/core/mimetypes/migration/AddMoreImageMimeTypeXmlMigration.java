@@ -36,34 +36,32 @@ import com.tle.core.xml.service.XmlService;
 
 @Bind
 @Singleton
-public class AddMoreImageMimeTypeXmlMigration extends XmlMigrator
-{
-	public static final List<String> imageMimeList = Arrays.asList("arw", "x3f");
+public class AddMoreImageMimeTypeXmlMigration extends XmlMigrator {
+  public static final List<String> imageMimeList = Arrays.asList("arw", "x3f");
 
-	@Inject
-	private XmlService xmlService;
+  @Inject private XmlService xmlService;
 
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) throws Exception
-	{
-		for( String mime : imageMimeList )
-		{
-			SubTemporaryFile mimeFolder = MimeEntryConverter.getMimeFolder(staging);
-			MimeEntry mimeEntry = new MimeEntry();
-			mimeEntry.setDescription("Image");
-			mimeEntry.setType("image/" + mime);
-			ArrayList<String> extensions = new ArrayList<String>();
-			extensions.add(mime);
-			mimeEntry.setExtensions(extensions);
-			mimeEntry.setAttribute(MimeTypeConstants.KEY_DEFAULT_VIEWERID, MimeTypeConstants.VAL_DEFAULT_VIEWERID);
-			mimeEntry.setAttribute(MimeTypeConstants.KEY_ENABLED_VIEWERS, "['livNavTreeViewer', 'toimg']");
-			mimeEntry.setAttribute(MimeTypeConstants.KEY_ICON_PLUGINICON, "icons/image.png");
+  @Override
+  public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
+      throws Exception {
+    for (String mime : imageMimeList) {
+      SubTemporaryFile mimeFolder = MimeEntryConverter.getMimeFolder(staging);
+      MimeEntry mimeEntry = new MimeEntry();
+      mimeEntry.setDescription("Image");
+      mimeEntry.setType("image/" + mime);
+      ArrayList<String> extensions = new ArrayList<String>();
+      extensions.add(mime);
+      mimeEntry.setExtensions(extensions);
+      mimeEntry.setAttribute(
+          MimeTypeConstants.KEY_DEFAULT_VIEWERID, MimeTypeConstants.VAL_DEFAULT_VIEWERID);
+      mimeEntry.setAttribute(
+          MimeTypeConstants.KEY_ENABLED_VIEWERS, "['livNavTreeViewer', 'toimg']");
+      mimeEntry.setAttribute(MimeTypeConstants.KEY_ICON_PLUGINICON, "icons/image.png");
 
-			String filename = MimeEntryConverter.getFilenameForEntry(mimeEntry);
-			if( !fileExists(mimeFolder, filename) )
-			{
-				xmlHelper.writeFile(mimeFolder, filename, xmlService.serialiseToXml(mimeEntry));
-			}
-		}
-	}
+      String filename = MimeEntryConverter.getFilenameForEntry(mimeEntry);
+      if (!fileExists(mimeFolder, filename)) {
+        xmlHelper.writeFile(mimeFolder, filename, xmlService.serialiseToXml(mimeEntry));
+      }
+    }
+  }
 }

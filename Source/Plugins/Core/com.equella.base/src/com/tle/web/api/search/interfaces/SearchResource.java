@@ -32,44 +32,53 @@ import io.swagger.annotations.ApiParam;
 @Path("search")
 @Api(value = "Searching", description = "search")
 @Produces(MediaType.APPLICATION_JSON)
-public interface SearchResource
-{
-	@GET
-	@Path("/facet")
-	@ApiOperation(value = "Perform a facet search")
-	// @formatter:off
-	public FacetSearchBean searchFacets(
-		@ApiParam(value="Comma seperated list of schema nodes to facet over", required = true)
-		@QueryParam("nodes")
-			CsvList nodes,
-		@ApiParam(value="The level at which to nest the facet search, the selected node must be flagged as nested in the schema definition", required = false)
-		@QueryParam("nest")
-			String nestLevel,
-		@ApiParam(value="Query string", required = false) @QueryParam("q")
-			String q,
-		@ApiParam(value="The number of term combinations to search for, a higher number will return more results and more accurate counts, but will take longer", required = false, defaultValue = "10", allowableValues = "range[0,200]")
-		@QueryParam("breadth")
-		@DefaultValue("10")
-			int breadth,
-		@ApiParam(value="List of collections", required = false)
-		@QueryParam("collections")
-			CsvList collections,
-		@ApiParam(value="The where-clause in the same format as the old SOAP one. See https://equella.github.io/",
-					required = false)
-		@QueryParam("where")
-			String where,
-		@ApiParam(value = "An ISO date format (yyyy-MM-dd)", required = false)
-		@QueryParam("modifiedAfter")
-				String modifiedAfter,
-		@ApiParam(value = "An ISO date format (yyyy-MM-dd)", required = false)
-		@QueryParam("modifiedBefore")
-				String modifiedBefore,
-		@ApiParam(value = "An ID (not a username) of a user", required = false)
-		@QueryParam("owner")
-				String owner,
-		@ApiParam(value="If true then includes items that are not live", allowableValues = "true,false", defaultValue = "false", required = false)
-		@QueryParam("showall")
-			String showall
-		);
-	// @formatter:on
+public interface SearchResource {
+  @GET
+  @Path("/facet")
+  @ApiOperation(value = "Perform a facet search")
+  // @formatter:off
+  public FacetSearchBean searchFacets(
+      @ApiParam(value = "Comma seperated list of schema nodes to facet over", required = true)
+          @QueryParam("nodes")
+          CsvList nodes,
+      @ApiParam(
+              value =
+                  "The level at which to nest the facet search, the selected node must be flagged as nested in the schema definition",
+              required = false)
+          @QueryParam("nest")
+          String nestLevel,
+      @ApiParam(value = "Query string", required = false) @QueryParam("q") String q,
+      @ApiParam(
+              value =
+                  "The number of term combinations to search for, a higher number will return more results and more accurate counts, but will take longer",
+              required = false,
+              defaultValue = "10",
+              allowableValues = "range[0,200]")
+          @QueryParam("breadth")
+          @DefaultValue("10")
+          int breadth,
+      @ApiParam(value = "List of collections", required = false) @QueryParam("collections")
+          CsvList collections,
+      @ApiParam(
+              value =
+                  "The where-clause in the same format as the old SOAP one. See https://equella.github.io/",
+              required = false)
+          @QueryParam("where")
+          String where,
+      @ApiParam(value = "An ISO date format (yyyy-MM-dd)", required = false)
+          @QueryParam("modifiedAfter")
+          String modifiedAfter,
+      @ApiParam(value = "An ISO date format (yyyy-MM-dd)", required = false)
+          @QueryParam("modifiedBefore")
+          String modifiedBefore,
+      @ApiParam(value = "An ID (not a username) of a user", required = false) @QueryParam("owner")
+          String owner,
+      @ApiParam(
+              value = "If true then includes items that are not live",
+              allowableValues = "true,false",
+              defaultValue = "false",
+              required = false)
+          @QueryParam("showall")
+          String showall);
+  // @formatter:on
 }

@@ -32,14 +32,15 @@ import com.tle.core.workflow.migrate.beans.WorkflowNodeStatus;
 
 @Entity(name = "ModerationStatus")
 @AccessType("field")
-public class ModerationStatus
-{
-	@Id
-	long id;
-	@OneToOne(mappedBy = "moderation")
-	FakeItem item;
-	Boolean needsReset;
-	Boolean deletedModerating;
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	Set<WorkflowNodeStatus> statuses;
+public class ModerationStatus {
+  @Id long id;
+
+  @OneToOne(mappedBy = "moderation")
+  FakeItem item;
+
+  Boolean needsReset;
+  Boolean deletedModerating;
+
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  Set<WorkflowNodeStatus> statuses;
 }

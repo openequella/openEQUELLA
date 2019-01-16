@@ -26,17 +26,16 @@ import com.tle.web.sections.standard.RendererFactory;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.renderers.FreemarkerComponentRendererFactory;
 
-/**
- * @author Andrew Gibb
- */
+/** @author Andrew Gibb */
 @Bind
 @Singleton
-public class MultiEditBoxRendererFactory extends FreemarkerComponentRendererFactory
-{
-	@Override
-	public SectionRenderable getRenderer(RendererFactory rendererFactory, SectionInfo info, String renderer,
-		HtmlComponentState state)
-	{
-		return new MultiEditBoxRenderer(factory, (MultiEditBoxState) state); // NOSONAR
-	}
+public class MultiEditBoxRendererFactory extends FreemarkerComponentRendererFactory {
+  @Override
+  public SectionRenderable getRenderer(
+      RendererFactory rendererFactory,
+      SectionInfo info,
+      String renderer,
+      HtmlComponentState state) {
+    return new MultiEditBoxRenderer(factory, (MultiEditBoxState) state); // NOSONAR
+  }
 }

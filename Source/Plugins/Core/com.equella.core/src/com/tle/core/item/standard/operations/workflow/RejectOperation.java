@@ -37,81 +37,71 @@ import com.tle.core.item.standard.workflow.nodes.TaskStatus;
 import com.tle.core.notification.beans.Notification;
 import com.tle.core.security.impl.SecureInModeration;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
 @SecureInModeration
 public final class RejectOperation extends SpecificTaskOperation // NOSONAR
 {
-	private final String msg;
-	private final String tostep;
-	private final String messageUuid;
+  private final String msg;
+  private final String tostep;
+  private final String messageUuid;
 
-	@AssistedInject
-	private RejectOperation(@Assisted("taskId") String taskId, @Assisted("comment") String msg,
-		@Assisted("step") @Nullable String tostep, @Assisted("messageUuid") @Nullable String messageUuid)
-	{
-		super(taskId);
-		this.msg = msg;
-		this.tostep = tostep;
-		this.messageUuid = messageUuid;
-	}
+  @AssistedInject
+  private RejectOperation(
+      @Assisted("taskId") String taskId,
+      @Assisted("comment") String msg,
+      @Assisted("step") @Nullable String tostep,
+      @Assisted("messageUuid") @Nullable String messageUuid) {
+    super(taskId);
+    this.msg = msg;
+    this.tostep = tostep;
+    this.messageUuid = messageUuid;
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public boolean execute()
-	{
-		checkWeCanModerate();
-		ModerationStatus modstatus = getModerationStatus();
-		modstatus.setLastAction(params.getDateNow());
+  @SuppressWarnings("nls")
+  @Override
+  public boolean execute() {
+    checkWeCanModerate();
+    ModerationStatus modstatus = getModerationStatus();
+    modstatus.setLastAction(params.getDateNow());
 
-		TaskStatus status = getTaskStatus();
-		params.setCause(status.getBean());
-		HistoryEvent reject = createHistory(Type.rejected);
-		reject.setComment(msg);
-		setToStepFromTask(reject, tostep);
-		setStepFromTask(reject);
-		addMessage(WorkflowMessage.TYPE_REJECT, msg, messageUuid);
+    TaskStatus status = getTaskStatus();
+    params.setCause(status.getBean());
+    HistoryEvent reject = createHistory(Type.rejected);
+    reject.setComment(msg);
+    setToStepFromTask(reject, tostep);
+    setStepFromTask(reject);
+    addMessage(WorkflowMessage.TYPE_REJECT, msg, messageUuid);
 
-		if( Check.isEmpty(tostep) )
-		{
-			Item item = getItem();
-			setState(ItemStatus.REJECTED);
-			modstatus.setRejectedMessage(msg);
-			modstatus.setRejectedBy(getUserId());
-			modstatus.setRejectedStep(status.getId());
-			exitTasksForItem();
-			item.setModerating(false);
-			removeModerationNotifications();
-			addNotifications(item.getItemId(), getAllOwnerIds(), Notification.REASON_REJECTED, false);
-		}
-		else
-		{
-			WorkflowNode parentNode = status.getRejectNode(tostep);
-			if( parentNode != null )
-			{
-				reenter(parentNode);
-			}
-			else
-			{
-				throw new WorkflowException("Rejection step is not a parent");
-			}
-		}
-		updateModeration();
+    if (Check.isEmpty(tostep)) {
+      Item item = getItem();
+      setState(ItemStatus.REJECTED);
+      modstatus.setRejectedMessage(msg);
+      modstatus.setRejectedBy(getUserId());
+      modstatus.setRejectedStep(status.getId());
+      exitTasksForItem();
+      item.setModerating(false);
+      removeModerationNotifications();
+      addNotifications(item.getItemId(), getAllOwnerIds(), Notification.REASON_REJECTED, false);
+    } else {
+      WorkflowNode parentNode = status.getRejectNode(tostep);
+      if (parentNode != null) {
+        reenter(parentNode);
+      } else {
+        throw new WorkflowException("Rejection step is not a parent");
+      }
+    }
+    updateModeration();
 
-		if (messageUuid != null)
-		{
-			try
-			{
-				fileSystemService.commitFiles(new StagingFile(messageUuid), new WorkflowMessageFile(messageUuid));
-			}
-			catch (IOException ex)
-			{
-				throw Throwables.propagate(ex);
-			}
-		}
-		return true;
-	}
+    if (messageUuid != null) {
+      try {
+        fileSystemService.commitFiles(
+            new StagingFile(messageUuid), new WorkflowMessageFile(messageUuid));
+      } catch (IOException ex) {
+        throw Throwables.propagate(ex);
+      }
+    }
+    return true;
+  }
 }

@@ -25,43 +25,36 @@ import com.tle.web.sections.js.JSStatements;
 
 /**
  * A JSStatements where the contents can be decided at runtime.
- * 
+ *
  * @author jolz
  */
 @NonNullByDefault
-public class RuntimeStatement implements JSStatements
-{
-	@Override
-	public String getStatements(RenderContext info)
-	{
-		return getRealStatements(info).getStatements(info);
-	}
+public class RuntimeStatement implements JSStatements {
+  @Override
+  public String getStatements(RenderContext info) {
+    return getRealStatements(info).getStatements(info);
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(getRealStatements(info));
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(getRealStatements(info));
+  }
 
-	protected JSStatements getRealStatements(RenderContext info)
-	{
-		JSStatements statements = info.getAttribute(this);
-		if( statements == null )
-		{
-			statements = createStatements(info);
-			info.setAttribute(this, statements);
-		}
-		return statements;
-	}
+  protected JSStatements getRealStatements(RenderContext info) {
+    JSStatements statements = info.getAttribute(this);
+    if (statements == null) {
+      statements = createStatements(info);
+      info.setAttribute(this, statements);
+    }
+    return statements;
+  }
 
-	public void setStatements(SectionInfo info, JSStatements statements)
-	{
-		info.setAttribute(this, statements);
-	}
+  public void setStatements(SectionInfo info, JSStatements statements) {
+    info.setAttribute(this, statements);
+  }
 
-	protected JSStatements createStatements(RenderContext info)
-	{
-		throw new SectionsRuntimeException("Statements not set and createStatements() not overridden"); //$NON-NLS-1$
-
-	}
+  protected JSStatements createStatements(RenderContext info) {
+    throw new SectionsRuntimeException(
+        "Statements not set and createStatements() not overridden"); //$NON-NLS-1$
+  }
 }

@@ -34,26 +34,29 @@ import com.tle.core.plugins.AbstractPluginService;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class CreateCustomLinksEntities extends AbstractCreateMigration
-{
-	private static String KEY_PFX = AbstractPluginService.getMyPluginId(CreateCustomLinksEntities.class)+".";
-	@Override
-	protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper)
-	{
-		return new TablesOnlyFilter("custom_link");
-	}
+public class CreateCustomLinksEntities extends AbstractCreateMigration {
+  private static String KEY_PFX =
+      AbstractPluginService.getMyPluginId(CreateCustomLinksEntities.class) + ".";
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{CustomLink.class, BaseEntity.class, LanguageBundle.class, Institution.class,
-				LanguageString.class, BaseEntity.Attribute.class};
-	}
+  @Override
+  protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
+    return new TablesOnlyFilter("custom_link");
+  }
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(KEY_PFX+"customlinks.migration.title");
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {
+      CustomLink.class,
+      BaseEntity.class,
+      LanguageBundle.class,
+      Institution.class,
+      LanguageString.class,
+      BaseEntity.Attribute.class
+    };
+  }
 
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(KEY_PFX + "customlinks.migration.title");
+  }
 }

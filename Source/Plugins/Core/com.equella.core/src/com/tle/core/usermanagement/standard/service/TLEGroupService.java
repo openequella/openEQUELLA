@@ -21,21 +21,20 @@ import java.util.List;
 import com.tle.beans.user.TLEGroup;
 import com.tle.core.remoting.RemoteTLEGroupService;
 
-public interface TLEGroupService extends RemoteTLEGroupService
-{
-	String add(TLEGroup group);
+public interface TLEGroupService extends RemoteTLEGroupService {
+  String add(TLEGroup group);
 
-	TLEGroup createGroup(String groupID, String name);
+  TLEGroup createGroup(String groupID, String name);
 
-	List<String> getUsersInGroup(String parentGroupID, boolean recurse);
+  List<String> getUsersInGroup(String parentGroupID, boolean recurse);
 
-	List<TLEGroup> getGroupsContainingUser(String userID, boolean recursive);
+  List<TLEGroup> getGroupsContainingUser(String userID, boolean recursive);
 
-	void addUserToGroup(String groupUuid, String userUuid);
+  void addUserToGroup(String groupUuid, String userUuid);
 
-	void removeUserFromGroup(String groupUuid, String userUuid);
+  void removeUserFromGroup(String groupUuid, String userUuid);
 
-	void removeAllUsersFromGroup(String groupUuid);
+  void removeAllUsersFromGroup(String groupUuid);
 
-	String prepareQuery(String searchString);
+  String prepareQuery(String searchString);
 }

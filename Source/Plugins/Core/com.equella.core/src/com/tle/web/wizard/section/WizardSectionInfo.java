@@ -22,16 +22,15 @@ import com.tle.web.viewurl.ItemSectionInfo;
 import com.tle.web.wizard.WizardState;
 
 @NonNullByDefault
-public interface WizardSectionInfo extends ItemSectionInfo
-{
-	@Nullable
-	WizardState getWizardState();
+public interface WizardSectionInfo extends ItemSectionInfo {
+  @Nullable
+  WizardState getWizardState();
 
-	boolean isAvailableForEditing();
+  boolean isAvailableForEditing();
 
-	boolean isLockedForEditing();
+  boolean isLockedForEditing();
 
-	boolean isNewItem();
+  boolean isNewItem();
 
-	void cancelEdit();
+  void cancelEdit();
 }

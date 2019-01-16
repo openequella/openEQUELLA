@@ -51,162 +51,132 @@ import com.tle.web.sections.standard.dialog.model.DialogModel;
 @NonNullByDefault
 @Bind
 @SuppressWarnings("nls")
-public class ShowErrorDialog extends AbstractOkayableDialog<ShowErrorDialogModel>
-{
-	@PlugKey("databases.errordialog.title")
-	private static Label TITLE;
+public class ShowErrorDialog extends AbstractOkayableDialog<ShowErrorDialogModel> {
+  @PlugKey("databases.errordialog.title")
+  private static Label TITLE;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Inject
-	private MigrationService migrationService;
-	@Inject
-	private DatabaseTabUtils databaseTabUtils;
+  @Inject private MigrationService migrationService;
+  @Inject private DatabaseTabUtils databaseTabUtils;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		setAjax(true);
-		setOkHandler(new OverrideHandler(getCloseFunction()));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    setAjax(true);
+    setOkHandler(new OverrideHandler(getCloseFunction()));
+  }
 
-	@Override
-	protected ParameterizedEvent getAjaxShowEvent()
-	{
-		return events.getEventHandler("open");
-	}
+  @Override
+  protected ParameterizedEvent getAjaxShowEvent() {
+    return events.getEventHandler("open");
+  }
 
-	@EventHandlerMethod
-	public void open(SectionInfo info, long schemaId)
-	{
-		ShowErrorDialogModel model = getModel(info);
-		model.setSchemaId(schemaId);
-		super.showDialog(info);
-	}
+  @EventHandlerMethod
+  public void open(SectionInfo info, long schemaId) {
+    ShowErrorDialogModel model = getModel(info);
+    model.setSchemaId(schemaId);
+    super.showDialog(info);
+  }
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		final ShowErrorDialogModel model = getModel(context);
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    final ShowErrorDialogModel model = getModel(context);
 
-		final long schemaId = model.getSchemaId();
+    final long schemaId = model.getSchemaId();
 
-		SchemaInfo schemaInfo = migrationService.getMigrationsStatus().getSchemas().get(schemaId);
-		DatabaseSchema duplicateWith = schemaInfo.getDuplicateWith();
-		if( duplicateWith != null )
-		{
-			model.setSchemaLabel(databaseTabUtils.getNameRenderer(duplicateWith));
-			model.setDupeSchema(duplicateWith);
-			return viewFactory.createResult("database/duplicate.ftl", this);
-		}
+    SchemaInfo schemaInfo = migrationService.getMigrationsStatus().getSchemas().get(schemaId);
+    DatabaseSchema duplicateWith = schemaInfo.getDuplicateWith();
+    if (duplicateWith != null) {
+      model.setSchemaLabel(databaseTabUtils.getNameRenderer(duplicateWith));
+      model.setDupeSchema(duplicateWith);
+      return viewFactory.createResult("database/duplicate.ftl", this);
+    }
 
-		MigrationErrorReport errorReport = migrationService.getErrorReport(schemaId);
-		model.setErrorReport(errorReport);
-		StringBuilder sbuf = new StringBuilder();
-		List<MigrationStatusLog> log = errorReport.getLog();
-		if( !Check.isEmpty(log) )
-		{
-			for( MigrationStatusLog statLog : log )
-			{
-				if( statLog.getType() == LogType.SQL )
-				{
-					sbuf.append(statLog.getValues()[0]);
-				}
-				else
-				{
-					sbuf.append(CurrentLocale.get(statLog.getKey(), statLog.getValues()));
-				}
-				sbuf.append('\n');
-			}
-			model.setLogAsString(sbuf.toString());
-		}
+    MigrationErrorReport errorReport = migrationService.getErrorReport(schemaId);
+    model.setErrorReport(errorReport);
+    StringBuilder sbuf = new StringBuilder();
+    List<MigrationStatusLog> log = errorReport.getLog();
+    if (!Check.isEmpty(log)) {
+      for (MigrationStatusLog statLog : log) {
+        if (statLog.getType() == LogType.SQL) {
+          sbuf.append(statLog.getValues()[0]);
+        } else {
+          sbuf.append(CurrentLocale.get(statLog.getKey(), statLog.getValues()));
+        }
+        sbuf.append('\n');
+      }
+      model.setLogAsString(sbuf.toString());
+    }
 
-		return viewFactory.createResult("database/errordialog.ftl", this);
-	}
+    return viewFactory.createResult("database/errordialog.ftl", this);
+  }
 
-	@Override
-	protected Collection<Button> collectFooterActions(RenderContext context)
-	{
-		return Collections.singleton(getOk());
-	}
+  @Override
+  protected Collection<Button> collectFooterActions(RenderContext context) {
+    return Collections.singleton(getOk());
+  }
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return TITLE;
-	}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return TITLE;
+  }
 
-	@Override
-	public String getWidth()
-	{
-		return "800px";
-	}
+  @Override
+  public String getWidth() {
+    return "800px";
+  }
 
-	@Override
-	public ShowErrorDialogModel instantiateDialogModel(SectionInfo info)
-	{
-		return new ShowErrorDialogModel();
-	}
+  @Override
+  public ShowErrorDialogModel instantiateDialogModel(SectionInfo info) {
+    return new ShowErrorDialogModel();
+  }
 
-	public static class ShowErrorDialogModel extends DialogModel
-	{
-		private long schemaId;
-		private MigrationErrorReport errorReport;
-		private String logAsString;
-		private SectionRenderable schemaLabel;
-		private DatabaseSchema dupeSchema;
+  public static class ShowErrorDialogModel extends DialogModel {
+    private long schemaId;
+    private MigrationErrorReport errorReport;
+    private String logAsString;
+    private SectionRenderable schemaLabel;
+    private DatabaseSchema dupeSchema;
 
-		public long getSchemaId()
-		{
-			return schemaId;
-		}
+    public long getSchemaId() {
+      return schemaId;
+    }
 
-		public void setSchemaId(long schemaId)
-		{
-			this.schemaId = schemaId;
-		}
+    public void setSchemaId(long schemaId) {
+      this.schemaId = schemaId;
+    }
 
-		public MigrationErrorReport getErrorReport()
-		{
-			return errorReport;
-		}
+    public MigrationErrorReport getErrorReport() {
+      return errorReport;
+    }
 
-		public void setErrorReport(MigrationErrorReport errorReport)
-		{
-			this.errorReport = errorReport;
-		}
+    public void setErrorReport(MigrationErrorReport errorReport) {
+      this.errorReport = errorReport;
+    }
 
-		public SectionRenderable getSchemaLabel()
-		{
-			return schemaLabel;
-		}
+    public SectionRenderable getSchemaLabel() {
+      return schemaLabel;
+    }
 
-		public void setSchemaLabel(SectionRenderable schemaLabel)
-		{
-			this.schemaLabel = schemaLabel;
-		}
+    public void setSchemaLabel(SectionRenderable schemaLabel) {
+      this.schemaLabel = schemaLabel;
+    }
 
-		public DatabaseSchema getDupeSchema()
-		{
-			return dupeSchema;
-		}
+    public DatabaseSchema getDupeSchema() {
+      return dupeSchema;
+    }
 
-		public void setDupeSchema(DatabaseSchema dupeSchema)
-		{
-			this.dupeSchema = dupeSchema;
-		}
+    public void setDupeSchema(DatabaseSchema dupeSchema) {
+      this.dupeSchema = dupeSchema;
+    }
 
-		public String getLogAsString()
-		{
-			return logAsString;
-		}
+    public String getLogAsString() {
+      return logAsString;
+    }
 
-		public void setLogAsString(String logAsString)
-		{
-			this.logAsString = logAsString;
-		}
-
-	}
+    public void setLogAsString(String logAsString) {
+      this.logAsString = logAsString;
+    }
+  }
 }

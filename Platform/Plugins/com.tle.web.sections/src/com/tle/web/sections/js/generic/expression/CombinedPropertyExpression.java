@@ -25,26 +25,22 @@ import com.tle.web.sections.js.JSExpression;
 import com.tle.web.sections.js.JSPropertyExpression;
 
 @NonNullByDefault
-public class CombinedPropertyExpression extends AbstractExpression implements JSPropertyExpression
-{
-	private final JSExpression first;
-	private final JSExpression second;
+public class CombinedPropertyExpression extends AbstractExpression implements JSPropertyExpression {
+  private final JSExpression first;
+  private final JSExpression second;
 
-	public CombinedPropertyExpression(JSExpression first, JSExpression second)
-	{
-		this.first = first;
-		this.second = second;
-	}
+  public CombinedPropertyExpression(JSExpression first, JSExpression second) {
+    this.first = first;
+    this.second = second;
+  }
 
-	@Override
-	public String getExpression(@Nullable RenderContext info)
-	{
-		return first.getExpression(info) + second.getExpression(info);
-	}
+  @Override
+  public String getExpression(@Nullable RenderContext info) {
+    return first.getExpression(info) + second.getExpression(info);
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		SectionUtils.preRender(info, first, second);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    SectionUtils.preRender(info, first, second);
+  }
 }

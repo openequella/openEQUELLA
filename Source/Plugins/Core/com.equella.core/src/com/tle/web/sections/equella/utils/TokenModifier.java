@@ -24,20 +24,17 @@ import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.sections.BookmarkModifier;
 import com.tle.web.sections.SectionInfo;
 
-public class TokenModifier implements BookmarkModifier
-{
-	private UserService userService;
+public class TokenModifier implements BookmarkModifier {
+  private UserService userService;
 
-	public TokenModifier(UserService userService)
-	{
-		this.userService = userService;
-	}
+  public TokenModifier(UserService userService) {
+    this.userService = userService;
+  }
 
-	@Override
-	public void addToBookmark(SectionInfo info, Map<String, String[]> bookmarkState)
-	{
-		String token = userService.getGeneratedToken(Constants.APPLET_SECRET_ID, CurrentUser.getUsername());
-		bookmarkState.put("token", new String[]{token}); //$NON-NLS-1$
-	}
-
+  @Override
+  public void addToBookmark(SectionInfo info, Map<String, String[]> bookmarkState) {
+    String token =
+        userService.getGeneratedToken(Constants.APPLET_SECRET_ID, CurrentUser.getUsername());
+    bookmarkState.put("token", new String[] {token}); // $NON-NLS-1$
+  }
 }

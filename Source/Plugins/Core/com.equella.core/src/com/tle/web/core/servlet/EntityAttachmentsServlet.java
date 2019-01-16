@@ -33,22 +33,18 @@ import com.tle.web.stream.FileContentStream;
 
 @Bind
 @Singleton
-public class EntityAttachmentsServlet extends AbstractIdPathServlet
-{
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private MimeTypeService mimeService;
-	@Inject
-	private ContentStreamWriter contentStreamWriter;
+public class EntityAttachmentsServlet extends AbstractIdPathServlet {
+  @Inject private FileSystemService fileSystemService;
+  @Inject private MimeTypeService mimeService;
+  @Inject private ContentStreamWriter contentStreamWriter;
 
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response, String entityId, String path)
-		throws ServletException, IOException
-	{
-		EntityFile entFile = new EntityFile(Long.parseLong(entityId));
-		FileContentStream stream = fileSystemService.getContentStream(entFile, path,
-			mimeService.getMimeTypeForFilename(path));
-		contentStreamWriter.outputStream(request, response, stream);
-	}
+  @Override
+  protected void service(
+      HttpServletRequest request, HttpServletResponse response, String entityId, String path)
+      throws ServletException, IOException {
+    EntityFile entFile = new EntityFile(Long.parseLong(entityId));
+    FileContentStream stream =
+        fileSystemService.getContentStream(entFile, path, mimeService.getMimeTypeForFilename(path));
+    contentStreamWriter.outputStream(request, response, stream);
+  }
 }

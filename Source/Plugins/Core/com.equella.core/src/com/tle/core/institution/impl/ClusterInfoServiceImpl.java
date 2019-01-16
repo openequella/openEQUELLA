@@ -43,45 +43,39 @@ import com.tle.core.zookeeper.ZookeeperService;
 @SuppressWarnings("nls")
 @Bind(ClusterInfoService.class)
 @Singleton
-public class ClusterInfoServiceImpl implements ClusterInfoService, StartupBean
-{
-	@Inject
-	private ZookeeperService zookeeperService;
-	private PathChildrenCache ipCache;
+public class ClusterInfoServiceImpl implements ClusterInfoService, StartupBean {
+  @Inject private ZookeeperService zookeeperService;
+  private PathChildrenCache ipCache;
 
-	@Override
-	public void startup()
-	{
-		if( !zookeeperService.hasStarted() )
-		{
-			throw new RuntimeException("Dependent ZK service not started!");
-		}
-		if( zookeeperService.isCluster() )
-		{
-			String allIps = Joiner.on(", ").join(
-				Lists.transform(NetworkUtils.getInetAddresses(),
-					new Function<Pair<NetworkInterface, InetAddress>, String>()
-					{
-						@Override
-						public String apply(Pair<NetworkInterface, InetAddress> ni)
-						{
-							return ni.getFirst().getName() + "=" + ni.getSecond().getHostAddress();
-						}
-					}));
-			zookeeperService.createNode(IP_LIST_ZKPATH, allIps);
-			ipCache = zookeeperService.createPathCache(IP_LIST_ZKPATH, true);
-		}
-	}
+  @Override
+  public void startup() {
+    if (!zookeeperService.hasStarted()) {
+      throw new RuntimeException("Dependent ZK service not started!");
+    }
+    if (zookeeperService.isCluster()) {
+      String allIps =
+          Joiner.on(", ")
+              .join(
+                  Lists.transform(
+                      NetworkUtils.getInetAddresses(),
+                      new Function<Pair<NetworkInterface, InetAddress>, String>() {
+                        @Override
+                        public String apply(Pair<NetworkInterface, InetAddress> ni) {
+                          return ni.getFirst().getName() + "=" + ni.getSecond().getHostAddress();
+                        }
+                      }));
+      zookeeperService.createNode(IP_LIST_ZKPATH, allIps);
+      ipCache = zookeeperService.createPathCache(IP_LIST_ZKPATH, true);
+    }
+  }
 
-	@Override
-	public Map<String, String> getIpAddresses()
-	{
-		List<ChildData> nodes = ipCache.getCurrentData();
-		Builder<String, String> b = ImmutableMap.builder();
-		for( ChildData childData : nodes )
-		{
-			b.put(ZKPaths.getNodeFromPath(childData.getPath()), new String(childData.getData()));
-		}
-		return b.build();
-	}
+  @Override
+  public Map<String, String> getIpAddresses() {
+    List<ChildData> nodes = ipCache.getCurrentData();
+    Builder<String, String> b = ImmutableMap.builder();
+    for (ChildData childData : nodes) {
+      b.put(ZKPaths.getNodeFromPath(childData.getPath()), new String(childData.getData()));
+    }
+    return b.build();
+  }
 }

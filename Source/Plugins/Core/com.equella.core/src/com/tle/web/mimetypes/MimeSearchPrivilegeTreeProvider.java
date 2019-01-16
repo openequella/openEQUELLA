@@ -26,11 +26,12 @@ import com.tle.web.resources.ResourcesService;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class MimeSearchPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider
-{
-	public MimeSearchPrivilegeTreeProvider()
-	{
-		super(Type.SYSTEM_SETTING, ResourcesService.getResourceHelper(MimeSearchPrivilegeTreeProvider.class).key(
-			"securitytree.mimetypes"), new SettingsTarget("mime"));
-	}
+public class MimeSearchPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider {
+  public MimeSearchPrivilegeTreeProvider() {
+    super(
+        Type.SYSTEM_SETTING,
+        ResourcesService.getResourceHelper(MimeSearchPrivilegeTreeProvider.class)
+            .key("securitytree.mimetypes"),
+        new SettingsTarget("mime"));
+  }
 }

@@ -20,40 +20,33 @@ import java.io.StringWriter;
 
 import org.ccil.cowan.tagsoup.XMLWriter;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public abstract class AbstractHtmlContentHandler extends XMLWriter implements HtmlContentHandler
-{
-	protected final StringWriter w;
-	protected boolean outputNamespaces;
+public abstract class AbstractHtmlContentHandler extends XMLWriter implements HtmlContentHandler {
+  protected final StringWriter w;
+  protected boolean outputNamespaces;
 
-	protected AbstractHtmlContentHandler(StringWriter w)
-	{
-		super(w);
+  protected AbstractHtmlContentHandler(StringWriter w) {
+    super(w);
 
-		this.w = w;
-		setOutputProperty(XMLWriter.METHOD, "html");
-		setOutputProperty(XMLWriter.OMIT_XML_DECLARATION, "yes");
-		setOutputProperty(XMLWriter.ENCODING, "UTF-8");
-	}
+    this.w = w;
+    setOutputProperty(XMLWriter.METHOD, "html");
+    setOutputProperty(XMLWriter.OMIT_XML_DECLARATION, "yes");
+    setOutputProperty(XMLWriter.ENCODING, "UTF-8");
+  }
 
-	@Override
-	public String getOutput()
-	{
-		return w.toString();
-	}
+  @Override
+  public String getOutput() {
+    return w.toString();
+  }
 
-	@Override
-	public boolean isOutputNamespaces()
-	{
-		return outputNamespaces;
-	}
+  @Override
+  public boolean isOutputNamespaces() {
+    return outputNamespaces;
+  }
 
-	@Override
-	public void setOutputNamespaces(boolean outputNamespaces)
-	{
-		this.outputNamespaces = outputNamespaces;
-	}
+  @Override
+  public void setOutputNamespaces(boolean outputNamespaces) {
+    this.outputNamespaces = outputNamespaces;
+  }
 }

@@ -25,24 +25,18 @@ import com.tle.web.sections.SectionsController;
 import com.tle.web.selection.SelectableInterface;
 import com.tle.web.selection.SelectionSession;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class FileUploadSelectable implements SelectableInterface
-{
-	@Inject
-	private SectionsController controller;
+public class FileUploadSelectable implements SelectableInterface {
+  @Inject private SectionsController controller;
 
-	@Override
-	public SectionInfo createSectionInfo(SectionInfo info, SelectionSession session)
-	{
-		return getFileUploadTree(info);
-	}
+  @Override
+  public SectionInfo createSectionInfo(SectionInfo info, SelectionSession session) {
+    return getFileUploadTree(info);
+  }
 
-	protected SectionInfo getFileUploadTree(SectionInfo info)
-	{
-		return controller.createForward(info, "/access/tlemceaddon.do"); //$NON-NLS-1$
-	}
+  protected SectionInfo getFileUploadTree(SectionInfo info) {
+    return controller.createForward(info, "/access/tlemceaddon.do"); // $NON-NLS-1$
+  }
 }

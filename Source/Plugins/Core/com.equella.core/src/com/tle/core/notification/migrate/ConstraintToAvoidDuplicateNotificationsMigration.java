@@ -47,106 +47,98 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class ConstraintToAvoidDuplicateNotificationsMigration extends AbstractHibernateSchemaMigration
-{
-	private static final String KEY_PREFIX = PluginServiceImpl.getMyPluginId(ConstraintToAvoidDuplicateNotificationsMigration.class) + ".";
+public class ConstraintToAvoidDuplicateNotificationsMigration
+    extends AbstractHibernateSchemaMigration {
+  private static final String KEY_PREFIX =
+      PluginServiceImpl.getMyPluginId(ConstraintToAvoidDuplicateNotificationsMigration.class) + ".";
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(new KeyString(KEY_PREFIX + "migrate.duplicateconstraint"));
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(new KeyString(KEY_PREFIX + "migrate.duplicateconstraint"));
+  }
 
-	@Override
-	public boolean isBackwardsCompatible()
-	{
-		return true;
-	}
+  @Override
+  public boolean isBackwardsCompatible() {
+    return true;
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-	{
-		// Find dupes and kill them (keep the latest one)
-		final ScrollableResults dupes = session.createQuery(getDupesFrom() + " ORDER BY n.date DESC").scroll(
-			ScrollMode.FORWARD_ONLY);
-		final Set<String> visited = Sets.newHashSet();
-		while( dupes.next() )
-		{
-			final FakeNotification dupe = (FakeNotification) dupes.get(0);
-			final String key = dupe.itemid + dupe.reason + dupe.userTo + dupe.institution.id;
-			// Ignore the most recent notification, we'll keep this one
-			if( !visited.contains(key) )
-			{
-				visited.add(key);
-			}
-			else
-			{
-				session.delete(dupe);
-				session.flush();
-				session.clear();
-			}
-			result.incrementStatus();
-		}
-	}
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) {
+    // Find dupes and kill them (keep the latest one)
+    final ScrollableResults dupes =
+        session
+            .createQuery(getDupesFrom() + " ORDER BY n.date DESC")
+            .scroll(ScrollMode.FORWARD_ONLY);
+    final Set<String> visited = Sets.newHashSet();
+    while (dupes.next()) {
+      final FakeNotification dupe = (FakeNotification) dupes.get(0);
+      final String key = dupe.itemid + dupe.reason + dupe.userTo + dupe.institution.id;
+      // Ignore the most recent notification, we'll keep this one
+      if (!visited.contains(key)) {
+        visited.add(key);
+      } else {
+        session.delete(dupe);
+        session.flush();
+        session.clear();
+      }
+      result.incrementStatus();
+    }
+  }
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return count(session.createQuery("SELECT COUNT(*) " + getDupesFrom()));
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return count(session.createQuery("SELECT COUNT(*) " + getDupesFrom()));
+  }
 
-	private String getDupesFrom()
-	{
-		return "FROM Notification n WHERE 1 < (SELECT COUNT(*) FROM Notification n2 WHERE n2.institution = n.institution"
-			+ " AND n2.itemid = n.itemid AND n2.reason = n.reason AND n2.userTo = n.userTo)";
-	}
+  private String getDupesFrom() {
+    return "FROM Notification n WHERE 1 < (SELECT COUNT(*) FROM Notification n2 WHERE n2.institution = n.institution"
+        + " AND n2.itemid = n.itemid AND n2.reason = n.reason AND n2.userTo = n.userTo)";
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		// false - we specify that we DON'T want to create the foreign key
-		// constraint(s). In this case, a foreign key for Institution already
-		// exists, and Oracle will object to any attempt to make a superfluous
-		// extra constraint (although Postgres for example will happily allow
-		// such)
-		return helper.getAddIndexesAndConstraintsForColumns("notification", false, "institution_id", "itemid",
-			"reason", "user_to");
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    // false - we specify that we DON'T want to create the foreign key
+    // constraint(s). In this case, a foreign key for Institution already
+    // exists, and Oracle will object to any attempt to make a superfluous
+    // extra constraint (although Postgres for example will happily allow
+    // such)
+    return helper.getAddIndexesAndConstraintsForColumns(
+        "notification", false, "institution_id", "itemid", "reason", "user_to");
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		return Collections.emptyList();
-	}
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    return Collections.emptyList();
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{FakeNotification.class, FakeInstitution.class,};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {
+      FakeNotification.class, FakeInstitution.class,
+    };
+  }
 
-	@Entity(name = "Notification")
-	@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"institution_id", "itemid", "reason", "userTo"}))
-	public static class FakeNotification
-	{
-		@Id
-		long id;
+  @Entity(name = "Notification")
+  @Table(
+      uniqueConstraints =
+          @UniqueConstraint(columnNames = {"institution_id", "itemid", "reason", "userTo"}))
+  public static class FakeNotification {
+    @Id long id;
 
-		@ManyToOne(fetch = FetchType.LAZY)
-		@JoinColumn(nullable = false)
-		FakeInstitution institution;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    FakeInstitution institution;
 
-		String itemid;
-		String userTo;
-		String reason;
-		Date date;
-	}
+    String itemid;
+    String userTo;
+    String reason;
+    Date date;
+  }
 
-	@Entity(name = "Institution")
-	@AccessType("field")
-	public static class FakeInstitution
-	{
-		@Id
-		long id;
-	}
+  @Entity(name = "Institution")
+  @AccessType("field")
+  public static class FakeInstitution {
+    @Id long id;
+  }
 }

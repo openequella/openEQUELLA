@@ -37,70 +37,61 @@ import com.tle.core.migration.AbstractHibernateSchemaMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class AddManualNavigationFlag extends AbstractHibernateSchemaMigration
-{
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return 0;
-	}
+public class AddManualNavigationFlag extends AbstractHibernateSchemaMigration {
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return 0;
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-	{
-		session.createSQLQuery("UPDATE item SET manual_navigation = ? WHERE manual_navigation IS NULL")
-			.setBoolean(0, false).executeUpdate();
-	}
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) {
+    session
+        .createSQLQuery("UPDATE item SET manual_navigation = ? WHERE manual_navigation IS NULL")
+        .setBoolean(0, false)
+        .executeUpdate();
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		return helper.getAddColumnsSQL("item", "manual_navigation");
-	}
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    return helper.getAddColumnsSQL("item", "manual_navigation");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{FakeItem.class, FakeNavigationSettings.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {FakeItem.class, FakeNavigationSettings.class};
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		return helper.getAddNotNullSQL("item", "manual_navigation");
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    return helper.getAddNotNullSQL("item", "manual_navigation");
+  }
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo("com.tle.core.entity.services.migration.manualnavigationflag");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo("com.tle.core.entity.services.migration.manualnavigationflag");
+  }
 
-	@Entity(name = "Item")
-	@AccessType("field")
-	public static class FakeItem
-	{
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		long id;
+  @Entity(name = "Item")
+  @AccessType("field")
+  public static class FakeItem {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    long id;
 
-		@Embedded
-		FakeNavigationSettings navigationSettings = new FakeNavigationSettings();
-	}
+    @Embedded FakeNavigationSettings navigationSettings = new FakeNavigationSettings();
+  }
 
-	@Embeddable
-	@AccessType("field")
-	public static class FakeNavigationSettings implements Serializable
-	{
-		private static final long serialVersionUID = 1L;
+  @Embeddable
+  @AccessType("field")
+  public static class FakeNavigationSettings implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-		@Column(name = "manualNavigation")
-		boolean manualNavigation;
-	}
+    @Column(name = "manualNavigation")
+    boolean manualNavigation;
+  }
 }

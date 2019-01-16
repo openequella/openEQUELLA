@@ -30,70 +30,59 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.SimpleSectionResult;
 
-/**
- * @author aholland / agibb
- */
+/** @author aholland / agibb */
 @Bind
 public class TasksPortletEditor
-	extends
-		AbstractPortletEditorSection<TasksPortletEditor.WorkflowTasksPortletEditorModel>
-{
-	private static final String TYPE = "tasks";
+    extends AbstractPortletEditorSection<TasksPortletEditor.WorkflowTasksPortletEditorModel> {
+  private static final String TYPE = "tasks";
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	protected SectionRenderable customRender(RenderEventContext context, WorkflowTasksPortletEditorModel model,
-		PortletEditingBean portlet) throws Exception
-	{
-		return new SimpleSectionResult("");
-	}
+  @Override
+  protected SectionRenderable customRender(
+      RenderEventContext context, WorkflowTasksPortletEditorModel model, PortletEditingBean portlet)
+      throws Exception {
+    return new SimpleSectionResult("");
+  }
 
-	@Override
-	protected Portlet createNewPortlet()
-	{
-		return new Portlet(TYPE);
-	}
+  @Override
+  protected Portlet createNewPortlet() {
+    return new Portlet(TYPE);
+  }
 
-	@Override
-	protected void customLoad(SectionInfo info, PortletEditingBean portlet)
-	{
-		// Nothing by default
-	}
+  @Override
+  protected void customLoad(SectionInfo info, PortletEditingBean portlet) {
+    // Nothing by default
+  }
 
-	@Override
-	protected void customSave(SectionInfo info, PortletEditingBean portlet)
-	{
-		// Nothing by default
-	}
+  @Override
+  protected void customSave(SectionInfo info, PortletEditingBean portlet) {
+    // Nothing by default
+  }
 
-	@Override
-	protected void customClear(SectionInfo info)
-	{
-		// Nothing by default
-	}
+  @Override
+  protected void customClear(SectionInfo info) {
+    // Nothing by default
+  }
 
-	@Override
-	protected void customValidate(SectionInfo info, PortletEditingBean portlet, Map<String, Object> errors)
-	{
-		// Nothing by default
-	}
+  @Override
+  protected void customValidate(
+      SectionInfo info, PortletEditingBean portlet, Map<String, Object> errors) {
+    // Nothing by default
+  }
 
-	@Override
-	public Class<WorkflowTasksPortletEditorModel> getModelClass()
-	{
-		return WorkflowTasksPortletEditorModel.class;
-	}
+  @Override
+  public Class<WorkflowTasksPortletEditorModel> getModelClass() {
+    return WorkflowTasksPortletEditorModel.class;
+  }
 
-	public static class WorkflowTasksPortletEditorModel extends AbstractPortletEditorSection.AbstractPortletEditorModel
-	{
-		// Nothing by default
-	}
+  public static class WorkflowTasksPortletEditorModel
+      extends AbstractPortletEditorSection.AbstractPortletEditorModel {
+    // Nothing by default
+  }
 
-	@Override
-	public SectionRenderable renderHelp(RenderContext context)
-	{
-		return viewFactory.createResult("portal/tasksportleteditorhelp.ftl", this);
-	}
+  @Override
+  public SectionRenderable renderHelp(RenderContext context) {
+    return viewFactory.createResult("portal/tasksportleteditorhelp.ftl", this);
+  }
 }

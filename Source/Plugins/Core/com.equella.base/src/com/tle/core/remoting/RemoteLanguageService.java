@@ -22,12 +22,9 @@ import java.util.Map;
 
 import com.tle.beans.Language;
 
-/**
- * @author Nicholas Read
- */
-public interface RemoteLanguageService
-{
-	Map<Long, String> getNames(Collection<Long> bundleRefs);
+/** @author Nicholas Read */
+public interface RemoteLanguageService {
+  Map<Long, String> getNames(Collection<Long> bundleRefs);
 
-	List<Language> getLanguages();
+  List<Language> getLanguages();
 }

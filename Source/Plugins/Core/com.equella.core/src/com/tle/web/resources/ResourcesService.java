@@ -32,49 +32,43 @@ import java.util.Map;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public class ResourcesService
-{
-	private static String baseUrl = "p/r/" + ApplicationVersion.get().getMmr() + '/';
+public class ResourcesService {
+  private static String baseUrl = "p/r/" + ApplicationVersion.get().getMmr() + '/';
 
-	private static Map<String, String> renamed = ImmutableMap.<String, String>builder()
-			.put("com.tle.web.sections.equella", "com.equella.core")
-			.put("com.tle.web.sections.standard", "com.equella.core")
-			.put("com.tle.web.connectors", "com.equella.core")
-			.put("com.tle.web.contribute", "com.equella.core")
-			.put("com.tle.web.search", "com.equella.core")
-			.put("com.tle.web.itemlist", "com.equella.core")
-			.put("com.tle.web.htmleditor.tinymce", "com.equella.core")
-			.put("com.tle.web.wizard.controls.universal", "com.equella.core").build();
+  private static Map<String, String> renamed =
+      ImmutableMap.<String, String>builder()
+          .put("com.tle.web.sections.equella", "com.equella.core")
+          .put("com.tle.web.sections.standard", "com.equella.core")
+          .put("com.tle.web.connectors", "com.equella.core")
+          .put("com.tle.web.contribute", "com.equella.core")
+          .put("com.tle.web.search", "com.equella.core")
+          .put("com.tle.web.itemlist", "com.equella.core")
+          .put("com.tle.web.htmleditor.tinymce", "com.equella.core")
+          .put("com.tle.web.wizard.controls.universal", "com.equella.core")
+          .build();
 
+  public static String getRealPluginId(String pluginId) {
+    String actualPluginId = renamed.get(pluginId);
+    if (actualPluginId == null) {
+      return pluginId;
+    }
+    return actualPluginId;
+  }
 
-	public static String getRealPluginId(String pluginId)
-	{
-		String actualPluginId = renamed.get(pluginId);
-		if (actualPluginId == null) {
-			return pluginId;
-		}
-		return actualPluginId;
-	}
+  public static String gkey(String pluginId, String key) {
+    return getRealPluginId(pluginId) + "." + key;
+  }
 
+  public static String getUrl(String pluginId, String path) {
+    StringBuilder b = new StringBuilder(75);
+    b.append(baseUrl);
+    b.append(getRealPluginId(pluginId));
+    b.append('/');
+    b.append(path);
+    return b.toString();
+  }
 
-	public static String gkey(String pluginId, String key)
-	{
-		return getRealPluginId(pluginId)+"."+key;
-	}
-
-	public static String getUrl(String pluginId, String path)
-	{
-		StringBuilder b = new StringBuilder(75);
-		b.append(baseUrl);
-		b.append(getRealPluginId(pluginId));
-		b.append('/');
-		b.append(path);
-		return b.toString();
-	}
-
-
-	public static PluginResourceHelper getResourceHelper(Object pluginObj)
-	{
-		return new PluginResourceHelper(pluginObj);
-	}
+  public static PluginResourceHelper getResourceHelper(Object pluginObj) {
+    return new PluginResourceHelper(pluginObj);
+  }
 }

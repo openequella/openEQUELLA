@@ -39,101 +39,81 @@ import com.tle.web.sections.SectionsController;
 @Bind(WebMimeTypeService.class)
 @Singleton
 @SuppressWarnings("nls")
-public class WebMimeTypeServiceImpl implements WebMimeTypeService
-{
-	private static final String DEFAULT_ICON = "icons/binary.png";
-	private static final PluginResourceHelper URL_HELPER = ResourcesService
-		.getResourceHelper(WebMimeTypeServiceImpl.class);
+public class WebMimeTypeServiceImpl implements WebMimeTypeService {
+  private static final String DEFAULT_ICON = "icons/binary.png";
+  private static final PluginResourceHelper URL_HELPER =
+      ResourcesService.getResourceHelper(WebMimeTypeServiceImpl.class);
 
-	@Inject
-	private SectionsController controller;
-	@Inject
-	private MimeTypeService mimeTypeService;
-	@Inject
-	private InstitutionService instituionService;
+  @Inject private SectionsController controller;
+  @Inject private MimeTypeService mimeTypeService;
+  @Inject private InstitutionService instituionService;
 
-	@Nullable
-	@Override
-	public MimeEntry getEntryForFilename(String filename)
-	{
-		return mimeTypeService.getEntryForFilename(filename);
-	}
+  @Nullable
+  @Override
+  public MimeEntry getEntryForFilename(String filename) {
+    return mimeTypeService.getEntryForFilename(filename);
+  }
 
-	@Nullable
-	@Override
-	public MimeEntry getEntryForMimeType(String mimeType)
-	{
-		return mimeTypeService.getEntryForMimeType(mimeType);
-	}
+  @Nullable
+  @Override
+  public MimeEntry getEntryForMimeType(String mimeType) {
+    return mimeTypeService.getEntryForMimeType(mimeType);
+  }
 
-	@Override
-	public String getMimeTypeForFilename(String filename)
-	{
-		return mimeTypeService.getMimeTypeForFilename(filename);
-	}
+  @Override
+  public String getMimeTypeForFilename(String filename) {
+    return mimeTypeService.getMimeTypeForFilename(filename);
+  }
 
-	@Override
-	public URL getIconForEntry(@Nullable MimeEntry entry)
-	{
-		return getIconForEntry(entry, true);
-	}
+  @Override
+  public URL getIconForEntry(@Nullable MimeEntry entry) {
+    return getIconForEntry(entry, true);
+  }
 
-	@Override
-	public URL getIconForEntry(@Nullable MimeEntry entry, boolean allowCache)
-	{
-		if( entry == null )
-		{
-			return getDefaultIconForEntry(null);
-		}
+  @Override
+  public URL getIconForEntry(@Nullable MimeEntry entry, boolean allowCache) {
+    if (entry == null) {
+      return getDefaultIconForEntry(null);
+    }
 
-		Map<String, String> attributes = entry.getAttributes();
-		if( attributes.containsKey(MimeTypeConstants.KEY_ICON_GIFBASE64) )
-		{
-			SectionInfo info = controller.createForward("/icon.do");
-			IconServer server = info.lookupSection(IconServer.class);
-			return URLUtils.newURL(server.getIconUrl(info, entry.getType(), allowCache).getHref());
-		}
-		return getDefaultIconForEntry(entry);
-	}
+    Map<String, String> attributes = entry.getAttributes();
+    if (attributes.containsKey(MimeTypeConstants.KEY_ICON_GIFBASE64)) {
+      SectionInfo info = controller.createForward("/icon.do");
+      IconServer server = info.lookupSection(IconServer.class);
+      return URLUtils.newURL(server.getIconUrl(info, entry.getType(), allowCache).getHref());
+    }
+    return getDefaultIconForEntry(entry);
+  }
 
-	@Override
-	public URL getDefaultIconForEntry(@Nullable MimeEntry entry)
-	{
-		String icon = null;
-		if( entry != null )
-		{
-			Map<String, String> attributes = entry.getAttributes();
-			icon = attributes.get(MimeTypeConstants.KEY_ICON_WEBAPPRELATIVE);
-			if( icon != null )
-			{
-				return URLUtils.newURL(instituionService.institutionalise(icon));
-			}
-			icon = attributes.get(MimeTypeConstants.KEY_ICON_PLUGINICON);
-		}
-		if( icon == null )
-		{
-			icon = DEFAULT_ICON;
-		}
-		return URLUtils.newURL(instituionService.institutionalise(URL_HELPER.url(icon)));
-	}
+  @Override
+  public URL getDefaultIconForEntry(@Nullable MimeEntry entry) {
+    String icon = null;
+    if (entry != null) {
+      Map<String, String> attributes = entry.getAttributes();
+      icon = attributes.get(MimeTypeConstants.KEY_ICON_WEBAPPRELATIVE);
+      if (icon != null) {
+        return URLUtils.newURL(instituionService.institutionalise(icon));
+      }
+      icon = attributes.get(MimeTypeConstants.KEY_ICON_PLUGINICON);
+    }
+    if (icon == null) {
+      icon = DEFAULT_ICON;
+    }
+    return URLUtils.newURL(instituionService.institutionalise(URL_HELPER.url(icon)));
+  }
 
-	@Override
-	public boolean hasCustomIcon(MimeEntry entry)
-	{
-		return entry.getAttributes().containsKey(MimeTypeConstants.KEY_ICON_GIFBASE64);
-	}
+  @Override
+  public boolean hasCustomIcon(MimeEntry entry) {
+    return entry.getAttributes().containsKey(MimeTypeConstants.KEY_ICON_GIFBASE64);
+  }
 
-	@Override
-	public void setIconBase64(MimeEntry entry, @Nullable String base64Icon)
-	{
-		Map<String, String> attr = entry.getAttributes();
-		if( base64Icon != null )
-		{
-			attr.put(MimeTypeConstants.KEY_ICON_GIFBASE64, base64Icon);
-		}
-		else if( attr.containsKey(MimeTypeConstants.KEY_ICON_GIFBASE64) )
-		{
-			attr.remove(MimeTypeConstants.KEY_ICON_GIFBASE64);
-		}
-	}
+  @Override
+  public void setIconBase64(MimeEntry entry, @Nullable String base64Icon) {
+    Map<String, String> attr = entry.getAttributes();
+    if (base64Icon != null) {
+      attr.put(MimeTypeConstants.KEY_ICON_GIFBASE64, base64Icon);
+    } else if (attr.containsKey(MimeTypeConstants.KEY_ICON_GIFBASE64)) {
+      attr.remove(MimeTypeConstants.KEY_ICON_GIFBASE64);
+    }
+  }
 }

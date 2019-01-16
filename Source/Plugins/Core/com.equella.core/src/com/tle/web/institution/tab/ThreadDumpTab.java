@@ -39,115 +39,109 @@ import com.tle.web.sections.standard.model.TableState;
 import com.tle.web.sections.standard.model.TableState.TableRow;
 
 @SuppressWarnings("nls")
-public class ThreadDumpTab extends AbstractInstitutionTab<ThreadDumpTab.ThreadDumpModel>
-{
-	@PlugKey("institutions.threaddump.link.name")
-	private static Label LINK_LABEL;
+public class ThreadDumpTab extends AbstractInstitutionTab<ThreadDumpTab.ThreadDumpModel> {
+  @PlugKey("institutions.threaddump.link.name")
+  private static Label LINK_LABEL;
 
-	@PlugKey(value = "institutions.threaddump.column.thread", global = true)
-	private static Label LABEL_THREAD;
-	@PlugKey(value = "institutions.threaddump.column.state", global = true)
-	private static Label LABEL_STATE;
-	@PlugKey(value = "institutions.threaddump.column.priority", global = true)
-	private static Label LABEL_PRIORITY;
-	@PlugKey(value = "institutions.threaddump.column.daemon", global = true)
-	private static Label LABEL_DAEMON;
+  @PlugKey(value = "institutions.threaddump.column.thread", global = true)
+  private static Label LABEL_THREAD;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @PlugKey(value = "institutions.threaddump.column.state", global = true)
+  private static Label LABEL_STATE;
 
-	@Component(name = "t")
-	private Table threadsTable;
+  @PlugKey(value = "institutions.threaddump.column.priority", global = true)
+  private static Label LABEL_PRIORITY;
 
-	private static final Comparator<Thread> THREAD_COMP = new Comparator<Thread>()
-	{
-		@Override
-		public int compare(Thread o1, Thread o2)
-		{
-			int result = o1.getName().compareToIgnoreCase(o2.getName());
-			if( result == 0 )
-			{
-				Long id1 = o1.getId();
-				Long id2 = o2.getId();
-				return id1.compareTo(id2);
-			}
-			return result;
-		}
-	};
+  @PlugKey(value = "institutions.threaddump.column.daemon", global = true)
+  private static Label LABEL_DAEMON;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		final ThreadDumpModel model = getModel(context);
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-		final Map<Thread, StackTraceElement[]> traces = new TreeMap<Thread, StackTraceElement[]>(THREAD_COMP);
-		traces.putAll(Thread.getAllStackTraces());
-		model.setTraces(traces);
-		final String currentUrl = context.getPublicBookmark().getHref();
+  @Component(name = "t")
+  private Table threadsTable;
 
-		final TableState threadsTableState = threadsTable.getState(context);
-		for( Thread thread : traces.keySet() )
-		{
-			final HtmlLinkState viewThreadLink = new HtmlLinkState(new TextLabel(thread.getName()));
-			viewThreadLink.setBookmark(new SimpleBookmark(currentUrl + "#" + thread.getId()));
+  private static final Comparator<Thread> THREAD_COMP =
+      new Comparator<Thread>() {
+        @Override
+        public int compare(Thread o1, Thread o2) {
+          int result = o1.getName().compareToIgnoreCase(o2.getName());
+          if (result == 0) {
+            Long id1 = o1.getId();
+            Long id2 = o2.getId();
+            return id1.compareTo(id2);
+          }
+          return result;
+        }
+      };
 
-			final TableRow row = threadsTableState.addRow(viewThreadLink, thread.getState().toString(),
-				thread.getPriority(), thread.isDaemon());
-			row.setSortData(thread.getName(), thread.getState(), thread.getPriority(), thread.isDaemon());
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    final ThreadDumpModel model = getModel(context);
 
-		return viewFactory.createResult("tab/threaddump.ftl", context);
-	}
+    final Map<Thread, StackTraceElement[]> traces =
+        new TreeMap<Thread, StackTraceElement[]>(THREAD_COMP);
+    traces.putAll(Thread.getAllStackTraces());
+    model.setTraces(traces);
+    final String currentUrl = context.getPublicBookmark().getHref();
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		threadsTable.setColumnHeadings(LABEL_THREAD, LABEL_STATE, LABEL_PRIORITY, LABEL_DAEMON);
-		threadsTable.setColumnSorts(Sort.PRIMARY_ASC, Sort.SORTABLE_ASC, Sort.SORTABLE_ASC, Sort.SORTABLE_ASC);
-	}
+    final TableState threadsTableState = threadsTable.getState(context);
+    for (Thread thread : traces.keySet()) {
+      final HtmlLinkState viewThreadLink = new HtmlLinkState(new TextLabel(thread.getName()));
+      viewThreadLink.setBookmark(new SimpleBookmark(currentUrl + "#" + thread.getId()));
 
-	@Override
-	protected boolean isTabVisible(SectionInfo info)
-	{
-		return true;
-	}
+      final TableRow row =
+          threadsTableState.addRow(
+              viewThreadLink,
+              thread.getState().toString(),
+              thread.getPriority(),
+              thread.isDaemon());
+      row.setSortData(thread.getName(), thread.getState(), thread.getPriority(), thread.isDaemon());
+    }
 
-	@Override
-	public Label getName()
-	{
-		return LINK_LABEL;
-	}
+    return viewFactory.createResult("tab/threaddump.ftl", context);
+  }
 
-	@Override
-	public Class<ThreadDumpModel> getModelClass()
-	{
-		return ThreadDumpModel.class;
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    threadsTable.setColumnHeadings(LABEL_THREAD, LABEL_STATE, LABEL_PRIORITY, LABEL_DAEMON);
+    threadsTable.setColumnSorts(
+        Sort.PRIMARY_ASC, Sort.SORTABLE_ASC, Sort.SORTABLE_ASC, Sort.SORTABLE_ASC);
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "threaddump";
-	}
+  @Override
+  protected boolean isTabVisible(SectionInfo info) {
+    return true;
+  }
 
-	public Table getThreadsTable()
-	{
-		return threadsTable;
-	}
+  @Override
+  public Label getName() {
+    return LINK_LABEL;
+  }
 
-	public static class ThreadDumpModel
-	{
-		private Map<Thread, StackTraceElement[]> traces;
+  @Override
+  public Class<ThreadDumpModel> getModelClass() {
+    return ThreadDumpModel.class;
+  }
 
-		public void setTraces(Map<Thread, StackTraceElement[]> traces)
-		{
-			this.traces = traces;
-		}
+  @Override
+  public String getDefaultPropertyName() {
+    return "threaddump";
+  }
 
-		public Map<Thread, StackTraceElement[]> getTraces()
-		{
-			return traces;
-		}
-	}
+  public Table getThreadsTable() {
+    return threadsTable;
+  }
+
+  public static class ThreadDumpModel {
+    private Map<Thread, StackTraceElement[]> traces;
+
+    public void setTraces(Map<Thread, StackTraceElement[]> traces) {
+      this.traces = traces;
+    }
+
+    public Map<Thread, StackTraceElement[]> getTraces() {
+      return traces;
+    }
+  }
 }

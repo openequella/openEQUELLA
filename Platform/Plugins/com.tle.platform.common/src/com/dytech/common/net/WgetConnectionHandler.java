@@ -18,7 +18,6 @@ package com.dytech.common.net;
 
 import java.net.URLConnection;
 
-public interface WgetConnectionHandler
-{
-	void connectionMade(URLConnection connection);
+public interface WgetConnectionHandler {
+  void connectionMade(URLConnection connection);
 }

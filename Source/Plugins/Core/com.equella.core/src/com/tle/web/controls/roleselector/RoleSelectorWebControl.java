@@ -66,219 +66,199 @@ import com.tle.web.wizard.controls.WebControlModel;
 
 @SuppressWarnings("nls")
 @Bind
-public class RoleSelectorWebControl extends AbstractWebControl<RoleSelectorWebControl.RoleSelectorWebControlModel>
-	implements
-		CurrentRolesCallback
-{
-	@PlugKey("rolesel.prompt.selectsingle")
-	private static Label LABEL_PROMPTSINGLE;
-	@PlugKey("rolesel.prompt.selectmultiple")
-	private static Label LABEL_PROMPTMULTIPLE;
-	@PlugKey("rolesel.title.selectsingle")
-	private static Label LABEL_TITLESINGLE;
-	@PlugKey("rolesel.title.selectmultiple")
-	private static Label LABEL_TITLEMULTIPLE;
+public class RoleSelectorWebControl
+    extends AbstractWebControl<RoleSelectorWebControl.RoleSelectorWebControlModel>
+    implements CurrentRolesCallback {
+  @PlugKey("rolesel.prompt.selectsingle")
+  private static Label LABEL_PROMPTSINGLE;
 
-	@PlugKey("rolesel.confirmremove")
-	private static Confirm KEY_CONFIRM;
-	@PlugKey("rolesel.remove")
-	private static Label LABEL_REMOVE;
+  @PlugKey("rolesel.prompt.selectmultiple")
+  private static Label LABEL_PROMPTMULTIPLE;
 
-	private RoleSelectorControl definitionControl;
-	private CCustomControl storageControl;
+  @PlugKey("rolesel.title.selectsingle")
+  private static Label LABEL_TITLESINGLE;
 
-	@Inject
-	private ComponentFactory componentFactory;
-	@Inject
-	private SelectRoleDialog selectRoleDialog;
-	@Inject
-	private UserService userService;
+  @PlugKey("rolesel.title.selectmultiple")
+  private static Label LABEL_TITLEMULTIPLE;
 
-	@ViewFactory(name="wizardFreemarkerFactory")
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @PlugKey("rolesel.confirmremove")
+  private static Confirm KEY_CONFIRM;
 
-	@Component
-	private SelectionsTable rolesTable;
-	@Component
-	@PlugKey("rolesel.button.selectrole")
-	private Link addLink;
+  @PlugKey("rolesel.remove")
+  private static Label LABEL_REMOVE;
 
-	private JSCallable removeRoleFunction;
+  private RoleSelectorControl definitionControl;
+  private CCustomControl storageControl;
 
-	@Override
-	public void setWrappedControl(final HTMLControl control)
-	{
-		definitionControl = new RoleSelectorControl((CustomControl) control.getControlBean());
-		storageControl = (CCustomControl) control;
-		super.setWrappedControl(control);
-	}
+  @Inject private ComponentFactory componentFactory;
+  @Inject private SelectRoleDialog selectRoleDialog;
+  @Inject private UserService userService;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		addDisabler(context, addLink);
-		return viewFactory.createResult("roleselectorwebcontrol.ftl", context);
-	}
+  @ViewFactory(name = "wizardFreemarkerFactory")
+  private FreemarkerFactory viewFactory;
 
-	@Override
-	public void registered(final String id, final SectionTree tree)
-	{
-		super.registered(id, tree);
+  @EventFactory private EventGenerator events;
+  @AjaxFactory private AjaxGenerator ajax;
 
-		final boolean multiple = definitionControl.isSelectMultiple();
+  @Component private SelectionsTable rolesTable;
 
-		selectRoleDialog.setMultipleRoles(multiple);
-		selectRoleDialog.setTitle(multiple ? LABEL_TITLEMULTIPLE : LABEL_TITLESINGLE);
-		selectRoleDialog.setPrompt(multiple ? LABEL_PROMPTMULTIPLE : LABEL_PROMPTSINGLE);
-		selectRoleDialog.setOkCallback(getReloadFunction(true, events.getEventHandler("select")));
-		selectRoleDialog.setRolesCallback(this);
+  @Component
+  @PlugKey("rolesel.button.selectrole")
+  private Link addLink;
 
-		componentFactory.registerComponent(id, "s", tree, selectRoleDialog);
-		removeRoleFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("removeRole"),
-			id + "roleselector");
+  private JSCallable removeRoleFunction;
 
-		addLink.setClickHandler(selectRoleDialog.getOpenFunction());
-		addLink.setDisablable(true);
+  @Override
+  public void setWrappedControl(final HTMLControl control) {
+    definitionControl = new RoleSelectorControl((CustomControl) control.getControlBean());
+    storageControl = (CCustomControl) control;
+    super.setWrappedControl(control);
+  }
 
-		rolesTable.setSelectionsModel(new RolesModel());
-		rolesTable.setAddAction(addLink);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    addDisabler(context, addLink);
+    return viewFactory.createResult("roleselectorwebcontrol.ftl", context);
+  }
 
-	@Override
-	public boolean isEmpty()
-	{
-		return storageControl.getValues().size() == 0;
-	}
+  @Override
+  public void registered(final String id, final SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	public BaseQuery getPowerSearchQuery()
-	{
-		if( storageControl.hasTargets() )
-		{
-			return storageControl.getDefaultPowerSearchQuery(storageControl.getValues(), false);
-		}
-		return null;
-	}
+    final boolean multiple = definitionControl.isSelectMultiple();
 
-	@EventHandlerMethod
-	public void select(final SectionContext context, final String rolesJson) throws Exception
-	{
-		final RoleSelectorWebControlModel model = getModel(context);
-		model.setSelectedRoles(SelectRoleDialog.rolesFromJsonString(rolesJson));
-	}
+    selectRoleDialog.setMultipleRoles(multiple);
+    selectRoleDialog.setTitle(multiple ? LABEL_TITLEMULTIPLE : LABEL_TITLESINGLE);
+    selectRoleDialog.setPrompt(multiple ? LABEL_PROMPTMULTIPLE : LABEL_PROMPTSINGLE);
+    selectRoleDialog.setOkCallback(getReloadFunction(true, events.getEventHandler("select")));
+    selectRoleDialog.setRolesCallback(this);
 
-	@EventHandlerMethod
-	public void removeRole(final SectionContext context, final String roleId) throws Exception
-	{
-		storageControl.getValues().remove(roleId);
-	}
+    componentFactory.registerComponent(id, "s", tree, selectRoleDialog);
+    removeRoleFunction =
+        ajax.getAjaxUpdateDomFunction(
+            tree, this, events.getEventHandler("removeRole"), id + "roleselector");
 
-	@Override
-	public void doEdits(SectionInfo info)
-	{
-		final RoleSelectorWebControlModel model = getModel(info);
+    addLink.setClickHandler(selectRoleDialog.getOpenFunction());
+    addLink.setDisablable(true);
 
-		if( model.getSelectedRoles() != null )
-		{
-			final List<String> controlValues = storageControl.getValues();
-			controlValues.clear();
-			controlValues.addAll(Lists.transform(model.getSelectedRoles(), new Function<SelectedRole, String>()
-			{
-				@Override
-				public String apply(SelectedRole role)
-				{
-					return role.getUuid();
-				}
-			}));
-		}
-	}
+    rolesTable.setSelectionsModel(new RolesModel());
+    rolesTable.setAddAction(addLink);
+  }
 
-	@Override
-	public Class<RoleSelectorWebControlModel> getModelClass()
-	{
-		return RoleSelectorWebControlModel.class;
-	}
+  @Override
+  public boolean isEmpty() {
+    return storageControl.getValues().size() == 0;
+  }
 
-	@Override
-	public List<SelectedRole> getCurrentSelectedRoles(final SectionInfo info)
-	{
-		return Lists.transform(storageControl.getValues(), new Function<String, SelectedRole>()
-		{
-			@Override
-			public SelectedRole apply(String id)
-			{
-				final RoleBean roleBean = userService.getInformationForRole(id);
-				final String displayName;
-				if( roleBean == null )
-				{
-					displayName = id;
-				}
-				else
-				{
-					displayName = Format.format(roleBean);
-				}
-				return new SelectedRole(id, displayName);
-			}
-		});
-	}
+  @Override
+  public BaseQuery getPowerSearchQuery() {
+    if (storageControl.hasTargets()) {
+      return storageControl.getDefaultPowerSearchQuery(storageControl.getValues(), false);
+    }
+    return null;
+  }
 
-	public SelectRoleDialog getSelectRoleDialog()
-	{
-		return selectRoleDialog;
-	}
+  @EventHandlerMethod
+  public void select(final SectionContext context, final String rolesJson) throws Exception {
+    final RoleSelectorWebControlModel model = getModel(context);
+    model.setSelectedRoles(SelectRoleDialog.rolesFromJsonString(rolesJson));
+  }
 
-	public SelectionsTable getRolesTable()
-	{
-		return rolesTable;
-	}
+  @EventHandlerMethod
+  public void removeRole(final SectionContext context, final String roleId) throws Exception {
+    storageControl.getValues().remove(roleId);
+  }
 
-	private class RolesModel extends DynamicSelectionsTableModel<String>
-	{
-		@Override
-		protected List<String> getSourceList(SectionInfo info)
-		{
-			return storageControl.getValues();
-		}
+  @Override
+  public void doEdits(SectionInfo info) {
+    final RoleSelectorWebControlModel model = getModel(info);
 
-		@Override
-		protected void transform(SectionInfo info, SelectionsTableSelection selection, String roleId,
-			List<SectionRenderable> actions, int index)
-		{
-			selection
-				.setViewAction(new LabelRenderer(new TextLabel(userService.getInformationForRole(roleId).getName())));
-			if( isEnabled() )
-			{
-				actions.add(makeRemoveAction(LABEL_REMOVE,
-					new OverrideHandler(removeRoleFunction, roleId).addValidator(KEY_CONFIRM)));
-			}
-		}
-	}
+    if (model.getSelectedRoles() != null) {
+      final List<String> controlValues = storageControl.getValues();
+      controlValues.clear();
+      controlValues.addAll(
+          Lists.transform(
+              model.getSelectedRoles(),
+              new Function<SelectedRole, String>() {
+                @Override
+                public String apply(SelectedRole role) {
+                  return role.getUuid();
+                }
+              }));
+    }
+  }
 
-	public static class RoleSelectorWebControlModel extends WebControlModel
-	{
-		/**
-		 * For shoving de-JSONed results into.
-		 */
-		private List<SelectedRole> selectedRoles;
+  @Override
+  public Class<RoleSelectorWebControlModel> getModelClass() {
+    return RoleSelectorWebControlModel.class;
+  }
 
-		public List<SelectedRole> getSelectedRoles()
-		{
-			return selectedRoles;
-		}
+  @Override
+  public List<SelectedRole> getCurrentSelectedRoles(final SectionInfo info) {
+    return Lists.transform(
+        storageControl.getValues(),
+        new Function<String, SelectedRole>() {
+          @Override
+          public SelectedRole apply(String id) {
+            final RoleBean roleBean = userService.getInformationForRole(id);
+            final String displayName;
+            if (roleBean == null) {
+              displayName = id;
+            } else {
+              displayName = Format.format(roleBean);
+            }
+            return new SelectedRole(id, displayName);
+          }
+        });
+  }
 
-		public void setSelectedRoles(final List<SelectedRole> selectedRoles)
-		{
-			this.selectedRoles = selectedRoles;
-		}
-	}
+  public SelectRoleDialog getSelectRoleDialog() {
+    return selectRoleDialog;
+  }
 
-	@Override
-	protected ElementId getIdForLabel()
-	{
-		return null;
-	}
+  public SelectionsTable getRolesTable() {
+    return rolesTable;
+  }
+
+  private class RolesModel extends DynamicSelectionsTableModel<String> {
+    @Override
+    protected List<String> getSourceList(SectionInfo info) {
+      return storageControl.getValues();
+    }
+
+    @Override
+    protected void transform(
+        SectionInfo info,
+        SelectionsTableSelection selection,
+        String roleId,
+        List<SectionRenderable> actions,
+        int index) {
+      selection.setViewAction(
+          new LabelRenderer(new TextLabel(userService.getInformationForRole(roleId).getName())));
+      if (isEnabled()) {
+        actions.add(
+            makeRemoveAction(
+                LABEL_REMOVE,
+                new OverrideHandler(removeRoleFunction, roleId).addValidator(KEY_CONFIRM)));
+      }
+    }
+  }
+
+  public static class RoleSelectorWebControlModel extends WebControlModel {
+    /** For shoving de-JSONed results into. */
+    private List<SelectedRole> selectedRoles;
+
+    public List<SelectedRole> getSelectedRoles() {
+      return selectedRoles;
+    }
+
+    public void setSelectedRoles(final List<SelectedRole> selectedRoles) {
+      this.selectedRoles = selectedRoles;
+    }
+  }
+
+  @Override
+  protected ElementId getIdForLabel() {
+    return null;
+  }
 }

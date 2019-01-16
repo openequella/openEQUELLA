@@ -44,144 +44,118 @@ import com.tle.web.workflow.portal.TaskListXML.TaskFilters;
 
 @Bind
 @Singleton
-public class TaskListFilters
-{
-	@Inject
-	private FreeTextService freeTextService;
-	@Inject
-	private TaskListXML taskListXML;
+public class TaskListFilters {
+  @Inject private FreeTextService freeTextService;
+  @Inject private TaskListXML taskListXML;
 
-	@Inject
-	private PluginTracker<TaskListExtension> tracker;
-	private Map<String, TaskListSubsearch> filterMap = null;
+  @Inject private PluginTracker<TaskListExtension> tracker;
+  private Map<String, TaskListSubsearch> filterMap = null;
 
-	public synchronized Map<String, TaskListSubsearch> getFilterMap()
-	{
-		if( filterMap == null || tracker.needsUpdate() )
-		{
-			Map<String, TaskListSubsearch> newMap = Maps.newLinkedHashMap();
-			for( TaskListExtension ext : tracker.getBeanList() )
-			{
-				for( TaskListSubsearch filter : ext.getTaskFilters() )
-				{
-					String identifier = filter.getIdentifier();
-					newMap.put(identifier, filter);
-				}
-			}
-			filterMap = newMap;
-		}
-		return filterMap;
-	}
+  public synchronized Map<String, TaskListSubsearch> getFilterMap() {
+    if (filterMap == null || tracker.needsUpdate()) {
+      Map<String, TaskListSubsearch> newMap = Maps.newLinkedHashMap();
+      for (TaskListExtension ext : tracker.getBeanList()) {
+        for (TaskListSubsearch filter : ext.getTaskFilters()) {
+          String identifier = filter.getIdentifier();
+          newMap.put(identifier, filter);
+        }
+      }
+      filterMap = newMap;
+    }
+    return filterMap;
+  }
 
-	public TaskListSubsearch getFilterForIdentifier(String filter)
-	{
-		return getFilterMap().get(filter);
-	}
+  public TaskListSubsearch getFilterForIdentifier(String filter) {
+    return getFilterMap().get(filter);
+  }
 
-	public List<TaskFilterCount> getFilterCounts(boolean ignoreZero)
-	{
-		return getFilterCounts(ignoreZero, false);
-	}
+  public List<TaskFilterCount> getFilterCounts(boolean ignoreZero) {
+    return getFilterCounts(ignoreZero, false);
+  }
 
-	public List<TaskFilterCount> getFilterCounts(boolean ignoreZero, boolean skipHref)
-	{
-		List<DefaultSearch> searches = new ArrayList<DefaultSearch>();
-		List<TaskFilterCount> filterList = new ArrayList<TaskFilterCount>();
-		addFilters(filterList, searches, getFilterMap().values());
-		int[] counts = freeTextService.countsFromFilters(searches);
-		Iterator<TaskFilterCount> iter = filterList.iterator();
-		int i = 0;
-		while( iter.hasNext() )
-		{
-			TaskFilterCount filterCount = iter.next();
-			int count = counts[i++];
-			if( !ignoreZero || count > 0 )
-			{
-				filterCount.setCount(count);
+  public List<TaskFilterCount> getFilterCounts(boolean ignoreZero, boolean skipHref) {
+    List<DefaultSearch> searches = new ArrayList<DefaultSearch>();
+    List<TaskFilterCount> filterList = new ArrayList<TaskFilterCount>();
+    addFilters(filterList, searches, getFilterMap().values());
+    int[] counts = freeTextService.countsFromFilters(searches);
+    Iterator<TaskFilterCount> iter = filterList.iterator();
+    int i = 0;
+    while (iter.hasNext()) {
+      TaskFilterCount filterCount = iter.next();
+      int count = counts[i++];
+      if (!ignoreZero || count > 0) {
+        filterCount.setCount(count);
 
-				SectionInfo info = setupSearch(null, filterCount.getId());
-				if( !skipHref )
-				{
-					filterCount.setHref(new InfoBookmark(info).getHref());
-				}
-			}
-			else
-			{
-				iter.remove();
-			}
-		}
-		return filterList;
-	}
+        SectionInfo info = setupSearch(null, filterCount.getId());
+        if (!skipHref) {
+          filterCount.setHref(new InfoBookmark(info).getHref());
+        }
+      } else {
+        iter.remove();
+      }
+    }
+    return filterList;
+  }
 
-	public String getFilterCountsXML(boolean ignoreZero)
-	{
-		List<TaskFilterCount> filterList = getFilterCounts(ignoreZero);
-		return taskListXML.toXML(new TaskFilters(filterList));
-	}
+  public String getFilterCountsXML(boolean ignoreZero) {
+    List<TaskFilterCount> filterList = getFilterCounts(ignoreZero);
+    return taskListXML.toXML(new TaskFilters(filterList));
+  }
 
-	private void addFilters(List<TaskFilterCount> filterList, List<DefaultSearch> searches,
-		Collection<? extends TaskListSubsearch> filters)
-	{
-		for( TaskListSubsearch subSearch : filters )
-		{
-			String id = subSearch.getIdentifier();
-			String name = subSearch.getName().getText();
-			TaskFilterCount filterCount = new TaskFilterCount(id, name);
-			searches.add(subSearch.getSearch());
-			if( subSearch.isSecondLevel() )
-			{
-				filterCount.setParent(subSearch.getParentIdentifier());
-			}
-			filterList.add(filterCount);
-		}
-	}
+  private void addFilters(
+      List<TaskFilterCount> filterList,
+      List<DefaultSearch> searches,
+      Collection<? extends TaskListSubsearch> filters) {
+    for (TaskListSubsearch subSearch : filters) {
+      String id = subSearch.getIdentifier();
+      String name = subSearch.getName().getText();
+      TaskFilterCount filterCount = new TaskFilterCount(id, name);
+      searches.add(subSearch.getSearch());
+      if (subSearch.isSecondLevel()) {
+        filterCount.setParent(subSearch.getParentIdentifier());
+      }
+      filterList.add(filterCount);
+    }
+  }
 
-	private SectionInfo setupSearch(SectionInfo info, String filter)
-	{
-		TaskListSubsearch search = getFilterForIdentifier(filter);
-		return search.setupForward(info);
-	}
+  private SectionInfo setupSearch(SectionInfo info, String filter) {
+    TaskListSubsearch search = getFilterForIdentifier(filter);
+    return search.setupForward(info);
+  }
 
-	public Set<String> getFilterNamesSet()
-	{
-		return getFilterMap().keySet();
-	}
+  public Set<String> getFilterNamesSet() {
+    return getFilterMap().keySet();
+  }
 
-	public String[] getFilterNames()
-	{
-		Set<String> filterNames = getFilterMap().keySet();
-		return filterNames.toArray(new String[filterNames.size()]);
-	}
+  public String[] getFilterNames() {
+    Set<String> filterNames = getFilterMap().keySet();
+    return filterNames.toArray(new String[filterNames.size()]);
+  }
 
-	public String getFilterResultsXML(String filterName, int start, int numResults)
-	{
-		TaskListSubsearch filter = getFilterForIdentifier(filterName);
-		DefaultSearch search = filter.getSearch();
-		FreetextSearchResults<FreetextResult> results = freeTextService.search(search, start, numResults);
-		List<ItemTask> tasks = new ArrayList<ItemTask>();
-		int i = 0;
-		for( Item item : results.getResults() )
-		{
-			FreetextResult resultData = results.getResultData(i++);
-			String taskUuid = null;
-			if( resultData instanceof TaskResult )
-			{
-				taskUuid = ((TaskResult) resultData).getTaskId();
-			}
-			tasks.add(new ItemTask(item.getUuid(), item.getVersion(), taskUuid));
-		}
-		return taskListXML.toXML(new ItemTasks(tasks));
-	}
+  public String getFilterResultsXML(String filterName, int start, int numResults) {
+    TaskListSubsearch filter = getFilterForIdentifier(filterName);
+    DefaultSearch search = filter.getSearch();
+    FreetextSearchResults<FreetextResult> results =
+        freeTextService.search(search, start, numResults);
+    List<ItemTask> tasks = new ArrayList<ItemTask>();
+    int i = 0;
+    for (Item item : results.getResults()) {
+      FreetextResult resultData = results.getResultData(i++);
+      String taskUuid = null;
+      if (resultData instanceof TaskResult) {
+        taskUuid = ((TaskResult) resultData).getTaskId();
+      }
+      tasks.add(new ItemTask(item.getUuid(), item.getVersion(), taskUuid));
+    }
+    return taskListXML.toXML(new ItemTasks(tasks));
+  }
 
-	public void execSearch(SectionInfo info, String filter)
-	{
-		SectionInfo search = setupSearch(info, filter);
-		info.forward(search);
-	}
+  public void execSearch(SectionInfo info, String filter) {
+    SectionInfo search = setupSearch(info, filter);
+    info.forward(search);
+  }
 
-	public Collection<TaskListSubsearch> getFilters()
-	{
-		return getFilterMap().values();
-	}
-
+  public Collection<TaskListSubsearch> getFilters() {
+    return getFilterMap().values();
+  }
 }

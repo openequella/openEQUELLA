@@ -29,14 +29,11 @@ import com.tle.web.copyright.service.impl.AbstractCopyrightWebService;
 
 @Bind
 @Singleton
-public class CALWebServiceImpl extends AbstractCopyrightWebService<CALHolding>
-{
-	@Inject
-	private CALService calService;
+public class CALWebServiceImpl extends AbstractCopyrightWebService<CALHolding> {
+  @Inject private CALService calService;
 
-	@Override
-	public CopyrightService<CALHolding, CALPortion, CALSection> getCopyrightServiceImpl()
-	{
-		return calService;
-	}
+  @Override
+  public CopyrightService<CALHolding, CALPortion, CALSection> getCopyrightServiceImpl() {
+    return calService;
+  }
 }

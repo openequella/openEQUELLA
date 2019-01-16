@@ -20,13 +20,12 @@ import java.util.Collection;
 
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
 
-public interface ItemSerializerItemBean
-{
-	void writeItemBeanResult(EquellaItemBean equellaItemBean, long itemId);
+public interface ItemSerializerItemBean {
+  void writeItemBeanResult(EquellaItemBean equellaItemBean, long itemId);
 
-	boolean hasPrivilege(long itemKey, String privilege);
+  boolean hasPrivilege(long itemKey, String privilege);
 
-	Collection<Long> getItemIds();
+  Collection<Long> getItemIds();
 
-	<T> T getData(long itemId, String alias);
+  <T> T getData(long itemId, String alias);
 }

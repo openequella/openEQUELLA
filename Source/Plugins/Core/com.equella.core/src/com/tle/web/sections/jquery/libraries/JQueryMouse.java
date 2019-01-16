@@ -23,30 +23,25 @@ import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.render.PreRenderable;
 
 @SuppressWarnings("nls")
-public class JQueryMouse implements JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
+public class JQueryMouse implements JavascriptModule {
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Includes ui.widget
-	 */
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.ui.mouse.js", JQueryUIWidget.PRERENDER).hasMin();
+  /** Includes ui.widget */
+  public static final PreRenderable PRERENDER =
+      new JQueryLibraryInclude("jquery.ui.mouse.js", JQueryUIWidget.PRERENDER).hasMin();
 
-	@Override
-	public String getDisplayName()
-	{
-		return CurrentLocale.get("com.tle.web.sections.jquery.modules.mouse.name");
-	}
+  @Override
+  public String getDisplayName() {
+    return CurrentLocale.get("com.tle.web.sections.jquery.modules.mouse.name");
+  }
 
-	@Override
-	public String getId()
-	{
-		return "mouse";
-	}
+  @Override
+  public String getId() {
+    return "mouse";
+  }
 
-	@Override
-	public Object getPreRenderer()
-	{
-		return PRERENDER;
-	}
+  @Override
+  public Object getPreRenderer() {
+    return PRERENDER;
+  }
 }

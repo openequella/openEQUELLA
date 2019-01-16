@@ -67,286 +67,298 @@ import com.tle.web.sections.standard.annotations.Component;
 
 @SuppressWarnings("nls")
 @Bind
-public class ShowOAuthSection extends AbstractPrototypeSection<ShowOAuthSection.ShowOAuthSectionModel>
-	implements
-		HtmlRenderer
-{
-	private static final String DIV_TOKENS = "tokensDiv";
+public class ShowOAuthSection
+    extends AbstractPrototypeSection<ShowOAuthSection.ShowOAuthSectionModel>
+    implements HtmlRenderer {
+  private static final String DIV_TOKENS = "tokensDiv";
 
-	private static final String DIV_CLIENTS = "clientsDiv";
+  private static final String DIV_CLIENTS = "clientsDiv";
 
-	@PlugKey("oauth.page.title")
-	private static Label LABEL_PAGE_TITLE;
+  @PlugKey("oauth.page.title")
+  private static Label LABEL_PAGE_TITLE;
 
-	@PlugKey("oauth.clients.link.add")
-	private static Label LABEL_CLIENTS_LINK_ADD;
-	@PlugKey("oauth.clients.none")
-	private static Label LABEL_CLIENTS_NONE;
-	@PlugKey("oauth.clients.confirm.delete")
-	private static Label LABEL_CLIENTS_DELETE_CONFIRM;
-	@PlugKey("oauth.clients.link.edit")
-	private static Label LABEL_CLIENTS_LINK_EDIT;
-	@PlugKey("oauth.clients.link.delete")
-	private static Label LABEL_CLIENTS_LINK_DELETE;
-	@PlugKey("oauth.clients.column.clientname")
-	private static Label LABEL_CLIENTS_CLIENTNAME;
-	@PlugKey("oauth.clients.column.clientid")
-	private static Label LABEL_CLIENTS_CLIENTID;
-	@PlugKey("oauth.clients.column.redirecturl")
-	private static Label LABEL_CLIENTS_REDIRECTURL;
+  @PlugKey("oauth.clients.link.add")
+  private static Label LABEL_CLIENTS_LINK_ADD;
 
-	@PlugKey("oauth.tokens.none")
-	private static Label LABEL_TOKENS_NONE;
-	@PlugKey("oauth.tokens.confirm.delete")
-	private static Label LABEL_TOKENS_DELETE_CONFIRM;
-	@PlugKey("oauth.tokens.link.delete")
-	private static Label LABEL_TOKENS_LINK_DELETE;
-	@PlugKey("oauth.tokens.column.token")
-	private static Label LABEL_TOKENS_TOKEN;
-	@PlugKey("oauth.tokens.column.username")
-	private static Label LABEL_TOKENS_USERNAME;
-	@PlugKey("oauth.tokens.column.clientid")
-	private static Label LABEL_TOKENS_CLIENTID;
-	@PlugKey("oauth.tokens.column.created")
-	private static Label LABEL_TOKENS_CREATED;
-	@PlugKey("oauth.clients.refuse.delete")
-	private static String KEY_OAUTH_CLIENT_IN_USE;
+  @PlugKey("oauth.clients.none")
+  private static Label LABEL_CLIENTS_NONE;
 
-	@Inject
-	private OAuthService oauthService;
-	@Inject
-	private BundleCache bundleCache;
-	@Inject
-	private TLEAclManager aclService;
-	@Inject
-	private DateRendererFactory dateRendererFactory;
+  @PlugKey("oauth.clients.confirm.delete")
+  private static Label LABEL_CLIENTS_DELETE_CONFIRM;
 
-	@TreeLookup
-	private OAuthClientEditorSection clientEditorSection;
+  @PlugKey("oauth.clients.link.edit")
+  private static Label LABEL_CLIENTS_LINK_EDIT;
 
-	@Component(name = "c")
-	private SelectionsTable clientTable;
-	@Component(name = "ac")
-	private Link addClientLink;
-	@Component(name = "t")
-	private SelectionsTable tokenTable;
+  @PlugKey("oauth.clients.link.delete")
+  private static Label LABEL_CLIENTS_LINK_DELETE;
 
-	@EventFactory
-	private EventGenerator events;
-	@AjaxFactory
-	private AjaxGenerator ajax;
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @PlugKey("oauth.clients.column.clientname")
+  private static Label LABEL_CLIENTS_CLIENTNAME;
 
-	private JSCallable editClientFunction;
-	private JSCallable deleteClientFunction;
-	private JSCallable deleteTokenFunction;
+  @PlugKey("oauth.clients.column.clientid")
+  private static Label LABEL_CLIENTS_CLIENTID;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final ShowOAuthSectionModel model = getModel(context);
-		model.setPageTitle(LABEL_PAGE_TITLE);
+  @PlugKey("oauth.clients.column.redirecturl")
+  private static Label LABEL_CLIENTS_REDIRECTURL;
 
-		final boolean canAdd = !aclService.filterNonGrantedPrivileges(OAuthConstants.PRIV_CREATE_OAUTH_CLIENT)
-			.isEmpty();
-		final boolean canEdit = !aclService.filterNonGrantedPrivileges(OAuthConstants.PRIV_EDIT_OAUTH_CLIENT).isEmpty();
-		addClientLink.setDisplayed(context, canAdd);
-		model.setShowClients(canAdd || canEdit);
+  @PlugKey("oauth.tokens.none")
+  private static Label LABEL_TOKENS_NONE;
 
-		model.setShowTokens(!aclService.filterNonGrantedPrivileges(OAuthConstants.PRIV_ADMINISTER_OAUTH_TOKENS)
-			.isEmpty());
+  @PlugKey("oauth.tokens.confirm.delete")
+  private static Label LABEL_TOKENS_DELETE_CONFIRM;
 
-		final GenericTemplateResult templateResult = new GenericTemplateResult();
-		templateResult.addNamedResult(OneColumnLayout.BODY, viewFactory.createResult("oauth.ftl", this));
-		return templateResult;
-	}
+  @PlugKey("oauth.tokens.link.delete")
+  private static Label LABEL_TOKENS_LINK_DELETE;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @PlugKey("oauth.tokens.column.token")
+  private static Label LABEL_TOKENS_TOKEN;
 
-		addClientLink.setLabel(LABEL_CLIENTS_LINK_ADD);
-		addClientLink.setClickHandler(events.getNamedHandler("newClient"));
-		deleteClientFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("deleteClient"),
-			ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), DIV_CLIENTS, DIV_TOKENS);
-		editClientFunction = events.getSubmitValuesFunction("editClient");
+  @PlugKey("oauth.tokens.column.username")
+  private static Label LABEL_TOKENS_USERNAME;
 
-		clientTable
-			.setColumnHeadings(LABEL_CLIENTS_CLIENTNAME, LABEL_CLIENTS_CLIENTID, LABEL_CLIENTS_REDIRECTURL, null);
-		clientTable.setColumnSorts(Sort.PRIMARY_ASC, Sort.SORTABLE_ASC);
-		clientTable.setSelectionsModel(new OAuthClientsModel());
-		clientTable.setNothingSelectedText(LABEL_CLIENTS_NONE);
-		clientTable.setAddAction(addClientLink);
+  @PlugKey("oauth.tokens.column.clientid")
+  private static Label LABEL_TOKENS_CLIENTID;
 
-		deleteTokenFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("deleteToken"),
-			ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), DIV_TOKENS);
+  @PlugKey("oauth.tokens.column.created")
+  private static Label LABEL_TOKENS_CREATED;
 
-		tokenTable.setColumnHeadings(LABEL_TOKENS_TOKEN, LABEL_TOKENS_USERNAME, LABEL_TOKENS_CLIENTID,
-			LABEL_TOKENS_CREATED, null);
-		tokenTable.setColumnSorts(Sort.NONE, Sort.SORTABLE_ASC, Sort.SORTABLE_ASC, Sort.PRIMARY_ASC);
-		tokenTable.setSelectionsModel(new OAuthTokensModel());
-		tokenTable.setNothingSelectedText(LABEL_TOKENS_NONE);
-	}
+  @PlugKey("oauth.clients.refuse.delete")
+  private static String KEY_OAUTH_CLIENT_IN_USE;
 
-	@EventHandlerMethod
-	public void editClient(SectionInfo info, String uuid)
-	{
-		clientEditorSection.startEdit(info, uuid);
-	}
+  @Inject private OAuthService oauthService;
+  @Inject private BundleCache bundleCache;
+  @Inject private TLEAclManager aclService;
+  @Inject private DateRendererFactory dateRendererFactory;
 
-	@EventHandlerMethod
-	public void newClient(SectionInfo info)
-	{
-		clientEditorSection.createNew(info);
-	}
+  @TreeLookup private OAuthClientEditorSection clientEditorSection;
 
-	@EventHandlerMethod
-	public void deleteClient(SectionInfo info, String uuid)
-	{
-		try
-		{
-			oauthService.delete(oauthService.getByUuid(uuid), true);
-		}
-		catch( InUseException iue ) // NOSONAR
-		{
-			// InUseException captures the properties string related to the
-			// class name of the entity which uses this OauthClient
-			String usingClassName = iue.getMessage();
-			getModel(info).setInUseError(new KeyLabel(KEY_OAUTH_CLIENT_IN_USE, usingClassName));
-		}
-	}
+  @Component(name = "c")
+  private SelectionsTable clientTable;
 
-	@EventHandlerMethod
-	public void deleteToken(SectionInfo info, long id)
-	{
-		oauthService.deleteToken(id);
-	}
+  @Component(name = "ac")
+  private Link addClientLink;
 
-	@Override
-	public Class<ShowOAuthSectionModel> getModelClass()
-	{
-		return ShowOAuthSectionModel.class;
-	}
+  @Component(name = "t")
+  private SelectionsTable tokenTable;
 
-	public SelectionsTable getClientTable()
-	{
-		return clientTable;
-	}
+  @EventFactory private EventGenerator events;
+  @AjaxFactory private AjaxGenerator ajax;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	public SelectionsTable getTokenTable()
-	{
-		return tokenTable;
-	}
+  private JSCallable editClientFunction;
+  private JSCallable deleteClientFunction;
+  private JSCallable deleteTokenFunction;
 
-	private class OAuthClientsModel extends DynamicSelectionsTableModel<OAuthClient>
-	{
-		@Override
-		protected List<OAuthClient> getSourceList(SectionInfo info)
-		{
-			return oauthService.enumerateEditable();
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    final ShowOAuthSectionModel model = getModel(context);
+    model.setPageTitle(LABEL_PAGE_TITLE);
 
-		@Override
-		protected void transform(SectionInfo info, SelectionsTableSelection selection, OAuthClient client,
-			List<SectionRenderable> actions, int index)
-		{
-			selection.setViewAction(new LabelRenderer(new BundleLabel(client.getName(), bundleCache)));
+    final boolean canAdd =
+        !aclService.filterNonGrantedPrivileges(OAuthConstants.PRIV_CREATE_OAUTH_CLIENT).isEmpty();
+    final boolean canEdit =
+        !aclService.filterNonGrantedPrivileges(OAuthConstants.PRIV_EDIT_OAUTH_CLIENT).isEmpty();
+    addClientLink.setDisplayed(context, canAdd);
+    model.setShowClients(canAdd || canEdit);
 
-			// client id, redirect url
-			final String clientid = client.getClientId();
-			selection.addColumn(clientid).setSortData(clientid);
+    model.setShowTokens(
+        !aclService
+            .filterNonGrantedPrivileges(OAuthConstants.PRIV_ADMINISTER_OAUTH_TOKENS)
+            .isEmpty());
 
-			final Label redirectUrl = new TextLabel(client.getRedirectUrl());
-			selection.addColumn(new WrappedLabel(redirectUrl, 50, true));
+    final GenericTemplateResult templateResult = new GenericTemplateResult();
+    templateResult.addNamedResult(
+        OneColumnLayout.BODY, viewFactory.createResult("oauth.ftl", this));
+    return templateResult;
+  }
 
-			final String uuid = client.getUuid();
-			actions.add(makeAction(LABEL_CLIENTS_LINK_EDIT, new OverrideHandler(editClientFunction, uuid)));
-			if( oauthService.canDelete(client) )
-			{
-				actions.add(makeAction(LABEL_CLIENTS_LINK_DELETE, new OverrideHandler(deleteClientFunction, uuid)
-					.addValidator(new Confirm(LABEL_CLIENTS_DELETE_CONFIRM))));
-			}
-		}
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	private class OAuthTokensModel extends DynamicSelectionsTableModel<OAuthToken>
-	{
-		@Override
-		protected List<OAuthToken> getSourceList(SectionInfo info)
-		{
-			return oauthService.listAllTokens();
-		}
+    addClientLink.setLabel(LABEL_CLIENTS_LINK_ADD);
+    addClientLink.setClickHandler(events.getNamedHandler("newClient"));
+    deleteClientFunction =
+        ajax.getAjaxUpdateDomFunction(
+            tree,
+            this,
+            events.getEventHandler("deleteClient"),
+            ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
+            DIV_CLIENTS,
+            DIV_TOKENS);
+    editClientFunction = events.getSubmitValuesFunction("editClient");
 
-		@Override
-		protected void transform(SectionInfo info, SelectionsTableSelection selection, OAuthToken token,
-			List<SectionRenderable> actions, int index)
-		{
-			selection.setViewAction(new LabelRenderer(new TextLabel(token.getToken())));
+    clientTable.setColumnHeadings(
+        LABEL_CLIENTS_CLIENTNAME, LABEL_CLIENTS_CLIENTID, LABEL_CLIENTS_REDIRECTURL, null);
+    clientTable.setColumnSorts(Sort.PRIMARY_ASC, Sort.SORTABLE_ASC);
+    clientTable.setSelectionsModel(new OAuthClientsModel());
+    clientTable.setNothingSelectedText(LABEL_CLIENTS_NONE);
+    clientTable.setAddAction(addClientLink);
 
-			final String username = token.getUsername();
-			final String clientId = token.getClient().getClientId();
-			final Date created = token.getCreated();
+    deleteTokenFunction =
+        ajax.getAjaxUpdateDomFunction(
+            tree,
+            this,
+            events.getEventHandler("deleteToken"),
+            ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
+            DIV_TOKENS);
 
-			selection.addColumn(username).setSortData(username);
-			selection.addColumn(clientId).setSortData(clientId);
-			selection.addColumn(dateRendererFactory.createDateRenderer(created)).setSortData(created);
+    tokenTable.setColumnHeadings(
+        LABEL_TOKENS_TOKEN,
+        LABEL_TOKENS_USERNAME,
+        LABEL_TOKENS_CLIENTID,
+        LABEL_TOKENS_CREATED,
+        null);
+    tokenTable.setColumnSorts(Sort.NONE, Sort.SORTABLE_ASC, Sort.SORTABLE_ASC, Sort.PRIMARY_ASC);
+    tokenTable.setSelectionsModel(new OAuthTokensModel());
+    tokenTable.setNothingSelectedText(LABEL_TOKENS_NONE);
+  }
 
-			if( oauthService.canAdministerTokens() )
-			{
-				actions.add(makeRemoveAction(LABEL_TOKENS_LINK_DELETE,
-					new OverrideHandler(deleteTokenFunction, token.getId()).addValidator(new Confirm(
-						LABEL_TOKENS_DELETE_CONFIRM))));
-			}
-		}
-	}
+  @EventHandlerMethod
+  public void editClient(SectionInfo info, String uuid) {
+    clientEditorSection.startEdit(info, uuid);
+  }
 
-	public static class ShowOAuthSectionModel extends OneColumnLayout.OneColumnLayoutModel
-	{
-		private Label pageTitle;
-		private boolean showClients;
-		private boolean showTokens;
-		private Label inUseError;
+  @EventHandlerMethod
+  public void newClient(SectionInfo info) {
+    clientEditorSection.createNew(info);
+  }
 
-		public Label getPageTitle()
-		{
-			return pageTitle;
-		}
+  @EventHandlerMethod
+  public void deleteClient(SectionInfo info, String uuid) {
+    try {
+      oauthService.delete(oauthService.getByUuid(uuid), true);
+    } catch (InUseException iue) // NOSONAR
+    {
+      // InUseException captures the properties string related to the
+      // class name of the entity which uses this OauthClient
+      String usingClassName = iue.getMessage();
+      getModel(info).setInUseError(new KeyLabel(KEY_OAUTH_CLIENT_IN_USE, usingClassName));
+    }
+  }
 
-		public void setPageTitle(Label pageTitle)
-		{
-			this.pageTitle = pageTitle;
-		}
+  @EventHandlerMethod
+  public void deleteToken(SectionInfo info, long id) {
+    oauthService.deleteToken(id);
+  }
 
-		public boolean isShowClients()
-		{
-			return showClients;
-		}
+  @Override
+  public Class<ShowOAuthSectionModel> getModelClass() {
+    return ShowOAuthSectionModel.class;
+  }
 
-		public void setShowClients(boolean showClients)
-		{
-			this.showClients = showClients;
-		}
+  public SelectionsTable getClientTable() {
+    return clientTable;
+  }
 
-		public boolean isShowTokens()
-		{
-			return showTokens;
-		}
+  public SelectionsTable getTokenTable() {
+    return tokenTable;
+  }
 
-		public void setShowTokens(boolean showTokens)
-		{
-			this.showTokens = showTokens;
-		}
+  private class OAuthClientsModel extends DynamicSelectionsTableModel<OAuthClient> {
+    @Override
+    protected List<OAuthClient> getSourceList(SectionInfo info) {
+      return oauthService.enumerateEditable();
+    }
 
-		public Label getInUseError()
-		{
-			return inUseError;
-		}
+    @Override
+    protected void transform(
+        SectionInfo info,
+        SelectionsTableSelection selection,
+        OAuthClient client,
+        List<SectionRenderable> actions,
+        int index) {
+      selection.setViewAction(new LabelRenderer(new BundleLabel(client.getName(), bundleCache)));
 
-		public void setInUseError(Label inUseError)
-		{
-			this.inUseError = inUseError;
-		}
-	}
+      // client id, redirect url
+      final String clientid = client.getClientId();
+      selection.addColumn(clientid).setSortData(clientid);
+
+      final Label redirectUrl = new TextLabel(client.getRedirectUrl());
+      selection.addColumn(new WrappedLabel(redirectUrl, 50, true));
+
+      final String uuid = client.getUuid();
+      actions.add(
+          makeAction(LABEL_CLIENTS_LINK_EDIT, new OverrideHandler(editClientFunction, uuid)));
+      if (oauthService.canDelete(client)) {
+        actions.add(
+            makeAction(
+                LABEL_CLIENTS_LINK_DELETE,
+                new OverrideHandler(deleteClientFunction, uuid)
+                    .addValidator(new Confirm(LABEL_CLIENTS_DELETE_CONFIRM))));
+      }
+    }
+  }
+
+  private class OAuthTokensModel extends DynamicSelectionsTableModel<OAuthToken> {
+    @Override
+    protected List<OAuthToken> getSourceList(SectionInfo info) {
+      return oauthService.listAllTokens();
+    }
+
+    @Override
+    protected void transform(
+        SectionInfo info,
+        SelectionsTableSelection selection,
+        OAuthToken token,
+        List<SectionRenderable> actions,
+        int index) {
+      selection.setViewAction(new LabelRenderer(new TextLabel(token.getToken())));
+
+      final String username = token.getUsername();
+      final String clientId = token.getClient().getClientId();
+      final Date created = token.getCreated();
+
+      selection.addColumn(username).setSortData(username);
+      selection.addColumn(clientId).setSortData(clientId);
+      selection.addColumn(dateRendererFactory.createDateRenderer(created)).setSortData(created);
+
+      if (oauthService.canAdministerTokens()) {
+        actions.add(
+            makeRemoveAction(
+                LABEL_TOKENS_LINK_DELETE,
+                new OverrideHandler(deleteTokenFunction, token.getId())
+                    .addValidator(new Confirm(LABEL_TOKENS_DELETE_CONFIRM))));
+      }
+    }
+  }
+
+  public static class ShowOAuthSectionModel extends OneColumnLayout.OneColumnLayoutModel {
+    private Label pageTitle;
+    private boolean showClients;
+    private boolean showTokens;
+    private Label inUseError;
+
+    public Label getPageTitle() {
+      return pageTitle;
+    }
+
+    public void setPageTitle(Label pageTitle) {
+      this.pageTitle = pageTitle;
+    }
+
+    public boolean isShowClients() {
+      return showClients;
+    }
+
+    public void setShowClients(boolean showClients) {
+      this.showClients = showClients;
+    }
+
+    public boolean isShowTokens() {
+      return showTokens;
+    }
+
+    public void setShowTokens(boolean showTokens) {
+      this.showTokens = showTokens;
+    }
+
+    public Label getInUseError() {
+      return inUseError;
+    }
+
+    public void setInUseError(Label inUseError) {
+      this.inUseError = inUseError;
+    }
+  }
 }

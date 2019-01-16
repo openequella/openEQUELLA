@@ -35,42 +35,40 @@ import com.tle.web.stream.FileContentStream;
 import com.tle.web.stream.URLContentStream;
 
 @SuppressWarnings("nls")
-public abstract class AbstractResourcesServlet extends HttpServlet
-{
-	private static final long serialVersionUID = 1L;
+public abstract class AbstractResourcesServlet extends HttpServlet {
+  private static final long serialVersionUID = 1L;
 
-	@Inject
-	private PluginService pluginService;
-	@Inject
-	private ContentStreamWriter contentStreamWriter;
+  @Inject private PluginService pluginService;
+  @Inject private ContentStreamWriter contentStreamWriter;
 
-	protected void service(HttpServletRequest request, HttpServletResponse response, String resourcePath,
-		String mimeType) throws IOException
-	{
-		final String filename = PathUtils.getFilenameFromFilepath(resourcePath);
+  protected void service(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      String resourcePath,
+      String mimeType)
+      throws IOException {
+    final String filename = PathUtils.getFilenameFromFilepath(resourcePath);
 
-		if( resourcePath.startsWith("/") )
-		{
-			resourcePath = resourcePath.substring(1);
-		}
+    if (resourcePath.startsWith("/")) {
+      resourcePath = resourcePath.substring(1);
+    }
 
-		final URL res = new URL(pluginService.getClassLoader(getPluginId(request)).getResource(getRootPath()),
-			resourcePath);
-		final File file = IoUtil.url2file(res);
+    final URL res =
+        new URL(
+            pluginService.getClassLoader(getPluginId(request)).getResource(getRootPath()),
+            resourcePath);
+    final File file = IoUtil.url2file(res);
 
-		ContentStream stream;
-		if( file != null )
-		{
-			stream = new FileContentStream(file, filename, mimeType);
-		}
-		else
-		{
-			stream = new URLContentStream(res, filename, mimeType);
-		}
-		contentStreamWriter.outputStream(request, response, stream);
-	}
+    ContentStream stream;
+    if (file != null) {
+      stream = new FileContentStream(file, filename, mimeType);
+    } else {
+      stream = new URLContentStream(res, filename, mimeType);
+    }
+    contentStreamWriter.outputStream(request, response, stream);
+  }
 
-	public abstract String getRootPath();
+  public abstract String getRootPath();
 
-	public abstract String getPluginId(HttpServletRequest request);
+  public abstract String getPluginId(HttpServletRequest request);
 }

@@ -36,39 +36,35 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.render.Label;
 
 @Bind
-public class FavouritesItemList extends StandardItemList
-{
-	@PlugKey("keywords")
-	private static Label KEYWORDS_LABEL;
-	@PlugKey("datefavourited")
-	private static Label DATE_FAVOURITED_LABEL;
+public class FavouritesItemList extends StandardItemList {
+  @PlugKey("keywords")
+  private static Label KEYWORDS_LABEL;
 
-	@Inject
-	private BookmarkService bookmarkService;
-	@Inject
-	private DateRendererFactory dateRendererFactory;
+  @PlugKey("datefavourited")
+  private static Label DATE_FAVOURITED_LABEL;
 
-	@Override
-	protected void customiseListEntries(RenderContext context, List<StandardItemListEntry> entries)
-	{
-		super.customiseListEntries(context, entries);
-		final Map<Item, Bookmark> bookmarks = bookmarkService.getBookmarksForItems(AbstractItemlikeListEntry
-			.getItems(entries));
+  @Inject private BookmarkService bookmarkService;
+  @Inject private DateRendererFactory dateRendererFactory;
 
-		for( StandardItemListEntry entry : entries )
-		{
-			Bookmark b = bookmarks.get(entry.getItem());
-			if( b != null )
-			{
-				Collection<String> keywords = b.getKeywords();
-				if( !keywords.isEmpty() )
-				{
-					entry.addDelimitedMetadata(KEYWORDS_LABEL, keywords);
-				}
+  @Override
+  protected void customiseListEntries(RenderContext context, List<StandardItemListEntry> entries) {
+    super.customiseListEntries(context, entries);
+    final Map<Item, Bookmark> bookmarks =
+        bookmarkService.getBookmarksForItems(AbstractItemlikeListEntry.getItems(entries));
 
-				entry.addMetadata(new StdMetadataEntry(DATE_FAVOURITED_LABEL, dateRendererFactory.createDateRenderer(b
-					.getDateModified())));
-			}
-		}
-	}
+    for (StandardItemListEntry entry : entries) {
+      Bookmark b = bookmarks.get(entry.getItem());
+      if (b != null) {
+        Collection<String> keywords = b.getKeywords();
+        if (!keywords.isEmpty()) {
+          entry.addDelimitedMetadata(KEYWORDS_LABEL, keywords);
+        }
+
+        entry.addMetadata(
+            new StdMetadataEntry(
+                DATE_FAVOURITED_LABEL,
+                dateRendererFactory.createDateRenderer(b.getDateModified())));
+      }
+    }
+  }
 }

@@ -21,18 +21,15 @@ import com.tle.core.guice.PluginTrackerModule;
 import com.tle.core.security.DomainObjectPrivilegeFilterExtension;
 
 @SuppressWarnings("nls")
-public class SecurityPluginTrackerModule extends PluginTrackerModule
-{
-	@Override
-	protected String getPluginId()
-	{
-		return "com.tle.core.security";
-	}
+public class SecurityPluginTrackerModule extends PluginTrackerModule {
+  @Override
+  protected String getPluginId() {
+    return "com.tle.core.security";
+  }
 
-	@Override
-	protected void configure()
-	{
-		bindTracker(DomainObjectPrivilegeFilterExtension.class, "domainObjectPrivilegeFilter", "bean");
-		bindTracker(Object.class, Names.named("domainParam"), "domainObjectParameter", null);
-	}
+  @Override
+  protected void configure() {
+    bindTracker(DomainObjectPrivilegeFilterExtension.class, "domainObjectPrivilegeFilter", "bean");
+    bindTracker(Object.class, Names.named("domainParam"), "domainObjectParameter", null);
+  }
 }

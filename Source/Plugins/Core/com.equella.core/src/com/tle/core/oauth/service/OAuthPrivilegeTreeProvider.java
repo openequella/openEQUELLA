@@ -29,21 +29,22 @@ import com.tle.web.resources.ResourcesService;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class OAuthPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeProvider<OAuthClient>
-{
-	private static final PluginResourceHelper resources = ResourcesService
-		.getResourceHelper(OAuthPrivilegeTreeProvider.class);
+public class OAuthPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeProvider<OAuthClient> {
+  private static final PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(OAuthPrivilegeTreeProvider.class);
 
-	@Inject
-	public OAuthPrivilegeTreeProvider(OAuthService oauthService)
-	{
-		super(oauthService, Node.ALL_OAUTH_CLIENTS, resources.key("securitytree.alloauthclient"), Node.OAUTH_CLIENT,
-			resources.key("securitytree.oauthclient"));
-	}
+  @Inject
+  public OAuthPrivilegeTreeProvider(OAuthService oauthService) {
+    super(
+        oauthService,
+        Node.ALL_OAUTH_CLIENTS,
+        resources.key("securitytree.alloauthclient"),
+        Node.OAUTH_CLIENT,
+        resources.key("securitytree.oauthclient"));
+  }
 
-	@Override
-	protected OAuthClient createEntity()
-	{
-		return new OAuthClient();
-	}
+  @Override
+  protected OAuthClient createEntity() {
+    return new OAuthClient();
+  }
 }

@@ -18,56 +18,53 @@ package com.tle.core.system;
 
 import com.tle.exceptions.BadCredentialsException;
 
-/**
- * @author Nicholas Read
- */
-public interface SystemConfigService
-{
-	void setAdminPassword(String oldPass, String newPass);
+/** @author Nicholas Read */
+public interface SystemConfigService {
+  void setAdminPassword(String oldPass, String newPass);
 
-	void checkAdminPassword(String password) throws BadCredentialsException;
+  void checkAdminPassword(String password) throws BadCredentialsException;
 
-	boolean adminPasswordNotSet();
+  boolean adminPasswordNotSet();
 
-	void setInitialAdminPassword(String newPass);
+  void setInitialAdminPassword(String newPass);
 
-	String getLicense();
+  String getLicense();
 
-	void setLicense(String string);
+  void setLicense(String string);
 
-	String getEmails();
+  String getEmails();
 
-	void setEmails(String emails);
+  void setEmails(String emails);
 
-	String getSmtpServer();
+  String getSmtpServer();
 
-	void setSmtpServer(String smtp);
+  void setSmtpServer(String smtp);
 
-	String getSmtpUser();
+  String getSmtpUser();
 
-	void setSmtpUser(String smtpUser);
+  void setSmtpUser(String smtpUser);
 
-	String getSmtpPassword();
+  String getSmtpPassword();
 
-	void setSmtpPassword(String smtpPassword);
+  void setSmtpPassword(String smtpPassword);
 
-    String getNoReplySender();
+  String getNoReplySender();
 
-    void setNoReplySender(String noReplySender);
+  void setNoReplySender(String noReplySender);
 
-	String getServerMessage();
+  String getServerMessage();
 
-	void setServerMessage(String serverMessage, boolean serverMessageEnabled);
+  void setServerMessage(String serverMessage, boolean serverMessageEnabled);
 
-	boolean isServerMessageEnabled();
+  boolean isServerMessageEnabled();
 
-	String getScheduledTasksConfig();
+  String getScheduledTasksConfig();
 
-	void setScheduleTasksConfig(String config);
+  void setScheduleTasksConfig(String config);
 
-	long createUniqueInstitutionId();
+  long createUniqueInstitutionId();
 
-	void registerInstitutionIdInUse(long id);
+  void registerInstitutionIdInUse(long id);
 
-	boolean isSystemSchemaUp();
+  boolean isSystemSchemaUp();
 }

@@ -35,28 +35,25 @@ import com.tle.web.sections.render.Label;
 
 /**
  * Mapped to /oauth/*
- * 
+ *
  * @author Aaron
  */
 @Bind
 @Singleton
-public class OAuthFilter extends AbstractWebFilter
-{
-	@Inject
-	private UserService userService;
-	@PlugKey("oauth.filter.error.mustbehttps")
-	private static Label LABEL_ERROR;
+public class OAuthFilter extends AbstractWebFilter {
+  @Inject private UserService userService;
 
-	@SuppressWarnings("nls")
-	@Override
-	public FilterResult filterRequest(HttpServletRequest request, HttpServletResponse response)
-		throws IOException, ServletException
-	{
-		AutoLogin autoLogin = userService.getAttribute(AutoLogin.class);
-		if( autoLogin != null && !request.isSecure() && autoLogin.isLoginViaSSL() )
-		{
-			throw new WebException(400, "ssl", LABEL_ERROR.getText());
-		}
-		return FilterResult.FILTER_CONTINUE;
-	}
+  @PlugKey("oauth.filter.error.mustbehttps")
+  private static Label LABEL_ERROR;
+
+  @SuppressWarnings("nls")
+  @Override
+  public FilterResult filterRequest(HttpServletRequest request, HttpServletResponse response)
+      throws IOException, ServletException {
+    AutoLogin autoLogin = userService.getAttribute(AutoLogin.class);
+    if (autoLogin != null && !request.isSecure() && autoLogin.isLoginViaSSL()) {
+      throw new WebException(400, "ssl", LABEL_ERROR.getText());
+    }
+    return FilterResult.FILTER_CONTINUE;
+  }
 }

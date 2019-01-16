@@ -26,39 +26,32 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.viewitem.summary.content.ChangeOwnershipContentSection;
 import com.tle.web.viewurl.ItemSectionInfo;
 
-/**
- * @author Andrew Gibb
- */
+/** @author Andrew Gibb */
 @Bind
-public class ChangeOwnershipSection extends GenericMinorActionWithPageSection
-{
-	@PlugKey("summary.sidebar.actions.changeownership.title")
-	private static Label LINK_LABEL;
+public class ChangeOwnershipSection extends GenericMinorActionWithPageSection {
+  @PlugKey("summary.sidebar.actions.changeownership.title")
+  private static Label LINK_LABEL;
 
-	@TreeLookup
-	private ChangeOwnershipContentSection changeOwnershipContentSection;
+  @TreeLookup private ChangeOwnershipContentSection changeOwnershipContentSection;
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return LINK_LABEL;
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return LINK_LABEL;
+  }
 
-	@Override
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		return !status.isLocked() && itemInfo.hasPrivilege(ChangeOwnershipContentSection.REQUIRED_PRIVILEGE);
-	}
+  @Override
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    return !status.isLocked()
+        && itemInfo.hasPrivilege(ChangeOwnershipContentSection.REQUIRED_PRIVILEGE);
+  }
 
-	@Override
-	protected SectionId getPageSection()
-	{
-		return changeOwnershipContentSection;
-	}
+  @Override
+  protected SectionId getPageSection() {
+    return changeOwnershipContentSection;
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return LINK_LABEL.getText();
-	}
+  @Override
+  public String getLinkText() {
+    return LINK_LABEL.getText();
+  }
 }

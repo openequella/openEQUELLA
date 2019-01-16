@@ -77,407 +77,360 @@ import com.tle.web.wizard.impl.WebRepository;
 
 import net.sf.json.JSONArray;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 public class MyPagesHandler extends AbstractAttachmentHandler<MyPagesHandler.MyPagesHandlerModel>
-	implements
-		InfoEventListener,
-		MyPagesPageFilter
-{
-	@PlugKey("handlers.mypages.name")
-	private static Label LABEL_NAME;
-	@PlugKey("handlers.mypages.description")
-	private static Label LABEL_DESCRIPTION;
-	@PlugKey("handlers.mypages.title.add")
-	private static Label LABEL_TITLE_ADD;
-	@PlugKey("handlers.mypages.title.edit")
-	private static Label LABEL_TITLE_EDIT;
-	@PlugKey("handlers.mypages.button.importfromscrapbook")
-	private static Label LABEL_BUTTON_IMPORTSCRAPBOOK;
-	@PlugKey("handlers.mypages.warning.toomanypages")
-	private static Label LABEL_WARN_TOO_MANY_PAGES;
+    implements InfoEventListener, MyPagesPageFilter {
+  @PlugKey("handlers.mypages.name")
+  private static Label LABEL_NAME;
 
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private MyPagesService mypagesService;
-	@Inject
-	private SelectionService selectionService;
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private MyContentSelectable selectable;
+  @PlugKey("handlers.mypages.description")
+  private static Label LABEL_DESCRIPTION;
 
-	protected JSCallAndReference resultsCallback;
+  @PlugKey("handlers.mypages.title.add")
+  private static Label LABEL_TITLE_ADD;
 
-	private HtmlLinkState scrapbook;
+  @PlugKey("handlers.mypages.title.edit")
+  private static Label LABEL_TITLE_EDIT;
 
-	/*
-	 * My Pages tree stuff
-	 */
-	@Inject
-	private RegistrationController controller;
-	@Inject
-	@Named("myPagesTree")
-	private SectionNode mypagesNode;
+  @PlugKey("handlers.mypages.button.importfromscrapbook")
+  private static Label LABEL_BUTTON_IMPORTSCRAPBOOK;
 
-	private DefaultSectionTree mypagesTree;
-	private RootMyPagesSection root;
-	private MyPagesContributeSection contrib;
-	private MyPagesHandlerPageActionsSection pages;
-	private MyPagesExtrasSection extraOptions;
+  @PlugKey("handlers.mypages.warning.toomanypages")
+  private static Label LABEL_WARN_TOO_MANY_PAGES;
 
-	@Override
-	public String getHandlerId()
-	{
-		return "mypagesHandler";
-	}
+  @Inject private ItemService itemService;
+  @Inject private MyPagesService mypagesService;
+  @Inject private SelectionService selectionService;
+  @Inject private FileSystemService fileSystemService;
+  @Inject private MyContentSelectable selectable;
 
-	@Override
-	public SectionRenderable render(RenderContext context, DialogRenderOptions renderOptions)
-	{
-		final MyPagesHandlerModel model = getModel(context);
+  protected JSCallAndReference resultsCallback;
 
-		if( model.isSelecting() )
-		{
-			return renderSelection(context, renderOptions);
-		}
+  private HtmlLinkState scrapbook;
 
-		boolean allowSave = true;
-		boolean editing = dialogState.isEditing(context);
-		boolean showOthers = !editing && !dialogState.isReplacing(context);
+  /*
+   * My Pages tree stuff
+   */
+  @Inject private RegistrationController controller;
 
-		if( !showOthers )
-		{
-			pages.setDisabled(context, true);
-		}
-		else
-		{
-			boolean add = true;
-			final int pageAttachmentCount = getPageAttachments(context).size();
-			if( isMultipleAllowed(context) )
-			{
-				allowSave = pageAttachmentCount > 0;
-			}
-			else
-			{
-				allowSave = pageAttachmentCount == 1;
-				add = pageAttachmentCount == 0;
-				if( pageAttachmentCount > 1 )
-				{
-					model.setWarnLabel(LABEL_WARN_TOO_MANY_PAGES);
-				}
-			}
-			pages.setDisallowAdd(context, !add);
-			if( add )
-			{
-				pages.setScrapbookCommand(context, scrapbook);
-			}
+  @Inject
+  @Named("myPagesTree")
+  private SectionNode mypagesNode;
 
-		}
-		renderOptions.setShowSave(allowSave);
-		renderOptions.setShowAddReplace(allowSave && !editing);
+  private DefaultSectionTree mypagesTree;
+  private RootMyPagesSection root;
+  private MyPagesContributeSection contrib;
+  private MyPagesHandlerPageActionsSection pages;
+  private MyPagesExtrasSection extraOptions;
 
-		model.setMyPages(renderSection(context, root));
-		return viewFactory.createResult("mypagesedit.ftl", this);
+  @Override
+  public String getHandlerId() {
+    return "mypagesHandler";
+  }
 
-	}
+  @Override
+  public SectionRenderable render(RenderContext context, DialogRenderOptions renderOptions) {
+    final MyPagesHandlerModel model = getModel(context);
 
-	private SectionRenderable renderSelection(RenderContext context, DialogRenderOptions renderOptions)
-	{
-		Decorations.getDecorations(context).clearAllDecorations();
-		renderOptions.setFullscreen(true);
+    if (model.isSelecting()) {
+      return renderSelection(context, renderOptions);
+    }
 
-		final SectionInfo forward = selectionService.getSelectionSessionForward(context, initSession(), selectable);
+    boolean allowSave = true;
+    boolean editing = dialogState.isEditing(context);
+    boolean showOthers = !editing && !dialogState.isReplacing(context);
 
-		final MyPagesHandlerModel model = getModel(context);
-		model.setSelectionUrl(new InfoBookmark(forward).getHref());
-		return viewFactory.createResult("mypagessession.ftl", this);
-	}
+    if (!showOthers) {
+      pages.setDisabled(context, true);
+    } else {
+      boolean add = true;
+      final int pageAttachmentCount = getPageAttachments(context).size();
+      if (isMultipleAllowed(context)) {
+        allowSave = pageAttachmentCount > 0;
+      } else {
+        allowSave = pageAttachmentCount == 1;
+        add = pageAttachmentCount == 0;
+        if (pageAttachmentCount > 1) {
+          model.setWarnLabel(LABEL_WARN_TOO_MANY_PAGES);
+        }
+      }
+      pages.setDisallowAdd(context, !add);
+      if (add) {
+        pages.setScrapbookCommand(context, scrapbook);
+      }
+    }
+    renderOptions.setShowSave(allowSave);
+    renderOptions.setShowAddReplace(allowSave && !editing);
 
-	private SelectionSession initSession()
-	{
-		final SelectionSession session = new SelectionSession(new ParentFrameSelectionCallback(resultsCallback, false));
+    model.setMyPages(renderSection(context, root));
+    return viewFactory.createResult("mypagesedit.ftl", this);
+  }
 
-		final MyContentSelectionSettings settings = new MyContentSelectionSettings();
-		settings.setRestrictToHandlerTypes(Arrays.asList(MyPagesConstants.MYPAGES_CONTENT_TYPE));
-		session.setSelectScrapbook(true);
-		session.setAttribute(MyContentSelectionSettings.class, settings);
-		session.setSelectItem(true);
-		session.setSelectAttachments(false);
-		session.setSelectPackage(false);
-		session.setSelectMultiple(isMultiple());
-		session.setAddToRecentSelections(false);
-		session.setOverrideVersionSelection(VersionSelection.FORCE_CURRENT);
-		if( !isMultiple() )
-		{
-			session.setSkipCheckoutPage(true);
-		}
+  private SectionRenderable renderSelection(
+      RenderContext context, DialogRenderOptions renderOptions) {
+    Decorations.getDecorations(context).clearAllDecorations();
+    renderOptions.setFullscreen(true);
 
-		return session;
-	}
+    final SectionInfo forward =
+        selectionService.getSelectionSessionForward(context, initSession(), selectable);
 
-	@Override
-	public Label getTitleLabel(RenderContext context, boolean editing)
-	{
-		return editing ? LABEL_TITLE_EDIT : LABEL_TITLE_ADD;
-	}
+    final MyPagesHandlerModel model = getModel(context);
+    model.setSelectionUrl(new InfoBookmark(forward).getHref());
+    return viewFactory.createResult("mypagessession.ftl", this);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  private SelectionSession initSession() {
+    final SelectionSession session =
+        new SelectionSession(new ParentFrameSelectionCallback(resultsCallback, false));
 
-		mypagesNode.setId(id + "m");
-		mypagesTree = new DefaultSectionTree(controller, mypagesNode);
-		mypagesTree.treeFinished();
-		root = mypagesTree.lookupSection(RootMyPagesSection.class, null);
-		contrib = mypagesTree.lookupSection(MyPagesContributeSection.class, null);
-		pages = mypagesTree.lookupSection(MyPagesHandlerPageActionsSection.class, null);
-		extraOptions = mypagesTree.lookupSection(MyPagesExtrasSection.class, null);
+    final MyContentSelectionSettings settings = new MyContentSelectionSettings();
+    settings.setRestrictToHandlerTypes(Arrays.asList(MyPagesConstants.MYPAGES_CONTENT_TYPE));
+    session.setSelectScrapbook(true);
+    session.setAttribute(MyContentSelectionSettings.class, settings);
+    session.setSelectItem(true);
+    session.setSelectAttachments(false);
+    session.setSelectPackage(false);
+    session.setSelectMultiple(isMultiple());
+    session.setAddToRecentSelections(false);
+    session.setOverrideVersionSelection(VersionSelection.FORCE_CURRENT);
+    if (!isMultiple()) {
+      session.setSkipCheckoutPage(true);
+    }
 
-		scrapbook = new HtmlLinkState(LABEL_BUTTON_IMPORTSCRAPBOOK, events.getNamedHandler("importFromScrapbook"));
-		resultsCallback = new PassThroughFunction("r" + id, events.getSubmitValuesFunction("selectionsMade"));
-	}
+    return session;
+  }
 
-	@SuppressWarnings("unchecked")
-	@EventHandlerMethod
-	public void selectionsMade(SectionInfo info, String selections)
-	{
-		final List<SelectedResourceDetails> selectedResources = new ArrayList<SelectedResourceDetails>(
-			JSONArray.toCollection(JSONArray.fromObject(selections), SelectedResourceDetails.class));
-		final WebRepository repo = dialogState.getRepository();
-		final WizardState state = repo.getState();
-		final MyPagesHandlerModel model = getModel(info);
-		for( SelectedResourceDetails resource : selectedResources )
-		{
-			final ItemId key = new ItemId(resource.getUuid(), resource.getVersion());
+  @Override
+  public Label getTitleLabel(RenderContext context, boolean editing) {
+    return editing ? LABEL_TITLE_EDIT : LABEL_TITLE_ADD;
+  }
 
-			// clone the HtmlAttachments AND the file system only attachments
-			// folder
-			final Item item = itemService.get(key);
-			final List<HtmlAttachment> pgs = new UnmodifiableAttachments(item).getList(AttachmentType.HTML);
-			for( HtmlAttachment oldPage : pgs )
-			{
-				final HtmlAttachment newPage = mypagesService.clonePage(state, item, oldPage, true);
-				if( Check.isEmpty(contrib.getPageUuid(info)) )
-				{
-					ChangePageEvent changePage = new ChangePageEvent(null, newPage.getUuid(), state.getWizid());
-					info.processEvent(changePage, mypagesTree);
-				}
-				repo.getAttachments().addAttachment(newPage);
-				// dialog.addAttachment(info, newPage);
-			}
-		}
-		model.setSelecting(false);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	public AttachmentHandlerLabel getLabel()
-	{
-		return new AttachmentHandlerLabel(LABEL_NAME, LABEL_DESCRIPTION);
-	}
+    mypagesNode.setId(id + "m");
+    mypagesTree = new DefaultSectionTree(controller, mypagesNode);
+    mypagesTree.treeFinished();
+    root = mypagesTree.lookupSection(RootMyPagesSection.class, null);
+    contrib = mypagesTree.lookupSection(MyPagesContributeSection.class, null);
+    pages = mypagesTree.lookupSection(MyPagesHandlerPageActionsSection.class, null);
+    extraOptions = mypagesTree.lookupSection(MyPagesExtrasSection.class, null);
 
-	@Override
-	public boolean supports(IAttachment attachment)
-	{
-		return attachment instanceof HtmlAttachment;
-	}
+    scrapbook =
+        new HtmlLinkState(
+            LABEL_BUTTON_IMPORTSCRAPBOOK, events.getNamedHandler("importFromScrapbook"));
+    resultsCallback =
+        new PassThroughFunction("r" + id, events.getSubmitValuesFunction("selectionsMade"));
+  }
 
-	@EventHandlerMethod
-	public void importFromScrapbook(SectionInfo info)
-	{
-		MyPagesHandlerModel model = getModel(info);
-		model.setSelecting(true);
-	}
+  @SuppressWarnings("unchecked")
+  @EventHandlerMethod
+  public void selectionsMade(SectionInfo info, String selections) {
+    final List<SelectedResourceDetails> selectedResources =
+        new ArrayList<SelectedResourceDetails>(
+            JSONArray.toCollection(
+                JSONArray.fromObject(selections), SelectedResourceDetails.class));
+    final WebRepository repo = dialogState.getRepository();
+    final WizardState state = repo.getState();
+    final MyPagesHandlerModel model = getModel(info);
+    for (SelectedResourceDetails resource : selectedResources) {
+      final ItemId key = new ItemId(resource.getUuid(), resource.getVersion());
 
-	private void ensureCleanupOperation()
-	{
-		WizardState state = dialogState.getRepository().getState();
-		UnusedContentCleanup cleanup = (UnusedContentCleanup) state.getWizardSaveOperation(UnusedContentCleanup.ID);
-		if( cleanup == null )
-		{
-			state.setWizardSaveOperation(UnusedContentCleanup.ID, new UnusedContentCleanup());
-		}
-		state.setWizardSaveOperation("", new ChangePreviewUrls(state));
-	}
+      // clone the HtmlAttachments AND the file system only attachments
+      // folder
+      final Item item = itemService.get(key);
+      final List<HtmlAttachment> pgs =
+          new UnmodifiableAttachments(item).getList(AttachmentType.HTML);
+      for (HtmlAttachment oldPage : pgs) {
+        final HtmlAttachment newPage = mypagesService.clonePage(state, item, oldPage, true);
+        if (Check.isEmpty(contrib.getPageUuid(info))) {
+          ChangePageEvent changePage =
+              new ChangePageEvent(null, newPage.getUuid(), state.getWizid());
+          info.processEvent(changePage, mypagesTree);
+        }
+        repo.getAttachments().addAttachment(newPage);
+        // dialog.addAttachment(info, newPage);
+      }
+    }
+    model.setSelecting(false);
+  }
 
-	@Override
-	public void cancelled(SectionInfo info)
-	{
-		contrib.setPageUuid(info, null);
-		mypagesService.clearDraft(info, dialogState.getRepository().getWizid());
-	}
+  @Override
+  public AttachmentHandlerLabel getLabel() {
+    return new AttachmentHandlerLabel(LABEL_NAME, LABEL_DESCRIPTION);
+  }
 
-	private List<HtmlAttachment> getPageAttachments(SectionInfo info)
-	{
-		return filterPages(
-			mypagesService.getNonDeletedPageAttachments(info, dialogState.getRepository().getWizid(), null));
-	}
+  @Override
+  public boolean supports(IAttachment attachment) {
+    return attachment instanceof HtmlAttachment;
+  }
 
-	@Override
-	public List<HtmlAttachment> filterPages(List<HtmlAttachment> pageAttachments)
-	{
-		final List<HtmlAttachment> filtered = new ArrayList<HtmlAttachment>();
-		final Collection<Attachment> controlAttachments = dialogState.getAttachments();
-		for( HtmlAttachment page : pageAttachments )
-		{
-			if( controlAttachments.contains(page) || page.isNew() || page.isDraft() )
-			{
-				filtered.add(page);
-			}
-		}
-		return filtered;
-	}
+  @EventHandlerMethod
+  public void importFromScrapbook(SectionInfo info) {
+    MyPagesHandlerModel model = getModel(info);
+    model.setSelecting(true);
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new MyPagesHandlerModel();
-	}
+  private void ensureCleanupOperation() {
+    WizardState state = dialogState.getRepository().getState();
+    UnusedContentCleanup cleanup =
+        (UnusedContentCleanup) state.getWizardSaveOperation(UnusedContentCleanup.ID);
+    if (cleanup == null) {
+      state.setWizardSaveOperation(UnusedContentCleanup.ID, new UnusedContentCleanup());
+    }
+    state.setWizardSaveOperation("", new ChangePreviewUrls(state));
+  }
 
-	public JSCallAndReference getResultsCallback()
-	{
-		return resultsCallback;
-	}
+  @Override
+  public void cancelled(SectionInfo info) {
+    contrib.setPageUuid(info, null);
+    mypagesService.clearDraft(info, dialogState.getRepository().getWizid());
+  }
 
-	@Override
-	public void handleInfoEvent(MutableSectionInfo info, boolean removed, boolean processParameters)
-	{
-		if( !removed )
-		{
-			info.getAttributeForClass(MutableSectionInfo.class).addTreeToBottom(mypagesTree, processParameters);
-			contrib.setSessionId(info, dialogState.getRepository().getWizid());
-			pages.setPageFilter(info, this);
-			// FIXME: always false until fixed, see bug #7668
-			extraOptions.setShowPreview(info, false);
-			extraOptions.setShowRestrict(info, canRestrictAttachments());
-		}
-	}
+  private List<HtmlAttachment> getPageAttachments(SectionInfo info) {
+    return filterPages(
+        mypagesService.getNonDeletedPageAttachments(
+            info, dialogState.getRepository().getWizid(), null));
+  }
 
-	@Override
-	public void createNew(SectionInfo info)
-	{
-		if( dialogState.isReplacing(info) )
-		{
-			pages.createPage(info);
-		}
-	}
+  @Override
+  public List<HtmlAttachment> filterPages(List<HtmlAttachment> pageAttachments) {
+    final List<HtmlAttachment> filtered = new ArrayList<HtmlAttachment>();
+    final Collection<Attachment> controlAttachments = dialogState.getAttachments();
+    for (HtmlAttachment page : pageAttachments) {
+      if (controlAttachments.contains(page) || page.isNew() || page.isDraft()) {
+        filtered.add(page);
+      }
+    }
+    return filtered;
+  }
 
-	@Override
-	public void loadForEdit(SectionInfo info, Attachment attachment)
-	{
-		contrib.setPageUuid(info, attachment.getUuid());
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new MyPagesHandlerModel();
+  }
 
-	@Override
-	public void saveEdited(SectionInfo info, Attachment attachment)
-	{
-		contrib.saveCurrentEdits(info);
-		String sessionId = dialogState.getRepository().getWizid();
-		mypagesService.commitDraft(info, sessionId);
-		ensureCleanupOperation();
-	}
+  public JSCallAndReference getResultsCallback() {
+    return resultsCallback;
+  }
 
-	@Override
-	public void remove(SectionInfo info, Attachment attachment, boolean willBeReplaced)
-	{
-		String sessionId = dialogState.getRepository().getWizid();
-		dialogState.removeAttachment(info, attachment);
-		mypagesService.deletePageFiles(info, sessionId, (HtmlAttachment) attachment);
-		if( !willBeReplaced )
-		{
-			dialogState.removeMetadataUuid(info, attachment.getUuid());
-		}
-	}
+  @Override
+  public void handleInfoEvent(MutableSectionInfo info, boolean removed, boolean processParameters) {
+    if (!removed) {
+      info.getAttributeForClass(MutableSectionInfo.class)
+          .addTreeToBottom(mypagesTree, processParameters);
+      contrib.setSessionId(info, dialogState.getRepository().getWizid());
+      pages.setPageFilter(info, this);
+      // FIXME: always false until fixed, see bug #7668
+      extraOptions.setShowPreview(info, false);
+      extraOptions.setShowRestrict(info, canRestrictAttachments());
+    }
+  }
 
-	@Override
-	public boolean validate(SectionInfo info)
-	{
-		return true;
-	}
+  @Override
+  public void createNew(SectionInfo info) {
+    if (dialogState.isReplacing(info)) {
+      pages.createPage(info);
+    }
+  }
 
-	@Override
-	public void saveChanges(SectionInfo info, @Nullable String replacementUuid)
-	{
-		String sessionId = dialogState.getRepository().getWizid();
-		contrib.saveCurrentEdits(info);
+  @Override
+  public void loadForEdit(SectionInfo info, Attachment attachment) {
+    contrib.setPageUuid(info, attachment.getUuid());
+  }
 
-		List<HtmlAttachment> pageAttachments = getPageAttachments(info);
-		for( HtmlAttachment htmlAttachment : pageAttachments )
-		{
-			if( htmlAttachment.isNew() )
-			{
-				if( replacementUuid != null )
-				{
-					final HtmlAttachment fakeDest = new HtmlAttachment();
-					fakeDest.setUuid(replacementUuid);
-					fakeDest.setParentFolder(htmlAttachment.getParentFolder());
-					fakeDest.setDraft(htmlAttachment.isDraft());
-					fileSystemService.move(new StagingFile(dialogState.getRepository().getStagingid()),
-						htmlAttachment.getFolder(), fakeDest.getFolder());
-					htmlAttachment.setUuid(replacementUuid);
-					replacementUuid = null;
-				}
-				else
-				{
-					dialogState.addMetadataUuid(info, htmlAttachment.getUuid());
-				}
-			}
-		}
-		mypagesService.commitDraft(info, sessionId);
-		ensureCleanupOperation();
-	}
+  @Override
+  public void saveEdited(SectionInfo info, Attachment attachment) {
+    contrib.saveCurrentEdits(info);
+    String sessionId = dialogState.getRepository().getWizid();
+    mypagesService.commitDraft(info, sessionId);
+    ensureCleanupOperation();
+  }
 
-	public static class MyPagesHandlerModel
-	{
-		@Bookmarked(name = "s")
-		private boolean selecting;
-		private String selectionUrl;
-		private SectionRenderable myPages;
-		private Label warnLabel;
+  @Override
+  public void remove(SectionInfo info, Attachment attachment, boolean willBeReplaced) {
+    String sessionId = dialogState.getRepository().getWizid();
+    dialogState.removeAttachment(info, attachment);
+    mypagesService.deletePageFiles(info, sessionId, (HtmlAttachment) attachment);
+    if (!willBeReplaced) {
+      dialogState.removeMetadataUuid(info, attachment.getUuid());
+    }
+  }
 
-		public boolean isSelecting()
-		{
-			return selecting;
-		}
+  @Override
+  public boolean validate(SectionInfo info) {
+    return true;
+  }
 
-		public void setSelecting(boolean selecting)
-		{
-			this.selecting = selecting;
-		}
+  @Override
+  public void saveChanges(SectionInfo info, @Nullable String replacementUuid) {
+    String sessionId = dialogState.getRepository().getWizid();
+    contrib.saveCurrentEdits(info);
 
-		public String getSelectionUrl()
-		{
-			return selectionUrl;
-		}
+    List<HtmlAttachment> pageAttachments = getPageAttachments(info);
+    for (HtmlAttachment htmlAttachment : pageAttachments) {
+      if (htmlAttachment.isNew()) {
+        if (replacementUuid != null) {
+          final HtmlAttachment fakeDest = new HtmlAttachment();
+          fakeDest.setUuid(replacementUuid);
+          fakeDest.setParentFolder(htmlAttachment.getParentFolder());
+          fakeDest.setDraft(htmlAttachment.isDraft());
+          fileSystemService.move(
+              new StagingFile(dialogState.getRepository().getStagingid()),
+              htmlAttachment.getFolder(),
+              fakeDest.getFolder());
+          htmlAttachment.setUuid(replacementUuid);
+          replacementUuid = null;
+        } else {
+          dialogState.addMetadataUuid(info, htmlAttachment.getUuid());
+        }
+      }
+    }
+    mypagesService.commitDraft(info, sessionId);
+    ensureCleanupOperation();
+  }
 
-		public void setSelectionUrl(String selectionUrl)
-		{
-			this.selectionUrl = selectionUrl;
-		}
+  public static class MyPagesHandlerModel {
+    @Bookmarked(name = "s")
+    private boolean selecting;
 
-		public Label getWarnLabel()
-		{
-			return warnLabel;
-		}
+    private String selectionUrl;
+    private SectionRenderable myPages;
+    private Label warnLabel;
 
-		public void setWarnLabel(Label warnLabel)
-		{
-			this.warnLabel = warnLabel;
-		}
+    public boolean isSelecting() {
+      return selecting;
+    }
 
-		public SectionRenderable getMyPages()
-		{
-			return myPages;
-		}
+    public void setSelecting(boolean selecting) {
+      this.selecting = selecting;
+    }
 
-		public void setMyPages(SectionRenderable myPages)
-		{
-			this.myPages = myPages;
-		}
-	}
+    public String getSelectionUrl() {
+      return selectionUrl;
+    }
+
+    public void setSelectionUrl(String selectionUrl) {
+      this.selectionUrl = selectionUrl;
+    }
+
+    public Label getWarnLabel() {
+      return warnLabel;
+    }
+
+    public void setWarnLabel(Label warnLabel) {
+      this.warnLabel = warnLabel;
+    }
+
+    public SectionRenderable getMyPages() {
+      return myPages;
+    }
+
+    public void setMyPages(SectionRenderable myPages) {
+      this.myPages = myPages;
+    }
+  }
 }

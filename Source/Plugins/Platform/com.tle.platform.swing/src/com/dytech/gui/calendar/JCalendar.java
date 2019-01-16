@@ -44,389 +44,350 @@ import javax.swing.border.Border;
 
 import com.dytech.gui.TableLayout;
 
-/**
- * @author Nicholas Read
- */
-public class JCalendar extends JComponent implements ActionListener, MouseListener
-{
-	@SuppressWarnings("nls")
-	private static final String[] DAYS = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+/** @author Nicholas Read */
+public class JCalendar extends JComponent implements ActionListener, MouseListener {
+  @SuppressWarnings("nls")
+  private static final String[] DAYS = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
-	@SuppressWarnings("nls")
-	private static final String[] MONTHS = {"January", "February", "March", "April", "May", "June", "July", "August",
-			"September", "October", "November", "December"};
-	private static final int YEAR_END = 2100;
+  @SuppressWarnings("nls")
+  private static final String[] MONTHS = {
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  };
 
-	private static final int YEAR_START = 1900;
+  private static final int YEAR_END = 2100;
 
-	private final int[] dayCounts = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-	private JLabel dateDisplay;
-	private DayLabel[][] days;
-	private JComboBox months;
-	private JComboBox years;
-	private JPanel dayGrid;
+  private static final int YEAR_START = 1900;
 
-	private DayLabel currentSelection;
+  private final int[] dayCounts = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+  private JLabel dateDisplay;
+  private DayLabel[][] days;
+  private JComboBox months;
+  private JComboBox years;
+  private JPanel dayGrid;
 
-	public JCalendar()
-	{
-		// Start with todays date
-		this(getCalendar().getTime());
-	}
+  private DayLabel currentSelection;
 
-	public JCalendar(Date d)
-	{
-		setup();
-		setDate(d);
-	}
+  public JCalendar() {
+    // Start with todays date
+    this(getCalendar().getTime());
+  }
 
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		if( e.getSource() == months || e.getSource() == years )
-		{
-			update();
-		}
-	}
+  public JCalendar(Date d) {
+    setup();
+    setDate(d);
+  }
 
-	private JComponent createCentre()
-	{
-		dayGrid = new JPanel(new GridLayout(7, 7, 5, 5));
-		dayGrid.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		dayGrid.setBackground(Color.WHITE);
-		dayGrid.addMouseListener(this);
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    if (e.getSource() == months || e.getSource() == years) {
+      update();
+    }
+  }
 
-		Map<TextAttribute, Float> dayAttributes = new HashMap<TextAttribute, Float>();
-		dayAttributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
-		Font dayFont = new Font(dayAttributes);
+  private JComponent createCentre() {
+    dayGrid = new JPanel(new GridLayout(7, 7, 5, 5));
+    dayGrid.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+    dayGrid.setBackground(Color.WHITE);
+    dayGrid.addMouseListener(this);
 
-		for( int i = 0; i < DAYS.length; i++ )
-		{
-			JLabel day = new JLabel(DAYS[i]);
-			day.setHorizontalAlignment(SwingConstants.CENTER);
-			day.setVerticalAlignment(SwingConstants.CENTER);
-			day.setFont(dayFont);
+    Map<TextAttribute, Float> dayAttributes = new HashMap<TextAttribute, Float>();
+    dayAttributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
+    Font dayFont = new Font(dayAttributes);
 
-			dayGrid.add(day);
-		}
+    for (int i = 0; i < DAYS.length; i++) {
+      JLabel day = new JLabel(DAYS[i]);
+      day.setHorizontalAlignment(SwingConstants.CENTER);
+      day.setVerticalAlignment(SwingConstants.CENTER);
+      day.setFont(dayFont);
 
-		days = new DayLabel[6][7];
-		for( int i = 0; i < days.length; i++ )
-		{
-			for( int j = 0; j < days[i].length; j++ )
-			{
-				days[i][j] = new DayLabel();
-				days[i][j].setDay(0);
-				dayGrid.add(days[i][j]);
-			}
-		}
+      dayGrid.add(day);
+    }
 
-		return dayGrid;
-	}
+    days = new DayLabel[6][7];
+    for (int i = 0; i < days.length; i++) {
+      for (int j = 0; j < days[i].length; j++) {
+        days[i][j] = new DayLabel();
+        days[i][j].setDay(0);
+        dayGrid.add(days[i][j]);
+      }
+    }
 
-	private void createGUI()
-	{
-		JComponent north = createNorth();
-		JComponent centre = createCentre();
+    return dayGrid;
+  }
 
-		setLayout(new BorderLayout(5, 5));
-		add(north, BorderLayout.NORTH);
-		add(centre, BorderLayout.CENTER);
-	}
+  private void createGUI() {
+    JComponent north = createNorth();
+    JComponent centre = createCentre();
 
-	private JComponent createNorth()
-	{
-		Map<TextAttribute, Float> fontAttributes = new HashMap<TextAttribute, Float>();
-		fontAttributes.put(TextAttribute.SIZE, 30f);
-		fontAttributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
+    setLayout(new BorderLayout(5, 5));
+    add(north, BorderLayout.NORTH);
+    add(centre, BorderLayout.CENTER);
+  }
 
-		dateDisplay = new JLabel();
-		dateDisplay.setVerticalAlignment(SwingConstants.BOTTOM);
-		dateDisplay.setFont(new Font(fontAttributes));
-		dateDisplay.setForeground(Color.BLUE);
+  private JComponent createNorth() {
+    Map<TextAttribute, Float> fontAttributes = new HashMap<TextAttribute, Float>();
+    fontAttributes.put(TextAttribute.SIZE, 30f);
+    fontAttributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
 
-		months = new JComboBox(MONTHS);
-		years = new JComboBox();
+    dateDisplay = new JLabel();
+    dateDisplay.setVerticalAlignment(SwingConstants.BOTTOM);
+    dateDisplay.setFont(new Font(fontAttributes));
+    dateDisplay.setForeground(Color.BLUE);
 
-		for( int i = YEAR_START; i <= YEAR_END; i++ )
-		{
-			years.addItem(Integer.valueOf(i));
-		}
+    months = new JComboBox(MONTHS);
+    years = new JComboBox();
 
-		months.addActionListener(this);
-		years.addActionListener(this);
+    for (int i = YEAR_START; i <= YEAR_END; i++) {
+      years.addItem(Integer.valueOf(i));
+    }
 
-		final int height1 = months.getPreferredSize().height;
-		final int width1 = months.getPreferredSize().width;
+    months.addActionListener(this);
+    years.addActionListener(this);
 
-		final int[] rows = {height1, height1};
-		final int[] cols = {TableLayout.FILL, width1};
+    final int height1 = months.getPreferredSize().height;
+    final int width1 = months.getPreferredSize().width;
 
-		JPanel all = new JPanel(new TableLayout(rows, cols, 5, 5));
-		all.add(dateDisplay, new Rectangle(0, 0, 1, 2));
-		all.add(months, new Rectangle(1, 0, 1, 1));
-		all.add(years, new Rectangle(1, 1, 1, 1));
+    final int[] rows = {height1, height1};
+    final int[] cols = {TableLayout.FILL, width1};
 
-		return all;
-	}
+    JPanel all = new JPanel(new TableLayout(rows, cols, 5, 5));
+    all.add(dateDisplay, new Rectangle(0, 0, 1, 2));
+    all.add(months, new Rectangle(1, 0, 1, 1));
+    all.add(years, new Rectangle(1, 1, 1, 1));
 
-	@Override
-	public void mouseClicked(MouseEvent e)
-	{
-		Point impact = e.getPoint();
-		Component c = dayGrid.getComponentAt(impact);
+    return all;
+  }
 
-		if( c instanceof DayLabel )
-		{
-			DayLabel newSelection = (DayLabel) c;
-			if( newSelection.isEnabled() )
-			{
-				if( currentSelection != null )
-				{
-					currentSelection.setSelected(false);
-				}
-				currentSelection = newSelection;
-				newSelection.setSelected(true);
-			}
-		}
-	}
+  @Override
+  public void mouseClicked(MouseEvent e) {
+    Point impact = e.getPoint();
+    Component c = dayGrid.getComponentAt(impact);
 
-	@Override
-	public void mouseEntered(MouseEvent e)
-	{
-		// We don't care about this event
-	}
+    if (c instanceof DayLabel) {
+      DayLabel newSelection = (DayLabel) c;
+      if (newSelection.isEnabled()) {
+        if (currentSelection != null) {
+          currentSelection.setSelected(false);
+        }
+        currentSelection = newSelection;
+        newSelection.setSelected(true);
+      }
+    }
+  }
 
-	@Override
-	public void mouseExited(MouseEvent e)
-	{
-		// We don't care about this event
-	}
+  @Override
+  public void mouseEntered(MouseEvent e) {
+    // We don't care about this event
+  }
 
-	@Override
-	public void mousePressed(MouseEvent e)
-	{
-		// We don't care about this event
-	}
+  @Override
+  public void mouseExited(MouseEvent e) {
+    // We don't care about this event
+  }
 
-	@Override
-	public void mouseReleased(MouseEvent e)
-	{
-		// We don't care about this event
-	}
+  @Override
+  public void mousePressed(MouseEvent e) {
+    // We don't care about this event
+  }
 
-	public Date getDate()
-	{
-		Date result = null;
-		if( currentSelection != null )
-		{
-			Calendar c = getCalendar();
-			c.set(Calendar.YEAR, years.getSelectedIndex() + YEAR_START);
-			c.set(Calendar.MONTH, months.getSelectedIndex());
-			c.set(Calendar.DAY_OF_MONTH, currentSelection.getDay());
-			c.set(Calendar.HOUR, 0);
-			c.set(Calendar.MINUTE, 0);
-			c.set(Calendar.SECOND, 0);
-			c.set(Calendar.MILLISECOND, 0);
+  @Override
+  public void mouseReleased(MouseEvent e) {
+    // We don't care about this event
+  }
 
-			result = c.getTime();
-		}
-		return result;
-	}
+  public Date getDate() {
+    Date result = null;
+    if (currentSelection != null) {
+      Calendar c = getCalendar();
+      c.set(Calendar.YEAR, years.getSelectedIndex() + YEAR_START);
+      c.set(Calendar.MONTH, months.getSelectedIndex());
+      c.set(Calendar.DAY_OF_MONTH, currentSelection.getDay());
+      c.set(Calendar.HOUR, 0);
+      c.set(Calendar.MINUTE, 0);
+      c.set(Calendar.SECOND, 0);
+      c.set(Calendar.MILLISECOND, 0);
 
-	public void setDate(Date date)
-	{
-		Calendar c = getCalendar();
-		c.setTime(date);
-		setDate(c.get(Calendar.MONTH), c.get(Calendar.YEAR));
-	}
+      result = c.getTime();
+    }
+    return result;
+  }
 
-	public void setDate(int month, int year)
-	{
-		if( month < 0 || month > MONTHS.length )
-		{
-			throw new IllegalArgumentException("Month must be between 0 and " + MONTHS.length); //$NON-NLS-1$
-		}
+  public void setDate(Date date) {
+    Calendar c = getCalendar();
+    c.setTime(date);
+    setDate(c.get(Calendar.MONTH), c.get(Calendar.YEAR));
+  }
 
-		if( year < YEAR_START || year > YEAR_END )
-		{
-			throw new IllegalArgumentException("Year must be between " + YEAR_START + " and " + YEAR_END); //$NON-NLS-1$ //$NON-NLS-2$
-		}
+  public void setDate(int month, int year) {
+    if (month < 0 || month > MONTHS.length) {
+      throw new IllegalArgumentException(
+          "Month must be between 0 and " + MONTHS.length); // $NON-NLS-1$
+    }
 
-		months.removeActionListener(this);
-		years.removeActionListener(this);
+    if (year < YEAR_START || year > YEAR_END) {
+      throw new IllegalArgumentException(
+          "Year must be between " + YEAR_START + " and " + YEAR_END); // $NON-NLS-1$ //$NON-NLS-2$
+    }
 
-		months.setSelectedIndex(month);
-		years.setSelectedIndex(year - YEAR_START);
+    months.removeActionListener(this);
+    years.removeActionListener(this);
 
-		months.addActionListener(this);
-		years.addActionListener(this);
+    months.setSelectedIndex(month);
+    years.setSelectedIndex(year - YEAR_START);
 
-		update();
-	}
+    months.addActionListener(this);
+    years.addActionListener(this);
 
-	public void setSelectionColor(Color c)
-	{
-		dateDisplay.setForeground(c);
-	}
+    update();
+  }
 
-	private void setup()
-	{
-		createGUI();
-	}
+  public void setSelectionColor(Color c) {
+    dateDisplay.setForeground(c);
+  }
 
-	private void update()
-	{
-		currentSelection = null;
+  private void setup() {
+    createGUI();
+  }
 
-		StringBuilder buffer = new StringBuilder(20);
-		buffer.append(months.getSelectedItem());
-		buffer.append(' ');
-		buffer.append(years.getSelectedItem());
-		dateDisplay.setText(buffer.toString());
+  private void update() {
+    currentSelection = null;
 
-		int year = years.getSelectedIndex() + YEAR_START;
-		int month = months.getSelectedIndex();
+    StringBuilder buffer = new StringBuilder(20);
+    buffer.append(months.getSelectedItem());
+    buffer.append(' ');
+    buffer.append(years.getSelectedItem());
+    dateDisplay.setText(buffer.toString());
 
-		Calendar firstDay = getCalendar();
-		firstDay.set(Calendar.YEAR, year);
-		firstDay.set(Calendar.MONTH, month);
-		firstDay.set(Calendar.DAY_OF_MONTH, 1);
+    int year = years.getSelectedIndex() + YEAR_START;
+    int month = months.getSelectedIndex();
 
-		int startDay = firstDay.get(Calendar.DAY_OF_WEEK) - 1;
+    Calendar firstDay = getCalendar();
+    firstDay.set(Calendar.YEAR, year);
+    firstDay.set(Calendar.MONTH, month);
+    firstDay.set(Calendar.DAY_OF_MONTH, 1);
 
-		if( ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0) )
-		{
-			dayCounts[1] = 29;
-		}
-		else
-		{
-			dayCounts[1] = 28;
-		}
+    int startDay = firstDay.get(Calendar.DAY_OF_WEEK) - 1;
 
-		int row = 0;
-		int column = 0;
-		int lastMonth = month - 1;
-		if( lastMonth == -1 )
-		{
-			lastMonth = 11;
-		}
+    if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
+      dayCounts[1] = 29;
+    } else {
+      dayCounts[1] = 28;
+    }
 
-		while( column < startDay )
-		{
-			int day = dayCounts[lastMonth] - startDay + column + 1;
-			days[row][column].setDay(day);
-			days[row][column].setEnabled(false);
-			days[row][column].setSelected(false);
-			column++;
-		}
+    int row = 0;
+    int column = 0;
+    int lastMonth = month - 1;
+    if (lastMonth == -1) {
+      lastMonth = 11;
+    }
 
-		for( int day = 1; day <= dayCounts[month]; day++, column++ )
-		{
-			days[row][column].setDay(day);
-			days[row][column].setEnabled(true);
-			days[row][column].setSelected(false);
+    while (column < startDay) {
+      int day = dayCounts[lastMonth] - startDay + column + 1;
+      days[row][column].setDay(day);
+      days[row][column].setEnabled(false);
+      days[row][column].setSelected(false);
+      column++;
+    }
 
-			if( column == days[row].length - 1 )
-			{
-				row++;
-				column = -1;
-			}
-		}
+    for (int day = 1; day <= dayCounts[month]; day++, column++) {
+      days[row][column].setDay(day);
+      days[row][column].setEnabled(true);
+      days[row][column].setSelected(false);
 
-		int remainingDays = 1;
-		while( column > 0 || row < days.length )
-		{
-			while( column < days[row].length )
-			{
-				days[row][column].setDay(remainingDays);
-				days[row][column].setEnabled(false);
-				days[row][column].setSelected(false);
+      if (column == days[row].length - 1) {
+        row++;
+        column = -1;
+      }
+    }
 
-				remainingDays++;
-				column++;
-			}
-			column = 0;
-			row++;
-		}
-	}
+    int remainingDays = 1;
+    while (column > 0 || row < days.length) {
+      while (column < days[row].length) {
+        days[row][column].setDay(remainingDays);
+        days[row][column].setEnabled(false);
+        days[row][column].setSelected(false);
 
-	private static Calendar getCalendar()
-	{
-		return Calendar.getInstance(TimeZone.getTimeZone("Etc/UTC"));
-	}
+        remainingDays++;
+        column++;
+      }
+      column = 0;
+      row++;
+    }
+  }
+
+  private static Calendar getCalendar() {
+    return Calendar.getInstance(TimeZone.getTimeZone("Etc/UTC"));
+  }
 }
 
-class DayLabel extends JLabel
-{
-	private boolean selected;
-	private int day;
-	private final JLabel label;
+class DayLabel extends JLabel {
+  private boolean selected;
+  private int day;
+  private final JLabel label;
 
-	private final Border selectedBorder = BorderFactory.createLineBorder(Color.BLACK);
-	private final Color selectedBackground = new Color(245, 245, 190);
+  private final Border selectedBorder = BorderFactory.createLineBorder(Color.BLACK);
+  private final Color selectedBackground = new Color(245, 245, 190);
 
-	private final Border normalBorder = null;
-	private final Color normalBackground = Color.WHITE;
-	private final Color enabledForeground = Color.BLACK;
-	private final Color disabledForeground = Color.LIGHT_GRAY;
+  private final Border normalBorder = null;
+  private final Color normalBackground = Color.WHITE;
+  private final Color enabledForeground = Color.BLACK;
+  private final Color disabledForeground = Color.LIGHT_GRAY;
 
-	public DayLabel()
-	{
-		label = new JLabel();
-		label.setHorizontalAlignment(SwingConstants.CENTER);
-		label.setVerticalAlignment(SwingConstants.CENTER);
-		label.setOpaque(true);
+  public DayLabel() {
+    label = new JLabel();
+    label.setHorizontalAlignment(SwingConstants.CENTER);
+    label.setVerticalAlignment(SwingConstants.CENTER);
+    label.setOpaque(true);
 
-		setLayout(new GridLayout(1, 1, 0, 0));
-		add(label);
+    setLayout(new GridLayout(1, 1, 0, 0));
+    add(label);
 
-		update();
-	}
+    update();
+  }
 
-	public int getDay()
-	{
-		return day;
-	}
+  public int getDay() {
+    return day;
+  }
 
-	public void setDay(int day)
-	{
-		this.day = day;
-		label.setText(Integer.toString(day));
-	}
+  public void setDay(int day) {
+    this.day = day;
+    label.setText(Integer.toString(day));
+  }
 
-	@Override
-	public void setEnabled(boolean enabled)
-	{
-		super.setEnabled(enabled);
-		update();
-	}
+  @Override
+  public void setEnabled(boolean enabled) {
+    super.setEnabled(enabled);
+    update();
+  }
 
-	public void setSelected(boolean selected)
-	{
-		this.selected = selected;
-		update();
-	}
+  public void setSelected(boolean selected) {
+    this.selected = selected;
+    update();
+  }
 
-	private void update()
-	{
-		if( selected )
-		{
-			label.setBorder(selectedBorder);
-			label.setBackground(selectedBackground);
-		}
-		else
-		{
-			label.setBorder(normalBorder);
-			label.setBackground(normalBackground);
-			if( isEnabled() )
-			{
-				label.setForeground(enabledForeground);
-			}
-			else
-			{
-				label.setForeground(disabledForeground);
-			}
-		}
-	}
+  private void update() {
+    if (selected) {
+      label.setBorder(selectedBorder);
+      label.setBackground(selectedBackground);
+    } else {
+      label.setBorder(normalBorder);
+      label.setBackground(normalBackground);
+      if (isEnabled()) {
+        label.setForeground(enabledForeground);
+      } else {
+        label.setForeground(disabledForeground);
+      }
+    }
+  }
 }

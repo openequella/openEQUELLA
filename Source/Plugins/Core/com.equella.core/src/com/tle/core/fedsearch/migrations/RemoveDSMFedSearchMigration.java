@@ -25,17 +25,15 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class RemoveDSMFedSearchMigration extends AbstractRemoveFedSearchMigration
-{
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(PluginServiceImpl.getMyPluginId(RemoveDSMFedSearchMigration.class) + ".removedsm.title");
-	}
+public class RemoveDSMFedSearchMigration extends AbstractRemoveFedSearchMigration {
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(
+        PluginServiceImpl.getMyPluginId(RemoveDSMFedSearchMigration.class) + ".removedsm.title");
+  }
 
-	@Override
-	protected String getFedSearchType()
-	{
-		return "DSMSearchEngine";
-	}
+  @Override
+  protected String getFedSearchType() {
+    return "DSMSearchEngine";
+  }
 }

@@ -21,12 +21,9 @@ import javax.ws.rs.Path;
 import com.tle.web.api.users.interfaces.RoleResource;
 import io.swagger.annotations.Api;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Path("usermanagement/local/role/")
 @Api(value = "Local roles", description = "usermanagement-local-role")
-public interface EquellaRoleResource extends RoleResource
-{
-	// Nothing to add, just the path annotation at the top
+public interface EquellaRoleResource extends RoleResource {
+  // Nothing to add, just the path annotation at the top
 }

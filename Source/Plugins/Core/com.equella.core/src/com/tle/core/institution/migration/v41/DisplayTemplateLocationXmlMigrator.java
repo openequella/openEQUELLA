@@ -32,53 +32,49 @@ import com.tle.core.institution.convert.XmlMigrator;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class DisplayTemplateLocationXmlMigrator extends XmlMigrator
-{
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
-	{
-		TemporaryFileHandle idefFolder = new SubTemporaryFile(staging, "itemdefinition");
+public class DisplayTemplateLocationXmlMigrator extends XmlMigrator {
+  @Override
+  public void execute(
+      TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) {
+    TemporaryFileHandle idefFolder = new SubTemporaryFile(staging, "itemdefinition");
 
-		for( String entry : xmlHelper.getXmlFileList(idefFolder) )
-		{
-			final PropBagEx xml = xmlHelper.readToPropBagEx(idefFolder, entry);
+    for (String entry : xmlHelper.getXmlFileList(idefFolder)) {
+      final PropBagEx xml = xmlHelper.readToPropBagEx(idefFolder, entry);
 
-			// Chop off the .xml from entry
-			String path = entry.substring(0, entry.length() - 4);
-			folderRename(xml.getSubtree("slow/itemSummarySections"), idefFolder, path);
+      // Chop off the .xml from entry
+      String path = entry.substring(0, entry.length() - 4);
+      folderRename(xml.getSubtree("slow/itemSummarySections"), idefFolder, path);
 
-			xmlHelper.writeFromPropBagEx(idefFolder, entry, xml);
-		}
-	}
+      xmlHelper.writeFromPropBagEx(idefFolder, entry, xml);
+    }
+  }
 
-	private void folderRename(PropBagEx xml, TemporaryFileHandle idefFolder, String path)
-	{
-		final String st = "summarytemplate";
-		final String dt = "displaytemplate";
+  private void folderRename(PropBagEx xml, TemporaryFileHandle idefFolder, String path) {
+    final String st = "summarytemplate";
+    final String dt = "displaytemplate";
 
-		PropBagIterator iter = xml.iterator("configList/com.tle.beans.entity.itemdef.SummarySectionsConfig");
+    PropBagIterator iter =
+        xml.iterator("configList/com.tle.beans.entity.itemdef.SummarySectionsConfig");
 
-		for( PropBagEx config : iter )
-		{
-			if( config.getNode("value").equals("xsltSection") ) //$NON-NLS-2$
-			{
-				// Get template folder path
-				String folderPath = String.format("%s/", path);
+    for (PropBagEx config : iter) {
+      if (config.getNode("value").equals("xsltSection")) // $NON-NLS-2$
+      {
+        // Get template folder path
+        String folderPath = String.format("%s/", path);
 
-				if( !Objects.equals(folderPath, "") )
-				{
-					// Get template folder
-					String folder = config.getNode("configuration");
-					folder = folder.substring(0, folder.indexOf('/'));
+        if (!Objects.equals(folderPath, "")) {
+          // Get template folder
+          String folder = config.getNode("configuration");
+          folder = folder.substring(0, folder.indexOf('/'));
 
-					// Rename folder
-					fileSystemService.rename(idefFolder, folderPath + folder, folderPath + dt);
+          // Rename folder
+          fileSystemService.rename(idefFolder, folderPath + folder, folderPath + dt);
 
-					// Update XML
-					String newFolderPath = config.getNode("configuration").replace(st, dt);
-					config.setNode("configuration", newFolderPath);
-				}
-			}
-		}
-	}
+          // Update XML
+          String newFolderPath = config.getNode("configuration").replace(st, dt);
+          config.setNode("configuration", newFolderPath);
+        }
+      }
+    }
+  }
 }

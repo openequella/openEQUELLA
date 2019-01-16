@@ -30,12 +30,13 @@ import com.tle.web.sections.standard.renderers.FileDropRenderer;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class EquellaFileDropExtension implements RendererFactoryExtension
-{
-	@Override
-	public SectionRenderable getRenderer(RendererFactory rendererFactory, SectionInfo info, String renderer,
-		HtmlComponentState state)
-	{
-		return new FileDropRenderer((HtmlFileDropState) state);
-	}
+public class EquellaFileDropExtension implements RendererFactoryExtension {
+  @Override
+  public SectionRenderable getRenderer(
+      RendererFactory rendererFactory,
+      SectionInfo info,
+      String renderer,
+      HtmlComponentState state) {
+    return new FileDropRenderer((HtmlFileDropState) state);
+  }
 }

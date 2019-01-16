@@ -27,29 +27,28 @@ import com.tle.web.template.section.TopbarLink;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class TopbarLinkService
-{
-	private PluginTracker<TopbarLink> links;
+public class TopbarLinkService {
+  private PluginTracker<TopbarLink> links;
 
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		links = new PluginTracker<TopbarLink>(pluginService, "com.tle.web.sections.equella", "topbarLink", "class",
-			new PluginTracker.ExtensionParamComparator("order"));
-		links.setBeanKey("class");
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    links =
+        new PluginTracker<TopbarLink>(
+            pluginService,
+            "com.tle.web.sections.equella",
+            "topbarLink",
+            "class",
+            new PluginTracker.ExtensionParamComparator("order"));
+    links.setBeanKey("class");
+  }
 
-	}
+  public PluginTracker<TopbarLink> getTopbarLinks() {
+    return links;
+  }
 
-	public PluginTracker<TopbarLink> getTopbarLinks()
-	{
-		return links;
-	}
-
-	public void clearCachedData()
-	{
-		for( TopbarLink link : links.getBeanList() )
-		{
-			link.clearCachedCount();
-		}
-	}
+  public void clearCachedData() {
+    for (TopbarLink link : links.getBeanList()) {
+      link.clearCachedCount();
+    }
+  }
 }

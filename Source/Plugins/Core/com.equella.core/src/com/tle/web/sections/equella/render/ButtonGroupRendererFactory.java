@@ -28,17 +28,18 @@ import com.tle.web.sections.standard.model.HtmlListState;
 
 /**
  * plugin defines the stateClassName as HtmlListState
- * 
+ *
  * @author Andrew Gibb
  */
 @Bind
 @Singleton
-public class ButtonGroupRendererFactory implements RendererFactoryExtension
-{
-	@Override
-	public SectionRenderable getRenderer(RendererFactory rendererFactory, SectionInfo info, String renderer,
-		HtmlComponentState state)
-	{
-		return new ButtonGroupRenderer((HtmlListState) state); // NOSONAR
-	}
+public class ButtonGroupRendererFactory implements RendererFactoryExtension {
+  @Override
+  public SectionRenderable getRenderer(
+      RendererFactory rendererFactory,
+      SectionInfo info,
+      String renderer,
+      HtmlComponentState state) {
+    return new ButtonGroupRenderer((HtmlListState) state); // NOSONAR
+  }
 }

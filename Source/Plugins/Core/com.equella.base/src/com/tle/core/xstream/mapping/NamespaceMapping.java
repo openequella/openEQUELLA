@@ -26,50 +26,39 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
-/**
- * 
- */
-public class NamespaceMapping extends NodeMapping
-{
-	private static final String XMLNS = "xmlns";
+/** */
+public class NamespaceMapping extends NodeMapping {
+  private static final String XMLNS = "xmlns";
 
-	public NamespaceMapping(String name, String node)
-	{
-		super(name, node);
-	}
+  public NamespaceMapping(String name, String node) {
+    super(name, node);
+  }
 
-	@Override
-	public void marshal(HierarchicalStreamWriter writer, MarshallingContext context, Object object)
-	{
-		Map<String, String> namespaces = (Map) getMarshalledValue(object);
-		if( namespaces != null )
-		{
-			for( Entry<String, String> entry : namespaces.entrySet() )
-			{
-				writer.addAttribute(entry.getKey(), entry.getValue());
-			}
-		}
-	}
+  @Override
+  public void marshal(HierarchicalStreamWriter writer, MarshallingContext context, Object object) {
+    Map<String, String> namespaces = (Map) getMarshalledValue(object);
+    if (namespaces != null) {
+      for (Entry<String, String> entry : namespaces.entrySet()) {
+        writer.addAttribute(entry.getKey(), entry.getValue());
+      }
+    }
+  }
 
-	@Override
-	protected Object getUnmarshalledValue(Object object, HierarchicalStreamReader reader, UnmarshallingContext context)
-	{
-		Iterator i = reader.getAttributeNames();
-		Map map = null;
-		while( i.hasNext() )
-		{
-			String ns = (String) i.next();
-			if( ns.startsWith(XMLNS) )
-			{
-				String value = reader.getAttribute(ns);
-				if( map == null )
-				{
-					map = new HashMap();
-				}
-				map.put(ns, value);
-			}
-
-		}
-		return map;
-	}
+  @Override
+  protected Object getUnmarshalledValue(
+      Object object, HierarchicalStreamReader reader, UnmarshallingContext context) {
+    Iterator i = reader.getAttributeNames();
+    Map map = null;
+    while (i.hasNext()) {
+      String ns = (String) i.next();
+      if (ns.startsWith(XMLNS)) {
+        String value = reader.getAttribute(ns);
+        if (map == null) {
+          map = new HashMap();
+        }
+        map.put(ns, value);
+      }
+    }
+    return map;
+  }
 }

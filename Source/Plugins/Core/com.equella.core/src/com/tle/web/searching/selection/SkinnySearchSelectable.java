@@ -31,87 +31,74 @@ import com.tle.web.selection.section.RootSelectionSection.Layout;
 
 /**
  * identical to SkinnyFavouritesNavAction, except for literal strings
- * 
+ *
  * @author larry
  */
-
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class SkinnySearchSelectable extends AbstractSelectionNavAction
-{
-	private static final String FORWARD_PATH = "/access/skinny/searching.do";
+public class SkinnySearchSelectable extends AbstractSelectionNavAction {
+  private static final String FORWARD_PATH = "/access/skinny/searching.do";
 
-	static
-	{
-		PluginResourceHandler.init(SkinnySearchSelectable.class);
-	}
+  static {
+    PluginResourceHandler.init(SkinnySearchSelectable.class);
+  }
 
-	@PlugKey("searching.selection.navaction")
-	private static Label NAV_ACTION_LABEL;
+  @PlugKey("searching.selection.navaction")
+  private static Label NAV_ACTION_LABEL;
 
-	@Inject
-	private SectionsController controller;
+  @Inject private SectionsController controller;
 
-	@Override
-	public SectionInfo createSectionInfo(SectionInfo info, SelectionSession session)
-	{
-		// TODO: should this be changing the session?? Maybe better to have an
-		// 'initialiseSession' method?
+  @Override
+  public SectionInfo createSectionInfo(SectionInfo info, SelectionSession session) {
+    // TODO: should this be changing the session?? Maybe better to have an
+    // 'initialiseSession' method?
 
-		// Contribution not support so no remote repos
-		session.setAllRemoteRepositories(false);
-		// There's no summary of selected things and this UI is focuesed on
-		// single selection only, so force it to be single selection only and
-		// forget about the checkout page.
-		session.setForcePost(true);
-		session.setSelectMultiple(false);
-		session.setSkipCheckoutPage(true);
+    // Contribution not support so no remote repos
+    session.setAllRemoteRepositories(false);
+    // There's no summary of selected things and this UI is focuesed on
+    // single selection only, so force it to be single selection only and
+    // forget about the checkout page.
+    session.setForcePost(true);
+    session.setSelectMultiple(false);
+    session.setSkipCheckoutPage(true);
 
-		return getSearchTree(info);
-	}
+    return getSearchTree(info);
+  }
 
-	@Override
-	public String getActionType()
-	{
-		return "skinnysearch";
-	}
+  @Override
+  public String getActionType() {
+    return "skinnysearch";
+  }
 
-	protected SectionInfo getSearchTree(SectionInfo info)
-	{
-		return controller.createForward(info, FORWARD_PATH);
-	}
+  protected SectionInfo getSearchTree(SectionInfo info) {
+    return controller.createForward(info, FORWARD_PATH);
+  }
 
-	public void setController(SectionsController controller)
-	{
-		this.controller = controller;
-	}
+  public void setController(SectionsController controller) {
+    this.controller = controller;
+  }
 
-	@Override
-	public Label getLabelForNavAction(SectionInfo info)
-	{
-		return NAV_ACTION_LABEL;
-	}
+  @Override
+  public Label getLabelForNavAction(SectionInfo info) {
+    return NAV_ACTION_LABEL;
+  }
 
-	@Override
-	public SectionInfo createForwardForNavAction(SectionInfo fromInfo, SelectionSession session)
-	{
-		return fromInfo.createForward(FORWARD_PATH);
-	}
+  @Override
+  public SectionInfo createForwardForNavAction(SectionInfo fromInfo, SelectionSession session) {
+    return fromInfo.createForward(FORWARD_PATH);
+  }
 
-	@Override
-	public boolean isActionAvailable(SectionInfo info, SelectionSession session)
-	{
-		if( !super.isActionAvailable(info, session) )
-		{
-			return false;
-		}
-		return session.getLayout() == Layout.SKINNY;
-	}
+  @Override
+  public boolean isActionAvailable(SectionInfo info, SelectionSession session) {
+    if (!super.isActionAvailable(info, session)) {
+      return false;
+    }
+    return session.getLayout() == Layout.SKINNY;
+  }
 
-	@Override
-	public boolean isShowBreadcrumbs()
-	{
-		return false;
-	}
+  @Override
+  public boolean isShowBreadcrumbs() {
+    return false;
+  }
 }

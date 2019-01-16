@@ -28,20 +28,19 @@ import com.tle.web.sections.standard.RendererFactory;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.renderers.FreemarkerComponentRendererFactory;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class BoxRendererFactory extends FreemarkerComponentRendererFactory
-{
-	@Inject
-	private AccessibilityModeService accessibilityService;
+public class BoxRendererFactory extends FreemarkerComponentRendererFactory {
+  @Inject private AccessibilityModeService accessibilityService;
 
-	@Override
-	public SectionRenderable getRenderer(RendererFactory rendererFactory, SectionInfo info, String renderer,
-		HtmlComponentState state)
-	{
-		return new BoxRenderer(factory, (BoxState) state, accessibilityService.isAccessibilityMode()); // NOSONAR
-	}
+  @Override
+  public SectionRenderable getRenderer(
+      RendererFactory rendererFactory,
+      SectionInfo info,
+      String renderer,
+      HtmlComponentState state) {
+    return new BoxRenderer(
+        factory, (BoxState) state, accessibilityService.isAccessibilityMode()); // NOSONAR
+  }
 }

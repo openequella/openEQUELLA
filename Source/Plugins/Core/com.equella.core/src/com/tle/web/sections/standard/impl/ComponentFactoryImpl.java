@@ -40,92 +40,84 @@ import com.tle.web.sections.standard.TextField;
 
 @Bind(ComponentFactory.class)
 @Singleton
-public class ComponentFactoryImpl implements ComponentFactory
-{
-	private static final Log LOGGER = LogFactory.getLog(ComponentFactoryImpl.class);
+public class ComponentFactoryImpl implements ComponentFactory {
+  private static final Log LOGGER = LogFactory.getLog(ComponentFactoryImpl.class);
 
-	@Inject
-	private RendererFactory renderFactory;
+  @Inject private RendererFactory renderFactory;
 
-	@Override
-	public Button createButton(String parentId, String id, SectionTree tree)
-	{
-		return createComponent(parentId, id, tree, Button.class, true);
-	}
+  @Override
+  public Button createButton(String parentId, String id, SectionTree tree) {
+    return createComponent(parentId, id, tree, Button.class, true);
+  }
 
-	@Override
-	public Link createLink(String parentId, String id, SectionTree tree)
-	{
-		return createComponent(parentId, id, tree, Link.class, true);
-	}
+  @Override
+  public Link createLink(String parentId, String id, SectionTree tree) {
+    return createComponent(parentId, id, tree, Link.class, true);
+  }
 
-	@Override
-	public MultiSelectionList<?> createMultiSelectionList(String parentId, String id, SectionTree tree)
-	{
-		return createComponent(parentId, id, tree, MultiSelectionList.class, true);
-	}
+  @Override
+  public MultiSelectionList<?> createMultiSelectionList(
+      String parentId, String id, SectionTree tree) {
+    return createComponent(parentId, id, tree, MultiSelectionList.class, true);
+  }
 
-	@Override
-	public SingleSelectionList<?> createSingleSelectionList(String parentId, String id, SectionTree tree)
-	{
-		return createComponent(parentId, id, tree, SingleSelectionList.class, true);
-	}
+  @Override
+  public SingleSelectionList<?> createSingleSelectionList(
+      String parentId, String id, SectionTree tree) {
+    return createComponent(parentId, id, tree, SingleSelectionList.class, true);
+  }
 
-	@Override
-	public TextField createTextField(String parentId, String id, SectionTree tree)
-	{
-		return createComponent(parentId, id, tree, TextField.class, true);
-	}
+  @Override
+  public TextField createTextField(String parentId, String id, SectionTree tree) {
+    return createComponent(parentId, id, tree, TextField.class, true);
+  }
 
-	@Override
-	public Checkbox createCheckbox(String parentId, String id, SectionTree tree)
-	{
-		return createComponent(parentId, id, tree, Checkbox.class, true);
-	}
+  @Override
+  public Checkbox createCheckbox(String parentId, String id, SectionTree tree) {
+    return createComponent(parentId, id, tree, Checkbox.class, true);
+  }
 
-	@Override
-	public void registerComponent(String parentId, String id, SectionTree tree, AbstractHtmlComponent<?> component)
-	{
-		setupAndRegister(parentId, id, tree, component, true);
-	}
+  @Override
+  public void registerComponent(
+      String parentId, String id, SectionTree tree, AbstractHtmlComponent<?> component) {
+    setupAndRegister(parentId, id, tree, component, true);
+  }
 
-	@Override
-	public void setupComponent(String parentId, String id, SectionTree tree, AbstractHtmlComponent<?> component)
-	{
-		setupAndRegister(parentId, id, tree, component, false);
-	}
+  @Override
+  public void setupComponent(
+      String parentId, String id, SectionTree tree, AbstractHtmlComponent<?> component) {
+    setupAndRegister(parentId, id, tree, component, false);
+  }
 
-	private void setupAndRegister(String parentId, String id, SectionTree tree, AbstractHtmlComponent<?> component,
-		boolean register)
-	{
-		component.setPreferredId(tree.getSubId(parentId, id));
-		if( component instanceof AbstractRenderedComponent<?> )
-		{
-			((AbstractRenderedComponent<?>) component).setRenderFactory(renderFactory);
-		}
-		if( register )
-		{
-			tree.registerInnerSection(component, parentId);
-		}
-	}
+  private void setupAndRegister(
+      String parentId,
+      String id,
+      SectionTree tree,
+      AbstractHtmlComponent<?> component,
+      boolean register) {
+    component.setPreferredId(tree.getSubId(parentId, id));
+    if (component instanceof AbstractRenderedComponent<?>) {
+      ((AbstractRenderedComponent<?>) component).setRenderFactory(renderFactory);
+    }
+    if (register) {
+      tree.registerInnerSection(component, parentId);
+    }
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	public <T extends AbstractHtmlComponent<?>> T createComponent(String parentId, String id, SectionTree tree,
-		Class<T> clazz, boolean register)
-	{
-		try
-		{
-			Constructor<T> cons = clazz.getConstructor();
-			T component = cons.newInstance();
-			setupAndRegister(parentId, id, tree, component, register);
-			return component;
-		}
-		catch( Exception ex )
-		{
-			LOGGER.error("Error creating component " + id + " of type " + clazz + " in parent " + parentId);
-			SectionUtils.throwRuntime(ex);
-		}
-		return null;
-	}
+  @Override
+  @SuppressWarnings("nls")
+  public <T extends AbstractHtmlComponent<?>> T createComponent(
+      String parentId, String id, SectionTree tree, Class<T> clazz, boolean register) {
+    try {
+      Constructor<T> cons = clazz.getConstructor();
+      T component = cons.newInstance();
+      setupAndRegister(parentId, id, tree, component, register);
+      return component;
+    } catch (Exception ex) {
+      LOGGER.error(
+          "Error creating component " + id + " of type " + clazz + " in parent " + parentId);
+      SectionUtils.throwRuntime(ex);
+    }
+    return null;
+  }
 }

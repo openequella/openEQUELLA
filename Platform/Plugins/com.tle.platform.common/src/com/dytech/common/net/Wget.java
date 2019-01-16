@@ -33,205 +33,169 @@ import com.google.common.io.Closeables;
 
 /**
  * A basic http downloader, one day set to become as powerful as Wget and Curl!
- * 
+ *
  * @author Nicholas Read
  */
-public class Wget
-{
-	private WgetConnectionHandler handler;
-	private final Map<String, String> requestParams;
-	private final Map<String, List<String>> headers;
-	private boolean useCookies;
-	private String cookie;
+public class Wget {
+  private WgetConnectionHandler handler;
+  private final Map<String, String> requestParams;
+  private final Map<String, List<String>> headers;
+  private boolean useCookies;
+  private String cookie;
 
-	public Wget()
-	{
-		super();
-		requestParams = new HashMap<String, String>();
-		headers = new HashMap<String, List<String>>();
-		useCookies = true;
-	}
+  public Wget() {
+    super();
+    requestParams = new HashMap<String, String>();
+    headers = new HashMap<String, List<String>>();
+    useCookies = true;
+  }
 
-	public Wget(WgetConnectionHandler handler)
-	{
-		this();
-		setHandler(handler);
-	}
+  public Wget(WgetConnectionHandler handler) {
+    this();
+    setHandler(handler);
+  }
 
-	public void setCookies(boolean useCookies)
-	{
-		this.useCookies = useCookies;
-	}
+  public void setCookies(boolean useCookies) {
+    this.useCookies = useCookies;
+  }
 
-	public void setRequestParameter(String key, String value) throws UnsupportedEncodingException
-	{
-		requestParams.put(encode(key), encode(value));
-	}
+  public void setRequestParameter(String key, String value) throws UnsupportedEncodingException {
+    requestParams.put(encode(key), encode(value));
+  }
 
-	public void removeRequestParameter(String key) throws UnsupportedEncodingException
-	{
-		requestParams.remove(encode(key));
-	}
+  public void removeRequestParameter(String key) throws UnsupportedEncodingException {
+    requestParams.remove(encode(key));
+  }
 
-	public void clearRequestParameters()
-	{
-		requestParams.clear();
-	}
+  public void clearRequestParameters() {
+    requestParams.clear();
+  }
 
-	public void setHeader(String key, String value)
-	{
-		List<String> vals = headers.get(key);
-		if( vals == null )
-		{
-			vals = new ArrayList<String>();
-			headers.put(key, vals);
-		}
-		vals.add(value);
-	}
+  public void setHeader(String key, String value) {
+    List<String> vals = headers.get(key);
+    if (vals == null) {
+      vals = new ArrayList<String>();
+      headers.put(key, vals);
+    }
+    vals.add(value);
+  }
 
-	public void removeHeader(String key)
-	{
-		headers.remove(key);
-	}
+  public void removeHeader(String key) {
+    headers.remove(key);
+  }
 
-	public void clearHeaders()
-	{
-		headers.clear();
-	}
+  public void clearHeaders() {
+    headers.clear();
+  }
 
-	private String encode(String s) throws UnsupportedEncodingException
-	{
-		return URLEncoder.encode(s, "UTF-8");
-	}
+  private String encode(String s) throws UnsupportedEncodingException {
+    return URLEncoder.encode(s, "UTF-8");
+  }
 
-	/**
-	 * The following method is a cut-n-paste rehashing of the ANT Get task which
-	 * is licenced under the Apache licence.
-	 */
-	public void retrieveURL(URL source, OutputStream target) throws IOException
-	{
-		InputStream input = null;
-		try
-		{
-			URLConnection connection = source.openConnection();
+  /**
+   * The following method is a cut-n-paste rehashing of the ANT Get task which is licenced under the
+   * Apache licence.
+   */
+  public void retrieveURL(URL source, OutputStream target) throws IOException {
+    InputStream input = null;
+    try {
+      URLConnection connection = source.openConnection();
 
-			if( useCookies && cookie != null )
-			{
-				connection.setRequestProperty("Cookie", cookie);
-			}
+      if (useCookies && cookie != null) {
+        connection.setRequestProperty("Cookie", cookie);
+      }
 
-			for( Map.Entry<String, List<String>> header : headers.entrySet() )
-			{
-				String headerName = header.getKey();
-				List<String> values = header.getValue();
-				StringBuilder valuesString = new StringBuilder();
-				boolean first = true;
-				for( String val : values )
-				{
-					if( !first )
-					{
-						valuesString.append(",");
-					}
-					valuesString.append(val);
-					first = false;
-				}
-				connection.setRequestProperty(headerName, valuesString.toString());
-			}
+      for (Map.Entry<String, List<String>> header : headers.entrySet()) {
+        String headerName = header.getKey();
+        List<String> values = header.getValue();
+        StringBuilder valuesString = new StringBuilder();
+        boolean first = true;
+        for (String val : values) {
+          if (!first) {
+            valuesString.append(",");
+          }
+          valuesString.append(val);
+          first = false;
+        }
+        connection.setRequestProperty(headerName, valuesString.toString());
+      }
 
-			if( !requestParams.isEmpty() )
-			{
-				// We will POST the parameters to ensure the URL is the same.
-				connection.setDoOutput(true);
+      if (!requestParams.isEmpty()) {
+        // We will POST the parameters to ensure the URL is the same.
+        connection.setDoOutput(true);
 
-				StringBuilder parameters = new StringBuilder();
-				for( String key : requestParams.keySet() )
-				{
-					String value = requestParams.get(key);
+        StringBuilder parameters = new StringBuilder();
+        for (String key : requestParams.keySet()) {
+          String value = requestParams.get(key);
 
-					if( parameters.length() > 0 )
-					{
-						parameters.append('&');
-					}
-					parameters.append(key);
-					parameters.append('=');
-					parameters.append(value);
-				}
+          if (parameters.length() > 0) {
+            parameters.append('&');
+          }
+          parameters.append(key);
+          parameters.append('=');
+          parameters.append(value);
+        }
 
-				byte[] paramBytes = parameters.toString().getBytes();
-				String paramLength = Integer.toString(paramBytes.length);
+        byte[] paramBytes = parameters.toString().getBytes();
+        String paramLength = Integer.toString(paramBytes.length);
 
-				connection.setRequestProperty("Content-Length", paramLength);
-				OutputStream oStream = connection.getOutputStream();
-				oStream.write(paramBytes);
-				oStream.flush();
-				oStream.close();
-			}
-			connection.connect();
+        connection.setRequestProperty("Content-Length", paramLength);
+        OutputStream oStream = connection.getOutputStream();
+        oStream.write(paramBytes);
+        oStream.flush();
+        oStream.close();
+      }
+      connection.connect();
 
-			if( useCookies )
-			{
-				String setcookie = connection.getHeaderField("Set-Cookie");
-				if( setcookie != null )
-				{
-					int index = setcookie.indexOf(';');
-					if( index >= 0 )
-					{
-						setcookie = setcookie.substring(0, index);
-					}
-					if( setcookie != null && setcookie.length() > 0 )
-					{
-						cookie = setcookie;
-					}
-				}
-			}
+      if (useCookies) {
+        String setcookie = connection.getHeaderField("Set-Cookie");
+        if (setcookie != null) {
+          int index = setcookie.indexOf(';');
+          if (index >= 0) {
+            setcookie = setcookie.substring(0, index);
+          }
+          if (setcookie != null && setcookie.length() > 0) {
+            cookie = setcookie;
+          }
+        }
+      }
 
-			if( handler != null )
-			{
-				handler.connectionMade(connection);
-			}
+      if (handler != null) {
+        handler.connectionMade(connection);
+      }
 
-			// Retry three times
-			boolean ok = false;
-			IOException lastException = null;
-			for( int i = 0; i < 3 && !ok; i++ )
-			{
-				try
-				{
-					input = connection.getInputStream();
-					ok = true;
-				}
-				catch( IOException ex )
-				{
-					// This might be expected. Just try again.
-					lastException = ex;
-				}
-			}
+      // Retry three times
+      boolean ok = false;
+      IOException lastException = null;
+      for (int i = 0; i < 3 && !ok; i++) {
+        try {
+          input = connection.getInputStream();
+          ok = true;
+        } catch (IOException ex) {
+          // This might be expected. Just try again.
+          lastException = ex;
+        }
+      }
 
-			if( input == null )
-			{
-				throw new IOException("Could not open connection", lastException);
-			}
+      if (input == null) {
+        throw new IOException("Could not open connection", lastException);
+      }
 
-			ByteStreams.copy(input, target);
-		}
-		finally
-		{
-			Closeables.close(input, true);
-		}
-	}
+      ByteStreams.copy(input, target);
+    } finally {
+      Closeables.close(input, true);
+    }
+  }
 
-	public WgetConnectionHandler getHandler()
-	{
-		return handler;
-	}
+  public WgetConnectionHandler getHandler() {
+    return handler;
+  }
 
-	public final void setHandler(WgetConnectionHandler handler)
-	{
-		this.handler = handler;
-	}
+  public final void setHandler(WgetConnectionHandler handler) {
+    this.handler = handler;
+  }
 
-	public static void getURL(URL source, OutputStream target) throws IOException
-	{
-		new Wget().retrieveURL(source, target);
-	}
+  public static void getURL(URL source, OutputStream target) throws IOException {
+    new Wget().retrieveURL(source, target);
+  }
 }

@@ -63,315 +63,275 @@ import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.SimpleHtmlListModel;
 
-public abstract class AbstractEditSection<M extends EditInstitutionModel> extends AbstractPrototypeSection<M>
-	implements
-		HtmlRenderer
-{
-	@PlugKey("institution.options.items")
-	private static Label ITEMS_LABEL;
-	@PlugKey("institution.options.items.attachments")
-	private static Label ITEM_ATTACHMENTS_LABEL;
-	@PlugKey("institution.options.auditlogs")
-	private static Label AUDITLOGS_LABEL;
+public abstract class AbstractEditSection<M extends EditInstitutionModel>
+    extends AbstractPrototypeSection<M> implements HtmlRenderer {
+  @PlugKey("institution.options.items")
+  private static Label ITEMS_LABEL;
 
-	@PlugKey("institutions.edit.notmatch")
-	private static Label LABEL_PASSWORDMATCH;
-	@PlugKey("institutions.edit.proceed")
-	private static Label LABEL_PROCEED;
-	@PlugKey("institutions.edit.timezone.systemname")
-	private static String KEY_TIMEZONE_SYSTEM;
+  @PlugKey("institution.options.items.attachments")
+  private static Label ITEM_ATTACHMENTS_LABEL;
 
-	@Inject
-	private InstitutionImportService instImportService;
-	@Inject
-	private MigrationService migrationService;
-	@Inject
-	private DatabaseTabUtils databaseTabUtils;
+  @PlugKey("institution.options.auditlogs")
+  private static Label AUDITLOGS_LABEL;
 
-	@TreeLookup
-	private ProgressSection progressSection;
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("institutions.edit.notmatch")
+  private static Label LABEL_PASSWORDMATCH;
 
-	@Component
-	private HiddenState selectedDatabase;
-	@Component
-	@PlugKey("institution.details.schema.select")
-	private Button selectDatabase;
-	@Inject
-	@Component
-	private SelectDatabaseDialog selectDatabaseDialog;
+  @PlugKey("institutions.edit.proceed")
+  private static Label LABEL_PROCEED;
 
-	@Component(stateful = false)
-	private TextField adminPassword;
-	@Component(stateful = false)
-	private TextField adminConfirm;
-	@Component
-	private TextField name;
-	@Component
-	private TextField url;
-	@Component
-	private NumberField limit;
-	@Component
-	private TextField filestore;
-	@Component
-	private SingleSelectionList<NameValue> timeZones;
-	@Component
-	private Button actionButton;
-	@Component
-	@PlugKey("institutions.edit.cancel")
-	private Button cancelButton;
-	@Component
-	private Checkbox itemsCheck;
-	@Component
-	private Checkbox attachmentsCheck;
-	@Component
-	private Checkbox auditlogsCheck;
+  @PlugKey("institutions.edit.timezone.systemname")
+  private static String KEY_TIMEZONE_SYSTEM;
 
-	public Button getSelectDatabase()
-	{
-		return selectDatabase;
-	}
+  @Inject private InstitutionImportService instImportService;
+  @Inject private MigrationService migrationService;
+  @Inject private DatabaseTabUtils databaseTabUtils;
 
-	public TextField getAdminPassword()
-	{
-		return adminPassword;
-	}
+  @TreeLookup private ProgressSection progressSection;
+  @EventFactory private EventGenerator events;
 
-	public TextField getAdminConfirm()
-	{
-		return adminConfirm;
-	}
+  @Component private HiddenState selectedDatabase;
 
-	public TextField getName()
-	{
-		return name;
-	}
+  @Component
+  @PlugKey("institution.details.schema.select")
+  private Button selectDatabase;
 
-	public TextField getUrl()
-	{
-		return url;
-	}
+  @Inject @Component private SelectDatabaseDialog selectDatabaseDialog;
 
-	public TextField getFilestore()
-	{
-		return filestore;
-	}
+  @Component(stateful = false)
+  private TextField adminPassword;
 
-	public NumberField getLimit()
-	{
-		return limit;
-	}
+  @Component(stateful = false)
+  private TextField adminConfirm;
 
-	public SingleSelectionList<NameValue> getTimeZones()
-	{
-		return timeZones;
-	}
+  @Component private TextField name;
+  @Component private TextField url;
+  @Component private NumberField limit;
+  @Component private TextField filestore;
+  @Component private SingleSelectionList<NameValue> timeZones;
+  @Component private Button actionButton;
 
-	public Button getActionButton()
-	{
-		return actionButton;
-	}
+  @Component
+  @PlugKey("institutions.edit.cancel")
+  private Button cancelButton;
 
-	public Button getCancelButton()
-	{
-		return cancelButton;
-	}
+  @Component private Checkbox itemsCheck;
+  @Component private Checkbox attachmentsCheck;
+  @Component private Checkbox auditlogsCheck;
 
-	@Override
-	@SuppressWarnings("nls")
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  public Button getSelectDatabase() {
+    return selectDatabase;
+  }
 
-		itemsCheck.setLabel(ITEMS_LABEL);
+  public TextField getAdminPassword() {
+    return adminPassword;
+  }
 
-		itemsCheck.addEventStatements(JSHandler.EVENT_CHANGE, new FunctionCallStatement(
-			attachmentsCheck.createDisableFunction(), new NotExpression(itemsCheck.createGetExpression())));
+  public TextField getAdminConfirm() {
+    return adminConfirm;
+  }
 
-		attachmentsCheck.setLabel(ITEM_ATTACHMENTS_LABEL);
-		auditlogsCheck.setLabel(AUDITLOGS_LABEL);
+  public TextField getName() {
+    return name;
+  }
 
-		adminPassword.setAutocompleteDisabled(true);
-		adminConfirm.setAutocompleteDisabled(true);
+  public TextField getUrl() {
+    return url;
+  }
 
-		cancelButton.setClickHandler(events.getNamedHandler("cancel"));
-		SubmitValuesHandler handler = events.getNamedHandler("doAction");
-		handler.addValidator(new SimpleValidator(
-			new EqualityExpression(adminPassword.createGetExpression(), adminConfirm.createGetExpression()))
-				.setFailureStatements(Js.alert_s(LABEL_PASSWORDMATCH)));
-		handler.addValidator(new Confirm(LABEL_PROCEED));
-		actionButton.setClickHandler(handler);
+  public TextField getFilestore() {
+    return filestore;
+  }
 
-		timeZones.setListModel(new SimpleHtmlListModel<NameValue>(
-			DateHelper.getTimeZoneNameValues(new BundleNameValue(KEY_TIMEZONE_SYSTEM, ""), false)));
+  public NumberField getLimit() {
+    return limit;
+  }
 
-		selectDatabaseDialog.setOkCallback(events.getSubmitValuesFunction("schemaSelected"));
-		selectDatabase.setClickHandler(selectDatabaseDialog.getOpenFunction());
+  public SingleSelectionList<NameValue> getTimeZones() {
+    return timeZones;
+  }
 
-		limit.setIntegersOnly(false);
-		limit.setMin(0);
-		limit.setStep(0.1);
-		limit.setDefaultNumber(0.0);
-	}
+  public Button getActionButton() {
+    return actionButton;
+  }
 
-	@EventHandlerMethod
-	public abstract void doAction(SectionInfo info);
+  public Button getCancelButton() {
+    return cancelButton;
+  }
 
-	@EventHandlerMethod
-	public void cancel(SectionInfo info)
-	{
-		SectionUtils.clearModel(info, this);
-	}
+  @Override
+  @SuppressWarnings("nls")
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@EventHandlerMethod
-	public void schemaSelected(SectionInfo info, long schemaId)
-	{
-		getModel(info).setNavigateAway(false);
-		selectedDatabase.setValue(info, schemaId);
-	}
+    itemsCheck.setLabel(ITEMS_LABEL);
 
-	protected Institution getInstitutionDetails(SectionInfo info)
-	{
-		Institution i = new Institution();
-		i.setUniqueId(getModel(info).getId());
-		i.setName(name.getValue(info));
-		i.setFilestoreId(filestore.getValue(info));
-		i.setUrl(url.getValue(info));
-		i.setAdminPassword(adminPassword.getValue(info));
-		i.setTimeZone(timeZones.getSelectedValueAsString(info));
-		try
-		{
-			i.setQuota(limit.getValue(info).doubleValue());
-		}
-		catch( NumberFormatException e )
-		{
-			i.setQuota(-1);
-		}
-		return i;
-	}
+    itemsCheck.addEventStatements(
+        JSHandler.EVENT_CHANGE,
+        new FunctionCallStatement(
+            attachmentsCheck.createDisableFunction(),
+            new NotExpression(itemsCheck.createGetExpression())));
 
-	protected void setupFieldsFromInstitution(SectionInfo info, Institution i)
-	{
-		name.setValue(info, i.getName());
-		filestore.setValue(info, i.getFilestoreId());
-		limit.setValue(info, i.getQuota());
-		url.setValue(info, i.getUrl());
-		timeZones.setSelectedStringValue(info, i.getTimeZone());
+    attachmentsCheck.setLabel(ITEM_ATTACHMENTS_LABEL);
+    auditlogsCheck.setLabel(AUDITLOGS_LABEL);
 
-		getModel(info).setId(i.getUniqueId());
-		getModel(info).setNavigateAway(false);
-	}
+    adminPassword.setAutocompleteDisabled(true);
+    adminConfirm.setAutocompleteDisabled(true);
 
-	protected void prepareSelectedDatabase(SectionInfo info)
-	{
-		long id = getSelectedDatabase(info);
-		if( id > 0 )
-		{
-			getModel(info).setSelectedDatabase(databaseTabUtils.getNameRenderer(migrationService.getSchema(id)));
-		}
-		else
-		{
-			// If there is only one schema online, select that and disable
-			// choice
+    cancelButton.setClickHandler(events.getNamedHandler("cancel"));
+    SubmitValuesHandler handler = events.getNamedHandler("doAction");
+    handler.addValidator(
+        new SimpleValidator(
+                new EqualityExpression(
+                    adminPassword.createGetExpression(), adminConfirm.createGetExpression()))
+            .setFailureStatements(Js.alert_s(LABEL_PASSWORDMATCH)));
+    handler.addValidator(new Confirm(LABEL_PROCEED));
+    actionButton.setClickHandler(handler);
 
-			Iterator<DatabaseSchema> iter = selectDatabaseDialog.getOnlineSchemas().iterator();
-			// We should never be able to get to here unless we have at least
-			// one online schema.
-			DatabaseSchema ds = iter.next();
-			if( !iter.hasNext() )
-			{
-				getModel(info).setSelectedDatabase(databaseTabUtils.getNameRenderer(ds));
+    timeZones.setListModel(
+        new SimpleHtmlListModel<NameValue>(
+            DateHelper.getTimeZoneNameValues(new BundleNameValue(KEY_TIMEZONE_SYSTEM, ""), false)));
 
-				selectedDatabase.setValue(info, ds.getId());
-				selectDatabase.setDisplayed(info, false);
-			}
-		}
-	}
+    selectDatabaseDialog.setOkCallback(events.getSubmitValuesFunction("schemaSelected"));
+    selectDatabase.setClickHandler(selectDatabaseDialog.getOpenFunction());
 
-	protected long getSelectedDatabase(SectionInfo info)
-	{
-		String value = selectedDatabase.getValue(info);
-		if( !Check.isEmpty(value) )
-		{
-			try
-			{
-				return Long.parseLong(value);
-			}
-			catch( NumberFormatException ex )
-			{
-				// Nothing to worry about
-			}
-		}
-		return -1;
-	}
+    limit.setIntegersOnly(false);
+    limit.setMin(0);
+    limit.setStep(0.1);
+    limit.setDefaultNumber(0.0);
+  }
 
-	protected boolean validate(SectionInfo info, Institution institution)
-	{
-		Map<String, String> errors = instImportService.validate(institution);
-		extraValidate(info, institution, errors);
-		if( !errors.isEmpty() )
-		{
-			getModel(info).setErrors(errors);
-			info.preventGET();
-			return false;
-		}
-		return true;
-	}
+  @EventHandlerMethod
+  public abstract void doAction(SectionInfo info);
 
-	protected void extraValidate(SectionInfo info, Institution institution, Map<String, String> errors)
-	{
-		// nothing by default
-	}
+  @EventHandlerMethod
+  public void cancel(SectionInfo info) {
+    SectionUtils.clearModel(info, this);
+  }
 
-	protected void ensureForCloneOrImport(Institution i)
-	{
-		i.setUniqueId(0);
+  @EventHandlerMethod
+  public void schemaSelected(SectionInfo info, long schemaId) {
+    getModel(info).setNavigateAway(false);
+    selectedDatabase.setValue(info, schemaId);
+  }
 
-		if( Check.isEmpty(i.getFilestoreId()) )
-		{
-			i.setFilestoreId(UUID.randomUUID().toString().replaceAll("[^A-Za-z0-9]+", "") //$NON-NLS-1$ //$NON-NLS-2$
-				.substring(0, 20));
-		}
-	}
+  protected Institution getInstitutionDetails(SectionInfo info) {
+    Institution i = new Institution();
+    i.setUniqueId(getModel(info).getId());
+    i.setName(name.getValue(info));
+    i.setFilestoreId(filestore.getValue(info));
+    i.setUrl(url.getValue(info));
+    i.setAdminPassword(adminPassword.getValue(info));
+    i.setTimeZone(timeZones.getSelectedValueAsString(info));
+    try {
+      i.setQuota(limit.getValue(info).doubleValue());
+    } catch (NumberFormatException e) {
+      i.setQuota(-1);
+    }
+    return i;
+  }
 
-	public Checkbox getItemsCheck()
-	{
-		return itemsCheck;
-	}
+  protected void setupFieldsFromInstitution(SectionInfo info, Institution i) {
+    name.setValue(info, i.getName());
+    filestore.setValue(info, i.getFilestoreId());
+    limit.setValue(info, i.getQuota());
+    url.setValue(info, i.getUrl());
+    timeZones.setSelectedStringValue(info, i.getTimeZone());
 
-	public Checkbox getAttachmentsCheck()
-	{
-		return attachmentsCheck;
-	}
+    getModel(info).setId(i.getUniqueId());
+    getModel(info).setNavigateAway(false);
+  }
 
-	public Checkbox getAuditlogsCheck()
-	{
-		return auditlogsCheck;
-	}
+  protected void prepareSelectedDatabase(SectionInfo info) {
+    long id = getSelectedDatabase(info);
+    if (id > 0) {
+      getModel(info)
+          .setSelectedDatabase(databaseTabUtils.getNameRenderer(migrationService.getSchema(id)));
+    } else {
+      // If there is only one schema online, select that and disable
+      // choice
 
-	protected Set<String> getFlags(SectionInfo info)
-	{
-		Set<String> flags = new HashSet<String>();
+      Iterator<DatabaseSchema> iter = selectDatabaseDialog.getOnlineSchemas().iterator();
+      // We should never be able to get to here unless we have at least
+      // one online schema.
+      DatabaseSchema ds = iter.next();
+      if (!iter.hasNext()) {
+        getModel(info).setSelectedDatabase(databaseTabUtils.getNameRenderer(ds));
 
-		if( itemsCheck.isChecked(info) )
-		{
-			if( !attachmentsCheck.isChecked(info) )
-			{
-				flags.add(ConverterParams.NO_ITEMSATTACHMENTS);
-			}
-		}
-		else
-		{
-			flags.add(ConverterParams.NO_ITEMS);
-			flags.add(ConverterParams.NO_ITEMSATTACHMENTS);
-		}
+        selectedDatabase.setValue(info, ds.getId());
+        selectDatabase.setDisplayed(info, false);
+      }
+    }
+  }
 
-		if( !auditlogsCheck.isChecked(info) )
-		{
-			flags.add(ConverterParams.NO_AUDITLOGS);
-		}
+  protected long getSelectedDatabase(SectionInfo info) {
+    String value = selectedDatabase.getValue(info);
+    if (!Check.isEmpty(value)) {
+      try {
+        return Long.parseLong(value);
+      } catch (NumberFormatException ex) {
+        // Nothing to worry about
+      }
+    }
+    return -1;
+  }
 
-		return flags;
-	}
+  protected boolean validate(SectionInfo info, Institution institution) {
+    Map<String, String> errors = instImportService.validate(institution);
+    extraValidate(info, institution, errors);
+    if (!errors.isEmpty()) {
+      getModel(info).setErrors(errors);
+      info.preventGET();
+      return false;
+    }
+    return true;
+  }
+
+  protected void extraValidate(
+      SectionInfo info, Institution institution, Map<String, String> errors) {
+    // nothing by default
+  }
+
+  protected void ensureForCloneOrImport(Institution i) {
+    i.setUniqueId(0);
+
+    if (Check.isEmpty(i.getFilestoreId())) {
+      i.setFilestoreId(
+          UUID.randomUUID()
+              .toString()
+              .replaceAll("[^A-Za-z0-9]+", "") // $NON-NLS-1$ //$NON-NLS-2$
+              .substring(0, 20));
+    }
+  }
+
+  public Checkbox getItemsCheck() {
+    return itemsCheck;
+  }
+
+  public Checkbox getAttachmentsCheck() {
+    return attachmentsCheck;
+  }
+
+  public Checkbox getAuditlogsCheck() {
+    return auditlogsCheck;
+  }
+
+  protected Set<String> getFlags(SectionInfo info) {
+    Set<String> flags = new HashSet<String>();
+
+    if (itemsCheck.isChecked(info)) {
+      if (!attachmentsCheck.isChecked(info)) {
+        flags.add(ConverterParams.NO_ITEMSATTACHMENTS);
+      }
+    } else {
+      flags.add(ConverterParams.NO_ITEMS);
+      flags.add(ConverterParams.NO_ITEMSATTACHMENTS);
+    }
+
+    if (!auditlogsCheck.isChecked(info)) {
+      flags.add(ConverterParams.NO_AUDITLOGS);
+    }
+
+    return flags;
+  }
 }

@@ -29,26 +29,24 @@ import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.filesystem.LanguageFile;
 import com.tle.core.remoting.RemoteLanguageService;
 
-/**
- * @author Nicholas Read
- */
-public interface LanguageService extends RemoteLanguageService
-{
-	boolean isRightToLeft(Locale locale);
+/** @author Nicholas Read */
+public interface LanguageService extends RemoteLanguageService {
+  boolean isRightToLeft(Locale locale);
 
-	ResourceBundle getResourceBundle(Locale locale, String bundleGroup);
+  ResourceBundle getResourceBundle(Locale locale, String bundleGroup);
 
-	void refreshBundles();
+  void refreshBundles();
 
-	void deleteLanguagePack(Locale locale);
+  void deleteLanguagePack(Locale locale);
 
-	void importLanguagePack(String stagingId, String filename) throws IOException;
+  void importLanguagePack(String stagingId, String filename) throws IOException;
 
-	LanguageFile importLanguagePack(TemporaryFileHandle staging, InputStream zipIn) throws IOException;
+  LanguageFile importLanguagePack(TemporaryFileHandle staging, InputStream zipIn)
+      throws IOException;
 
-	void exportLanguagePack(Locale locale, OutputStream out) throws IOException;
+  void exportLanguagePack(Locale locale, OutputStream out) throws IOException;
 
-	List<Locale> listAvailableResourceBundles();
+  List<Locale> listAvailableResourceBundles();
 
-	void setLanguages(Collection<Language> languages);
+  void setLanguages(Collection<Language> languages);
 }

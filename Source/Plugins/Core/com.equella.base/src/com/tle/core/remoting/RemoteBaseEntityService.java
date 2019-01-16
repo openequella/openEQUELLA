@@ -18,7 +18,6 @@ package com.tle.core.remoting;
 
 import com.tle.beans.entity.LanguageBundle;
 
-public interface RemoteBaseEntityService
-{
-	LanguageBundle getNameForId(long id);
+public interface RemoteBaseEntityService {
+  LanguageBundle getNameForId(long id);
 }

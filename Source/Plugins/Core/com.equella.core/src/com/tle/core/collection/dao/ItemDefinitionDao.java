@@ -23,20 +23,15 @@ import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.ItemKey;
 import com.tle.core.entity.dao.AbstractEntityDao;
 
-/**
- * @author Nicholas Read
- */
-public interface ItemDefinitionDao extends AbstractEntityDao<ItemDefinition>
-{
-	List<ItemDefinition> findByType(String type);
+/** @author Nicholas Read */
+public interface ItemDefinitionDao extends AbstractEntityDao<ItemDefinition> {
+  List<ItemDefinition> findByType(String type);
 
-	List<BaseEntityLabel> listAllForSchema(long schemaID);
+  List<BaseEntityLabel> listAllForSchema(long schemaID);
 
-	/**
-	 * @deprecated Use an event to ask for reference
-	 */
-	@Deprecated
-	List<Class<?>> getReferencingClasses(long id);
+  /** @deprecated Use an event to ask for reference */
+  @Deprecated
+  List<Class<?>> getReferencingClasses(long id);
 
-	ItemDefinition getByItemId(ItemKey itemId);
+  ItemDefinition getByItemId(ItemKey itemId);
 }

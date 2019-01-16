@@ -36,41 +36,35 @@ import com.tle.web.resources.ResourcesService;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class CreateTomcatSessionEntity extends AbstractCreateMigration
-{
-	private static PluginResourceHelper r = ResourcesService.getResourceHelper(CreateTomcatSessionEntity.class);
+public class CreateTomcatSessionEntity extends AbstractCreateMigration {
+  private static PluginResourceHelper r =
+      ResourcesService.getResourceHelper(CreateTomcatSessionEntity.class);
 
-	@Inject
-	private EventService eventService;
-	
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(r.key("migration.create.info"));
-	}
-	
-	@Override
-	public void migrate(MigrationResult result) throws Exception
-	{
-		super.migrate(result);
-		eventService.publishApplicationEvent(new TomcatRestartEvent());
-	}
+  @Inject private EventService eventService;
 
-	@Override
-	protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper)
-	{
-		return new TablesOnlyFilter("tomcat_sessions");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(r.key("migration.create.info"));
+  }
 
-	@Override
-	protected void addExtraStatements(HibernateMigrationHelper helper, List<String> statements)
-	{
-		helper.getAddIndexesForColumns("tomcat_sessions", "app");
-	}
+  @Override
+  public void migrate(MigrationResult result) throws Exception {
+    super.migrate(result);
+    eventService.publishApplicationEvent(new TomcatRestartEvent());
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class[]{TomcatSessions.class};
-	}
+  @Override
+  protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
+    return new TablesOnlyFilter("tomcat_sessions");
+  }
+
+  @Override
+  protected void addExtraStatements(HibernateMigrationHelper helper, List<String> statements) {
+    helper.getAddIndexesForColumns("tomcat_sessions", "app");
+  }
+
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class[] {TomcatSessions.class};
+  }
 }

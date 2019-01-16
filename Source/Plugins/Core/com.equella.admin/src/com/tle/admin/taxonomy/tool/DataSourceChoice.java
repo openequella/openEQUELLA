@@ -29,130 +29,106 @@ import com.tle.common.taxonomy.Taxonomy;
 import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.plugins.PluginService;
 
-public abstract class DataSourceChoice extends DynamicChoicePanel<Taxonomy>
-{
-	private JComponent existingTab;
-	private DynamicTabService dynamicTabService;
-	private ClientService clientService;
-	private PluginService pluginService;
-	private boolean readonly;
-	private String entityUuid;
+public abstract class DataSourceChoice extends DynamicChoicePanel<Taxonomy> {
+  private JComponent existingTab;
+  private DynamicTabService dynamicTabService;
+  private ClientService clientService;
+  private PluginService pluginService;
+  private boolean readonly;
+  private String entityUuid;
 
-	private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
+  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
 
-	protected String getString(String key)
-	{
-		return CurrentLocale.get(getKey(key));
-	}
+  protected String getString(String key) {
+    return CurrentLocale.get(getKey(key));
+  }
 
-	protected String getKey(String key)
-	{
-		return KEY_PFX+key;
-	}
+  protected String getKey(String key) {
+    return KEY_PFX + key;
+  }
 
-	public DataSourceChoice()
-	{
-		super();
-	}
+  public DataSourceChoice() {
+    super();
+  }
 
-	public DataSourceChoice(LayoutManager lm)
-	{
-		super(lm);
-	}
+  public DataSourceChoice(LayoutManager lm) {
+    super(lm);
+  }
 
-	protected void addTab(final String tabName, final JComponent comp)
-	{
-		if( tabName != null && comp != null )
-		{
-			existingTab = comp;
-			dynamicTabService.addTab(comp, tabName, 1);
-		}
-	}
+  protected void addTab(final String tabName, final JComponent comp) {
+    if (tabName != null && comp != null) {
+      existingTab = comp;
+      dynamicTabService.addTab(comp, tabName, 1);
+    }
+  }
 
-	@Override
-	public void choiceDeselected()
-	{
-		if( existingTab != null )
-		{
-			dynamicTabService.removeTab(existingTab);
-		}
-	}
+  @Override
+  public void choiceDeselected() {
+    if (existingTab != null) {
+      dynamicTabService.removeTab(existingTab);
+    }
+  }
 
-	@Override
-	public boolean hasDetectedChanges()
-	{
-		if( super.hasDetectedChanges() )
-		{
-			return true;
-		}
+  @Override
+  public boolean hasDetectedChanges() {
+    if (super.hasDetectedChanges()) {
+      return true;
+    }
 
-		if( existingTab instanceof Changeable )
-		{
-			Changeable ch = (Changeable) existingTab;
-			return ch.hasDetectedChanges();
-		}
+    if (existingTab instanceof Changeable) {
+      Changeable ch = (Changeable) existingTab;
+      return ch.hasDetectedChanges();
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	@Override
-	public void clearChanges()
-	{
-		super.clearChanges();
-		if( existingTab instanceof Changeable )
-		{
-			Changeable ch = (Changeable) existingTab;
-			ch.clearChanges();
-		}
-	}
+  @Override
+  public void clearChanges() {
+    super.clearChanges();
+    if (existingTab instanceof Changeable) {
+      Changeable ch = (Changeable) existingTab;
+      ch.clearChanges();
+    }
+  }
 
-	public ClientService getClientService()
-	{
-		return clientService;
-	}
+  public ClientService getClientService() {
+    return clientService;
+  }
 
-	public void setDynamicTabService(DynamicTabService dynamicTabService)
-	{
-		this.dynamicTabService = dynamicTabService;
-	}
+  public void setDynamicTabService(DynamicTabService dynamicTabService) {
+    this.dynamicTabService = dynamicTabService;
+  }
 
-	public PluginService getPluginService()
-	{
-		return pluginService;
-	}
+  public PluginService getPluginService() {
+    return pluginService;
+  }
 
-	public void setClientService(ClientService clientService)
-	{
-		this.clientService = clientService;
-	}
+  public void setClientService(ClientService clientService) {
+    this.clientService = clientService;
+  }
 
-	public void setPluginService(PluginService pluginService)
-	{
-		this.pluginService = pluginService;
-	}
+  public void setPluginService(PluginService pluginService) {
+    this.pluginService = pluginService;
+  }
 
-	public boolean isReadonly()
-	{
-		return readonly;
-	}
+  public boolean isReadonly() {
+    return readonly;
+  }
 
-	public void setReadOnly(boolean readonly)
-	{
-		this.readonly = readonly;
-	}
+  public void setReadOnly(boolean readonly) {
+    this.readonly = readonly;
+  }
 
-	public String getEntityUuid()
-	{
-		return entityUuid;
-	}
+  public String getEntityUuid() {
+    return entityUuid;
+  }
 
-	public void setEntityUuid(String entityUuid)
-	{
-		this.entityUuid = entityUuid;
-	}
+  public void setEntityUuid(String entityUuid) {
+    this.entityUuid = entityUuid;
+  }
 
-	public void afterSave()
-	{
-		// Nothing by default
-	}
+  public void afterSave() {
+    // Nothing by default
+  }
 }

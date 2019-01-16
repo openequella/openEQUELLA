@@ -25,17 +25,15 @@ import com.tle.web.qti.viewer.questions.renderer.QtiNodeRenderer;
 import com.tle.web.qti.viewer.questions.renderer.unsupported.UnsupportedQuestionException;
 import com.tle.web.sections.render.SectionRenderable;
 
-public class UploadInteractionRenderer extends QtiNodeRenderer
-{
-	@AssistedInject
-	public UploadInteractionRenderer(@Assisted UploadInteraction model, @Assisted QtiViewerContext context)
-	{
-		super(model, context);
-	}
+public class UploadInteractionRenderer extends QtiNodeRenderer {
+  @AssistedInject
+  public UploadInteractionRenderer(
+      @Assisted UploadInteraction model, @Assisted QtiViewerContext context) {
+    super(model, context);
+  }
 
-	@Override
-	protected SectionRenderable createTopRenderable()
-	{
-		throw new UnsupportedQuestionException("uploadInteraction");
-	}
+  @Override
+  protected SectionRenderable createTopRenderable() {
+    throw new UnsupportedQuestionException("uploadInteraction");
+  }
 }

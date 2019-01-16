@@ -26,30 +26,27 @@ import com.tle.web.sections.render.SectionRenderable;
 
 /**
  * Not supported until individual submission mode is supported.
- * 
+ *
  * @author Aaron
  */
-public class EndAttemptInteractionRenderer extends QtiNodeRenderer
-{
-	@SuppressWarnings("unused")
-	private final EndAttemptInteraction model;
+public class EndAttemptInteractionRenderer extends QtiNodeRenderer {
+  @SuppressWarnings("unused")
+  private final EndAttemptInteraction model;
 
-	@AssistedInject
-	public EndAttemptInteractionRenderer(@Assisted EndAttemptInteraction model, @Assisted QtiViewerContext context)
-	{
-		super(model, context);
-		this.model = model;
-	}
+  @AssistedInject
+  public EndAttemptInteractionRenderer(
+      @Assisted EndAttemptInteraction model, @Assisted QtiViewerContext context) {
+    super(model, context);
+    this.model = model;
+  }
 
-	@Override
-	protected SectionRenderable createTopRenderable()
-	{
-		return null;
-	}
+  @Override
+  protected SectionRenderable createTopRenderable() {
+    return null;
+  }
 
-	@Override
-	protected SectionRenderable createNestedRenderable()
-	{
-		return null;
-	}
+  @Override
+  protected SectionRenderable createNestedRenderable() {
+    return null;
+  }
 }

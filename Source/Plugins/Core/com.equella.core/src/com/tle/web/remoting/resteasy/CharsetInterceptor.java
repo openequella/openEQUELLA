@@ -27,32 +27,25 @@ import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 @SuppressWarnings("nls")
 @Provider
 @ServerInterceptor
-public class CharsetInterceptor implements PostProcessInterceptor
-{
-	private static final String CONTENT_TYPE_HEADER = "Content-Type";
+public class CharsetInterceptor implements PostProcessInterceptor {
+  private static final String CONTENT_TYPE_HEADER = "Content-Type";
 
-	@Override
-	public void postProcess(ServerResponse response)
-	{
-		final MultivaluedMap<String, Object> metadata = response.getMetadata();
-		final Object contentType = metadata.getFirst(CONTENT_TYPE_HEADER);
-		if( contentType != null )
-		{
-			final String ct;
-			if( contentType instanceof MediaType )
-			{
-				MediaType mct = (MediaType) contentType;
-				ct = mct.toString().toLowerCase();
-			}
-			else
-			{
-				ct = ((String) contentType).toLowerCase();
-			}
+  @Override
+  public void postProcess(ServerResponse response) {
+    final MultivaluedMap<String, Object> metadata = response.getMetadata();
+    final Object contentType = metadata.getFirst(CONTENT_TYPE_HEADER);
+    if (contentType != null) {
+      final String ct;
+      if (contentType instanceof MediaType) {
+        MediaType mct = (MediaType) contentType;
+        ct = mct.toString().toLowerCase();
+      } else {
+        ct = ((String) contentType).toLowerCase();
+      }
 
-			if( ct.contains("json") && !ct.contains("charset"))
-			{
-				metadata.putSingle(CONTENT_TYPE_HEADER, ct + "; charset=utf-8");
-			}
-		}
-	}
+      if (ct.contains("json") && !ct.contains("charset")) {
+        metadata.putSingle(CONTENT_TYPE_HEADER, ct + "; charset=utf-8");
+      }
+    }
+  }
 }

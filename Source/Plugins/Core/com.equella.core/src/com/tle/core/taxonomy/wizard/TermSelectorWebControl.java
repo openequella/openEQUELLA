@@ -41,98 +41,87 @@ import com.tle.web.wizard.render.WizardFreemarkerFactory;
 
 @SuppressWarnings("nls")
 @Bind
-public class TermSelectorWebControl extends AbstractSimpleWebControl
-{
-	@ViewFactory(name = "wizardFreemarkerFactory")
-	private WizardFreemarkerFactory viewFactory;
+public class TermSelectorWebControl extends AbstractSimpleWebControl {
+  @ViewFactory(name = "wizardFreemarkerFactory")
+  private WizardFreemarkerFactory viewFactory;
 
-	@Inject
-	private PluginService pluginService;
-	@Inject
-	private TaxonomyService taxonomyService;
+  @Inject private PluginService pluginService;
+  @Inject private TaxonomyService taxonomyService;
 
-	private TermSelectorDisplayDelegate<?> delegate;
-	private String delegateSectionId;
-	private TermSelectorControl definitionControl;
-	private CCustomControl storageControl;
+  private TermSelectorDisplayDelegate<?> delegate;
+  private String delegateSectionId;
+  private TermSelectorControl definitionControl;
+  private CCustomControl storageControl;
 
-	public TermSelectorWebControl()
-	{
-		super();
-	}
+  public TermSelectorWebControl() {
+    super();
+  }
 
-	@Override
-	public void setWrappedControl(final HTMLControl control)
-	{
-		definitionControl = new TermSelectorControl((CustomControl) control.getControlBean());
-		storageControl = (CCustomControl) control;
-		super.setWrappedControl(control);
-	}
+  @Override
+  public void setWrappedControl(final HTMLControl control) {
+    definitionControl = new TermSelectorControl((CustomControl) control.getControlBean());
+    storageControl = (CCustomControl) control;
+    super.setWrappedControl(control);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		delegate = getDelegate();
-		delegate.init(getDefaultPropertyName() + "d", definitionControl, storageControl, this);
-		delegate.setWebWizardPage(getWebWizardPage());
+    delegate = getDelegate();
+    delegate.init(getDefaultPropertyName() + "d", definitionControl, storageControl, this);
+    delegate.setWebWizardPage(getWebWizardPage());
 
-		delegateSectionId = tree.registerSections(delegate, id);
-	}
+    delegateSectionId = tree.registerSections(delegate, id);
+  }
 
-	private TermSelectorDisplayDelegate<?> getDelegate()
-	{
-		String selectedTaxonomy = definitionControl.getSelectedTaxonomy();
-		if( Check.isEmpty(selectedTaxonomy) || taxonomyService.getByUuid(selectedTaxonomy) == null )
-		{
-			throw new RuntimeException(
-				"You must select a taxonomy for this control in the Collection Definition Editor");
-		}
-		final String extId = definitionControl.getDisplayType();
-		for( Extension ext : pluginService.getConnectedExtensions("com.tle.core.taxonomy", "termSelectorDisplay") )
-		{
-			if( ext.getId().equals(extId) )
-			{
-				return (TermSelectorDisplayDelegate<?>) pluginService.getBean(ext.getDeclaringPluginDescriptor(), ext
-					.getParameter("bean").valueAsString());
-			}
-		}
-		throw new RuntimeException("No term selector display registered for '" + extId + '\'');
-	}
+  private TermSelectorDisplayDelegate<?> getDelegate() {
+    String selectedTaxonomy = definitionControl.getSelectedTaxonomy();
+    if (Check.isEmpty(selectedTaxonomy) || taxonomyService.getByUuid(selectedTaxonomy) == null) {
+      throw new RuntimeException(
+          "You must select a taxonomy for this control in the Collection Definition Editor");
+    }
+    final String extId = definitionControl.getDisplayType();
+    for (Extension ext :
+        pluginService.getConnectedExtensions("com.tle.core.taxonomy", "termSelectorDisplay")) {
+      if (ext.getId().equals(extId)) {
+        return (TermSelectorDisplayDelegate<?>)
+            pluginService.getBean(
+                ext.getDeclaringPluginDescriptor(), ext.getParameter("bean").valueAsString());
+      }
+    }
+    throw new RuntimeException("No term selector display registered for '" + extId + '\'');
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		return viewFactory.createWizardResult(SectionUtils.renderSection(context, delegateSectionId),
-			viewFactory.getDefaultTitleTemplate(), viewFactory.getDefaultTailTemplate(), context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    return viewFactory.createWizardResult(
+        SectionUtils.renderSection(context, delegateSectionId),
+        viewFactory.getDefaultTitleTemplate(),
+        viewFactory.getDefaultTailTemplate(),
+        context);
+  }
 
-	@Override
-	public boolean isEmpty()
-	{
-		return delegate.isEmpty();
-	}
+  @Override
+  public boolean isEmpty() {
+    return delegate.isEmpty();
+  }
 
-	@Override
-	public void doEdits(SectionInfo info)
-	{
-		delegate.doEdits(info);
-	}
+  @Override
+  public void doEdits(SectionInfo info) {
+    delegate.doEdits(info);
+  }
 
-	@Override
-	public BaseQuery getPowerSearchQuery()
-	{
-		if( storageControl.hasTargets() )
-		{
-			return storageControl.getDefaultPowerSearchQuery(storageControl.getValues(), false);
-		}
-		return null;
-	}
+  @Override
+  public BaseQuery getPowerSearchQuery() {
+    if (storageControl.hasTargets()) {
+      return storageControl.getDefaultPowerSearchQuery(storageControl.getValues(), false);
+    }
+    return null;
+  }
 
-	@Override
-	protected ElementId getIdForLabel()
-	{
-		return null;
-	}
+  @Override
+  protected ElementId getIdForLabel() {
+    return null;
+  }
 }

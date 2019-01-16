@@ -26,56 +26,46 @@ import com.tle.web.sections.render.PreRenderable;
 
 import static com.tle.web.sections.SectionInfo.KEY_MINIFIED;
 
-public class IncludeFile implements PreRenderable
-{
-	protected boolean hasMin = false;
-	protected List<String> includes = new ArrayList<String>();
-	protected List<PreRenderable> preRenderables = new ArrayList<PreRenderable>();
+public class IncludeFile implements PreRenderable {
+  protected boolean hasMin = false;
+  protected List<String> includes = new ArrayList<String>();
+  protected List<PreRenderable> preRenderables = new ArrayList<PreRenderable>();
 
-	public IncludeFile()
-	{
-		// nothing
-	}
+  public IncludeFile() {
+    // nothing
+  }
 
-	public IncludeFile(String include, PreRenderable... preRenderables)
-	{
-		this.includes.add(include);
-		this.preRenderables.addAll(Arrays.asList(preRenderables));
-	}
+  public IncludeFile(String include, PreRenderable... preRenderables) {
+    this.includes.add(include);
+    this.preRenderables.addAll(Arrays.asList(preRenderables));
+  }
 
-	public IncludeFile hasMin()
-	{
-		this.hasMin = true;
-		return this;
-	}
+  public IncludeFile hasMin() {
+    this.hasMin = true;
+    return this;
+  }
 
-	public IncludeFile(String[] includes)
-	{
-		this.includes.addAll(Arrays.asList(includes));
-	}
+  public IncludeFile(String[] includes) {
+    this.includes.addAll(Arrays.asList(includes));
+  }
 
-	public void addPreRenderers(Collection<PreRenderable> preRenderers)
-	{
-		preRenderables.addAll(preRenderers);
-	}
+  public void addPreRenderers(Collection<PreRenderable> preRenderers) {
+    preRenderables.addAll(preRenderers);
+  }
 
-	public void addPreRenderer(PreRenderable preRenderer)
-	{
-		preRenderables.add(preRenderer);
-	}
+  public void addPreRenderer(PreRenderable preRenderer) {
+    preRenderables.add(preRenderer);
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(preRenderables);
-		boolean replaceExt = hasMin && info.getBooleanAttribute(KEY_MINIFIED);
-		for( String include : includes )
-		{
-			if (replaceExt)
-			{
-				include = include.replace(".js", ".min.js");
-			}
-			info.addJs(include);
-		}
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(preRenderables);
+    boolean replaceExt = hasMin && info.getBooleanAttribute(KEY_MINIFIED);
+    for (String include : includes) {
+      if (replaceExt) {
+        include = include.replace(".js", ".min.js");
+      }
+      info.addJs(include);
+    }
+  }
 }

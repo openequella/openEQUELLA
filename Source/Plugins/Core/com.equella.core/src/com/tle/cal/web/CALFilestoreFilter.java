@@ -29,15 +29,12 @@ import com.tle.web.copyright.AbstractCopyrightFilestoreFilter;
 
 @Bind
 @Singleton
-public class CALFilestoreFilter extends AbstractCopyrightFilestoreFilter<CALHolding, CALPortion, CALSection>
-{
-	@Inject
-	private CALService calService;
+public class CALFilestoreFilter
+    extends AbstractCopyrightFilestoreFilter<CALHolding, CALPortion, CALSection> {
+  @Inject private CALService calService;
 
-	@Override
-	protected CopyrightService<CALHolding, CALPortion, CALSection> getCopyrightService()
-	{
-		return calService;
-	}
-
+  @Override
+  protected CopyrightService<CALHolding, CALPortion, CALSection> getCopyrightService() {
+    return calService;
+  }
 }

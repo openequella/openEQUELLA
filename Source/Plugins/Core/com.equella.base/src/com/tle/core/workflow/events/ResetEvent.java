@@ -18,15 +18,11 @@ package com.tle.core.workflow.events;
 
 import com.tle.beans.item.HistoryEvent;
 
-/**
- * @author jmaginnis
- */
-public class ResetEvent extends WorkflowEvent
-{
-	private static final long serialVersionUID = 1L;
+/** @author jmaginnis */
+public class ResetEvent extends WorkflowEvent {
+  private static final long serialVersionUID = 1L;
 
-	public ResetEvent(HistoryEvent event)
-	{
-		super(event);
-	}
+  public ResetEvent(HistoryEvent event) {
+    super(event);
+  }
 }

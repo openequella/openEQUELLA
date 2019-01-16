@@ -31,34 +31,33 @@ import com.tle.core.security.SecurityTargetHandler;
 
 @Bind
 @Singleton
-public class BaseEntitySecurityTargetHandler implements SecurityTargetHandler
-{
-	@Override
-	public void gatherAllLabels(Set<String> labels, Object target)
-	{
-		labels.add(getPrimaryLabel(target));
-	}
+public class BaseEntitySecurityTargetHandler implements SecurityTargetHandler {
+  @Override
+  public void gatherAllLabels(Set<String> labels, Object target) {
+    labels.add(getPrimaryLabel(target));
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	public String getPrimaryLabel(Object target)
-	{
-		final long id = target instanceof BaseEntity ? ((BaseEntity) target).getId() : ((BaseEntityLabel) target)
-			.getId();
-		return TARGET_BASEENTITY + ":" + id;
-	}
+  @Override
+  @SuppressWarnings("nls")
+  public String getPrimaryLabel(Object target) {
+    final long id =
+        target instanceof BaseEntity
+            ? ((BaseEntity) target).getId()
+            : ((BaseEntityLabel) target).getId();
+    return TARGET_BASEENTITY + ":" + id;
+  }
 
-	@Override
-	public Object transform(Object target)
-	{
-		return ((EntityPack<?>) target).getEntity();
-	}
+  @Override
+  public Object transform(Object target) {
+    return ((EntityPack<?>) target).getEntity();
+  }
 
-	@Override
-	public boolean isOwner(Object target, String userId)
-	{
-		final String owner = target instanceof BaseEntity ? ((BaseEntity) target).getOwner()
-			: ((BaseEntityLabel) target).getOwner();
-		return Objects.equals(owner, userId);
-	}
+  @Override
+  public boolean isOwner(Object target, String userId) {
+    final String owner =
+        target instanceof BaseEntity
+            ? ((BaseEntity) target).getOwner()
+            : ((BaseEntityLabel) target).getOwner();
+    return Objects.equals(owner, userId);
+  }
 }

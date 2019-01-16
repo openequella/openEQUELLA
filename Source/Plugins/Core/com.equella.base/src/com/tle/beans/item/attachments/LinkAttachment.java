@@ -24,18 +24,15 @@ import org.hibernate.annotations.AccessType;
 @Entity
 @AccessType("field")
 @DiscriminatorValue("attachment")
-public class LinkAttachment extends Attachment
-{
-	private static final long serialVersionUID = 1L;
+public class LinkAttachment extends Attachment {
+  private static final long serialVersionUID = 1L;
 
-	public LinkAttachment()
-	{
-		super();
-	}
+  public LinkAttachment() {
+    super();
+  }
 
-	@Override
-	public AttachmentType getAttachmentType()
-	{
-		return AttachmentType.LINK;
-	}
+  @Override
+  public AttachmentType getAttachmentType() {
+    return AttachmentType.LINK;
+  }
 }

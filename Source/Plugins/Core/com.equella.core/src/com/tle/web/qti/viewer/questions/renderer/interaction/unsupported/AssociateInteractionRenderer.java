@@ -25,20 +25,16 @@ import com.tle.web.qti.viewer.questions.renderer.QtiNodeRenderer;
 import com.tle.web.qti.viewer.questions.renderer.unsupported.UnsupportedQuestionException;
 import com.tle.web.sections.render.SectionRenderable;
 
-/**
- * NOT SUPPORTED
- */
-public class AssociateInteractionRenderer extends QtiNodeRenderer
-{
-	@AssistedInject
-	public AssociateInteractionRenderer(@Assisted AssociateInteraction model, @Assisted QtiViewerContext context)
-	{
-		super(model, context);
-	}
+/** NOT SUPPORTED */
+public class AssociateInteractionRenderer extends QtiNodeRenderer {
+  @AssistedInject
+  public AssociateInteractionRenderer(
+      @Assisted AssociateInteraction model, @Assisted QtiViewerContext context) {
+    super(model, context);
+  }
 
-	@Override
-	protected SectionRenderable createTopRenderable()
-	{
-		throw new UnsupportedQuestionException("associateInteraction");
-	}
+  @Override
+  protected SectionRenderable createTopRenderable() {
+    throw new UnsupportedQuestionException("associateInteraction");
+  }
 }

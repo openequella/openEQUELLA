@@ -39,30 +39,26 @@ import io.swagger.annotations.ApiParam;
 @Path("user/{id}/action/")
 @Produces({"application/json"})
 @Api(value = "User actions", description = "user-action")
-public class UserActionResource
-{
-	@Inject
-	private EventService eventService;
-	@Inject
-	private TLEAclManager tleAclManager;
+public class UserActionResource {
+  @Inject private EventService eventService;
+  @Inject private TLEAclManager tleAclManager;
 
-	@POST
-	@Path("changeid/{newid}")
-	@ApiOperation(value = "Change all references from an existing user ID to a new user ID")
-	public Response changeAllUserReferences(
-		// @formatter:off
-		@ApiParam("Existing user ID") @PathParam("id") String userId,
-		@ApiParam("The new ID that all user references will be changed to") @PathParam("newid") String newUserId
-		// @formatter:on
-	)
-	{
-		if( tleAclManager.filterNonGrantedPrivileges("EDIT_USER_MANAGEMENT").isEmpty() )
-		{
-			return Response.status(Status.UNAUTHORIZED).build();
-		}
+  @POST
+  @Path("changeid/{newid}")
+  @ApiOperation(value = "Change all references from an existing user ID to a new user ID")
+  public Response changeAllUserReferences(
+      // @formatter:off
+      @ApiParam("Existing user ID") @PathParam("id") String userId,
+      @ApiParam("The new ID that all user references will be changed to") @PathParam("newid")
+          String newUserId
+      // @formatter:on
+      ) {
+    if (tleAclManager.filterNonGrantedPrivileges("EDIT_USER_MANAGEMENT").isEmpty()) {
+      return Response.status(Status.UNAUTHORIZED).build();
+    }
 
-		eventService.publishApplicationEvent(new UserIdChangedEvent(userId, newUserId));
+    eventService.publishApplicationEvent(new UserIdChangedEvent(userId, newUserId));
 
-		return Response.ok().build();
-	}
+    return Response.ok().build();
+  }
 }

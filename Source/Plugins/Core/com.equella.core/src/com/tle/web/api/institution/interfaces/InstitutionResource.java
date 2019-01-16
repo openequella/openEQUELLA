@@ -40,33 +40,41 @@ import io.swagger.annotations.ApiParam;
 @Path("institution")
 @Api(value = "Institutions", description = "institution")
 @Institutional(Type.NON_INSTITUTIONAL)
-public interface InstitutionResource
-{
-	@POST
-	@Consumes("application/json")
-	@ApiOperation(value = "Create a new institution")
-	public Response newInstitution(
-		@ApiParam(value = "Which schema (-1 is the first available)", defaultValue = "-1", required = false) @DefaultValue("-1") @QueryParam("schemaId") long schemaId,
-		@ApiParam(value = "The institution bean") final InstitutionBean institutionBean);
+public interface InstitutionResource {
+  @POST
+  @Consumes("application/json")
+  @ApiOperation(value = "Create a new institution")
+  public Response newInstitution(
+      @ApiParam(
+              value = "Which schema (-1 is the first available)",
+              defaultValue = "-1",
+              required = false)
+          @DefaultValue("-1")
+          @QueryParam("schemaId")
+          long schemaId,
+      @ApiParam(value = "The institution bean") final InstitutionBean institutionBean);
 
-	@DELETE
-	@Path("/{uniqueId}")
-	@ApiOperation(value = "Delete an institution")
-	public Response deleteInstitution(@ApiParam("The intitution unique id") @PathParam("uniqueId") long uniqueId);
+  @DELETE
+  @Path("/{uniqueId}")
+  @ApiOperation(value = "Delete an institution")
+  public Response deleteInstitution(
+      @ApiParam("The intitution unique id") @PathParam("uniqueId") long uniqueId);
 
-	@GET
-	@ApiOperation(value = "List institution")
-	public SearchBean<InstitutionBean> getInstitutions();
+  @GET
+  @ApiOperation(value = "List institution")
+  public SearchBean<InstitutionBean> getInstitutions();
 
-	@GET
-	@Path("/{uniqueId}")
-	@ApiOperation(value = "Get an institution")
-	public InstitutionBean getInstitution(@ApiParam("The intitution unique id") @PathParam("uniqueId") long uniqueId);
+  @GET
+  @Path("/{uniqueId}")
+  @ApiOperation(value = "Get an institution")
+  public InstitutionBean getInstitution(
+      @ApiParam("The intitution unique id") @PathParam("uniqueId") long uniqueId);
 
-	@PUT
-	@Path("/{uniqueId}")
-	@Consumes("application/json")
-	@ApiOperation(value = "Edit an institution")
-	public Response editInstitution(@ApiParam("The intitution unique id") @PathParam("uniqueId") long uniqueId,
-		@ApiParam(value = "The institution bean") final InstitutionBean institutionBean);
+  @PUT
+  @Path("/{uniqueId}")
+  @Consumes("application/json")
+  @ApiOperation(value = "Edit an institution")
+  public Response editInstitution(
+      @ApiParam("The intitution unique id") @PathParam("uniqueId") long uniqueId,
+      @ApiParam(value = "The institution bean") final InstitutionBean institutionBean);
 }

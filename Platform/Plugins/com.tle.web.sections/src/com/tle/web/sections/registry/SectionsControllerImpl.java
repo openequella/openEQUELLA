@@ -50,85 +50,79 @@ import com.tle.web.sections.events.RenderEvent;
 import com.tle.web.sections.events.SectionEvent;
 import com.tle.web.sections.generic.DefaultSectionInfo;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @NonNullByDefault
 @SuppressWarnings("nls")
 @Bind(SectionsController.class)
 @Singleton
-public class SectionsControllerImpl extends AbstractSectionsController
-{
-	@Inject
-	private TreeRegistry treeRegistry;
-	protected PluginTracker<SectionFilter> sectionFilters;
-	protected PluginTracker<SectionsExceptionHandler> exceptionHandlers;
+public class SectionsControllerImpl extends AbstractSectionsController {
+  @Inject private TreeRegistry treeRegistry;
+  protected PluginTracker<SectionFilter> sectionFilters;
+  protected PluginTracker<SectionsExceptionHandler> exceptionHandlers;
 
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		sectionFilters = new PluginTracker<SectionFilter>(pluginService, "com.tle.web.sections", "sectionFilter", "id",
-			new PluginTracker.ExtensionParamComparator("order"));
-		sectionFilters.setBeanKey("class");
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    sectionFilters =
+        new PluginTracker<SectionFilter>(
+            pluginService,
+            "com.tle.web.sections",
+            "sectionFilter",
+            "id",
+            new PluginTracker.ExtensionParamComparator("order"));
+    sectionFilters.setBeanKey("class");
 
-		exceptionHandlers = new PluginTracker<SectionsExceptionHandler>(pluginService, "com.tle.web.sections",
-			"exceptionHandler", "class", new PluginTracker.ExtensionParamComparator("order"));
-		exceptionHandlers.setBeanKey("class");
-	}
+    exceptionHandlers =
+        new PluginTracker<SectionsExceptionHandler>(
+            pluginService,
+            "com.tle.web.sections",
+            "exceptionHandler",
+            "class",
+            new PluginTracker.ExtensionParamComparator("order"));
+    exceptionHandlers.setBeanKey("class");
+  }
 
-	@Override
-	protected SectionTree getTreeForPath(String path)
-	{
-		return treeRegistry.getTreeForPath(path);
-	}
+  @Override
+  protected SectionTree getTreeForPath(String path) {
+    return treeRegistry.getTreeForPath(path);
+  }
 
-	@Override
-	public List<SectionFilter> getSectionFilters()
-	{
-		return sectionFilters.getBeanList();
-	}
+  @Override
+  public List<SectionFilter> getSectionFilters() {
+    return sectionFilters.getBeanList();
+  }
 
-	@Override
-	public void handleException(SectionInfo info, Throwable exception, @Nullable SectionEvent<?> event)
-	{
-		if( exception instanceof SectionsRuntimeException )
-		{
-			if( exception.getCause() != null )
-			{
-				exception = exception.getCause();
-			}
-		}
-		List<Extension> extensions = exceptionHandlers.getExtensions();
-		for( Extension ext : extensions )
-		{
-			boolean handle;
-			SectionsExceptionHandler handler = null;
-			Parameter param = ext.getParameter("exceptionClass");
-			if( param != null )
-			{
-				handle = exception.getClass().getName().equals(param.valueAsString());
-			}
-			else
-			{
-				handler = exceptionHandlers.getBeanByExtension(ext);
-				handle = handler.canHandle(info, exception, event);
-			}
-			if( handle )
-			{
-				if( handler == null )
-				{
-					handler = exceptionHandlers.getBeanByExtension(ext);
-				}
-				// we don't expect to have a non-null handler, but to be sure ..
-				if( handler != null )
-				{
-					handler.handle(exception, info, this, event);
-					return;
-				}
-				// else continue until we either find a non-null handler, or
-				// exit loop and call SectionUtils.throwRuntime
-			}
-		}
-		SectionUtils.throwRuntime(exception);
-	}
+  @Override
+  public void handleException(
+      SectionInfo info, Throwable exception, @Nullable SectionEvent<?> event) {
+    if (exception instanceof SectionsRuntimeException) {
+      if (exception.getCause() != null) {
+        exception = exception.getCause();
+      }
+    }
+    List<Extension> extensions = exceptionHandlers.getExtensions();
+    for (Extension ext : extensions) {
+      boolean handle;
+      SectionsExceptionHandler handler = null;
+      Parameter param = ext.getParameter("exceptionClass");
+      if (param != null) {
+        handle = exception.getClass().getName().equals(param.valueAsString());
+      } else {
+        handler = exceptionHandlers.getBeanByExtension(ext);
+        handle = handler.canHandle(info, exception, event);
+      }
+      if (handle) {
+        if (handler == null) {
+          handler = exceptionHandlers.getBeanByExtension(ext);
+        }
+        // we don't expect to have a non-null handler, but to be sure ..
+        if (handler != null) {
+          handler.handle(exception, info, this, event);
+          return;
+        }
+        // else continue until we either find a non-null handler, or
+        // exit loop and call SectionUtils.throwRuntime
+      }
+    }
+    SectionUtils.throwRuntime(exception);
+  }
 }

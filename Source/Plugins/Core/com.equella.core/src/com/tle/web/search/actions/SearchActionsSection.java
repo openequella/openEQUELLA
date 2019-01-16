@@ -34,44 +34,36 @@ import com.tle.web.sections.render.HtmlRenderer;
 @NonNullByDefault
 @SuppressWarnings("nls")
 public class SearchActionsSection
-	extends
-		AbstractSearchActionsSection<AbstractSearchActionsSection.AbstractSearchActionsModel> implements HtmlRenderer
-{
-	@EventFactory
-	private EventGenerator events;
+    extends AbstractSearchActionsSection<AbstractSearchActionsSection.AbstractSearchActionsModel>
+    implements HtmlRenderer {
+  @EventFactory private EventGenerator events;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.setLayout(id, TwoColumnLayout.RIGHT);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.setLayout(id, TwoColumnLayout.RIGHT);
+  }
 
-	@Override
-	public String[] getResetFilterAjaxIds()
-	{
-		return new String[]{};
-	}
+  @Override
+  public String[] getResetFilterAjaxIds() {
+    return new String[] {};
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		renderSectionsToModel(context);
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    renderSectionsToModel(context);
 
-		return viewFactory.createResult("searchactions.ftl", this);
-	}
+    return viewFactory.createResult("searchactions.ftl", this);
+  }
 
-	public List<SectionId> getTopSections()
-	{
-		return topSections;
-	}
+  public List<SectionId> getTopSections() {
+    return topSections;
+  }
 
-	@Override
-	public Class<AbstractSearchActionsModel> getModelClass()
-	{
-		return AbstractSearchActionsModel.class;
-	}
+  @Override
+  public Class<AbstractSearchActionsModel> getModelClass() {
+    return AbstractSearchActionsModel.class;
+  }
 }

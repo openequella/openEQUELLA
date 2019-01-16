@@ -23,30 +23,25 @@ import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.render.PreRenderable;
 
 @SuppressWarnings("nls")
-public class JQuerySortable implements JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
+public class JQuerySortable implements JavascriptModule {
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Includes ui.mouse
-	 */
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.ui.sortable.js", JQueryMouse.PRERENDER).hasMin();
+  /** Includes ui.mouse */
+  public static final PreRenderable PRERENDER =
+      new JQueryLibraryInclude("jquery.ui.sortable.js", JQueryMouse.PRERENDER).hasMin();
 
-	@Override
-	public String getDisplayName()
-	{
-		return CurrentLocale.get("com.tle.web.sections.jquery.modules.sortable.name");
-	}
+  @Override
+  public String getDisplayName() {
+    return CurrentLocale.get("com.tle.web.sections.jquery.modules.sortable.name");
+  }
 
-	@Override
-	public String getId()
-	{
-		return "sortable";
-	}
+  @Override
+  public String getId() {
+    return "sortable";
+  }
 
-	@Override
-	public Object getPreRenderer()
-	{
-		return PRERENDER;
-	}
+  @Override
+  public Object getPreRenderer() {
+    return PRERENDER;
+  }
 }

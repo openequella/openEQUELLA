@@ -40,118 +40,94 @@ import com.tle.web.viewitem.summary.sidebar.MinorActionsGroupSection;
 
 /**
  * Used exclusively for the details when in a "structured" selection session
- * 
+ *
  * @author Aaron
  */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
 public class ItemDetailsAndActionsSummarySection
-	extends
-		AbstractItemDetailsSection<ItemDetailsAndActionsSummarySection.ItemDetailsModel>
-	implements
-		DisplaySectionConfiguration
-{
-	@Inject
-	private SelectionService selectionService;
+    extends AbstractItemDetailsSection<ItemDetailsAndActionsSummarySection.ItemDetailsModel>
+    implements DisplaySectionConfiguration {
+  @Inject private SelectionService selectionService;
 
-	@EventFactory
-	private EventGenerator events;
+  @EventFactory private EventGenerator events;
 
-	@TreeLookup
-	private HistoryContentSection historySection;
-	@TreeLookup
-	private TermsOfUseContentSection termsOfUseSection;
-	@TreeLookup
-	private MinorActionsGroupSection minorActionsGroupSection;
-	@TreeLookup
-	private LockedByGroupSection lockedByGroupSection;
-	@TreeLookup
-	private ItemDetailsGroupSection itemDetailsGroupSection;
+  @TreeLookup private HistoryContentSection historySection;
+  @TreeLookup private TermsOfUseContentSection termsOfUseSection;
+  @TreeLookup private MinorActionsGroupSection minorActionsGroupSection;
+  @TreeLookup private LockedByGroupSection lockedByGroupSection;
+  @TreeLookup private ItemDetailsGroupSection itemDetailsGroupSection;
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		final SelectionSession ss = selectionService.getCurrentSession(info);
-		return (ss != null && ss.getLayout() == Layout.COURSE);
-	}
+  @Override
+  public boolean canView(SectionInfo info) {
+    final SelectionSession ss = selectionService.getCurrentSession(info);
+    return (ss != null && ss.getLayout() == Layout.COURSE);
+  }
 
-	@Override
-	protected String getTemplate(RenderEventContext context)
-	{
-		final ItemDetailsModel model = getModel(context);
+  @Override
+  protected String getTemplate(RenderEventContext context) {
+    final ItemDetailsModel model = getModel(context);
 
-		model.setMinorActions(renderSection(context, minorActionsGroupSection));
-		model.setItemDetails(renderSection(context, itemDetailsGroupSection));
+    model.setMinorActions(renderSection(context, minorActionsGroupSection));
+    model.setItemDetails(renderSection(context, itemDetailsGroupSection));
 
-		final WorkflowStatus status = getItemInfo(context).getWorkflowStatus();
+    final WorkflowStatus status = getItemInfo(context).getWorkflowStatus();
 
-		if( getItemInfo(context).isEditing() || status.isLocked() )
-		{
-			model.setLockSection(renderSection(context, lockedByGroupSection));
-		}
+    if (getItemInfo(context).isEditing() || status.isLocked()) {
+      model.setLockSection(renderSection(context, lockedByGroupSection));
+    }
 
-		return "viewitem/itemdetails.ftl";
-	}
+    return "viewitem/itemdetails.ftl";
+  }
 
-	@Override
-	public void associateConfiguration(SummarySectionsConfig config)
-	{
-		// Nah
-	}
+  @Override
+  public void associateConfiguration(SummarySectionsConfig config) {
+    // Nah
+  }
 
-	@EventHandlerMethod
-	public void showHistory(SectionInfo info)
-	{
-		contentSection.setSummaryId(info, historySection);
-	}
+  @EventHandlerMethod
+  public void showHistory(SectionInfo info) {
+    contentSection.setSummaryId(info, historySection);
+  }
 
-	@EventHandlerMethod
-	public void showTermsOfUse(SectionInfo info)
-	{
-		contentSection.setSummaryId(info, termsOfUseSection);
-	}
+  @EventHandlerMethod
+  public void showTermsOfUse(SectionInfo info) {
+    contentSection.setSummaryId(info, termsOfUseSection);
+  }
 
-	@Override
-	public ItemDetailsModel instantiateModel(SectionInfo info)
-	{
-		return new ItemDetailsModel();
-	}
+  @Override
+  public ItemDetailsModel instantiateModel(SectionInfo info) {
+    return new ItemDetailsModel();
+  }
 
-	public static class ItemDetailsModel extends AbstractItemDetailsSection.ItemDetailsModel
-	{
-		private SectionRenderable minorActions;
-		private SectionRenderable lockSection;
-		private SectionRenderable itemDetails;
+  public static class ItemDetailsModel extends AbstractItemDetailsSection.ItemDetailsModel {
+    private SectionRenderable minorActions;
+    private SectionRenderable lockSection;
+    private SectionRenderable itemDetails;
 
-		public SectionRenderable getMinorActions()
-		{
-			return minorActions;
-		}
+    public SectionRenderable getMinorActions() {
+      return minorActions;
+    }
 
-		public void setMinorActions(SectionRenderable minorActions)
-		{
-			this.minorActions = minorActions;
-		}
+    public void setMinorActions(SectionRenderable minorActions) {
+      this.minorActions = minorActions;
+    }
 
-		public SectionRenderable getLockSection()
-		{
-			return lockSection;
-		}
+    public SectionRenderable getLockSection() {
+      return lockSection;
+    }
 
-		public void setLockSection(SectionRenderable lockSection)
-		{
-			this.lockSection = lockSection;
-		}
+    public void setLockSection(SectionRenderable lockSection) {
+      this.lockSection = lockSection;
+    }
 
-		public SectionRenderable getItemDetails()
-		{
-			return itemDetails;
-		}
+    public SectionRenderable getItemDetails() {
+      return itemDetails;
+    }
 
-		public void setItemDetails(SectionRenderable itemDetails)
-		{
-			this.itemDetails = itemDetails;
-		}
-	}
+    public void setItemDetails(SectionRenderable itemDetails) {
+      this.itemDetails = itemDetails;
+    }
+  }
 }

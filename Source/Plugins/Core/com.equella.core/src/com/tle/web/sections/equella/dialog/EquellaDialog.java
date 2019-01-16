@@ -53,118 +53,108 @@ import com.tle.web.template.DialogTemplate;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public abstract class EquellaDialog<S extends DialogModel> extends AbstractDialog<S>
-{
-	@Inject
-	protected DialogTemplate template;
+public abstract class EquellaDialog<S extends DialogModel> extends AbstractDialog<S> {
+  @Inject protected DialogTemplate template;
 
-	private boolean alwaysShowFooter;
-	private ElementId footerId;
+  private boolean alwaysShowFooter;
+  private ElementId footerId;
 
-	@Override
-	protected SectionRenderable getDialogContents(RenderContext context)
-	{
-		return template.getLayout(getTitleLabel(context), context, getDialogTemplate(context), this,
-			getTemplateCloseFunction(), getContentBodyClass(context), footerId);
-	}
+  @Override
+  protected SectionRenderable getDialogContents(RenderContext context) {
+    return template.getLayout(
+        getTitleLabel(context),
+        context,
+        getDialogTemplate(context),
+        this,
+        getTemplateCloseFunction(),
+        getContentBodyClass(context),
+        footerId);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		footerId = new AppendedElementId(this, "footer");
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    footerId = new AppendedElementId(this, "footer");
+  }
 
-	@Override
-	protected void setupModal(RenderEventContext context)
-	{
-		Decorations.getDecorations(context).clearAllDecorations();
-	}
+  @Override
+  protected void setupModal(RenderEventContext context) {
+    Decorations.getDecorations(context).clearAllDecorations();
+  }
 
-	@Nullable
-	protected String getContentBodyClass(RenderContext context)
-	{
-		return null;
-	}
+  @Nullable
+  protected String getContentBodyClass(RenderContext context) {
+    return null;
+  }
 
-	public JSCallable getFooterUpdate(SectionTree tree, ParameterizedEvent event)
-	{
-		return getFooterUpdate(tree, event, footerId.getElementId(new DummySectionInfo()));
-	}
+  public JSCallable getFooterUpdate(SectionTree tree, ParameterizedEvent event) {
+    return getFooterUpdate(tree, event, footerId.getElementId(new DummySectionInfo()));
+  }
 
-	public JSCallable getFooterUpdate(SectionTree tree, ParameterizedEvent event, String... ids)
-	{
-		return ajaxEvents.getAjaxUpdateDomFunction(tree, this, event,
-			ajaxEvents.getEffectFunction(EffectType.REPLACE_IN_PLACE),
-			ObjectArrays.concat(footerId.getElementId(new DummySectionInfo()), ids));
-	}
+  public JSCallable getFooterUpdate(SectionTree tree, ParameterizedEvent event, String... ids) {
+    return ajaxEvents.getAjaxUpdateDomFunction(
+        tree,
+        this,
+        event,
+        ajaxEvents.getEffectFunction(EffectType.REPLACE_IN_PLACE),
+        ObjectArrays.concat(footerId.getElementId(new DummySectionInfo()), ids));
+  }
 
-	@Nullable
-	protected abstract Label getTitleLabel(RenderContext context);
+  @Nullable
+  protected abstract Label getTitleLabel(RenderContext context);
 
-	protected JSHandler getTemplateCloseFunction()
-	{
-		return new OverrideHandler(getCloseFunction());
-	}
+  protected JSHandler getTemplateCloseFunction() {
+    return new OverrideHandler(getCloseFunction());
+  }
 
-	protected TemplateResult getDialogTemplate(RenderContext context)
-	{
-		GenericTemplateResult tr = new GenericTemplateResult();
+  protected TemplateResult getDialogTemplate(RenderContext context) {
+    GenericTemplateResult tr = new GenericTemplateResult();
 
-		tr.addNamedResult(DialogTemplate.BODY, getRenderableContents(context));
+    tr.addNamedResult(DialogTemplate.BODY, getRenderableContents(context));
 
-		Collection<Button> actions = collectFooterActions(context);
-		if( alwaysShowFooter || !Check.isEmpty(actions) )
-		{
-			SectionRenderable sr = null;
-			for( Button b : actions )
-			{
-				b.getState(context).setOverrideRendererType(EquellaButtonExtension.BOOTSTRAP_BUTTON);
-				ButtonRenderer br = (ButtonRenderer) SectionUtils.renderSection(context, b);
-				if( br != null )
-				{
-					ButtonType type = b.getComponentAttribute(ButtonType.class);
-					if( type != null )
-					{
-						br.showAs(type);
-					}
-					br.setSize(ButtonSize.MEDIUM);
+    Collection<Button> actions = collectFooterActions(context);
+    if (alwaysShowFooter || !Check.isEmpty(actions)) {
+      SectionRenderable sr = null;
+      for (Button b : actions) {
+        b.getState(context).setOverrideRendererType(EquellaButtonExtension.BOOTSTRAP_BUTTON);
+        ButtonRenderer br = (ButtonRenderer) SectionUtils.renderSection(context, b);
+        if (br != null) {
+          ButtonType type = b.getComponentAttribute(ButtonType.class);
+          if (type != null) {
+            br.showAs(type);
+          }
+          br.setSize(ButtonSize.MEDIUM);
 
-					sr = CombinedRenderer.combineResults(sr, br);
-				}
-			}
+          sr = CombinedRenderer.combineResults(sr, br);
+        }
+      }
 
-			if( sr == null && alwaysShowFooter )
-			{
-				sr = SectionUtils.convertToRenderer("");
-			}
+      if (sr == null && alwaysShowFooter) {
+        sr = SectionUtils.convertToRenderer("");
+      }
 
-			tr.addNamedResult(DialogTemplate.FOOTER, sr);
-		}
+      tr.addNamedResult(DialogTemplate.FOOTER, sr);
+    }
 
-		return tr;
-	}
+    return tr;
+  }
 
-	@Nullable
-	protected Collection<Button> collectFooterActions(RenderContext context)
-	{
-		return null;
-	}
+  @Nullable
+  protected Collection<Button> collectFooterActions(RenderContext context) {
+    return null;
+  }
 
-	@Nullable
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		throw new RuntimeException("Must implement getRenderableContents() or getDialogTemplate()");
-	}
+  @Nullable
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    throw new RuntimeException("Must implement getRenderableContents() or getDialogTemplate()");
+  }
 
-	public ElementId getFooterId()
-	{
-		return footerId;
-	}
+  public ElementId getFooterId() {
+    return footerId;
+  }
 
-	protected void setAlwaysShowFooter(boolean show)
-	{
-		this.alwaysShowFooter = show;
-	}
+  protected void setAlwaysShowFooter(boolean show) {
+    this.alwaysShowFooter = show;
+  }
 }

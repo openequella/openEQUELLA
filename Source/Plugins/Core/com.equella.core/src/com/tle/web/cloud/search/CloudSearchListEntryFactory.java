@@ -30,35 +30,28 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.renderers.ImageRenderer;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
 @Bind
 @Singleton
-public class CloudSearchListEntryFactory
-{
-	@Inject
-	private Provider<CloudSearchListEntry> entryProvider;
+public class CloudSearchListEntryFactory {
+  @Inject private Provider<CloudSearchListEntry> entryProvider;
 
-	public CloudSearchListEntry createListEntry(SectionInfo info, CloudItem result)
-	{
-		final CloudSearchListEntry listItem = entryProvider.get();
-		listItem.setInfo(info);
-		listItem.setItem(result);
+  public CloudSearchListEntry createListEntry(SectionInfo info, CloudItem result) {
+    final CloudSearchListEntry listItem = entryProvider.get();
+    listItem.setInfo(info);
+    listItem.setItem(result);
 
-		final List<CloudAttachment> attachments = result.getAttachments();
-		if( attachments != null )
-		{
-			for( CloudAttachment attachment : attachments )
-			{
-				final String thumbUrl = attachment.getThumbnail();
-				if( thumbUrl != null )
-				{
-					listItem.addThumbnail(new ImageRenderer(thumbUrl, new TextLabel(attachment.getDescription())));
-				}
-			}
-		}
-		return listItem;
-	}
+    final List<CloudAttachment> attachments = result.getAttachments();
+    if (attachments != null) {
+      for (CloudAttachment attachment : attachments) {
+        final String thumbUrl = attachment.getThumbnail();
+        if (thumbUrl != null) {
+          listItem.addThumbnail(
+              new ImageRenderer(thumbUrl, new TextLabel(attachment.getDescription())));
+        }
+      }
+    }
+    return listItem;
+  }
 }

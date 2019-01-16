@@ -20,54 +20,43 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @XmlRootElement
-public class CloudSearchResultsBean
-{
-	private int start;
-	private int length;
-	private int available;
-	private List<CloudItemBean> results;
+public class CloudSearchResultsBean {
+  private int start;
+  private int length;
+  private int available;
+  private List<CloudItemBean> results;
 
-	public int getStart()
-	{
-		return start;
-	}
+  public int getStart() {
+    return start;
+  }
 
-	public void setStart(int start)
-	{
-		this.start = start;
-	}
+  public void setStart(int start) {
+    this.start = start;
+  }
 
-	public int getLength()
-	{
-		return length;
-	}
+  public int getLength() {
+    return length;
+  }
 
-	public void setLength(int length)
-	{
-		this.length = length;
-	}
+  public void setLength(int length) {
+    this.length = length;
+  }
 
-	public int getAvailable()
-	{
-		return available;
-	}
+  public int getAvailable() {
+    return available;
+  }
 
-	public void setAvailable(int available)
-	{
-		this.available = available;
-	}
+  public void setAvailable(int available) {
+    this.available = available;
+  }
 
-	public List<CloudItemBean> getResults()
-	{
-		return results;
-	}
+  public List<CloudItemBean> getResults() {
+    return results;
+  }
 
-	public void setResults(List<CloudItemBean> results)
-	{
-		this.results = results;
-	}
+  public void setResults(List<CloudItemBean> results) {
+    this.results = results;
+  }
 }

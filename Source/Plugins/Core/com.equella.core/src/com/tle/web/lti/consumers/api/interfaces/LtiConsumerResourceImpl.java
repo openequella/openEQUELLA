@@ -30,48 +30,36 @@ import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.lti.consumers.api.beans.LtiConsumerBean;
 import com.tle.web.lti.consumers.api.serializer.LtiConsumerBeanSerializer;
 
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @Bind(LtiConsumerResource.class)
 public class LtiConsumerResourceImpl
-	extends
-		AbstractBaseEntityResource<LtiConsumer, BaseEntitySecurityBean, LtiConsumerBean>
-	implements LtiConsumerResource
-{
-	@Inject
-	private LtiConsumerService ltiConsumerService;
-	@Inject
-	private LtiConsumerBeanSerializer ltiConsumerSerializer;
+    extends AbstractBaseEntityResource<LtiConsumer, BaseEntitySecurityBean, LtiConsumerBean>
+    implements LtiConsumerResource {
+  @Inject private LtiConsumerService ltiConsumerService;
+  @Inject private LtiConsumerBeanSerializer ltiConsumerSerializer;
 
-	@Override
-	protected Node[] getAllNodes()
-	{
-		return new Node[]{Node.ALL_LTI_CONSUMERS};
-	}
+  @Override
+  protected Node[] getAllNodes() {
+    return new Node[] {Node.ALL_LTI_CONSUMERS};
+  }
 
-	@Override
-	protected BaseEntitySecurityBean createAllSecurityBean()
-	{
-		return new BaseEntitySecurityBean();
-	}
+  @Override
+  protected BaseEntitySecurityBean createAllSecurityBean() {
+    return new BaseEntitySecurityBean();
+  }
 
-	@Override
-	public AbstractEntityService<?, LtiConsumer> getEntityService()
-	{
-		return ltiConsumerService;
-	}
+  @Override
+  public AbstractEntityService<?, LtiConsumer> getEntityService() {
+    return ltiConsumerService;
+  }
 
-	@Override
-	protected BaseEntitySerializer<LtiConsumer, LtiConsumerBean> getSerializer()
-	{
-		return ltiConsumerSerializer;
-	}
+  @Override
+  protected BaseEntitySerializer<LtiConsumer, LtiConsumerBean> getSerializer() {
+    return ltiConsumerSerializer;
+  }
 
-	@Override
-	protected Class<?> getResourceClass()
-	{
-		return LtiConsumerResource.class;
-	}
+  @Override
+  protected Class<?> getResourceClass() {
+    return LtiConsumerResource.class;
+  }
 }

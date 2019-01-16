@@ -29,25 +29,22 @@ import com.tle.core.guice.Bind;
 
 @Bind
 @Singleton
-public class OAIServlet extends OAIHandler
-{
-	@Inject
-	private OAIProperties properties;
-	@Inject
-	private MembersInjector<OAICatalog> oaiInjector;
-	@Inject
-	private MembersInjector<XMLRecordFactory> recordInjector;
+public class OAIServlet extends OAIHandler {
+  @Inject private OAIProperties properties;
+  @Inject private MembersInjector<OAICatalog> oaiInjector;
+  @Inject private MembersInjector<XMLRecordFactory> recordInjector;
 
-	@Override
-	@SuppressWarnings("nls")
-	public void init(ServletConfig config) throws ServletException
-	{
-		config.getServletContext().setAttribute(OAIHandler.PROPERTIES_SERVLET_CONTEXT_ATTRIBUTE, properties);
+  @Override
+  @SuppressWarnings("nls")
+  public void init(ServletConfig config) throws ServletException {
+    config
+        .getServletContext()
+        .setAttribute(OAIHandler.PROPERTIES_SERVLET_CONTEXT_ATTRIBUTE, properties);
 
-		super.init(config);
+    super.init(config);
 
-		AbstractCatalog catalog = (AbstractCatalog) getAttributes("").get("OAIHandler.catalog");
-		oaiInjector.injectMembers((OAICatalog) catalog);
-		recordInjector.injectMembers((XMLRecordFactory) catalog.getRecordFactory());
-	}
+    AbstractCatalog catalog = (AbstractCatalog) getAttributes("").get("OAIHandler.catalog");
+    oaiInjector.injectMembers((OAICatalog) catalog);
+    recordInjector.injectMembers((XMLRecordFactory) catalog.getRecordFactory());
+  }
 }

@@ -29,79 +29,79 @@ import com.tle.common.usermanagement.user.ModifiableUserState;
 import com.tle.common.usermanagement.user.UserState;
 
 /**
- * This interface has many similarities with {@link UserDirectory}, but with a
- * couple of differences.
+ * This interface has many similarities with {@link UserDirectory}, but with a couple of
+ * differences.
+ *
  * <ol>
- * <li>Some method results are just lists rather than pair containing a chain
- * control value and list. The chain control stuff is only interesting to the
- * chain handler itself, not to other objects using the chain.</li>
- * <li>Unlike UserDirectory implementations, any returned lists or maps from the
- * chain must not be null.</li>
+ *   <li>Some method results are just lists rather than pair containing a chain control value and
+ *       list. The chain control stuff is only interesting to the chain handler itself, not to other
+ *       objects using the chain.
+ *   <li>Unlike UserDirectory implementations, any returned lists or maps from the chain must not be
+ *       null.
  * </ol>
- * 
+ *
  * @author nick
  */
-public interface UserDirectoryChain
-{
-	void purgeFromCaches(String id);
-	
-	void purgeGroupFromCaches(String groupId);
+public interface UserDirectoryChain {
+  void purgeFromCaches(String id);
 
-	ModifiableUserState authenticateToken(String token);
+  void purgeGroupFromCaches(String groupId);
 
-	ModifiableUserState authenticateUser(String username, String password);
+  ModifiableUserState authenticateToken(String token);
 
-	ModifiableUserState authenticateUserFromUsername(String username, String privateData);
+  ModifiableUserState authenticateUser(String username, String password);
 
-	ModifiableUserState authenticateRequest(HttpServletRequest request);
+  ModifiableUserState authenticateUserFromUsername(String username, String privateData);
 
-	void close() throws Exception;
+  ModifiableUserState authenticateRequest(HttpServletRequest request);
 
-	String getGeneratedToken(String secretId, String username);
+  void close() throws Exception;
 
-	List<GroupBean> getGroupsContainingUser(String userId);
+  String getGeneratedToken(String secretId, String username);
 
-	List<UserBean> getUsersInGroup(String groupId, boolean recursive);
+  List<GroupBean> getGroupsContainingUser(String userId);
 
-	GroupBean getInformationForGroup(String groupId);
+  List<UserBean> getUsersInGroup(String groupId, boolean recursive);
 
-	Map<String, GroupBean> getInformationForGroups(Collection<String> groupIds);
+  GroupBean getInformationForGroup(String groupId);
 
-	RoleBean getInformationForRole(String roleId);
+  Map<String, GroupBean> getInformationForGroups(Collection<String> groupIds);
 
-	Map<String, RoleBean> getInformationForRoles(Collection<String> roleIds);
+  RoleBean getInformationForRole(String roleId);
 
-	UserBean getInformationForUser(String userId);
+  Map<String, RoleBean> getInformationForRoles(Collection<String> roleIds);
 
-	Map<String, UserBean> getInformationForUsers(Collection<String> userIds);
+  UserBean getInformationForUser(String userId);
 
-	GroupBean getParentGroupForGroup(String groupId);
+  Map<String, UserBean> getInformationForUsers(Collection<String> userIds);
 
-	List<RoleBean> getRolesForUser(String userId);
+  GroupBean getParentGroupForGroup(String groupId);
 
-	List<String> getTokenSecretIds();
+  List<RoleBean> getRolesForUser(String userId);
 
-	void initGuestUserState(ModifiableUserState state);
+  List<String> getTokenSecretIds();
 
-	void initUserState(ModifiableUserState state);
+  void initGuestUserState(ModifiableUserState state);
 
-	void initSystemUserState(ModifiableUserState state);
+  void initUserState(ModifiableUserState state);
 
-	void keepAlive();
+  void initSystemUserState(ModifiableUserState state);
 
-	void logout(UserState state);
+  void keepAlive();
 
-	List<GroupBean> searchGroups(String query);
+  void logout(UserState state);
 
-	List<GroupBean> searchGroups(String query, String parentId);
+  List<GroupBean> searchGroups(String query);
 
-	List<RoleBean> searchRoles(String query);
+  List<GroupBean> searchGroups(String query, String parentId);
 
-	List<UserBean> searchUsers(String query);
+  List<RoleBean> searchRoles(String query);
 
-	List<UserBean> searchUsers(String query, String parentGroupId, boolean recursive);
+  List<UserBean> searchUsers(String query);
 
-	boolean verifyUserStateForToken(UserState userState, String token);
+  List<UserBean> searchUsers(String query, String parentGroupId, boolean recursive);
 
-	void clearUserSearchCache();
+  boolean verifyUserStateForToken(UserState userState, String token);
+
+  void clearUserSearchCache();
 }

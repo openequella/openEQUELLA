@@ -18,7 +18,6 @@ package com.tle.common.workflow;
 
 import com.tle.core.remoting.RemoteAbstractEntityService;
 
-public interface RemoteWorkflowService extends RemoteAbstractEntityService<Workflow>
-{
-	String ENTITY_TYPE = "WORKFLOW"; //$NON-NLS-1$
+public interface RemoteWorkflowService extends RemoteAbstractEntityService<Workflow> {
+  String ENTITY_TYPE = "WORKFLOW"; // $NON-NLS-1$
 }

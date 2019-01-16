@@ -34,50 +34,44 @@ import com.tle.web.sections.registry.handler.util.PropertyAccessor;
 
 @Bind
 @Singleton
-public class FromSessionIdConverter extends AbstractConverter implements SectionsConverter
-{
-	@Inject
-	private UserSessionService userSessionService;
+public class FromSessionIdConverter extends AbstractConverter implements SectionsConverter {
+  @Inject private UserSessionService userSessionService;
 
-	@Override
-	protected boolean canHandleDestinationType(TypeReference<?> destinationType)
-	{
-		return destinationType.isRawTypeSubOf(SessionState.class);
-	}
+  @Override
+  protected boolean canHandleDestinationType(TypeReference<?> destinationType) {
+    return destinationType.isRawTypeSubOf(SessionState.class);
+  }
 
-	@Override
-	protected boolean canHandleSourceObject(Object sourceObject)
-	{
-		return sourceObject == null || sourceObject.getClass() == String.class;
-	}
+  @Override
+  protected boolean canHandleSourceObject(Object sourceObject) {
+    return sourceObject == null || sourceObject.getClass() == String.class;
+  }
 
-	@Override
-	public Object doConvert(ConversionContext context, Object sourceObject, TypeReference<?> destinationType)
-		throws ConverterException
-	{
-		try
-		{
-			SessionState sessionObj = (SessionState) destinationType.getRawType().newInstance();
-			sessionObj.setBookmarkString((String) sourceObject);
-			return userSessionService.getAttribute(sessionObj.getSessionId());
-		}
-		catch( Exception e )
-		{
-			throw new RuntimeException(e);
-		}
-	}
+  @Override
+  public Object doConvert(
+      ConversionContext context, Object sourceObject, TypeReference<?> destinationType)
+      throws ConverterException {
+    try {
+      SessionState sessionObj = (SessionState) destinationType.getRawType().newInstance();
+      sessionObj.setBookmarkString((String) sourceObject);
+      return userSessionService.getAttribute(sessionObj.getSessionId());
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-	@Override
-	public void registerBookmark(SectionTree tree, SectionId sectionId, PropertyAccessor readAccessor,
-		PropertyAccessor writeAccessor, TypeReference<?> typeRef)
-	{
-		// nothing
-	}
+  @Override
+  public void registerBookmark(
+      SectionTree tree,
+      SectionId sectionId,
+      PropertyAccessor readAccessor,
+      PropertyAccessor writeAccessor,
+      TypeReference<?> typeRef) {
+    // nothing
+  }
 
-	@Override
-	public boolean supports(String convertId)
-	{
-		return convertId.equals(ConversionType.FROMPARAMS.name());
-	}
-
+  @Override
+  public boolean supports(String convertId) {
+    return convertId.equals(ConversionType.FROMPARAMS.name());
+  }
 }

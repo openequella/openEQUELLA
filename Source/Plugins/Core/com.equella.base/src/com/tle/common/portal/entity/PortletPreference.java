@@ -28,125 +28,105 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Entity
 @AccessType("field")
-public class PortletPreference
-{
-	public static final int POSITION_TOP = 1;
-	public static final int POSITION_LEFT = 2;
-	public static final int POSITION_RIGHT = 3;
+public class PortletPreference {
+  public static final int POSITION_TOP = 1;
+  public static final int POSITION_LEFT = 2;
+  public static final int POSITION_RIGHT = 3;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	@JoinColumn(nullable = false)
-	@ManyToOne(fetch = FetchType.LAZY)
-	@Index(name = "portletPrefPortletIndex")
-	private Portlet portlet;
+  @JoinColumn(nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @Index(name = "portletPrefPortletIndex")
+  private Portlet portlet;
 
-	@Index(name = "portletPrefUserIndex")
-	@Column(length = 40, nullable = false)
-	private String userId;
+  @Index(name = "portletPrefUserIndex")
+  @Column(length = 40, nullable = false)
+  private String userId;
 
-	private int position;
-	private int order;
-	private boolean closed;
-	private boolean minimised;
+  private int position;
+  private int order;
+  private boolean closed;
+  private boolean minimised;
 
-	@SuppressWarnings("unused")
-	private PortletPreference()
-	{
-		// hibernate
-	}
+  @SuppressWarnings("unused")
+  private PortletPreference() {
+    // hibernate
+  }
 
-	public PortletPreference(Portlet portlet, String userId)
-	{
-		this.portlet = portlet;
-		this.userId = userId;
-	}
+  public PortletPreference(Portlet portlet, String userId) {
+    this.portlet = portlet;
+    this.userId = userId;
+  }
 
-	public long getId()
-	{
-		return id;
-	}
+  public long getId() {
+    return id;
+  }
 
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public Portlet getPortlet()
-	{
-		return portlet;
-	}
+  public Portlet getPortlet() {
+    return portlet;
+  }
 
-	public void setPortlet(Portlet portlet)
-	{
-		this.portlet = portlet;
-	}
+  public void setPortlet(Portlet portlet) {
+    this.portlet = portlet;
+  }
 
-	public String getUserId()
-	{
-		return userId;
-	}
+  public String getUserId() {
+    return userId;
+  }
 
-	public void setUserId(String userId)
-	{
-		this.userId = userId;
-	}
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
 
-	public int getPosition()
-	{
-		return position;
-	}
+  public int getPosition() {
+    return position;
+  }
 
-	/**
-	 * @param position One of PortletPreference.POSITION_TOP,
-	 *            PortletPreference.POSITION_TOP or
-	 *            PortletPreference.POSITION_TOP
-	 */
-	public void setPosition(int position)
-	{
-		this.position = position;
-	}
+  /**
+   * @param position One of PortletPreference.POSITION_TOP, PortletPreference.POSITION_TOP or
+   *     PortletPreference.POSITION_TOP
+   */
+  public void setPosition(int position) {
+    this.position = position;
+  }
 
-	public int getOrder()
-	{
-		return order;
-	}
+  public int getOrder() {
+    return order;
+  }
 
-	public void setOrder(int order)
-	{
-		this.order = order;
-	}
+  public void setOrder(int order) {
+    this.order = order;
+  }
 
-	/**
-	 * Only applicable to preferences on institution-wide portlets. User defined
-	 * portlets are simply deleted when closed.
-	 * 
-	 * @return
-	 */
-	public boolean isClosed()
-	{
-		return closed;
-	}
+  /**
+   * Only applicable to preferences on institution-wide portlets. User defined portlets are simply
+   * deleted when closed.
+   *
+   * @return
+   */
+  public boolean isClosed() {
+    return closed;
+  }
 
-	public void setClosed(boolean closed)
-	{
-		this.closed = closed;
-	}
+  public void setClosed(boolean closed) {
+    this.closed = closed;
+  }
 
-	public boolean isMinimised()
-	{
-		return minimised;
-	}
+  public boolean isMinimised() {
+    return minimised;
+  }
 
-	public void setMinimised(boolean minimised)
-	{
-		this.minimised = minimised;
-	}
+  public void setMinimised(boolean minimised) {
+    this.minimised = minimised;
+  }
 }

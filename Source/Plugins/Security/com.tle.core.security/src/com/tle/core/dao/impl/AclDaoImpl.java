@@ -40,218 +40,218 @@ import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericDaoImpl;
 import com.tle.core.security.impl.SecureOnCallSystem;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @Bind(AclDao.class)
 @Singleton
 @SuppressWarnings("nls")
-public class AclDaoImpl extends GenericDaoImpl<AccessEntry, Long> implements AclDao
-{
-	public AclDaoImpl()
-	{
-		super(AccessEntry.class);
-	}
+public class AclDaoImpl extends GenericDaoImpl<AccessEntry, Long> implements AclDao {
+  public AclDaoImpl() {
+    super(AccessEntry.class);
+  }
 
-	@Override
-	@Transactional(propagation = Propagation.MANDATORY)
-	public Long save(AccessEntry entity)
-	{
-		entity.generateAggregateOrdering();
-		return super.save(entity);
-	}
+  @Override
+  @Transactional(propagation = Propagation.MANDATORY)
+  public Long save(AccessEntry entity) {
+    entity.generateAggregateOrdering();
+    return super.save(entity);
+  }
 
-	@Override
-	@Transactional(propagation = Propagation.MANDATORY)
-	public void saveOrUpdate(AccessEntry entity)
-	{
-		entity.generateAggregateOrdering();
-		super.saveOrUpdate(entity);
-	}
+  @Override
+  @Transactional(propagation = Propagation.MANDATORY)
+  public void saveOrUpdate(AccessEntry entity) {
+    entity.generateAggregateOrdering();
+    super.saveOrUpdate(entity);
+  }
 
-	@Override
-	@Transactional(propagation = Propagation.MANDATORY)
-	public void delete(final String target, final String privilege, final Institution institution)
-	{
-		getHibernateTemplate().execute(new HibernateCallback()
-		{
-			@Override
-			public Object doInHibernate(Session session)
-			{
-				Query query = session.createQuery("delete from AccessEntry where"
-					+ " targetObject = :target and privilege = :privilege" + " and institution = :institution");
-				query.setString("target", target);
-				query.setString("privilege", privilege);
-				query.setParameter("institution", institution);
+  @Override
+  @Transactional(propagation = Propagation.MANDATORY)
+  public void delete(final String target, final String privilege, final Institution institution) {
+    getHibernateTemplate()
+        .execute(
+            new HibernateCallback() {
+              @Override
+              public Object doInHibernate(Session session) {
+                Query query =
+                    session.createQuery(
+                        "delete from AccessEntry where"
+                            + " targetObject = :target and privilege = :privilege"
+                            + " and institution = :institution");
+                query.setString("target", target);
+                query.setString("privilege", privilege);
+                query.setParameter("institution", institution);
 
-				query.executeUpdate();
+                query.executeUpdate();
 
-				return null;
-			}
-		});
-	}
+                return null;
+              }
+            });
+  }
 
-	@Override
-	@Transactional(propagation = Propagation.MANDATORY)
-	public void deleteAll(final String target, final boolean targetIsPartial, final List<Integer> priorities)
-	{
-		getHibernateTemplate().execute(new HibernateCallback()
-		{
-			@Override
-			public Object doInHibernate(Session session)
-			{
-				String op = targetIsPartial ? "like" : "=";
+  @Override
+  @Transactional(propagation = Propagation.MANDATORY)
+  public void deleteAll(
+      final String target, final boolean targetIsPartial, final List<Integer> priorities) {
+    getHibernateTemplate()
+        .execute(
+            new HibernateCallback() {
+              @Override
+              public Object doInHibernate(Session session) {
+                String op = targetIsPartial ? "like" : "=";
 
-				String tar = target;
-				if( targetIsPartial )
-				{
-					tar += "%";
-				}
+                String tar = target;
+                if (targetIsPartial) {
+                  tar += "%";
+                }
 
-				Query query = session.createQuery("delete from AccessEntry where" + " targetObject " + op
-					+ " :target and institution = :institution" + " and aclPriority in (:priorities)");
-				query.setString("target", tar);
-				query.setParameterList("priorities", priorities);
-				query.setParameter("institution", CurrentInstitution.get());
-				query.executeUpdate();
-				return null;
-			}
-		});
-	}
+                Query query =
+                    session.createQuery(
+                        "delete from AccessEntry where"
+                            + " targetObject "
+                            + op
+                            + " :target and institution = :institution"
+                            + " and aclPriority in (:priorities)");
+                query.setString("target", tar);
+                query.setParameterList("priorities", priorities);
+                query.setParameter("institution", CurrentInstitution.get());
+                query.executeUpdate();
+                return null;
+              }
+            });
+  }
 
-	@Override
-	@SecureOnCallSystem
-	@Transactional(propagation = Propagation.MANDATORY)
-	public void deleteAll()
-	{
-		getHibernateTemplate().deleteAll(listAll());
-	}
+  @Override
+  @SecureOnCallSystem
+  @Transactional(propagation = Propagation.MANDATORY)
+  public void deleteAll() {
+    getHibernateTemplate().deleteAll(listAll());
+  }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	@Transactional(propagation = Propagation.MANDATORY)
-	public List<Object[]> getPrivileges(final Collection<String> privileges, final Collection<Long> expressions)
-	{
-		if (privileges.isEmpty() || expressions.isEmpty())
-		{
-			return Collections.emptyList();
-		}
-		return getHibernateTemplate().executeFind(new TLEHibernateCallback()
-		{
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException
-			{
-				Query query = session.getNamedQuery("getPrivileges");
-				query.setParameter("institution", CurrentInstitution.get());
-				query.setParameterList("privileges", privileges);
-				query.setParameterList("expressions", expressions);
-				return query.list();
-			}
-		});
-	}
+  @Override
+  @SuppressWarnings("unchecked")
+  @Transactional(propagation = Propagation.MANDATORY)
+  public List<Object[]> getPrivileges(
+      final Collection<String> privileges, final Collection<Long> expressions) {
+    if (privileges.isEmpty() || expressions.isEmpty()) {
+      return Collections.emptyList();
+    }
+    return getHibernateTemplate()
+        .executeFind(
+            new TLEHibernateCallback() {
+              @Override
+              public Object doInHibernate(Session session) throws HibernateException {
+                Query query = session.getNamedQuery("getPrivileges");
+                query.setParameter("institution", CurrentInstitution.get());
+                query.setParameterList("privileges", privileges);
+                query.setParameterList("expressions", expressions);
+                return query.list();
+              }
+            });
+  }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	@Transactional(propagation = Propagation.MANDATORY)
-	public List<Object[]> getPrivilegesForTargets(final Collection<String> privileges, Collection<String> targets,
-		final Collection<Long> expressions)
-	{
-		return getHibernateTemplate().executeFind(new CollectionPartitioner<String, Object[]>(targets)
-		{
-			@Override
-			public List<Object[]> doQuery(Session session, Collection<String> collection)
-			{
-				Query query = session.getNamedQuery("getPrivilegesForTargets");
-				query.setParameter("institution", CurrentInstitution.get());
-				query.setParameterList("privileges", privileges);
-				query.setParameterList("targets", collection);
-				query.setParameterList("expressions", expressions);
-				return query.list();
-			}
-		});
-	}
+  @Override
+  @SuppressWarnings("unchecked")
+  @Transactional(propagation = Propagation.MANDATORY)
+  public List<Object[]> getPrivilegesForTargets(
+      final Collection<String> privileges,
+      Collection<String> targets,
+      final Collection<Long> expressions) {
+    return getHibernateTemplate()
+        .executeFind(
+            new CollectionPartitioner<String, Object[]>(targets) {
+              @Override
+              public List<Object[]> doQuery(Session session, Collection<String> collection) {
+                Query query = session.getNamedQuery("getPrivilegesForTargets");
+                query.setParameter("institution", CurrentInstitution.get());
+                query.setParameterList("privileges", privileges);
+                query.setParameterList("targets", collection);
+                query.setParameterList("expressions", expressions);
+                return query.list();
+              }
+            });
+  }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	@Transactional(propagation = Propagation.MANDATORY)
-	public List<TargetListEntry> getTargetListEntries(final String target, final Collection<Integer> priorities)
-	{
-		return getHibernateTemplate().executeFind(new TLEHibernateCallback()
-		{
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException
-			{
-				Query query = session.getNamedQuery("getTargetListEntries");
-				query.setParameter("institution", CurrentInstitution.get());
-				query.setParameterList("priorities", priorities);
-				query.setString("target", target);
-				return query.list();
-			}
-		});
-	}
+  @Override
+  @SuppressWarnings("unchecked")
+  @Transactional(propagation = Propagation.MANDATORY)
+  public List<TargetListEntry> getTargetListEntries(
+      final String target, final Collection<Integer> priorities) {
+    return getHibernateTemplate()
+        .executeFind(
+            new TLEHibernateCallback() {
+              @Override
+              public Object doInHibernate(Session session) throws HibernateException {
+                Query query = session.getNamedQuery("getTargetListEntries");
+                query.setParameter("institution", CurrentInstitution.get());
+                query.setParameterList("priorities", priorities);
+                query.setString("target", target);
+                return query.list();
+              }
+            });
+  }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	@Transactional(propagation = Propagation.MANDATORY)
-	public List<ACLEntryMapping> getAllEntries(final Collection<String> privileges, Collection<String> targets)
-	{
-		return getHibernateTemplate().executeFind(new CollectionPartitioner<String, ACLEntryMapping>(targets)
-		{
-			@Override
-			public List<ACLEntryMapping> doQuery(Session session, Collection<String> collection)
-			{
-				Query query = session.getNamedQuery("getAllEntries");
-				query.setParameter("institution", CurrentInstitution.get());
-				query.setParameterList("targets", collection);
-				query.setParameterList("privileges", privileges);
-				return query.list();
-			}
-		});
-	}
+  @Override
+  @SuppressWarnings("unchecked")
+  @Transactional(propagation = Propagation.MANDATORY)
+  public List<ACLEntryMapping> getAllEntries(
+      final Collection<String> privileges, Collection<String> targets) {
+    return getHibernateTemplate()
+        .executeFind(
+            new CollectionPartitioner<String, ACLEntryMapping>(targets) {
+              @Override
+              public List<ACLEntryMapping> doQuery(Session session, Collection<String> collection) {
+                Query query = session.getNamedQuery("getAllEntries");
+                query.setParameter("institution", CurrentInstitution.get());
+                query.setParameterList("targets", collection);
+                query.setParameterList("privileges", privileges);
+                return query.list();
+              }
+            });
+  }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	@Transactional(propagation = Propagation.MANDATORY)
-	public List<AccessEntry> listAll()
-	{
-		return getHibernateTemplate().executeFind(new TLEHibernateCallback()
-		{
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException
-			{
-				Query query = session.getNamedQuery("getAllEntriesForInstitution");
-				query.setParameter("institution", CurrentInstitution.get());
-				return query.list();
-			}
-		});
-	}
+  @Override
+  @SuppressWarnings("unchecked")
+  @Transactional(propagation = Propagation.MANDATORY)
+  public List<AccessEntry> listAll() {
+    return getHibernateTemplate()
+        .executeFind(
+            new TLEHibernateCallback() {
+              @Override
+              public Object doInHibernate(Session session) throws HibernateException {
+                Query query = session.getNamedQuery("getAllEntriesForInstitution");
+                query.setParameter("institution", CurrentInstitution.get());
+                return query.list();
+              }
+            });
+  }
 
-	@Override
-	@Transactional(propagation = Propagation.MANDATORY)
-	public void remapExpressionId(final long oldId, final long newId)
-	{
-		getHibernateTemplate().executeFind(new TLEHibernateCallback()
-		{
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException
-			{
-				Query query = session.createQuery("UPDATE AccessEntry SET expression.id = :newId"
-					+ " WHERE institution = :institution AND expression.id = :oldId");
-				query.setLong("oldId", oldId);
-				query.setLong("newId", newId);
-				query.setParameter("institution", CurrentInstitution.get());
-				query.executeUpdate();
-				return null;
-			}
-		});
-	}
+  @Override
+  @Transactional(propagation = Propagation.MANDATORY)
+  public void remapExpressionId(final long oldId, final long newId) {
+    getHibernateTemplate()
+        .executeFind(
+            new TLEHibernateCallback() {
+              @Override
+              public Object doInHibernate(Session session) throws HibernateException {
+                Query query =
+                    session.createQuery(
+                        "UPDATE AccessEntry SET expression.id = :newId"
+                            + " WHERE institution = :institution AND expression.id = :oldId");
+                query.setLong("oldId", oldId);
+                query.setLong("newId", newId);
+                query.setParameter("institution", CurrentInstitution.get());
+                query.executeUpdate();
+                return null;
+              }
+            });
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<AccessEntry> getVirtualAccessEntries(Collection<Integer> priorities)
-	{
-		return getHibernateTemplate().findByNamedParam(
-			"FROM AccessEntry WHERE institution = :inst AND aclPriority in (:priorities) order by aclOrder desc",
-			new String[]{"inst", "priorities"}, new Object[]{CurrentInstitution.get(), priorities});
-	}
+  @SuppressWarnings("unchecked")
+  @Override
+  public List<AccessEntry> getVirtualAccessEntries(Collection<Integer> priorities) {
+    return getHibernateTemplate()
+        .findByNamedParam(
+            "FROM AccessEntry WHERE institution = :inst AND aclPriority in (:priorities) order by aclOrder desc",
+            new String[] {"inst", "priorities"},
+            new Object[] {CurrentInstitution.get(), priorities});
+  }
 }

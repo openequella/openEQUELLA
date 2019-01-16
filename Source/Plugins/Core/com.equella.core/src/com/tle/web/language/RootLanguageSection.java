@@ -84,326 +84,299 @@ import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 
-/**
- * @author larry
- */
+/** @author larry */
 @SuppressWarnings("nls")
-public class RootLanguageSection extends OneColumnLayout<OneColumnLayout.OneColumnLayoutModel>
-{
-	@PlugKey("language.title")
-	private static Label TITLE_LABEL;
-	@PlugKey("language.importlangpack.receipt")
-	private static Label IMPORT_LANGPACK_RECEIPT_LABEL;
-	@PlugKey("language.removelangpack.confirm.delete")
-	private static Confirm CONFIRM_REMOVE_LANGPACK;
-	@PlugKey("language.removelangpack.receipt")
-	private static Label REMOVE_LANGPACK_RECEIPT_LABEL;
-	@PlugKey("language.export.defaultfilenameprefix")
-	private static String defaultExportFilePrefix;
-	@PlugKey("language.removecontriblang.confirm.delete")
-	private static Confirm CONFIRM_REMOVE_CONTRIBLANG;
-	@PlugKey("language.export.label")
-	private static Label EXPORT_LABEL;
-	@PlugKey("language.delete.label")
-	private static Label DELETE_LABEL;
-	@PlugKey("language.locale.default.name")
-	private static Label LABEL_LOCALE_DEFAULT_NAME;
+public class RootLanguageSection extends OneColumnLayout<OneColumnLayout.OneColumnLayoutModel> {
+  @PlugKey("language.title")
+  private static Label TITLE_LABEL;
 
-	@Component(name = "fiup")
-	private FileUpload fileUploader;
+  @PlugKey("language.importlangpack.receipt")
+  private static Label IMPORT_LANGPACK_RECEIPT_LABEL;
 
-	@Component
-	@PlugKey("addcontriblang.addlink")
-	private Link addContribLangLink;
+  @PlugKey("language.removelangpack.confirm.delete")
+  private static Confirm CONFIRM_REMOVE_LANGPACK;
 
-	@Component
-	@Inject
-	private AddLanguageDialog addLanguageDialog;
+  @PlugKey("language.removelangpack.receipt")
+  private static Label REMOVE_LANGPACK_RECEIPT_LABEL;
 
-	@Component(stateful = false)
-	private SelectionsTable languagePacksTbl;
+  @PlugKey("language.export.defaultfilenameprefix")
+  private static String defaultExportFilePrefix;
 
-	@Component(stateful = false)
-	private SelectionsTable contributionLanguageTbl;
+  @PlugKey("language.removecontriblang.confirm.delete")
+  private static Confirm CONFIRM_REMOVE_CONTRIBLANG;
 
-	@Inject
-	private LanguageSettingsPrivilegeTreeProvider securityProvider;
-	@Inject
-	private LanguageService langService;
-	@Inject
-	private StagingService stagingService;
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private ReceiptService receiptService;
-	@EventFactory
-	private EventGenerator events;
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @PlugKey("language.export.label")
+  private static Label EXPORT_LABEL;
 
-	private JSCallable deleteLocaleHandler;
-	private JSCallable deleteContribHandler;
-	private JSAssignable importValidate;
+  @PlugKey("language.delete.label")
+  private static Label DELETE_LABEL;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @PlugKey("language.locale.default.name")
+  private static Label LABEL_LOCALE_DEFAULT_NAME;
 
-		addContribLangLink.setClickHandler(addLanguageDialog.getOpenFunction(), "", "");
-		addContribLangLink.setStyleClass("add");
-		addLanguageDialog.setOkCallback(new ReloadFunction());
+  @Component(name = "fiup")
+  private FileUpload fileUploader;
 
-		deleteLocaleHandler = events.getSubmitValuesFunction("removeLocale");
-		languagePacksTbl.setSelectionsModel(new LocaleLanguageTableModel());
+  @Component
+  @PlugKey("addcontriblang.addlink")
+  private Link addContribLangLink;
 
-		deleteContribHandler = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("removeContribLangRow"),
-			ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), "contriblanglist");
-		contributionLanguageTbl.setSelectionsModel(new ContributionLanguageTableModel());
+  @Component @Inject private AddLanguageDialog addLanguageDialog;
 
-		importValidate = AjaxUpload.simpleUploadValidator("uploadProgress",
-				new AnonymousFunction(new ReloadFunction()));
-	}
+  @Component(stateful = false)
+  private SelectionsTable languagePacksTbl;
 
-	@Override
-	protected TemplateResult setupTemplate(RenderEventContext info)
-	{
-		securityProvider.checkAuthorised();
-		fileUploader.setAjaxUploadUrl(info, ajax.getAjaxUrl(info, "importLocale"));
-		fileUploader.setValidateFile(info, importValidate);
-		return new GenericTemplateResult(viewFactory.createNamedResult(BODY, "language.ftl", this));
-	}
+  @Component(stateful = false)
+  private SelectionsTable contributionLanguageTbl;
 
-	/**
-	 * We can't know the result of the file-save (or file-save-Cancel), and
-	 * setting any receipt string here won't necessarily display in any case.
-	 * Given that any browsers behaviour will be to present the user with a
-	 * save-or-cancel dialog, that would seem to be sufficient feedback for this
-	 * operation.
-	 * 
-	 * @param info
-	 * @param key
-	 */
-	@EventHandlerMethod
-	public void exportLocale(SectionInfo info, String key)
-	{
-		Locale matchingLocale = null;
-		for( Locale locale : langService.listAvailableResourceBundles() )
-		{
-			String localAsStrng = locale.toString();
-			if( localAsStrng.equals(key) )
-			{
-				matchingLocale = locale;
-				break;
-			}
-		}
-		if( matchingLocale == null )
-		{
-			throw new Error("Cannot find locale for " + key);
-		}
+  @Inject private LanguageSettingsPrivilegeTreeProvider securityProvider;
+  @Inject private LanguageService langService;
+  @Inject private StagingService stagingService;
+  @Inject private FileSystemService fileSystemService;
+  @Inject private ReceiptService receiptService;
+  @EventFactory private EventGenerator events;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @AjaxFactory private AjaxGenerator ajax;
 
-		try
-		{
-			String exportedFilename = CurrentLocale.get(defaultExportFilePrefix);
-			exportedFilename += matchingLocale.toString() + ".zip";
+  private JSCallable deleteLocaleHandler;
+  private JSCallable deleteContribHandler;
+  private JSAssignable importValidate;
 
-			HttpServletResponse response = info.getResponse();
-			response.addHeader("Content-Disposition", "attachment; filename=\"" + exportedFilename + '"');
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-			langService.exportLanguagePack(matchingLocale, response.getOutputStream());
-			info.setRendered();
-		}
-		catch( IOException ioe )
-		{
-			throw new RuntimeException(ioe);
-		}
-	}
+    addContribLangLink.setClickHandler(addLanguageDialog.getOpenFunction(), "", "");
+    addContribLangLink.setStyleClass("add");
+    addLanguageDialog.setOkCallback(new ReloadFunction());
 
-	/**
-	 * Removing locale from the table is a complete action (ie, it is NOT a
-	 * visual removal carried to completion with a Save button), hence we
-	 * precede it with a confirmation alert box.
-	 * 
-	 * @param info
-	 * @param key
-	 */
-	@EventHandlerMethod
-	public void removeLocale(SectionInfo info, String key)
-	{
-		boolean removed = false;
-		List<Locale> persistedLangaugePacks = langService.listAvailableResourceBundles();
-		for( Iterator<Locale> iter = persistedLangaugePacks.iterator(); iter.hasNext(); )
-		{
-			Locale locale = iter.next();
-			String localeAsString = locale.toString();
-			if( localeAsString.equals(key) )
-			{
-				langService.deleteLanguagePack(locale);
-				iter.remove();
-				removed = true;
-				break; // there can only be one remove at a time
-			}
-		}
-		if( removed )
-		{
-			receiptService.setReceipt(REMOVE_LANGPACK_RECEIPT_LABEL);
-		}
-	}
+    deleteLocaleHandler = events.getSubmitValuesFunction("removeLocale");
+    languagePacksTbl.setSelectionsModel(new LocaleLanguageTableModel());
 
-	@AjaxMethod
-	public boolean importLocale(SectionInfo info)
-	{
-		String uploadFilename = fileUploader.getFilename(info);
-		if( !Check.isEmpty(uploadFilename) )
-		{
-			long filesize = fileUploader.getFileSize(info);
+    deleteContribHandler =
+        ajax.getAjaxUpdateDomFunction(
+            tree,
+            this,
+            events.getEventHandler("removeContribLangRow"),
+            ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
+            "contriblanglist");
+    contributionLanguageTbl.setSelectionsModel(new ContributionLanguageTableModel());
 
-			if( filesize > 0 )
-			{
-				try
-				{
-					// upload the file into server's staging area ...
-					StagingFile stagingDir = stagingService.createStagingArea();
-					InputStream is = fileUploader.getInputStream(info);
-					fileSystemService.write(stagingDir, uploadFilename, is, false);
-					// ... from where the language service can do its thing.
-					langService.importLanguagePack(stagingDir.getUuid(), uploadFilename);
-					// gloat.
-					receiptService.setReceipt(IMPORT_LANGPACK_RECEIPT_LABEL);
-				}
-				catch( IOException ioe )
-				{
-					throw new RuntimeException(ioe);
-				}
-			}
-		}
-		return true;
-	}
+    importValidate =
+        AjaxUpload.simpleUploadValidator(
+            "uploadProgress", new AnonymousFunction(new ReloadFunction()));
+  }
 
-	@EventHandlerMethod
-	public void removeContribLangRow(SectionInfo info, String key)
-	{
-		List<Language> persistedLanguages = langService.getLanguages();
+  @Override
+  protected TemplateResult setupTemplate(RenderEventContext info) {
+    securityProvider.checkAuthorised();
+    fileUploader.setAjaxUploadUrl(info, ajax.getAjaxUrl(info, "importLocale"));
+    fileUploader.setValidateFile(info, importValidate);
+    return new GenericTemplateResult(viewFactory.createNamedResult(BODY, "language.ftl", this));
+  }
 
-		boolean altered = false;
-		for( Iterator<Language> iter = persistedLanguages.iterator(); iter.hasNext(); )
-		{
-			Language lang = iter.next();
-			if( lang.getLocale().getDisplayName().equals(key) )
-			{
-				iter.remove();
-				altered = true;
-				break; // there can only be one remove at a time
-			}
-		}
-		if( altered )
-		{
-			langService.setLanguages(persistedLanguages);
-		}
-	}
+  /**
+   * We can't know the result of the file-save (or file-save-Cancel), and setting any receipt string
+   * here won't necessarily display in any case. Given that any browsers behaviour will be to
+   * present the user with a save-or-cancel dialog, that would seem to be sufficient feedback for
+   * this operation.
+   *
+   * @param info
+   * @param key
+   */
+  @EventHandlerMethod
+  public void exportLocale(SectionInfo info, String key) {
+    Locale matchingLocale = null;
+    for (Locale locale : langService.listAvailableResourceBundles()) {
+      String localAsStrng = locale.toString();
+      if (localAsStrng.equals(key)) {
+        matchingLocale = locale;
+        break;
+      }
+    }
+    if (matchingLocale == null) {
+      throw new Error("Cannot find locale for " + key);
+    }
 
-	private class ContributionLanguageTableModel extends DynamicSelectionsTableModel<String>
-	{
-		@Override
-		protected List<String> getSourceList(SectionInfo info)
-		{
-			List<Language> langList = langService.getLanguages();
-			return Lists.transform(langList, new Function<Language, String>()
-			{
-				@Override
-				public String apply(Language lang)
-				{
-					return lang.getLocale().getDisplayName();
-				}
-			});
-		}
+    try {
+      String exportedFilename = CurrentLocale.get(defaultExportFilePrefix);
+      exportedFilename += matchingLocale.toString() + ".zip";
 
-		@Override
-		protected void transform(SectionInfo info, SelectionsTableSelection selection, String lang,
-			List<SectionRenderable> actions, int index)
-		{
-			selection.setViewAction(new LabelRenderer(new TextLabel(lang)));
-			if( langService.getLanguages().size() > 1 )
-			{
-				actions.add(makeRemoveAction(null,
-					new OverrideHandler(deleteContribHandler, lang).addValidator(CONFIRM_REMOVE_CONTRIBLANG)));
-			}
-		}
-	}
+      HttpServletResponse response = info.getResponse();
+      response.addHeader("Content-Disposition", "attachment; filename=\"" + exportedFilename + '"');
 
-	private class LocaleLanguageTableModel extends DynamicSelectionsTableModel<Locale>
-	{
-		@Override
-		protected List<Locale> getSourceList(SectionInfo info)
-		{
-			return langService.listAvailableResourceBundles();
-		}
+      langService.exportLanguagePack(matchingLocale, response.getOutputStream());
+      info.setRendered();
+    } catch (IOException ioe) {
+      throw new RuntimeException(ioe);
+    }
+  }
 
-		@Override
-		protected void transform(SectionInfo info, SelectionsTableSelection selection, Locale locale,
-			List<SectionRenderable> actions, int index)
-		{
-			final Label name;
-			// toString() gets the country, lang and variant and sticks them
-			// together. If none of them are populated it returns a blank string
-			if( Strings.isNullOrEmpty(locale.toString()) )
-			{
-				name = LABEL_LOCALE_DEFAULT_NAME;
-			}
-			else
-			{
-				name = new TextLabel(locale.getDisplayName());
-			}
-			selection.setViewAction(new LabelRenderer(name));
-			/**
-			 * Export handled as a GET rather than a POST, to avoid errors with
-			 * 'page already being submitted', hence the BookmarkAndModify
-			 * utilisation.
-			 */
-			Bookmark bookmarkForGET = new BookmarkAndModify(info,
-				events.getNamedModifier("exportLocale", locale.toString()));
-			actions.add(new LinkRenderer(new HtmlLinkState(EXPORT_LABEL, bookmarkForGET)));
-			actions.add(makeAction(DELETE_LABEL,
-				new OverrideHandler(deleteLocaleHandler, locale.toString()).addValidator(CONFIRM_REMOVE_LANGPACK)));
-		}
-	}
+  /**
+   * Removing locale from the table is a complete action (ie, it is NOT a visual removal carried to
+   * completion with a Save button), hence we precede it with a confirmation alert box.
+   *
+   * @param info
+   * @param key
+   */
+  @EventHandlerMethod
+  public void removeLocale(SectionInfo info, String key) {
+    boolean removed = false;
+    List<Locale> persistedLangaugePacks = langService.listAvailableResourceBundles();
+    for (Iterator<Locale> iter = persistedLangaugePacks.iterator(); iter.hasNext(); ) {
+      Locale locale = iter.next();
+      String localeAsString = locale.toString();
+      if (localeAsString.equals(key)) {
+        langService.deleteLanguagePack(locale);
+        iter.remove();
+        removed = true;
+        break; // there can only be one remove at a time
+      }
+    }
+    if (removed) {
+      receiptService.setReceipt(REMOVE_LANGPACK_RECEIPT_LABEL);
+    }
+  }
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		decorations.setTitle(TITLE_LABEL);
-		crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
-	}
+  @AjaxMethod
+  public boolean importLocale(SectionInfo info) {
+    String uploadFilename = fileUploader.getFilename(info);
+    if (!Check.isEmpty(uploadFilename)) {
+      long filesize = fileUploader.getFileSize(info);
 
-	public boolean hasLanguagePacks(SectionInfo info)
-	{
-		return !Check.isEmpty(langService.listAvailableResourceBundles());
-	}
+      if (filesize > 0) {
+        try {
+          // upload the file into server's staging area ...
+          StagingFile stagingDir = stagingService.createStagingArea();
+          InputStream is = fileUploader.getInputStream(info);
+          fileSystemService.write(stagingDir, uploadFilename, is, false);
+          // ... from where the language service can do its thing.
+          langService.importLanguagePack(stagingDir.getUuid(), uploadFilename);
+          // gloat.
+          receiptService.setReceipt(IMPORT_LANGPACK_RECEIPT_LABEL);
+        } catch (IOException ioe) {
+          throw new RuntimeException(ioe);
+        }
+      }
+    }
+    return true;
+  }
 
-	public SelectionsTable getLanguagePacksTbl()
-	{
-		return languagePacksTbl;
-	}
+  @EventHandlerMethod
+  public void removeContribLangRow(SectionInfo info, String key) {
+    List<Language> persistedLanguages = langService.getLanguages();
 
-	public boolean hasContributionLanguages(SectionInfo info)
-	{
-		return !Check.isEmpty(langService.getLanguages());
-	}
+    boolean altered = false;
+    for (Iterator<Language> iter = persistedLanguages.iterator(); iter.hasNext(); ) {
+      Language lang = iter.next();
+      if (lang.getLocale().getDisplayName().equals(key)) {
+        iter.remove();
+        altered = true;
+        break; // there can only be one remove at a time
+      }
+    }
+    if (altered) {
+      langService.setLanguages(persistedLanguages);
+    }
+  }
 
-	public FileUpload getFileUploader()
-	{
-		return fileUploader;
-	}
+  private class ContributionLanguageTableModel extends DynamicSelectionsTableModel<String> {
+    @Override
+    protected List<String> getSourceList(SectionInfo info) {
+      List<Language> langList = langService.getLanguages();
+      return Lists.transform(
+          langList,
+          new Function<Language, String>() {
+            @Override
+            public String apply(Language lang) {
+              return lang.getLocale().getDisplayName();
+            }
+          });
+    }
 
-	public SelectionsTable getContributionLanguageTbl()
-	{
-		return contributionLanguageTbl;
-	}
+    @Override
+    protected void transform(
+        SectionInfo info,
+        SelectionsTableSelection selection,
+        String lang,
+        List<SectionRenderable> actions,
+        int index) {
+      selection.setViewAction(new LabelRenderer(new TextLabel(lang)));
+      if (langService.getLanguages().size() > 1) {
+        actions.add(
+            makeRemoveAction(
+                null,
+                new OverrideHandler(deleteContribHandler, lang)
+                    .addValidator(CONFIRM_REMOVE_CONTRIBLANG)));
+      }
+    }
+  }
 
-	public Link getAddContribLangLink()
-	{
-		return addContribLangLink;
-	}
+  private class LocaleLanguageTableModel extends DynamicSelectionsTableModel<Locale> {
+    @Override
+    protected List<Locale> getSourceList(SectionInfo info) {
+      return langService.listAvailableResourceBundles();
+    }
+
+    @Override
+    protected void transform(
+        SectionInfo info,
+        SelectionsTableSelection selection,
+        Locale locale,
+        List<SectionRenderable> actions,
+        int index) {
+      final Label name;
+      // toString() gets the country, lang and variant and sticks them
+      // together. If none of them are populated it returns a blank string
+      if (Strings.isNullOrEmpty(locale.toString())) {
+        name = LABEL_LOCALE_DEFAULT_NAME;
+      } else {
+        name = new TextLabel(locale.getDisplayName());
+      }
+      selection.setViewAction(new LabelRenderer(name));
+      /**
+       * Export handled as a GET rather than a POST, to avoid errors with 'page already being
+       * submitted', hence the BookmarkAndModify utilisation.
+       */
+      Bookmark bookmarkForGET =
+          new BookmarkAndModify(info, events.getNamedModifier("exportLocale", locale.toString()));
+      actions.add(new LinkRenderer(new HtmlLinkState(EXPORT_LABEL, bookmarkForGET)));
+      actions.add(
+          makeAction(
+              DELETE_LABEL,
+              new OverrideHandler(deleteLocaleHandler, locale.toString())
+                  .addValidator(CONFIRM_REMOVE_LANGPACK)));
+    }
+  }
+
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    decorations.setTitle(TITLE_LABEL);
+    crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
+  }
+
+  public boolean hasLanguagePacks(SectionInfo info) {
+    return !Check.isEmpty(langService.listAvailableResourceBundles());
+  }
+
+  public SelectionsTable getLanguagePacksTbl() {
+    return languagePacksTbl;
+  }
+
+  public boolean hasContributionLanguages(SectionInfo info) {
+    return !Check.isEmpty(langService.getLanguages());
+  }
+
+  public FileUpload getFileUploader() {
+    return fileUploader;
+  }
+
+  public SelectionsTable getContributionLanguageTbl() {
+    return contributionLanguageTbl;
+  }
+
+  public Link getAddContribLangLink() {
+    return addContribLangLink;
+  }
 }

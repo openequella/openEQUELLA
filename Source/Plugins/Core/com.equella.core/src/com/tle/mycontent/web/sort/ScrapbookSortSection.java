@@ -30,44 +30,37 @@ import com.tle.web.sections.annotations.TreeLookup;
 
 @SuppressWarnings("nls")
 @Bind
-public class ScrapbookSortSection extends AbstractSortOptionsSection<FreetextSearchEvent>
-{
-	@TreeLookup
-	private MyResourcesSortSection otherSort;
+public class ScrapbookSortSection extends AbstractSortOptionsSection<FreetextSearchEvent> {
+  @TreeLookup private MyResourcesSortSection otherSort;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		sortOptions.setParameterId("sbsort");
-		reverse.setParameterId("sbrs");
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    sortOptions.setParameterId("sbsort");
+    reverse.setParameterId("sbrs");
+  }
 
-	@Override
-	protected void addSortOptions(List<SortOption> sorts)
-	{
-		sorts.add(new SortOption(SortType.DATEMODIFIED));
-		sorts.add(new SortOption(SortType.DATECREATED));
-		sorts.add(new SortOption(SortType.NAME));
-	}
+  @Override
+  protected void addSortOptions(List<SortOption> sorts) {
+    sorts.add(new SortOption(SortType.DATEMODIFIED));
+    sorts.add(new SortOption(SortType.DATECREATED));
+    sorts.add(new SortOption(SortType.NAME));
+  }
 
-	public void enable(SectionInfo info)
-	{
-		getModel(info).setDisabled(false);
-		otherSort.disable(info);
-	}
+  public void enable(SectionInfo info) {
+    getModel(info).setDisabled(false);
+    otherSort.disable(info);
+  }
 
-	@Override
-	protected String getDefaultSearch(SectionInfo info)
-	{
-		return "datemodified";
-	}
+  @Override
+  protected String getDefaultSearch(SectionInfo info) {
+    return "datemodified";
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		SortOptionsModel model = new SortOptionsModel();
-		model.setDisabled(true);
-		return model;
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    SortOptionsModel model = new SortOptionsModel();
+    model.setDisabled(true);
+    return model;
+  }
 }

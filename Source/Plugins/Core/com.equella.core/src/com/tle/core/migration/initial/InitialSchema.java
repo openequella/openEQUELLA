@@ -79,121 +79,164 @@ import com.tle.core.plugins.PluginTracker;
 
 @Bind
 @Singleton
-public class InitialSchema extends AbstractCreateMigration
-{
-	private PluginTracker<Object> initialTracker;
-	private static PluginResourceHelper r = ResourcesService.getResourceHelper(InitialSchema.class);
+public class InitialSchema extends AbstractCreateMigration {
+  private PluginTracker<Object> initialTracker;
+  private static PluginResourceHelper r = ResourcesService.getResourceHelper(InitialSchema.class);
 
-	private static Class<?>[] clazzes = new Class<?>[]{ConfigurationProperty.class, ItemDefinitionScript.class,
-			SchemaScript.class, Institution.class, Language.class, Staging.class, UserPreference.class,
-			UserPreference.UserPrefKey.class, BaseEntity.class, LanguageBundle.class,
-			LanguageString.class, EntityLock.class, ItemDefinition.class, ItemdefBlobs.class, Workflow.class,
-			WorkflowNodeStatus.class, WorkflowItemStatus.class, DecisionNode.class, ScriptNode.class,
-			ParallelNode.class, SerialNode.class, WorkflowItem.class, WorkflowNode.class, ReferencedURL.class,
-			Comment.class, DrmAcceptance.class, HistoryEvent.class, Item.class, ItemXml.class, DrmSettings.class,
-			ItemLock.class, ModerationStatus.class, CourseInfo.class, Attachment.class, IMSResourceAttachment.class,
-			FileAttachment.class, HtmlAttachment.class, ImsAttachment.class, CustomAttachment.class,
-			LinkAttachment.class, ZipAttachment.class, ItemNavigationNode.class, ItemNavigationTab.class,
-			NavigationSettings.class, AccessEntry.class, AccessExpression.class, SharePass.class, TLEUser.class,
-			TLEGroup.class, Relation.class, Bookmark.class, MimeEntry.class, ActivateRequest.class,
-			TargetListEntry.class, VersionSelection.class, BaseEntity.Attribute.class, ACLEntryMapping.class };
+  private static Class<?>[] clazzes =
+      new Class<?>[] {
+        ConfigurationProperty.class,
+        ItemDefinitionScript.class,
+        SchemaScript.class,
+        Institution.class,
+        Language.class,
+        Staging.class,
+        UserPreference.class,
+        UserPreference.UserPrefKey.class,
+        BaseEntity.class,
+        LanguageBundle.class,
+        LanguageString.class,
+        EntityLock.class,
+        ItemDefinition.class,
+        ItemdefBlobs.class,
+        Workflow.class,
+        WorkflowNodeStatus.class,
+        WorkflowItemStatus.class,
+        DecisionNode.class,
+        ScriptNode.class,
+        ParallelNode.class,
+        SerialNode.class,
+        WorkflowItem.class,
+        WorkflowNode.class,
+        ReferencedURL.class,
+        Comment.class,
+        DrmAcceptance.class,
+        HistoryEvent.class,
+        Item.class,
+        ItemXml.class,
+        DrmSettings.class,
+        ItemLock.class,
+        ModerationStatus.class,
+        CourseInfo.class,
+        Attachment.class,
+        IMSResourceAttachment.class,
+        FileAttachment.class,
+        HtmlAttachment.class,
+        ImsAttachment.class,
+        CustomAttachment.class,
+        LinkAttachment.class,
+        ZipAttachment.class,
+        ItemNavigationNode.class,
+        ItemNavigationTab.class,
+        NavigationSettings.class,
+        AccessEntry.class,
+        AccessExpression.class,
+        SharePass.class,
+        TLEUser.class,
+        TLEGroup.class,
+        Relation.class,
+        Bookmark.class,
+        MimeEntry.class,
+        ActivateRequest.class,
+        TargetListEntry.class,
+        VersionSelection.class,
+        BaseEntity.Attribute.class,
+        ACLEntryMapping.class
+      };
 
-	@SuppressWarnings("nls")
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(r.key("initial.title"), r.key("initial.description"));
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(r.key("initial.title"), r.key("initial.description"));
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		List<Class<?>> classList = new ArrayList<Class<?>>(Arrays.asList(clazzes));
-		List<Extension> extensions = initialTracker.getExtensions();
-		for( Extension extension : extensions )
-		{
-			Collection<Parameter> tempClazzes = extension.getParameters("class"); //$NON-NLS-1$
-			for( Parameter parameter : tempClazzes )
-			{
-				String clazzName = parameter.valueAsString();
-				classList.add(initialTracker.getClassForName(extension, clazzName));
-			}
-		}
-		return classList.toArray(new Class<?>[classList.size()]);
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    List<Class<?>> classList = new ArrayList<Class<?>>(Arrays.asList(clazzes));
+    List<Extension> extensions = initialTracker.getExtensions();
+    for (Extension extension : extensions) {
+      Collection<Parameter> tempClazzes = extension.getParameters("class"); // $NON-NLS-1$
+      for (Parameter parameter : tempClazzes) {
+        String clazzName = parameter.valueAsString();
+        classList.add(initialTracker.getClassForName(extension, clazzName));
+      }
+    }
+    return classList.toArray(new Class<?>[classList.size()]);
+  }
 
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		initialTracker = new PluginTracker<Object>(pluginService, "com.tle.core.migration", "initialSchema", null); //$NON-NLS-1$
-	}
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    initialTracker =
+        new PluginTracker<Object>(
+            pluginService, "com.tle.core.migration", "initialSchema", null); // $NON-NLS-1$
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	protected void addExtraStatements(HibernateMigrationHelper helper, List<String> sql)
-	{
-		sql.addAll(DBSchema$.MODULE$.schema().creationSQL());
-		sql.addAll(helper.getAddIndexesRaw("bookmark_keywords", "bookkeywords", "bookmark_id"));
+  @SuppressWarnings("nls")
+  @Override
+  protected void addExtraStatements(HibernateMigrationHelper helper, List<String> sql) {
+    sql.addAll(DBSchema$.MODULE$.schema().creationSQL());
+    sql.addAll(helper.getAddIndexesRaw("bookmark_keywords", "bookkeywords", "bookmark_id"));
 
-		sql.addAll(helper.getAddIndexesRaw("tlegroup_users", new String[]{"tleguGroup", "tlegroup_id"}, new String[]{
-				"tleguElem", "element"}));
-		sql.addAll(helper.getAddIndexesRaw("tlegroup_all_parents", "tlegap_parent", "all_parents_id"));
+    sql.addAll(
+        helper.getAddIndexesRaw(
+            "tlegroup_users",
+            new String[] {"tleguGroup", "tlegroup_id"},
+            new String[] {"tleguElem", "element"}));
+    sql.addAll(helper.getAddIndexesRaw("tlegroup_all_parents", "tlegap_parent", "all_parents_id"));
 
-		sql.addAll(helper.getAddIndexesRaw("item_collaborators", "ic_item", "item_id"));
-		sql.addAll(helper.getAddIndexesRaw("item_notifications", "in_item", "item_id"));
-		sql.addAll(helper.getAddIndexesRaw("base_entity_attributes", "bea_entity", "base_entity_id"));
+    sql.addAll(helper.getAddIndexesRaw("item_collaborators", "ic_item", "item_id"));
+    sql.addAll(helper.getAddIndexesRaw("item_notifications", "in_item", "item_id"));
+    sql.addAll(helper.getAddIndexesRaw("base_entity_attributes", "bea_entity", "base_entity_id"));
 
-		sql.addAll(helper.getAddIndexesRaw("access_expression_expression_p", "aeep_aexp", "access_expression_id"));
+    sql.addAll(
+        helper.getAddIndexesRaw(
+            "access_expression_expression_p", "aeep_aexp", "access_expression_id"));
 
-		sql.addAll(helper.getAddIndexesRaw("workflow_node_users", "wnu_node", "workflow_node_id"));
-		sql.addAll(helper.getAddIndexesRaw("workflow_node_groups", "wng_node", "workflow_node_id"));
-		sql.addAll(helper.getAddIndexesRaw("workflow_node_roles", "wnr_node", "workflow_node_id"));
-		sql.addAll(helper.getAddIndexesRaw("workflow_node_auto_assigns", "wnaa_node", "workflow_node_id"));
-		sql.addAll(helper.getAddIndexesRaw("workflow_node_status_accepted", "taskAcceptedNode",
-			"workflow_node_status_id"));
+    sql.addAll(helper.getAddIndexesRaw("workflow_node_users", "wnu_node", "workflow_node_id"));
+    sql.addAll(helper.getAddIndexesRaw("workflow_node_groups", "wng_node", "workflow_node_id"));
+    sql.addAll(helper.getAddIndexesRaw("workflow_node_roles", "wnr_node", "workflow_node_id"));
+    sql.addAll(
+        helper.getAddIndexesRaw("workflow_node_auto_assigns", "wnaa_node", "workflow_node_id"));
+    sql.addAll(
+        helper.getAddIndexesRaw(
+            "workflow_node_status_accepted", "taskAcceptedNode", "workflow_node_status_id"));
 
-		sql.addAll(helper.getAddIndexesRaw("mime_entry_extensions", "mee_mime", "mime_entry_id"));
+    sql.addAll(helper.getAddIndexesRaw("mime_entry_extensions", "mee_mime", "mime_entry_id"));
 
-		List<Extension> extensions = initialTracker.getExtensions();
-		for( Extension extension : extensions )
-		{
-			Collection<Parameter> indexes = extension.getParameters("index");
-			for( Parameter indexParam : indexes )
-			{
-				String table = indexParam.getSubParameter("table").valueAsString();
-				String name = indexParam.getSubParameter("name").valueAsString();
-				Collection<Parameter> cols = indexParam.getSubParameters("column");
-				String function = indexParam.getSubParameter("function") != null ? indexParam.getSubParameter(
-					"function").valueAsString() : null;
-				String[] index = new String[cols.size() + 1];
-				index[0] = name;
-				int i = 1;
-				for( Parameter col : cols )
-				{
-					index[i++] = col.valueAsString();
-				}
-				if( function == null )
-				{
-					sql.addAll(helper.getAddIndexesRaw(table, index));
-				}
-				else
-				{
-					sql.addAll(helper.getAddFunctionIndexes(table, function, index));
-				}
-			}
-		}
-	}
+    List<Extension> extensions = initialTracker.getExtensions();
+    for (Extension extension : extensions) {
+      Collection<Parameter> indexes = extension.getParameters("index");
+      for (Parameter indexParam : indexes) {
+        String table = indexParam.getSubParameter("table").valueAsString();
+        String name = indexParam.getSubParameter("name").valueAsString();
+        Collection<Parameter> cols = indexParam.getSubParameters("column");
+        String function =
+            indexParam.getSubParameter("function") != null
+                ? indexParam.getSubParameter("function").valueAsString()
+                : null;
+        String[] index = new String[cols.size() + 1];
+        index[0] = name;
+        int i = 1;
+        for (Parameter col : cols) {
+          index[i++] = col.valueAsString();
+        }
+        if (function == null) {
+          sql.addAll(helper.getAddIndexesRaw(table, index));
+        } else {
+          sql.addAll(helper.getAddFunctionIndexes(table, function, index));
+        }
+      }
+    }
+  }
 
-	@Override
-	protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper)
-	{
-		AllDataHibernateMigrationFilter filter = new AllDataHibernateMigrationFilter();
-		Session session = helper.getFactory().openSession();
-		if( helper.tableExists(session, SystemConfig.TABLE_NAME) )
-		{
-			filter.setIncludeGenerators(false);
-		}
-		session.close();
-		return filter;
-	}
+  @Override
+  protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
+    AllDataHibernateMigrationFilter filter = new AllDataHibernateMigrationFilter();
+    Session session = helper.getFactory().openSession();
+    if (helper.tableExists(session, SystemConfig.TABLE_NAME)) {
+      filter.setIncludeGenerators(false);
+    }
+    session.close();
+    return filter;
+  }
 }

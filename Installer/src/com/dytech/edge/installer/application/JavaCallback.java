@@ -25,44 +25,43 @@ import com.dytech.devlib.PropBagEx;
 import com.dytech.installer.Callback;
 import com.dytech.installer.Wizard;
 
-/**
- * @author Nicholas Read
- */
-public class JavaCallback implements Callback
-{
-	/*
-	 * (non-Javadoc)
-	 * @see com.dytech.installer.Callback#task(com.dytech.installer.Wizard)
-	 */
-	@Override
-	public void task(Wizard installer)
-	{
-		PropBagEx output = installer.getOutputNow();
-		String dir = output.getNode("java/jdk"); //$NON-NLS-1$
-		File tools = new File(dir + "/lib/tools.jar"); //$NON-NLS-1$
+/** @author Nicholas Read */
+public class JavaCallback implements Callback {
+  /*
+   * (non-Javadoc)
+   * @see com.dytech.installer.Callback#task(com.dytech.installer.Wizard)
+   */
+  @Override
+  public void task(Wizard installer) {
+    PropBagEx output = installer.getOutputNow();
+    String dir = output.getNode("java/jdk"); // $NON-NLS-1$
+    File tools = new File(dir + "/lib/tools.jar"); // $NON-NLS-1$
 
-		if( tools.exists() )
-		{
-			int result = JOptionPane.YES_OPTION;
-			if( dir.indexOf("1.8") == -1 ) //$NON-NLS-1$
-			{
-				Component parent = installer.getFrame();
-				result = JOptionPane.showConfirmDialog(parent,
-					"Does the directory refer to a Java 8 installation?", "Warning", //$NON-NLS-1$ //$NON-NLS-2$
-					JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-			}
+    if (tools.exists()) {
+      int result = JOptionPane.YES_OPTION;
+      if (dir.indexOf("1.8") == -1) // $NON-NLS-1$
+      {
+        Component parent = installer.getFrame();
+        result =
+            JOptionPane.showConfirmDialog(
+                parent,
+                "Does the directory refer to a Java 8 installation?",
+                "Warning", //$NON-NLS-1$ //$NON-NLS-2$
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+      }
 
-			if( result == JOptionPane.YES_OPTION )
-			{
-				installer.gotoPage(installer.getCurrentPageNumber() + 1);
-			}
-		}
-		else
-		{
-			Component parent = installer.getFrame();
-			JOptionPane.showMessageDialog(parent, "You have not specified a valid Java directory."
-				+ "\nPlease select the correct path, and try again.", "Incorrect Java Directory",
-				JOptionPane.ERROR_MESSAGE);
-		}
-	}
+      if (result == JOptionPane.YES_OPTION) {
+        installer.gotoPage(installer.getCurrentPageNumber() + 1);
+      }
+    } else {
+      Component parent = installer.getFrame();
+      JOptionPane.showMessageDialog(
+          parent,
+          "You have not specified a valid Java directory."
+              + "\nPlease select the correct path, and try again.",
+          "Incorrect Java Directory",
+          JOptionPane.ERROR_MESSAGE);
+    }
+  }
 }

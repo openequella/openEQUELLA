@@ -27,27 +27,21 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.annotations.TreeLookup;
 
 @Bind
-public class ConnectorManagementFavouriteSearchSection extends AbstractFavouriteSearchSection
-{
-	@Inject
-	private BundleCache bundleCache;
-	@TreeLookup
-	private ConnectorManagementQuerySection querySection;
+public class ConnectorManagementFavouriteSearchSection extends AbstractFavouriteSearchSection {
+  @Inject private BundleCache bundleCache;
+  @TreeLookup private ConnectorManagementQuerySection querySection;
 
-	@Override
-	protected String getWithin(SectionInfo info)
-	{
-		BaseEntityLabel label = querySection.getConnectorList().getSelectedValue(info);
-		if( label != null )
-		{
-			return new BundleNameValue(label.getBundleId(), label.getUuid(), bundleCache).getName();
-		}
-		return null;
-	}
+  @Override
+  protected String getWithin(SectionInfo info) {
+    BaseEntityLabel label = querySection.getConnectorList().getSelectedValue(info);
+    if (label != null) {
+      return new BundleNameValue(label.getBundleId(), label.getUuid(), bundleCache).getName();
+    }
+    return null;
+  }
 
-	@Override
-	protected String getCriteria(SectionInfo info)
-	{
-		return null;
-	}
+  @Override
+  protected String getCriteria(SectionInfo info) {
+    return null;
+  }
 }

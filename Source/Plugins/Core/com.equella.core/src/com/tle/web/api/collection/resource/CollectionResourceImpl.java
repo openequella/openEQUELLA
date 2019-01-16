@@ -36,42 +36,33 @@ import javax.inject.Singleton;
 @Bind(CollectionResource.class)
 @Singleton
 public class CollectionResourceImpl
-	extends
-		AbstractBaseEntityResource<ItemDefinition, AllCollectionsSecurityBean, CollectionBean>
-		implements CollectionResource
-{
-	@Inject
-	private ItemDefinitionService collectionService;
-	@Inject
-	private CollectionBeanSerializer collectionSerializer;
+    extends AbstractBaseEntityResource<ItemDefinition, AllCollectionsSecurityBean, CollectionBean>
+    implements CollectionResource {
+  @Inject private ItemDefinitionService collectionService;
+  @Inject private CollectionBeanSerializer collectionSerializer;
 
-	@Override
-	protected Class<?> getResourceClass()
-	{
-		return CollectionResource.class;
-	}
+  @Override
+  protected Class<?> getResourceClass() {
+    return CollectionResource.class;
+  }
 
-	@Override
-	public AbstractEntityService<?, ItemDefinition> getEntityService()
-	{
-		return collectionService;
-	}
+  @Override
+  public AbstractEntityService<?, ItemDefinition> getEntityService() {
+    return collectionService;
+  }
 
-	@Override
-	protected BaseEntitySerializer<ItemDefinition, CollectionBean> getSerializer()
-	{
-		return collectionSerializer;
-	}
+  @Override
+  protected BaseEntitySerializer<ItemDefinition, CollectionBean> getSerializer() {
+    return collectionSerializer;
+  }
 
-	@Override
-	protected Node[] getAllNodes()
-	{
-		return new Node[]{Node.ALL_COLLECTIONS, Node.GLOBAL_ITEM_STATUS};
-	}
+  @Override
+  protected Node[] getAllNodes() {
+    return new Node[] {Node.ALL_COLLECTIONS, Node.GLOBAL_ITEM_STATUS};
+  }
 
-	@Override
-	protected AllCollectionsSecurityBean createAllSecurityBean()
-	{
-		return new AllCollectionsSecurityBean();
-	}
+  @Override
+  protected AllCollectionsSecurityBean createAllSecurityBean() {
+    return new AllCollectionsSecurityBean();
+  }
 }

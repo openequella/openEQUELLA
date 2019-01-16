@@ -23,24 +23,21 @@ import com.tle.mypages.web.section.RootMyPagesSection;
 import com.tle.web.sections.SectionNode;
 import com.tle.web.sections.equella.guice.SectionsModule;
 
-public class MyPagesControlModule extends SectionsModule
-{
-	@SuppressWarnings("nls")
-	@Override
-	protected void configure()
-	{
-		NodeProvider node = node(RootMyPagesSection.class);
+public class MyPagesControlModule extends SectionsModule {
+  @SuppressWarnings("nls")
+  @Override
+  protected void configure() {
+    NodeProvider node = node(RootMyPagesSection.class);
 
-		NodeProvider handlerNode = node(MyPagesContributeSection.class);
-		node.child(handlerNode);
+    NodeProvider handlerNode = node(MyPagesContributeSection.class);
+    node.child(handlerNode);
 
-		handlerNode.child(MyPagesHandlerPageActionsSection.class);
+    handlerNode.child(MyPagesHandlerPageActionsSection.class);
 
-		NodeProvider edNode = node(MyPagesEditorSection.class);
-		edNode.child(MyPagesExtrasSection.class);
-		handlerNode.child(edNode);
+    NodeProvider edNode = node(MyPagesEditorSection.class);
+    edNode.child(MyPagesExtrasSection.class);
+    handlerNode.child(edNode);
 
-		bind(SectionNode.class).annotatedWith(Names.named("myPagesTree")).toProvider(node);
-	}
-
+    bind(SectionNode.class).annotatedWith(Names.named("myPagesTree")).toProvider(node);
+  }
 }

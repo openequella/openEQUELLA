@@ -32,24 +32,19 @@ import com.tle.web.viewurl.attachments.AttachmentResourceExtension;
 @Bind
 @Singleton
 public class EchoResource
-	implements
-		AttachmentResourceExtension<CustomAttachment>,
-		RegisterMimeTypeExtension<CustomAttachment>
-{
-	@Inject
-	private SelectionService selection;
-	@Inject
-	private EchoService echoService;
+    implements AttachmentResourceExtension<CustomAttachment>,
+        RegisterMimeTypeExtension<CustomAttachment> {
+  @Inject private SelectionService selection;
+  @Inject private EchoService echoService;
 
-	@Override
-	public ViewableResource process(SectionInfo info, ViewableResource resource, CustomAttachment attachment)
-	{
-		return new EchoViewableResource(resource, attachment, echoService, selection, info);
-	}
+  @Override
+  public ViewableResource process(
+      SectionInfo info, ViewableResource resource, CustomAttachment attachment) {
+    return new EchoViewableResource(resource, attachment, echoService, selection, info);
+  }
 
-	@Override
-	public String getMimeType(CustomAttachment attachment)
-	{
-		return EchoUtils.MIME_TYPE;
-	}
+  @Override
+  public String getMimeType(CustomAttachment attachment) {
+    return EchoUtils.MIME_TYPE;
+  }
 }

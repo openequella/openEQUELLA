@@ -31,25 +31,21 @@ import com.tle.core.guice.Bind;
 @Deprecated
 @Bind
 @Singleton
-public class OAIServletLegacy extends OAIHandler
-{
-	@Inject
-	private OAIProperties properties;
-	@Inject
-	private MembersInjector<OAICatalog> catalogInjector;
-	@Inject
-	private MembersInjector<XMLRecordFactory> recordInjector;
+public class OAIServletLegacy extends OAIHandler {
+  @Inject private OAIProperties properties;
+  @Inject private MembersInjector<OAICatalog> catalogInjector;
+  @Inject private MembersInjector<XMLRecordFactory> recordInjector;
 
-	@Override
-	public void init(ServletConfig config) throws ServletException
-	{
-		Properties props = properties.getProperties();
-		config.getServletContext().setAttribute(OAIHandler.PROPERTIES_SERVLET_CONTEXT_ATTRIBUTE, props);
+  @Override
+  public void init(ServletConfig config) throws ServletException {
+    Properties props = properties.getProperties();
+    config.getServletContext().setAttribute(OAIHandler.PROPERTIES_SERVLET_CONTEXT_ATTRIBUTE, props);
 
-		super.init(config);
+    super.init(config);
 
-		OAICatalog catalog = (OAICatalog) getAttributes("").get("OAIHandler.catalog"); //$NON-NLS-1$ //$NON-NLS-2$
-		catalogInjector.injectMembers(catalog);
-		recordInjector.injectMembers((XMLRecordFactory) catalog.getRecordFactory());
-	}
+    OAICatalog catalog =
+        (OAICatalog) getAttributes("").get("OAIHandler.catalog"); // $NON-NLS-1$ //$NON-NLS-2$
+    catalogInjector.injectMembers(catalog);
+    recordInjector.injectMembers((XMLRecordFactory) catalog.getRecordFactory());
+  }
 }

@@ -29,39 +29,36 @@ import com.tle.web.sections.render.PreRenderable;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public class JQueryUICore implements PreRenderable, JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
+public class JQueryUICore implements PreRenderable, JavascriptModule {
+  private static final long serialVersionUID = 1L;
 
-	private static final PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(JQueryUICore.class);
+  private static final PluginResourceHelper urlHelper =
+      ResourcesService.getResourceHelper(JQueryUICore.class);
 
-	public static final PreRenderable PRERENDER = new IncludeFile(
-		urlHelper
-			.url("jquerylib/jquery.ui.core.js"),
-		JQueryCore.PRERENDER, CssInclude.include(urlHelper.url(
-			"css/themes/equella/jquery-ui.css")).hasMin().make()).hasMin();
+  public static final PreRenderable PRERENDER =
+      new IncludeFile(
+              urlHelper.url("jquerylib/jquery.ui.core.js"),
+              JQueryCore.PRERENDER,
+              CssInclude.include(urlHelper.url("css/themes/equella/jquery-ui.css")).hasMin().make())
+          .hasMin();
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(PRERENDER);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(PRERENDER);
+  }
 
-	@Override
-	public String getDisplayName()
-	{
-		return CurrentLocale.get("com.tle.web.sections.jquery.modules.ui.name");
-	}
+  @Override
+  public String getDisplayName() {
+    return CurrentLocale.get("com.tle.web.sections.jquery.modules.ui.name");
+  }
 
-	@Override
-	public String getId()
-	{
-		return "ui";
-	}
+  @Override
+  public String getId() {
+    return "ui";
+  }
 
-	@Override
-	public Object getPreRenderer()
-	{
-		return PRERENDER;
-	}
+  @Override
+  public Object getPreRenderer() {
+    return PRERENDER;
+  }
 }

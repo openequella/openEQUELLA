@@ -27,35 +27,33 @@ import com.tle.core.institution.convert.ConverterParams;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class UpdateItemNavigationTree extends AbstractItemXmlMigrator
-{
-	@Override
-	public boolean migrate(ConverterParams params, PropBagEx xml, SubTemporaryFile file, String filename)
-		throws Exception
-	{
-		boolean changed = false;
+public class UpdateItemNavigationTree extends AbstractItemXmlMigrator {
+  @Override
+  public boolean migrate(
+      ConverterParams params, PropBagEx xml, SubTemporaryFile file, String filename)
+      throws Exception {
+    boolean changed = false;
 
-		for( PropBagEx node : xml.iterateAll("treeNodes/com.tle.beans.item.attachments.ItemNavigationNode") )
-		{
-			PropBagEx attachment = node.getSubtree("attachment");
-			if( attachment != null )
-			{
-				PropBagEx tab = node.newSubtree("tabs/com.tle.beans.item.attachments.ItemNavigationTab");
-				tab.setNode("id", -1);
-				tab.setNode("node/@reference", "../../..");
-				tab.setNode("name", "Node converted from 3.1");
-				tab.setNode("viewer", "");
-				tab.setNode("attachment/@class", attachment.getNode("@class"));
-				tab.setNode("attachment/@reference", "../../" + attachment.getNode("@reference"));
+    for (PropBagEx node :
+        xml.iterateAll("treeNodes/com.tle.beans.item.attachments.ItemNavigationNode")) {
+      PropBagEx attachment = node.getSubtree("attachment");
+      if (attachment != null) {
+        PropBagEx tab = node.newSubtree("tabs/com.tle.beans.item.attachments.ItemNavigationTab");
+        tab.setNode("id", -1);
+        tab.setNode("node/@reference", "../../..");
+        tab.setNode("name", "Node converted from 3.1");
+        tab.setNode("viewer", "");
+        tab.setNode("attachment/@class", attachment.getNode("@class"));
+        tab.setNode("attachment/@reference", "../../" + attachment.getNode("@reference"));
 
-				node.deleteNode("attachment");
+        node.deleteNode("attachment");
 
-				changed = true;
-			}
-		}
+        changed = true;
+      }
+    }
 
-		changed = xml.deleteNode("navigationSettings/showNextPrev") || changed;
+    changed = xml.deleteNode("navigationSettings/showNextPrev") || changed;
 
-		return changed;
-	}
+    return changed;
+  }
 }

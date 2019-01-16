@@ -52,121 +52,105 @@ import com.tle.web.viewurl.ItemSectionInfo;
 import com.tle.web.viewurl.ViewItemUrlFactory;
 
 @SuppressWarnings("nls")
-public class VersionsContentSection extends AbstractContentSection<Object>
-{
-	@PlugKey("summary.content.versions.pagetitle")
-	private static Label TITLE_LABEL;
-	@PlugKey("summary.content.versions.column.version")
-	private static Label LABEL_VERSION;
-	@PlugKey("summary.content.versions.column.itemtitle")
-	private static Label LABEL_ITEM_TITLE;
-	@PlugKey("summary.content.versions.column.status")
-	private static Label LABEL_STATUS;
-	@PlugKey("summary.content.versions.column.views")
-	private static Label LABEL_VIEWS;
+public class VersionsContentSection extends AbstractContentSection<Object> {
+  @PlugKey("summary.content.versions.pagetitle")
+  private static Label TITLE_LABEL;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @PlugKey("summary.content.versions.column.version")
+  private static Label LABEL_VERSION;
 
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private ViewItemUrlFactory viewItemUrlFactory;
-	@Inject
-	private TLEAclManager aclService;
+  @PlugKey("summary.content.versions.column.itemtitle")
+  private static Label LABEL_ITEM_TITLE;
 
-	@Component(name = "v")
-	private Table versionsTable;
+  @PlugKey("summary.content.versions.column.status")
+  private static Label LABEL_STATUS;
 
-	private SubmitValuesFunction versionsClickedFunc;
+  @PlugKey("summary.content.versions.column.views")
+  private static Label LABEL_VIEWS;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-		versionsClickedFunc = events.getSubmitValuesFunction("versionClicked");
-	}
+  @Inject private ItemService itemService;
+  @Inject private ViewItemUrlFactory viewItemUrlFactory;
+  @Inject private TLEAclManager aclService;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(context);
+  @Component(name = "v")
+  private Table versionsTable;
 
-		final List<Item> items = itemService.getVersionDetails(itemInfo.getItem().getUuid());
-		final TableState versionTableState = versionsTable.getState(context);
-		versionTableState.addClass("versions");
+  private SubmitValuesFunction versionsClickedFunc;
 
-		final Set<ItemId> showViews = getVisibleViewsItems(items);
-		final boolean anyViews = !showViews.isEmpty();
-		if (anyViews)
-		{
-			versionTableState.addHeaderRow(LABEL_VERSION, LABEL_ITEM_TITLE, LABEL_STATUS, LABEL_VIEWS);
-			versionTableState.setColumnSorts(Sort.PRIMARY_DESC, Sort.NONE, Sort.NONE, Sort.SORTABLE_DESC);
-		}
-		else
-		{
-			versionTableState.addHeaderRow(LABEL_VERSION, LABEL_ITEM_TITLE, LABEL_STATUS);
-			versionTableState.setColumnSorts(Sort.PRIMARY_DESC, Sort.NONE, Sort.NONE);
-		}
-		for( Item item : items )
-		{
-			final int version = item.getVersion();
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-			final HtmlLinkState linkState = new HtmlLinkState(new OverrideHandler(versionsClickedFunc, version));
-			linkState.setLabel(new BundleLabel(item.getName(), item.getUuid(), bundleCache));
+    versionsClickedFunc = events.getSubmitValuesFunction("versionClicked");
+  }
 
-			if (anyViews)
-			{
-				Integer views = null;
-				if (showViews.contains(item.getItemId()))
-				{
-					views = ViewCountJavaDao.getSummaryViewCount(item.getItemId());
-				}
-				TableRow row = versionTableState.addRow(version, linkState, item.getStatus(), views);
-				row.setSortData(version, null, null, views);
-			}
-			else
-			{
-				TableRow row = versionTableState.addRow(version, linkState, item.getStatus());
-				row.setSortData(version, null, null);
-			}
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(context);
 
-		addDefaultBreadcrumbs(context, itemInfo, TITLE_LABEL);
-		displayBackButton(context);
+    final List<Item> items = itemService.getVersionDetails(itemInfo.getItem().getUuid());
+    final TableState versionTableState = versionsTable.getState(context);
+    versionTableState.addClass("versions");
 
-		return viewFactory.createResult("viewitem/summary/content/versions.ftl", context);
-	}
+    final Set<ItemId> showViews = getVisibleViewsItems(items);
+    final boolean anyViews = !showViews.isEmpty();
+    if (anyViews) {
+      versionTableState.addHeaderRow(LABEL_VERSION, LABEL_ITEM_TITLE, LABEL_STATUS, LABEL_VIEWS);
+      versionTableState.setColumnSorts(Sort.PRIMARY_DESC, Sort.NONE, Sort.NONE, Sort.SORTABLE_DESC);
+    } else {
+      versionTableState.addHeaderRow(LABEL_VERSION, LABEL_ITEM_TITLE, LABEL_STATUS);
+      versionTableState.setColumnSorts(Sort.PRIMARY_DESC, Sort.NONE, Sort.NONE);
+    }
+    for (Item item : items) {
+      final int version = item.getVersion();
 
-	private Set<ItemId> getVisibleViewsItems(List<Item> items)
-	{
-		final Set<ItemId> res = new HashSet<>();
-		for (Item item : items)
-		{
-			if (aclService.hasPrivilege(item, Privilege.VIEW_VIEWCOUNT))
-			{
-				res.add(item.getItemId());
-			}
-		}
-		return res;
-	}
+      final HtmlLinkState linkState =
+          new HtmlLinkState(new OverrideHandler(versionsClickedFunc, version));
+      linkState.setLabel(new BundleLabel(item.getName(), item.getUuid(), bundleCache));
 
-	@EventHandlerMethod
-	public void versionClicked(SectionInfo info, int version)
-	{
-		final String uuid = ParentViewItemSectionUtils.getItemInfo(info).getItemId().getUuid();
-		info.forwardToUrl(viewItemUrlFactory.createItemUrl(info, new ItemId(uuid, version)).getHref());
-	}
+      if (anyViews) {
+        Integer views = null;
+        if (showViews.contains(item.getItemId())) {
+          views = ViewCountJavaDao.getSummaryViewCount(item.getItemId());
+        }
+        TableRow row = versionTableState.addRow(version, linkState, item.getStatus(), views);
+        row.setSortData(version, null, null, views);
+      } else {
+        TableRow row = versionTableState.addRow(version, linkState, item.getStatus());
+        row.setSortData(version, null, null);
+      }
+    }
 
-	@Override
-	public SectionRenderable renderHelp(RenderContext context)
-	{
-		return viewFactory.createResult("viewitem/summary/help/versions.ftl", this);
-	}
+    addDefaultBreadcrumbs(context, itemInfo, TITLE_LABEL);
+    displayBackButton(context);
 
-	public Table getVersionsTable()
-	{
-		return versionsTable;
-	}
+    return viewFactory.createResult("viewitem/summary/content/versions.ftl", context);
+  }
+
+  private Set<ItemId> getVisibleViewsItems(List<Item> items) {
+    final Set<ItemId> res = new HashSet<>();
+    for (Item item : items) {
+      if (aclService.hasPrivilege(item, Privilege.VIEW_VIEWCOUNT)) {
+        res.add(item.getItemId());
+      }
+    }
+    return res;
+  }
+
+  @EventHandlerMethod
+  public void versionClicked(SectionInfo info, int version) {
+    final String uuid = ParentViewItemSectionUtils.getItemInfo(info).getItemId().getUuid();
+    info.forwardToUrl(viewItemUrlFactory.createItemUrl(info, new ItemId(uuid, version)).getHref());
+  }
+
+  @Override
+  public SectionRenderable renderHelp(RenderContext context) {
+    return viewFactory.createResult("viewitem/summary/help/versions.ftl", this);
+  }
+
+  public Table getVersionsTable() {
+    return versionsTable;
+  }
 }

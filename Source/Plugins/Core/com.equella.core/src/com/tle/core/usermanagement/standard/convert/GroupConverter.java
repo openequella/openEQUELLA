@@ -26,31 +26,25 @@ import com.tle.core.usermanagement.standard.dao.TLEGroupDao;
 
 @Bind
 @Singleton
-public class GroupConverter extends TreeNodeConverter<TLEGroup>
-{
-	@Inject
-	private TLEGroupDao tleGroupDao;
+public class GroupConverter extends TreeNodeConverter<TLEGroup> {
+  @Inject private TLEGroupDao tleGroupDao;
 
-	public GroupConverter()
-	{
-		super("groups", "groups.xml"); //$NON-NLS-1$ //$NON-NLS-2$
-	}
+  public GroupConverter() {
+    super("groups", "groups.xml"); // $NON-NLS-1$ //$NON-NLS-2$
+  }
 
-	@Override
-	public TLEGroupDao getDao()
-	{
-		return tleGroupDao;
-	}
+  @Override
+  public TLEGroupDao getDao() {
+    return tleGroupDao;
+  }
 
-	@Override
-	public String getStringId()
-	{
-		return "GROUPS";
-	}
+  @Override
+  public String getStringId() {
+    return "GROUPS";
+  }
 
-	@Override
-	public Class<TLEGroup> getNodeClass()
-	{
-		return TLEGroup.class;
-	}
+  @Override
+  public Class<TLEGroup> getNodeClass() {
+    return TLEGroup.class;
+  }
 }

@@ -31,26 +31,21 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class CreateLogTable extends AbstractCreateMigration
-{
-	private static final String KEY_PFX = PluginServiceImpl.getMyPluginId(CreateLogTable.class) + ".";
+public class CreateLogTable extends AbstractCreateMigration {
+  private static final String KEY_PFX = PluginServiceImpl.getMyPluginId(CreateLogTable.class) + ".";
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(KEY_PFX + "migration");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(KEY_PFX + "migration");
+  }
 
-	@Override
-	protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper)
-	{
-		return new TablesOnlyFilter("audit_log_lms");
-	}
+  @Override
+  protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
+    return new TablesOnlyFilter("audit_log_lms");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{AuditLogLms.class, Institution.class};
-	}
-
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {AuditLogLms.class, Institution.class};
+  }
 }

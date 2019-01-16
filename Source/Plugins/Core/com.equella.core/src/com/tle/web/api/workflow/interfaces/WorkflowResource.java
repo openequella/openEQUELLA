@@ -33,64 +33,68 @@ import java.util.List;
 @Produces({"application/json"})
 @Path("workflow/")
 @Api(value = "Workflows", description = "workflow")
-public interface WorkflowResource extends BaseEntityResource<WorkflowBean, BaseEntitySecurityBean>
-{
-	@GET
-	@Path("/acl")
-	@ApiOperation(value = "List global workflow acls")
-	public BaseEntitySecurityBean getAcls(@Context UriInfo uriInfo);
+public interface WorkflowResource extends BaseEntityResource<WorkflowBean, BaseEntitySecurityBean> {
+  @GET
+  @Path("/acl")
+  @ApiOperation(value = "List global workflow acls")
+  public BaseEntitySecurityBean getAcls(@Context UriInfo uriInfo);
 
-	@PUT
-	@Path("/acl")
-	@ApiOperation(value = "Edit global workflow acls")
-	public Response editAcls(@Context UriInfo uriInfo, BaseEntitySecurityBean security);
+  @PUT
+  @Path("/acl")
+  @ApiOperation(value = "Edit global workflow acls")
+  public Response editAcls(@Context UriInfo uriInfo, BaseEntitySecurityBean security);
 
-	@GET
-	@ApiOperation("List all workflows")
-	public PagingBean<WorkflowBean> list(
-			@Context UriInfo uriInfo,
-			@ApiParam("Search name and description") @QueryParam("q") String q,
-			@ApiParam("Privilege(s) to filter by") @QueryParam("privilege") List<String> privilege,
-			@QueryParam("resumption") @ApiParam("Resumption token for paging") String resumptionToken,
-			@QueryParam("length") @ApiParam("Number of results") @DefaultValue("10") int length,
-			@QueryParam("full") @ApiParam("Return full entity (needs VIEW or EDIT privilege)") boolean full);
+  @GET
+  @ApiOperation("List all workflows")
+  public PagingBean<WorkflowBean> list(
+      @Context UriInfo uriInfo,
+      @ApiParam("Search name and description") @QueryParam("q") String q,
+      @ApiParam("Privilege(s) to filter by") @QueryParam("privilege") List<String> privilege,
+      @QueryParam("resumption") @ApiParam("Resumption token for paging") String resumptionToken,
+      @QueryParam("length") @ApiParam("Number of results") @DefaultValue("10") int length,
+      @QueryParam("full") @ApiParam("Return full entity (needs VIEW or EDIT privilege)")
+          boolean full);
 
+  @GET
+  @Path("/{uuid}")
+  @ApiOperation("Get a workflow")
+  public WorkflowBean get(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
+  @DELETE
+  @Path("/{uuid}")
+  @ApiOperation("Delete a workflow")
+  public Response delete(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@GET
-	@Path("/{uuid}")
-	@ApiOperation("Get a workflow")
-	public WorkflowBean get(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+  @POST
+  @ApiOperation("Create a new workflow")
+  public Response create(
+      @Context UriInfo uriInfo,
+      @ApiParam WorkflowBean bean,
+      @QueryParam("file") String stagingUuid);
 
-	@DELETE
-	@Path("/{uuid}")
-	@ApiOperation("Delete a workflow")
-	public Response delete(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+  @PUT
+  @Path("/{uuid}")
+  @ApiOperation("Edit a workflow")
+  public Response edit(
+      @Context UriInfo uriInfo,
+      @ApiParam @PathParam("uuid") String uuid,
+      @ApiParam WorkflowBean bean,
+      @ApiParam(required = false) @QueryParam("file") String stagingUuid,
+      @ApiParam(required = false) @QueryParam("lock") String lockId,
+      @ApiParam(required = false) @QueryParam("keeplocked") boolean keepLocked);
 
-	@POST
-	@ApiOperation("Create a new workflow")
-	public Response create(@Context UriInfo uriInfo, @ApiParam WorkflowBean bean, @QueryParam("file") String stagingUuid);
+  @GET
+  @Path("/{uuid}/lock")
+  @ApiOperation("Read the lock for a workflow")
+  public Response getLock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@PUT
-	@Path("/{uuid}")
-	@ApiOperation("Edit a workflow")
-	public Response edit(@Context UriInfo uriInfo, @ApiParam @PathParam("uuid") String uuid,
-		@ApiParam WorkflowBean bean, @ApiParam(required = false) @QueryParam("file") String stagingUuid,
-		@ApiParam(required = false) @QueryParam("lock") String lockId,
-		@ApiParam(required = false) @QueryParam("keeplocked") boolean keepLocked);
+  @POST
+  @Path("/{uuid}/lock")
+  @ApiOperation("Lock a workflow")
+  public Response lock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@GET
-	@Path("/{uuid}/lock")
-	@ApiOperation("Read the lock for a workflow")
-	public Response getLock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
-
-	@POST
-	@Path("/{uuid}/lock")
-	@ApiOperation("Lock a workflow")
-	public Response lock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
-
-	@DELETE
-	@Path("/{uuid}/lock")
-	@ApiOperation("Unlock a workflow")
-	public Response unlock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+  @DELETE
+  @Path("/{uuid}/lock")
+  @ApiOperation("Unlock a workflow")
+  public Response unlock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 }

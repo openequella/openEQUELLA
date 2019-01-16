@@ -38,73 +38,60 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.events.RenderContext;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
 @Bind
 public class CloudSearchItemListSection
-	extends
-		AbstractItemlikeList<CloudItem, CloudSearchListEntry, CloudSearchItemListSection.CloudSearchItemListModel>
-{
-	@Inject
-	private CloudSearchListEntryFactory entryFactory;
-	@Inject
-	private CloudSearchListAttachmentSection attachmentSection;
-	@Inject
-	private CloudSelectItemListExtension selectItemExtension;
+    extends AbstractItemlikeList<
+        CloudItem, CloudSearchListEntry, CloudSearchItemListSection.CloudSearchItemListModel> {
+  @Inject private CloudSearchListEntryFactory entryFactory;
+  @Inject private CloudSearchListAttachmentSection attachmentSection;
+  @Inject private CloudSelectItemListExtension selectItemExtension;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		attachmentSection.register(tree, id);
-		selectItemExtension.register(tree, id);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    attachmentSection.register(tree, id);
+    selectItemExtension.register(tree, id);
+  }
 
-	@Override
-	protected void customiseListEntries(RenderContext context, List<CloudSearchListEntry> entries)
-	{
-		if( Check.isEmpty(entries) )
-		{
-			return;
-		}
-		final ListSettings<CloudSearchListEntry> settings = getModel(context).getListSettings();
+  @Override
+  protected void customiseListEntries(RenderContext context, List<CloudSearchListEntry> entries) {
+    if (Check.isEmpty(entries)) {
+      return;
+    }
+    final ListSettings<CloudSearchListEntry> settings = getModel(context).getListSettings();
 
-		// Standard item list does this via extensions. Maybe refactor later to
-		// do the same?
-		attachmentSection.processEntries(context, entries, settings);
-		final ProcessEntryCallback<CloudItem, CloudSearchListEntry> processEntries = selectItemExtension
-			.processEntries(context, entries, settings);
-		if( processEntries != null )
-		{
-			for( CloudSearchListEntry entry : entries )
-			{
-				processEntries.processEntry(entry);
-			}
-		}
-	}
+    // Standard item list does this via extensions. Maybe refactor later to
+    // do the same?
+    attachmentSection.processEntries(context, entries, settings);
+    final ProcessEntryCallback<CloudItem, CloudSearchListEntry> processEntries =
+        selectItemExtension.processEntries(context, entries, settings);
+    if (processEntries != null) {
+      for (CloudSearchListEntry entry : entries) {
+        processEntries.processEntry(entry);
+      }
+    }
+  }
 
-	@Override
-	protected Set<String> getExtensionTypes()
-	{
-		return new HashSet<>();
-	}
+  @Override
+  protected Set<String> getExtensionTypes() {
+    return new HashSet<>();
+  }
 
-	@Override
-	protected CloudSearchListEntry createItemListEntry(SectionInfo info, CloudItem item, FreetextResult result)
-	{
-		return entryFactory.createListEntry(info, item);
-	}
+  @Override
+  protected CloudSearchListEntry createItemListEntry(
+      SectionInfo info, CloudItem item, FreetextResult result) {
+    return entryFactory.createListEntry(info, item);
+  }
 
-	@Override
-	public CloudSearchItemListModel instantiateModel(SectionInfo info)
-	{
-		return new CloudSearchItemListModel();
-	}
+  @Override
+  public CloudSearchItemListModel instantiateModel(SectionInfo info) {
+    return new CloudSearchItemListModel();
+  }
 
-	public static class CloudSearchItemListModel extends StandardListSection.Model<CloudSearchListEntry>
-	{
-		// Nothing
-	}
+  public static class CloudSearchItemListModel
+      extends StandardListSection.Model<CloudSearchListEntry> {
+    // Nothing
+  }
 }

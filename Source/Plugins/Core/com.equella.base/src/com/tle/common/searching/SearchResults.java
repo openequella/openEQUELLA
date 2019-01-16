@@ -19,20 +19,17 @@ package com.tle.common.searching;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- * @author Nicholas Read
- */
-public interface SearchResults<T> extends Serializable
-{
-	int getOffset();
+/** @author Nicholas Read */
+public interface SearchResults<T> extends Serializable {
+  int getOffset();
 
-	int getCount();
+  int getCount();
 
-	int getAvailable();
+  int getAvailable();
 
-	List<T> getResults();
+  List<T> getResults();
 
-	String getErrorMessage();
+  String getErrorMessage();
 
-	void setErrorMessage(String errorMessage);
+  void setErrorMessage(String errorMessage);
 }

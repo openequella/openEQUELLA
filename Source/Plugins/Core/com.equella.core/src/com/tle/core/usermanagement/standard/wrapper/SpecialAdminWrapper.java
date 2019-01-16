@@ -40,70 +40,59 @@ import com.tle.plugins.ump.UserDirectoryUtils;
 
 @Bind
 @SuppressWarnings("nls")
-public class SpecialAdminWrapper extends AbstractSystemUserWrapper
-{
-	private final Map<String, RoleBean> roles;
+public class SpecialAdminWrapper extends AbstractSystemUserWrapper {
+  private final Map<String, RoleBean> roles;
 
-	private String email;
+  private String email;
 
-	public SpecialAdminWrapper()
-	{
-		roles = Maps.newHashMap();
-		roles.put(LOGGED_IN_USER_ROLE_ID, new DefaultRoleBean(LOGGED_IN_USER_ROLE_ID, "Logged In User Role"));
-		roles.put(GUEST_USER_ROLE_ID, new DefaultRoleBean(GUEST_USER_ROLE_ID, "Guest User Role"));
-	}
+  public SpecialAdminWrapper() {
+    roles = Maps.newHashMap();
+    roles.put(
+        LOGGED_IN_USER_ROLE_ID, new DefaultRoleBean(LOGGED_IN_USER_ROLE_ID, "Logged In User Role"));
+    roles.put(GUEST_USER_ROLE_ID, new DefaultRoleBean(GUEST_USER_ROLE_ID, "Guest User Role"));
+  }
 
-	@Inject
-	public void setConfigurationService(ConfigurationService configurationService)
-	{
-		this.email = configurationService.getProperties(new MailSettings()).getSender();
-	}
+  @Inject
+  public void setConfigurationService(ConfigurationService configurationService) {
+    this.email = configurationService.getProperties(new MailSettings()).getSender();
+  }
 
-	@Override
-	protected boolean authenticatePassword(String suppliedPassword)
-	{
-		return Hash.checkPasswordMatch(CurrentInstitution.get().getAdminPassword(), suppliedPassword);
-	}
+  @Override
+  protected boolean authenticatePassword(String suppliedPassword) {
+    return Hash.checkPasswordMatch(CurrentInstitution.get().getAdminPassword(), suppliedPassword);
+  }
 
-	@Override
-	protected String getEmailAddress()
-	{
-		return email;
-	}
+  @Override
+  protected String getEmailAddress() {
+    return email;
+  }
 
-	@Override
-	public void initUserState(ModifiableUserState state)
-	{
-		state.getUsersRoles().add(LOGGED_IN_USER_ROLE_ID);
-	}
+  @Override
+  public void initUserState(ModifiableUserState state) {
+    state.getUsersRoles().add(LOGGED_IN_USER_ROLE_ID);
+  }
 
-	@Override
-	public RoleBean getInformationForRole(String roleID)
-	{
-		return roles.get(roleID);
-	}
+  @Override
+  public RoleBean getInformationForRole(String roleID) {
+    return roles.get(roleID);
+  }
 
-	@Override
-	public Map<String, RoleBean> getInformationForRoles(Collection<String> roleIds)
-	{
-		return UserDirectoryUtils.getMultipleRoleInfosFromSingleInfos(this, roleIds);
-	}
+  @Override
+  public Map<String, RoleBean> getInformationForRoles(Collection<String> roleIds) {
+    return UserDirectoryUtils.getMultipleRoleInfosFromSingleInfos(this, roleIds);
+  }
 
-	@Override
-	public List<RoleBean> searchRoles(String query)
-	{
-		List<RoleBean> rv = null;
-		for( RoleBean roleBean : roles.values() )
-		{
-			if( TLEPattern.matches(query, roleBean.getName()) )
-			{
-				if( rv == null )
-				{
-					rv = Lists.newArrayListWithExpectedSize(roles.size());
-				}
-				rv.add(roleBean);
-			}
-		}
-		return rv;
-	}
+  @Override
+  public List<RoleBean> searchRoles(String query) {
+    List<RoleBean> rv = null;
+    for (RoleBean roleBean : roles.values()) {
+      if (TLEPattern.matches(query, roleBean.getName())) {
+        if (rv == null) {
+          rv = Lists.newArrayListWithExpectedSize(roles.size());
+        }
+        rv.add(roleBean);
+      }
+    }
+    return rv;
+  }
 }

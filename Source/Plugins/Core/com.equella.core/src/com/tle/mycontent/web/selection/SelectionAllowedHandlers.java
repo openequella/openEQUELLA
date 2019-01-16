@@ -34,48 +34,38 @@ import com.tle.web.selection.SelectionSession;
 
 @Bind
 @Singleton
-public class SelectionAllowedHandlers implements CacheFiller<Set<String>>
-{
-	@Inject
-	private MyContentService myContentService;
-	@Inject
-	private SelectionService selectionService;
+public class SelectionAllowedHandlers implements CacheFiller<Set<String>> {
+  @Inject private MyContentService myContentService;
+  @Inject private SelectionService selectionService;
 
-	@Override
-	public Set<String> get(SectionInfo info)
-	{
-		Set<String> handlerIds = myContentService.getContentHandlerIds();
-		MyContentSelectionSettings settings = getSelectionSettings(info);
-		if( settings != null )
-		{
-			handlerIds = new HashSet<String>(handlerIds);
-			Collection<String> types = settings.getRestrictToHandlerTypes();
-			if( types != null )
-			{
-				handlerIds.retainAll(types);
-			}
-			if( settings.isRawFilesOnly() )
-			{
-				Iterator<String> iter = handlerIds.iterator();
-				while( iter.hasNext() )
-				{
-					String handlerId = iter.next();
-					ContentHandler handler = myContentService.getHandlerForId(handlerId);
-					if( !handler.isRawFiles() )
-					{
-						iter.remove();
-					}
-				}
-			}
-			return handlerIds;
-		}
-		return null;
-	}
+  @Override
+  public Set<String> get(SectionInfo info) {
+    Set<String> handlerIds = myContentService.getContentHandlerIds();
+    MyContentSelectionSettings settings = getSelectionSettings(info);
+    if (settings != null) {
+      handlerIds = new HashSet<String>(handlerIds);
+      Collection<String> types = settings.getRestrictToHandlerTypes();
+      if (types != null) {
+        handlerIds.retainAll(types);
+      }
+      if (settings.isRawFilesOnly()) {
+        Iterator<String> iter = handlerIds.iterator();
+        while (iter.hasNext()) {
+          String handlerId = iter.next();
+          ContentHandler handler = myContentService.getHandlerForId(handlerId);
+          if (!handler.isRawFiles()) {
+            iter.remove();
+          }
+        }
+      }
+      return handlerIds;
+    }
+    return null;
+  }
 
-	protected MyContentSelectionSettings getSelectionSettings(SectionInfo info)
-	{
-		SelectionSession session = selectionService.getCurrentSession(info);
-		return (MyContentSelectionSettings) (session != null ? session.getAttribute(MyContentSelectionSettings.class)
-			: null);
-	}
+  protected MyContentSelectionSettings getSelectionSettings(SectionInfo info) {
+    SelectionSession session = selectionService.getCurrentSession(info);
+    return (MyContentSelectionSettings)
+        (session != null ? session.getAttribute(MyContentSelectionSettings.class) : null);
+  }
 }

@@ -35,111 +35,89 @@ import com.tle.web.sections.equella.receipt.ReceiptService;
 import com.tle.web.sections.events.js.BookmarkAndModify;
 import com.tle.web.sections.render.Label;
 
-public class RootTaskListSection extends ContextableSearchSection<RootTaskListSection.Model>
-{
-	public static final String URL = "/access/tasklist.do"; //$NON-NLS-1$
-	private static final String PARAM_TASKID = "taskId"; //$NON-NLS-1$
+public class RootTaskListSection extends ContextableSearchSection<RootTaskListSection.Model> {
+  public static final String URL = "/access/tasklist.do"; // $NON-NLS-1$
+  private static final String PARAM_TASKID = "taskId"; // $NON-NLS-1$
 
-	@Inject
-	private ModerationService moderationService;
-	@Inject
-	private ReceiptService receiptService;
-	@Inject
-	private TopbarLinkService topbarLinkService;
+  @Inject private ModerationService moderationService;
+  @Inject private ReceiptService receiptService;
+  @Inject private TopbarLinkService topbarLinkService;
 
-	@PlugKey("error.notmoderating")
-	private static Label LABEL_NOTMODERATING;
-	@PlugKey("mytasklist.title")
-	private static Label LABEL_TITLE;
+  @PlugKey("error.notmoderating")
+  private static Label LABEL_NOTMODERATING;
 
-	@Override
-	protected String getSessionKey()
-	{
-		return "taskListContext"; //$NON-NLS-1$
-	}
+  @PlugKey("mytasklist.title")
+  private static Label LABEL_TITLE;
 
-	@Override
-	public Label getTitle(SectionInfo info)
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  protected String getSessionKey() {
+    return "taskListContext"; //$NON-NLS-1$
+  }
 
-	public static SectionInfo createForward(InfoCreator creator)
-	{
-		return creator.createForward(URL);
-	}
+  @Override
+  public Label getTitle(SectionInfo info) {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model();
-	}
+  public static SectionInfo createForward(InfoCreator creator) {
+    return creator.createForward(URL);
+  }
 
-	@DirectEvent
-	public void moderate(SectionInfo info)
-	{
-		ItemTaskId taskId = getModel(info).getTaskId();
-		if( taskId != null )
-		{
-			try
-			{
-				moderationService.moderate(info, ModerationService.VIEW_METADATA, taskId, 0, 1);
-			}
-			catch( NotModeratingStepException nmse )
-			{
-				receiptService.setReceipt(LABEL_NOTMODERATING);
-			}
-		}
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model();
+  }
 
-	public class Model extends ContextableSearchSection.Model
-	{
-		@Bookmarked(stateful = false, supported = true, parameter = PARAM_TASKID)
-		private ItemTaskId taskId;
+  @DirectEvent
+  public void moderate(SectionInfo info) {
+    ItemTaskId taskId = getModel(info).getTaskId();
+    if (taskId != null) {
+      try {
+        moderationService.moderate(info, ModerationService.VIEW_METADATA, taskId, 0, 1);
+      } catch (NotModeratingStepException nmse) {
+        receiptService.setReceipt(LABEL_NOTMODERATING);
+      }
+    }
+  }
 
-		public ItemTaskId getTaskId()
-		{
-			return taskId;
-		}
+  public class Model extends ContextableSearchSection.Model {
+    @Bookmarked(stateful = false, supported = true, parameter = PARAM_TASKID)
+    private ItemTaskId taskId;
 
-		public void setTaskId(ItemTaskId taskId)
-		{
-			this.taskId = taskId;
-		}
-	}
+    public ItemTaskId getTaskId() {
+      return taskId;
+    }
 
-	public static class TaskModifier implements BookmarkModifier
-	{
-		private ItemTaskId taskId;
+    public void setTaskId(ItemTaskId taskId) {
+      this.taskId = taskId;
+    }
+  }
 
-		public TaskModifier(ItemTaskId taskId)
-		{
-			this.taskId = taskId;
-		}
+  public static class TaskModifier implements BookmarkModifier {
+    private ItemTaskId taskId;
 
-		@Override
-		public void addToBookmark(SectionInfo info, Map<String, String[]> bookmarkState)
-		{
-			bookmarkState.put(PARAM_TASKID, new String[]{taskId.toString()});
-		}
+    public TaskModifier(ItemTaskId taskId) {
+      this.taskId = taskId;
+    }
 
-	}
+    @Override
+    public void addToBookmark(SectionInfo info, Map<String, String[]> bookmarkState) {
+      bookmarkState.put(PARAM_TASKID, new String[] {taskId.toString()});
+    }
+  }
 
-	public static Bookmark createModerateBookmark(InfoCreator creator, ItemTaskId itemTaskId)
-	{
-		SectionInfo info = createForward(creator);
-		return new BookmarkAndModify(info, new TaskModifier(itemTaskId));
-	}
+  public static Bookmark createModerateBookmark(InfoCreator creator, ItemTaskId itemTaskId) {
+    SectionInfo info = createForward(creator);
+    return new BookmarkAndModify(info, new TaskModifier(itemTaskId));
+  }
 
-	@DirectEvent
-	public void updateTopbar(SectionInfo info)
-	{
-		topbarLinkService.clearCachedData();
-	}
+  @DirectEvent
+  public void updateTopbar(SectionInfo info) {
+    topbarLinkService.clearCachedData();
+  }
 
-	@Override
-	protected ContentLayout getDefaultLayout(SectionInfo info)
-	{
-		return ContentLayout.TWO_COLUMN;
-	}
+  @Override
+  protected ContentLayout getDefaultLayout(SectionInfo info) {
+    return ContentLayout.TWO_COLUMN;
+  }
 }

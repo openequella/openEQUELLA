@@ -23,75 +23,78 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.Relation;
 
-public interface RelationService
-{
-	Collection<Relation> getAllByFromItem(Item from);
+public interface RelationService {
+  Collection<Relation> getAllByFromItem(Item from);
 
-	Collection<Relation> getAllByToItem(Item to);
+  Collection<Relation> getAllByToItem(Item to);
 
-	Collection<Relation> getAllByType(String type);
+  Collection<Relation> getAllByType(String type);
 
-	Collection<Relation> getAllByToItemAndType(Item to, String type);
+  Collection<Relation> getAllByToItemAndType(Item to, String type);
 
-	Collection<Relation> getAllByFromItemAndType(Item from, String type);
+  Collection<Relation> getAllByFromItemAndType(Item from, String type);
 
-	/**
-	 * NOTE: Does not fire relation listeners
-	 * 
-	 * @param relation
-	 */
-	void delete(Relation relation);
+  /**
+   * NOTE: Does not fire relation listeners
+   *
+   * @param relation
+   */
+  void delete(Relation relation);
 
-	/**
-	 * NOTE: Does not fire relation listeners
-	 * 
-	 * @param relation
-	 */
-	long saveRelation(Relation relation);
+  /**
+   * NOTE: Does not fire relation listeners
+   *
+   * @param relation
+   */
+  long saveRelation(Relation relation);
 
-	void updateRelation(Relation relation);
+  void updateRelation(Relation relation);
 
-	Relation getById(long id);
+  Relation getById(long id);
 
-	/**
-	 * Must have VIEW_ITEM.
-	 * 
-	 * @param itemId
-	 * @param id
-	 * @return
-	 */
-	Relation getForView(ItemKey itemId, long id);
+  /**
+   * Must have VIEW_ITEM.
+   *
+   * @param itemId
+   * @param id
+   * @return
+   */
+  Relation getForView(ItemKey itemId, long id);
 
-	/**
-	 * Must have VIEW_ITEM.
-	 * 
-	 * @param itemId
-	 * @return
-	 */
-	List<Relation> getRelationsForItem(ItemKey itemId);
+  /**
+   * Must have VIEW_ITEM.
+   *
+   * @param itemId
+   * @return
+   */
+  List<Relation> getRelationsForItem(ItemKey itemId);
 
-	/**
-	 * Delete a relation. Checks EDIT_ITEM on the supplied item. This will call
-	 * any registered relation listeners.
-	 * 
-	 * @param itemId
-	 * @param relationId
-	 */
-	void delete(ItemKey itemId, long relationId);
+  /**
+   * Delete a relation. Checks EDIT_ITEM on the supplied item. This will call any registered
+   * relation listeners.
+   *
+   * @param itemId
+   * @param relationId
+   */
+  void delete(ItemKey itemId, long relationId);
 
-	/**
-	 * Create a new relation. Checks EDIT_ITEM on the supplied item. This will
-	 * call any registered relation listeners.
-	 * 
-	 * @param fromItem
-	 * @param toItem
-	 * @param editorIsFrom
-	 * @param type
-	 * @param fromResource
-	 * @param toResource
-	 * @return
-	 */
-	long createRelation(ItemKey fromItem, ItemKey toItem, boolean editorIsFrom, String type, String fromResource,
-		String toResource);
-
+  /**
+   * Create a new relation. Checks EDIT_ITEM on the supplied item. This will call any registered
+   * relation listeners.
+   *
+   * @param fromItem
+   * @param toItem
+   * @param editorIsFrom
+   * @param type
+   * @param fromResource
+   * @param toResource
+   * @return
+   */
+  long createRelation(
+      ItemKey fromItem,
+      ItemKey toItem,
+      boolean editorIsFrom,
+      String type,
+      String fromResource,
+      String toResource);
 }

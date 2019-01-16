@@ -16,21 +16,20 @@
 
 package com.tle.core.hibernate;
 
-public interface DataSourceService
-{
-	ExtendedDialect getDialect();
+public interface DataSourceService {
+  ExtendedDialect getDialect();
 
-	DataSourceHolder getSystemDataSource();
+  DataSourceHolder getSystemDataSource();
 
-	DataSourceHolder getDataSource(String url, String username, String password);
+  DataSourceHolder getDataSource(String url, String username, String password);
 
-	String getSystemUrl();
+  String getSystemUrl();
 
-	String getSystemUsername();
+  String getSystemUsername();
 
-	String getSystemPassword();
+  String getSystemPassword();
 
-	String getDriverClass();
+  String getDriverClass();
 
-	void removeDataSource(String url, String username, String password);
+  void removeDataSource(String url, String username, String password);
 }

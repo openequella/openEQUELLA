@@ -33,32 +33,29 @@ import com.tle.web.sections.ajax.handler.UpdateDomFunction;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.js.SubmitValuesFunction;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
-public interface QtiViewerContext
-{
-	RenderContext getRenderContext();
+public interface QtiViewerContext {
+  RenderContext getRenderContext();
 
-	TestSessionState getSessionState();
+  TestSessionState getSessionState();
 
-	TestSessionController getTestSessionController();
+  TestSessionController getTestSessionController();
 
-	ItemSessionController getItemSessionController();
+  ItemSessionController getItemSessionController();
 
-	Bookmark getViewResourceUrl(String url);
+  Bookmark getViewResourceUrl(String url);
 
-	UpdateDomFunction getValueChangedFunction();
+  UpdateDomFunction getValueChangedFunction();
 
-	SubmitValuesFunction getEndAttemptFunction();
+  SubmitValuesFunction getEndAttemptFunction();
 
-	@Nullable
-	List<String> getValues(Identifier responseIdentifier);
+  @Nullable
+  List<String> getValues(Identifier responseIdentifier);
 
-	Value evaluateVariable(@Nullable QtiNode caller, Identifier variableId);
+  Value evaluateVariable(@Nullable QtiNode caller, Identifier variableId);
 
-	void addError(String message, Identifier interactionId);
+  void addError(String message, Identifier interactionId);
 
-	List<Pair<String, Identifier>> getErrors();
+  List<Pair<String, Identifier>> getErrors();
 }

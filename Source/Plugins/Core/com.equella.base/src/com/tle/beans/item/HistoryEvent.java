@@ -32,201 +32,186 @@ import com.tle.beans.IdCloneable;
 
 @Entity
 @AccessType("field")
-public class HistoryEvent implements Serializable, IdCloneable
-{
-	private static final long serialVersionUID = 1L;
+public class HistoryEvent implements Serializable, IdCloneable {
+  private static final long serialVersionUID = 1L;
 
-	public enum Type
-	{
-		statechange, resetworkflow, approved, rejected, edit, promoted, comment, assign, clone, changeCollection,
-		newversion, contributed, workflowremoved, scriptComplete, scriptError, taskMove
-	}
+  public enum Type {
+    statechange,
+    resetworkflow,
+    approved,
+    rejected,
+    edit,
+    promoted,
+    comment,
+    assign,
+    clone,
+    changeCollection,
+    newversion,
+    contributed,
+    workflowremoved,
+    scriptComplete,
+    scriptError,
+    taskMove
+  }
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	private String user;
-	private Date date;
+  private String user;
+  private Date date;
 
-	@Column(length = 40)
-	private String step;
-	@Column(length = 40)
-	private String toStep;
-	@Column(length = 100)
-	private String stepName;
-	@Column(length = 100)
-	private String toStepName;
+  @Column(length = 40)
+  private String step;
 
-	@Lob
-	private String comment;
-	private boolean applies;
+  @Column(length = 40)
+  private String toStep;
 
-	@Column(length = 25)
-	private String type;
-	private transient Type typeEnum;
+  @Column(length = 100)
+  private String stepName;
 
-	@Column(length = 25)
-	private String state;
-	private transient ItemStatus stateEnum;
+  @Column(length = 100)
+  private String toStepName;
 
-	public HistoryEvent()
-	{
-		super();
-	}
+  @Lob private String comment;
+  private boolean applies;
 
-	public HistoryEvent(Item item)
-	{
-		setState(item.getStatus());
-	}
+  @Column(length = 25)
+  private String type;
 
-	public HistoryEvent(Type type, Item item)
-	{
-		this(item);
-		setType(type);
-	}
+  private transient Type typeEnum;
 
-	@Override
-	public long getId()
-	{
-		return id;
-	}
+  @Column(length = 25)
+  private String state;
 
-	@Override
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  private transient ItemStatus stateEnum;
 
-	public Date getDate()
-	{
-		return date;
-	}
+  public HistoryEvent() {
+    super();
+  }
 
-	public void setDate(Date date)
-	{
-		this.date = date;
-	}
+  public HistoryEvent(Item item) {
+    setState(item.getStatus());
+  }
 
-	public ItemStatus getState()
-	{
-		if( stateEnum == null && state != null )
-		{
-			stateEnum = ItemStatus.valueOf(state);
-		}
-		return stateEnum;
-	}
+  public HistoryEvent(Type type, Item item) {
+    this(item);
+    setType(type);
+  }
 
-	public void setState(ItemStatus state)
-	{
-		this.state = state.name();
-		this.stateEnum = state;
-	}
+  @Override
+  public long getId() {
+    return id;
+  }
 
-	public String getToStep()
-	{
-		return toStep;
-	}
+  @Override
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public void setToStep(String tostep)
-	{
-		this.toStep = tostep;
-	}
+  public Date getDate() {
+    return date;
+  }
 
-	public Type getType()
-	{
-		if( typeEnum == null && type != null )
-		{
-			typeEnum = Type.valueOf(type);
-		}
-		return typeEnum;
-	}
+  public void setDate(Date date) {
+    this.date = date;
+  }
 
-	public void setType(Type type)
-	{
-		this.typeEnum = type;
-		this.type = type.name();
-	}
+  public ItemStatus getState() {
+    if (stateEnum == null && state != null) {
+      stateEnum = ItemStatus.valueOf(state);
+    }
+    return stateEnum;
+  }
 
-	public String getUser()
-	{
-		return user;
-	}
+  public void setState(ItemStatus state) {
+    this.state = state.name();
+    this.stateEnum = state;
+  }
 
-	public void setUser(String user)
-	{
-		this.user = user;
-	}
+  public String getToStep() {
+    return toStep;
+  }
 
-	public String getStep()
-	{
-		return step;
-	}
+  public void setToStep(String tostep) {
+    this.toStep = tostep;
+  }
 
-	public void setStep(String step)
-	{
-		this.step = step;
-	}
+  public Type getType() {
+    if (typeEnum == null && type != null) {
+      typeEnum = Type.valueOf(type);
+    }
+    return typeEnum;
+  }
 
-	public String getComment()
-	{
-		return comment;
-	}
+  public void setType(Type type) {
+    this.typeEnum = type;
+    this.type = type.name();
+  }
 
-	public void setComment(String comment)
-	{
-		this.comment = comment;
-	}
+  public String getUser() {
+    return user;
+  }
 
-	public boolean isApplies()
-	{
-		return applies;
-	}
+  public void setUser(String user) {
+    this.user = user;
+  }
 
-	public void setApplies(boolean applies)
-	{
-		this.applies = applies;
-	}
+  public String getStep() {
+    return step;
+  }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		if( this == obj )
-		{
-			return true;
-		}
+  public void setStep(String step) {
+    this.step = step;
+  }
 
-		if( !(obj instanceof HistoryEvent) )
-		{
-			return false;
-		}
+  public String getComment() {
+    return comment;
+  }
 
-		return id == ((HistoryEvent) obj).id;
-	}
+  public void setComment(String comment) {
+    this.comment = comment;
+  }
 
-	@Override
-	public int hashCode()
-	{
-		return (int) id;
-	}
+  public boolean isApplies() {
+    return applies;
+  }
 
-	public String getStepName()
-	{
-		return stepName;
-	}
+  public void setApplies(boolean applies) {
+    this.applies = applies;
+  }
 
-	public void setStepName(String stepName)
-	{
-		this.stepName = stepName;
-	}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
 
-	public String getToStepName()
-	{
-		return toStepName;
-	}
+    if (!(obj instanceof HistoryEvent)) {
+      return false;
+    }
 
-	public void setToStepName(String toStepName)
-	{
-		this.toStepName = toStepName;
-	}
+    return id == ((HistoryEvent) obj).id;
+  }
+
+  @Override
+  public int hashCode() {
+    return (int) id;
+  }
+
+  public String getStepName() {
+    return stepName;
+  }
+
+  public void setStepName(String stepName) {
+    this.stepName = stepName;
+  }
+
+  public String getToStepName() {
+    return toStepName;
+  }
+
+  public void setToStepName(String toStepName) {
+    this.toStepName = toStepName;
+  }
 }

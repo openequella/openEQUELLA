@@ -27,21 +27,17 @@ import com.tle.web.sections.standard.ComponentFactory;
 
 @Bind
 @Singleton
-public class ComponentRegistrationHandler extends CachedScannerHandler<ComponentScanner>
-{
-	@Inject
-	private ComponentFactory factory;
+public class ComponentRegistrationHandler extends CachedScannerHandler<ComponentScanner> {
+  @Inject private ComponentFactory factory;
 
-	@Override
-	protected ComponentScanner newEntry(Class<?> clazz)
-	{
-		return new ComponentScanner(clazz, this);
-	}
+  @Override
+  protected ComponentScanner newEntry(Class<?> clazz) {
+    return new ComponentScanner(clazz, this);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree, Section section)
-	{
-		ComponentScanner scanner = getForClass(section.getClass());
-		scanner.registerComponents(id, tree, section, factory);
-	}
+  @Override
+  public void registered(String id, SectionTree tree, Section section) {
+    ComponentScanner scanner = getForClass(section.getClass());
+    scanner.registerComponents(id, tree, section, factory);
+  }
 }

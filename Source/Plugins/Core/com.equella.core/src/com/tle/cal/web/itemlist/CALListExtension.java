@@ -30,26 +30,22 @@ import com.tle.web.sections.SectionTree;
 
 @Bind
 @Singleton
-public class CALListExtension extends AbstractCitationGenerator<CALHolding, CALPortion, CALSection>
-{
-	@Inject
-	private CALService calService;
+public class CALListExtension
+    extends AbstractCitationGenerator<CALHolding, CALPortion, CALSection> {
+  @Inject private CALService calService;
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		// Nothing to do
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    // Nothing to do
+  }
 
-	@Override
-	public CopyrightService<CALHolding, CALPortion, CALSection> getCopyrightService()
-	{
-		return calService;
-	}
+  @Override
+  public CopyrightService<CALHolding, CALPortion, CALSection> getCopyrightService() {
+    return calService;
+  }
 
-	@Override
-	public String getItemExtensionType()
-	{
-		return null;
-	}
+  @Override
+  public String getItemExtensionType() {
+    return null;
+  }
 }

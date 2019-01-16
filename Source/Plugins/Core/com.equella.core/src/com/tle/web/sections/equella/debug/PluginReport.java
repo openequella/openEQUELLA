@@ -48,172 +48,149 @@ import com.tle.web.sections.render.TextLabel;
 import com.tle.web.template.Decorations;
 
 @Bind
-public class PluginReport extends AbstractPrototypeSection<PluginReport.Model> implements HtmlRenderer
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@Inject
-	private PluginServiceImpl pluginService;
+public class PluginReport extends AbstractPrototypeSection<PluginReport.Model>
+    implements HtmlRenderer {
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @Inject private PluginServiceImpl pluginService;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		Decorations.getDecorations(context).setTitle(new TextLabel("Plugin Report"));
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    Decorations.getDecorations(context).setTitle(new TextLabel("Plugin Report"));
 
-		PluginManager manager = pluginService.getPluginManager();
-		PluginRegistry registry = manager.getRegistry();
-		IntegrityCheckReport integrityCheckReport = registry.checkIntegrity(manager.getPathResolver(), true);
-		Model model = getModel(context);
-		model.setReport(integrityCheckReport);
-		Collection<PluginDescriptor> plugins = registry.getPluginDescriptors();
-		List<DepRow> depRows = new ArrayList<DepRow>();
-		List<DepRow> extRows = new ArrayList<DepRow>();
-		int loadedPlugins = 0;
-		for( PluginDescriptor desc : plugins )
-		{
-			boolean pluginActivated = manager.isPluginActivated(desc);
-			depRows.add(new DepRow(desc.getId(), countLoadedPlugins(desc, registry, new HashSet<String>()),
-				pluginActivated));
-			if( pluginActivated )
-			{
-				loadedPlugins++;
-			}
-		}
-		Collections.sort(depRows, NumberOrderComparator.HIGHEST_FIRST);
+    PluginManager manager = pluginService.getPluginManager();
+    PluginRegistry registry = manager.getRegistry();
+    IntegrityCheckReport integrityCheckReport =
+        registry.checkIntegrity(manager.getPathResolver(), true);
+    Model model = getModel(context);
+    model.setReport(integrityCheckReport);
+    Collection<PluginDescriptor> plugins = registry.getPluginDescriptors();
+    List<DepRow> depRows = new ArrayList<DepRow>();
+    List<DepRow> extRows = new ArrayList<DepRow>();
+    int loadedPlugins = 0;
+    for (PluginDescriptor desc : plugins) {
+      boolean pluginActivated = manager.isPluginActivated(desc);
+      depRows.add(
+          new DepRow(
+              desc.getId(),
+              countLoadedPlugins(desc, registry, new HashSet<String>()),
+              pluginActivated));
+      if (pluginActivated) {
+        loadedPlugins++;
+      }
+    }
+    Collections.sort(depRows, NumberOrderComparator.HIGHEST_FIRST);
 
-		for( PluginDescriptor desc : plugins )
-		{
-			for( ExtensionPoint extPoint : desc.getExtensionPoints() )
-			{
-				extRows.add(new DepRow(extPoint.getUniqueId(), countExtensionPlugins(extPoint, registry), false));
-			}
-		}
-		Collections.sort(extRows, NumberOrderComparator.HIGHEST_FIRST);
+    for (PluginDescriptor desc : plugins) {
+      for (ExtensionPoint extPoint : desc.getExtensionPoints()) {
+        extRows.add(
+            new DepRow(extPoint.getUniqueId(), countExtensionPlugins(extPoint, registry), false));
+      }
+    }
+    Collections.sort(extRows, NumberOrderComparator.HIGHEST_FIRST);
 
-		model.setExtensionRows(extRows);
-		model.setLoadedPlugins(loadedPlugins);
-		model.setDependencyRows(depRows);
-		return viewFactory.createResult("debug/plugins.ftl", this); //$NON-NLS-1$
-	}
+    model.setExtensionRows(extRows);
+    model.setLoadedPlugins(loadedPlugins);
+    model.setDependencyRows(depRows);
+    return viewFactory.createResult("debug/plugins.ftl", this); // $NON-NLS-1$
+  }
 
-	private int countExtensionPlugins(ExtensionPoint point, PluginRegistry registry)
-	{
-		Collection<Extension> ext = point.getConnectedExtensions();
-		Set<String> alreadyLoaded = new HashSet<String>();
-		int count = 0;
-		for( Extension extension : ext )
-		{
-			PluginDescriptor desc = extension.getDeclaringPluginDescriptor();
-			count += countLoadedPlugins(desc, registry, alreadyLoaded);
-		}
-		return count;
-	}
+  private int countExtensionPlugins(ExtensionPoint point, PluginRegistry registry) {
+    Collection<Extension> ext = point.getConnectedExtensions();
+    Set<String> alreadyLoaded = new HashSet<String>();
+    int count = 0;
+    for (Extension extension : ext) {
+      PluginDescriptor desc = extension.getDeclaringPluginDescriptor();
+      count += countLoadedPlugins(desc, registry, alreadyLoaded);
+    }
+    return count;
+  }
 
-	private int countLoadedPlugins(PluginDescriptor descriptor, PluginRegistry registry, Set<String> alreadyLoaded)
-	{
-		if( alreadyLoaded.contains(descriptor.getId()) )
-		{
-			return 0;
-		}
-		alreadyLoaded.add(descriptor.getId());
-		int count = 1;
-		Collection<PluginPrerequisite> preList = descriptor.getPrerequisites();
-		for( PluginPrerequisite pre : preList )
-		{
-			String pluginId = pre.getPluginId();
-			PluginDescriptor subDesc = registry.getPluginDescriptor(pluginId);
-			count += countLoadedPlugins(subDesc, registry, alreadyLoaded);
+  private int countLoadedPlugins(
+      PluginDescriptor descriptor, PluginRegistry registry, Set<String> alreadyLoaded) {
+    if (alreadyLoaded.contains(descriptor.getId())) {
+      return 0;
+    }
+    alreadyLoaded.add(descriptor.getId());
+    int count = 1;
+    Collection<PluginPrerequisite> preList = descriptor.getPrerequisites();
+    for (PluginPrerequisite pre : preList) {
+      String pluginId = pre.getPluginId();
+      PluginDescriptor subDesc = registry.getPluginDescriptor(pluginId);
+      count += countLoadedPlugins(subDesc, registry, alreadyLoaded);
+    }
+    return count;
+  }
 
-		}
-		return count;
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model();
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model();
-	}
+  public static class Model {
+    private IntegrityCheckReport report;
+    private List<DepRow> dependencyRows;
+    private List<DepRow> extensionRows;
+    private int loadedPlugins;
 
-	public static class Model
-	{
-		private IntegrityCheckReport report;
-		private List<DepRow> dependencyRows;
-		private List<DepRow> extensionRows;
-		private int loadedPlugins;
+    public IntegrityCheckReport getReport() {
+      return report;
+    }
 
-		public IntegrityCheckReport getReport()
-		{
-			return report;
-		}
+    public void setReport(IntegrityCheckReport report) {
+      this.report = report;
+    }
 
-		public void setReport(IntegrityCheckReport report)
-		{
-			this.report = report;
-		}
+    public List<DepRow> getDependencyRows() {
+      return dependencyRows;
+    }
 
-		public List<DepRow> getDependencyRows()
-		{
-			return dependencyRows;
-		}
+    public void setDependencyRows(List<DepRow> dependencyRows) {
+      this.dependencyRows = dependencyRows;
+    }
 
-		public void setDependencyRows(List<DepRow> dependencyRows)
-		{
-			this.dependencyRows = dependencyRows;
-		}
+    public int getLoadedPlugins() {
+      return loadedPlugins;
+    }
 
-		public int getLoadedPlugins()
-		{
-			return loadedPlugins;
-		}
+    public void setLoadedPlugins(int loadedPlugins) {
+      this.loadedPlugins = loadedPlugins;
+    }
 
-		public void setLoadedPlugins(int loadedPlugins)
-		{
-			this.loadedPlugins = loadedPlugins;
-		}
+    public List<DepRow> getExtensionRows() {
+      return extensionRows;
+    }
 
-		public List<DepRow> getExtensionRows()
-		{
-			return extensionRows;
-		}
+    public void setExtensionRows(List<DepRow> extensionRows) {
+      this.extensionRows = extensionRows;
+    }
+  }
 
-		public void setExtensionRows(List<DepRow> extensionRows)
-		{
-			this.extensionRows = extensionRows;
-		}
-	}
+  public static class DepRow implements NumberOrder {
+    private final String name;
+    private final int count;
+    private final boolean loaded;
 
-	public static class DepRow implements NumberOrder
-	{
-		private final String name;
-		private final int count;
-		private final boolean loaded;
+    public DepRow(String name, int count, boolean loaded) {
+      this.name = name;
+      this.count = count;
+      this.loaded = loaded;
+    }
 
-		public DepRow(String name, int count, boolean loaded)
-		{
-			this.name = name;
-			this.count = count;
-			this.loaded = loaded;
-		}
+    public String getName() {
+      return name;
+    }
 
-		public String getName()
-		{
-			return name;
-		}
+    public int getCount() {
+      return count;
+    }
 
-		public int getCount()
-		{
-			return count;
-		}
+    @Override
+    public int getOrder() {
+      return count;
+    }
 
-		@Override
-		public int getOrder()
-		{
-			return count;
-		}
-
-		public boolean isLoaded()
-		{
-			return loaded;
-		}
-	}
+    public boolean isLoaded() {
+      return loaded;
+    }
+  }
 }

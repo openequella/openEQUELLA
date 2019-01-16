@@ -22,9 +22,8 @@ import com.tle.beans.ConfigurationProperty;
 import com.tle.beans.ConfigurationProperty.PropertyKey;
 import com.tle.core.hibernate.dao.GenericDao;
 
-public interface ConfigurationDao extends GenericDao<ConfigurationProperty, PropertyKey>
-{
-	void deleteAll();
+public interface ConfigurationDao extends GenericDao<ConfigurationProperty, PropertyKey> {
+  void deleteAll();
 
-	void deletePropertiesLike(Collection<String> select);
+  void deletePropertiesLike(Collection<String> select);
 }

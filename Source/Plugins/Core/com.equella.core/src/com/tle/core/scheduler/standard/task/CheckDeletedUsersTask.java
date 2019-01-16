@@ -38,46 +38,37 @@ import com.tle.core.services.user.UserService;
 
 @Bind
 @Singleton
-public class CheckDeletedUsersTask implements ScheduledTask
-{
-	@Inject
-	private EntityRegistry entityRegistry;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private UserPreferenceService userPreferenceService;
-	@Inject
-	private UserService userService;
-	@Inject
-	private EventService eventService;
+public class CheckDeletedUsersTask implements ScheduledTask {
+  @Inject private EntityRegistry entityRegistry;
+  @Inject private ItemService itemService;
+  @Inject private UserPreferenceService userPreferenceService;
+  @Inject private UserService userService;
+  @Inject private EventService eventService;
 
-	@Override
-	@Transactional
-	public void execute()
-	{
-		final Set<String> allUsers = new HashSet<String>();
+  @Override
+  @Transactional
+  public void execute() {
+    final Set<String> allUsers = new HashSet<String>();
 
-		for( AbstractEntityService<?, BaseEntity> service : entityRegistry.getAllEntityServices() )
-		{
-			Set<String> referencedUsers = service.getReferencedUsers();
-			allUsers.addAll(referencedUsers);
-		}
+    for (AbstractEntityService<?, BaseEntity> service : entityRegistry.getAllEntityServices()) {
+      Set<String> referencedUsers = service.getReferencedUsers();
+      allUsers.addAll(referencedUsers);
+    }
 
-		allUsers.addAll(itemService.getReferencedUsers());
-		allUsers.addAll(userPreferenceService.getReferencedUsers());
+    allUsers.addAll(itemService.getReferencedUsers());
+    allUsers.addAll(userPreferenceService.getReferencedUsers());
 
-		// Remove all users that information could be found for
-		allUsers.removeAll(userService.getInformationForUsers(allUsers).keySet());
+    // Remove all users that information could be found for
+    allUsers.removeAll(userService.getInformationForUsers(allUsers).keySet());
 
-		// Remove any nulls or blank strings that made there way in
-		allUsers.remove(null);
-		allUsers.remove(Constants.BLANK);
+    // Remove any nulls or blank strings that made there way in
+    allUsers.remove(null);
+    allUsers.remove(Constants.BLANK);
 
-		// ...IDs left over are for users that don't exist anymore
-		for( String delUser : allUsers )
-		{
-			// Post these synchronously, as we are in danger of absolutely swamping the connections
-			eventService.publishApplicationEvent(new UserDeletedEvent(delUser, true));
-		}
-	}
+    // ...IDs left over are for users that don't exist anymore
+    for (String delUser : allUsers) {
+      // Post these synchronously, as we are in danger of absolutely swamping the connections
+      eventService.publishApplicationEvent(new UserDeletedEvent(delUser, true));
+    }
+  }
 }

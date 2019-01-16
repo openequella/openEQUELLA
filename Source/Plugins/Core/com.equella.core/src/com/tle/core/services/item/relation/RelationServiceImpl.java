@@ -42,168 +42,147 @@ import com.tle.exceptions.AccessDeniedException;
 @Bind(RelationService.class)
 @Singleton
 @SuppressWarnings("nls")
-public class RelationServiceImpl implements RelationService
-{
-	@Inject
-	private PluginTracker<RelationListener> listenerTracker;
-	@Inject
-	private RelationDao dao;
-	@Inject
-	private ItemService itemService;
+public class RelationServiceImpl implements RelationService {
+  @Inject private PluginTracker<RelationListener> listenerTracker;
+  @Inject private RelationDao dao;
+  @Inject private ItemService itemService;
 
-	private LoadingCache<String, List<RelationListener>> listenersForType = CacheBuilder.newBuilder().build(
-		new CacheLoader<String, List<RelationListener>>()
-		{
-			@Override
-			public List<RelationListener> load(String relationType)
-			{
-				List<RelationListener> listeners = Lists.newArrayList();
-				List<Extension> extensions = listenerTracker.getExtensions();
-				for( Extension extension : extensions )
-				{
-					Collection<Parameter> types = extension.getParameters("type");
-					for( Parameter typeParam : types )
-					{
-						if( typeParam.valueAsString().equals(relationType) )
-						{
-							listeners.add(listenerTracker.getBeanByExtension(extension));
-						}
-					}
-				}
-				return listeners;
-			}
-		});
+  private LoadingCache<String, List<RelationListener>> listenersForType =
+      CacheBuilder.newBuilder()
+          .build(
+              new CacheLoader<String, List<RelationListener>>() {
+                @Override
+                public List<RelationListener> load(String relationType) {
+                  List<RelationListener> listeners = Lists.newArrayList();
+                  List<Extension> extensions = listenerTracker.getExtensions();
+                  for (Extension extension : extensions) {
+                    Collection<Parameter> types = extension.getParameters("type");
+                    for (Parameter typeParam : types) {
+                      if (typeParam.valueAsString().equals(relationType)) {
+                        listeners.add(listenerTracker.getBeanByExtension(extension));
+                      }
+                    }
+                  }
+                  return listeners;
+                }
+              });
 
-	@Override
-	public Collection<Relation> getAllByFromItem(Item from)
-	{
-		return dao.getAllByFromItem(from);
-	}
+  @Override
+  public Collection<Relation> getAllByFromItem(Item from) {
+    return dao.getAllByFromItem(from);
+  }
 
-	@Override
-	public Collection<Relation> getAllByToItem(Item to)
-	{
-		return dao.getAllByToItem(to);
-	}
+  @Override
+  public Collection<Relation> getAllByToItem(Item to) {
+    return dao.getAllByToItem(to);
+  }
 
-	@Override
-	public Collection<Relation> getAllByType(String type)
-	{
-		return dao.getAllByType(type);
-	}
+  @Override
+  public Collection<Relation> getAllByType(String type) {
+    return dao.getAllByType(type);
+  }
 
-	@Override
-	public Collection<Relation> getAllByFromItemAndType(Item from, String type)
-	{
-		return dao.getAllByFromItemAndType(from, type);
-	}
+  @Override
+  public Collection<Relation> getAllByFromItemAndType(Item from, String type) {
+    return dao.getAllByFromItemAndType(from, type);
+  }
 
-	@Override
-	public long saveRelation(Relation relation)
-	{
-		return dao.save(relation);
-	}
+  @Override
+  public long saveRelation(Relation relation) {
+    return dao.save(relation);
+  }
 
-	@Override
-	public void updateRelation(Relation relation)
-	{
-		dao.merge(relation);
-	}
+  @Override
+  public void updateRelation(Relation relation) {
+    dao.merge(relation);
+  }
 
-	@Override
-	public void delete(Relation relation)
-	{
-		dao.delete(relation);
-	}
+  @Override
+  public void delete(Relation relation) {
+    dao.delete(relation);
+  }
 
-	@Override
-	public Relation getById(long id)
-	{
-		return dao.findById(id);
-	}
+  @Override
+  public Relation getById(long id) {
+    return dao.findById(id);
+  }
 
-	@Override
-	public Collection<Relation> getAllByToItemAndType(Item to, String type)
-	{
-		return dao.getAllByToItemAndType(to, type);
-	}
+  @Override
+  public Collection<Relation> getAllByToItemAndType(Item to, String type) {
+    return dao.getAllByToItemAndType(to, type);
+  }
 
-	@Override
-	@Transactional
-	public Relation getForView(ItemKey itemId, long relationId)
-	{
-		// For security and existance
-		itemService.get(itemId);
-		Relation relation = dao.findById(relationId);
-		if( relation == null )
-		{
-			throw new NotFoundException("Relation '" + relationId + "' not found");
-		}
-		return relation;
-	}
+  @Override
+  @Transactional
+  public Relation getForView(ItemKey itemId, long relationId) {
+    // For security and existance
+    itemService.get(itemId);
+    Relation relation = dao.findById(relationId);
+    if (relation == null) {
+      throw new NotFoundException("Relation '" + relationId + "' not found");
+    }
+    return relation;
+  }
 
-	@Override
-	@Transactional
-	public List<Relation> getRelationsForItem(ItemKey itemId)
-	{
-		// For security and existance
-		itemService.get(itemId);
-		return dao.getAllMentioningItem(itemId);
-	}
+  @Override
+  @Transactional
+  public List<Relation> getRelationsForItem(ItemKey itemId) {
+    // For security and existance
+    itemService.get(itemId);
+    return dao.getAllMentioningItem(itemId);
+  }
 
-	private List<RelationListener> getListenerByType(String relationType)
-	{
-		if( listenerTracker.needsUpdate() )
-		{
-			listenersForType.invalidateAll();
-		}
-		return listenersForType.getUnchecked(relationType);
-	}
+  private List<RelationListener> getListenerByType(String relationType) {
+    if (listenerTracker.needsUpdate()) {
+      listenersForType.invalidateAll();
+    }
+    return listenersForType.getUnchecked(relationType);
+  }
 
-	@Override
-	@Transactional
-	public void delete(ItemKey itemId, long relationId)
-	{
-		Item item = itemService.getForEdit(itemId);
-		Relation relation = dao.findById(relationId);
-		if( relation == null )
-		{
-			throw new NotFoundException("Relation '" + relationId + "' not found");
-		}
-		if( relation.getFirstItem().getId() != item.getId() && relation.getSecondItem().getId() != item.getId() )
-		{
-			throw new AccessDeniedException("Item '" + itemId + "' is not part of relation '" + relationId + "'");
-		}
-		dao.delete(relation);
-		List<RelationListener> listeners = getListenerByType(relation.getRelationType());
-		for( RelationListener relationListener : listeners )
-		{
-			relationListener.relationDeleted(relation);
-		}
-	}
+  @Override
+  @Transactional
+  public void delete(ItemKey itemId, long relationId) {
+    Item item = itemService.getForEdit(itemId);
+    Relation relation = dao.findById(relationId);
+    if (relation == null) {
+      throw new NotFoundException("Relation '" + relationId + "' not found");
+    }
+    if (relation.getFirstItem().getId() != item.getId()
+        && relation.getSecondItem().getId() != item.getId()) {
+      throw new AccessDeniedException(
+          "Item '" + itemId + "' is not part of relation '" + relationId + "'");
+    }
+    dao.delete(relation);
+    List<RelationListener> listeners = getListenerByType(relation.getRelationType());
+    for (RelationListener relationListener : listeners) {
+      relationListener.relationDeleted(relation);
+    }
+  }
 
-	@Override
-	@Transactional
-	public long createRelation(ItemKey fromItem, ItemKey toItem, boolean editorIsFrom, String type,
-		String fromResource, String toResource)
-	{
-		Item item = itemService.getForEdit(editorIsFrom ? fromItem : toItem);
-		Item otherItem = itemService.getUnsecure(editorIsFrom ? toItem : fromItem);
-		Item firstItem = editorIsFrom ? item : otherItem;
-		Item secondItem = editorIsFrom ? otherItem : item;
-		Relation relation = new Relation();
-		relation.setFirstItem(firstItem);
-		relation.setSecondItem(secondItem);
-		relation.setRelationType(type);
-		relation.setFirstResource(fromResource);
-		relation.setSecondResource(toResource);
-		Long relationId = dao.save(relation);
-		List<RelationListener> listeners = getListenerByType(type);
-		for( RelationListener relationListener : listeners )
-		{
-			relationListener.relationCreated(relation);
-		}
-		return relationId;
-	}
-
+  @Override
+  @Transactional
+  public long createRelation(
+      ItemKey fromItem,
+      ItemKey toItem,
+      boolean editorIsFrom,
+      String type,
+      String fromResource,
+      String toResource) {
+    Item item = itemService.getForEdit(editorIsFrom ? fromItem : toItem);
+    Item otherItem = itemService.getUnsecure(editorIsFrom ? toItem : fromItem);
+    Item firstItem = editorIsFrom ? item : otherItem;
+    Item secondItem = editorIsFrom ? otherItem : item;
+    Relation relation = new Relation();
+    relation.setFirstItem(firstItem);
+    relation.setSecondItem(secondItem);
+    relation.setRelationType(type);
+    relation.setFirstResource(fromResource);
+    relation.setSecondResource(toResource);
+    Long relationId = dao.save(relation);
+    List<RelationListener> listeners = getListenerByType(type);
+    for (RelationListener relationListener : listeners) {
+      relationListener.relationCreated(relation);
+    }
+    return relationId;
+  }
 }

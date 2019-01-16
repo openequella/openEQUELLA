@@ -35,107 +35,91 @@ import com.tle.common.util.Dates;
 import com.tle.common.util.LocalDate;
 
 @NonNullByDefault
-public abstract class AbstractHelper
-{
-	public abstract void load(PropBagEx xml, Item item);
+public abstract class AbstractHelper {
+  public abstract void load(PropBagEx xml, Item item);
 
-	/**
-	 * @param xml
-	 * @param item
-	 * @param handled The metdata paths that have been handled. The nodes found
-	 *            in this list will be deleted once all helpers have had a turn
-	 */
-	public abstract void save(PropBagEx xml, Item item, Set<String> handled);
+  /**
+   * @param xml
+   * @param item
+   * @param handled The metdata paths that have been handled. The nodes found in this list will be
+   *     deleted once all helpers have had a turn
+   */
+  public abstract void save(PropBagEx xml, Item item, Set<String> handled);
 
-	public void initialise(Item item)
-	{
-		// TO BE OVERRIDDEN
-	}
+  public void initialise(Item item) {
+    // TO BE OVERRIDDEN
+  }
 
-	public void load(PropBagEx item, ItemPack<Item> pack)
-	{
-		load(item, pack.getItem());
-	}
+  public void load(PropBagEx item, ItemPack<Item> pack) {
+    load(item, pack.getItem());
+  }
 
-	/**
-	 * @param xml
-	 * @param pack
-	 * @param handled The metdata paths that have been handled. The nodes found
-	 *            in this list will be deleted once all helpers have had a turn
-	 */
-	public void save(PropBagEx xml, ItemPack<Item> pack, Set<String> handled)
-	{
-		save(xml, pack.getItem(), handled);
-	}
+  /**
+   * @param xml
+   * @param pack
+   * @param handled The metdata paths that have been handled. The nodes found in this list will be
+   *     deleted once all helpers have had a turn
+   */
+  public void save(PropBagEx xml, ItemPack<Item> pack, Set<String> handled) {
+    save(xml, pack.getItem(), handled);
+  }
 
-	protected void setNode(PropBagEx xml, String path, @Nullable Object o)
-	{
-		if( o != null )
-		{
-			xml.setNode(path, o.toString());
-		}
-		else
-		{
-			xml.deleteNode(path);
-		}
-	}
+  protected void setNode(PropBagEx xml, String path, @Nullable Object o) {
+    if (o != null) {
+      xml.setNode(path, o.toString());
+    } else {
+      xml.deleteNode(path);
+    }
+  }
 
-	// protected String getNode(PropBagEx xml, String path)
-	// {
-	// return getNode(xml, path, BLANK);
-	// }
-	//
-	// protected String getNode(PropBagEx xml, String path, String defaultValue)
-	// {
-	// String value = xml.getNode(path, defaultValue);
-	// xml.deleteNode(path);
-	// return value;
-	// }
-	//
-	// protected PropBagEx getSubtree(PropBagEx itemxml, String node)
-	// {
-	// PropBagEx value = itemxml.getSubtree(node);
-	// itemxml.deleteNode(node);
-	// return value;
-	// }
+  // protected String getNode(PropBagEx xml, String path)
+  // {
+  // return getNode(xml, path, BLANK);
+  // }
+  //
+  // protected String getNode(PropBagEx xml, String path, String defaultValue)
+  // {
+  // String value = xml.getNode(path, defaultValue);
+  // xml.deleteNode(path);
+  // return value;
+  // }
+  //
+  // protected PropBagEx getSubtree(PropBagEx itemxml, String node)
+  // {
+  // PropBagEx value = itemxml.getSubtree(node);
+  // itemxml.deleteNode(node);
+  // return value;
+  // }
 
-	protected <T extends Collection<String>> T iterate(PropBagEx xml, String node, T collection)
-	{
-		for( String s : xml.iterateAllValues(node) )
-		{
-			collection.add(s);
-		}
-		return collection;
-	}
+  protected <T extends Collection<String>> T iterate(PropBagEx xml, String node, T collection) {
+    for (String s : xml.iterateAllValues(node)) {
+      collection.add(s);
+    }
+    return collection;
+  }
 
-	protected List<String> iterate(PropBagEx xml, String node)
-	{
-		return iterate(xml, node, new ArrayList<String>());
-	}
+  protected List<String> iterate(PropBagEx xml, String node) {
+    return iterate(xml, node, new ArrayList<String>());
+  }
 
-	protected TimeZone getTimeZone()
-	{
-		return CurrentTimeZone.get();
-	}
+  protected TimeZone getTimeZone() {
+    return CurrentTimeZone.get();
+  }
 
-	protected String formatDate(@Nullable Date date)
-	{
-		if( date == null )
-		{
-			return Constants.BLANK;
-		}
-		return formatDate(new LocalDate(date, getTimeZone()));
-	}
+  protected String formatDate(@Nullable Date date) {
+    if (date == null) {
+      return Constants.BLANK;
+    }
+    return formatDate(new LocalDate(date, getTimeZone()));
+  }
 
-	@Nullable
-	protected String formatDate(LocalDate date)
-	{
-		return date.formatOrNull(Dates.ISO_WITH_TIMEZONE);
-	}
+  @Nullable
+  protected String formatDate(LocalDate date) {
+    return date.formatOrNull(Dates.ISO_WITH_TIMEZONE);
+  }
 
-	@Nullable
-	protected LocalDate parseDate(String date)
-	{
-		return DateHelper.parseOrNull(date, Dates.ISO_WITH_TIMEZONE, getTimeZone());
-	}
+  @Nullable
+  protected LocalDate parseDate(String date) {
+    return DateHelper.parseOrNull(date, Dates.ISO_WITH_TIMEZONE, getTimeZone());
+  }
 }

@@ -30,67 +30,57 @@ import com.tle.web.selection.AbstractSelectionNavAction;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.section.RootSelectionSection.Layout;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class BrowseSelectable extends AbstractSelectionNavAction
-{
-	static
-	{
-		PluginResourceHandler.init(BrowseSelectable.class);
-	}
-	@PlugKey("label.selection.action")
-	private static Label LABEL_BROWSE;
+public class BrowseSelectable extends AbstractSelectionNavAction {
+  static {
+    PluginResourceHandler.init(BrowseSelectable.class);
+  }
 
-	@Inject
-	private HierarchyService hierarchyService;
+  @PlugKey("label.selection.action")
+  private static Label LABEL_BROWSE;
 
-	@Override
-	public SectionInfo createSectionInfo(SectionInfo info, SelectionSession session)
-	{
-		return createForwardForNavAction(info, session);
-	}
+  @Inject private HierarchyService hierarchyService;
 
-	@Override
-	public Label getLabelForNavAction(SectionInfo info)
-	{
-		return LABEL_BROWSE;
-	}
+  @Override
+  public SectionInfo createSectionInfo(SectionInfo info, SelectionSession session) {
+    return createForwardForNavAction(info, session);
+  }
 
-	@Override
-	public SectionInfo createForwardForNavAction(SectionInfo fromInfo, SelectionSession session)
-	{
-		return fromInfo.createForward("/hierarchy.do");
-	}
+  @Override
+  public Label getLabelForNavAction(SectionInfo info) {
+    return LABEL_BROWSE;
+  }
 
-	@Override
-	public boolean isActionAvailable(SectionInfo info, SelectionSession session)
-	{
-		if( !super.isActionAvailable(info, session) )
-		{
-			return false;
-		}
-		if( session.getLayout() != Layout.NORMAL )
-		{
-			return false;
-		}
-		// This seems really expensive...
-		return (session.isAllCollections() || !Check.isEmpty(session.getCollectionUuids()))
-			&& !hierarchyService.expandVirtualisedTopics(hierarchyService.getChildTopics(null), null, null).isEmpty();
-	}
+  @Override
+  public SectionInfo createForwardForNavAction(SectionInfo fromInfo, SelectionSession session) {
+    return fromInfo.createForward("/hierarchy.do");
+  }
 
-	@Override
-	public String getActionType()
-	{
-		return "browse";
-	}
+  @Override
+  public boolean isActionAvailable(SectionInfo info, SelectionSession session) {
+    if (!super.isActionAvailable(info, session)) {
+      return false;
+    }
+    if (session.getLayout() != Layout.NORMAL) {
+      return false;
+    }
+    // This seems really expensive...
+    return (session.isAllCollections() || !Check.isEmpty(session.getCollectionUuids()))
+        && !hierarchyService
+            .expandVirtualisedTopics(hierarchyService.getChildTopics(null), null, null)
+            .isEmpty();
+  }
 
-	@Override
-	public boolean isShowBreadcrumbs()
-	{
-		return true;
-	}
+  @Override
+  public String getActionType() {
+    return "browse";
+  }
+
+  @Override
+  public boolean isShowBreadcrumbs() {
+    return true;
+  }
 }

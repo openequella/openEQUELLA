@@ -30,24 +30,23 @@ import com.tle.core.institution.convert.XmlMigrator;
 
 @Bind
 @Singleton
-public class RemoveGoogleAndEdnaAndDSMFedSearchMigrationXml extends XmlMigrator
-{
-	// and LORN!
-	@Override
-	@SuppressWarnings("nls")
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
-	{
-		final SubTemporaryFile fedSearchFolder = new SubTemporaryFile(staging, "federatedsearch");
-		final List<String> fedSearches = xmlHelper.getXmlFileList(fedSearchFolder);
-		for( String fedSearch : fedSearches )
-		{
-			PropBagEx xml = xmlHelper.readToPropBagEx(fedSearchFolder, fedSearch);
-			String node = xml.getNode("type");
-			if( node.equals("GoogleSearchEngine") || node.equals("EdnaOnlineSearchEngine")
-				|| node.equals("DSMSearchEngine") || node.equals("LornSearchEngine") )
-			{
-				fileSystemService.removeFile(fedSearchFolder, fedSearch);
-			}
-		}
-	}
+public class RemoveGoogleAndEdnaAndDSMFedSearchMigrationXml extends XmlMigrator {
+  // and LORN!
+  @Override
+  @SuppressWarnings("nls")
+  public void execute(
+      TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) {
+    final SubTemporaryFile fedSearchFolder = new SubTemporaryFile(staging, "federatedsearch");
+    final List<String> fedSearches = xmlHelper.getXmlFileList(fedSearchFolder);
+    for (String fedSearch : fedSearches) {
+      PropBagEx xml = xmlHelper.readToPropBagEx(fedSearchFolder, fedSearch);
+      String node = xml.getNode("type");
+      if (node.equals("GoogleSearchEngine")
+          || node.equals("EdnaOnlineSearchEngine")
+          || node.equals("DSMSearchEngine")
+          || node.equals("LornSearchEngine")) {
+        fileSystemService.removeFile(fedSearchFolder, fedSearch);
+      }
+    }
+  }
 }

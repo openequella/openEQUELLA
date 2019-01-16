@@ -28,20 +28,16 @@ import com.tle.web.sections.TreeIndexed;
 
 @TreeIndexed
 @Bind
-public class CLAActivateSection extends AbstractActivateSection
-{
-	@Inject
-	private CLAWebServiceImpl claWebService;
+public class CLAActivateSection extends AbstractActivateSection {
+  @Inject private CLAWebServiceImpl claWebService;
 
-	@Override
-	protected String getActivationType()
-	{
-		return CLAConstants.ACTIVATION_TYPE;
-	}
+  @Override
+  protected String getActivationType() {
+    return CLAConstants.ACTIVATION_TYPE;
+  }
 
-	@Override
-	protected CopyrightWebService<? extends Holding> getCopyrightServiceImpl()
-	{
-		return claWebService;
-	}
+  @Override
+  protected CopyrightWebService<? extends Holding> getCopyrightServiceImpl() {
+    return claWebService;
+  }
 }

@@ -21,9 +21,7 @@ import com.tle.beans.cla.CLAPortion;
 import com.tle.beans.cla.CLASection;
 import com.tle.core.copyright.service.CopyrightService;
 
-public interface CLAService extends CopyrightService<CLAHolding, CLAPortion, CLASection>
-{
+public interface CLAService extends CopyrightService<CLAHolding, CLAPortion, CLASection> {
 
-	void validateHolding(CLAHolding holding);
-
+  void validateHolding(CLAHolding holding);
 }

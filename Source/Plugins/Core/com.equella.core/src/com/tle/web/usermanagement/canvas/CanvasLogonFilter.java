@@ -37,71 +37,60 @@ import com.tle.common.usermanagement.user.UserState;
 import com.tle.plugins.ump.UserManagementLogonFilter;
 import com.tle.web.dispatcher.FilterResult;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @SuppressWarnings("nls")
-public class CanvasLogonFilter implements UserManagementLogonFilter
-{
-	private static final Logger LOGGER = Logger.getLogger(CanvasLogonFilter.class);
-	private static final String PARAM_NO_AUTO_LOGIN = "NO_AUTO_LOGIN";
+public class CanvasLogonFilter implements UserManagementLogonFilter {
+  private static final Logger LOGGER = Logger.getLogger(CanvasLogonFilter.class);
+  private static final String PARAM_NO_AUTO_LOGIN = "NO_AUTO_LOGIN";
 
-	@Inject
-	private ConfigurationService configurationService;
+  @Inject private ConfigurationService configurationService;
 
-	private CanvasWrapperSettings settings;
+  private CanvasWrapperSettings settings;
 
-	@Override
-	public boolean init(Map<Object, Object> attributes)
-	{
-		settings = configurationService.getProperties(new CanvasWrapperSettings());
-		if( settings.isEnabled() && LOGGER.isDebugEnabled() )
-		{
-			LOGGER.debug("Canvas URL: " + settings.getCanvasUrl());
-			LOGGER.debug("Canvas Client ID: " + settings.getClientId());
-		}
-		return settings.isEnabled();
-	}
+  @Override
+  public boolean init(Map<Object, Object> attributes) {
+    settings = configurationService.getProperties(new CanvasWrapperSettings());
+    if (settings.isEnabled() && LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Canvas URL: " + settings.getCanvasUrl());
+      LOGGER.debug("Canvas Client ID: " + settings.getClientId());
+    }
+    return settings.isEnabled();
+  }
 
-	@Override
-	public void addStateParameters(HttpServletRequest request, Map<String, String[]> params)
-	{
-		if( request.getParameter(PARAM_NO_AUTO_LOGIN) != null )
-		{
-			params.put(PARAM_NO_AUTO_LOGIN, new String[]{"true"});
-		}
-	}
+  @Override
+  public void addStateParameters(HttpServletRequest request, Map<String, String[]> params) {
+    if (request.getParameter(PARAM_NO_AUTO_LOGIN) != null) {
+      params.put(PARAM_NO_AUTO_LOGIN, new String[] {"true"});
+    }
+  }
 
-	@Override
-	public FilterResult filter(HttpServletRequest request, HttpServletResponse response) throws IOException
-	{
-		if( !CurrentUser.isGuest() || request.getParameter(PARAM_NO_AUTO_LOGIN) != null
-			|| !settings.isBypassLogonPage() )
-		{
-			return null;
-		}
-		return new FilterResult("/canvassso");
-	}
+  @Override
+  public FilterResult filter(HttpServletRequest request, HttpServletResponse response)
+      throws IOException {
+    if (!CurrentUser.isGuest()
+        || request.getParameter(PARAM_NO_AUTO_LOGIN) != null
+        || !settings.isBypassLogonPage()) {
+      return null;
+    }
+    return new FilterResult("/canvassso");
+  }
 
-	@Override
-	public URI logoutRedirect(URI loggedOutURI)
-	{
-		return null;
-	}
+  @Override
+  public URI logoutRedirect(URI loggedOutURI) {
+    return null;
+  }
 
-	@Override
-	public URI logoutURI(UserState state, URI loggedOutURI)
-	{
-		QueryBuilder loggedOutQB = QueryBuilder.create();
-		String loggedOutQuery = loggedOutURI.getQuery();
-		if( loggedOutQuery != null )
-		{
-			loggedOutQB.parse(loggedOutQuery);
-		}
-		loggedOutQB.addParam(PARAM_NO_AUTO_LOGIN, "true");
-		UriBuilder builder = UriBuilder.create(loggedOutURI);
-		builder.setQuery(loggedOutQB);
-		return builder.build();
-	}
+  @Override
+  public URI logoutURI(UserState state, URI loggedOutURI) {
+    QueryBuilder loggedOutQB = QueryBuilder.create();
+    String loggedOutQuery = loggedOutURI.getQuery();
+    if (loggedOutQuery != null) {
+      loggedOutQB.parse(loggedOutQuery);
+    }
+    loggedOutQB.addParam(PARAM_NO_AUTO_LOGIN, "true");
+    UriBuilder builder = UriBuilder.create(loggedOutURI);
+    builder.setQuery(loggedOutQB);
+    return builder.build();
+  }
 }

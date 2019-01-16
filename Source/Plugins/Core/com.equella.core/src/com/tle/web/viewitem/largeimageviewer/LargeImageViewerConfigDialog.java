@@ -21,19 +21,16 @@ import com.tle.web.sections.equella.viewers.AbstractNewWindowConfigDialog;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.render.Label;
 
-public class LargeImageViewerConfigDialog extends AbstractNewWindowConfigDialog
-{
-	@PlugKey("liv.title")
-	private static Label LABEL_TITLE;
+public class LargeImageViewerConfigDialog extends AbstractNewWindowConfigDialog {
+  @PlugKey("liv.title")
+  private static Label LABEL_TITLE;
 
-	public LargeImageViewerConfigDialog()
-	{
-		super(false);
-	}
+  public LargeImageViewerConfigDialog() {
+    super(false);
+  }
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return LABEL_TITLE;
+  }
 }

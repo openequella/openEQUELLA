@@ -51,219 +51,185 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
 import com.tle.web.sections.standard.model.SimpleHtmlListModel;
 
-/**
- * @author larry
- */
+/** @author larry */
 @SuppressWarnings("nls")
 @Bind
 @NonNullByDefault
-public class AddLanguageDialog extends AbstractOkayableDialog<AddLanguageDialog.AddLanguageModel>
-{
-	@PlugKey("addlanguage.dialog.title.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("addlanguage.dialog.none")
-	private static String defaultLangCountryNone;
+public class AddLanguageDialog extends AbstractOkayableDialog<AddLanguageDialog.AddLanguageModel> {
+  @PlugKey("addlanguage.dialog.title.title")
+  private static Label LABEL_TITLE;
 
-	@Component(name = "lnge")
-	private SingleSelectionList<NameValue> languageList;
+  @PlugKey("addlanguage.dialog.none")
+  private static String defaultLangCountryNone;
 
-	@Component(name = "cntr")
-	private SingleSelectionList<NameValue> countryList;
+  @Component(name = "lnge")
+  private SingleSelectionList<NameValue> languageList;
 
-	@Inject
-	private LanguageService langService;
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @Component(name = "cntr")
+  private SingleSelectionList<NameValue> countryList;
 
-	private JSCallable reloadParent;
-	private static final String DIALOG_HEIGHT = "360px";
+  @Inject private LanguageService langService;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	protected String getContentBodyClass(RenderContext context)
-	{
-		return "aldl";
-	}
+  private JSCallable reloadParent;
+  private static final String DIALOG_HEIGHT = "360px";
 
-	@Override
-	protected ParameterizedEvent getAjaxShowEvent()
-	{
-		return events.getEventHandler("showItem");
-	}
+  @Override
+  protected String getContentBodyClass(RenderContext context) {
+    return "aldl";
+  }
 
-	@EventHandlerMethod
-	public void showItem(SectionInfo info, String highlightedLang, String highlightedCntry)
-	{
-		AddLanguageModel model = getModel(info);
-		if( !Check.isEmpty(highlightedLang) )
-		{
-			model.setHighlightedLanguage(highlightedLang);
-		}
+  @Override
+  protected ParameterizedEvent getAjaxShowEvent() {
+    return events.getEventHandler("showItem");
+  }
 
-		if( !Check.isEmpty(highlightedCntry) )
-		{
-			model.setHighlightedCountry(highlightedCntry);
-		}
+  @EventHandlerMethod
+  public void showItem(SectionInfo info, String highlightedLang, String highlightedCntry) {
+    AddLanguageModel model = getModel(info);
+    if (!Check.isEmpty(highlightedLang)) {
+      model.setHighlightedLanguage(highlightedLang);
+    }
 
-		super.showDialog(info);
-	}
+    if (!Check.isEmpty(highlightedCntry)) {
+      model.setHighlightedCountry(highlightedCntry);
+    }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+    super.showDialog(info);
+  }
 
-		setAjax(true);
-		reloadParent = addParentCallable(new ReloadFunction(false));
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		String[] isoLanguageCodes = Locale.getISOLanguages();
-		List<NameValue> isoLangArray = new ArrayList<NameValue>(isoLanguageCodes.length);
-		for( String isoLanguageCode : isoLanguageCodes )
-		{
-			Locale localeForLang = new Locale(isoLanguageCode);
-			String displayName = localeForLang.getDisplayLanguage() + " [" + isoLanguageCode + ']';
-			isoLangArray.add(new NameValue(displayName, isoLanguageCode));
-		}
-		isoLangArray.add(0, new NameValue(CurrentLocale.get(defaultLangCountryNone), null));
-		languageList.setListModel(new SimpleHtmlListModel<NameValue>(isoLangArray));
+    setAjax(true);
+    reloadParent = addParentCallable(new ReloadFunction(false));
 
-		String[] isoCountryCodes = Locale.getISOCountries();
-		List<NameValue> isoCntryArray = new ArrayList<NameValue>(isoCountryCodes.length);
-		for( String isoCountryCode : isoCountryCodes )
-		{
-			// Can't pass null, but an empty string OK for language param
-			Locale localeForCountry = new Locale("", isoCountryCode);
-			String displayName = localeForCountry.getDisplayCountry() + " [" + isoCountryCode + ']';
-			isoCntryArray.add(new NameValue(displayName, isoCountryCode));
-		}
-		isoCntryArray.add(0, new NameValue(CurrentLocale.get(defaultLangCountryNone), null));
-		countryList.setListModel(new SimpleHtmlListModel<NameValue>(isoCntryArray));
-	}
+    String[] isoLanguageCodes = Locale.getISOLanguages();
+    List<NameValue> isoLangArray = new ArrayList<NameValue>(isoLanguageCodes.length);
+    for (String isoLanguageCode : isoLanguageCodes) {
+      Locale localeForLang = new Locale(isoLanguageCode);
+      String displayName = localeForLang.getDisplayLanguage() + " [" + isoLanguageCode + ']';
+      isoLangArray.add(new NameValue(displayName, isoLanguageCode));
+    }
+    isoLangArray.add(0, new NameValue(CurrentLocale.get(defaultLangCountryNone), null));
+    languageList.setListModel(new SimpleHtmlListModel<NameValue>(isoLangArray));
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		AddLanguageModel model = getModel(context);
-		if( !Check.isEmpty(model.getHighlightedLanguage()) )
-		{
-			languageList.setSelectedStringValue(context, model.getHighlightedLanguage());
-		}
+    String[] isoCountryCodes = Locale.getISOCountries();
+    List<NameValue> isoCntryArray = new ArrayList<NameValue>(isoCountryCodes.length);
+    for (String isoCountryCode : isoCountryCodes) {
+      // Can't pass null, but an empty string OK for language param
+      Locale localeForCountry = new Locale("", isoCountryCode);
+      String displayName = localeForCountry.getDisplayCountry() + " [" + isoCountryCode + ']';
+      isoCntryArray.add(new NameValue(displayName, isoCountryCode));
+    }
+    isoCntryArray.add(0, new NameValue(CurrentLocale.get(defaultLangCountryNone), null));
+    countryList.setListModel(new SimpleHtmlListModel<NameValue>(isoCntryArray));
+  }
 
-		if( !Check.isEmpty(model.getHighlightedCountry()) )
-		{
-			countryList.setSelectedStringValue(context, model.getHighlightedCountry());
-		}
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    AddLanguageModel model = getModel(context);
+    if (!Check.isEmpty(model.getHighlightedLanguage())) {
+      languageList.setSelectedStringValue(context, model.getHighlightedLanguage());
+    }
 
-		return viewFactory.createResult("addlanguage-dialog.ftl", this);
-	}
+    if (!Check.isEmpty(model.getHighlightedCountry())) {
+      countryList.setSelectedStringValue(context, model.getHighlightedCountry());
+    }
 
-	@Override
-	protected JSHandler createOkHandler(SectionTree tree)
-	{
-		JSExpression aGetLanguageExpression = languageList.createGetExpression();
-		JSExpression aGetCountryExpression = countryList.createGetExpression();
-		return events.getNamedHandler("saveContribLanguages", aGetLanguageExpression, aGetCountryExpression);
-	}
+    return viewFactory.createResult("addlanguage-dialog.ftl", this);
+  }
 
-	/**
-	 * Do nothing if both inputs are empty, but otherwise if either is null,
-	 * create a non-null empty string to get a valid Language object (and
-	 * comparison)
-	 */
-	@EventHandlerMethod
-	public void saveContribLanguages(SectionInfo info, @Nullable String langStr, @Nullable String cntrStr)
-	{
-		List<Language> persistedLangs = langService.getLanguages();
-		String noneSelected = CurrentLocale.get(defaultLangCountryNone);
-		if( langStr == null || langStr.equals(noneSelected) )
-		{
-			langStr = "";
-		}
+  @Override
+  protected JSHandler createOkHandler(SectionTree tree) {
+    JSExpression aGetLanguageExpression = languageList.createGetExpression();
+    JSExpression aGetCountryExpression = countryList.createGetExpression();
+    return events.getNamedHandler(
+        "saveContribLanguages", aGetLanguageExpression, aGetCountryExpression);
+  }
 
-		if( cntrStr == null || cntrStr.equals(noneSelected) )
-		{
-			cntrStr = "";
-		}
+  /**
+   * Do nothing if both inputs are empty, but otherwise if either is null, create a non-null empty
+   * string to get a valid Language object (and comparison)
+   */
+  @EventHandlerMethod
+  public void saveContribLanguages(
+      SectionInfo info, @Nullable String langStr, @Nullable String cntrStr) {
+    List<Language> persistedLangs = langService.getLanguages();
+    String noneSelected = CurrentLocale.get(defaultLangCountryNone);
+    if (langStr == null || langStr.equals(noneSelected)) {
+      langStr = "";
+    }
 
-		if( !(Check.isEmpty(langStr) && Check.isEmpty(cntrStr)) )
-		{
-			Language newLang = new Language();
-			newLang.setLanguage(langStr);
-			newLang.setCountry(cntrStr);
-			boolean pairExists = false;
-			for( Language alang : persistedLangs )
-			{
-				String alangLang = alang.getLanguage() != null ? alang.getLanguage() : "";
-				String alangCntry = alang.getCountry() != null ? alang.getCountry() : "";
-				if( alangLang.equals(langStr) && alangCntry.equals(cntrStr) )
-				{
-					pairExists = true;
-					break;
-				}
-			}
+    if (cntrStr == null || cntrStr.equals(noneSelected)) {
+      cntrStr = "";
+    }
 
-			if( !pairExists )
-			{
-				// Inflate the existing lang set and save it
-				persistedLangs.add(newLang);
-				langService.setLanguages(persistedLangs);
-			}
-		}
-		closeDialog(info, reloadParent);
-	}
+    if (!(Check.isEmpty(langStr) && Check.isEmpty(cntrStr))) {
+      Language newLang = new Language();
+      newLang.setLanguage(langStr);
+      newLang.setCountry(cntrStr);
+      boolean pairExists = false;
+      for (Language alang : persistedLangs) {
+        String alangLang = alang.getLanguage() != null ? alang.getLanguage() : "";
+        String alangCntry = alang.getCountry() != null ? alang.getCountry() : "";
+        if (alangLang.equals(langStr) && alangCntry.equals(cntrStr)) {
+          pairExists = true;
+          break;
+        }
+      }
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return LABEL_TITLE;
-	}
+      if (!pairExists) {
+        // Inflate the existing lang set and save it
+        persistedLangs.add(newLang);
+        langService.setLanguages(persistedLangs);
+      }
+    }
+    closeDialog(info, reloadParent);
+  }
 
-	@Override
-	public String getHeight()
-	{
-		return DIALOG_HEIGHT;
-	}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return LABEL_TITLE;
+  }
 
-	public SingleSelectionList<NameValue> getLanguageList()
-	{
-		return languageList;
-	}
+  @Override
+  public String getHeight() {
+    return DIALOG_HEIGHT;
+  }
 
-	public SingleSelectionList<NameValue> getCountryList()
-	{
-		return countryList;
-	}
+  public SingleSelectionList<NameValue> getLanguageList() {
+    return languageList;
+  }
 
-	@Override
-	public AddLanguageModel instantiateDialogModel(SectionInfo info)
-	{
-		return new AddLanguageModel();
-	}
+  public SingleSelectionList<NameValue> getCountryList() {
+    return countryList;
+  }
 
-	public static class AddLanguageModel extends DialogModel
-	{
-		@Bookmarked
-		private String highlightedLanguage;
-		@Bookmarked
-		private String highlightedCountry;
+  @Override
+  public AddLanguageModel instantiateDialogModel(SectionInfo info) {
+    return new AddLanguageModel();
+  }
 
-		public String getHighlightedLanguage()
-		{
-			return highlightedLanguage;
-		}
+  public static class AddLanguageModel extends DialogModel {
+    @Bookmarked private String highlightedLanguage;
+    @Bookmarked private String highlightedCountry;
 
-		public void setHighlightedLanguage(String highlightedLanguage)
-		{
-			this.highlightedLanguage = highlightedLanguage;
-		}
+    public String getHighlightedLanguage() {
+      return highlightedLanguage;
+    }
 
-		public String getHighlightedCountry()
-		{
-			return highlightedCountry;
-		}
+    public void setHighlightedLanguage(String highlightedLanguage) {
+      this.highlightedLanguage = highlightedLanguage;
+    }
 
-		public void setHighlightedCountry(String highlightedCountry)
-		{
-			this.highlightedCountry = highlightedCountry;
-		}
-	}
+    public String getHighlightedCountry() {
+      return highlightedCountry;
+    }
+
+    public void setHighlightedCountry(String highlightedCountry) {
+      this.highlightedCountry = highlightedCountry;
+    }
+  }
 }

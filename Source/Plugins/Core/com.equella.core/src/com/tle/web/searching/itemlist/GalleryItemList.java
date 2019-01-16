@@ -35,37 +35,33 @@ import com.tle.web.sections.render.SectionRenderable;
 
 @Bind
 @SuppressWarnings("nls")
-public class GalleryItemList extends StandardItemList
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@PlugURL("scripts/gallerypreview.js")
-	private static String SCRIPT_URL;
+public class GalleryItemList extends StandardItemList {
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	private final IncludeFile previewHandler = new IncludeFile(SCRIPT_URL);
+  @PlugURL("scripts/gallerypreview.js")
+  private static String SCRIPT_URL;
 
-	public static final String GALLERY_FLAG = "gallery.result";
+  private final IncludeFile previewHandler = new IncludeFile(SCRIPT_URL);
 
-	@Override
-	protected SectionRenderable getRenderable(RenderEventContext context)
-	{
-		JSCallAndReference setupPreviews = new ExternallyDefinedFunction("setupPreviews", previewHandler);
-		getTag(context).addReadyStatements(setupPreviews);
-		return viewFactory.createResult("gallerylist.ftl", this);
-	}
+  public static final String GALLERY_FLAG = "gallery.result";
 
-	@SuppressWarnings("nls")
-	@Override
-	protected void customiseListEntries(RenderContext context, List<StandardItemListEntry> entries)
-	{
-		getListSettings(context).setAttribute(GALLERY_FLAG, true);
-		super.customiseListEntries(context, entries);
-	}
+  @Override
+  protected SectionRenderable getRenderable(RenderEventContext context) {
+    JSCallAndReference setupPreviews =
+        new ExternallyDefinedFunction("setupPreviews", previewHandler);
+    getTag(context).addReadyStatements(setupPreviews);
+    return viewFactory.createResult("gallerylist.ftl", this);
+  }
 
-	@Override
-	protected Set<String> getExtensionTypes()
-	{
-		return Collections.singleton("gallery");
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected void customiseListEntries(RenderContext context, List<StandardItemListEntry> entries) {
+    getListSettings(context).setAttribute(GALLERY_FLAG, true);
+    super.customiseListEntries(context, entries);
+  }
 
+  @Override
+  protected Set<String> getExtensionTypes() {
+    return Collections.singleton("gallery");
+  }
 }

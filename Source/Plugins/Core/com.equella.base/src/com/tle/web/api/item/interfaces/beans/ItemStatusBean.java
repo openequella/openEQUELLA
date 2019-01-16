@@ -21,50 +21,41 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.tle.web.api.interfaces.beans.UserBean;
 
 @XmlRootElement
-public class ItemStatusBean
-{
-	private String status;
-	private String rejectedMessage;
-	private UserBean rejectedBy;
-	private ItemNodeStatusBean nodes;
+public class ItemStatusBean {
+  private String status;
+  private String rejectedMessage;
+  private UserBean rejectedBy;
+  private ItemNodeStatusBean nodes;
 
-	public String getStatus()
-	{
-		return status;
-	}
+  public String getStatus() {
+    return status;
+  }
 
-	public void setStatus(String status)
-	{
-		this.status = status;
-	}
+  public void setStatus(String status) {
+    this.status = status;
+  }
 
-	public ItemNodeStatusBean getNodes()
-	{
-		return nodes;
-	}
+  public ItemNodeStatusBean getNodes() {
+    return nodes;
+  }
 
-	public void setNodes(ItemNodeStatusBean nodes)
-	{
-		this.nodes = nodes;
-	}
+  public void setNodes(ItemNodeStatusBean nodes) {
+    this.nodes = nodes;
+  }
 
-	public UserBean getRejectedBy()
-	{
-		return rejectedBy;
-	}
+  public UserBean getRejectedBy() {
+    return rejectedBy;
+  }
 
-	public void setRejectedBy(UserBean rejectedBy)
-	{
-		this.rejectedBy = rejectedBy;
-	}
+  public void setRejectedBy(UserBean rejectedBy) {
+    this.rejectedBy = rejectedBy;
+  }
 
-	public String getRejectedMessage()
-	{
-		return rejectedMessage;
-	}
+  public String getRejectedMessage() {
+    return rejectedMessage;
+  }
 
-	public void setRejectedMessage(String rejectedMessage)
-	{
-		this.rejectedMessage = rejectedMessage;
-	}
+  public void setRejectedMessage(String rejectedMessage) {
+    this.rejectedMessage = rejectedMessage;
+  }
 }

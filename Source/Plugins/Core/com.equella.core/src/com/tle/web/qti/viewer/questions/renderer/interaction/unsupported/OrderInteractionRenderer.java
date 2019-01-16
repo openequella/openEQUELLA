@@ -25,17 +25,15 @@ import com.tle.web.qti.viewer.questions.renderer.QtiNodeRenderer;
 import com.tle.web.qti.viewer.questions.renderer.unsupported.UnsupportedQuestionException;
 import com.tle.web.sections.render.SectionRenderable;
 
-public class OrderInteractionRenderer extends QtiNodeRenderer
-{
-	@AssistedInject
-	public OrderInteractionRenderer(@Assisted OrderInteraction model, @Assisted QtiViewerContext context)
-	{
-		super(model, context);
-	}
+public class OrderInteractionRenderer extends QtiNodeRenderer {
+  @AssistedInject
+  public OrderInteractionRenderer(
+      @Assisted OrderInteraction model, @Assisted QtiViewerContext context) {
+    super(model, context);
+  }
 
-	@Override
-	protected SectionRenderable createTopRenderable()
-	{
-		throw new UnsupportedQuestionException("orderInteraction");
-	}
+  @Override
+  protected SectionRenderable createTopRenderable() {
+    throw new UnsupportedQuestionException("orderInteraction");
+  }
 }

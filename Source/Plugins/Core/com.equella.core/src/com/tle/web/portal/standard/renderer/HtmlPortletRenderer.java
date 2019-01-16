@@ -27,55 +27,43 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.SectionRenderable;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @SuppressWarnings("nls")
-public class HtmlPortletRenderer extends PortletContentRenderer<HtmlPortletRenderer.Model>
-{
-	@Inject
-	private HtmlEditorService htmlEditorService;
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+public class HtmlPortletRenderer extends PortletContentRenderer<HtmlPortletRenderer.Model> {
+  @Inject private HtmlEditorService htmlEditorService;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	public SectionRenderable renderHtml(RenderEventContext context) throws Exception
-	{
-		getModel(context).setHtml(htmlEditorService.getHtmlRenderable(context, portlet.getConfig()));
-		return viewFactory.createResult("htmlportlet.ftl", this);
-	}
+  @Override
+  public SectionRenderable renderHtml(RenderEventContext context) throws Exception {
+    getModel(context).setHtml(htmlEditorService.getHtmlRenderable(context, portlet.getConfig()));
+    return viewFactory.createResult("htmlportlet.ftl", this);
+  }
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		return true;
-	}
+  @Override
+  public boolean canView(SectionInfo info) {
+    return true;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "pht";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "pht";
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model();
+  }
 
-	public static class Model
-	{
-		private SectionRenderable html;
+  public static class Model {
+    private SectionRenderable html;
 
-		public SectionRenderable getHtml()
-		{
-			return html;
-		}
+    public SectionRenderable getHtml() {
+      return html;
+    }
 
-		public void setHtml(SectionRenderable html)
-		{
-			this.html = html;
-		}
-	}
+    public void setHtml(SectionRenderable html) {
+      this.html = html;
+    }
+  }
 }

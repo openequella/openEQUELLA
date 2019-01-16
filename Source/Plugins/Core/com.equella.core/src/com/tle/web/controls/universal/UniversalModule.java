@@ -19,21 +19,18 @@ package com.tle.web.controls.universal;
 import com.tle.core.guice.PluginTrackerModule;
 import com.tle.core.plugins.PluginTracker;
 
-public class UniversalModule extends PluginTrackerModule
-{
+public class UniversalModule extends PluginTrackerModule {
 
-	@Override
-	protected String getPluginId()
-	{
-		return "com.tle.web.wizard.controls.universal";
-	}
+  @Override
+  protected String getPluginId() {
+    return "com.tle.web.wizard.controls.universal";
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	protected void configure()
-	{
-		bindTracker(AttachmentHandler.class, "universalResourceHandler", "class").setIdParam(
-			PluginTracker.LOCAL_ID_FOR_KEY).orderByParameter("order");
-	}
-
+  @SuppressWarnings("nls")
+  @Override
+  protected void configure() {
+    bindTracker(AttachmentHandler.class, "universalResourceHandler", "class")
+        .setIdParam(PluginTracker.LOCAL_ID_FOR_KEY)
+        .orderByParameter("order");
+  }
 }

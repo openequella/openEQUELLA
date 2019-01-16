@@ -24,36 +24,31 @@ import org.hibernate.annotations.AccessType;
 
 @Entity
 @AccessType("field")
-public class Staging
-{
-	@Id
-	@Column(length = 40)
-	private String stagingID;
-	@Column(length = 40)
-	private String userSession;
+public class Staging {
+  @Id
+  @Column(length = 40)
+  private String stagingID;
 
-	public Staging()
-	{
-		super();
-	}
+  @Column(length = 40)
+  private String userSession;
 
-	public String getStagingID()
-	{
-		return stagingID;
-	}
+  public Staging() {
+    super();
+  }
 
-	public void setStagingID(String stagingID)
-	{
-		this.stagingID = stagingID;
-	}
+  public String getStagingID() {
+    return stagingID;
+  }
 
-	public String getUserSession()
-	{
-		return userSession;
-	}
+  public void setStagingID(String stagingID) {
+    this.stagingID = stagingID;
+  }
 
-	public void setUserSession(String userSession)
-	{
-		this.userSession = userSession;
-	}
+  public String getUserSession() {
+    return userSession;
+  }
+
+  public void setUserSession(String userSession) {
+    this.userSession = userSession;
+  }
 }

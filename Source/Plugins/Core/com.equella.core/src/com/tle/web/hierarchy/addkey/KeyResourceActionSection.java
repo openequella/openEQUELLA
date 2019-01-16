@@ -33,41 +33,34 @@ import com.tle.web.viewitem.summary.sidebar.actions.GenericMinorActionWithPageSe
 import com.tle.web.viewurl.ItemSectionInfo;
 
 @Bind
-public class KeyResourceActionSection extends GenericMinorActionWithPageSection
-{
-	@Inject
-	private TLEAclManager aclManager;
+public class KeyResourceActionSection extends GenericMinorActionWithPageSection {
+  @Inject private TLEAclManager aclManager;
 
-	@TreeLookup
-	private HierarchyTreeSection selectSection;
+  @TreeLookup private HierarchyTreeSection selectSection;
 
-	@PlugKey("aftercontribution.link")
-	private static Label LABEL_KEYRESOURCE;
+  @PlugKey("aftercontribution.link")
+  private static Label LABEL_KEYRESOURCE;
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return LABEL_KEYRESOURCE;
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return LABEL_KEYRESOURCE;
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		final Set<String> privilege = aclManager.filterNonGrantedPrivileges(Collections
-			.singleton("MODIFY_KEY_RESOURCE"));
-		return !privilege.isEmpty();
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    final Set<String> privilege =
+        aclManager.filterNonGrantedPrivileges(Collections.singleton("MODIFY_KEY_RESOURCE"));
+    return !privilege.isEmpty();
+  }
 
-	@Override
-	protected SectionId getPageSection()
-	{
-		return selectSection;
-	}
+  @Override
+  protected SectionId getPageSection() {
+    return selectSection;
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return LABEL_KEYRESOURCE.getText();
-	}
+  @Override
+  public String getLinkText() {
+    return LABEL_KEYRESOURCE.getText();
+  }
 }

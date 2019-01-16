@@ -24,11 +24,11 @@ import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.core.entity.dao.AbstractEntityDao;
 
-public interface DynaCollectionDao extends AbstractEntityDao<DynaCollection>
-{
-	List<DynaCollection> enumerateForUsage(String usage);
+public interface DynaCollectionDao extends AbstractEntityDao<DynaCollection> {
+  List<DynaCollection> enumerateForUsage(String usage);
 
-	Collection<DynaCollection> getDynaCollectionsReferencingItemDefinition(ItemDefinition itemDefinition);
+  Collection<DynaCollection> getDynaCollectionsReferencingItemDefinition(
+      ItemDefinition itemDefinition);
 
-	Collection<DynaCollection> getDynaCollectionsReferencingSchema(Schema schema);
+  Collection<DynaCollection> getDynaCollectionsReferencingSchema(Schema schema);
 }

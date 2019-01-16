@@ -21,12 +21,9 @@ import javax.ws.rs.Path;
 import com.tle.web.api.users.interfaces.UserResource;
 import io.swagger.annotations.Api;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Path("usermanagement/local/user/")
 @Api(value = "Local users", description = "usermanagement-local-user")
-public interface EquellaUserResource extends UserResource
-{
-	// Nothing to add, just the Path annotation
+public interface EquellaUserResource extends UserResource {
+  // Nothing to add, just the Path annotation
 }

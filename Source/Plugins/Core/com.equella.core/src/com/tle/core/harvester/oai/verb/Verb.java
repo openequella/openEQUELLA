@@ -38,149 +38,122 @@ import com.tle.core.harvester.oai.error.NoSetHierarchyException;
 import com.tle.core.harvester.oai.xstream.XStreamFactory;
 
 @SuppressWarnings("nls")
-public abstract class Verb
-{
-	public static final String IDENTIFIER = "identifier";
-	public static final String RESUMPTION_TOKEN = "resumptionToken";
-	public static final String METADATA_PREFIX = "metadataPrefix";
+public abstract class Verb {
+  public static final String IDENTIFIER = "identifier";
+  public static final String RESUMPTION_TOKEN = "resumptionToken";
+  public static final String METADATA_PREFIX = "metadataPrefix";
 
-	public static final String DC_PREFIX = MetadataFormat.DUBLIN_CORE_FORMAT.getMetadataPrefix();
+  public static final String DC_PREFIX = MetadataFormat.DUBLIN_CORE_FORMAT.getMetadataPrefix();
 
-	private static final XStream xstream = XStreamFactory.getXStream();
+  private static final XStream xstream = XStreamFactory.getXStream();
 
-	protected URL url;
-	private Map<String, String> map;
+  protected URL url;
+  private Map<String, String> map;
 
-	public Verb()
-	{
-		map = new HashMap<String, String>();
-	}
+  public Verb() {
+    map = new HashMap<String, String>();
+  }
 
-	private String generateParamaters()
-	{
-		StringBuilder buf = new StringBuilder();
-		buf.append("?verb=");
-		buf.append(URLUtils.basicUrlEncode(getVerb()));
+  private String generateParamaters() {
+    StringBuilder buf = new StringBuilder();
+    buf.append("?verb=");
+    buf.append(URLUtils.basicUrlEncode(getVerb()));
 
-		for( Entry<String, String> entry : getParameters().entrySet() )
-		{
-			buf.append('&');
-			buf.append(entry.getKey());
-			buf.append('=');
-			buf.append(URLUtils.basicUrlEncode(entry.getValue()));
-		}
+    for (Entry<String, String> entry : getParameters().entrySet()) {
+      buf.append('&');
+      buf.append(entry.getKey());
+      buf.append('=');
+      buf.append(URLUtils.basicUrlEncode(entry.getValue()));
+    }
 
-		return buf.toString();
-	}
+    return buf.toString();
+  }
 
-	protected void addParamater(String name, String value)
-	{
-		if( value != null )
-		{
-			map.put(name, value);
-		}
-	}
+  protected void addParamater(String name, String value) {
+    if (value != null) {
+      map.put(name, value);
+    }
+  }
 
-	public Map<String, String> getParameters()
-	{
-		return map;
-	}
+  public Map<String, String> getParameters() {
+    return map;
+  }
 
-	public abstract String getVerb();
+  public abstract String getVerb();
 
-	public void setURL(URL url)
-	{
-		this.url = url;
-	}
+  public void setURL(URL url) {
+    this.url = url;
+  }
 
-	protected List listFromXML(Response response)
-	{
-		return (List) response.getMessage();
-	}
+  protected List listFromXML(Response response) {
+    return (List) response.getMessage();
+  }
 
-	public Response call()
-	{
-		try
-		{
-			HttpURLConnection con = (HttpURLConnection) URLUtils.newURL(url, url.getPath() + generateParamaters())
-				.openConnection();
-			con.setConnectTimeout(10000);
-			con.setRequestProperty("User-Agent", "OAIHarvester/2.0");
-			String enc = con.getContentEncoding();
-			if( enc == null )
-			{
-				enc = "UTF-8";
-			}
-			return (Response) xstream.fromXML(new UnicodeReader(con.getInputStream(), enc));
-		}
-		catch( IOException e )
-		{
-			throw new RuntimeException(e);
-		}
-	}
+  public Response call() {
+    try {
+      HttpURLConnection con =
+          (HttpURLConnection)
+              URLUtils.newURL(url, url.getPath() + generateParamaters()).openConnection();
+      con.setConnectTimeout(10000);
+      con.setRequestProperty("User-Agent", "OAIHarvester/2.0");
+      String enc = con.getContentEncoding();
+      if (enc == null) {
+        enc = "UTF-8";
+      }
+      return (Response) xstream.fromXML(new UnicodeReader(con.getInputStream(), enc));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-	protected void checkIdDoesNotExistError(Response response) throws IdDoesNotExistException
-	{
-		OAIError error = response.getError();
-		if( error != null )
-		{
-			String code = error.getCode();
-			if( code.equals("idDoesNotExist") )
-			{
-				throw new IdDoesNotExistException(error);
-			}
-		}
-	}
+  protected void checkIdDoesNotExistError(Response response) throws IdDoesNotExistException {
+    OAIError error = response.getError();
+    if (error != null) {
+      String code = error.getCode();
+      if (code.equals("idDoesNotExist")) {
+        throw new IdDoesNotExistException(error);
+      }
+    }
+  }
 
-	protected void checkNoMetadataFormats(Response response) throws NoMetadataFormatsException
-	{
-		OAIError error = response.getError();
-		if( error != null )
-		{
-			String code = error.getCode();
-			if( code.equals("noMetadataFormats") )
-			{
-				throw new NoMetadataFormatsException(error);
-			}
-		}
-	}
+  protected void checkNoMetadataFormats(Response response) throws NoMetadataFormatsException {
+    OAIError error = response.getError();
+    if (error != null) {
+      String code = error.getCode();
+      if (code.equals("noMetadataFormats")) {
+        throw new NoMetadataFormatsException(error);
+      }
+    }
+  }
 
-	protected void checkCannotDisseminateFormat(Response response) throws CannotDisseminateFormatException
-	{
-		OAIError error = response.getError();
-		if( error != null )
-		{
-			String code = error.getCode();
-			if( code.equals("cannotDisseminateFormat") )
-			{
-				throw new CannotDisseminateFormatException(error);
-			}
-		}
-	}
+  protected void checkCannotDisseminateFormat(Response response)
+      throws CannotDisseminateFormatException {
+    OAIError error = response.getError();
+    if (error != null) {
+      String code = error.getCode();
+      if (code.equals("cannotDisseminateFormat")) {
+        throw new CannotDisseminateFormatException(error);
+      }
+    }
+  }
 
-	protected void checkNoRecordsMatch(Response response) throws NoRecordsMatchException
-	{
-		OAIError error = response.getError();
-		if( error != null )
-		{
-			String code = error.getCode();
-			if( code.equals("noRecordsMatch") )
-			{
-				throw new NoRecordsMatchException(error);
-			}
-		}
-	}
+  protected void checkNoRecordsMatch(Response response) throws NoRecordsMatchException {
+    OAIError error = response.getError();
+    if (error != null) {
+      String code = error.getCode();
+      if (code.equals("noRecordsMatch")) {
+        throw new NoRecordsMatchException(error);
+      }
+    }
+  }
 
-	protected void checkNoSetHierarchy(Response response) throws NoSetHierarchyException
-	{
-		OAIError error = response.getError();
-		if( error != null )
-		{
-			String code = error.getCode();
-			if( code.equals("noSetHierarchyException") )
-			{
-				throw new NoSetHierarchyException(error);
-			}
-		}
-	}
+  protected void checkNoSetHierarchy(Response response) throws NoSetHierarchyException {
+    OAIError error = response.getError();
+    if (error != null) {
+      String code = error.getCode();
+      if (code.equals("noSetHierarchyException")) {
+        throw new NoSetHierarchyException(error);
+      }
+    }
+  }
 }

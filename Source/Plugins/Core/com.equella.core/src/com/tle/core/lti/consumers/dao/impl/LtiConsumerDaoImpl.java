@@ -31,27 +31,30 @@ import com.tle.core.lti.consumers.dao.LtiConsumerDao;
 
 @Bind(LtiConsumerDao.class)
 @Singleton
-public class LtiConsumerDaoImpl extends AbstractEntityDaoImpl<LtiConsumer> implements LtiConsumerDao
-{
-	public LtiConsumerDaoImpl()
-	{
-		super(LtiConsumer.class);
-	}
+public class LtiConsumerDaoImpl extends AbstractEntityDaoImpl<LtiConsumer>
+    implements LtiConsumerDao {
+  public LtiConsumerDaoImpl() {
+    super(LtiConsumer.class);
+  }
 
-	@Override
-	public LtiConsumer findByConsumerKey(String consumerKey)
-	{
-		return (LtiConsumer) getHibernateTemplate().execute(new TLEHibernateCallback()
-		{
-			@SuppressWarnings("unchecked")
-			@Override
-			public Object doInHibernate(Session session)
-			{
-				List<LtiConsumer> consumers = session
-					.createQuery("FROM LtiConsumer WHERE consumerKey = :key AND institution = :institution")
-					.setParameter("key", consumerKey).setParameter("institution", CurrentInstitution.get()).list();
-				return Check.isEmpty(consumers) ? null : consumers.get(0);
-			}
-		});
-	}
+  @Override
+  public LtiConsumer findByConsumerKey(String consumerKey) {
+    return (LtiConsumer)
+        getHibernateTemplate()
+            .execute(
+                new TLEHibernateCallback() {
+                  @SuppressWarnings("unchecked")
+                  @Override
+                  public Object doInHibernate(Session session) {
+                    List<LtiConsumer> consumers =
+                        session
+                            .createQuery(
+                                "FROM LtiConsumer WHERE consumerKey = :key AND institution = :institution")
+                            .setParameter("key", consumerKey)
+                            .setParameter("institution", CurrentInstitution.get())
+                            .list();
+                    return Check.isEmpty(consumers) ? null : consumers.get(0);
+                  }
+                });
+  }
 }

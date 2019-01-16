@@ -28,21 +28,24 @@ import com.tle.web.viewitem.FilestoreContentFilter;
 
 @Bind(FileFilterService.class)
 @Singleton
-public class FileFilterServiceImpl implements FileFilterService
-{
-	private PluginTracker<FilestoreContentFilter> filters;
+public class FileFilterServiceImpl implements FileFilterService {
+  private PluginTracker<FilestoreContentFilter> filters;
 
-	@Override
-	public List<FilestoreContentFilter> getFilters()
-	{
-		return filters.getBeanList();
-	}
+  @Override
+  public List<FilestoreContentFilter> getFilters() {
+    return filters.getBeanList();
+  }
 
-	@SuppressWarnings("nls")
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		filters = new PluginTracker<FilestoreContentFilter>(pluginService, "com.tle.web.viewitem", "contentFilter", null,
-			new PluginTracker.ExtensionParamComparator("order")).setBeanKey("bean");
-	}
+  @SuppressWarnings("nls")
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    filters =
+        new PluginTracker<FilestoreContentFilter>(
+                pluginService,
+                "com.tle.web.viewitem",
+                "contentFilter",
+                null,
+                new PluginTracker.ExtensionParamComparator("order"))
+            .setBeanKey("bean");
+  }
 }

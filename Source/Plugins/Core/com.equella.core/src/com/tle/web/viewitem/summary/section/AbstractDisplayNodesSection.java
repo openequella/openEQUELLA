@@ -37,111 +37,92 @@ import com.tle.web.viewable.ViewableItem;
  */
 @SuppressWarnings("nls")
 @NonNullByDefault
-public abstract class AbstractDisplayNodesSection<I extends IItem<?>, M extends AbstractDisplayNodesSection.DisplayNodesModel>
-	extends
-		AbstractPrototypeSection<M> implements HtmlRenderer
-{
-	protected abstract ViewableItem<I> getViewableItem(SectionInfo info);
+public abstract class AbstractDisplayNodesSection<
+        I extends IItem<?>, M extends AbstractDisplayNodesSection.DisplayNodesModel>
+    extends AbstractPrototypeSection<M> implements HtmlRenderer {
+  protected abstract ViewableItem<I> getViewableItem(SectionInfo info);
 
-	@Nullable
-	protected abstract List<Entry> getEntries(RenderEventContext context, ViewableItem<I> vitem);
+  @Nullable
+  protected abstract List<Entry> getEntries(RenderEventContext context, ViewableItem<I> vitem);
 
-	@ViewFactory
-	private FreemarkerFactory view;
+  @ViewFactory private FreemarkerFactory view;
 
-	@Nullable
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		final ViewableItem<I> vitem = getViewableItem(context);
-		final List<Entry> entries = getEntries(context, vitem);
-		if( entries != null && !entries.isEmpty() )
-		{
-			DisplayNodesModel model = getModel(context);
-			model.setEntries(entries);
-			return view.createNamedResult("section_displaynodes", "viewitem/displaynodes.ftl", context);
-		}
+  @Nullable
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    final ViewableItem<I> vitem = getViewableItem(context);
+    final List<Entry> entries = getEntries(context, vitem);
+    if (entries != null && !entries.isEmpty()) {
+      DisplayNodesModel model = getModel(context);
+      model.setEntries(entries);
+      return view.createNamedResult("section_displaynodes", "viewitem/displaynodes.ftl", context);
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "displaynodes";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "displaynodes";
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new DisplayNodesModel();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new DisplayNodesModel();
+  }
 
-	public static class Entry
-	{
-		private final Label title;
-		private final SectionRenderable value;
-		private final int truncateLength;
-		private boolean fullspan;
-		@Nullable
-		private String style;
+  public static class Entry {
+    private final Label title;
+    private final SectionRenderable value;
+    private final int truncateLength;
+    private boolean fullspan;
+    @Nullable private String style;
 
-		public Entry(Label title, SectionRenderable value, int truncateLength)
-		{
-			this.title = title;
-			this.value = value;
-			this.truncateLength = truncateLength;
-		}
+    public Entry(Label title, SectionRenderable value, int truncateLength) {
+      this.title = title;
+      this.value = value;
+      this.truncateLength = truncateLength;
+    }
 
-		public SectionRenderable getValue()
-		{
-			return value;
-		}
+    public SectionRenderable getValue() {
+      return value;
+    }
 
-		public boolean isFullspan()
-		{
-			return fullspan;
-		}
+    public boolean isFullspan() {
+      return fullspan;
+    }
 
-		public void setFullspan(boolean fullspan)
-		{
-			this.fullspan = fullspan;
-		}
+    public void setFullspan(boolean fullspan) {
+      this.fullspan = fullspan;
+    }
 
-		public Label getTitle()
-		{
-			return title;
-		}
+    public Label getTitle() {
+      return title;
+    }
 
-		public int getTruncateLength()
-		{
-			return truncateLength;
-		}
+    public int getTruncateLength() {
+      return truncateLength;
+    }
 
-		public String getStyle()
-		{
-			return style;
-		}
+    public String getStyle() {
+      return style;
+    }
 
-		public void setStyle(String style)
-		{
-			this.style = style;
-		}
-	}
+    public void setStyle(String style) {
+      this.style = style;
+    }
+  }
 
-	@NonNullByDefault(false)
-	public static class DisplayNodesModel
-	{
-		private List<Entry> entries;
+  @NonNullByDefault(false)
+  public static class DisplayNodesModel {
+    private List<Entry> entries;
 
-		public List<Entry> getEntries()
-		{
-			return entries;
-		}
+    public List<Entry> getEntries() {
+      return entries;
+    }
 
-		public void setEntries(List<Entry> entries)
-		{
-			this.entries = entries;
-		}
-	}
+    public void setEntries(List<Entry> entries) {
+      this.entries = entries;
+    }
+  }
 }

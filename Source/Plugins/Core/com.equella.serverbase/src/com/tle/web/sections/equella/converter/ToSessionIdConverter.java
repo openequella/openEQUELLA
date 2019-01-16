@@ -37,88 +37,77 @@ import com.tle.web.sections.registry.handler.util.PropertyAccessor;
 
 @Bind
 @Singleton
-public class ToSessionIdConverter extends AbstractConverter implements SectionsConverter
-{
-	@Inject
-	private UserSessionService userSessionService;
+public class ToSessionIdConverter extends AbstractConverter implements SectionsConverter {
+  @Inject private UserSessionService userSessionService;
 
-	@Override
-	public boolean canHandleDestinationType(TypeReference<?> destinationType)
-	{
-		return destinationType.isType(String.class);
-	}
+  @Override
+  public boolean canHandleDestinationType(TypeReference<?> destinationType) {
+    return destinationType.isType(String.class);
+  }
 
-	@Override
-	protected boolean canHandleSourceObject(Object sourceObject)
-	{
-		return sourceObject == null || SessionState.class.isAssignableFrom(sourceObject.getClass());
-	}
+  @Override
+  protected boolean canHandleSourceObject(Object sourceObject) {
+    return sourceObject == null || SessionState.class.isAssignableFrom(sourceObject.getClass());
+  }
 
-	@Override
-	public Object doConvert(ConversionContext context, Object sourceObject, TypeReference<?> destinationType)
-		throws ConverterException
-	{
-		if( sourceObject != null )
-		{
-			SessionState state = (SessionState) sourceObject;
-			if( ensureSessionObj(state) )
-			{
-				return state.getBookmarkString();
-			}
-		}
-		return null;
-	}
+  @Override
+  public Object doConvert(
+      ConversionContext context, Object sourceObject, TypeReference<?> destinationType)
+      throws ConverterException {
+    if (sourceObject != null) {
+      SessionState state = (SessionState) sourceObject;
+      if (ensureSessionObj(state)) {
+        return state.getBookmarkString();
+      }
+    }
+    return null;
+  }
 
-	private boolean ensureSessionObj(SessionState state)
-	{
-		if( state.isRemoved() )
-		{
-			userSessionService.removeAttribute(state.getSessionId());
-			return false;
-		}
-		if( state.isNew() )
-		{
-			String unique = userSessionService.createUniqueKey();
-			state.setBookmarkString(unique);
-			userSessionService.setAttribute(unique, state);
-			state.synced();
-		}
-		return true;
-	}
+  private boolean ensureSessionObj(SessionState state) {
+    if (state.isRemoved()) {
+      userSessionService.removeAttribute(state.getSessionId());
+      return false;
+    }
+    if (state.isNew()) {
+      String unique = userSessionService.createUniqueKey();
+      state.setBookmarkString(unique);
+      userSessionService.setAttribute(unique, state);
+      state.synced();
+    }
+    return true;
+  }
 
-	@Override
-	public void registerBookmark(SectionTree tree, final SectionId sectionId, final PropertyAccessor readAccessor,
-		PropertyAccessor writeAccessor, TypeReference<?> typeRef)
-	{
-		if( typeRef.isRawTypeSubOf(SessionState.class) )
-		{
-			tree.addListener(null, RespondingListener.class, new RespondingListener()
-			{
-				@Override
-				public void responding(SectionInfo info)
-				{
-					Object model = info.getModelForId(sectionId.getSectionId());
-					try
-					{
-						SessionState state = (SessionState) readAccessor.read(model);
-						if( state != null && ensureSessionObj(state) && state.isModified() )
-						{
-							userSessionService.setAttribute(state.getSessionId(), state);
-							state.synced();
-						}
-					}
-					catch( Exception e )
-					{
-						throw new SectionsRuntimeException(e);
-					}
-				}
-			});
-		}
-	}
+  @Override
+  public void registerBookmark(
+      SectionTree tree,
+      final SectionId sectionId,
+      final PropertyAccessor readAccessor,
+      PropertyAccessor writeAccessor,
+      TypeReference<?> typeRef) {
+    if (typeRef.isRawTypeSubOf(SessionState.class)) {
+      tree.addListener(
+          null,
+          RespondingListener.class,
+          new RespondingListener() {
+            @Override
+            public void responding(SectionInfo info) {
+              Object model = info.getModelForId(sectionId.getSectionId());
+              try {
+                SessionState state = (SessionState) readAccessor.read(model);
+                if (state != null && ensureSessionObj(state) && state.isModified()) {
+                  userSessionService.setAttribute(state.getSessionId(), state);
+                  state.synced();
+                }
+              } catch (Exception e) {
+                throw new SectionsRuntimeException(e);
+              }
+            }
+          });
+    }
+  }
 
-	@Override
-	public boolean supports(String type)
-	{
-		return (type.equals(ConversionType.TOPARAMS.name()));
-	}
+  @Override
+  public boolean supports(String type) {
+    return (type.equals(ConversionType.TOPARAMS.name()));
+  }
 }

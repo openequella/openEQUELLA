@@ -27,37 +27,31 @@ import com.tle.core.guice.Bind;
 @Bind(CLADao.class)
 @Singleton
 @SuppressWarnings("nls")
-public class CLADaoImpl extends AbstractCopyrightDao<CLAHolding, CLAPortion, CLASection> implements CLADao
-{
+public class CLADaoImpl extends AbstractCopyrightDao<CLAHolding, CLAPortion, CLASection>
+    implements CLADao {
 
-	@Override
-	protected String getHoldingEntity()
-	{
-		return "CLAHolding";
-	}
+  @Override
+  protected String getHoldingEntity() {
+    return "CLAHolding";
+  }
 
-	@Override
-	protected String getPortionEntity()
-	{
-		return "CLAPortion";
-	}
+  @Override
+  protected String getPortionEntity() {
+    return "CLAPortion";
+  }
 
-	@Override
-	protected String getSectionEntity()
-	{
-		return "CLASection";
-	}
+  @Override
+  protected String getSectionEntity() {
+    return "CLASection";
+  }
 
-	@Override
-	protected String getPortionTable()
-	{
-		return "cla_portion";
-	}
+  @Override
+  protected String getPortionTable() {
+    return "cla_portion";
+  }
 
-	@Override
-	protected String getHoldingTable()
-	{
-		return "cla_holding";
-	}
-
+  @Override
+  protected String getHoldingTable() {
+    return "cla_holding";
+  }
 }

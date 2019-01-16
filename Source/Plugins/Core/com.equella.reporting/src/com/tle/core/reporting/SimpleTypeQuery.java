@@ -26,114 +26,97 @@ import com.tle.common.URLUtils;
 import com.tle.reporting.MetadataBean;
 import com.tle.reporting.MetadataBean.Definition;
 
-public abstract class SimpleTypeQuery implements QueryDelegate
-{
-	protected static final int TYPE_STRING = 1;
-	protected static final int TYPE_LONG = 2;
-	protected static final int TYPE_INT = 3;
-	protected static final int TYPE_DATE = 4;
-	protected static final int TYPE_BOOLEAN = 5;
-	private static final String DIVIDER_REGEX = "\\|"; //$NON-NLS-1$
+public abstract class SimpleTypeQuery implements QueryDelegate {
+  protected static final int TYPE_STRING = 1;
+  protected static final int TYPE_LONG = 2;
+  protected static final int TYPE_INT = 3;
+  protected static final int TYPE_DATE = 4;
+  protected static final int TYPE_BOOLEAN = 5;
+  private static final String DIVIDER_REGEX = "\\|"; // $NON-NLS-1$
 
-	protected Definition addColumn(String name, int type, MetadataBean bean)
-	{
-		Definition d = new Definition();
-		d.setLabel(name);
-		d.setName(name);
-		d.setType(type);
-		String typename = null;
-		switch( type )
-		{
-			case TYPE_STRING:
-				typename = "String"; //$NON-NLS-1$
-				break;
-			case TYPE_INT:
-				typename = "Integer"; //$NON-NLS-1$
-				break;
-			case TYPE_LONG:
-				typename = "Long"; //$NON-NLS-1$
-				break;
-			case TYPE_DATE:
-				typename = "Date"; //$NON-NLS-1$
-				break;
+  protected Definition addColumn(String name, int type, MetadataBean bean) {
+    Definition d = new Definition();
+    d.setLabel(name);
+    d.setName(name);
+    d.setType(type);
+    String typename = null;
+    switch (type) {
+      case TYPE_STRING:
+        typename = "String"; // $NON-NLS-1$
+        break;
+      case TYPE_INT:
+        typename = "Integer"; // $NON-NLS-1$
+        break;
+      case TYPE_LONG:
+        typename = "Long"; // $NON-NLS-1$
+        break;
+      case TYPE_DATE:
+        typename = "Date"; // $NON-NLS-1$
+        break;
 
-			default:
-				break;
-		}
-		d.setTypename(typename);
-		bean.addDefinition(d);
-		return d;
-	}
+      default:
+        break;
+    }
+    d.setTypename(typename);
+    bean.addDefinition(d);
+    return d;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.tle.core.reporting.QueryDelegate#getParamterMetadata(java.lang.String
-	 * , java.util.List)
-	 */
-	@Override
-	public IParameterMetaData getParameterMetadata(String query, List<Object> params) throws OdaException
-	{
-		MetadataBean bean = new MetadataBean();
-		int paramcount = 1;
-		String[] queryStrings = getQueryStrings(query, null);
-		for( String queryString : queryStrings )
-		{
-			int sz = queryString.length();
-			for( int i = 0; i < sz; i++ )
-			{
-				char c = queryString.charAt(i);
-				if( c == '?' )
-				{
-					Definition definition = addColumn("param" + (paramcount++), TYPE_STRING, bean); //$NON-NLS-1$
-					definition.setMode(ParameterMetaData.parameterModeIn);
-				}
-			}
-		}
-		return bean;
-	}
+  /*
+   * (non-Javadoc)
+   * @see
+   * com.tle.core.reporting.QueryDelegate#getParamterMetadata(java.lang.String
+   * , java.util.List)
+   */
+  @Override
+  public IParameterMetaData getParameterMetadata(String query, List<Object> params)
+      throws OdaException {
+    MetadataBean bean = new MetadataBean();
+    int paramcount = 1;
+    String[] queryStrings = getQueryStrings(query, null);
+    for (String queryString : queryStrings) {
+      int sz = queryString.length();
+      for (int i = 0; i < sz; i++) {
+        char c = queryString.charAt(i);
+        if (c == '?') {
+          Definition definition =
+              addColumn("param" + (paramcount++), TYPE_STRING, bean); // $NON-NLS-1$
+          definition.setMode(ParameterMetaData.parameterModeIn);
+        }
+      }
+    }
+    return bean;
+  }
 
-	protected String[] getQueryStrings(String query, List<Object> params)
-	{
-		query = query.substring(query.indexOf(':') + 1);
-		String[] queryStrings = query.split(DIVIDER_REGEX);
-		int paramcount = 0;
-		int i = 0;
-		while( i < queryStrings.length )
-		{
-			String queryString = URLUtils.basicUrlDecode(queryStrings[i]);
-			StringBuilder sbuf = new StringBuilder();
-			int sz = queryString.length();
-			for( int j = 0; j < sz; j++ )
-			{
-				char c = queryString.charAt(j);
-				if( c == '\\' )
-				{
-					sbuf.append(queryString.charAt(++j));
-				}
-				else if( c == '?' )
-				{
-					if( params != null )
-					{
-						sbuf.append(params.get(paramcount++));
-					}
-					else
-					{
-						sbuf.append('?');
-					}
-				}
-				else
-				{
-					sbuf.append(c);
-				}
-			}
-			queryStrings[i++] = sbuf.toString();
-		}
+  protected String[] getQueryStrings(String query, List<Object> params) {
+    query = query.substring(query.indexOf(':') + 1);
+    String[] queryStrings = query.split(DIVIDER_REGEX);
+    int paramcount = 0;
+    int i = 0;
+    while (i < queryStrings.length) {
+      String queryString = URLUtils.basicUrlDecode(queryStrings[i]);
+      StringBuilder sbuf = new StringBuilder();
+      int sz = queryString.length();
+      for (int j = 0; j < sz; j++) {
+        char c = queryString.charAt(j);
+        if (c == '\\') {
+          sbuf.append(queryString.charAt(++j));
+        } else if (c == '?') {
+          if (params != null) {
+            sbuf.append(params.get(paramcount++));
+          } else {
+            sbuf.append('?');
+          }
+        } else {
+          sbuf.append(c);
+        }
+      }
+      queryStrings[i++] = sbuf.toString();
+    }
 
-		if( queryStrings.length == 0 )
-		{
-			return new String[]{""}; //$NON-NLS-1$
-		}
-		return queryStrings;
-	}
+    if (queryStrings.length == 0) {
+      return new String[] {""}; // $NON-NLS-1$
+    }
+    return queryStrings;
+  }
 }

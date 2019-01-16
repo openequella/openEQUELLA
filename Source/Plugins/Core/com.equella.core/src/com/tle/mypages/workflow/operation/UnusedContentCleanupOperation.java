@@ -49,166 +49,134 @@ import com.tle.core.services.html.HrefCallback;
 import com.tle.mypages.parse.ConvertHtmlService;
 import com.tle.web.htmleditor.service.HtmlEditorService;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
 public class UnusedContentCleanupOperation extends AbstractWorkflowOperation // NOSONAR
 {
-	private static final Logger LOGGR = Logger.getLogger(UnusedContentCleanupOperation.class);
+  private static final Logger LOGGR = Logger.getLogger(UnusedContentCleanupOperation.class);
 
-	private final Collection<String> metadataHtmls;
+  private final Collection<String> metadataHtmls;
 
-	@Inject
-	private ConvertHtmlService htmlService;
+  @Inject private ConvertHtmlService htmlService;
 
-	@AssistedInject
-	private UnusedContentCleanupOperation(@Assisted Collection<String> metadataHtmls)
-	{
-		this.metadataHtmls = metadataHtmls;
-	}
+  @AssistedInject
+  private UnusedContentCleanupOperation(@Assisted Collection<String> metadataHtmls) {
+    this.metadataHtmls = metadataHtmls;
+  }
 
-	@AssistedInject
-	private UnusedContentCleanupOperation()
-	{
-		this.metadataHtmls = null;
-	}
+  @AssistedInject
+  private UnusedContentCleanupOperation() {
+    this.metadataHtmls = null;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		// scan the HtmlAttachments file system and see if their UUID is
-		// referred to in the HTML
-		StagingFile staging = getStaging();
-		if( staging != null )
-		{
-			if( metadataHtmls != null && metadataHtmls.size() > 0 )
-			{
-				try
-				{
-					scanHtml(metadataHtmls, staging, HtmlEditorService.CONTENT_DIRECTORY);
-				}
-				catch( IOException e )
-				{
-					Throwables.propagate(e);
-				}
-			}
+  @Override
+  public boolean execute() {
+    // scan the HtmlAttachments file system and see if their UUID is
+    // referred to in the HTML
+    StagingFile staging = getStaging();
+    if (staging != null) {
+      if (metadataHtmls != null && metadataHtmls.size() > 0) {
+        try {
+          scanHtml(metadataHtmls, staging, HtmlEditorService.CONTENT_DIRECTORY);
+        } catch (IOException e) {
+          Throwables.propagate(e);
+        }
+      }
 
-			List<HtmlAttachment> pages = new UnmodifiableAttachments(getItem()).getList(AttachmentType.HTML);
-			for( HtmlAttachment page : pages )
-			{
-				try
-				{
-					scanHtml(Collections.singletonList(getHtml(staging, page)), staging, page.getFolder());
-				}
-				catch( IOException e )
-				{
-					Throwables.propagate(e);
-				}
-			}
-		}
-		return false;
-	}
+      List<HtmlAttachment> pages =
+          new UnmodifiableAttachments(getItem()).getList(AttachmentType.HTML);
+      for (HtmlAttachment page : pages) {
+        try {
+          scanHtml(Collections.singletonList(getHtml(staging, page)), staging, page.getFolder());
+        } catch (IOException e) {
+          Throwables.propagate(e);
+        }
+      }
+    }
+    return false;
+  }
 
-	protected void scanHtml(Collection<String> htmls, StagingFile staging, String folder) throws IOException
-	{
-		ContentUrlDetectorCallback detector = new ContentUrlDetectorCallback(staging, folder, fileSystemService);
-		for( String html : htmls )
-		{
-			htmlService.modifyXml(new StringReader(html), detector);
-		}
-		for( Entry<String, Boolean> entry : detector.getAllFiles().entrySet() )
-		{
-			if( !entry.getValue() )
-			{
-				// fileSystemService.removeFile(staging, entry.getKey());
-				LOGGR.info("Would have deleted " + entry.getKey() + " if cleanup was working."); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-		}
-	}
+  protected void scanHtml(Collection<String> htmls, StagingFile staging, String folder)
+      throws IOException {
+    ContentUrlDetectorCallback detector =
+        new ContentUrlDetectorCallback(staging, folder, fileSystemService);
+    for (String html : htmls) {
+      htmlService.modifyXml(new StringReader(html), detector);
+    }
+    for (Entry<String, Boolean> entry : detector.getAllFiles().entrySet()) {
+      if (!entry.getValue()) {
+        // fileSystemService.removeFile(staging, entry.getKey());
+        LOGGR.info(
+            "Would have deleted "
+                + entry.getKey()
+                + " if cleanup was working."); //$NON-NLS-1$ //$NON-NLS-2$
+      }
+    }
+  }
 
-	protected String getHtml(StagingFile staging, HtmlAttachment attachment)
-	{
-		try( InputStream htmlStream = fileSystemService.read(staging, attachment.getFilename()) )
-		{
-			StringWriter html = new StringWriter();
-			CharStreams.copy(new InputStreamReader(htmlStream), html);
-			return html.toString();
-		}
-		catch( IOException io )
-		{
-			throw new RuntimeException(io);
-		}
-	}
+  protected String getHtml(StagingFile staging, HtmlAttachment attachment) {
+    try (InputStream htmlStream = fileSystemService.read(staging, attachment.getFilename())) {
+      StringWriter html = new StringWriter();
+      CharStreams.copy(new InputStreamReader(htmlStream), html);
+      return html.toString();
+    } catch (IOException io) {
+      throw new RuntimeException(io);
+    }
+  }
 
-	protected static class ContentUrlDetectorCallback implements HrefCallback
-	{
-		private final Map<String, Boolean> allFiles;
+  protected static class ContentUrlDetectorCallback implements HrefCallback {
+    private final Map<String, Boolean> allFiles;
 
-		public ContentUrlDetectorCallback(final StagingFile staging, final String baseFolder,
-			final FileSystemService fsys) throws IOException
-		{
-			this.allFiles = new HashMap<String, Boolean>();
+    public ContentUrlDetectorCallback(
+        final StagingFile staging, final String baseFolder, final FileSystemService fsys)
+        throws IOException {
+      this.allFiles = new HashMap<String, Boolean>();
 
-			FileEntry file = fsys.enumerateTree(staging, baseFolder, null);
-			addFiles(file.getFiles(), baseFolder + '/', true);
+      FileEntry file = fsys.enumerateTree(staging, baseFolder, null);
+      addFiles(file.getFiles(), baseFolder + '/', true);
+    }
 
-		}
+    private void addFiles(List<FileEntry> files, String path, boolean foldersOnly) {
+      for (FileEntry file : files) {
+        if (!file.isFolder() && !foldersOnly) {
+          allFiles.put(path + file.getName(), false);
+        } else {
+          addFiles(file.getFiles(), path + file.getName() + '/', false);
+        }
+      }
+    }
 
-		private void addFiles(List<FileEntry> files, String path, boolean foldersOnly)
-		{
-			for( FileEntry file : files )
-			{
-				if( !file.isFolder() && !foldersOnly )
-				{
-					allFiles.put(path + file.getName(), false);
-				}
-				else
-				{
-					addFiles(file.getFiles(), path + file.getName() + '/', false);
-				}
-			}
-		}
+    @Override
+    public String hrefFound(String tag, String attribute, AttributesImpl atts) {
+      for (Entry<String, Boolean> fileEntry : allFiles.entrySet()) {
+        String filename = fileEntry.getKey();
+        boolean referenced = fileEntry.getValue();
+        if (!referenced) {
+          // if a match on filename and tag, then keep
+          if (attribute.contains(filename)) {
+            fileEntry.setValue(true);
+            return null;
+          }
+        }
+      }
+      return null;
+    }
 
-		@Override
-		public String hrefFound(String tag, String attribute, AttributesImpl atts)
-		{
-			for( Entry<String, Boolean> fileEntry : allFiles.entrySet() )
-			{
-				String filename = fileEntry.getKey();
-				boolean referenced = fileEntry.getValue();
-				if( !referenced )
-				{
-					// if a match on filename and tag, then keep
-					if( attribute.contains(filename) )
-					{
-						fileEntry.setValue(true);
-						return null;
-					}
-				}
-			}
-			return null;
-		}
+    @Override
+    public String textFound(String text) {
+      return text;
+    }
 
-		@Override
-		public String textFound(String text)
-		{
-			return text;
-		}
+    public Map<String, Boolean> getAllFiles() {
+      return allFiles;
+    }
+  }
 
-		public Map<String, Boolean> getAllFiles()
-		{
-			return allFiles;
-		}
-	}
+  @BindFactory
+  public interface UnusedContentCleanupOperationFactory {
+    UnusedContentCleanupOperation createWithContent(Collection<String> content);
 
-	@BindFactory
-	public interface UnusedContentCleanupOperationFactory
-	{
-		UnusedContentCleanupOperation createWithContent(Collection<String> content);
-
-		UnusedContentCleanupOperation create();
-	}
-
+    UnusedContentCleanupOperation create();
+  }
 }

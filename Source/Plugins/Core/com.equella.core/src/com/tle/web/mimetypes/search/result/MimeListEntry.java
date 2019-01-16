@@ -45,111 +45,98 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.renderers.ImageRenderer;
 
 @Bind
-public class MimeListEntry extends AbstractListEntry
-{
-	static
-	{
-		PluginResourceHandler.init(MimeListEntry.class);
-	}
+public class MimeListEntry extends AbstractListEntry {
+  static {
+    PluginResourceHandler.init(MimeListEntry.class);
+  }
 
-	@PlugKey("list.result.delete")
-	private static Label DELETE_LABEL;
-	@PlugKey("list.result.edit")
-	private static Label EDIT_LABEL;
-	@PlugKey("label.extensions")
-	private static Label EXTENSIONS_LABEL;
+  @PlugKey("list.result.delete")
+  private static Label DELETE_LABEL;
 
-	private final List<MetadataEntry> entries = new ArrayList<MetadataEntry>();
+  @PlugKey("list.result.edit")
+  private static Label EDIT_LABEL;
 
-	@Inject
-	private WebMimeTypeService webMimeService;
+  @PlugKey("label.extensions")
+  private static Label EXTENSIONS_LABEL;
 
-	private JSHandler editHandler;
-	private JSHandler deleteHandler;
-	private MimeEntry mime;
-	private SectionRenderable image;
+  private final List<MetadataEntry> entries = new ArrayList<MetadataEntry>();
 
-	@Override
-	public HtmlBooleanState getCheckbox()
-	{
-		return new HtmlBooleanState();
-	}
+  @Inject private WebMimeTypeService webMimeService;
 
-	@Override
-	public Label getDescription()
-	{
-		String desc = mime.getDescription();
-		desc = desc == null ? "" : desc; //$NON-NLS-1$
-		return new TextLabel(desc);
-	}
+  private JSHandler editHandler;
+  private JSHandler deleteHandler;
+  private MimeEntry mime;
+  private SectionRenderable image;
 
-	@Override
-	public List<MetadataEntry> getMetadata()
-	{
-		return entries;
-	}
+  @Override
+  public HtmlBooleanState getCheckbox() {
+    return new HtmlBooleanState();
+  }
 
-	public List<SectionRenderable> getActions()
-	{
-		List<SectionRenderable> actions = new ArrayList<SectionRenderable>();
+  @Override
+  public Label getDescription() {
+    String desc = mime.getDescription();
+    desc = desc == null ? "" : desc; // $NON-NLS-1$
+    return new TextLabel(desc);
+  }
 
-		if( editHandler != null )
-		{
-			actions.add(new ButtonRenderer(new HtmlComponentState(EDIT_LABEL, editHandler)).showAs(ButtonType.EDIT));
-		}
-		if( deleteHandler != null )
-		{
-			actions.add(new ButtonRenderer(new HtmlComponentState(DELETE_LABEL, deleteHandler))
-				.showAs(ButtonType.DELETE));
-		}
-		return actions;
-	}
+  @Override
+  public List<MetadataEntry> getMetadata() {
+    return entries;
+  }
 
-	@Override
-	public HtmlLinkState getTitle()
-	{
-		return new HtmlLinkState(new TextLabel(mime.getType()), editHandler);
-	}
+  public List<SectionRenderable> getActions() {
+    List<SectionRenderable> actions = new ArrayList<SectionRenderable>();
 
-	public void init()
-	{
-		Collection<String> extensions = mime.getExtensions();
-		if( extensions.size() > 0 )
-		{
-			SectionRenderable[] exts = SectionUtils.convertToRenderers(extensions);
-			entries.add(new DelimitedMetadata(EXTENSIONS_LABEL, Arrays.asList(exts)));
-		}
+    if (editHandler != null) {
+      actions.add(
+          new ButtonRenderer(new HtmlComponentState(EDIT_LABEL, editHandler))
+              .showAs(ButtonType.EDIT));
+    }
+    if (deleteHandler != null) {
+      actions.add(
+          new ButtonRenderer(new HtmlComponentState(DELETE_LABEL, deleteHandler))
+              .showAs(ButtonType.DELETE));
+    }
+    return actions;
+  }
 
-		URL mimeIcon = webMimeService.getIconForEntry(mime, false);
-		if( mimeIcon != null )
-		{
-			image = new ImageRenderer(mimeIcon.toString(), new TextLabel(mime.getType()));
-		}
-	}
+  @Override
+  public HtmlLinkState getTitle() {
+    return new HtmlLinkState(new TextLabel(mime.getType()), editHandler);
+  }
 
-	@Override
-	public void addMetadata(MetadataEntry entry)
-	{
-		entries.add(entry);
-	}
+  public void init() {
+    Collection<String> extensions = mime.getExtensions();
+    if (extensions.size() > 0) {
+      SectionRenderable[] exts = SectionUtils.convertToRenderers(extensions);
+      entries.add(new DelimitedMetadata(EXTENSIONS_LABEL, Arrays.asList(exts)));
+    }
 
-	public void setEditHandler(JSHandler editHandler)
-	{
-		this.editHandler = editHandler;
-	}
+    URL mimeIcon = webMimeService.getIconForEntry(mime, false);
+    if (mimeIcon != null) {
+      image = new ImageRenderer(mimeIcon.toString(), new TextLabel(mime.getType()));
+    }
+  }
 
-	public void setDeleteHandler(JSHandler deleteHandler)
-	{
-		this.deleteHandler = deleteHandler;
-	}
+  @Override
+  public void addMetadata(MetadataEntry entry) {
+    entries.add(entry);
+  }
 
-	public void setMime(MimeEntry mime)
-	{
-		this.mime = mime;
-	}
+  public void setEditHandler(JSHandler editHandler) {
+    this.editHandler = editHandler;
+  }
 
-	public SectionRenderable getImage()
-	{
-		return image;
-	}
+  public void setDeleteHandler(JSHandler deleteHandler) {
+    this.deleteHandler = deleteHandler;
+  }
+
+  public void setMime(MimeEntry mime) {
+    this.mime = mime;
+  }
+
+  public SectionRenderable getImage() {
+    return image;
+  }
 }

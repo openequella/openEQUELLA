@@ -24,39 +24,32 @@ import com.google.inject.assistedinject.AssistedInject;
 import com.tle.beans.item.ItemStatus;
 import com.tle.core.item.operations.WorkflowOperation;
 
-/**
- * @author jmaginnis
- */
-public class RemoveDeletedItemsFilter extends AbstractStandardOperationFilter
-{
-	private final int daysOld;
+/** @author jmaginnis */
+public class RemoveDeletedItemsFilter extends AbstractStandardOperationFilter {
+  private final int daysOld;
 
-	@AssistedInject
-	protected RemoveDeletedItemsFilter(@Assisted int daysOld)
-	{
-		this.daysOld = daysOld;
-	}
+  @AssistedInject
+  protected RemoveDeletedItemsFilter(@Assisted int daysOld) {
+    this.daysOld = daysOld;
+  }
 
-	@Override
-	public WorkflowOperation[] createOperations()
-	{
-		return new WorkflowOperation[]{operationFactory.purge(false)};
-	}
+  @Override
+  public WorkflowOperation[] createOperations() {
+    return new WorkflowOperation[] {operationFactory.purge(false)};
+  }
 
-	@Override
-	public void queryValues(Map<String, Object> values)
-	{
-		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 59);
-		cal.add(Calendar.DAY_OF_YEAR, -daysOld);
-		values.put("dateModified", cal.getTime());
-		values.put("status", ItemStatus.DELETED.name());
-	}
+  @Override
+  public void queryValues(Map<String, Object> values) {
+    Calendar cal = Calendar.getInstance();
+    cal.set(Calendar.HOUR_OF_DAY, 23);
+    cal.set(Calendar.MINUTE, 59);
+    cal.add(Calendar.DAY_OF_YEAR, -daysOld);
+    values.put("dateModified", cal.getTime());
+    values.put("status", ItemStatus.DELETED.name());
+  }
 
-	@Override
-	public String getWhereClause()
-	{
-		return "status = :status and dateModified <= :dateModified";
-	}
+  @Override
+  public String getWhereClause() {
+    return "status = :status and dateModified <= :dateModified";
+  }
 }

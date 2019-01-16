@@ -28,44 +28,39 @@ import com.tle.web.scripting.ScriptTypeFactory;
 import javax.inject.Inject;
 import java.util.List;
 
-public class SearchResultsScriptTypeImpl implements SearchResultsScriptType
-{
-	private static final long serialVersionUID = 1L;
+public class SearchResultsScriptTypeImpl implements SearchResultsScriptType {
+  private static final long serialVersionUID = 1L;
 
-	@Inject
-	private ScriptTypeFactory scriptTypeFactory;
+  @Inject private ScriptTypeFactory scriptTypeFactory;
 
-	private final SearchResults<Item> results;
+  private final SearchResults<Item> results;
 
-	// lazy
-	private List<ItemScriptType> resultList;
+  // lazy
+  private List<ItemScriptType> resultList;
 
-	@Inject
-	protected SearchResultsScriptTypeImpl(@Assisted("results") SearchResults<Item> results)
-	{
-		this.results = results;
-	}
+  @Inject
+  protected SearchResultsScriptTypeImpl(@Assisted("results") SearchResults<Item> results) {
+    this.results = results;
+  }
 
-	@Override
-	public int available()
-	{
-		return results.getAvailable();
-	}
+  @Override
+  public int available() {
+    return results.getAvailable();
+  }
 
-	@Override
-	public List<ItemScriptType> getResults()
-	{
-		if( resultList == null )
-		{
-			resultList = Lists.transform(results.getResults(), new Function<Item, ItemScriptType>()
-			{
-				@Override
-				public ItemScriptType apply(Item item)
-				{
-					return scriptTypeFactory.createItem(item);
-				}
-			});
-		}
-		return resultList;
-	}
+  @Override
+  public List<ItemScriptType> getResults() {
+    if (resultList == null) {
+      resultList =
+          Lists.transform(
+              results.getResults(),
+              new Function<Item, ItemScriptType>() {
+                @Override
+                public ItemScriptType apply(Item item) {
+                  return scriptTypeFactory.createItem(item);
+                }
+              });
+    }
+    return resultList;
+  }
 }

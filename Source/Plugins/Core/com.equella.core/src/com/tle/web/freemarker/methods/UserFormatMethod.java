@@ -30,51 +30,41 @@ import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateScalarModel;
 
-public class UserFormatMethod implements TemplateMethodModelEx
-{
-	private final UserService userService;
+public class UserFormatMethod implements TemplateMethodModelEx {
+  private final UserService userService;
 
-	public UserFormatMethod(UserService userService)
-	{
-		this.userService = userService;
-	}
+  public UserFormatMethod(UserService userService) {
+    this.userService = userService;
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Object exec(List args) throws TemplateModelException
-	{
-		UserBean user = null;
-		Object userModel = args.get(0);
-		if( userModel instanceof AdapterTemplateModel )
-		{
-			Object wrapped = ((AdapterTemplateModel) userModel).getAdaptedObject(Object.class);
-			if( wrapped instanceof UserBean )
-			{
-				user = (UserBean) wrapped;
-			}
-		}
-		if( user == null && userModel instanceof TemplateScalarModel )
-		{
-			String userId = ((TemplateScalarModel) userModel).getAsString();
-			if( userId.equals("$LoggedInUser") ) //$NON-NLS-1$
-			{
-				user = CurrentUser.getDetails();
-			}
-			else
-			{
-				user = userService.getInformationForUser(userId);
-			}
-		}
-		String format = Format.DEFAULT_USER_BEAN_FORMAT;
-		if( args.size() > 1 )
-		{
-			Object formatModel = args.get(1);
-			if( formatModel instanceof TemplateScalarModel )
-			{
-				format = ((TemplateScalarModel) formatModel).getAsString();
-			}
-		}
+  @SuppressWarnings("unchecked")
+  @Override
+  public Object exec(List args) throws TemplateModelException {
+    UserBean user = null;
+    Object userModel = args.get(0);
+    if (userModel instanceof AdapterTemplateModel) {
+      Object wrapped = ((AdapterTemplateModel) userModel).getAdaptedObject(Object.class);
+      if (wrapped instanceof UserBean) {
+        user = (UserBean) wrapped;
+      }
+    }
+    if (user == null && userModel instanceof TemplateScalarModel) {
+      String userId = ((TemplateScalarModel) userModel).getAsString();
+      if (userId.equals("$LoggedInUser")) // $NON-NLS-1$
+      {
+        user = CurrentUser.getDetails();
+      } else {
+        user = userService.getInformationForUser(userId);
+      }
+    }
+    String format = Format.DEFAULT_USER_BEAN_FORMAT;
+    if (args.size() > 1) {
+      Object formatModel = args.get(1);
+      if (formatModel instanceof TemplateScalarModel) {
+        format = ((TemplateScalarModel) formatModel).getAsString();
+      }
+    }
 
-		return new SimpleScalar(Utils.ent(Format.format(user, format)));
-	}
+    return new SimpleScalar(Utils.ent(Format.format(user, format)));
+  }
 }

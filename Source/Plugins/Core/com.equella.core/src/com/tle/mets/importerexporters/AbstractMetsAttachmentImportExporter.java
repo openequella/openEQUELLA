@@ -49,205 +49,175 @@ import edu.harvard.hul.ois.mets.helper.MetsException;
 import edu.harvard.hul.ois.mets.helper.MetsIDElement;
 import edu.harvard.hul.ois.mets.helper.PCData;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public abstract class AbstractMetsAttachmentImportExporter implements MetsAttachmentImporterExporter
-{
-	@Inject
-	private MimeTypeService mimeTypeService;
-	@Inject
-	private FileSystemService fileSystemService;
+public abstract class AbstractMetsAttachmentImportExporter
+    implements MetsAttachmentImporterExporter {
+  @Inject private MimeTypeService mimeTypeService;
+  @Inject private FileSystemService fileSystemService;
 
-	protected MetsIDElementInfo<? extends MetsIDElement> exportBinaryFile(FileHandle file, String filename,
-		long fileSize, String description, String id, String uuid)
-	{
-		return exportBinaryFile(file, filename, fileSize, description, id, uuid, null);
-	}
+  protected MetsIDElementInfo<? extends MetsIDElement> exportBinaryFile(
+      FileHandle file, String filename, long fileSize, String description, String id, String uuid) {
+    return exportBinaryFile(file, filename, fileSize, description, id, uuid, null);
+  }
 
-	@SuppressWarnings("unchecked")
-	protected MetsIDElementInfo<? extends MetsIDElement> exportBinaryFile(FileHandle file, String filename,
-		long fileSize, String description, String id, String uuid, XmlCallback xml)
-	{
-		final FContent content = new FContent();
-		content.setID(id);
-		content.getContent().add(getFileAsBinData(file, filename));
-		if( fileSize < 0 )
-		{
-			try
-			{
-				fileSize = fileSystemService.fileLength(file, filename);
-			}
-			catch( FileNotFoundException e )
-			{
-				throw new RuntimeException(e);
-			}
-		}
+  @SuppressWarnings("unchecked")
+  protected MetsIDElementInfo<? extends MetsIDElement> exportBinaryFile(
+      FileHandle file,
+      String filename,
+      long fileSize,
+      String description,
+      String id,
+      String uuid,
+      XmlCallback xml) {
+    final FContent content = new FContent();
+    content.setID(id);
+    content.getContent().add(getFileAsBinData(file, filename));
+    if (fileSize < 0) {
+      try {
+        fileSize = fileSystemService.fileLength(file, filename);
+      } catch (FileNotFoundException e) {
+        throw new RuntimeException(e);
+      }
+    }
 
-		return new MetsIDElementInfo<FContent>(content, mimeTypeService.getMimeTypeForFilename(filename), getXml(
-			filename, fileSize, description, uuid, xml));
-	}
+    return new MetsIDElementInfo<FContent>(
+        content,
+        mimeTypeService.getMimeTypeForFilename(filename),
+        getXml(filename, fileSize, description, uuid, xml));
+  }
 
-	@SuppressWarnings("unchecked")
-	protected <T> T getFirst(List<?> l, Class<T> clazz)
-	{
-		for( Object o : l )
-		{
-			if( clazz.isAssignableFrom(o.getClass()) )
-			{
-				return (T) o;
-			}
-		}
-		return null;
-	}
+  @SuppressWarnings("unchecked")
+  protected <T> T getFirst(List<?> l, Class<T> clazz) {
+    for (Object o : l) {
+      if (clazz.isAssignableFrom(o.getClass())) {
+        return (T) o;
+      }
+    }
+    return null;
+  }
 
-	protected PropBagEx getXml(String filename, long size, String description, String uuid, XmlCallback xmlCb)
-	{
-		PropBagEx xml = new PropBagEx();
-		xml.setNode("url", filename);
-		xml.setNode("description", description);
-		xml.setNode("size", size);
-		if( uuid != null )
-		{
-			xml.setNode("uuid", uuid);
-		}
-		if( xmlCb != null )
-		{
-			xmlCb.addXml(xml);
-		}
+  protected PropBagEx getXml(
+      String filename, long size, String description, String uuid, XmlCallback xmlCb) {
+    PropBagEx xml = new PropBagEx();
+    xml.setNode("url", filename);
+    xml.setNode("description", description);
+    xml.setNode("size", size);
+    if (uuid != null) {
+      xml.setNode("uuid", uuid);
+    }
+    if (xmlCb != null) {
+      xmlCb.addXml(xml);
+    }
 
-		return xml;
-	}
+    return xml;
+  }
 
-	@SuppressWarnings("unchecked")
-	private BinData getFileAsBinData(FileHandle file, String filename)
-	{
-		try( InputStream in = fileSystemService.read(file, filename) )
-		{
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ByteStreams.copy(in, baos);
+  @SuppressWarnings("unchecked")
+  private BinData getFileAsBinData(FileHandle file, String filename) {
+    try (InputStream in = fileSystemService.read(file, filename)) {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ByteStreams.copy(in, baos);
 
-			BinData data = new BinData();
-			data.getContent().add(new PCData(new Base64().encode(baos.toByteArray())));
-			return data;
-		}
-		catch( IOException io )
-		{
-			throw Throwables.propagate(io);
-		}
-	}
+      BinData data = new BinData();
+      data.getContent().add(new PCData(new Base64().encode(baos.toByteArray())));
+      return data;
+    } catch (IOException io) {
+      throw Throwables.propagate(io);
+    }
+  }
 
-	/**
-	 * Only reads the first PCData content of bin. Returns null if none found.
-	 * 
-	 * @param bin
-	 * @param staging
-	 * @param targetFolder where the file will be written
-	 * @param filename Can be null in which case it uses the "url" node in
-	 *            xmlData
-	 * @return
-	 * @throws MetsException
-	 */
-	protected ImportInfo importBinaryFile(BinData bin, FileHandle staging, String targetFolder, String filename,
-		PropBagEx xmlData)
-	{
-		final PCData pc = getFirst(bin.getContent(), PCData.class);
-		if( pc != null )
-		{
-			final String resultFilename = Utils
-				.coalesce(xmlData.getNode("url"), filename, UUID.randomUUID().toString());
-			final String resultFilepath = PathUtils.filePath(targetFolder, resultFilename);
-			final StringBuilder base64data = new StringBuilder();
-			for( Object data : pc.getContent() )
-			{
-				base64data.append(data);
-			}
-			final byte[] bytes = new Base64().decode(base64data.toString());
+  /**
+   * Only reads the first PCData content of bin. Returns null if none found.
+   *
+   * @param bin
+   * @param staging
+   * @param targetFolder where the file will be written
+   * @param filename Can be null in which case it uses the "url" node in xmlData
+   * @return
+   * @throws MetsException
+   */
+  protected ImportInfo importBinaryFile(
+      BinData bin, FileHandle staging, String targetFolder, String filename, PropBagEx xmlData) {
+    final PCData pc = getFirst(bin.getContent(), PCData.class);
+    if (pc != null) {
+      final String resultFilename =
+          Utils.coalesce(xmlData.getNode("url"), filename, UUID.randomUUID().toString());
+      final String resultFilepath = PathUtils.filePath(targetFolder, resultFilename);
+      final StringBuilder base64data = new StringBuilder();
+      for (Object data : pc.getContent()) {
+        base64data.append(data);
+      }
+      final byte[] bytes = new Base64().decode(base64data.toString());
 
-			try
-			{
-				fileSystemService.write(staging, resultFilepath, new ByteArrayInputStream(bytes), true);
-				int size = 0;
-				final String sizeNode = xmlData.getNode("size");
-				if( !Strings.isNullOrEmpty(sizeNode) )
-				{
-					size = Integer.parseInt(sizeNode);
-				}
-				if( size == 0 )
-				{
-					size = bytes.length;
-				}
-				final String description = Utils.coalesce(xmlData.getNode("description"), resultFilename);
-				final String attachmentUuid = Utils.coalesce(xmlData.getNode("uuid"), UUID.randomUUID().toString());
-				return new ImportInfo(size, description, resultFilepath, attachmentUuid);
-			}
-			catch( IOException io )
-			{
-				throw new RuntimeException(CurrentLocale.get("com.tle.mets.treebuilder.couldntwrite"));
-			}
-		}
-		return null;
-	}
+      try {
+        fileSystemService.write(staging, resultFilepath, new ByteArrayInputStream(bytes), true);
+        int size = 0;
+        final String sizeNode = xmlData.getNode("size");
+        if (!Strings.isNullOrEmpty(sizeNode)) {
+          size = Integer.parseInt(sizeNode);
+        }
+        if (size == 0) {
+          size = bytes.length;
+        }
+        final String description = Utils.coalesce(xmlData.getNode("description"), resultFilename);
+        final String attachmentUuid =
+            Utils.coalesce(xmlData.getNode("uuid"), UUID.randomUUID().toString());
+        return new ImportInfo(size, description, resultFilepath, attachmentUuid);
+      } catch (IOException io) {
+        throw new RuntimeException(CurrentLocale.get("com.tle.mets.treebuilder.couldntwrite"));
+      }
+    }
+    return null;
+  }
 
-	protected void populateStandardProperties(Attachment attachment, ImportInfo info)
-	{
-		attachment.setUuid(info.getUuid());
-		attachment.setUrl(info.getUrl());
-		attachment.setDescription(info.getDescription());
-		if( attachment instanceof ImsAttachment )
-		{
-			((ImsAttachment) attachment).setSize(info.getSize());
-		}
-		else if( attachment instanceof FileAttachment )
-		{
-			((FileAttachment) attachment).setSize(info.getSize());
-		}
-	}
+  protected void populateStandardProperties(Attachment attachment, ImportInfo info) {
+    attachment.setUuid(info.getUuid());
+    attachment.setUrl(info.getUrl());
+    attachment.setDescription(info.getDescription());
+    if (attachment instanceof ImsAttachment) {
+      ((ImsAttachment) attachment).setSize(info.getSize());
+    } else if (attachment instanceof FileAttachment) {
+      ((FileAttachment) attachment).setSize(info.getSize());
+    }
+  }
 
-	protected boolean idPrefixMatch(MetsElement elem, String id)
-	{
-		return elem instanceof MetsIDElement && Utils.safeStartsWith(((MetsIDElement) elem).getID(), id, true);
-	}
+  protected boolean idPrefixMatch(MetsElement elem, String id) {
+    return elem instanceof MetsIDElement
+        && Utils.safeStartsWith(((MetsIDElement) elem).getID(), id, true);
+  }
 
-	protected static class ImportInfo
-	{
-		private final long size;
-		private final String description;
-		private final String url;
-		private final String uuid;
+  protected static class ImportInfo {
+    private final long size;
+    private final String description;
+    private final String url;
+    private final String uuid;
 
-		protected ImportInfo(long size, String description, String url, String uuid)
-		{
-			this.size = size;
-			this.description = description;
-			this.url = url;
-			this.uuid = uuid;
-		}
+    protected ImportInfo(long size, String description, String url, String uuid) {
+      this.size = size;
+      this.description = description;
+      this.url = url;
+      this.uuid = uuid;
+    }
 
-		public long getSize()
-		{
-			return size;
-		}
+    public long getSize() {
+      return size;
+    }
 
-		public String getDescription()
-		{
-			return description;
-		}
+    public String getDescription() {
+      return description;
+    }
 
-		public String getUrl()
-		{
-			return url;
-		}
+    public String getUrl() {
+      return url;
+    }
 
-		public String getUuid()
-		{
-			return uuid;
-		}
-	}
+    public String getUuid() {
+      return uuid;
+    }
+  }
 
-	protected interface XmlCallback
-	{
-		void addXml(PropBagEx xml);
-	}
+  protected interface XmlCallback {
+    void addXml(PropBagEx xml);
+  }
 }

@@ -16,29 +16,25 @@
 
 package com.tle.core.remoterepo.merlot.syndication;
 
-
 import org.jdom2.Namespace;
 
 import com.rometools.rome.feed.module.Module;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
-public interface MerlotTopLevelModule extends Module
-{
-	String URI = "http://www.merlot.org/merlot/materials-rest";
-	Namespace NAMESPACE = Namespace.getNamespace(URI);
+public interface MerlotTopLevelModule extends Module {
+  String URI = "http://www.merlot.org/merlot/materials-rest";
+  Namespace NAMESPACE = Namespace.getNamespace(URI);
 
-	int getTotalCount();
+  int getTotalCount();
 
-	void setTotalCount(int totalCount);
+  void setTotalCount(int totalCount);
 
-	int getResultCount();
+  int getResultCount();
 
-	void setResultCount(int resultCount);
+  void setResultCount(int resultCount);
 
-	int getLastRecNumber();
+  int getLastRecNumber();
 
-	void setLastRecNumber(int lastRecNumber);
+  void setLastRecNumber(int lastRecNumber);
 }

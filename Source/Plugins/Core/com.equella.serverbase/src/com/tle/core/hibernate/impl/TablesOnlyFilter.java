@@ -27,61 +27,50 @@ import org.hibernate.mapping.Index;
 import org.hibernate.mapping.Table;
 import org.hibernate.mapping.UniqueKey;
 
-public class TablesOnlyFilter implements HibernateCreationFilter
-{
-	private Set<String> tables;
-	private boolean includeGenerators;
+public class TablesOnlyFilter implements HibernateCreationFilter {
+  private Set<String> tables;
+  private boolean includeGenerators;
 
-	public TablesOnlyFilter(String... tables)
-	{
-		this.tables = new HashSet<String>();
-		Collections.addAll(this.tables, tables);
-	}
+  public TablesOnlyFilter(String... tables) {
+    this.tables = new HashSet<String>();
+    Collections.addAll(this.tables, tables);
+  }
 
-	@Override
-	public boolean includeForeignKey(Table table, ForeignKey fk)
-	{
-		return includeTable(table);
-	}
+  @Override
+  public boolean includeForeignKey(Table table, ForeignKey fk) {
+    return includeTable(table);
+  }
 
-	@Override
-	public boolean includeGenerator(PersistentIdentifierGenerator pig)
-	{
-		return includeGenerators;
-	}
+  @Override
+  public boolean includeGenerator(PersistentIdentifierGenerator pig) {
+    return includeGenerators;
+  }
 
-	@Override
-	public boolean includeIndex(Table table, Index index)
-	{
-		return includeTable(table);
-	}
+  @Override
+  public boolean includeIndex(Table table, Index index) {
+    return includeTable(table);
+  }
 
-	@Override
-	public boolean includeObject(AuxiliaryDatabaseObject object)
-	{
-		return false;
-	}
+  @Override
+  public boolean includeObject(AuxiliaryDatabaseObject object) {
+    return false;
+  }
 
-	@Override
-	public boolean includeTable(Table table)
-	{
-		return tables.contains(table.getName());
-	}
+  @Override
+  public boolean includeTable(Table table) {
+    return tables.contains(table.getName());
+  }
 
-	@Override
-	public boolean includeUniqueKey(Table table, UniqueKey uk)
-	{
-		return includeTable(table);
-	}
+  @Override
+  public boolean includeUniqueKey(Table table, UniqueKey uk) {
+    return includeTable(table);
+  }
 
-	public boolean isIncludeGenerators()
-	{
-		return includeGenerators;
-	}
+  public boolean isIncludeGenerators() {
+    return includeGenerators;
+  }
 
-	public void setIncludeGenerators(boolean includeGenerators)
-	{
-		this.includeGenerators = includeGenerators;
-	}
-
+  public void setIncludeGenerators(boolean includeGenerators) {
+    this.includeGenerators = includeGenerators;
+  }
 }

@@ -19,17 +19,14 @@ package com.tle.web.api.item.interfaces.beans;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("file")
-public class FileBean extends GenericFileBean
-{
-	private long size;
+public class FileBean extends GenericFileBean {
+  private long size;
 
-	public long getSize()
-	{
-		return size;
-	}
+  public long getSize() {
+    return size;
+  }
 
-	public void setSize(long size)
-	{
-		this.size = size;
-	}
+  public void setSize(long size) {
+    this.size = size;
+  }
 }

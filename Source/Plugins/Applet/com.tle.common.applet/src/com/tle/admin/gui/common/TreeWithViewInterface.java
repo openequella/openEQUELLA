@@ -21,18 +21,15 @@ import java.awt.event.KeyListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-/**
- * @author Nicholas Read
- */
-public interface TreeWithViewInterface<NODE_TYPE extends DefaultMutableTreeNode>
-{
-	Component getComponent();
+/** @author Nicholas Read */
+public interface TreeWithViewInterface<NODE_TYPE extends DefaultMutableTreeNode> {
+  Component getComponent();
 
-	void setup();
+  void setup();
 
-	void addNameListener(KeyListener listener);
+  void addNameListener(KeyListener listener);
 
-	void load(NODE_TYPE element);
+  void load(NODE_TYPE element);
 
-	void save(NODE_TYPE element);
+  void save(NODE_TYPE element);
 }

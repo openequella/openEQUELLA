@@ -26,22 +26,18 @@ import com.tle.web.remoterepo.RemoteRepoListEntry;
 import com.tle.web.remoterepo.RemoteRepoListEntryFactory;
 import com.tle.web.sections.SectionInfo;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class MerlotListEntryFactory implements RemoteRepoListEntryFactory<MerlotSearchResult>
-{
-	@Inject
-	private Provider<MerlotListEntry> entryProvider;
+public class MerlotListEntryFactory implements RemoteRepoListEntryFactory<MerlotSearchResult> {
+  @Inject private Provider<MerlotListEntry> entryProvider;
 
-	@Override
-	public RemoteRepoListEntry<MerlotSearchResult> createListEntry(SectionInfo info, MerlotSearchResult result)
-	{
-		MerlotListEntry entry = entryProvider.get();
-		entry.setResult(result);
-		entry.setInfo(info);
-		return entry;
-	}
+  @Override
+  public RemoteRepoListEntry<MerlotSearchResult> createListEntry(
+      SectionInfo info, MerlotSearchResult result) {
+    MerlotListEntry entry = entryProvider.get();
+    entry.setResult(result);
+    entry.setInfo(info);
+    return entry;
+  }
 }

@@ -52,97 +52,81 @@ import com.tle.web.viewitem.section.ParentViewItemSectionUtils;
 @NonNullByDefault
 @Bind
 public class DisplayNodesSection
-	extends
-		AbstractDisplayNodesSection<Item, AbstractDisplayNodesSection.DisplayNodesModel>
-	implements
-		ViewableChildInterface,
-		DisplaySectionConfiguration
-{
-	@Inject
-	private HtmlEditorService htmlEditorService;
-	@Inject
-	private ItemHelper itemHelper;
-	@Inject
-	private XmlService xmlService;
-	@Inject
-	private BundleCache bundleCache;
+    extends AbstractDisplayNodesSection<Item, AbstractDisplayNodesSection.DisplayNodesModel>
+    implements ViewableChildInterface, DisplaySectionConfiguration {
+  @Inject private HtmlEditorService htmlEditorService;
+  @Inject private ItemHelper itemHelper;
+  @Inject private XmlService xmlService;
+  @Inject private BundleCache bundleCache;
 
-	@Nullable
-	private String config;
+  @Nullable private String config;
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		return true;
-	}
+  @Override
+  public boolean canView(SectionInfo info) {
+    return true;
+  }
 
-	@Override
-	protected ViewableItem<Item> getViewableItem(SectionInfo info)
-	{
-		return ParentViewItemSectionUtils.getItemInfo(info).getViewableItem();
-	}
+  @Override
+  protected ViewableItem<Item> getViewableItem(SectionInfo info) {
+    return ParentViewItemSectionUtils.getItemInfo(info).getViewableItem();
+  }
 
-	@Nullable
-	private List<DisplayNode> getDisplayNodes(SectionInfo info, ViewableItem<Item> vitem)
-	{
-		if( config != null )
-		{
-			Object fromXML = xmlService.deserialiseFromXml(getClass().getClassLoader(), config);
-			return (List<DisplayNode>) fromXML;
-		}
-		return null;
-	}
+  @Nullable
+  private List<DisplayNode> getDisplayNodes(SectionInfo info, ViewableItem<Item> vitem) {
+    if (config != null) {
+      Object fromXML = xmlService.deserialiseFromXml(getClass().getClassLoader(), config);
+      return (List<DisplayNode>) fromXML;
+    }
+    return null;
+  }
 
-	@Nullable
-	@Override
-	protected List<AbstractDisplayNodesSection.Entry> getEntries(RenderEventContext context, ViewableItem<Item> vitem)
-	{
-		final List<DisplayNode> displayNodes = getDisplayNodes(context, vitem);
-		if( displayNodes != null )
-		{
-			PropBagEx itemXml = itemHelper.convertToXml(new ItemPack<Item>(vitem.getItem(), vitem.getItemxml(), ""),
-				new ItemHelperSettings(true));
+  @Nullable
+  @Override
+  protected List<AbstractDisplayNodesSection.Entry> getEntries(
+      RenderEventContext context, ViewableItem<Item> vitem) {
+    final List<DisplayNode> displayNodes = getDisplayNodes(context, vitem);
+    if (displayNodes != null) {
+      PropBagEx itemXml =
+          itemHelper.convertToXml(
+              new ItemPack<Item>(vitem.getItem(), vitem.getItemxml(), ""),
+              new ItemHelperSettings(true));
 
-			return fillValuesAndDoLayout(context, itemXml, displayNodes);
-		}
-		return null;
-	}
+      return fillValuesAndDoLayout(context, itemXml, displayNodes);
+    }
+    return null;
+  }
 
-	private List<Entry> fillValuesAndDoLayout(RenderEventContext context, final PropBagEx itemXml,
-		final List<DisplayNode> nodes)
-	{
-		final List<Entry> results = new ArrayList<Entry>();
-		for( DisplayNode node : nodes )
-		{
-			Integer truncLength = node.getTruncateLength();
-			if( truncLength == null || truncLength == 0 )
-			{
-				truncLength = -1;
-			}
+  private List<Entry> fillValuesAndDoLayout(
+      RenderEventContext context, final PropBagEx itemXml, final List<DisplayNode> nodes) {
+    final List<Entry> results = new ArrayList<Entry>();
+    for (DisplayNode node : nodes) {
+      Integer truncLength = node.getTruncateLength();
+      if (truncLength == null || truncLength == 0) {
+        truncLength = -1;
+      }
 
-			final String text = CurrentLocale.get(ItemHelper.getDisplayNodeValues(node, itemXml, null), null);
-			if( !Check.isEmpty(text) )
-			{
-				final boolean html = node.isHTMLType();
-				final SectionRenderable textRenderable = (html ? htmlEditorService.getHtmlRenderable(context, text)
-					: new SimpleSectionResult(text));
-				final Entry entry = new Entry(new BundleLabel(node.getTitle(), bundleCache), textRenderable,
-					truncLength);
-				entry.setFullspan(node.isSingleMode());
-				if( html )
-				{
-					entry.setStyle(HtmlEditorService.DISPLAY_CLASS);
-				}
-				results.add(entry);
-			}
-		}
-		return results;
-	}
+      final String text =
+          CurrentLocale.get(ItemHelper.getDisplayNodeValues(node, itemXml, null), null);
+      if (!Check.isEmpty(text)) {
+        final boolean html = node.isHTMLType();
+        final SectionRenderable textRenderable =
+            (html
+                ? htmlEditorService.getHtmlRenderable(context, text)
+                : new SimpleSectionResult(text));
+        final Entry entry =
+            new Entry(new BundleLabel(node.getTitle(), bundleCache), textRenderable, truncLength);
+        entry.setFullspan(node.isSingleMode());
+        if (html) {
+          entry.setStyle(HtmlEditorService.DISPLAY_CLASS);
+        }
+        results.add(entry);
+      }
+    }
+    return results;
+  }
 
-	@Override
-	public void associateConfiguration(SummarySectionsConfig config)
-	{
-		this.config = config.getConfiguration();
-	}
-
+  @Override
+  public void associateConfiguration(SummarySectionsConfig config) {
+    this.config = config.getConfiguration();
+  }
 }

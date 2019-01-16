@@ -21,11 +21,9 @@ import javax.inject.Inject;
 import com.tle.core.guice.Bind;
 
 @Bind
-class PopupBrowserWebControl extends AbstractPopupBrowserWebControl
-{
-	@Inject
-	public PopupBrowserWebControl(PopupBrowserDialog popupBrowserDialog)
-	{
-		super(popupBrowserDialog);
-	}
+class PopupBrowserWebControl extends AbstractPopupBrowserWebControl {
+  @Inject
+  public PopupBrowserWebControl(PopupBrowserDialog popupBrowserDialog) {
+    super(popupBrowserDialog);
+  }
 }

@@ -35,120 +35,104 @@ import com.dytech.devlib.PropBagEx;
 import com.google.common.io.ByteStreams;
 
 @SuppressWarnings("nls")
-public class Upgrader
-{
-	private final AjaxState ajaxState;
-	private final String ajaxId;
+public class Upgrader {
+  private final AjaxState ajaxState;
+  private final String ajaxId;
 
-	public Upgrader(String ajaxId, AjaxState ajaxState)
-	{
-		this.ajaxState = ajaxState;
+  public Upgrader(String ajaxId, AjaxState ajaxState) {
+    this.ajaxState = ajaxState;
 
-		this.ajaxId = ajaxId;
-	}
+    this.ajaxId = ajaxId;
+  }
 
-	public File processUpgrade(File baseDir, File upgradeFile) throws Exception
-	{
-		try( ZipFile upgrade = new ZipFile(upgradeFile) )
-		{
-			PropBagEx manifest = getManifest(upgrade);
-			String oldFileName = manifest.getNode("@old-file"); //$NON-NLS-1$
-			String newFileName = manifest.getNode("@new-file"); //$NON-NLS-1$
+  public File processUpgrade(File baseDir, File upgradeFile) throws Exception {
+    try (ZipFile upgrade = new ZipFile(upgradeFile)) {
+      PropBagEx manifest = getManifest(upgrade);
+      String oldFileName = manifest.getNode("@old-file"); // $NON-NLS-1$
+      String newFileName = manifest.getNode("@new-file"); // $NON-NLS-1$
 
-			File newFile = new File(baseDir, newFileName);
+      File newFile = new File(baseDir, newFileName);
 
-			try( ZipFile oldFile = new ZipFile(new File(baseDir, oldFileName));
-				OutputStream newOut = new BufferedOutputStream(new FileOutputStream(newFile)) )
-			{
-				dealWith(manifest.iterator("step"), upgrade, oldFile, newOut); //$NON-NLS-1$
+      try (ZipFile oldFile = new ZipFile(new File(baseDir, oldFileName));
+          OutputStream newOut = new BufferedOutputStream(new FileOutputStream(newFile))) {
+        dealWith(manifest.iterator("step"), upgrade, oldFile, newOut); // $NON-NLS-1$
 
-				return newFile;
-			}
-			finally
-			{
-				ajaxState.addHeading(ajaxId, "Download complete");
-				ajaxState.finish(ajaxId, "Click here to continue", "/pages/");
-			}
-		}
-		finally
-		{
-			FileUtils.delete(upgradeFile);
-		}
-	}
+        return newFile;
+      } finally {
+        ajaxState.addHeading(ajaxId, "Download complete");
+        ajaxState.finish(ajaxId, "Click here to continue", "/pages/");
+      }
+    } finally {
+      FileUtils.delete(upgradeFile);
+    }
+  }
 
-	private PropBagEx getManifest(ZipFile upgrade) throws Exception
-	{
-		try( InputStream in = upgrade.getInputStream(upgrade.getEntry("manifest.xml")) )
-		{
-			return new PropBagEx(in);
-		}
-	}
+  private PropBagEx getManifest(ZipFile upgrade) throws Exception {
+    try (InputStream in = upgrade.getInputStream(upgrade.getEntry("manifest.xml"))) {
+      return new PropBagEx(in);
+    }
+  }
 
-	private void dealWith(Iterator<PropBagEx> i, ZipFile upgrade, ZipFile oldFile, OutputStream out) throws IOException
-	{
-		Set<String> ignoreEntries = new HashSet<String>();
-		ZipOutputStream zout = new ZipOutputStream(out);
+  private void dealWith(Iterator<PropBagEx> i, ZipFile upgrade, ZipFile oldFile, OutputStream out)
+      throws IOException {
+    Set<String> ignoreEntries = new HashSet<String>();
+    ZipOutputStream zout = new ZipOutputStream(out);
 
-		boolean done = false;
-		while( i.hasNext() && !done )
-		{
-			PropBagEx step = i.next();
-			String type = step.getNode("@type"); //$NON-NLS-1$
-			if( "ascend".equals(type) ) //$NON-NLS-1$
-			{
-				done = true;
-			}
-			else if( "add".equals(type) || "update".equals(type) ) //$NON-NLS-1$ //$NON-NLS-2$
-			{
-				String fileName = step.getNode("@file"); //$NON-NLS-1$
-				zout.putNextEntry(new ZipEntry(fileName));
-				ByteStreams.copy(upgrade.getInputStream(upgrade.getEntry(step.getNode("@data"))), zout); //$NON-NLS-1$
-				zout.closeEntry();
+    boolean done = false;
+    while (i.hasNext() && !done) {
+      PropBagEx step = i.next();
+      String type = step.getNode("@type"); // $NON-NLS-1$
+      if ("ascend".equals(type)) // $NON-NLS-1$
+      {
+        done = true;
+      } else if ("add".equals(type) || "update".equals(type)) // $NON-NLS-1$ //$NON-NLS-2$
+      {
+        String fileName = step.getNode("@file"); // $NON-NLS-1$
+        zout.putNextEntry(new ZipEntry(fileName));
+        ByteStreams.copy(
+            upgrade.getInputStream(upgrade.getEntry(step.getNode("@data"))), zout); // $NON-NLS-1$
+        zout.closeEntry();
 
-				ignoreEntries.add(step.getNode("@file")); //$NON-NLS-1$
-			}
-			else if( "delete".equals(type) ) //$NON-NLS-1$
-			{
-				String fileName = step.getNode("@file"); //$NON-NLS-1$
-				ignoreEntries.add(fileName);
-			}
-			else if( "descend".equals(type) ) //$NON-NLS-1$
-			{
-				String fileName = step.getNode("@file"); //$NON-NLS-1$
+        ignoreEntries.add(step.getNode("@file")); // $NON-NLS-1$
+      } else if ("delete".equals(type)) // $NON-NLS-1$
+      {
+        String fileName = step.getNode("@file"); // $NON-NLS-1$
+        ignoreEntries.add(fileName);
+      } else if ("descend".equals(type)) // $NON-NLS-1$
+      {
+        String fileName = step.getNode("@file"); // $NON-NLS-1$
 
-				ajaxState.addBasic(ajaxId, "Processing " + fileName);
-				File temp = File.createTempFile("tlezipper", "zip"); //$NON-NLS-1$ //$NON-NLS-2$
+        ajaxState.addBasic(ajaxId, "Processing " + fileName);
+        File temp = File.createTempFile("tlezipper", "zip"); // $NON-NLS-1$ //$NON-NLS-2$
 
-				OutputStream tempOut = new BufferedOutputStream(new FileOutputStream(temp));
-				ByteStreams.copy(oldFile.getInputStream(oldFile.getEntry(fileName)), tempOut);
-				tempOut.close();
+        OutputStream tempOut = new BufferedOutputStream(new FileOutputStream(temp));
+        ByteStreams.copy(oldFile.getInputStream(oldFile.getEntry(fileName)), tempOut);
+        tempOut.close();
 
-				ZipFile newOldFile = new ZipFile(temp);
+        ZipFile newOldFile = new ZipFile(temp);
 
-				zout.putNextEntry(new ZipEntry(step.getNode("@file"))); //$NON-NLS-1$
-				dealWith(i, upgrade, newOldFile, zout);
-				zout.closeEntry();
+        zout.putNextEntry(new ZipEntry(step.getNode("@file"))); // $NON-NLS-1$
+        dealWith(i, upgrade, newOldFile, zout);
+        zout.closeEntry();
 
-				temp.delete();
+        temp.delete();
 
-				ignoreEntries.add(step.getNode("@file")); //$NON-NLS-1$
-			}
-		}
+        ignoreEntries.add(step.getNode("@file")); // $NON-NLS-1$
+      }
+    }
 
-		Enumeration<? extends ZipEntry> e = oldFile.entries();
-		while( e.hasMoreElements() )
-		{
-			ZipEntry zentry = e.nextElement();
-			String name = zentry.getName();
-			if( !ignoreEntries.contains(name) )
-			{
-				zout.putNextEntry(new ZipEntry(name));
-				ByteStreams.copy(oldFile.getInputStream(zentry), zout);
-				zout.closeEntry();
-				ignoreEntries.add(name);
-			}
-		}
-		zout.finish();
-		zout.flush();
-	}
+    Enumeration<? extends ZipEntry> e = oldFile.entries();
+    while (e.hasMoreElements()) {
+      ZipEntry zentry = e.nextElement();
+      String name = zentry.getName();
+      if (!ignoreEntries.contains(name)) {
+        zout.putNextEntry(new ZipEntry(name));
+        ByteStreams.copy(oldFile.getInputStream(zentry), zout);
+        zout.closeEntry();
+        ignoreEntries.add(name);
+      }
+    }
+    zout.finish();
+    zout.flush();
+  }
 }

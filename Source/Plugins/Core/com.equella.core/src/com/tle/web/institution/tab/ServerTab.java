@@ -30,58 +30,48 @@ import com.tle.web.sections.render.ResultListCollector;
 import com.tle.web.sections.render.SectionRenderable;
 
 @SuppressWarnings("nls")
-public class ServerTab extends AbstractInstitutionTab<ServerTab.ServerTabModel>
-{
-	@PlugKey("institutions.server.settings.name")
-	private static Label LINK_LABEL;
+public class ServerTab extends AbstractInstitutionTab<ServerTab.ServerTabModel> {
+  @PlugKey("institutions.server.settings.name")
+  private static Label LINK_LABEL;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		ServerTabModel model = getModel(context);
-		model.setSections(renderChildren(context, new ResultListCollector()).getResultList());
-		return viewFactory.createResult("tab/server.ftl", context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    ServerTabModel model = getModel(context);
+    model.setSections(renderChildren(context, new ResultListCollector()).getResultList());
+    return viewFactory.createResult("tab/server.ftl", context);
+  }
 
-	@Override
-	protected boolean isTabVisible(SectionInfo info)
-	{
-		return true;
-	}
+  @Override
+  protected boolean isTabVisible(SectionInfo info) {
+    return true;
+  }
 
-	@Override
-	public Class<ServerTabModel> getModelClass()
-	{
-		return ServerTabModel.class;
-	}
+  @Override
+  public Class<ServerTabModel> getModelClass() {
+    return ServerTabModel.class;
+  }
 
-	@Override
-	public Label getName()
-	{
-		return LINK_LABEL;
-	}
+  @Override
+  public Label getName() {
+    return LINK_LABEL;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "servertab";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "servertab";
+  }
 
-	public static class ServerTabModel
-	{
-		private List<SectionRenderable> sections;
+  public static class ServerTabModel {
+    private List<SectionRenderable> sections;
 
-		public List<SectionRenderable> getSections()
-		{
-			return sections;
-		}
+    public List<SectionRenderable> getSections() {
+      return sections;
+    }
 
-		public void setSections(List<SectionRenderable> sections)
-		{
-			this.sections = sections;
-		}
-	}
+    public void setSections(List<SectionRenderable> sections) {
+      this.sections = sections;
+    }
+  }
 }

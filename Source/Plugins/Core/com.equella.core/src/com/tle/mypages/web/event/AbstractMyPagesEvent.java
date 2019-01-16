@@ -20,20 +20,16 @@ import java.util.EventListener;
 
 import com.tle.web.sections.events.AbstractSectionEvent;
 
-/**
- * @author Aaron
- */
-public abstract class AbstractMyPagesEvent<L extends EventListener> extends AbstractSectionEvent<L>
-{
-	private final String sessionId;
+/** @author Aaron */
+public abstract class AbstractMyPagesEvent<L extends EventListener>
+    extends AbstractSectionEvent<L> {
+  private final String sessionId;
 
-	protected AbstractMyPagesEvent(String sessionId)
-	{
-		this.sessionId = sessionId;
-	}
+  protected AbstractMyPagesEvent(String sessionId) {
+    this.sessionId = sessionId;
+  }
 
-	public String getSessionId()
-	{
-		return sessionId;
-	}
+  public String getSessionId() {
+    return sessionId;
+  }
 }

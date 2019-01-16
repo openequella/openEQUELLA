@@ -23,7 +23,6 @@ import com.tle.web.freemarker.BasicFreemarkerFactory;
 
 @Bind(BasicFreemarkerFactory.class)
 @Singleton
-public class AdvancedScriptFreemarkerFactory extends BasicFreemarkerFactory
-{
-	// nothing
+public class AdvancedScriptFreemarkerFactory extends BasicFreemarkerFactory {
+  // nothing
 }

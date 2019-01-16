@@ -32,46 +32,43 @@ import com.tle.web.template.section.HelpAndScreenOptionsSection;
 import com.tle.web.template.section.ServerMessageSection;
 
 @SuppressWarnings("nls")
-public class SelectionModule extends SectionsModule
-{
-	@Override
-	protected void configure()
-	{
-		bind(Object.class).annotatedWith(Names.named("/access/selection/checkout")).toProvider(
-			node(SelectionCheckoutSection.class));
-		bind(SectionTree.class).annotatedWith(Names.named("selectionTree")).toProvider(tree(selectionTree()));
+public class SelectionModule extends SectionsModule {
+  @Override
+  protected void configure() {
+    bind(Object.class)
+        .annotatedWith(Names.named("/access/selection/checkout"))
+        .toProvider(node(SelectionCheckoutSection.class));
+    bind(SectionTree.class)
+        .annotatedWith(Names.named("selectionTree"))
+        .toProvider(tree(selectionTree()));
 
-		install(new TrackerModule());
-	}
+    install(new TrackerModule());
+  }
 
-	private NodeProvider selectionTree()
-	{
-		NodeProvider node = node(RootSelectionSection.class);
-		node.child(HelpAndScreenOptionsSection.class);
-		node.child(ServerMessageSection.class);
+  private NodeProvider selectionTree() {
+    NodeProvider node = node(RootSelectionSection.class);
+    node.child(HelpAndScreenOptionsSection.class);
+    node.child(ServerMessageSection.class);
 
-		// would be good not to have these hardcoded here
-		node.child(CourseListSection.class);
-		node.child(SkinnySelectionProviderSection.class);
+    // would be good not to have these hardcoded here
+    node.child(CourseListSection.class);
+    node.child(SkinnySelectionProviderSection.class);
 
-		node.innerChild(ModalErrorSection.class);
-		return node;
-	}
+    node.innerChild(ModalErrorSection.class);
+    return node;
+  }
 
-	private static class TrackerModule extends PluginTrackerModule
-	{
-		@Override
-		protected String getPluginId()
-		{
-			return "com.tle.web.selection";
-		}
+  private static class TrackerModule extends PluginTrackerModule {
+    @Override
+    protected String getPluginId() {
+      return "com.tle.web.selection";
+    }
 
-		@Override
-		protected void configure()
-		{
-			bindTracker(SelectionNavAction.class, "selectionNavActions", "class").setIdParam("type");
-			bindTracker(SelectableInterface.class, "selectable", "selectBean").setIdParam("id");
-			bindTracker(SelectableAttachment.class, "selectableAttachment", "class");
-		}
-	}
+    @Override
+    protected void configure() {
+      bindTracker(SelectionNavAction.class, "selectionNavActions", "class").setIdParam("type");
+      bindTracker(SelectableInterface.class, "selectable", "selectBean").setIdParam("id");
+      bindTracker(SelectableAttachment.class, "selectableAttachment", "class");
+    }
+  }
 }

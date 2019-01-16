@@ -40,40 +40,46 @@ import io.swagger.annotations.ApiParam;
 @Produces(MediaType.APPLICATION_JSON)
 @Path("localuser/")
 @Api(value = "Local users", description = "localuser")
-public interface UserResource
-{
-	@GET
-	@Path("/{uuid}")
-	@ApiOperation("Retrieve a user")
-	public UserBean getUser(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+public interface UserResource {
+  @GET
+  @Path("/{uuid}")
+  @ApiOperation("Retrieve a user")
+  public UserBean getUser(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@GET
-	@Path("/username/{username}")
-	@ApiOperation("Retrieve a user by username")
-	public UserBean getUserByUsername(@Context UriInfo uriInfo, @PathParam("username") String username);
+  @GET
+  @Path("/username/{username}")
+  @ApiOperation("Retrieve a user by username")
+  public UserBean getUserByUsername(
+      @Context UriInfo uriInfo, @PathParam("username") String username);
 
-	@PUT
-	@Path("/{uuid}")
-	@ApiOperation("Edit a user")
-	public Response editUser(@PathParam("uuid") String uuid, @ApiParam UserBean user);
+  @PUT
+  @Path("/{uuid}")
+  @ApiOperation("Edit a user")
+  public Response editUser(@PathParam("uuid") String uuid, @ApiParam UserBean user);
 
-	@DELETE
-	@Path("/{uuid}")
-	@ApiOperation("Delete a user")
-	public Response deleteUser(@PathParam("uuid") String uuid);
+  @DELETE
+  @Path("/{uuid}")
+  @ApiOperation("Delete a user")
+  public Response deleteUser(@PathParam("uuid") String uuid);
 
-	@POST
-	@Path("/")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation("Add a user")
-	public Response addUser(@ApiParam UserBean user);
+  @POST
+  @Path("/")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @ApiOperation("Add a user")
+  public Response addUser(@ApiParam UserBean user);
 
-	@GET
-	@Path("/")
-	@ApiOperation("List internal users")
-	public SearchBean<UserBean> list(
-		@Context UriInfo uriInfo,
-		@ApiParam(required = false) @QueryParam("q") String query,
-		@ApiParam(required = false) @QueryParam("group") String parentGroupId,
-		@ApiParam(value = "Search the specified group's child groups as well", required = false, defaultValue = "false", allowableValues = "true|false") @QueryParam("recursive") boolean recursive);
+  @GET
+  @Path("/")
+  @ApiOperation("List internal users")
+  public SearchBean<UserBean> list(
+      @Context UriInfo uriInfo,
+      @ApiParam(required = false) @QueryParam("q") String query,
+      @ApiParam(required = false) @QueryParam("group") String parentGroupId,
+      @ApiParam(
+              value = "Search the specified group's child groups as well",
+              required = false,
+              defaultValue = "false",
+              allowableValues = "true|false")
+          @QueryParam("recursive")
+          boolean recursive);
 }

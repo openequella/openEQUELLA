@@ -26,39 +26,34 @@ import com.tle.core.entity.EntityEditingBean;
 import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.remoting.RemoteItemDefinitionService;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 public interface ItemDefinitionService
-	extends
-		AbstractEntityService<EntityEditingBean, ItemDefinition>,
-		RemoteItemDefinitionService
-{
-	List<ItemDefinition> enumerateForType(String type);
+    extends AbstractEntityService<EntityEditingBean, ItemDefinition>, RemoteItemDefinitionService {
+  List<ItemDefinition> enumerateForType(String type);
 
-	List<ItemDefinition> enumerateForWorkflow(long workflowID);
+  List<ItemDefinition> enumerateForWorkflow(long workflowID);
 
-	List<ItemDefinition> enumerateWithWorkflow();
+  List<ItemDefinition> enumerateWithWorkflow();
 
-	List<ItemDefinition> enumerateCreateable();
+  List<ItemDefinition> enumerateCreateable();
 
-	List<ItemDefinition> enumerateSearchable();
+  List<ItemDefinition> enumerateSearchable();
 
-	List<BaseEntityLabel> listAllForSchema(long schemaID);
+  List<BaseEntityLabel> listAllForSchema(long schemaID);
 
-	List<BaseEntityLabel> listSearchable();
+  List<BaseEntityLabel> listSearchable();
 
-	List<BaseEntityLabel> listCreateable();
+  List<BaseEntityLabel> listCreateable();
 
-	Collection<ItemDefinition> filterSearchable(Collection<ItemDefinition> collections);
+  Collection<ItemDefinition> filterSearchable(Collection<ItemDefinition> collections);
 
-	List<ItemDefinition> getMatchingSearchable(Collection<Long> itemdefs);
+  List<ItemDefinition> getMatchingSearchable(Collection<Long> itemdefs);
 
-	List<ItemDefinition> getMatchingSearchableUuid(Collection<String> itemdefUuids);
+  List<ItemDefinition> getMatchingSearchableUuid(Collection<String> itemdefUuids);
 
-	List<ItemDefinition> getMatchingCreatableUuid(Collection<String> itemdefs);
+  List<ItemDefinition> getMatchingCreatableUuid(Collection<String> itemdefs);
 
-	ItemDefinition getForItemCreate(String uuid);
+  ItemDefinition getForItemCreate(String uuid);
 
-	ItemDefinition getByItemIdUnsecure(ItemKey itemId);
+  ItemDefinition getByItemIdUnsecure(ItemKey itemId);
 }

@@ -20,7 +20,6 @@ import java.util.List;
 
 import com.tle.beans.entity.BaseEntityLabel;
 
-public interface SchemaReferences
-{
-	List<BaseEntityLabel> getSchemaUses(long id);
+public interface SchemaReferences {
+  List<BaseEntityLabel> getSchemaUses(long id);
 }

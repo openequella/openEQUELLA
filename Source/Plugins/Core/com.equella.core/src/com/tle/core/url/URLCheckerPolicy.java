@@ -36,111 +36,93 @@ import com.tle.beans.ReferencedURL;
 import com.tle.core.guice.Bind;
 
 /**
- * <p>
- * Because the URL checking policy needs to apply to objects and to DB queries,
- * I'm grouping these together into this single class where it can be documented
- * a single place. Hopefully anyone updating the policy in the future will have
- * enough wits about them to see they need to change them both.
- * </p>
- * <p>
- * So with that out of the way, the policy is:
+ * Because the URL checking policy needs to apply to objects and to DB queries, I'm grouping these
+ * together into this single class where it can be documented a single place. Hopefully anyone
+ * updating the policy in the future will have enough wits about them to see they need to change
+ * them both.
+ *
+ * <p>So with that out of the way, the policy is:
+ *
  * <dl>
- * <dt>Re-check if it's been more than one month since the last check</dt>
- * <dd>URLs come and go, so we need to keep checking. This ensures that URLs are
- * rechecked every month, regardless of how many times they've been checked
- * before and whether those checks were successful or not.</dd>
- * <dt>Re-check unsuccessful URLs if less than 10 tries and it hasn't been
- * checked in over a day</dt>
- * <dd>If a URL has been successful then let's not waste our effort testing it
- * all the time as it's probably OK. The first rule will ensure that we
- * eventually do retry them.</dd>
+ *   <dt>Re-check if it's been more than one month since the last check
+ *   <dd>URLs come and go, so we need to keep checking. This ensures that URLs are rechecked every
+ *       month, regardless of how many times they've been checked before and whether those checks
+ *       were successful or not.
+ *   <dt>Re-check unsuccessful URLs if less than 10 tries and it hasn't been checked in over a day
+ *   <dd>If a URL has been successful then let's not waste our effort testing it all the time as
+ *       it's probably OK. The first rule will ensure that we eventually do retry them.
  * </dl>
- * </p>
- * <p>
- * If the code below doesn't match the policy in the above comment, git blame to
- * find the offender and give them a slapping.
- * </p>
- * 
+ *
+ * <p>If the code below doesn't match the policy in the above comment, git blame to find the
+ * offender and give them a slapping.
+ *
  * @author Nick Read
  */
 @Bind
 @Singleton
-public class URLCheckerPolicy
-{
-	@Inject(optional = true)
-	@Named("urlChecker.triesUntilWarning")
-	private int triesUntilWarning = 5;
+public class URLCheckerPolicy {
+  @Inject(optional = true)
+  @Named("urlChecker.triesUntilWarning")
+  private int triesUntilWarning = 5;
 
-	@Inject(optional = true)
-	@Named("urlChecker.triesUntilDisabled")
-	private int triesUntilDisabled = 10;
+  @Inject(optional = true)
+  @Named("urlChecker.triesUntilDisabled")
+  private int triesUntilDisabled = 10;
 
-	public boolean isUrlDisabled(ReferencedURL rurl)
-	{
-		return !rurl.isSuccess() && rurl.getTries() >= triesUntilDisabled;
-	}
+  public boolean isUrlDisabled(ReferencedURL rurl) {
+    return !rurl.isSuccess() && rurl.getTries() >= triesUntilDisabled;
+  }
 
-	/**
-	 * Review the checking policy on the class.
-	 */
-	public boolean requiresChecking(ReferencedURL rurl)
-	{
-		// DO NOT CHANGE THIS METHOD without also changing the other methods in
-		// this policy class, and also the documented policy in the class
-		// comments.
+  /** Review the checking policy on the class. */
+  public boolean requiresChecking(ReferencedURL rurl) {
+    // DO NOT CHANGE THIS METHOD without also changing the other methods in
+    // this policy class, and also the documented policy in the class
+    // comments.
 
-		final long lastCheck = rurl.getLastChecked().getTime();
+    final long lastCheck = rurl.getLastChecked().getTime();
 
-		if( lastCheck < oneMonthAgo() )
-		{
-			return true;
-		}
+    if (lastCheck < oneMonthAgo()) {
+      return true;
+    }
 
-		if( !rurl.isSuccess() && rurl.getTries() < triesUntilDisabled )
-		{
-			if( lastCheck < oneDayAgo() )
-			{
-				return true;
-			}
-		}
+    if (!rurl.isSuccess() && rurl.getTries() < triesUntilDisabled) {
+      if (lastCheck < oneDayAgo()) {
+        return true;
+      }
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	@SuppressWarnings("nls")
-	public Criteria addRequiresCheckingCriteria(Criteria c)
-	{
-		// DO NOT CHANGE THIS METHOD without also changing the other methods in
-		// this policy class, and also the documented policy in the class
-		// comments.
+  @SuppressWarnings("nls")
+  public Criteria addRequiresCheckingCriteria(Criteria c) {
+    // DO NOT CHANGE THIS METHOD without also changing the other methods in
+    // this policy class, and also the documented policy in the class
+    // comments.
 
-		SimpleExpression overOneMonthAgo = lt("lastChecked", new Date(oneMonthAgo()));
+    SimpleExpression overOneMonthAgo = lt("lastChecked", new Date(oneMonthAgo()));
 
-		SimpleExpression overOneDayAgo = lt("lastChecked", new Date(oneDayAgo()));
-		SimpleExpression lessThanFiveTries = lt("tries", triesUntilDisabled);
-		SimpleExpression notSuccessful = eq("success", false);
-		LogicalExpression badButStillTrying = and(notSuccessful, and(lessThanFiveTries, overOneDayAgo));
+    SimpleExpression overOneDayAgo = lt("lastChecked", new Date(oneDayAgo()));
+    SimpleExpression lessThanFiveTries = lt("tries", triesUntilDisabled);
+    SimpleExpression notSuccessful = eq("success", false);
+    LogicalExpression badButStillTrying = and(notSuccessful, and(lessThanFiveTries, overOneDayAgo));
 
-		return c.add(or(overOneMonthAgo, badButStillTrying));
-	}
+    return c.add(or(overOneMonthAgo, badButStillTrying));
+  }
 
-	private long oneMonthAgo()
-	{
-		return System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30);
-	}
+  private long oneMonthAgo() {
+    return System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30);
+  }
 
-	private long oneDayAgo()
-	{
-		return System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1);
-	}
+  private long oneDayAgo() {
+    return System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1);
+  }
 
-	public int getTriesUntilWarning()
-	{
-		return triesUntilWarning;
-	}
+  public int getTriesUntilWarning() {
+    return triesUntilWarning;
+  }
 
-	public int getTriesUntilDisabled()
-	{
-		return triesUntilDisabled;
-	}
+  public int getTriesUntilDisabled() {
+    return triesUntilDisabled;
+  }
 }

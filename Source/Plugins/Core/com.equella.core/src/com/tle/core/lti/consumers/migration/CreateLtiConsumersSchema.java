@@ -35,36 +35,32 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 
 @Bind
 @Singleton
-public class CreateLtiConsumersSchema extends AbstractCreateMigration
-{
-	private static final String KEY_PFX = PluginServiceImpl.getMyPluginId(CreateLtiConsumersSchema.class) + ".";
+public class CreateLtiConsumersSchema extends AbstractCreateMigration {
+  private static final String KEY_PFX =
+      PluginServiceImpl.getMyPluginId(CreateLtiConsumersSchema.class) + ".";
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(KEY_PFX + "lti.migration.createentity");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(KEY_PFX + "lti.migration.createentity");
+  }
 
-	@Override
-	protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper)
-	{
-		Set<String> tables = new HashSet<String>();
-		tables.add("lti_consumer");
-		tables.add("lti_consumer_instructor_roles");
-		tables.add("lti_consumer_other_roles");
-		tables.add("lti_consumer_unknown_groups");
-		tables.add("lti_consumer_custom_role");
-		return new TablesOnlyFilter(tables.toArray(new String[tables.size()]));
-	}
+  @Override
+  protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
+    Set<String> tables = new HashSet<String>();
+    tables.add("lti_consumer");
+    tables.add("lti_consumer_instructor_roles");
+    tables.add("lti_consumer_other_roles");
+    tables.add("lti_consumer_unknown_groups");
+    tables.add("lti_consumer_custom_role");
+    return new TablesOnlyFilter(tables.toArray(new String[tables.size()]));
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		final Set<Class<?>> domainClasses = Sets.newHashSet(ClassDependencies.baseEntity());
-		domainClasses.add(Institution.class);
-		domainClasses.add(LtiConsumer.class);
-		domainClasses.add(LtiConsumerCustomRole.class);
-		return domainClasses.toArray(new Class<?>[domainClasses.size()]);
-	}
-
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    final Set<Class<?>> domainClasses = Sets.newHashSet(ClassDependencies.baseEntity());
+    domainClasses.add(Institution.class);
+    domainClasses.add(LtiConsumer.class);
+    domainClasses.add(LtiConsumerCustomRole.class);
+    return domainClasses.toArray(new Class<?>[domainClasses.size()]);
+  }
 }

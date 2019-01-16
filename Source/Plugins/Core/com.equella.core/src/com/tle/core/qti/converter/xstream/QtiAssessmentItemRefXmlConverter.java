@@ -24,40 +24,32 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.tle.common.qti.entity.QtiAssessmentItemRef;
 import com.tle.core.qti.dao.QtiAssessmentItemRefDao;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public class QtiAssessmentItemRefXmlConverter implements Converter
-{
-	private final QtiAssessmentItemRefDao questionRefDao;
+public class QtiAssessmentItemRefXmlConverter implements Converter {
+  private final QtiAssessmentItemRefDao questionRefDao;
 
-	public QtiAssessmentItemRefXmlConverter(QtiAssessmentItemRefDao questionRefDao)
-	{
-		this.questionRefDao = questionRefDao;
-	}
+  public QtiAssessmentItemRefXmlConverter(QtiAssessmentItemRefDao questionRefDao) {
+    this.questionRefDao = questionRefDao;
+  }
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public boolean canConvert(Class clazz)
-	{
-		return clazz == QtiAssessmentItemRef.class;
-	}
+  @SuppressWarnings("rawtypes")
+  @Override
+  public boolean canConvert(Class clazz) {
+    return clazz == QtiAssessmentItemRef.class;
+  }
 
-	@Override
-	public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext context)
-	{
-		final QtiAssessmentItemRef questionRef = (QtiAssessmentItemRef) obj;
-		if( questionRef != null )
-		{
-			writer.addAttribute("uuid", questionRef.getUuid());
-		}
-	}
+  @Override
+  public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext context) {
+    final QtiAssessmentItemRef questionRef = (QtiAssessmentItemRef) obj;
+    if (questionRef != null) {
+      writer.addAttribute("uuid", questionRef.getUuid());
+    }
+  }
 
-	@Override
-	public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context)
-	{
-		final String uuidFromStream = reader.getAttribute("uuid");
-		return questionRefDao.getByUuid(uuidFromStream);
-	}
+  @Override
+  public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+    final String uuidFromStream = reader.getAttribute("uuid");
+    return questionRefDao.getByUuid(uuidFromStream);
+  }
 }

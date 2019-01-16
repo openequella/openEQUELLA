@@ -21,48 +21,45 @@ import java.util.List;
 
 import com.tle.beans.item.Item;
 
-/**
- * @author Aaron
- */
-public interface Holding
-{
-	Date getIssueDate();
+/** @author Aaron */
+public interface Holding {
+  Date getIssueDate();
 
-	long getId();
+  long getId();
 
-	Item getItem();
+  Item getItem();
 
-	List<? extends Portion> getPortions();
+  List<? extends Portion> getPortions();
 
-	List<String> getIds();
+  List<String> getIds();
 
-	List<String> getAuthors();
+  List<String> getAuthors();
 
-	String getTitle();
+  String getTitle();
 
-	String getPublisher();
+  String getPublisher();
 
-	String getPubDate();
+  String getPubDate();
 
-	String getDescription();
+  String getDescription();
 
-	String getComments();
+  String getComments();
 
-	String getLength();
+  String getLength();
 
-	String getType();
+  String getType();
 
-	boolean isOutOfPrint();
+  boolean isOutOfPrint();
 
-	String getAuthorList();
+  String getAuthorList();
 
-	String getIdList();
+  String getIdList();
 
-	String getVolume();
+  String getVolume();
 
-	String getIssueNumber();
+  String getIssueNumber();
 
-	void setItem(Item item);
+  void setItem(Item item);
 
-	void setPortions(List<? extends Portion> portions);
+  void setPortions(List<? extends Portion> portions);
 }

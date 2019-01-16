@@ -21,19 +21,18 @@ import java.util.Date;
 
 import com.tle.beans.Institution;
 
-public interface AuditLogTable extends Serializable
-{
-	long getId();
+public interface AuditLogTable extends Serializable {
+  long getId();
 
-	Institution getInstitution();
+  Institution getInstitution();
 
-	Date getTimestamp();
+  Date getTimestamp();
 
-	String getUserId();
+  String getUserId();
 
-	String getSessionId();
+  String getSessionId();
 
-	void setInstitution(Institution institution);
+  void setInstitution(Institution institution);
 
-	void setId(long id);
+  void setId(long id);
 }

@@ -65,387 +65,343 @@ import com.tle.web.DebugSettings;
 @Singleton
 @SuppressWarnings("nls")
 @Bind(ConfigurationService.class)
-public class ConfigurationServiceImpl implements ConfigurationService, ConfigurationChangeListener
-{
-	private static final Logger LOGGER = Logger.getLogger(ConfigurationServiceImpl.class);
+public class ConfigurationServiceImpl implements ConfigurationService, ConfigurationChangeListener {
+  private static final Logger LOGGER = Logger.getLogger(ConfigurationServiceImpl.class);
 
-	private static final Object CACHED_NULL = new Object();
-	private InstitutionCache<Cache<Object, Object>> cache;
+  private static final Object CACHED_NULL = new Object();
+  private InstitutionCache<Cache<Object, Object>> cache;
 
-	@Inject
-	private EventService eventService;
-	@Inject
-	private ConfigurationDao configurationDao;
+  @Inject private EventService eventService;
+  @Inject private ConfigurationDao configurationDao;
 
-	private final ProxyDetails proxy = new ProxyDetails();
+  private final ProxyDetails proxy = new ProxyDetails();
 
-	public ConfigurationServiceImpl()
-	{
-		LOGGER.info("EQUELLA Version: " + ApplicationVersion.get().getFull());
+  public ConfigurationServiceImpl() {
+    LOGGER.info("EQUELLA Version: " + ApplicationVersion.get().getFull());
 
-		logSystemProperty("java.version", "Java Version");
-		logSystemProperty("java.class.version", "Java Class Version");
-		logSystemProperty("java.home", "Java Home Directory");
-		logSystemProperty("os.arch", "OS Architecture");
-		logSystemProperty("os.name", "OS System Name");
-		logSystemProperty("os.version", "OS Version");
-		logSystemProperty("user.name", "Running User");
+    logSystemProperty("java.version", "Java Version");
+    logSystemProperty("java.class.version", "Java Class Version");
+    logSystemProperty("java.home", "Java Home Directory");
+    logSystemProperty("os.arch", "OS Architecture");
+    logSystemProperty("os.name", "OS System Name");
+    logSystemProperty("os.version", "OS Version");
+    logSystemProperty("user.name", "Running User");
 
-		if( LOGGER.isDebugEnabled() )
-		{
-			LOGGER.debug("Automated Test Mode:" + DebugSettings.isAutoTestMode());
-			LOGGER.debug("Debugging Mode:" + DebugSettings.isDebuggingMode());
-		}
-	}
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Automated Test Mode:" + DebugSettings.isAutoTestMode());
+      LOGGER.debug("Debugging Mode:" + DebugSettings.isDebuggingMode());
+    }
+  }
 
-	private void logSystemProperty(String key, String description)
-	{
-		LOGGER.info(description + ": " + System.getProperty(key));
-	}
+  private void logSystemProperty(String key, String description) {
+    LOGGER.info(description + ": " + System.getProperty(key));
+  }
 
-	@Inject
-	public void setInstitutionService(InstitutionService service)
-	{
-		cache = service.newInstitutionAwareCache(new CacheLoader<Institution, Cache<Object, Object>>()
-		{
-			@Override
-			public Cache<Object, Object> load(Institution key)
-			{
-				return CacheBuilder.newBuilder().concurrencyLevel(12).build();
-			}
-		});
-	}
+  @Inject
+  public void setInstitutionService(InstitutionService service) {
+    cache =
+        service.newInstitutionAwareCache(
+            new CacheLoader<Institution, Cache<Object, Object>>() {
+              @Override
+              public Cache<Object, Object> load(Institution key) {
+                return CacheBuilder.newBuilder().concurrencyLevel(12).build();
+              }
+            });
+  }
 
-	@Inject(optional = true)
-	public void setProxyExceptions(@Named("configurationService.proxyExceptions") String proxyExceptions)
-	{
-		proxy.setExceptions(proxyExceptions);
-	}
+  @Inject(optional = true)
+  public void setProxyExceptions(
+      @Named("configurationService.proxyExceptions") String proxyExceptions) {
+    proxy.setExceptions(proxyExceptions);
+  }
 
-	@Inject(optional = true)
-	public void setProxyHost(@Named("configurationService.proxyHost") String proxyHost)
-	{
-		proxy.setHost(proxyHost);
-	}
+  @Inject(optional = true)
+  public void setProxyHost(@Named("configurationService.proxyHost") String proxyHost) {
+    proxy.setHost(proxyHost);
+  }
 
-	@Inject(optional = true)
-	public void setProxyPassword(@Named("configurationService.proxyPassword") String proxyPassword)
-	{
-		proxy.setPassword(proxyPassword);
-	}
+  @Inject(optional = true)
+  public void setProxyPassword(@Named("configurationService.proxyPassword") String proxyPassword) {
+    proxy.setPassword(proxyPassword);
+  }
 
-	@Inject(optional = true)
-	public void setProxyPort(@Named("configurationService.proxyPort") int proxyPort)
-	{
-		proxy.setPort(proxyPort);
-	}
+  @Inject(optional = true)
+  public void setProxyPort(@Named("configurationService.proxyPort") int proxyPort) {
+    proxy.setPort(proxyPort);
+  }
 
-	@Inject(optional = true)
-	public void setProxyUsername(@Named("configurationService.proxyUsername") String proxyUsername)
-	{
-		proxy.setUsername(proxyUsername);
-	}
+  @Inject(optional = true)
+  public void setProxyUsername(@Named("configurationService.proxyUsername") String proxyUsername) {
+    proxy.setUsername(proxyUsername);
+  }
 
-	@PostConstruct
-	public void afterPropertiesSet()
-	{
-		Proxy.setProxy(proxy.getHost(), proxy.getPort(), proxy.getExceptions(), proxy.getUsername(),
-			proxy.getPassword());
-	}
+  @PostConstruct
+  public void afterPropertiesSet() {
+    Proxy.setProxy(
+        proxy.getHost(),
+        proxy.getPort(),
+        proxy.getExceptions(),
+        proxy.getUsername(),
+        proxy.getPassword());
+  }
 
-	@Override
-	@Transactional
-	public Map<String, String> getAllProperties()
-	{
-		Criterion crit = getInstitutionCriterion();
-		List<ConfigurationProperty> all = configurationDao.findAllByCriteria(crit);
-		return PropertyBeanFactory.fill(all);
-	}
+  @Override
+  @Transactional
+  public Map<String, String> getAllProperties() {
+    Criterion crit = getInstitutionCriterion();
+    List<ConfigurationProperty> all = configurationDao.findAllByCriteria(crit);
+    return PropertyBeanFactory.fill(all);
+  }
 
-	// Appearances aside, the getPropertires is effectively synchronized so long
-	// as getFromCache is
-	@Override
-	public <T extends ConfigurationProperties> T getProperties(final T empty)
-	{
-		return getFromCache(empty.getClass(), null, new CacheLoader<String, T>() // NOSONAR
-		{
-			@Override
-			public T load(String property)
-			{
-				Collection<String> queries = PropertyBeanFactory.getSelect(empty);
-				MultipleOr criterion = new MultipleOr();
-				for( String query : queries )
-				{
-					Criterion crit = Restrictions.like("key.property", query + "%");
-					criterion.add(crit);
-				}
+  // Appearances aside, the getPropertires is effectively synchronized so long
+  // as getFromCache is
+  @Override
+  public <T extends ConfigurationProperties> T getProperties(final T empty) {
+    return getFromCache(
+        empty.getClass(),
+        null,
+        new CacheLoader<String, T>() // NOSONAR
+        {
+          @Override
+          public T load(String property) {
+            Collection<String> queries = PropertyBeanFactory.getSelect(empty);
+            MultipleOr criterion = new MultipleOr();
+            for (String query : queries) {
+              Criterion crit = Restrictions.like("key.property", query + "%");
+              criterion.add(crit);
+            }
 
-				List<ConfigurationProperty> all;
-				if( queries.size() > 0 )
-				{
-					all = configurationDao.findAllByCriteria(getInstitutionCriterion(), criterion);
-				}
-				else
-				{
-					all = new ArrayList<ConfigurationProperty>();
-				}
-				PropertyBeanFactory.fill(all, empty);
-				return empty;
-			}
-		});
-	}
+            List<ConfigurationProperty> all;
+            if (queries.size() > 0) {
+              all = configurationDao.findAllByCriteria(getInstitutionCriterion(), criterion);
+            } else {
+              all = new ArrayList<ConfigurationProperty>();
+            }
+            PropertyBeanFactory.fill(all, empty);
+            return empty;
+          }
+        });
+  }
 
-	@Override
-	public String getProperty(String property)
-	{
-		return getFromCache(property, property, new CacheLoader<String, String>()
-		{
-			@Override
-			public String load(String property)
-			{
-				PropertyKey key = new PropertyKey(CurrentInstitution.get(), property);
-				ConfigurationProperty prop = configurationDao.findById(key);
-				return prop == null ? null : prop.getValue();
-			}
-		});
-	}
+  @Override
+  public String getProperty(String property) {
+    return getFromCache(
+        property,
+        property,
+        new CacheLoader<String, String>() {
+          @Override
+          public String load(String property) {
+            PropertyKey key = new PropertyKey(CurrentInstitution.get(), property);
+            ConfigurationProperty prop = configurationDao.findById(key);
+            return prop == null ? null : prop.getValue();
+          }
+        });
+  }
 
-	@Override
-	public <T> List<T> getPropertyList(final String property)
-	{
-		return getFromCache(property, property, new CacheLoader<String, List<T>>()
-		{
-			@Override
-			public List<T> load(String property)
-			{
-				Criterion crit = Restrictions.like("key.property", property + "%");
-				Criterion crit2 = getInstitutionCriterion();
-				Map<String, String> vals = PropertyBeanFactory.fill(configurationDao.findAllByCriteria(crit, crit2));
+  @Override
+  public <T> List<T> getPropertyList(final String property) {
+    return getFromCache(
+        property,
+        property,
+        new CacheLoader<String, List<T>>() {
+          @Override
+          public List<T> load(String property) {
+            Criterion crit = Restrictions.like("key.property", property + "%");
+            Criterion crit2 = getInstitutionCriterion();
+            Map<String, String> vals =
+                PropertyBeanFactory.fill(configurationDao.findAllByCriteria(crit, crit2));
 
-				List<T> list = new ArrayList<T>();
-				PropertyBeanFactory.load(list, property, vals);
-				return list;
-			}
-		});
-	}
+            List<T> list = new ArrayList<T>();
+            PropertyBeanFactory.load(list, property, vals);
+            return list;
+          }
+        });
+  }
 
-	@Override
-	@Transactional
-	@SecureOnCallSystem
-	public void importInstitutionProperties(Map<String, String> map)
-	{
-		setPropertiesImpl(map);
-	}
+  @Override
+  @Transactional
+  @SecureOnCallSystem
+  public void importInstitutionProperties(Map<String, String> map) {
+    setPropertiesImpl(map);
+  }
 
-	@Override
-	@Transactional
-	public void setProperty(String property, String value)
-	{
-		setPropertyImpl(property, value);
-		invalidateCache();
-	}
+  @Override
+  @Transactional
+  public void setProperty(String property, String value) {
+    setPropertyImpl(property, value);
+    invalidateCache();
+  }
 
-	@Override
-	@Transactional
-	public synchronized void setProperties(ConfigurationProperties properties)
-	{
-		Collection<String> select = PropertyBeanFactory.getSelect(properties);
-		if( select.size() > 0 )
-		{
-			configurationDao.deletePropertiesLike(select);
+  @Override
+  @Transactional
+  public synchronized void setProperties(ConfigurationProperties properties) {
+    Collection<String> select = PropertyBeanFactory.getSelect(properties);
+    if (select.size() > 0) {
+      configurationDao.deletePropertiesLike(select);
 
-			HashMap<String, String> map = new HashMap<String, String>();
-			PropertyBeanFactory.save(properties, map);
-			setPropertiesImpl(map);
-		}
+      HashMap<String, String> map = new HashMap<String, String>();
+      PropertyBeanFactory.save(properties, map);
+      setPropertiesImpl(map);
+    }
 
-		invalidateCache();
-	}
+    invalidateCache();
+  }
 
-	private void setPropertiesImpl(Map<String, String> map)
-	{
-		for( Map.Entry<String, String> entry : map.entrySet() )
-		{
-			setPropertyImpl(entry.getKey(), entry.getValue());
-		}
-	}
+  private void setPropertiesImpl(Map<String, String> map) {
+    for (Map.Entry<String, String> entry : map.entrySet()) {
+      setPropertyImpl(entry.getKey(), entry.getValue());
+    }
+  }
 
-	private void setPropertyImpl(String property, String value)
-	{
-		ConfigurationProperty prop = new ConfigurationProperty();
-		PropertyKey key = new PropertyKey(CurrentInstitution.get(), property);
-		prop.setValue(value);
-		prop.setKey(key);
-		configurationDao.merge(prop);
-	}
+  private void setPropertyImpl(String property, String value) {
+    ConfigurationProperty prop = new ConfigurationProperty();
+    PropertyKey key = new PropertyKey(CurrentInstitution.get(), property);
+    prop.setValue(value);
+    prop.setKey(key);
+    configurationDao.merge(prop);
+  }
 
-	@Override
-	@Transactional
-	public void deleteProperty(String property)
-	{
-		configurationDao.deletePropertiesLike(Collections.singleton(property));
-		invalidateCache();
-	}
+  @Override
+  @Transactional
+  public void deleteProperty(String property) {
+    configurationDao.deletePropertiesLike(Collections.singleton(property));
+    invalidateCache();
+  }
 
-	@Override
-	@Transactional
-	@SecureOnCallSystem
-	public void deleteAllInstitutionProperties()
-	{
-		invalidateCache();
-		configurationDao.deleteAll();
-	}
+  @Override
+  @Transactional
+  @SecureOnCallSystem
+  public void deleteAllInstitutionProperties() {
+    invalidateCache();
+    configurationDao.deleteAll();
+  }
 
-	private Criterion getInstitutionCriterion()
-	{
-		Institution inst = CurrentInstitution.get();
-		if( inst != null )
-		{
-			return Restrictions.eq("key.institutionId", inst.getDatabaseId());
-		}
-		throw new IllegalStateException("Configuration properties can only be retrieved from within an institution");
-	}
+  private Criterion getInstitutionCriterion() {
+    Institution inst = CurrentInstitution.get();
+    if (inst != null) {
+      return Restrictions.eq("key.institutionId", inst.getDatabaseId());
+    }
+    throw new IllegalStateException(
+        "Configuration properties can only be retrieved from within an institution");
+  }
 
-	@Override
-	public boolean isAutoTestMode()
-	{
-		return DebugSettings.isAutoTestMode();
-	}
+  @Override
+  public boolean isAutoTestMode() {
+    return DebugSettings.isAutoTestMode();
+  }
 
-	@Override
-	public boolean isDebuggingMode()
-	{
-		return DebugSettings.isDebuggingMode();
-	}
+  @Override
+  public boolean isDebuggingMode() {
+    return DebugSettings.isDebuggingMode();
+  }
 
-	@Override
-	public ProxyDetails getProxyDetails()
-	{
-		return proxy;
-	}
+  @Override
+  public ProxyDetails getProxyDetails() {
+    return proxy;
+  }
 
-	// CACHING ///////////////////////////////////////////////////////////////
+  // CACHING ///////////////////////////////////////////////////////////////
 
-	@Override
-	public void configurationChangedEvent(ConfigurationChangedEvent event)
-	{
-		cache.clear();
-	}
+  @Override
+  public void configurationChangedEvent(ConfigurationChangedEvent event) {
+    cache.clear();
+  }
 
-	private void invalidateCache()
-	{
-		ConfigurationChangedEvent event = new ConfigurationChangedEvent();
+  private void invalidateCache() {
+    ConfigurationChangedEvent event = new ConfigurationChangedEvent();
 
-		// Call to local handler method to invalidate the local cache, then post
-		// it to everyone else.
-		configurationChangedEvent(event);
+    // Call to local handler method to invalidate the local cache, then post
+    // it to everyone else.
+    configurationChangedEvent(event);
 
-		eventService.publishApplicationEvent(event);
-	}
+    eventService.publishApplicationEvent(event);
+  }
 
-	@Transactional
-	<T> T loadFromDb(String property, CacheLoader<String, T> loader)
-	{
-		try
-		{
-			return loader.load(property);
-		}
-		catch( Exception e )
-		{
-			throw new RuntimeApplicationException("Could not create config object", e); //$NON-NLS-1$
-		}
-	}
+  @Transactional
+  <T> T loadFromDb(String property, CacheLoader<String, T> loader) {
+    try {
+      return loader.load(property);
+    } catch (Exception e) {
+      throw new RuntimeApplicationException("Could not create config object", e); // $NON-NLS-1$
+    }
+  }
 
-	@SuppressWarnings("unchecked")
-	private <T> T getFromCache(Object key, String property, final CacheLoader<String, T> loader)
-	{
-		Cache<Object, Object> map = cache.getCache();
+  @SuppressWarnings("unchecked")
+  private <T> T getFromCache(Object key, String property, final CacheLoader<String, T> loader) {
+    Cache<Object, Object> map = cache.getCache();
 
-		Object ro = map.getIfPresent(key);
-		if( ro == null )
-		{
-			T newObj = loadFromDb(property, loader);
-			synchronized( map )
-			{
-				map.put(key, newObj != null ? newObj : CACHED_NULL);
-				return newObj;
-			}
-		}
-		else
-		{
-			return ro.equals(CACHED_NULL) ? null : (T) ro;
-		}
-	}
+    Object ro = map.getIfPresent(key);
+    if (ro == null) {
+      T newObj = loadFromDb(property, loader);
+      synchronized (map) {
+        map.put(key, newObj != null ? newObj : CACHED_NULL);
+        return newObj;
+      }
+    } else {
+      return ro.equals(CACHED_NULL) ? null : (T) ro;
+    }
+  }
 
-	// HIBERNATE /////////////////////////////////////////////////////////////
+  // HIBERNATE /////////////////////////////////////////////////////////////
 
-	private static class MultipleOr implements Criterion
-	{
-		private static final long serialVersionUID = 1L;
+  private static class MultipleOr implements Criterion {
+    private static final long serialVersionUID = 1L;
 
-		private final List<Criterion> criterion;
-		private final String op;
+    private final List<Criterion> criterion;
+    private final String op;
 
-		protected MultipleOr()
-		{
-			criterion = new ArrayList<Criterion>();
-			this.op = "or";
-		}
+    protected MultipleOr() {
+      criterion = new ArrayList<Criterion>();
+      this.op = "or";
+    }
 
-		public void add(Criterion crit)
-		{
-			criterion.add(crit);
-		}
+    public void add(Criterion crit) {
+      criterion.add(crit);
+    }
 
-		@Override
-		public TypedValue[] getTypedValues(Criteria criteria, CriteriaQuery criteriaQuery) throws HibernateException
-		{
-			List<TypedValue> values = new ArrayList<TypedValue>();
-			for( Criterion crit : criterion )
-			{
-				values.addAll(Arrays.asList(crit.getTypedValues(criteria, criteriaQuery)));
-			}
-			return values.toArray(new TypedValue[values.size()]);
-		}
+    @Override
+    public TypedValue[] getTypedValues(Criteria criteria, CriteriaQuery criteriaQuery)
+        throws HibernateException {
+      List<TypedValue> values = new ArrayList<TypedValue>();
+      for (Criterion crit : criterion) {
+        values.addAll(Arrays.asList(crit.getTypedValues(criteria, criteriaQuery)));
+      }
+      return values.toArray(new TypedValue[values.size()]);
+    }
 
-		@Override
-		public String toSqlString(Criteria criteria, CriteriaQuery criteriaQuery) throws HibernateException
-		{
-			StringBuilder buffer = new StringBuilder();
-			buffer.append('(');
-			int i = 0;
-			for( Criterion crit : criterion )
-			{
-				if( i != 0 )
-				{
-					buffer.append(' ');
-					buffer.append(op);
-					buffer.append(' ');
-				}
-				buffer.append(crit.toSqlString(criteria, criteriaQuery));
-				i++;
-			}
-			buffer.append(')');
-			return buffer.toString();
-		}
+    @Override
+    public String toSqlString(Criteria criteria, CriteriaQuery criteriaQuery)
+        throws HibernateException {
+      StringBuilder buffer = new StringBuilder();
+      buffer.append('(');
+      int i = 0;
+      for (Criterion crit : criterion) {
+        if (i != 0) {
+          buffer.append(' ');
+          buffer.append(op);
+          buffer.append(' ');
+        }
+        buffer.append(crit.toSqlString(criteria, criteriaQuery));
+        i++;
+      }
+      buffer.append(')');
+      return buffer.toString();
+    }
 
-		@Override
-		public String toString()
-		{
-			StringBuilder buffer = new StringBuilder();
-			int i = 0;
-			for( Criterion crit : criterion )
-			{
-				if( i != 0 )
-				{
-					buffer.append(' ');
-					buffer.append(op);
-					buffer.append(' ');
-				}
-				buffer.append(crit.toString());
-				i++;
-			}
-			return buffer.toString();
-		}
-	}
+    @Override
+    public String toString() {
+      StringBuilder buffer = new StringBuilder();
+      int i = 0;
+      for (Criterion crit : criterion) {
+        if (i != 0) {
+          buffer.append(' ');
+          buffer.append(op);
+          buffer.append(' ');
+        }
+        buffer.append(crit.toString());
+        i++;
+      }
+      return buffer.toString();
+    }
+  }
 }

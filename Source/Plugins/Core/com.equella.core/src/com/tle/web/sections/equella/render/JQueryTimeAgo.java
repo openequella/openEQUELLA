@@ -51,155 +51,142 @@ import com.tle.web.sections.render.TagState;
 import com.tle.web.sections.result.util.KeyLabel;
 
 @SuppressWarnings("nls")
-public class JQueryTimeAgo implements JavascriptModule, PreRenderable
-{
-	private static final long serialVersionUID = 1L;
-	public static final String DATE_FORMAT_APPROX = "format.approx";
-	private static String KEY_PFX = AbstractPluginService.getMyPluginId(JQueryTimeAgo.class)+".";
+public class JQueryTimeAgo implements JavascriptModule, PreRenderable {
+  private static final long serialVersionUID = 1L;
+  public static final String DATE_FORMAT_APPROX = "format.approx";
+  private static String KEY_PFX = AbstractPluginService.getMyPluginId(JQueryTimeAgo.class) + ".";
 
-	private static final PreRenderable PRERENDER = new JQueryTimeAgo();
-	private static final ExternallyDefinedFunction TIMEAGO_METHOD = new ExternallyDefinedFunction("timeago", 2,
-		PRERENDER);
+  private static final PreRenderable PRERENDER = new JQueryTimeAgo();
+  private static final ExternallyDefinedFunction TIMEAGO_METHOD =
+      new ExternallyDefinedFunction("timeago", 2, PRERENDER);
 
-	private static final TagProcessor TIMEAGO_READY = new TimeAgoProcess(true, "timeago", true);
-	private static final TagProcessor TIMEAGO_NOSUF_READY = new TimeAgoProcess(false, "timeago_nosuf", true);
+  private static final TagProcessor TIMEAGO_READY = new TimeAgoProcess(true, "timeago", true);
+  private static final TagProcessor TIMEAGO_NOSUF_READY =
+      new TimeAgoProcess(false, "timeago_nosuf", true);
 
-	private static final TagProcessor TIMEAGO_READY_NO_FUZZY = new TimeAgoProcess(true, "timeago", false);
-	private static final TagProcessor TIMEAGO_NOSUF_READY_NO_FUZZY = new TimeAgoProcess(false, "timeago_nosuf", false);
+  private static final TagProcessor TIMEAGO_READY_NO_FUZZY =
+      new TimeAgoProcess(true, "timeago", false);
+  private static final TagProcessor TIMEAGO_NOSUF_READY_NO_FUZZY =
+      new TimeAgoProcess(false, "timeago_nosuf", false);
 
-	public static class TimeAgoProcess implements TagProcessor
-	{
-		private final JQueryStatement statement;
-		private final String clazz;
+  public static class TimeAgoProcess implements TagProcessor {
+    private final JQueryStatement statement;
+    private final String clazz;
 
-		public TimeAgoProcess(boolean showSuffix, String clazz, boolean fuzzyTime)
-		{
-			statement = new JQueryStatement(new JQuerySelector(Type.CLASS, clazz), new FunctionCallExpression(
-				TIMEAGO_METHOD, showSuffix, fuzzyTime));
-			this.clazz = clazz;
-		}
+    public TimeAgoProcess(boolean showSuffix, String clazz, boolean fuzzyTime) {
+      statement =
+          new JQueryStatement(
+              new JQuerySelector(Type.CLASS, clazz),
+              new FunctionCallExpression(TIMEAGO_METHOD, showSuffix, fuzzyTime));
+      this.clazz = clazz;
+    }
 
-		@Override
-		public void processAttributes(SectionWriter writer, Map<String, String> attrs)
-		{
-			TagRenderer.addClass(attrs, clazz);
-		}
+    @Override
+    public void processAttributes(SectionWriter writer, Map<String, String> attrs) {
+      TagRenderer.addClass(attrs, clazz);
+    }
 
-		@Override
-		public void preRender(PreRenderContext info)
-		{
-			info.addReadyStatements(statement);
-		}
-	};
+    @Override
+    public void preRender(PreRenderContext info) {
+      info.addReadyStatements(statement);
+    }
+  };
 
-	private static final JQueryLibraryInclude TIMEAGO_JS = new JQueryLibraryInclude("jquery.timeago.js",
-		JQueryCore.PRERENDER);
+  private static final JQueryLibraryInclude TIMEAGO_JS =
+      new JQueryLibraryInclude("jquery.timeago.js", JQueryCore.PRERENDER);
 
-	private static final AssignStatement ALLOW_FUTURE_OPTION = new AssignStatement(new ScriptExpression(
-		"jQuery.timeago.settings.allowFuture"), true);
+  private static final AssignStatement ALLOW_FUTURE_OPTION =
+      new AssignStatement(new ScriptExpression("jQuery.timeago.settings.allowFuture"), true);
 
-	private static final AssignStatement STRINGS_OPTION;
-	static
-	{
-		ObjectExpression strs = new ObjectExpression();
-		strs.put("prefixAgo", s("prefixAgo"));
-		strs.put("suffixAgo", s("suffixAgo"));
-		strs.put("seconds", s("seconds"));
-		strs.put("minute", s("minute"));
-		strs.put("minutes", s("minutes"));
-		strs.put("hour", s("hour"));
-		strs.put("hours", s("hours"));
-		strs.put("day", s("day"));
-		strs.put("days", s("days"));
-		strs.put("month", s("month"));
-		strs.put("months", s("months"));
-		strs.put("year", s("year"));
-		strs.put("singularYear", s("singularYear"));
-		strs.put("years", s("years"));
-		strs.put("prefixFromNow", s("prefixFromNow"));
-		strs.put("suffixFromNow", s("suffixFromNow"));
-		strs.put("andExtraUnits", s("andExtraUnits"));
+  private static final AssignStatement STRINGS_OPTION;
 
-		STRINGS_OPTION = new AssignStatement(new ScriptExpression("jQuery.timeago.settings.strings"), strs);
-	}
+  static {
+    ObjectExpression strs = new ObjectExpression();
+    strs.put("prefixAgo", s("prefixAgo"));
+    strs.put("suffixAgo", s("suffixAgo"));
+    strs.put("seconds", s("seconds"));
+    strs.put("minute", s("minute"));
+    strs.put("minutes", s("minutes"));
+    strs.put("hour", s("hour"));
+    strs.put("hours", s("hours"));
+    strs.put("day", s("day"));
+    strs.put("days", s("days"));
+    strs.put("month", s("month"));
+    strs.put("months", s("months"));
+    strs.put("year", s("year"));
+    strs.put("singularYear", s("singularYear"));
+    strs.put("years", s("years"));
+    strs.put("prefixFromNow", s("prefixFromNow"));
+    strs.put("suffixFromNow", s("suffixFromNow"));
+    strs.put("andExtraUnits", s("andExtraUnits"));
 
-	private static JSExpression s(String keyPart)
-	{
-		return new LabelExpression(new KeyLabel(KEY_PFX+"timeago." + keyPart), true)
-		{
-			@Override
-			public String getExpression(RenderContext info)
-			{
-				String text = label.getText();
-				if( text.startsWith("function(") )
-				{
-					return text;
-				}
-				return super.getExpression(info);
-			}
-		};
-	}
+    STRINGS_OPTION =
+        new AssignStatement(new ScriptExpression("jQuery.timeago.settings.strings"), strs);
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(TIMEAGO_JS);
-		info.addStatements(STRINGS_OPTION);
+  private static JSExpression s(String keyPart) {
+    return new LabelExpression(new KeyLabel(KEY_PFX + "timeago." + keyPart), true) {
+      @Override
+      public String getExpression(RenderContext info) {
+        String text = label.getText();
+        if (text.startsWith("function(")) {
+          return text;
+        }
+        return super.getExpression(info);
+      }
+    };
+  }
 
-		if( info.getAttribute(ALLOW_FUTURE_OPTION) != null )
-		{
-			info.addStatements(ALLOW_FUTURE_OPTION);
-		}
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(TIMEAGO_JS);
+    info.addStatements(STRINGS_OPTION);
 
-	public static TagRenderer timeAgoTag(Date date)
-	{
-		return timeAgoTag(date, false, DATE_FORMAT_APPROX);
-	}
+    if (info.getAttribute(ALLOW_FUTURE_OPTION) != null) {
+      info.addStatements(ALLOW_FUTURE_OPTION);
+    }
+  }
 
-	public static TagRenderer timeAgoTag(Date date, boolean noSuffix, String displayDateFormat)
-	{
-		TagState state = new TagState();
-		TimeZone zone = CurrentTimeZone.get();
+  public static TagRenderer timeAgoTag(Date date) {
+    return timeAgoTag(date, false, DATE_FORMAT_APPROX);
+  }
 
-		if( displayDateFormat.equals(DATE_FORMAT_APPROX) )
-		{
-			state.addTagProcessor(new ExtraAttributes("title", Long.toString(date.getTime())));
-			state.addTagProcessor(noSuffix ? TIMEAGO_NOSUF_READY : TIMEAGO_READY);
-		}
-		else
-		{
-			state.addTagProcessor(new ExtraAttributes("title", new LocalDate(date, zone).format(Dates.DATE_AND_TIME)));
-			state.addTagProcessor(noSuffix ? TIMEAGO_NOSUF_READY_NO_FUZZY : TIMEAGO_READY_NO_FUZZY);
-		}
+  public static TagRenderer timeAgoTag(Date date, boolean noSuffix, String displayDateFormat) {
+    TagState state = new TagState();
+    TimeZone zone = CurrentTimeZone.get();
 
-		TagRenderer renderer = new TagRenderer("abbr", state);
-		SimpleSectionResult nested = new SimpleSectionResult(new LocalDate(date, zone).format(Dates.DATE_AND_TIME));
-		renderer.setNestedRenderable(nested);
-		return renderer;
+    if (displayDateFormat.equals(DATE_FORMAT_APPROX)) {
+      state.addTagProcessor(new ExtraAttributes("title", Long.toString(date.getTime())));
+      state.addTagProcessor(noSuffix ? TIMEAGO_NOSUF_READY : TIMEAGO_READY);
+    } else {
+      state.addTagProcessor(
+          new ExtraAttributes("title", new LocalDate(date, zone).format(Dates.DATE_AND_TIME)));
+      state.addTagProcessor(noSuffix ? TIMEAGO_NOSUF_READY_NO_FUZZY : TIMEAGO_READY_NO_FUZZY);
+    }
 
-	}
+    TagRenderer renderer = new TagRenderer("abbr", state);
+    SimpleSectionResult nested =
+        new SimpleSectionResult(new LocalDate(date, zone).format(Dates.DATE_AND_TIME));
+    renderer.setNestedRenderable(nested);
+    return renderer;
+  }
 
-	public static void enableFutureTimes(SectionInfo info)
-	{
-		info.setAttribute(ALLOW_FUTURE_OPTION, ALLOW_FUTURE_OPTION);
-	}
+  public static void enableFutureTimes(SectionInfo info) {
+    info.setAttribute(ALLOW_FUTURE_OPTION, ALLOW_FUTURE_OPTION);
+  }
 
-	@Override
-	public String getDisplayName()
-	{
-		return CurrentLocale.get("com.tle.web.sections.jquery.modules.timeago.name");
-	}
+  @Override
+  public String getDisplayName() {
+    return CurrentLocale.get("com.tle.web.sections.jquery.modules.timeago.name");
+  }
 
-	@Override
-	public String getId()
-	{
-		return "timeago";
-	}
+  @Override
+  public String getId() {
+    return "timeago";
+  }
 
-	@Override
-	public PreRenderable getPreRenderer()
-	{
-		return PRERENDER;
-	}
+  @Override
+  public PreRenderable getPreRenderer() {
+    return PRERENDER;
+  }
 }

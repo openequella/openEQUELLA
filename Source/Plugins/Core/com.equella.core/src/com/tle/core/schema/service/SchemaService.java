@@ -25,19 +25,17 @@ import com.tle.core.entity.EntityEditingBean;
 import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.remoting.RemoteSchemaService;
 
-/**
- * @author Nicholas Read
- */
-public interface SchemaService extends AbstractEntityService<EntityEditingBean, Schema>, RemoteSchemaService
-{
-	List<String> getExportSchemaTypes();
+/** @author Nicholas Read */
+public interface SchemaService
+    extends AbstractEntityService<EntityEditingBean, Schema>, RemoteSchemaService {
+  List<String> getExportSchemaTypes();
 
-	Set<Schema> getSchemasForExportSchemaType(String type);
+  Set<Schema> getSchemasForExportSchemaType(String type);
 
-	// Need this for OAI, otherwise run out of connections...
-	String transformForExport(long id, String type, PropBagEx itemxml, boolean omitXmlDeclaration);
+  // Need this for OAI, otherwise run out of connections...
+  String transformForExport(long id, String type, PropBagEx itemxml, boolean omitXmlDeclaration);
 
-	String transformForImport(long id, String type, PropBagEx foreignXml);
+  String transformForImport(long id, String type, PropBagEx foreignXml);
 
-	List<String> getAllCitations();
+  List<String> getAllCitations();
 }

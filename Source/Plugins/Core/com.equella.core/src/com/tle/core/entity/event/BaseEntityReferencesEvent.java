@@ -26,22 +26,18 @@ import com.tle.core.events.listeners.ApplicationListener;
 
 @NonNullByDefault
 public abstract class BaseEntityReferencesEvent<E extends BaseEntity, L extends ApplicationListener>
-	extends
-		ApplicationEvent<L>
-{
-	private static final long serialVersionUID = 1L;
+    extends ApplicationEvent<L> {
+  private static final long serialVersionUID = 1L;
 
-	protected final E entity;
-	protected final List<Class<?>> referencingClasses = Lists.newArrayList();
+  protected final E entity;
+  protected final List<Class<?>> referencingClasses = Lists.newArrayList();
 
-	public BaseEntityReferencesEvent(E entity)
-	{
-		super(PostTo.POST_TO_SELF_SYNCHRONOUSLY);
-		this.entity = entity;
-	}
+  public BaseEntityReferencesEvent(E entity) {
+    super(PostTo.POST_TO_SELF_SYNCHRONOUSLY);
+    this.entity = entity;
+  }
 
-	public List<Class<?>> getReferencingClasses()
-	{
-		return referencingClasses;
-	}
+  public List<Class<?>> getReferencingClasses() {
+    return referencingClasses;
+  }
 }

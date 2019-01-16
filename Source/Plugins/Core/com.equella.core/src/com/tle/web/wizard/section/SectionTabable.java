@@ -23,13 +23,12 @@ import com.tle.web.sections.Section;
 import com.tle.web.sections.SectionInfo;
 
 @NonNullByDefault
-public interface SectionTabable extends Section
-{
-	void addTabs(SectionInfo info, List<SectionTab> tabs);
+public interface SectionTabable extends Section {
+  void addTabs(SectionInfo info, List<SectionTab> tabs);
 
-	void setupShowingTab(SectionInfo info, SectionTab tab);
+  void setupShowingTab(SectionInfo info, SectionTab tab);
 
-	void leavingTab(SectionInfo info, SectionTab tab);
+  void leavingTab(SectionInfo info, SectionTab tab);
 
-	void unfinishedTab(SectionInfo info, SectionTab tab);
+  void unfinishedTab(SectionInfo info, SectionTab tab);
 }

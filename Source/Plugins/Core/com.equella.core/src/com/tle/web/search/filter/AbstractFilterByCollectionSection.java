@@ -48,176 +48,139 @@ import com.tle.web.sections.standard.model.NameValueOption;
 import com.tle.web.sections.standard.model.Option;
 import com.tle.web.sections.standard.renderers.LabelTagRenderer;
 
-public abstract class AbstractFilterByCollectionSection<M extends AbstractFilterByCollectionSection.AbstractFilterByCollectionModel>
-	extends
-		AbstractPrototypeSection<M>
-	implements
-		HtmlRenderer,
-		ResetFiltersListener,
-		SearchEventListener<FreetextSearchEvent>
-{
-	protected static final String ALL_KEY = "all";
+public abstract class AbstractFilterByCollectionSection<
+        M extends AbstractFilterByCollectionSection.AbstractFilterByCollectionModel>
+    extends AbstractPrototypeSection<M>
+    implements HtmlRenderer, ResetFiltersListener, SearchEventListener<FreetextSearchEvent> {
+  protected static final String ALL_KEY = "all";
 
-	@Inject
-	protected ItemDefinitionService itemDefinitionService;
-	@Inject
-	protected BundleCache bundleCache;
+  @Inject protected ItemDefinitionService itemDefinitionService;
+  @Inject protected BundleCache bundleCache;
 
-	@ViewFactory
-	protected FreemarkerFactory viewFactory;
-	@EventFactory
-	protected EventGenerator events;
-	@TreeLookup
-	protected AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
-	@Component(name = "c", parameter = "in", supported = true)
-	protected SingleSelectionList<WhereEntry> collectionList;
+  @ViewFactory protected FreemarkerFactory viewFactory;
+  @EventFactory protected EventGenerator events;
+  @TreeLookup protected AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Component(name = "c", parameter = "in", supported = true)
+  protected SingleSelectionList<WhereEntry> collectionList;
 
-		collectionList.setListModel(getCollectionModel());
-		collectionList.setAlwaysSelect(true);
-		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception
-	{
-		if( isDisabled(info) )
-		{
-			return;
-		}
+    collectionList.setListModel(getCollectionModel());
+    collectionList.setAlwaysSelect(true);
+    tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
+  }
 
-		WhereEntry selCollection = collectionList.getSelectedValue(info);
-		if( selCollection != null )
-		{
-			ItemDefinition entity = selCollection.getEntity();
-			event.filterByCollection(entity.getUuid());
-		}
-	}
+  @Override
+  public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception {
+    if (isDisabled(info)) {
+      return;
+    }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( isDisabled(context) )
-		{
-			return null;
-		}
+    WhereEntry selCollection = collectionList.getSelectedValue(info);
+    if (selCollection != null) {
+      ItemDefinition entity = selCollection.getEntity();
+      event.filterByCollection(entity.getUuid());
+    }
+  }
 
-		return viewFactory.createResult("filter/filterbycollection.ftl", context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (isDisabled(context)) {
+      return null;
+    }
 
-	public void disable(SectionInfo info)
-	{
-		getModel(info).setDisabled(true);
-	}
+    return viewFactory.createResult("filter/filterbycollection.ftl", context);
+  }
 
-	public boolean isDisabled(SectionInfo info)
-	{
-		return getModel(info).isDisabled();
-	}
+  public void disable(SectionInfo info) {
+    getModel(info).setDisabled(true);
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		collectionList.addChangeEventHandler(
-			new StatementHandler(searchResults.getResultsUpdater(tree, null, "searchresults-actions")));
-	}
+  public boolean isDisabled(SectionInfo info) {
+    return getModel(info).isDisabled();
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new AbstractFilterByCollectionModel(false);
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    collectionList.addChangeEventHandler(
+        new StatementHandler(searchResults.getResultsUpdater(tree, null, "searchresults-actions")));
+  }
 
-	public abstract DynamicHtmlListModel<WhereEntry> getCollectionModel();
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new AbstractFilterByCollectionModel(false);
+  }
 
-	public static class AbstractFilterByCollectionModel
-	{
-		private boolean disabled;
+  public abstract DynamicHtmlListModel<WhereEntry> getCollectionModel();
 
-		public AbstractFilterByCollectionModel(boolean disabled)
-		{
-			this.disabled = disabled;
-		}
+  public static class AbstractFilterByCollectionModel {
+    private boolean disabled;
 
-		public boolean isDisabled()
-		{
-			return disabled;
-		}
+    public AbstractFilterByCollectionModel(boolean disabled) {
+      this.disabled = disabled;
+    }
 
-		public void setDisabled(boolean disabled)
-		{
-			this.disabled = disabled;
-		}
+    public boolean isDisabled() {
+      return disabled;
+    }
 
-	}
+    public void setDisabled(boolean disabled) {
+      this.disabled = disabled;
+    }
+  }
 
-	@Override
-	public void reset(SectionInfo info)
-	{
-		collectionList.setSelectedStringValue(info, null);
-	}
+  @Override
+  public void reset(SectionInfo info) {
+    collectionList.setSelectedStringValue(info, null);
+  }
 
-	public SingleSelectionList<WhereEntry> getCollectionList()
-	{
-		return collectionList;
-	}
+  public SingleSelectionList<WhereEntry> getCollectionList() {
+    return collectionList;
+  }
 
-	public LabelTagRenderer getLabelTag()
-	{
-		return new LabelTagRenderer(collectionList, null, null);
-	}
+  public LabelTagRenderer getLabelTag() {
+    return new LabelTagRenderer(collectionList, null, null);
+  }
 
-	// Cut down version of SearchQuerySection.WhereEntry
-	public class WhereEntry
-	{
-		private final String value;
-		@Nullable
-		private NameValue name;
-		@Nullable
-		private ItemDefinition entity;
+  // Cut down version of SearchQuerySection.WhereEntry
+  public class WhereEntry {
+    private final String value;
+    @Nullable private NameValue name;
+    @Nullable private ItemDefinition entity;
 
-		public WhereEntry(BaseEntityLabel bel)
-		{
-			this(bel.getUuid());
-			this.name = new BundleNameValue(bel.getBundleId(), value, bundleCache);
-		}
+    public WhereEntry(BaseEntityLabel bel) {
+      this(bel.getUuid());
+      this.name = new BundleNameValue(bel.getBundleId(), value, bundleCache);
+    }
 
-		public WhereEntry(String uuid)
-		{
-			this.value = uuid;
-		}
+    public WhereEntry(String uuid) {
+      this.value = uuid;
+    }
 
-		public Option<WhereEntry> convert()
-		{
-			return new NameValueOption<WhereEntry>(getName(), this);
-		}
+    public Option<WhereEntry> convert() {
+      return new NameValueOption<WhereEntry>(getName(), this);
+    }
 
-		private NameValue getName()
-		{
-			if( name == null )
-			{
-				name = new BundleNameValue(getEntity().getName(), value, bundleCache);
-			}
-			return name;
-		}
+    private NameValue getName() {
+      if (name == null) {
+        name = new BundleNameValue(getEntity().getName(), value, bundleCache);
+      }
+      return name;
+    }
 
-		public ItemDefinition getEntity()
-		{
-			if( entity == null )
-			{
-				entity = itemDefinitionService.getByUuid(value);
-			}
-			return entity;
-		}
+    public ItemDefinition getEntity() {
+      if (entity == null) {
+        entity = itemDefinitionService.getByUuid(value);
+      }
+      return entity;
+    }
 
-		public String getValue()
-		{
-			return value;
-		}
-	}
+    public String getValue() {
+      return value;
+    }
+  }
 }

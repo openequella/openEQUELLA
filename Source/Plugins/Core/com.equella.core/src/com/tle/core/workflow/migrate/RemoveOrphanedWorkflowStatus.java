@@ -31,27 +31,21 @@ import com.tle.core.item.convert.ItemConverter.ItemConverterInfo;
 
 @Bind
 @Singleton
-public class RemoveOrphanedWorkflowStatus implements PostReadMigrator<ItemConverterInfo>
-{
-	@Override
-	public void migrate(ItemConverterInfo obj) throws IOException
-	{
-		ModerationStatus moderation = obj.getItem().getModeration();
-		if( moderation != null )
-		{
-			Set<WorkflowNodeStatus> statuses = moderation.getStatuses();
-			if( !Check.isEmpty(statuses) )
-			{
-				Iterator<WorkflowNodeStatus> iter = statuses.iterator();
-				while( iter.hasNext() )
-				{
-					WorkflowNodeStatus status = iter.next();
-					if( status.getNode() == null )
-					{
-						iter.remove();
-					}
-				}
-			}
-		}
-	}
+public class RemoveOrphanedWorkflowStatus implements PostReadMigrator<ItemConverterInfo> {
+  @Override
+  public void migrate(ItemConverterInfo obj) throws IOException {
+    ModerationStatus moderation = obj.getItem().getModeration();
+    if (moderation != null) {
+      Set<WorkflowNodeStatus> statuses = moderation.getStatuses();
+      if (!Check.isEmpty(statuses)) {
+        Iterator<WorkflowNodeStatus> iter = statuses.iterator();
+        while (iter.hasNext()) {
+          WorkflowNodeStatus status = iter.next();
+          if (status.getNode() == null) {
+            iter.remove();
+          }
+        }
+      }
+    }
+  }
 }

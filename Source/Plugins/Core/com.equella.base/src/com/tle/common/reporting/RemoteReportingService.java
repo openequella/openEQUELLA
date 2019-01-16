@@ -22,15 +22,14 @@ import java.util.List;
 import com.tle.beans.entity.report.Report;
 import com.tle.core.remoting.RemoteAbstractEntityService;
 
-public interface RemoteReportingService extends RemoteAbstractEntityService<Report>
-{
-	String ENTITY_TYPE = "REPORT"; //$NON-NLS-1$
+public interface RemoteReportingService extends RemoteAbstractEntityService<Report> {
+  String ENTITY_TYPE = "REPORT"; // $NON-NLS-1$
 
-	List<String> getReportDesignFiles(String stagingId);
+  List<String> getReportDesignFiles(String stagingId);
 
-	void processReportDesign(String stagingId, String filename) throws IOException;
+  void processReportDesign(String stagingId, String filename) throws IOException;
 
-	String prepareDownload(Report report, String stagingId, String filename);
+  String prepareDownload(Report report, String stagingId, String filename);
 
-	void cleanDownload(String stagingId);
+  void cleanDownload(String stagingId);
 }

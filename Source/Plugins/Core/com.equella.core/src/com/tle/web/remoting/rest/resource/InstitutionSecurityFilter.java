@@ -33,45 +33,38 @@ import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.api.interfaces.Institutional;
 
 /**
- * An invoking class that is annotated with
- * Institutional.Type.NON_INSTITUTIONAL, requires that the CurrentInstitution be
- * set by the InstitutionFilter.
- * 
+ * An invoking class that is annotated with Institutional.Type.NON_INSTITUTIONAL, requires that the
+ * CurrentInstitution be set by the InstitutionFilter.
+ *
  * @author (stolen from) EPS
  */
 @Bind
 @Singleton
-public class InstitutionSecurityFilter implements ContainerRequestFilter
-{
+public class InstitutionSecurityFilter implements ContainerRequestFilter {
 
-	@SuppressWarnings("nls")
-	@Override
-	public void filter(ContainerRequestContext context) throws IOException
-	{
-		ResourceMethodInvoker invoker = (ResourceMethodInvoker) context.getProperty(ResourceMethodInvoker.class
-			.getName());
-		Class<?> clazz = invoker.getResourceClass();
-		Institutional.Type instType = Institutional.Type.INSTITUTIONAL;
-		Institutional instanno = clazz.getAnnotation(Institutional.class);
-		if( instanno != null )
-		{
-			instType = instanno.value();
-		}
-		boolean hasInst = CurrentInstitution.get() != null;
-		if( instType != Institutional.Type.BOTH && (hasInst != (instType == Institutional.Type.INSTITUTIONAL)) )
-		{
-			throw new NotFoundException();
-		}
-		// Class or calling method system restricted?
-		SecureOnCallSystem system = clazz.getAnnotation(SecureOnCallSystem.class);
-		if( system == null )
-		{
-			system = invoker.getMethod().getAnnotation(SecureOnCallSystem.class);
-		}
-		if( system != null && !CurrentUser.getUserState().isSystem() )
-		{
-			throw new AccessDeniedException("You do not have the privileges to access this endpoint");
-		}
-	}
-
+  @SuppressWarnings("nls")
+  @Override
+  public void filter(ContainerRequestContext context) throws IOException {
+    ResourceMethodInvoker invoker =
+        (ResourceMethodInvoker) context.getProperty(ResourceMethodInvoker.class.getName());
+    Class<?> clazz = invoker.getResourceClass();
+    Institutional.Type instType = Institutional.Type.INSTITUTIONAL;
+    Institutional instanno = clazz.getAnnotation(Institutional.class);
+    if (instanno != null) {
+      instType = instanno.value();
+    }
+    boolean hasInst = CurrentInstitution.get() != null;
+    if (instType != Institutional.Type.BOTH
+        && (hasInst != (instType == Institutional.Type.INSTITUTIONAL))) {
+      throw new NotFoundException();
+    }
+    // Class or calling method system restricted?
+    SecureOnCallSystem system = clazz.getAnnotation(SecureOnCallSystem.class);
+    if (system == null) {
+      system = invoker.getMethod().getAnnotation(SecureOnCallSystem.class);
+    }
+    if (system != null && !CurrentUser.getUserState().isSystem()) {
+      throw new AccessDeniedException("You do not have the privileges to access this endpoint");
+    }
+  }
 }

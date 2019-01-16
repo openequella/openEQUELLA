@@ -30,21 +30,17 @@ import com.tle.web.sections.TreeIndexed;
 @TreeIndexed
 @Bind
 public class StandardItemList
-	extends
-		AbstractItemList<StandardItemListEntry, AbstractItemList.Model<StandardItemListEntry>>
-{
-	@Inject
-	private StandardItemListEntryFactory factory;
+    extends AbstractItemList<StandardItemListEntry, AbstractItemList.Model<StandardItemListEntry>> {
+  @Inject private StandardItemListEntryFactory factory;
 
-	@Override
-	protected Set<String> getExtensionTypes()
-	{
-		return Collections.singleton(ItemlikeListEntryExtension.TYPE_STANDARD);
-	}
+  @Override
+  protected Set<String> getExtensionTypes() {
+    return Collections.singleton(ItemlikeListEntryExtension.TYPE_STANDARD);
+  }
 
-	@Override
-	protected StandardItemListEntry createItemListEntry(SectionInfo info, Item item, FreetextResult result)
-	{
-		return factory.createItemListItem(info, item, result);
-	}
+  @Override
+  protected StandardItemListEntry createItemListEntry(
+      SectionInfo info, Item item, FreetextResult result) {
+    return factory.createItemListItem(info, item, result);
+  }
 }

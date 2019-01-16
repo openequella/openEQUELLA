@@ -28,35 +28,32 @@ import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
 import com.tle.web.sections.render.PreRenderable;
 
-public class JQueryTimer implements JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.timer.js").hasMin();
+public class JQueryTimer implements JavascriptModule {
+  private static final long serialVersionUID = 1L;
+  public static final PreRenderable PRERENDER =
+      new JQueryLibraryInclude("jquery.timer.js").hasMin();
 
-	@SuppressWarnings("nls")
-	private static final ExternallyDefinedFunction TIMER_FUNC = new ExternallyDefinedFunction(
-		PropertyExpression.create(JQueryCore.JQUERY, "timer"), -1, PRERENDER);
+  @SuppressWarnings("nls")
+  private static final ExternallyDefinedFunction TIMER_FUNC =
+      new ExternallyDefinedFunction(
+          PropertyExpression.create(JQueryCore.JQUERY, "timer"), -1, PRERENDER);
 
-	@Override
-	public String getDisplayName()
-	{
-		return CurrentLocale.get("com.tle.web.sections.jquery.modules.timer.name");
-	}
+  @Override
+  public String getDisplayName() {
+    return CurrentLocale.get("com.tle.web.sections.jquery.modules.timer.name");
+  }
 
-	public static JSStatements createTimer(int millis, JSStatements body, ScriptVariable... vars)
-	{
-		return new FunctionCallStatement(TIMER_FUNC, millis, new AnonymousFunction(body, vars));
-	}
+  public static JSStatements createTimer(int millis, JSStatements body, ScriptVariable... vars) {
+    return new FunctionCallStatement(TIMER_FUNC, millis, new AnonymousFunction(body, vars));
+  }
 
-	@Override
-	public String getId()
-	{
-		return "timer";
-	}
+  @Override
+  public String getId() {
+    return "timer";
+  }
 
-	@Override
-	public Object getPreRenderer()
-	{
-		return PRERENDER;
-	}
+  @Override
+  public Object getPreRenderer() {
+    return PRERENDER;
+  }
 }

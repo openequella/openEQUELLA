@@ -28,24 +28,18 @@ import com.tle.web.sections.registry.handler.CachedScannerHandler;
 
 @Bind
 @Singleton
-public class FreemarkerFactoryHandler extends CachedScannerHandler<AnnotatedViewFactoryScanner>
-{
-	@Inject
-	private CustomTemplateLoader templateLoader;
-	@Inject
-	private PluginService pluginService;
+public class FreemarkerFactoryHandler extends CachedScannerHandler<AnnotatedViewFactoryScanner> {
+  @Inject private CustomTemplateLoader templateLoader;
+  @Inject private PluginService pluginService;
 
-	@Override
-	public void registered(String id, SectionTree tree, final Section section)
-	{
-		final AnnotatedViewFactoryScanner scanner = getForClass(section.getClass());
-		scanner.setupFactories(section, templateLoader, pluginService);
-	}
+  @Override
+  public void registered(String id, SectionTree tree, final Section section) {
+    final AnnotatedViewFactoryScanner scanner = getForClass(section.getClass());
+    scanner.setupFactories(section, templateLoader, pluginService);
+  }
 
-	@Override
-	protected AnnotatedViewFactoryScanner newEntry(Class<?> clazz)
-	{
-		return new AnnotatedViewFactoryScanner(clazz, this);
-	}
-
+  @Override
+  protected AnnotatedViewFactoryScanner newEntry(Class<?> clazz) {
+    return new AnnotatedViewFactoryScanner(clazz, this);
+  }
 }

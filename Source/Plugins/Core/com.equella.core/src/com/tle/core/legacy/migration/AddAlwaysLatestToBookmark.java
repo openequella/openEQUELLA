@@ -38,56 +38,50 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class AddAlwaysLatestToBookmark extends AbstractHibernateSchemaMigration
-{
-	private static final String keyPrefix = PluginServiceImpl.getMyPluginId(AddAlwaysLatestToBookmark.class) + ".addalwayslatest.";
+public class AddAlwaysLatestToBookmark extends AbstractHibernateSchemaMigration {
+  private static final String keyPrefix =
+      PluginServiceImpl.getMyPluginId(AddAlwaysLatestToBookmark.class) + ".addalwayslatest.";
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return 1;
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return 1;
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-	{
-		Query query = session.createQuery("UPDATE Bookmark SET always_latest = :value");
-		query.setParameter("value", false);
-		query.executeUpdate();
-	}
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) {
+    Query query = session.createQuery("UPDATE Bookmark SET always_latest = :value");
+    query.setParameter("value", false);
+    query.executeUpdate();
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		return helper.getAddColumnsSQL("bookmark", "always_latest");
-	}
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    return helper.getAddColumnsSQL("bookmark", "always_latest");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class[]{FakeBookmark.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class[] {FakeBookmark.class};
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		return helper.getAddNotNullSQL("bookmark", "always_latest");
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    return helper.getAddNotNullSQL("bookmark", "always_latest");
+  }
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(keyPrefix + "title", keyPrefix + "description");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(keyPrefix + "title", keyPrefix + "description");
+  }
 
-	@Entity(name = "Bookmark")
-	@AccessType("field")
-	public class FakeBookmark
-	{
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		public long id;
+  @Entity(name = "Bookmark")
+  @AccessType("field")
+  public class FakeBookmark {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public long id;
 
-		public boolean alwaysLatest;
-	}
+    public boolean alwaysLatest;
+  }
 }

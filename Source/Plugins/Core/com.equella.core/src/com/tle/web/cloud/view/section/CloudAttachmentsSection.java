@@ -33,81 +33,69 @@ import com.tle.web.viewitem.AttachmentViewFilter;
 import com.tle.web.viewitem.summary.attachment.service.ViewAttachmentWebService.AttachmentRowDisplay;
 import com.tle.web.viewitem.summary.section.attachment.AbstractAttachmentsSection;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
 @Bind
 public class CloudAttachmentsSection
-	extends
-		AbstractAttachmentsSection<CloudItem, CloudAttachmentsSection.CloudAttachmentsModel>
-{
-	@PlugKey("viewitem.attachments.title")
-	private static Label LABEL_ATTACHMENTS_TITLE;
+    extends AbstractAttachmentsSection<CloudItem, CloudAttachmentsSection.CloudAttachmentsModel> {
+  @PlugKey("viewitem.attachments.title")
+  private static Label LABEL_ATTACHMENTS_TITLE;
 
-	@Override
-	protected boolean showFullscreen(SectionInfo info, CloudItem item, List<AttachmentRowDisplay> rows)
-	{
-		return false;
-	}
+  @Override
+  protected boolean showFullscreen(
+      SectionInfo info, CloudItem item, List<AttachmentRowDisplay> rows) {
+    return false;
+  }
 
-	@Nullable
-	@Override
-	protected Bookmark getFullscreenBookmark(SectionInfo info, ViewableItem<CloudItem> vitem)
-	{
-		return null;
-	}
+  @Nullable
+  @Override
+  protected Bookmark getFullscreenBookmark(SectionInfo info, ViewableItem<CloudItem> vitem) {
+    return null;
+  }
 
-	@Override
-	protected ViewableItem<CloudItem> getViewableItem(SectionInfo info)
-	{
-		return CloudItemSectionInfo.getItemInfo(info).getViewableItem();
-	}
+  @Override
+  protected ViewableItem<CloudItem> getViewableItem(SectionInfo info) {
+    return CloudItemSectionInfo.getItemInfo(info).getViewableItem();
+  }
 
-	@Override
-	protected String getItemExtensionType()
-	{
-		return CloudConstants.ITEM_EXTENSION;
-	}
+  @Override
+  protected String getItemExtensionType() {
+    return CloudConstants.ITEM_EXTENSION;
+  }
 
-	@Nullable
-	@Override
-	protected JSCallable getSelectPackageFunction(SectionInfo info, ViewableItem<CloudItem> vitem)
-	{
-		return null;
-	}
+  @Nullable
+  @Override
+  protected JSCallable getSelectPackageFunction(SectionInfo info, ViewableItem<CloudItem> vitem) {
+    return null;
+  }
 
-	@Override
-	protected Label getTitle(SectionInfo info, ViewableItem<CloudItem> vitem)
-	{
-		return LABEL_ATTACHMENTS_TITLE;
-	}
+  @Override
+  protected Label getTitle(SectionInfo info, ViewableItem<CloudItem> vitem) {
+    return LABEL_ATTACHMENTS_TITLE;
+  }
 
-	@Override
-	protected boolean isFiltered(ViewableItem<CloudItem> viewableItem) {
-		return false;
-	}
+  @Override
+  protected boolean isFiltered(ViewableItem<CloudItem> viewableItem) {
+    return false;
+  }
 
-	@Override
-	protected AttachmentViewFilter getCustomFilter(SectionInfo info, ViewableItem<CloudItem> vitem, boolean filtered)
-	{
-		return null;
-	}
+  @Override
+  protected AttachmentViewFilter getCustomFilter(
+      SectionInfo info, ViewableItem<CloudItem> vitem, boolean filtered) {
+    return null;
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new CloudAttachmentsModel();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new CloudAttachmentsModel();
+  }
 
-	public static class CloudAttachmentsModel extends AbstractAttachmentsSection.AttachmentsModel
-	{
-		// Nothing specific
-	}
+  public static class CloudAttachmentsModel extends AbstractAttachmentsSection.AttachmentsModel {
+    // Nothing specific
+  }
 
-	@Override
-	protected String getAttchmentControlId()
-	{
-		return null;
-	}
+  @Override
+  protected String getAttchmentControlId() {
+    return null;
+  }
 }

@@ -20,7 +20,6 @@ import com.tle.beans.Institution;
 import com.tle.core.echo.entity.EchoServer;
 import com.tle.core.entity.dao.AbstractEntityDao;
 
-public interface EchoDao extends AbstractEntityDao<EchoServer>
-{
-	EchoServer getBySystemID(Institution inst, String esid);
+public interface EchoDao extends AbstractEntityDao<EchoServer> {
+  EchoServer getBySystemID(Institution inst, String esid);
 }

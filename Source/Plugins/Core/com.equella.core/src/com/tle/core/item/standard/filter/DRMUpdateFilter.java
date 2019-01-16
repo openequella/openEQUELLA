@@ -33,65 +33,53 @@ import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.service.DrmService;
 import com.tle.core.item.standard.operations.AbstractStandardWorkflowOperation;
 
-public class DRMUpdateFilter extends AbstractStandardOperationFilter
-{
-	private final long itemDefinitionID;
-	private Collection<String> pageIds;
+public class DRMUpdateFilter extends AbstractStandardOperationFilter {
+  private final long itemDefinitionID;
+  private Collection<String> pageIds;
 
-	@Inject
-	private Provider<DrmUpdateOperation> opFactory;
+  @Inject private Provider<DrmUpdateOperation> opFactory;
 
-	@AssistedInject
-	protected DRMUpdateFilter(@Assisted long collectionId, @Assisted Collection<String> pageIds)
-	{
-		this.itemDefinitionID = collectionId;
-		this.pageIds = pageIds;
-	}
+  @AssistedInject
+  protected DRMUpdateFilter(@Assisted long collectionId, @Assisted Collection<String> pageIds) {
+    this.itemDefinitionID = collectionId;
+    this.pageIds = pageIds;
+  }
 
-	@Override
-	public WorkflowOperation[] createOperations()
-	{
-		return new WorkflowOperation[]{opFactory.get(), operationFactory.saveNoSaveScript(true)};
-	}
+  @Override
+  public WorkflowOperation[] createOperations() {
+    return new WorkflowOperation[] {opFactory.get(), operationFactory.saveNoSaveScript(true)};
+  }
 
-	@Override
-	public void queryValues(Map<String, Object> values)
-	{
-		values.put("itemDefinition", itemDefinitionID);
-		values.put("pages", pageIds);
-	}
+  @Override
+  public void queryValues(Map<String, Object> values) {
+    values.put("itemDefinition", itemDefinitionID);
+    values.put("pages", pageIds);
+  }
 
-	@Override
-	public String getWhereClause()
-	{
-		return "itemDefinition.id = :itemDefinition and drmSettings.drmPageUuid in (:pages)";
-	}
+  @Override
+  public String getWhereClause() {
+    return "itemDefinition.id = :itemDefinition and drmSettings.drmPageUuid in (:pages)";
+  }
 
-	@Bind
-	public static class DrmUpdateOperation extends AbstractStandardWorkflowOperation
-	{
-		@Inject
-		private DrmService drmService;
+  @Bind
+  public static class DrmUpdateOperation extends AbstractStandardWorkflowOperation {
+    @Inject private DrmService drmService;
 
-		@Override
-		public boolean execute()
-		{
-			DrmSettings drmSettings = getItem().getDrmSettings();
-			List<WizardPage> pages = getCollection().getWizard().getPages();
-			String id = drmSettings.getDrmPageUuid();
-			for( WizardPage page : pages )
-			{
-				if( page instanceof DRMPage )
-				{
-					DRMPage drmPage = (DRMPage) page;
-					if( drmPage.getUuid().equals(id) )
-					{
-						drmService.mergeSettings(drmSettings, drmPage);
-						break;
-					}
-				}
-			}
-			return true;
-		}
-	}
+    @Override
+    public boolean execute() {
+      DrmSettings drmSettings = getItem().getDrmSettings();
+      List<WizardPage> pages = getCollection().getWizard().getPages();
+      String id = drmSettings.getDrmPageUuid();
+      for (WizardPage page : pages) {
+        if (page instanceof DRMPage) {
+          DRMPage drmPage = (DRMPage) page;
+          if (drmPage.getUuid().equals(id)) {
+            drmService.mergeSettings(drmSettings, drmPage);
+            break;
+          }
+        }
+      }
+      return true;
+    }
+  }
 }

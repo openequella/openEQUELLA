@@ -21,145 +21,119 @@ import java.util.List;
 import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public class FileUploadSettings extends UniversalSettings
-{
-	private static final String NOUNZIP = "FILE_NOUNZIP";
-	private static final String PACKAGEONLY = "FILE_PACKAGEONLY";
-	private static final String QTIPACKAGE = "FILE_QTI_PACKAGE";
-	private static final String SCORMPACKAGE = "FILE_SCORM_PACKAGE";
-	private static final String SUPPRESSTHUMBS = "FILE_SUPPRESS_THUMBS";
-	private static final String SHOWTHUMBOPTION = "FILE_SHOW_THUMB_OPT";
-	private static final String RESTRICTMIME = "FILE_RESTRICTMIME";
-	private static final String KEY_MIMETYPES = "MIMETYPES";
-	private static final String RESTRICTFILESIZE = "FILE_RESTRICTSIZE";
-	private static final String MAXFILESIZE = "FILE_MAXFILESIZE";
+public class FileUploadSettings extends UniversalSettings {
+  private static final String NOUNZIP = "FILE_NOUNZIP";
+  private static final String PACKAGEONLY = "FILE_PACKAGEONLY";
+  private static final String QTIPACKAGE = "FILE_QTI_PACKAGE";
+  private static final String SCORMPACKAGE = "FILE_SCORM_PACKAGE";
+  private static final String SUPPRESSTHUMBS = "FILE_SUPPRESS_THUMBS";
+  private static final String SHOWTHUMBOPTION = "FILE_SHOW_THUMB_OPT";
+  private static final String RESTRICTMIME = "FILE_RESTRICTMIME";
+  private static final String KEY_MIMETYPES = "MIMETYPES";
+  private static final String RESTRICTFILESIZE = "FILE_RESTRICTSIZE";
+  private static final String MAXFILESIZE = "FILE_MAXFILESIZE";
 
-	public FileUploadSettings(CustomControl wrapped)
-	{
-		super(wrapped);
-	}
+  public FileUploadSettings(CustomControl wrapped) {
+    super(wrapped);
+  }
 
-	public FileUploadSettings(UniversalSettings settings)
-	{
-		super(settings.getWrapped());
-	}
+  public FileUploadSettings(UniversalSettings settings) {
+    super(settings.getWrapped());
+  }
 
-	public boolean isNoUnzip()
-	{
-		return wrapped.getBooleanAttribute(NOUNZIP, false);
-	}
+  public boolean isNoUnzip() {
+    return wrapped.getBooleanAttribute(NOUNZIP, false);
+  }
 
-	public void setNoUnzip(boolean noUnzip)
-	{
-		wrapped.getAttributes().put(NOUNZIP, noUnzip);
-	}
+  public void setNoUnzip(boolean noUnzip) {
+    wrapped.getAttributes().put(NOUNZIP, noUnzip);
+  }
 
-	public boolean isPackagesOnly()
-	{
-		return wrapped.getBooleanAttribute(PACKAGEONLY, false);
-	}
+  public boolean isPackagesOnly() {
+    return wrapped.getBooleanAttribute(PACKAGEONLY, false);
+  }
 
-	public void setPackagesOnly(boolean packagesOnly)
-	{
-		wrapped.getAttributes().put(PACKAGEONLY, packagesOnly);
-	}
+  public void setPackagesOnly(boolean packagesOnly) {
+    wrapped.getAttributes().put(PACKAGEONLY, packagesOnly);
+  }
 
-	public boolean isQtiPackagesOnly()
-	{
-		return wrapped.getBooleanAttribute(QTIPACKAGE, false);
-	}
+  public boolean isQtiPackagesOnly() {
+    return wrapped.getBooleanAttribute(QTIPACKAGE, false);
+  }
 
-	public void setQtiPackagesOnly(boolean qtiOnly)
-	{
-		wrapped.getAttributes().put(QTIPACKAGE, qtiOnly);
-	}
+  public void setQtiPackagesOnly(boolean qtiOnly) {
+    wrapped.getAttributes().put(QTIPACKAGE, qtiOnly);
+  }
 
-	public boolean isScormPackagesOnly()
-	{
-		return wrapped.getBooleanAttribute(SCORMPACKAGE, false);
-	}
+  public boolean isScormPackagesOnly() {
+    return wrapped.getBooleanAttribute(SCORMPACKAGE, false);
+  }
 
-	public void setScormPackagesOnly(boolean scormOnly)
-	{
-		wrapped.getAttributes().put(SCORMPACKAGE, scormOnly);
-	}
+  public void setScormPackagesOnly(boolean scormOnly) {
+    wrapped.getAttributes().put(SCORMPACKAGE, scormOnly);
+  }
 
-	public boolean isSuppressThumbnails()
-	{
-		return wrapped.getBooleanAttribute(SUPPRESSTHUMBS, false);
-	}
+  public boolean isSuppressThumbnails() {
+    return wrapped.getBooleanAttribute(SUPPRESSTHUMBS, false);
+  }
 
-	public void setSuppressThumbnails(boolean suppress)
-	{
-		wrapped.getAttributes().put(SUPPRESSTHUMBS, suppress);
-	}
+  public void setSuppressThumbnails(boolean suppress) {
+    wrapped.getAttributes().put(SUPPRESSTHUMBS, suppress);
+  }
 
-	public boolean isShowThumbOption()
-	{
-		return wrapped.getBooleanAttribute(SHOWTHUMBOPTION, false);
-	}
+  public boolean isShowThumbOption() {
+    return wrapped.getBooleanAttribute(SHOWTHUMBOPTION, false);
+  }
 
-	public void setShowThumbOption(boolean showOption)
-	{
-		wrapped.getAttributes().put(SHOWTHUMBOPTION, showOption);
-	}
+  public void setShowThumbOption(boolean showOption) {
+    wrapped.getAttributes().put(SHOWTHUMBOPTION, showOption);
+  }
 
-	public boolean isRestrictByMime()
-	{
-		return wrapped.getBooleanAttribute(RESTRICTMIME, false);
-	}
+  public boolean isRestrictByMime() {
+    return wrapped.getBooleanAttribute(RESTRICTMIME, false);
+  }
 
-	public void setRestrictByMime(boolean restrictMime)
-	{
-		wrapped.getAttributes().put(RESTRICTMIME, restrictMime);
-	}
+  public void setRestrictByMime(boolean restrictMime) {
+    wrapped.getAttributes().put(RESTRICTMIME, restrictMime);
+  }
 
-	public List<String> getMimeTypes()
-	{
-		return wrapped.ensureListAttribute(KEY_MIMETYPES);
-	}
+  public List<String> getMimeTypes() {
+    return wrapped.ensureListAttribute(KEY_MIMETYPES);
+  }
 
-	public void setMimeTypes(List<String> mimeTypes)
-	{
-		wrapped.getAttributes().put(KEY_MIMETYPES, mimeTypes);
-	}
+  public void setMimeTypes(List<String> mimeTypes) {
+    wrapped.getAttributes().put(KEY_MIMETYPES, mimeTypes);
+  }
 
-	public boolean isRestrictFileSize()
-	{
-		return wrapped.getBooleanAttribute(RESTRICTFILESIZE, false);
-	}
+  public boolean isRestrictFileSize() {
+    return wrapped.getBooleanAttribute(RESTRICTFILESIZE, false);
+  }
 
-	public void setRestrictFileSize(boolean restrictFileSize)
-	{
-		wrapped.getAttributes().put(RESTRICTFILESIZE, restrictFileSize);
-	}
+  public void setRestrictFileSize(boolean restrictFileSize) {
+    wrapped.getAttributes().put(RESTRICTFILESIZE, restrictFileSize);
+  }
 
-	public int getMaxFileSize()
-	{
-		Integer maxFileSize = (Integer) wrapped.getAttributes().get(MAXFILESIZE);
-		if( maxFileSize != null )
-		{
-			return maxFileSize;
-		}
-		return 0;
-	}
+  public int getMaxFileSize() {
+    Integer maxFileSize = (Integer) wrapped.getAttributes().get(MAXFILESIZE);
+    if (maxFileSize != null) {
+      return maxFileSize;
+    }
+    return 0;
+  }
 
-	public void setMaxFileSize(int maxFileSize)
-	{
-		wrapped.getAttributes().put(MAXFILESIZE, maxFileSize);
-	}
+  public void setMaxFileSize(int maxFileSize) {
+    wrapped.getAttributes().put(MAXFILESIZE, maxFileSize);
+  }
 
-	// public boolean isNoScrapbook()
-	// {
-	// return wrapped.getBooleanAttribute(NOSCRAPBOOK, false);
-	// }
-	//
-	// public void setNoScrapbook(boolean noScrapbook)
-	// {
-	// wrapped.getAttributes().put(NOUNZIP, noScrapbook);
-	// }
+  // public boolean isNoScrapbook()
+  // {
+  // return wrapped.getBooleanAttribute(NOSCRAPBOOK, false);
+  // }
+  //
+  // public void setNoScrapbook(boolean noScrapbook)
+  // {
+  // wrapped.getAttributes().put(NOUNZIP, noScrapbook);
+  // }
 }

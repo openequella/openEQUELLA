@@ -33,34 +33,30 @@ import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.home.model.RecentSelectionSegmentModel.RecentSelection;
 import com.tle.web.viewurl.ViewItemUrlFactory;
 
-public class SelectionsSegment extends AbstractRecentSegment
-{
-	@PlugKey("recently.selected")
-	private static Label TITLE;
+public class SelectionsSegment extends AbstractRecentSegment {
+  @PlugKey("recently.selected")
+  private static Label TITLE;
 
-	@Inject
-	private ViewItemUrlFactory urlFactory;
-	@Inject
-	private SelectionService selectionService;
+  @Inject private ViewItemUrlFactory urlFactory;
+  @Inject private SelectionService selectionService;
 
-	@Override
-	protected List<RecentSelection> getSelections(SectionInfo info, SelectionSession session, int maximum)
-	{
-		List<SelectionHistory> list = selectionService.getRecentSelections(info, maximum);
-		List<RecentSelection> selections = new ArrayList<RecentSelection>();
-		for( SelectionHistory resource : list )
-		{
-			HtmlLinkState state = new HtmlLinkState(urlFactory.createItemUrl(info, new ItemId(resource.getUuid(),
-				resource.getVersion())));
-			selections.add(new RecentSelection(resource, state));
-		}
-		return selections;
-	}
+  @Override
+  protected List<RecentSelection> getSelections(
+      SectionInfo info, SelectionSession session, int maximum) {
+    List<SelectionHistory> list = selectionService.getRecentSelections(info, maximum);
+    List<RecentSelection> selections = new ArrayList<RecentSelection>();
+    for (SelectionHistory resource : list) {
+      HtmlLinkState state =
+          new HtmlLinkState(
+              urlFactory.createItemUrl(
+                  info, new ItemId(resource.getUuid(), resource.getVersion())));
+      selections.add(new RecentSelection(resource, state));
+    }
+    return selections;
+  }
 
-	@Override
-	public String getTitle(SectionInfo info, SelectionSession session)
-	{
-		return TITLE.getText(); //$NON-NLS-1$
-	}
-
+  @Override
+  public String getTitle(SectionInfo info, SelectionSession session) {
+    return TITLE.getText(); // $NON-NLS-1$
+  }
 }

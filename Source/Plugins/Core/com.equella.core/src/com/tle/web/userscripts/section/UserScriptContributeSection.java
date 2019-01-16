@@ -35,73 +35,64 @@ import com.tle.web.sections.render.Label;
 
 @TreeIndexed
 public class UserScriptContributeSection
-	extends
-		AbstractEntityContributeSection<UserScriptEditingBean, UserScript, UserScriptContributeSection.UserScriptContributeModel>
-{
+    extends AbstractEntityContributeSection<
+        UserScriptEditingBean, UserScript, UserScriptContributeSection.UserScriptContributeModel> {
 
-	@PlugKey("scripts.editor.pagetitle.new")
-	private static Label NEW_SCRIPT_LABEL;
-	@PlugKey("scripts.editor.pagetitle.edit")
-	private static Label EDIT_SCRIPT_LABEL;
+  @PlugKey("scripts.editor.pagetitle.new")
+  private static Label NEW_SCRIPT_LABEL;
 
-	@Inject
-	private UserScriptEditorSection userScriptEditorSection;
-	@Inject
-	private UserScriptsService userScriptService;
+  @PlugKey("scripts.editor.pagetitle.edit")
+  private static Label EDIT_SCRIPT_LABEL;
 
-	@Override
-	protected AbstractEntityService<UserScriptEditingBean, UserScript> getEntityService()
-	{
-		return userScriptService;
-	}
+  @Inject private UserScriptEditorSection userScriptEditorSection;
+  @Inject private UserScriptsService userScriptService;
 
-	@Override
-	protected Label getCreatingLabel(SectionInfo info)
-	{
-		return NEW_SCRIPT_LABEL;
-	}
+  @Override
+  protected AbstractEntityService<UserScriptEditingBean, UserScript> getEntityService() {
+    return userScriptService;
+  }
 
-	@Override
-	protected Label getEditingLabel(SectionInfo info)
-	{
-		return EDIT_SCRIPT_LABEL;
-	}
+  @Override
+  protected Label getCreatingLabel(SectionInfo info) {
+    return NEW_SCRIPT_LABEL;
+  }
 
-	@Override
-	protected EntityEditor<UserScriptEditingBean, UserScript> getEditor(SectionInfo info)
-	{
-		return userScriptEditorSection;
-	}
+  @Override
+  protected Label getEditingLabel(SectionInfo info) {
+    return EDIT_SCRIPT_LABEL;
+  }
 
-	@Override
-	protected String getCreatePriv()
-	{
-		return UserScriptsConstants.PRIV_CREATE_SCRIPT;
-	}
+  @Override
+  protected EntityEditor<UserScriptEditingBean, UserScript> getEditor(SectionInfo info) {
+    return userScriptEditorSection;
+  }
 
-	@Override
-	protected String getEditPriv()
-	{
+  @Override
+  protected String getCreatePriv() {
+    return UserScriptsConstants.PRIV_CREATE_SCRIPT;
+  }
 
-		return UserScriptsConstants.PRIV_EDIT_SCRIPT;
-	}
+  @Override
+  protected String getEditPriv() {
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new UserScriptContributeModel();
-	}
+    return UserScriptsConstants.PRIV_EDIT_SCRIPT;
+  }
 
-	@Override
-	protected Collection<EntityEditor<UserScriptEditingBean, UserScript>> getAllEditors()
-	{
-		return Collections.singletonList((EntityEditor<UserScriptEditingBean, UserScript>) userScriptEditorSection);
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new UserScriptContributeModel();
+  }
 
-	public class UserScriptContributeModel
-		extends
-			AbstractEntityContributeSection<UserScriptEditingBean, UserScript, UserScriptContributeModel>.EntityContributeModel
-	{
-		// Empty
-	}
+  @Override
+  protected Collection<EntityEditor<UserScriptEditingBean, UserScript>> getAllEditors() {
+    return Collections.singletonList(
+        (EntityEditor<UserScriptEditingBean, UserScript>) userScriptEditorSection);
+  }
+
+  public class UserScriptContributeModel
+      extends AbstractEntityContributeSection<
+              UserScriptEditingBean, UserScript, UserScriptContributeModel>
+          .EntityContributeModel {
+    // Empty
+  }
 }

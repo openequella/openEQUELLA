@@ -29,21 +29,22 @@ import com.tle.web.resources.ResourcesService;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class DynaCollectionPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeProvider<DynaCollection>
-{
-	@Inject
-	public DynaCollectionPrivilegeTreeProvider(DynaCollectionService dynaCollectionService)
-	{
-		super(dynaCollectionService, Node.ALL_DYNA_COLLECTIONS,
-			ResourcesService.getResourceHelper(DynaCollectionPrivilegeTreeProvider.class)
-				.key("securitytree.alldynacollections"),
-			Node.DYNA_COLLECTION, ResourcesService.getResourceHelper(DynaCollectionPrivilegeTreeProvider.class)
-				.key("securitytree.targetalldynacollections"));
-	}
+public class DynaCollectionPrivilegeTreeProvider
+    extends AbstractEntityPrivilegeTreeProvider<DynaCollection> {
+  @Inject
+  public DynaCollectionPrivilegeTreeProvider(DynaCollectionService dynaCollectionService) {
+    super(
+        dynaCollectionService,
+        Node.ALL_DYNA_COLLECTIONS,
+        ResourcesService.getResourceHelper(DynaCollectionPrivilegeTreeProvider.class)
+            .key("securitytree.alldynacollections"),
+        Node.DYNA_COLLECTION,
+        ResourcesService.getResourceHelper(DynaCollectionPrivilegeTreeProvider.class)
+            .key("securitytree.targetalldynacollections"));
+  }
 
-	@Override
-	protected DynaCollection createEntity()
-	{
-		return new DynaCollection();
-	}
+  @Override
+  protected DynaCollection createEntity() {
+    return new DynaCollection();
+  }
 }

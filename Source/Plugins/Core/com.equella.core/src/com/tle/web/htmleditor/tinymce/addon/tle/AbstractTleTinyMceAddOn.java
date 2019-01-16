@@ -24,38 +24,30 @@ import com.tle.web.htmleditor.tinymce.TinyMceAddOn;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.sections.SectionTree;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
-public abstract class AbstractTleTinyMceAddOn implements TinyMceAddOn
-{
-	@Inject
-	private InstitutionService institutionService;
+public abstract class AbstractTleTinyMceAddOn implements TinyMceAddOn {
+  @Inject private InstitutionService institutionService;
 
-	@Override
-	public String getBaseUrl()
-	{
-		return institutionService.institutionalise(getResourceHelper().url("scripts/" + getId()));
-	}
+  @Override
+  public String getBaseUrl() {
+    return institutionService.institutionalise(getResourceHelper().url("scripts/" + getId()));
+  }
 
-	@Override
-	public String getJsUrl()
-	{
-		return PathUtils.urlPath(getBaseUrl(), "editor_plugin_src.js");
-	}
+  @Override
+  public String getJsUrl() {
+    return PathUtils.urlPath(getBaseUrl(), "editor_plugin_src.js");
+  }
 
-	protected abstract PluginResourceHelper getResourceHelper();
+  protected abstract PluginResourceHelper getResourceHelper();
 
-	@Override
-	public boolean isEnabled()
-	{
-		return true;
-	}
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		// don't register anything by default
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    // don't register anything by default
+  }
 }

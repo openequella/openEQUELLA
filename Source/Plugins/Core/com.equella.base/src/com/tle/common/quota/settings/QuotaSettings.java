@@ -25,90 +25,73 @@ import com.tle.common.settings.annotation.Property;
 import com.tle.common.settings.annotation.PropertyDataList;
 import com.tle.common.settings.annotation.PropertyList;
 
-/**
- * @author Nicholas Read
- */
-public class QuotaSettings implements ConfigurationProperties
-{
-	private static final long serialVersionUID = 1;
-	public static final int QUOTA_GIG_PRECISION = 4;
+/** @author Nicholas Read */
+public class QuotaSettings implements ConfigurationProperties {
+  private static final long serialVersionUID = 1;
+  public static final int QUOTA_GIG_PRECISION = 4;
 
-	@PropertyList(key = "banned.extensions")
-	private final List<String> bannedExtensions = new ArrayList<String>();
+  @PropertyList(key = "banned.extensions")
+  private final List<String> bannedExtensions = new ArrayList<String>();
 
-	@PropertyDataList(key = "user.quota.quotas", type = UserQuota.class)
-	private final List<UserQuota> quotas = new ArrayList<UserQuota>();
+  @PropertyDataList(key = "user.quota.quotas", type = UserQuota.class)
+  private final List<UserQuota> quotas = new ArrayList<UserQuota>();
 
-	public QuotaSettings()
-	{
-		super();
-	}
+  public QuotaSettings() {
+    super();
+  }
 
-	public List<String> getBannedExtensions()
-	{
-		return bannedExtensions;
-	}
+  public List<String> getBannedExtensions() {
+    return bannedExtensions;
+  }
 
-	public List<UserQuota> getQuotas()
-	{
-		return quotas;
-	}
+  public List<UserQuota> getQuotas() {
+    return quotas;
+  }
 
-	public static class UserQuota implements ConfigurationProperties
-	{
-		private static final long serialVersionUID = 1;
+  public static class UserQuota implements ConfigurationProperties {
+    private static final long serialVersionUID = 1;
 
-		@Property(key = "size")
-		private long size;
-		@Property(key = "expression")
-		private String expression;
+    @Property(key = "size")
+    private long size;
 
-		/**
-		 * Reflection only.
-		 */
-		public UserQuota()
-		{
-			//
-		}
+    @Property(key = "expression")
+    private String expression;
 
-		public String getExpression()
-		{
-			return expression;
-		}
+    /** Reflection only. */
+    public UserQuota() {
+      //
+    }
 
-		public void setExpression(String expression)
-		{
-			this.expression = expression;
-		}
+    public String getExpression() {
+      return expression;
+    }
 
-		public long getSize()
-		{
-			return size;
-		}
+    public void setExpression(String expression) {
+      this.expression = expression;
+    }
 
-		public void setSize(long size)
-		{
-			this.size = size;
-		}
+    public long getSize() {
+      return size;
+    }
 
-		@Override
-		public int hashCode()
-		{
-			return Long.valueOf(size).hashCode() + (expression == null ? 0 : expression.hashCode());
-		}
+    public void setSize(long size) {
+      this.size = size;
+    }
 
-		@Override
-		public boolean equals(Object obj)
-		{
-			if( obj instanceof UserQuota )
-			{
-				final UserQuota other = (UserQuota) obj;
-				if( size == other.size && Objects.equals(expression, other.expression) )
-				{
-					return true;
-				}
-			}
-			return false;
-		}
-	}
+    @Override
+    public int hashCode() {
+      return Long.valueOf(size).hashCode() + (expression == null ? 0 : expression.hashCode());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj instanceof UserQuota) {
+        final UserQuota other = (UserQuota) obj;
+        if (size == other.size && Objects.equals(expression, other.expression)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
 }

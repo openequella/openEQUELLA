@@ -29,21 +29,22 @@ import com.tle.web.resources.ResourcesService;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class ConnectorPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeProvider<Connector>
-{
-	private static final PluginResourceHelper resources = ResourcesService
-		.getResourceHelper(ConnectorPrivilegeTreeProvider.class);
+public class ConnectorPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeProvider<Connector> {
+  private static final PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(ConnectorPrivilegeTreeProvider.class);
 
-	@Inject
-	public ConnectorPrivilegeTreeProvider(ConnectorService connectorService)
-	{
-		super(connectorService, Node.ALL_CONNECTORS, resources.key("securitytree.allconnectors"), Node.CONNECTOR,
-			resources.key("securitytree.targetallconnectors"));
-	}
+  @Inject
+  public ConnectorPrivilegeTreeProvider(ConnectorService connectorService) {
+    super(
+        connectorService,
+        Node.ALL_CONNECTORS,
+        resources.key("securitytree.allconnectors"),
+        Node.CONNECTOR,
+        resources.key("securitytree.targetallconnectors"));
+  }
 
-	@Override
-	protected Connector createEntity()
-	{
-		return new Connector();
-	}
+  @Override
+  protected Connector createEntity() {
+    return new Connector();
+  }
 }

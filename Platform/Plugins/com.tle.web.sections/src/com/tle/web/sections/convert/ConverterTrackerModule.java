@@ -18,19 +18,16 @@ package com.tle.web.sections.convert;
 
 import com.tle.core.guice.PluginTrackerModule;
 
-public class ConverterTrackerModule extends PluginTrackerModule
-{
-	@Override
-	protected String getPluginId()
-	{
-		return "com.tle.web.sections";
-	}
+public class ConverterTrackerModule extends PluginTrackerModule {
+  @Override
+  protected String getPluginId() {
+    return "com.tle.web.sections";
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	protected void configure()
-	{
-		bind(Conversion.class).asEagerSingleton();
-		bindTracker(SectionsConverter.class, "converter", null);
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected void configure() {
+    bind(Conversion.class).asEagerSingleton();
+    bindTracker(SectionsConverter.class, "converter", null);
+  }
 }

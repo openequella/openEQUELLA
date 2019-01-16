@@ -38,77 +38,68 @@ import com.tle.core.plugins.PluginTracker;
 
 @Bind(HibernateFactoryService.class)
 @Singleton
-public class HibernateFactoryServiceImpl implements HibernateFactoryService, DynamicClassLoader
-{
-	private static final String EXTPOINT_ID = "domainObjects"; //$NON-NLS-1$
-	private static final String MAIN_FACTORY = "main"; //$NON-NLS-1$
+public class HibernateFactoryServiceImpl implements HibernateFactoryService, DynamicClassLoader {
+  private static final String EXTPOINT_ID = "domainObjects"; // $NON-NLS-1$
+  private static final String MAIN_FACTORY = "main"; // $NON-NLS-1$
 
-	private PluginTracker<Object> domainTracker;
-	private Map<String, List<Extension>> extensionMap;
-	private Map<String, Class<?>> accessibleClasses = Collections.synchronizedMap(new HashMap<String, Class<?>>());
+  private PluginTracker<Object> domainTracker;
+  private Map<String, List<Extension>> extensionMap;
+  private Map<String, Class<?>> accessibleClasses =
+      Collections.synchronizedMap(new HashMap<String, Class<?>>());
 
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		domainTracker = new PluginTracker<Object>(pluginService, "com.tle.core.hibernate", EXTPOINT_ID, null); // NOSONAR
-		((StandardPluginClassLoader) SessionFactory.class.getClassLoader()).setDynamicClassLoader(this);
-	}
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    domainTracker =
+        new PluginTracker<Object>(
+            pluginService, "com.tle.core.hibernate", EXTPOINT_ID, null); // NOSONAR
+    ((StandardPluginClassLoader) SessionFactory.class.getClassLoader()).setDynamicClassLoader(this);
+  }
 
-	@Override
-	public HibernateFactory createConfiguration(DataSourceHolder dataSourceHolder, Class<?>... clazzes)
-	{
-		for( Class<?> clazz : clazzes )
-		{
-			accessibleClasses.put(clazz.getName(), clazz);
-		}
-		return new HibernateFactory(dataSourceHolder, clazzes);
-	}
+  @Override
+  public HibernateFactory createConfiguration(
+      DataSourceHolder dataSourceHolder, Class<?>... clazzes) {
+    for (Class<?> clazz : clazzes) {
+      accessibleClasses.put(clazz.getName(), clazz);
+    }
+    return new HibernateFactory(dataSourceHolder, clazzes);
+  }
 
-	@Override
-	public synchronized Class<?>[] getDomainClasses(String factory)
-	{
-		if( extensionMap == null || domainTracker.needsUpdate() )
-		{
-			extensionMap = new HashMap<String, List<Extension>>();
-			List<Extension> extensions = domainTracker.getExtensions();
-			for( Extension extension : extensions )
-			{
-				String name = MAIN_FACTORY;
+  @Override
+  public synchronized Class<?>[] getDomainClasses(String factory) {
+    if (extensionMap == null || domainTracker.needsUpdate()) {
+      extensionMap = new HashMap<String, List<Extension>>();
+      List<Extension> extensions = domainTracker.getExtensions();
+      for (Extension extension : extensions) {
+        String name = MAIN_FACTORY;
 
-				Parameter factoryParam = extension.getParameter("factory"); //$NON-NLS-1$
-				if( factoryParam != null )
-				{
-					name = factoryParam.valueAsString();
-				}
-				List<Extension> list = extensionMap.get(name);
-				if( list == null )
-				{
-					list = new ArrayList<Extension>();
-					extensionMap.put(name, list);
-				}
-				list.add(extension);
-			}
-		}
-		List<Class<?>> clazzes = new ArrayList<Class<?>>();
-		List<Extension> extlist = extensionMap.get(factory);
-		if( extlist != null )
-		{
-			for( Extension extension : extlist )
-			{
-				Collection<Parameter> params = extension.getParameters("class"); //$NON-NLS-1$
-				for( Parameter cp : params )
-				{
-					Class<?> clazz = domainTracker.getClassForName(extension, cp.valueAsString());
-					clazzes.add(clazz);
-				}
-			}
-		}
-		return clazzes.toArray(new Class<?>[clazzes.size()]);
-	}
+        Parameter factoryParam = extension.getParameter("factory"); // $NON-NLS-1$
+        if (factoryParam != null) {
+          name = factoryParam.valueAsString();
+        }
+        List<Extension> list = extensionMap.get(name);
+        if (list == null) {
+          list = new ArrayList<Extension>();
+          extensionMap.put(name, list);
+        }
+        list.add(extension);
+      }
+    }
+    List<Class<?>> clazzes = new ArrayList<Class<?>>();
+    List<Extension> extlist = extensionMap.get(factory);
+    if (extlist != null) {
+      for (Extension extension : extlist) {
+        Collection<Parameter> params = extension.getParameters("class"); // $NON-NLS-1$
+        for (Parameter cp : params) {
+          Class<?> clazz = domainTracker.getClassForName(extension, cp.valueAsString());
+          clazzes.add(clazz);
+        }
+      }
+    }
+    return clazzes.toArray(new Class<?>[clazzes.size()]);
+  }
 
-	@Override
-	public Class<?> findClass(String name)
-	{
-		return accessibleClasses.get(name);
-	}
+  @Override
+  public Class<?> findClass(String name) {
+    return accessibleClasses.get(name);
+  }
 }

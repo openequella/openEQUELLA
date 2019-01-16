@@ -36,69 +36,57 @@ import com.google.common.base.Throwables;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.core.guice.Bind;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class PdfExtracter extends AbstractTextExtracterExtension
-{
-	private static final Logger LOGGER = LoggerFactory.getLogger(PdfExtracter.class);
+public class PdfExtracter extends AbstractTextExtracterExtension {
+  private static final Logger LOGGER = LoggerFactory.getLogger(PdfExtracter.class);
 
-	@Override
-	public boolean isSupportedByDefault(MimeEntry mimeEntry)
-	{
-		return mimeEntry.getType().equals("application/pdf");
-	}
+  @Override
+  public boolean isSupportedByDefault(MimeEntry mimeEntry) {
+    return mimeEntry.getType().equals("application/pdf");
+  }
 
-	@Override
-	public void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration)
-		throws IOException
-	{
-		WriteOutContentHandler wrapped = new WriteOutContentHandler(maxSize);
-		ContentHandler handler = new CappedBodyContentHandler(wrapped, parseDuration);
-		try
-		{
-			Metadata meta = new Metadata();
-			Parser parser = new AutoDetectParser(new TikaConfig(getClass().getClassLoader()));
-			parser.parse(input, handler, meta, new ParseContext());
+  @Override
+  public void extractText(
+      String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration)
+      throws IOException {
+    WriteOutContentHandler wrapped = new WriteOutContentHandler(maxSize);
+    ContentHandler handler = new CappedBodyContentHandler(wrapped, parseDuration);
+    try {
+      Metadata meta = new Metadata();
+      Parser parser = new AutoDetectParser(new TikaConfig(getClass().getClassLoader()));
+      parser.parse(input, handler, meta, new ParseContext());
 
-			appendText(handler, outputText, maxSize);
+      appendText(handler, outputText, maxSize);
 
-		}
-		catch( Exception t )
-		{
-			if( wrapped.isWriteLimitReached(t) )
-			{
-				// keep going
-				LOGGER.debug("PDF size limit reached.  Indexing truncated text");
-				appendText(handler, outputText, maxSize);
-				return;
-			}
-			throw Throwables.propagate(t);
-		}
-	}
+    } catch (Exception t) {
+      if (wrapped.isWriteLimitReached(t)) {
+        // keep going
+        LOGGER.debug("PDF size limit reached.  Indexing truncated text");
+        appendText(handler, outputText, maxSize);
+        return;
+      }
+      throw Throwables.propagate(t);
+    }
+  }
 
-	private void appendText(ContentHandler handler, StringBuilder outputText, int maxSize)
-	{
-		String pdfSummary = handler.toString();
+  private void appendText(ContentHandler handler, StringBuilder outputText, int maxSize) {
+    String pdfSummary = handler.toString();
 
-		if( pdfSummary.length() > maxSize )
-		{
-			pdfSummary = pdfSummary.substring(0, maxSize);
-		}
-		outputText.append(pdfSummary);
+    if (pdfSummary.length() > maxSize) {
+      pdfSummary = pdfSummary.substring(0, maxSize);
+    }
+    outputText.append(pdfSummary);
 
-		if( LOGGER.isTraceEnabled() )
-		{
-			LOGGER.trace("PDF Summary:" + pdfSummary);
-		}
-	}
+    if (LOGGER.isTraceEnabled()) {
+      LOGGER.trace("PDF Summary:" + pdfSummary);
+    }
+  }
 
-	@Override
-	public boolean isMimeTypeSupported(String mimeType)
-	{
-		return mimeType.toLowerCase().contains("pdf");
-	}
+  @Override
+  public boolean isMimeTypeSupported(String mimeType) {
+    return mimeType.toLowerCase().contains("pdf");
+  }
 }

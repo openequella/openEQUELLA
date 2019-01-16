@@ -19,7 +19,6 @@ package com.tle.web.api.report;
 import com.tle.beans.entity.report.Report;
 import com.tle.web.api.baseentity.serializer.BaseEntityEditor;
 
-public interface ReportEditor  extends BaseEntityEditor<Report, ReportBean>
-{
-    // Nothing to see here
+public interface ReportEditor extends BaseEntityEditor<Report, ReportBean> {
+  // Nothing to see here
 }

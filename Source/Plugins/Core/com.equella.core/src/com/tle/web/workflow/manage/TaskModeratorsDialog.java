@@ -56,186 +56,155 @@ import com.tle.web.sections.standard.renderers.LinkRenderer;
 @NonNullByDefault
 @Bind
 @SuppressWarnings("nls")
-public class TaskModeratorsDialog extends EquellaDialog<TaskModeratorsDialog.Model>
-{
-	@PlugKey("moddialog.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("moddialog.and")
-	private static Label LABEL_AND;
-	@PlugKey("moddialog.others")
-	private static String KEY_OTHERS;
+public class TaskModeratorsDialog extends EquellaDialog<TaskModeratorsDialog.Model> {
+  @PlugKey("moddialog.title")
+  private static Label LABEL_TITLE;
 
-	@Inject
-	private WorkflowService workflowService;
+  @PlugKey("moddialog.and")
+  private static Label LABEL_AND;
 
-	@Inject
-	private UserLinkService userLinkService;
-	private UserLinkSection userLinkSection;
+  @PlugKey("moddialog.others")
+  private static String KEY_OTHERS;
 
-	@EventFactory
-	private EventGenerator events;
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @Inject private WorkflowService workflowService;
 
-	public TaskModeratorsDialog()
-	{
-		setAjax(true);
-	}
+  @Inject private UserLinkService userLinkService;
+  private UserLinkSection userLinkSection;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		userLinkSection = userLinkService.register(tree, id);
-	}
+  @EventFactory private EventGenerator events;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return LABEL_TITLE;
-	}
+  public TaskModeratorsDialog() {
+    setAjax(true);
+  }
 
-	@Override
-	public Model instantiateDialogModel(SectionInfo info)
-	{
-		return new Model();
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    userLinkSection = userLinkService.register(tree, id);
+  }
 
-	@Override
-	protected ParameterizedEvent getAjaxShowEvent()
-	{
-		return events.getEventHandler("openMods"); //$NON-NLS-1$
-	}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return LABEL_TITLE;
+  }
 
-	@EventHandlerMethod
-	public void openMods(SectionInfo info, ItemTaskId taskId)
-	{
-		getModel(info).setTaskId(taskId);
-		showDialog(info);
-	}
+  @Override
+  public Model instantiateDialogModel(SectionInfo info) {
+    return new Model();
+  }
 
-	@Override
-	public String getWidth()
-	{
-		return "auto";
-	}
+  @Override
+  protected ParameterizedEvent getAjaxShowEvent() {
+    return events.getEventHandler("openMods"); // $NON-NLS-1$
+  }
 
-	@Override
-	public String getHeight()
-	{
-		return "auto";
-	}
+  @EventHandlerMethod
+  public void openMods(SectionInfo info, ItemTaskId taskId) {
+    getModel(info).setTaskId(taskId);
+    showDialog(info);
+  }
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		Model model = getModel(context);
-		List<TaskModerator> moderatorList = workflowService.getModeratorList(model.getTaskId(), true);
-		Multimap<Boolean, ModRow> rows = ArrayListMultimap.create();
-		for( TaskModerator taskModerator : moderatorList )
-		{
-			HtmlLinkState link = createLinkForModerator(context, taskModerator);
-			if( link != null )
-			{
-				rows.put(taskModerator.isAccepted(), new ModRow(link, false));
-			}
-		}
-		model.setModerators(rows.get(false));
-		model.setModeratorsAccepted(rows.get(true));
-		return viewFactory.createResult("moddialog.ftl", this);
-	}
+  @Override
+  public String getWidth() {
+    return "auto";
+  }
 
-	@Nullable
-	private HtmlLinkState createLinkForModerator(SectionInfo info, TaskModerator moderator)
-	{
-		HtmlLinkState link = null;
-		if( moderator.getType() == Type.USER )
-		{
-			link = userLinkSection.createLink(info, moderator.getId());
-		}
-		else if( moderator.getType() == Type.ROLE )
-		{
-			link = userLinkSection.createRoleLink(info, moderator.getId());
-		}
-		return link;
-	}
+  @Override
+  public String getHeight() {
+    return "auto";
+  }
 
-	public static class Model extends DialogModel
-	{
-		@Bookmarked
-		private ItemTaskId taskId;
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    Model model = getModel(context);
+    List<TaskModerator> moderatorList = workflowService.getModeratorList(model.getTaskId(), true);
+    Multimap<Boolean, ModRow> rows = ArrayListMultimap.create();
+    for (TaskModerator taskModerator : moderatorList) {
+      HtmlLinkState link = createLinkForModerator(context, taskModerator);
+      if (link != null) {
+        rows.put(taskModerator.isAccepted(), new ModRow(link, false));
+      }
+    }
+    model.setModerators(rows.get(false));
+    model.setModeratorsAccepted(rows.get(true));
+    return viewFactory.createResult("moddialog.ftl", this);
+  }
 
-		private Collection<ModRow> moderators;
-		private Collection<ModRow> moderatorsAccepted;
+  @Nullable
+  private HtmlLinkState createLinkForModerator(SectionInfo info, TaskModerator moderator) {
+    HtmlLinkState link = null;
+    if (moderator.getType() == Type.USER) {
+      link = userLinkSection.createLink(info, moderator.getId());
+    } else if (moderator.getType() == Type.ROLE) {
+      link = userLinkSection.createRoleLink(info, moderator.getId());
+    }
+    return link;
+  }
 
-		public Collection<ModRow> getModerators()
-		{
-			return moderators;
-		}
+  public static class Model extends DialogModel {
+    @Bookmarked private ItemTaskId taskId;
 
-		public void setModerators(Collection<ModRow> moderators)
-		{
-			this.moderators = moderators;
-		}
+    private Collection<ModRow> moderators;
+    private Collection<ModRow> moderatorsAccepted;
 
-		public ItemTaskId getTaskId()
-		{
-			return taskId;
-		}
+    public Collection<ModRow> getModerators() {
+      return moderators;
+    }
 
-		public void setTaskId(ItemTaskId taskId)
-		{
-			this.taskId = taskId;
-		}
+    public void setModerators(Collection<ModRow> moderators) {
+      this.moderators = moderators;
+    }
 
-		public Collection<ModRow> getModeratorsAccepted()
-		{
-			return moderatorsAccepted;
-		}
+    public ItemTaskId getTaskId() {
+      return taskId;
+    }
 
-		public void setModeratorsAccepted(Collection<ModRow> moderatorsAccepted)
-		{
-			this.moderatorsAccepted = moderatorsAccepted;
-		}
+    public void setTaskId(ItemTaskId taskId) {
+      this.taskId = taskId;
+    }
 
-	}
+    public Collection<ModRow> getModeratorsAccepted() {
+      return moderatorsAccepted;
+    }
 
-	public static class ModRow
-	{
-		private final HtmlLinkState moderator;
-		private final boolean accepted;
+    public void setModeratorsAccepted(Collection<ModRow> moderatorsAccepted) {
+      this.moderatorsAccepted = moderatorsAccepted;
+    }
+  }
 
-		public ModRow(HtmlLinkState moderator, boolean accetped)
-		{
-			this.moderator = moderator;
-			this.accepted = accetped;
-		}
+  public static class ModRow {
+    private final HtmlLinkState moderator;
+    private final boolean accepted;
 
-		public HtmlLinkState getModerator()
-		{
-			return moderator;
-		}
+    public ModRow(HtmlLinkState moderator, boolean accetped) {
+      this.moderator = moderator;
+      this.accepted = accetped;
+    }
 
-		public boolean isAccepted()
-		{
-			return accepted;
-		}
+    public HtmlLinkState getModerator() {
+      return moderator;
+    }
 
-	}
+    public boolean isAccepted() {
+      return accepted;
+    }
+  }
 
-	public SectionRenderable getListLink(SectionInfo info, List<TaskModerator> mods, ItemTaskId taskId)
-	{
-		if( mods.size() > 0 )
-		{
-			SectionRenderable listLink = new LinkRenderer(createLinkForModerator(info, mods.get(0)));
-			if( mods.size() == 1 )
-			{
-				return listLink;
-			}
-			LinkRenderer otherLink = new LinkRenderer(new HtmlLinkState(new PluralKeyLabel(KEY_OTHERS, mods.size() - 1),
-				new OverrideHandler(getOpenFunction(), taskId)));
-			return new DelimitedRenderer(" ", listLink, LABEL_AND, otherLink);
-		}
-		return null;
-	}
+  public SectionRenderable getListLink(
+      SectionInfo info, List<TaskModerator> mods, ItemTaskId taskId) {
+    if (mods.size() > 0) {
+      SectionRenderable listLink = new LinkRenderer(createLinkForModerator(info, mods.get(0)));
+      if (mods.size() == 1) {
+        return listLink;
+      }
+      LinkRenderer otherLink =
+          new LinkRenderer(
+              new HtmlLinkState(
+                  new PluralKeyLabel(KEY_OTHERS, mods.size() - 1),
+                  new OverrideHandler(getOpenFunction(), taskId)));
+      return new DelimitedRenderer(" ", listLink, LABEL_AND, otherLink);
+    }
+    return null;
+  }
 }

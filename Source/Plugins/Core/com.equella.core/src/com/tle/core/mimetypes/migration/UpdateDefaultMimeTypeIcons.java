@@ -36,66 +36,62 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 
 @Bind
 @Singleton
-public class UpdateDefaultMimeTypeIcons extends AbstractHibernateDataMigration
-{
-	private static final String KEY_PREFIX = PluginServiceImpl.getMyPluginId(UpdateDefaultMimeTypeIcons.class) + ".";
+public class UpdateDefaultMimeTypeIcons extends AbstractHibernateDataMigration {
+  private static final String KEY_PREFIX =
+      PluginServiceImpl.getMyPluginId(UpdateDefaultMimeTypeIcons.class) + ".";
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(KEY_PREFIX + "mimetypes.migration.title");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(KEY_PREFIX + "mimetypes.migration.title");
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-		throws Exception
-	{
-		ScrollableResults results = session.createQuery(
-			"FROM MimeEntryAttributes WHERE element LIKE '%.gif' AND mapkey = 'PluginIconPath' ").scroll();
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception {
+    ScrollableResults results =
+        session
+            .createQuery(
+                "FROM MimeEntryAttributes WHERE element LIKE '%.gif' AND mapkey = 'PluginIconPath' ")
+            .scroll();
 
-		while( results.next() )
-		{
-			Object[] resultEntry = results.get();
-			FakeMimeEntryAttributes fmeAttr = (FakeMimeEntryAttributes) resultEntry[0];
-			fmeAttr.element = fmeAttr.element.replaceAll(".gif", ".png");
+    while (results.next()) {
+      Object[] resultEntry = results.get();
+      FakeMimeEntryAttributes fmeAttr = (FakeMimeEntryAttributes) resultEntry[0];
+      fmeAttr.element = fmeAttr.element.replaceAll(".gif", ".png");
 
-			session.save(fmeAttr);
-			session.flush();
-			session.clear();
-		}
-	}
+      session.save(fmeAttr);
+      session.flush();
+      session.clear();
+    }
+  }
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return count(session, "FROM MimeEntryAttributes WHERE element LIKE '%.gif' AND mapkey = 'PluginIconPath' ");
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return count(
+        session,
+        "FROM MimeEntryAttributes WHERE element LIKE '%.gif' AND mapkey = 'PluginIconPath' ");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class[]{FakeMimeEntryAttributes.class, FakeMimeEntryAttributesKey.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class[] {FakeMimeEntryAttributes.class, FakeMimeEntryAttributesKey.class};
+  }
 
-	@Entity(name = "MimeEntryAttributes")
-	public static class FakeMimeEntryAttributes implements Serializable
-	{
-		private static final long serialVersionUID = 1L;
+  @Entity(name = "MimeEntryAttributes")
+  public static class FakeMimeEntryAttributes implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-		@Id
-		public FakeMimeEntryAttributesKey mimeEntryId;
+    @Id public FakeMimeEntryAttributesKey mimeEntryId;
 
-		@Lob
-		String element;
-	}
+    @Lob String element;
+  }
 
-	@Embeddable
-	public static class FakeMimeEntryAttributesKey implements Serializable
-	{
-		private static final long serialVersionUID = 1L;
+  @Embeddable
+  public static class FakeMimeEntryAttributesKey implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-		long mimeEntryId;
+    long mimeEntryId;
 
-		String mapkey;
-	}
+    String mapkey;
+  }
 }

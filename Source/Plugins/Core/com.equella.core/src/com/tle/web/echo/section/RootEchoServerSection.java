@@ -40,59 +40,54 @@ import com.tle.web.template.Decorations;
 
 @Bind
 @SuppressWarnings("nls")
-public class RootEchoServerSection extends OneColumnLayout<OneColumnLayoutModel>
-{
+public class RootEchoServerSection extends OneColumnLayout<OneColumnLayoutModel> {
 
-	@PlugKey("serverlist.page.title")
-	private static Label TITLE_LABEL;
-	@PlugKey("echo.error.noaccess")
-	private static String ACCESS_ERROR;
+  @PlugKey("serverlist.page.title")
+  private static Label TITLE_LABEL;
 
-	@Inject
-	private TLEAclManager aclService;
+  @PlugKey("echo.error.noaccess")
+  private static String ACCESS_ERROR;
 
-	private boolean canView()
-	{
-		return !aclService.filterNonGrantedPrivileges(
-			Arrays.asList(EchoConstants.PRIV_CREATE_ECHO, EchoConstants.PRIV_EDIT_ECHO)).isEmpty();
-	}
+  @Inject private TLEAclManager aclService;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !canView() )
-		{
-			throw new AccessDeniedException(CurrentLocale.get(ACCESS_ERROR));
-		}
+  private boolean canView() {
+    return !aclService
+        .filterNonGrantedPrivileges(
+            Arrays.asList(EchoConstants.PRIV_CREATE_ECHO, EchoConstants.PRIV_EDIT_ECHO))
+        .isEmpty();
+  }
 
-		return super.renderHtml(context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (!canView()) {
+      throw new AccessDeniedException(CurrentLocale.get(ACCESS_ERROR));
+    }
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		OneColumnLayoutModel model = getModel(info);
-		SectionId modalSection = model.getModalSection();
-		crumbs.add(SettingsUtils.getBreadcrumb(info));
+    return super.renderHtml(context);
+  }
 
-		if( modalSection != null )
-		{
-			crumbs.add(SettingsList.asLinkOrNull(SettingsList.echoSettings()));
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    OneColumnLayoutModel model = getModel(info);
+    SectionId modalSection = model.getModalSection();
+    crumbs.add(SettingsUtils.getBreadcrumb(info));
 
-			SectionId section = info.getSectionForId(modalSection);
-			if( section instanceof ModalEchoServerSection )
-			{
-				((ModalEchoServerSection) section).addBreadcrumbsAndTitle(info, decorations, crumbs);
-				return;
-			}
-		}
-		decorations.setTitle(TITLE_LABEL);
-		decorations.setContentBodyClass("echos");
-	}
+    if (modalSection != null) {
+      crumbs.add(SettingsList.asLinkOrNull(SettingsList.echoSettings()));
 
-	@Override
-	public Class<OneColumnLayoutModel> getModelClass()
-	{
-		return OneColumnLayoutModel.class;
-	}
+      SectionId section = info.getSectionForId(modalSection);
+      if (section instanceof ModalEchoServerSection) {
+        ((ModalEchoServerSection) section).addBreadcrumbsAndTitle(info, decorations, crumbs);
+        return;
+      }
+    }
+    decorations.setTitle(TITLE_LABEL);
+    decorations.setContentBodyClass("echos");
+  }
+
+  @Override
+  public Class<OneColumnLayoutModel> getModelClass() {
+    return OneColumnLayoutModel.class;
+  }
 }

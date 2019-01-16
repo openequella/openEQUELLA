@@ -21,11 +21,8 @@ import java.util.List;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.web.sections.SectionInfo;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
-public interface SelectionsTableModel
-{
-	List<SelectionsTableSelection> getSelections(SectionInfo info);
+public interface SelectionsTableModel {
+  List<SelectionsTableSelection> getSelections(SectionInfo info);
 }

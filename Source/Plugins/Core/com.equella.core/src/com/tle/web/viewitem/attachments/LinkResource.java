@@ -30,20 +30,19 @@ import com.tle.web.viewurl.attachments.AttachmentResourceExtension;
 
 @Bind
 @Singleton
-public class LinkResource implements AttachmentResourceExtension<Attachment>, RegisterMimeTypeExtension<Attachment>
-{
-	@Inject
-	private URLCheckerService urlCheckerService;
+public class LinkResource
+    implements AttachmentResourceExtension<Attachment>, RegisterMimeTypeExtension<Attachment> {
+  @Inject private URLCheckerService urlCheckerService;
 
-	@Override
-	public ViewableResource process(SectionInfo info, ViewableResource resource, Attachment attachment)
-	{
-		return new DetailUrlResource(resource, attachment.getUrl(), attachment.getDescription(), urlCheckerService);
-	}
+  @Override
+  public ViewableResource process(
+      SectionInfo info, ViewableResource resource, Attachment attachment) {
+    return new DetailUrlResource(
+        resource, attachment.getUrl(), attachment.getDescription(), urlCheckerService);
+  }
 
-	@Override
-	public String getMimeType(Attachment attachment)
-	{
-		return MimeTypeConstants.MIME_LINK;
-	}
+  @Override
+  public String getMimeType(Attachment attachment) {
+    return MimeTypeConstants.MIME_LINK;
+  }
 }

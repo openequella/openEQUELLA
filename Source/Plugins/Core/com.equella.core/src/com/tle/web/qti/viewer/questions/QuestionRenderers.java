@@ -171,265 +171,250 @@ import com.tle.web.qti.viewer.questions.renderer.xhtml.ObjectRenderer;
 import com.tle.web.qti.viewer.questions.renderer.xhtml.TableRenderer;
 import com.tle.web.qti.viewer.questions.renderer.xhtml.XhtmlElementRenderer;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
 @Bind
 @Singleton
-public class QuestionRenderers
-{
-	private static final Logger LOGGER = Logger.getLogger(QuestionRenderers.class);
-
-	@Inject
-	private Factory qfac;
-
-	private static final Map<Class<?>, Method> facMap = Maps.newHashMap();
-
-	@PostConstruct
-	public void setupLookupMap()
-	{
-		for( Method method : Factory.class.getDeclaredMethods() )
-		{
-			Class<?>[] parameterTypes = method.getParameterTypes();
-			if( parameterTypes.length == 2 )
-			{
-				Class<?> param = parameterTypes[0];
-				facMap.put(param, method);
-			}
-		}
-	}
+public class QuestionRenderers {
+  private static final Logger LOGGER = Logger.getLogger(QuestionRenderers.class);
 
-	public QtiNodeRenderer chooseRenderer(@Nullable java.lang.Object model, QtiViewerContext viewer)
-	{
-		if( model == null )
-		{
-			return null;
-		}
+  @Inject private Factory qfac;
 
-		final Class<? extends java.lang.Object> modelClass = model.getClass();
+  private static final Map<Class<?>, Method> facMap = Maps.newHashMap();
 
-		final Method method = facMap.get(modelClass);
-		if( method != null )
-		{
-			LOGGER.trace(modelClass.getName() + "." + method.getName());
-			try
-			{
-				final QtiNodeRenderer renderer = (QtiNodeRenderer) method.invoke(qfac, model, viewer);
-				renderer.preProcess();
-				return renderer;
-			}
-			catch( IllegalAccessException | IllegalArgumentException | InvocationTargetException e )
-			{
-				throw Throwables.propagate(e);
-			}
-		}
-		else if( model instanceof QtiNode )
-		{
-			throw new UnrenderableNodeTypeException("Unrenderable qti node type " + modelClass.getName());
-		}
-		// Unrenderable type
-		throw new UnrenderableNodeTypeException("Unrenderable type " + modelClass.getName());
-	}
+  @PostConstruct
+  public void setupLookupMap() {
+    for (Method method : Factory.class.getDeclaredMethods()) {
+      Class<?>[] parameterTypes = method.getParameterTypes();
+      if (parameterTypes.length == 2) {
+        Class<?> param = parameterTypes[0];
+        facMap.put(param, method);
+      }
+    }
+  }
 
-	/**
-	 * Don't need to use this in general, use chooseRenderer instead unless you
-	 * need a specific renderer.
-	 * 
-	 * @return
-	 */
-	public Factory getRendererFactory()
-	{
-		return qfac;
-	}
+  public QtiNodeRenderer chooseRenderer(@Nullable java.lang.Object model, QtiViewerContext viewer) {
+    if (model == null) {
+      return null;
+    }
 
-	@BindFactory
-	public interface Factory
-	{
-		AssessmentItemRenderer createAssessmentItemRenderer(AssessmentItem item, QtiViewerContext context);
+    final Class<? extends java.lang.Object> modelClass = model.getClass();
 
-		ItemBodyRenderer createItemBodyRenderer(ItemBody itemBody, QtiViewerContext context);
+    final Method method = facMap.get(modelClass);
+    if (method != null) {
+      LOGGER.trace(modelClass.getName() + "." + method.getName());
+      try {
+        final QtiNodeRenderer renderer = (QtiNodeRenderer) method.invoke(qfac, model, viewer);
+        renderer.preProcess();
+        return renderer;
+      } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        throw Throwables.propagate(e);
+      }
+    } else if (model instanceof QtiNode) {
+      throw new UnrenderableNodeTypeException("Unrenderable qti node type " + modelClass.getName());
+    }
+    // Unrenderable type
+    throw new UnrenderableNodeTypeException("Unrenderable type " + modelClass.getName());
+  }
 
-		ChoiceInteractionRenderer createChoiceInteractionRenderer(ChoiceInteraction model, QtiViewerContext context);
+  /**
+   * Don't need to use this in general, use chooseRenderer instead unless you need a specific
+   * renderer.
+   *
+   * @return
+   */
+  public Factory getRendererFactory() {
+    return qfac;
+  }
 
-		SimpleChoiceRenderer createSimpleChoiceRenderer(SimpleChoice choice, QtiViewerContext context);
+  @BindFactory
+  public interface Factory {
+    AssessmentItemRenderer createAssessmentItemRenderer(
+        AssessmentItem item, QtiViewerContext context);
 
-		SimpleChoiceRenderer createSimpleChoiceRenderer(SimpleChoice choice, QtiViewerContext context, String name,
-			boolean multiple);
+    ItemBodyRenderer createItemBodyRenderer(ItemBody itemBody, QtiViewerContext context);
 
-		ExtendedTextInteractionRenderer createExtendedTextInteractionRenderer(ExtendedTextInteraction interaction,
-			QtiViewerContext context);
+    ChoiceInteractionRenderer createChoiceInteractionRenderer(
+        ChoiceInteraction model, QtiViewerContext context);
 
-		FeedbackBlockRenderer c(FeedbackBlock fb, QtiViewerContext context);
+    SimpleChoiceRenderer createSimpleChoiceRenderer(SimpleChoice choice, QtiViewerContext context);
 
-		XhtmlElementRenderer c(P p, QtiViewerContext context);
+    SimpleChoiceRenderer createSimpleChoiceRenderer(
+        SimpleChoice choice, QtiViewerContext context, String name, boolean multiple);
 
-		XhtmlElementRenderer c(H1 p, QtiViewerContext context);
+    ExtendedTextInteractionRenderer createExtendedTextInteractionRenderer(
+        ExtendedTextInteraction interaction, QtiViewerContext context);
 
-		XhtmlElementRenderer c(H2 p, QtiViewerContext context);
+    FeedbackBlockRenderer c(FeedbackBlock fb, QtiViewerContext context);
 
-		XhtmlElementRenderer c(H3 p, QtiViewerContext context);
+    XhtmlElementRenderer c(P p, QtiViewerContext context);
 
-		XhtmlElementRenderer c(H4 p, QtiViewerContext context);
+    XhtmlElementRenderer c(H1 p, QtiViewerContext context);
 
-		XhtmlElementRenderer c(H5 p, QtiViewerContext context);
+    XhtmlElementRenderer c(H2 p, QtiViewerContext context);
 
-		XhtmlElementRenderer c(H6 p, QtiViewerContext context);
+    XhtmlElementRenderer c(H3 p, QtiViewerContext context);
 
-		XhtmlElementRenderer c(Pre p, QtiViewerContext context);
+    XhtmlElementRenderer c(H4 p, QtiViewerContext context);
 
-		XhtmlElementRenderer cBrRenderer(Br p, QtiViewerContext context);
+    XhtmlElementRenderer c(H5 p, QtiViewerContext context);
 
-		XhtmlElementRenderer cHrRenderer(Hr p, QtiViewerContext context);
+    XhtmlElementRenderer c(H6 p, QtiViewerContext context);
 
-		XhtmlElementRenderer cDivRenderer(Div p, QtiViewerContext context);
+    XhtmlElementRenderer c(Pre p, QtiViewerContext context);
 
-		XhtmlElementRenderer cAbbrRenderer(Abbr p, QtiViewerContext context);
+    XhtmlElementRenderer cBrRenderer(Br p, QtiViewerContext context);
 
-		XhtmlElementRenderer cCodeRenderer(Code p, QtiViewerContext context);
+    XhtmlElementRenderer cHrRenderer(Hr p, QtiViewerContext context);
 
-		XhtmlElementRenderer cSpanRenderer(Span p, QtiViewerContext context);
+    XhtmlElementRenderer cDivRenderer(Div p, QtiViewerContext context);
 
-		XhtmlElementRenderer cBlockquoteRenderer(Blockquote p, QtiViewerContext context);
+    XhtmlElementRenderer cAbbrRenderer(Abbr p, QtiViewerContext context);
 
-		XhtmlElementRenderer cStrongRenderer(Strong p, QtiViewerContext context);
+    XhtmlElementRenderer cCodeRenderer(Code p, QtiViewerContext context);
 
-		XhtmlElementRenderer cARenderer(A p, QtiViewerContext context);
+    XhtmlElementRenderer cSpanRenderer(Span p, QtiViewerContext context);
 
-		XhtmlElementRenderer cImgRenderer(Img p, QtiViewerContext context);
+    XhtmlElementRenderer cBlockquoteRenderer(Blockquote p, QtiViewerContext context);
 
-		XhtmlElementRenderer cAcronymRenderer(Acronym p, QtiViewerContext context);
+    XhtmlElementRenderer cStrongRenderer(Strong p, QtiViewerContext context);
 
-		XhtmlElementRenderer cAddressRenderer(Address p, QtiViewerContext context);
+    XhtmlElementRenderer cARenderer(A p, QtiViewerContext context);
 
-		XhtmlElementRenderer cCiteRenderer(Cite p, QtiViewerContext context);
+    XhtmlElementRenderer cImgRenderer(Img p, QtiViewerContext context);
 
-		XhtmlElementRenderer cDfnRenderer(Dfn p, QtiViewerContext context);
+    XhtmlElementRenderer cAcronymRenderer(Acronym p, QtiViewerContext context);
 
-		XhtmlElementRenderer cEmRenderer(Em p, QtiViewerContext context);
+    XhtmlElementRenderer cAddressRenderer(Address p, QtiViewerContext context);
 
-		XhtmlElementRenderer cKdbRenderer(Kbd p, QtiViewerContext context);
+    XhtmlElementRenderer cCiteRenderer(Cite p, QtiViewerContext context);
 
-		XhtmlElementRenderer cQRenderer(Q p, QtiViewerContext context);
+    XhtmlElementRenderer cDfnRenderer(Dfn p, QtiViewerContext context);
 
-		XhtmlElementRenderer cSampRenderer(Samp p, QtiViewerContext context);
+    XhtmlElementRenderer cEmRenderer(Em p, QtiViewerContext context);
 
-		XhtmlElementRenderer cVarRenderer(Var p, QtiViewerContext context);
+    XhtmlElementRenderer cKdbRenderer(Kbd p, QtiViewerContext context);
 
-		XhtmlElementRenderer cDlRenderer(Dl p, QtiViewerContext context);
+    XhtmlElementRenderer cQRenderer(Q p, QtiViewerContext context);
 
-		XhtmlElementRenderer cDdRenderer(Dd p, QtiViewerContext context);
+    XhtmlElementRenderer cSampRenderer(Samp p, QtiViewerContext context);
 
-		XhtmlElementRenderer cDtRenderer(Dt p, QtiViewerContext context);
+    XhtmlElementRenderer cVarRenderer(Var p, QtiViewerContext context);
 
-		XhtmlElementRenderer cUlRenderer(Ul p, QtiViewerContext context);
+    XhtmlElementRenderer cDlRenderer(Dl p, QtiViewerContext context);
 
-		XhtmlElementRenderer cLiRenderer(Li p, QtiViewerContext context);
+    XhtmlElementRenderer cDdRenderer(Dd p, QtiViewerContext context);
 
-		XhtmlElementRenderer cOlRenderer(Ol p, QtiViewerContext context);
+    XhtmlElementRenderer cDtRenderer(Dt p, QtiViewerContext context);
 
-		XhtmlElementRenderer cParamRenderer(Param p, QtiViewerContext context);
+    XhtmlElementRenderer cUlRenderer(Ul p, QtiViewerContext context);
 
-		XhtmlElementRenderer cBigRenderer(Big p, QtiViewerContext context);
+    XhtmlElementRenderer cLiRenderer(Li p, QtiViewerContext context);
 
-		XhtmlElementRenderer cIRenderer(I p, QtiViewerContext context);
+    XhtmlElementRenderer cOlRenderer(Ol p, QtiViewerContext context);
 
-		XhtmlElementRenderer cSmallRenderer(Small p, QtiViewerContext context);
+    XhtmlElementRenderer cParamRenderer(Param p, QtiViewerContext context);
 
-		XhtmlElementRenderer cSubRenderer(Sub p, QtiViewerContext context);
+    XhtmlElementRenderer cBigRenderer(Big p, QtiViewerContext context);
 
-		XhtmlElementRenderer cSupRenderer(Sup p, QtiViewerContext context);
+    XhtmlElementRenderer cIRenderer(I p, QtiViewerContext context);
 
-		XhtmlElementRenderer cTtRenderer(Tt p, QtiViewerContext context);
+    XhtmlElementRenderer cSmallRenderer(Small p, QtiViewerContext context);
 
-		XhtmlElementRenderer cCaptionRenderer(Caption p, QtiViewerContext context);
+    XhtmlElementRenderer cSubRenderer(Sub p, QtiViewerContext context);
 
-		XhtmlElementRenderer cColRenderer(Col p, QtiViewerContext context);
+    XhtmlElementRenderer cSupRenderer(Sup p, QtiViewerContext context);
 
-		TableRenderer c(Table p, QtiViewerContext context);
+    XhtmlElementRenderer cTtRenderer(Tt p, QtiViewerContext context);
 
-		XhtmlElementRenderer cTbodyRenderer(Tbody p, QtiViewerContext context);
+    XhtmlElementRenderer cCaptionRenderer(Caption p, QtiViewerContext context);
 
-		XhtmlElementRenderer cTdRenderer(Td p, QtiViewerContext context);
+    XhtmlElementRenderer cColRenderer(Col p, QtiViewerContext context);
 
-		XhtmlElementRenderer createTfootRenderer(Tfoot p, QtiViewerContext context);
+    TableRenderer c(Table p, QtiViewerContext context);
 
-		XhtmlElementRenderer c(Th p, QtiViewerContext context);
+    XhtmlElementRenderer cTbodyRenderer(Tbody p, QtiViewerContext context);
 
-		XhtmlElementRenderer c(Thead p, QtiViewerContext context);
+    XhtmlElementRenderer cTdRenderer(Td p, QtiViewerContext context);
 
-		XhtmlElementRenderer c(Tr p, QtiViewerContext context);
+    XhtmlElementRenderer createTfootRenderer(Tfoot p, QtiViewerContext context);
 
-		TextRunRenderer c(TextRun p, QtiViewerContext context);
+    XhtmlElementRenderer c(Th p, QtiViewerContext context);
 
-		ForeignElementRenderer c(ForeignElement p, QtiViewerContext context);
+    XhtmlElementRenderer c(Thead p, QtiViewerContext context);
 
-		MathRenderer c(Math m, QtiViewerContext context);
+    XhtmlElementRenderer c(Tr p, QtiViewerContext context);
 
-		FeedbackInlineRenderer c(FeedbackInline p, QtiViewerContext context);
+    TextRunRenderer c(TextRun p, QtiViewerContext context);
 
-		TestFeedbackRenderer c(TestFeedback p, QtiViewerContext context);
+    ForeignElementRenderer c(ForeignElement p, QtiViewerContext context);
 
-		MatchInteractionRenderer c(MatchInteraction p, QtiViewerContext context);
+    MathRenderer c(Math m, QtiViewerContext context);
 
-		GapMatchInteractionRenderer c(GapMatchInteraction p, QtiViewerContext context);
+    FeedbackInlineRenderer c(FeedbackInline p, QtiViewerContext context);
 
-		PromptRenderer c(Prompt p, QtiViewerContext context);
+    TestFeedbackRenderer c(TestFeedback p, QtiViewerContext context);
 
-		AssociateInteractionRenderer c(AssociateInteraction p, QtiViewerContext context);
+    MatchInteractionRenderer c(MatchInteraction p, QtiViewerContext context);
 
-		UploadInteractionRenderer c(UploadInteraction p, QtiViewerContext context);
+    GapMatchInteractionRenderer c(GapMatchInteraction p, QtiViewerContext context);
 
-		OrderInteractionRenderer c(OrderInteraction p, QtiViewerContext context);
+    PromptRenderer c(Prompt p, QtiViewerContext context);
 
-		InfoControlRenderer c(InfoControl p, QtiViewerContext context);
+    AssociateInteractionRenderer c(AssociateInteraction p, QtiViewerContext context);
 
-		ObjectRenderer c(Object object, QtiViewerContext context);
+    UploadInteractionRenderer c(UploadInteraction p, QtiViewerContext context);
 
-		TextEntryInteractionRenderer c(TextEntryInteraction p, QtiViewerContext context);
+    OrderInteractionRenderer c(OrderInteraction p, QtiViewerContext context);
 
-		SimpleAssociableChoiceRenderer c(SimpleAssociableChoice p, QtiViewerContext context);
+    InfoControlRenderer c(InfoControl p, QtiViewerContext context);
 
-		GapTextRenderer c(GapText gapText, QtiViewerContext context);
+    ObjectRenderer c(Object object, QtiViewerContext context);
 
-		GapRenderer c(Gap gap, QtiViewerContext context);
+    TextEntryInteractionRenderer c(TextEntryInteraction p, QtiViewerContext context);
 
-		InlineChoiceInteractionRenderer c(InlineChoiceInteraction inlineChoice, QtiViewerContext context);
+    SimpleAssociableChoiceRenderer c(SimpleAssociableChoice p, QtiViewerContext context);
 
-		InlineChoiceRenderer c(InlineChoice choice, QtiViewerContext context);
+    GapTextRenderer c(GapText gapText, QtiViewerContext context);
 
-		SimpleMatchSetRenderer c(SimpleMatchSet simpleMatchSet, QtiViewerContext context);
+    GapRenderer c(Gap gap, QtiViewerContext context);
 
-		PrintedVariableRenderer c(PrintedVariable printedVariable, QtiViewerContext context);
+    InlineChoiceInteractionRenderer c(
+        InlineChoiceInteraction inlineChoice, QtiViewerContext context);
 
-		RubricBlockRenderer c(RubricBlock rubricBlock, QtiViewerContext context);
+    InlineChoiceRenderer c(InlineChoice choice, QtiViewerContext context);
 
-		StylesheetRenderer c(Stylesheet stylesheet, QtiViewerContext context);
+    SimpleMatchSetRenderer c(SimpleMatchSet simpleMatchSet, QtiViewerContext context);
 
-		HottextInteractionRenderer c(HottextInteraction hottext, QtiViewerContext context);
+    PrintedVariableRenderer c(PrintedVariable printedVariable, QtiViewerContext context);
 
-		EndAttemptInteractionRenderer c(EndAttemptInteraction p, QtiViewerContext context);
+    RubricBlockRenderer c(RubricBlock rubricBlock, QtiViewerContext context);
 
-		HottextRenderer c(Hottext p, QtiViewerContext context);
+    StylesheetRenderer c(Stylesheet stylesheet, QtiViewerContext context);
 
-		ModalFeedbackRenderer c(ModalFeedback p, QtiViewerContext context);
+    HottextInteractionRenderer c(HottextInteraction hottext, QtiViewerContext context);
 
-		// Unsupported
-		SelectPointInteractionRenderer c(SelectPointInteraction spi, QtiViewerContext context);
+    EndAttemptInteractionRenderer c(EndAttemptInteraction p, QtiViewerContext context);
 
-		GraphicOrderInteractionRenderer c(GraphicOrderInteraction gi, QtiViewerContext context);
+    HottextRenderer c(Hottext p, QtiViewerContext context);
 
-		HotspotInteractionRenderer c(HotspotInteraction p, QtiViewerContext context);
+    ModalFeedbackRenderer c(ModalFeedback p, QtiViewerContext context);
 
-		GraphicAssociateInteractionRenderer c(GraphicAssociateInteraction p, QtiViewerContext context);
+    // Unsupported
+    SelectPointInteractionRenderer c(SelectPointInteraction spi, QtiViewerContext context);
 
-		CustomInteractionRenderer c(CustomInteraction<?> p, QtiViewerContext context);
+    GraphicOrderInteractionRenderer c(GraphicOrderInteraction gi, QtiViewerContext context);
 
-		DrawingInteractionRenderer c(DrawingInteraction p, QtiViewerContext context);
+    HotspotInteractionRenderer c(HotspotInteraction p, QtiViewerContext context);
 
-		SliderInteractionRenderer c(SliderInteraction p, QtiViewerContext context);
+    GraphicAssociateInteractionRenderer c(GraphicAssociateInteraction p, QtiViewerContext context);
 
-		MediaInteractionRenderer c(MediaInteraction p, QtiViewerContext context);
-	}
+    CustomInteractionRenderer c(CustomInteraction<?> p, QtiViewerContext context);
 
+    DrawingInteractionRenderer c(DrawingInteraction p, QtiViewerContext context);
+
+    SliderInteractionRenderer c(SliderInteraction p, QtiViewerContext context);
+
+    MediaInteractionRenderer c(MediaInteraction p, QtiViewerContext context);
+  }
 }

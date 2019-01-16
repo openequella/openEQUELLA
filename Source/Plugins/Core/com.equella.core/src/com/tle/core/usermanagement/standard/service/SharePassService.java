@@ -20,16 +20,13 @@ import java.util.Date;
 
 import com.tle.beans.item.Item;
 
-/**
- * @author Nicholas Read
- */
-public interface SharePassService
-{
-	boolean isEnabled();
+/** @author Nicholas Read */
+public interface SharePassService {
+  boolean isEnabled();
 
-	String add(Item item, String email, Date expiry);
+  String add(Item item, String email, Date expiry);
 
-	void removeExpiredPasses();
+  void removeExpiredPasses();
 
-	String activatePasses(String token);
+  String activatePasses(String token);
 }

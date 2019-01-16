@@ -31,32 +31,27 @@ import com.tle.core.xml.service.XmlService;
 
 @Bind
 @Singleton
-public class UpdateDefaultMimeTypeIconsXml extends XmlMigrator
-{
-	@Inject
-	private XmlService xmlService;
+public class UpdateDefaultMimeTypeIconsXml extends XmlMigrator {
+  @Inject private XmlService xmlService;
 
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
-	{
-		TemporaryFileHandle mimeFolder = new SubTemporaryFile(staging, "mimetypes"); //$NON-NLS-1$
+  @Override
+  public void execute(
+      TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) {
+    TemporaryFileHandle mimeFolder = new SubTemporaryFile(staging, "mimetypes"); // $NON-NLS-1$
 
-		for( String entry : xmlHelper.getXmlFileList(mimeFolder) )
-		{
-			MimeEntry mimeEntry = xmlHelper.readXmlFile(mimeFolder, entry);
-			changeDefaultIconPath(mimeEntry);
-			xmlHelper.writeFile(mimeFolder, entry, xmlService.serialiseToXml(mimeEntry));
-		}
-	}
+    for (String entry : xmlHelper.getXmlFileList(mimeFolder)) {
+      MimeEntry mimeEntry = xmlHelper.readXmlFile(mimeFolder, entry);
+      changeDefaultIconPath(mimeEntry);
+      xmlHelper.writeFile(mimeFolder, entry, xmlService.serialiseToXml(mimeEntry));
+    }
+  }
 
-	public static void changeDefaultIconPath(MimeEntry mimeEntry)
-	{
-		final String iconPath = "PluginIconPath";
+  public static void changeDefaultIconPath(MimeEntry mimeEntry) {
+    final String iconPath = "PluginIconPath";
 
-		String attr = mimeEntry.getAttribute(iconPath);
-		if( !Check.isEmpty(attr) && attr.contains(".gif") )
-		{
-			mimeEntry.setAttribute(iconPath, attr.replaceAll(".gif", ".png"));
-		}
-	}
+    String attr = mimeEntry.getAttribute(iconPath);
+    if (!Check.isEmpty(attr) && attr.contains(".gif")) {
+      mimeEntry.setAttribute(iconPath, attr.replaceAll(".gif", ".png"));
+    }
+  }
 }

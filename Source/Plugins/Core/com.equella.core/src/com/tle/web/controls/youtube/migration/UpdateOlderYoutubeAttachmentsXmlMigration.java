@@ -29,33 +29,26 @@ import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.PostReadMigrator;
 import com.tle.core.item.convert.ItemConverter.ItemConverterInfo;
 
-/**
- * @author larry
- *
- */
+/** @author larry */
 @Bind
 @Singleton
-public class UpdateOlderYoutubeAttachmentsXmlMigration implements PostReadMigrator<ItemConverterInfo>
-{
-	@SuppressWarnings("unused")
-	@Override
-	public void migrate(ItemConverterInfo obj) throws IOException
-	{
-		// return value not referred to for XmlMigration, but we code it here in
-		// for debugging convenience
-		boolean wasModified = false;
-		Item item = obj.getItem();
-		List<Attachment> attachments = item.getAttachments();
-		if( !Check.isEmpty(attachments) )
-		{
-			for( Attachment attachment : attachments )
-			{
-				Map<String, Object> dataMap = attachment.getDataAttributes();
-				if( dataMap != null )
-				{
-					wasModified |= UpdateOlderYoutubeAttachmentMigration.checkForUpdate(dataMap);
-				}
-			}
-		}
-	}
+public class UpdateOlderYoutubeAttachmentsXmlMigration
+    implements PostReadMigrator<ItemConverterInfo> {
+  @SuppressWarnings("unused")
+  @Override
+  public void migrate(ItemConverterInfo obj) throws IOException {
+    // return value not referred to for XmlMigration, but we code it here in
+    // for debugging convenience
+    boolean wasModified = false;
+    Item item = obj.getItem();
+    List<Attachment> attachments = item.getAttachments();
+    if (!Check.isEmpty(attachments)) {
+      for (Attachment attachment : attachments) {
+        Map<String, Object> dataMap = attachment.getDataAttributes();
+        if (dataMap != null) {
+          wasModified |= UpdateOlderYoutubeAttachmentMigration.checkForUpdate(dataMap);
+        }
+      }
+    }
+  }
 }

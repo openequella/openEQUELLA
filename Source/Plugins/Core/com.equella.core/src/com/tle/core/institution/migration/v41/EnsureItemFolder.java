@@ -29,17 +29,16 @@ import com.tle.core.institution.convert.XmlMigrator;
 
 @Bind
 @Singleton
-public class EnsureItemFolder extends XmlMigrator
-{
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) throws Exception
-	{
-		SubTemporaryFile folder = new SubTemporaryFile(staging, "items");
-		List<String> entries = fileSystemService.grep(folder, "", "*/_item/item.xml");
-		for( String entry : entries )
-		{
-			entry = entry.substring(0, entry.lastIndexOf('/'));
-			fileSystemService.rename(folder, entry, entry.substring(0, entry.lastIndexOf('/')) + "/_ITEM");
-		}
-	}
+public class EnsureItemFolder extends XmlMigrator {
+  @Override
+  public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
+      throws Exception {
+    SubTemporaryFile folder = new SubTemporaryFile(staging, "items");
+    List<String> entries = fileSystemService.grep(folder, "", "*/_item/item.xml");
+    for (String entry : entries) {
+      entry = entry.substring(0, entry.lastIndexOf('/'));
+      fileSystemService.rename(
+          folder, entry, entry.substring(0, entry.lastIndexOf('/')) + "/_ITEM");
+    }
+  }
 }

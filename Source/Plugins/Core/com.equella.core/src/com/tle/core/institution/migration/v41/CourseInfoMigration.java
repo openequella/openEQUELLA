@@ -39,66 +39,57 @@ import com.tle.core.migration.MigrationResult;
 
 @Bind
 @Singleton
-public class CourseInfoMigration extends AbstractHibernateSchemaMigration
-{
-	private static final String TABLE_NAME = "course_info";
-	private static final String NEW_SETTING_COLUMN = "version_selection";
+public class CourseInfoMigration extends AbstractHibernateSchemaMigration {
+  private static final String TABLE_NAME = "course_info";
+  private static final String NEW_SETTING_COLUMN = "version_selection";
 
-	@SuppressWarnings("nls")
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo("com.tle.core.entity.services.courseinfo.versel.title");
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo("com.tle.core.entity.services.courseinfo.versel.title");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class[]{FakeCourseInfo.class, VersionSelection.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class[] {FakeCourseInfo.class, VersionSelection.class};
+  }
 
-	@Override
-	public boolean isBackwardsCompatible()
-	{
-		return false;
-	}
+  @Override
+  public boolean isBackwardsCompatible() {
+    return false;
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		List<String> sql = new ArrayList<String>();
-		sql.addAll(helper.getAddColumnsSQL(TABLE_NAME, NEW_SETTING_COLUMN));
-		sql.addAll(helper.getAddIndexesAndConstraintsForColumns(TABLE_NAME, NEW_SETTING_COLUMN));
-		return sql;
-	}
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    List<String> sql = new ArrayList<String>();
+    sql.addAll(helper.getAddColumnsSQL(TABLE_NAME, NEW_SETTING_COLUMN));
+    sql.addAll(helper.getAddIndexesAndConstraintsForColumns(TABLE_NAME, NEW_SETTING_COLUMN));
+    return sql;
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		return Collections.emptyList();
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    return Collections.emptyList();
+  }
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return 0;
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return 0;
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-	{
-		// Nothing to do here
-	}
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) {
+    // Nothing to do here
+  }
 
-	@Entity(name = "CourseInfo")
-	@AccessType("field")
-	public static class FakeCourseInfo
-	{
-		@Id
-		long id;
+  @Entity(name = "CourseInfo")
+  @AccessType("field")
+  public static class FakeCourseInfo {
+    @Id long id;
 
-		@Column(length = 30)
-		@Enumerated(EnumType.STRING)
-		VersionSelection versionSelection;
-	}
+    @Column(length = 30)
+    @Enumerated(EnumType.STRING)
+    VersionSelection versionSelection;
+  }
 }

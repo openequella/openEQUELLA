@@ -45,58 +45,50 @@ import com.tle.web.wizard.WizardService;
 
 @Bind
 @SuppressWarnings("nls")
-public class ResumeSection extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	@PlugKey("resume.confirm")
-	private static Confirm RESUME_CONFIRM;
+public class ResumeSection extends AbstractPrototypeSection<Object> implements HtmlRenderer {
+  @PlugKey("resume.confirm")
+  private static Confirm RESUME_CONFIRM;
 
-	@EventFactory
-	private EventGenerator events;
+  @EventFactory private EventGenerator events;
 
-	@Inject
-	private WizardService wizardService;
+  @Inject private WizardService wizardService;
 
-	@Inject
-	private WebWizardService webWizardService;
+  @Inject private WebWizardService webWizardService;
 
-	@Component
-	@PlugKey("resume")
-	private Button resume;
+  @Component
+  @PlugKey("resume")
+  private Button resume;
 
-	private SubmitValuesFunction resumeHandler;
+  private SubmitValuesFunction resumeHandler;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		resumeHandler = events.getSubmitValuesFunction("resume");
-	}
+    resumeHandler = events.getSubmitValuesFunction("resume");
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(context);
-		Item item = itemInfo.getItem();
-		List<WizardInfo> resumableWizards = wizardService.listWizardsInSession();
-		if( resumableWizards.size() > 0 )
-		{
-			for( WizardInfo wizInfo : resumableWizards )
-			{
-				if( wizInfo.getItemUuid().equals(item.getUuid()) && wizInfo.getItemVersion() == item.getVersion() )
-				{
-					resume.setClickHandler(context,
-						new OverrideHandler(resumeHandler, wizInfo.getUuid()).addValidator(RESUME_CONFIRM));
-					return renderSection(context, resume);
-				}
-			}
-		}
-		return null;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(context);
+    Item item = itemInfo.getItem();
+    List<WizardInfo> resumableWizards = wizardService.listWizardsInSession();
+    if (resumableWizards.size() > 0) {
+      for (WizardInfo wizInfo : resumableWizards) {
+        if (wizInfo.getItemUuid().equals(item.getUuid())
+            && wizInfo.getItemVersion() == item.getVersion()) {
+          resume.setClickHandler(
+              context,
+              new OverrideHandler(resumeHandler, wizInfo.getUuid()).addValidator(RESUME_CONFIRM));
+          return renderSection(context, resume);
+        }
+      }
+    }
+    return null;
+  }
 
-	@EventHandlerMethod
-	public void resume(SectionInfo info, String wizardUuid)
-	{
-		webWizardService.forwardToLoadWizard(info, wizardUuid);
-	}
+  @EventHandlerMethod
+  public void resume(SectionInfo info, String wizardUuid) {
+    webWizardService.forwardToLoadWizard(info, wizardUuid);
+  }
 }

@@ -26,23 +26,19 @@ import com.tle.core.item.standard.operations.AbstractStandardWorkflowOperation;
 import com.tle.core.item.standard.operations.workflow.EscalateOperation;
 
 @Bind
-public class CheckModerationFilter extends AbstractStandardOperationFilter
-{
-	@Inject
-	private Provider<EscalateOperation> escalateFactory;
-	@Inject
-	private ItemOperationFactory itemOperationFactory;
+public class CheckModerationFilter extends AbstractStandardOperationFilter {
+  @Inject private Provider<EscalateOperation> escalateFactory;
+  @Inject private ItemOperationFactory itemOperationFactory;
 
-	@Override
-	public AbstractStandardWorkflowOperation[] createOperations()
-	{
-		return new AbstractStandardWorkflowOperation[]{escalateFactory.get(), itemOperationFactory.checkSteps(),
-				operationFactory.save()};
-	}
+  @Override
+  public AbstractStandardWorkflowOperation[] createOperations() {
+    return new AbstractStandardWorkflowOperation[] {
+      escalateFactory.get(), itemOperationFactory.checkSteps(), operationFactory.save()
+    };
+  }
 
-	@Override
-	public String getWhereClause()
-	{
-		return "moderating = true"; //$NON-NLS-1$
-	}
+  @Override
+  public String getWhereClause() {
+    return "moderating = true"; //$NON-NLS-1$
+  }
 }

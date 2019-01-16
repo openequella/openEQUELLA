@@ -26,17 +26,16 @@ import com.tle.web.sections.standard.RendererFactoryExtension;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.TableState;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
 @Singleton
-public class EquellaTableExtension implements RendererFactoryExtension
-{
-	@Override
-	public SectionRenderable getRenderer(RendererFactory rendererFactory, SectionInfo info, String renderer,
-		HtmlComponentState state)
-	{
-		return new ZebraTableRenderer((TableState) state, rendererFactory); // NOSONAR
-	}
+public class EquellaTableExtension implements RendererFactoryExtension {
+  @Override
+  public SectionRenderable getRenderer(
+      RendererFactory rendererFactory,
+      SectionInfo info,
+      String renderer,
+      HtmlComponentState state) {
+    return new ZebraTableRenderer((TableState) state, rendererFactory); // NOSONAR
+  }
 }

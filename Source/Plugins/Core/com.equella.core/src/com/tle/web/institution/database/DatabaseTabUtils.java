@@ -34,52 +34,42 @@ import com.tle.web.sections.standard.renderers.SpanRenderer;
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class DatabaseTabUtils
-{
-	@Inject
-	private DataSourceService dataSourceService;
+public class DatabaseTabUtils {
+  @Inject private DataSourceService dataSourceService;
 
-	public SectionRenderable getNameRenderer(DatabaseSchema ds)
-	{
-		TagState state = new TagState();
-		Label dbName = getConnectionLabel(ds);
-		Label contents = dbName;
+  public SectionRenderable getNameRenderer(DatabaseSchema ds) {
+    TagState state = new TagState();
+    Label dbName = getConnectionLabel(ds);
+    Label contents = dbName;
 
-		String desc = ds.getDescription();
-		if( !Check.isEmpty(desc) )
-		{
-			state.addTagProcessor(new LabelTagProcessor("alt", dbName));
-			state.addTagProcessor(new LabelTagProcessor("title", dbName));
-			contents = new TextLabel(desc);
-		}
-		return new SpanRenderer(state, contents);
-	}
+    String desc = ds.getDescription();
+    if (!Check.isEmpty(desc)) {
+      state.addTagProcessor(new LabelTagProcessor("alt", dbName));
+      state.addTagProcessor(new LabelTagProcessor("title", dbName));
+      contents = new TextLabel(desc);
+    }
+    return new SpanRenderer(state, contents);
+  }
 
-	public Label getConnectionLabel(DatabaseSchema ds)
-	{
-		String username;
-		String url;
-		if( ds.isUseSystem() )
-		{
-			url = dataSourceService.getSystemUrl();
-			username = dataSourceService.getSystemUsername();
-		}
-		else
-		{
-			username = ds.getUsername();
-			url = ds.getUrl();
-		}
-		ExtendedDialect dialect = dataSourceService.getDialect();
-		return new TextLabel(username + " @ " + dialect.getDisplayNameForUrl(url));
-	}
+  public Label getConnectionLabel(DatabaseSchema ds) {
+    String username;
+    String url;
+    if (ds.isUseSystem()) {
+      url = dataSourceService.getSystemUrl();
+      username = dataSourceService.getSystemUsername();
+    } else {
+      username = ds.getUsername();
+      url = ds.getUrl();
+    }
+    ExtendedDialect dialect = dataSourceService.getDialect();
+    return new TextLabel(username + " @ " + dialect.getDisplayNameForUrl(url));
+  }
 
-	public Label getNameLabel(DatabaseSchema ds)
-	{
-		String desc = ds.getDescription();
-		if( !Check.isEmpty(desc) )
-		{
-			return new TextLabel(desc);
-		}
-		return getConnectionLabel(ds);
-	}
+  public Label getNameLabel(DatabaseSchema ds) {
+    String desc = ds.getDescription();
+    if (!Check.isEmpty(desc)) {
+      return new TextLabel(desc);
+    }
+    return getConnectionLabel(ds);
+  }
 }

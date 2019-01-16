@@ -25,16 +25,14 @@ import com.tle.web.sections.js.JSStatements;
 import com.tle.web.sections.standard.model.TabSection;
 
 @NonNullByDefault
-public interface ScriptingTabInterface extends TabSection
-{
-	void customLoad(SectionInfo info, PortletEditingBean portlet);
+public interface ScriptingTabInterface extends TabSection {
+  void customLoad(SectionInfo info, PortletEditingBean portlet);
 
-	void customSave(SectionInfo info, PortletEditingBean portlet);
+  void customSave(SectionInfo info, PortletEditingBean portlet);
 
-	void customClear(SectionInfo info);
+  void customClear(SectionInfo info);
 
-	void customValidate(SectionInfo info, Map<String, Object> errors);
+  void customValidate(SectionInfo info, Map<String, Object> errors);
 
-	JSStatements getTabShowStatements();
-
+  JSStatements getTabShowStatements();
 }

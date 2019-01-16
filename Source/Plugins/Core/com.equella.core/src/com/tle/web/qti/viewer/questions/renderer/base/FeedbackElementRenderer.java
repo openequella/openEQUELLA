@@ -32,57 +32,49 @@ import com.tle.web.qti.viewer.QtiViewerContext;
 import com.tle.web.qti.viewer.questions.renderer.QtiNodeRenderer;
 import com.tle.web.sections.render.SectionRenderable;
 
-/**
- * @author Aaron
- */
-public abstract class FeedbackElementRenderer extends QtiNodeRenderer
-{
-	@Inject
-	private QtiService qtiService;
+/** @author Aaron */
+public abstract class FeedbackElementRenderer extends QtiNodeRenderer {
+  @Inject private QtiService qtiService;
 
-	private final FeedbackElement model;
+  private final FeedbackElement model;
 
-	protected FeedbackElementRenderer(FeedbackElement model, QtiViewerContext context)
-	{
-		super(model, context);
-		this.model = model;
-	}
+  protected FeedbackElementRenderer(FeedbackElement model, QtiViewerContext context) {
+    super(model, context);
+    this.model = model;
+  }
 
-	@Override
-	protected SectionRenderable createTopRenderable()
-	{
-		final QtiViewerContext context = getContext();
-		final ItemSessionState itemSessionState = context.getItemSessionController().getItemSessionState();
+  @Override
+  protected SectionRenderable createTopRenderable() {
+    final QtiViewerContext context = getContext();
+    final ItemSessionState itemSessionState =
+        context.getItemSessionController().getItemSessionState();
 
-		// TODO: does it need to be closed??? What about multiple attempts?
-		if( itemSessionState.isEnded() )
-		{
-			final ItemSessionController itemSessionController = context.getItemSessionController();
-			final ResolvedAssessmentItem resolvedAssessmentItem = context.getItemSessionController()
-				.getResolvedAssessmentItem();
-			if( qtiService.isResponded(resolvedAssessmentItem.getItemLookup().extractIfSuccessful(), itemSessionState) )
-			{
+    // TODO: does it need to be closed??? What about multiple attempts?
+    if (itemSessionState.isEnded()) {
+      final ItemSessionController itemSessionController = context.getItemSessionController();
+      final ResolvedAssessmentItem resolvedAssessmentItem =
+          context.getItemSessionController().getResolvedAssessmentItem();
+      if (qtiService.isResponded(
+          resolvedAssessmentItem.getItemLookup().extractIfSuccessful(), itemSessionState)) {
 
-				// TODO: probably a cleaner way to see if there was a response
-				final Value outcomeValue = itemSessionController.evaluateVariableValue(model.getOutcomeIdentifier(),
-					VariableType.OUTCOME);
-				if( !outcomeValue.isNull() )
-				{
-					final boolean vis = model.isVisible(itemSessionController);
-					if( vis )
-					{
-						return super.createTopRenderable();
-					}
-				}
-			}
-		}
-		return null;
-	}
+        // TODO: probably a cleaner way to see if there was a response
+        final Value outcomeValue =
+            itemSessionController.evaluateVariableValue(
+                model.getOutcomeIdentifier(), VariableType.OUTCOME);
+        if (!outcomeValue.isNull()) {
+          final boolean vis = model.isVisible(itemSessionController);
+          if (vis) {
+            return super.createTopRenderable();
+          }
+        }
+      }
+    }
+    return null;
+  }
 
-	@Override
-	protected void addAttributes(Map<String, String> attrs)
-	{
-		super.addAttributes(attrs);
-		attrs.put("class", "feedback");
-	}
+  @Override
+  protected void addAttributes(Map<String, String> attrs) {
+    super.addAttributes(attrs);
+    attrs.put("class", "feedback");
+  }
 }

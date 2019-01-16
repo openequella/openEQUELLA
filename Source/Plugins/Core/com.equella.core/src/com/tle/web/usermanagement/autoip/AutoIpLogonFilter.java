@@ -36,63 +36,51 @@ import hurl.build.QueryBuilder;
 import hurl.build.UriBuilder;
 
 @Bind
-public class AutoIpLogonFilter implements UserManagementLogonFilter
-{
-	private static final String PARAM_NOIP = "NO_IP_LOGIN"; //$NON-NLS-1$
-	@Inject
-	private ConfigurationService configService;
-	@Inject
-	private AutoIpLogonService autoIpLogonService;
+public class AutoIpLogonFilter implements UserManagementLogonFilter {
+  private static final String PARAM_NOIP = "NO_IP_LOGIN"; // $NON-NLS-1$
+  @Inject private ConfigurationService configService;
+  @Inject private AutoIpLogonService autoIpLogonService;
 
-	@Override
-	public boolean init(Map<Object, Object> attributes)
-	{
-		AutoLogin settings = configService.getProperties(new AutoLogin());
-		attributes.put(AutoLogin.class, settings);
-		return settings.isEnabledViaIp() && !settings.isNotAutomatic();
-	}
+  @Override
+  public boolean init(Map<Object, Object> attributes) {
+    AutoLogin settings = configService.getProperties(new AutoLogin());
+    attributes.put(AutoLogin.class, settings);
+    return settings.isEnabledViaIp() && !settings.isNotAutomatic();
+  }
 
-	@Override
-	public FilterResult filter(HttpServletRequest request, HttpServletResponse response) throws IOException
-	{
-		if( !CurrentUser.isGuest() )
-		{
-			return null;
-		}
-		if( request.getParameter(PARAM_NOIP) == null && autoIpLogonService.autoLogon(request) )
-		{
-			return FilterResult.FILTER_CONTINUE;
-		}
-		return null;
-	}
+  @Override
+  public FilterResult filter(HttpServletRequest request, HttpServletResponse response)
+      throws IOException {
+    if (!CurrentUser.isGuest()) {
+      return null;
+    }
+    if (request.getParameter(PARAM_NOIP) == null && autoIpLogonService.autoLogon(request)) {
+      return FilterResult.FILTER_CONTINUE;
+    }
+    return null;
+  }
 
-	@Override
-	public URI logoutRedirect(URI loggedOutURI)
-	{
-		return null;
-	}
+  @Override
+  public URI logoutRedirect(URI loggedOutURI) {
+    return null;
+  }
 
-	@Override
-	public URI logoutURI(UserState state, URI loggedOutURI)
-	{
-		UriBuilder uri = UriBuilder.create(loggedOutURI);
-		QueryBuilder qb = QueryBuilder.create();
-		if( loggedOutURI.getQuery() != null )
-		{
-			qb.parse(loggedOutURI.getQuery());
-		}
-		qb.addParam(PARAM_NOIP, "true"); //$NON-NLS-1$
-		uri.setQuery(qb);
-		return uri.build();
-	}
+  @Override
+  public URI logoutURI(UserState state, URI loggedOutURI) {
+    UriBuilder uri = UriBuilder.create(loggedOutURI);
+    QueryBuilder qb = QueryBuilder.create();
+    if (loggedOutURI.getQuery() != null) {
+      qb.parse(loggedOutURI.getQuery());
+    }
+    qb.addParam(PARAM_NOIP, "true"); // $NON-NLS-1$
+    uri.setQuery(qb);
+    return uri.build();
+  }
 
-	@Override
-	public void addStateParameters(HttpServletRequest request, Map<String, String[]> params)
-	{
-		if( request.getParameter(PARAM_NOIP) != null )
-		{
-			params.put(PARAM_NOIP, new String[]{"true"}); //$NON-NLS-1$
-		}
-	}
-
+  @Override
+  public void addStateParameters(HttpServletRequest request, Map<String, String[]> params) {
+    if (request.getParameter(PARAM_NOIP) != null) {
+      params.put(PARAM_NOIP, new String[] {"true"}); // $NON-NLS-1$
+    }
+  }
 }

@@ -28,24 +28,22 @@ import com.tle.web.viewurl.ViewableResource;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class EchoPlayerViewer extends AbstractEchoViewer
-{
-	@Override
-	public boolean supports(SectionInfo info, ViewableResource resource)
-	{
-		IAttachment a = resource.getAttachment();
-		if( a != null )
-		{
-			EchoAttachmentData ed = getEchoAttachmentData(a);
-			boolean supportsMime = super.supports(info, resource);
-			return ed == null ? supportsMime : supportsMime && !Check.isEmpty(ed.getEchoData().getEchoLinkUrl());
-		}
-		return super.supports(info, resource);
-	}
+public class EchoPlayerViewer extends AbstractEchoViewer {
+  @Override
+  public boolean supports(SectionInfo info, ViewableResource resource) {
+    IAttachment a = resource.getAttachment();
+    if (a != null) {
+      EchoAttachmentData ed = getEchoAttachmentData(a);
+      boolean supportsMime = super.supports(info, resource);
+      return ed == null
+          ? supportsMime
+          : supportsMime && !Check.isEmpty(ed.getEchoData().getEchoLinkUrl());
+    }
+    return super.supports(info, resource);
+  }
 
-	@Override
-	public String getViewerId()
-	{
-		return "echoPlayerViewer";
-	}
+  @Override
+  public String getViewerId() {
+    return "echoPlayerViewer";
+  }
 }

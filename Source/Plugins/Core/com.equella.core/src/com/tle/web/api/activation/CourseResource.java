@@ -34,68 +34,75 @@ import java.util.List;
 @Path("course")
 @Api(value = "Courses", description = "course")
 @Produces(MediaType.APPLICATION_JSON)
-public interface CourseResource extends BaseEntityResource<CourseBean, BaseEntitySecurityBean>
-{
-	@GET
-	@ApiOperation("List all courses")
-	PagingBean<CourseBean> list(@Context UriInfo uriInfo,
-		   @ApiParam(value = "Course code to search for", required = false) @QueryParam("code") String code,
-		   @ApiParam("Search name and description") @QueryParam("q") String q,
-		   @ApiParam("Include archived") @QueryParam("archived") @DefaultValue("false") boolean includeArchived,
-		   @ApiParam("Privilege(s) to filter by") @QueryParam("privilege") List<String> privilege,
-		   @QueryParam("resumption") @ApiParam("Resumption token for paging") String resumption,
-		   @QueryParam("length") @ApiParam("Number of results") @DefaultValue("10") int length,
-		   @QueryParam("full") @ApiParam("Return full entity (needs VIEW or EDIT privilege)") boolean full);
+public interface CourseResource extends BaseEntityResource<CourseBean, BaseEntitySecurityBean> {
+  @GET
+  @ApiOperation("List all courses")
+  PagingBean<CourseBean> list(
+      @Context UriInfo uriInfo,
+      @ApiParam(value = "Course code to search for", required = false) @QueryParam("code")
+          String code,
+      @ApiParam("Search name and description") @QueryParam("q") String q,
+      @ApiParam("Include archived") @QueryParam("archived") @DefaultValue("false")
+          boolean includeArchived,
+      @ApiParam("Privilege(s) to filter by") @QueryParam("privilege") List<String> privilege,
+      @QueryParam("resumption") @ApiParam("Resumption token for paging") String resumption,
+      @QueryParam("length") @ApiParam("Number of results") @DefaultValue("10") int length,
+      @QueryParam("full") @ApiParam("Return full entity (needs VIEW or EDIT privilege)")
+          boolean full);
 
-	@GET
-	@Path("/acl")
-	@ApiOperation(value = "List global course ACLs")
-	public BaseEntitySecurityBean getAcls(@Context UriInfo uriInfo);
+  @GET
+  @Path("/acl")
+  @ApiOperation(value = "List global course ACLs")
+  public BaseEntitySecurityBean getAcls(@Context UriInfo uriInfo);
 
-	@PUT
-	@Path("/acl")
-	@ApiOperation(value = "Edit global course ACLs")
-	public Response editAcls(@Context UriInfo uriInfo, BaseEntitySecurityBean security);
+  @PUT
+  @Path("/acl")
+  @ApiOperation(value = "Edit global course ACLs")
+  public Response editAcls(@Context UriInfo uriInfo, BaseEntitySecurityBean security);
 
-	@GET
-	@Path("/{uuid}")
-	@ApiOperation("Get a course")
-	public CourseBean get(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+  @GET
+  @Path("/{uuid}")
+  @ApiOperation("Get a course")
+  public CourseBean get(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@GET
-	@Path("/bycode/{code}")
-	@ApiOperation("Get a course")
-	public CourseBean getByCode(@Context UriInfo uriInfo, @PathParam("code") String code);
+  @GET
+  @Path("/bycode/{code}")
+  @ApiOperation("Get a course")
+  public CourseBean getByCode(@Context UriInfo uriInfo, @PathParam("code") String code);
 
-	@DELETE
-	@Path("/{uuid}")
-	@ApiOperation("Delete a course")
-	public Response delete(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+  @DELETE
+  @Path("/{uuid}")
+  @ApiOperation("Delete a course")
+  public Response delete(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@POST
-	@ApiOperation("Create a new course")
-	public Response create(@Context UriInfo uriInfo, @ApiParam CourseBean bean, @QueryParam("file") String stagingUuid);
+  @POST
+  @ApiOperation("Create a new course")
+  public Response create(
+      @Context UriInfo uriInfo, @ApiParam CourseBean bean, @QueryParam("file") String stagingUuid);
 
-	@PUT
-	@Path("/{uuid}")
-	@ApiOperation("Edit a course")
-	public Response edit(@Context UriInfo uriInfo, @ApiParam @PathParam("uuid") String uuid, @ApiParam CourseBean bean,
-		@ApiParam(required = false) @QueryParam("file") String stagingUuid,
-		@ApiParam(required = false) @QueryParam("lock") String lockId,
-		@ApiParam(required = false) @QueryParam("keeplocked") boolean keepLocked);
+  @PUT
+  @Path("/{uuid}")
+  @ApiOperation("Edit a course")
+  public Response edit(
+      @Context UriInfo uriInfo,
+      @ApiParam @PathParam("uuid") String uuid,
+      @ApiParam CourseBean bean,
+      @ApiParam(required = false) @QueryParam("file") String stagingUuid,
+      @ApiParam(required = false) @QueryParam("lock") String lockId,
+      @ApiParam(required = false) @QueryParam("keeplocked") boolean keepLocked);
 
-	@GET
-	@Path("/{uuid}/lock")
-	@ApiOperation("Read the lock for a workflow")
-	public Response getLock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+  @GET
+  @Path("/{uuid}/lock")
+  @ApiOperation("Read the lock for a workflow")
+  public Response getLock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@POST
-	@Path("/{uuid}/lock")
-	@ApiOperation("Lock a workflow")
-	public Response lock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+  @POST
+  @Path("/{uuid}/lock")
+  @ApiOperation("Lock a workflow")
+  public Response lock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@DELETE
-	@Path("/{uuid}/lock")
-	@ApiOperation("Unlock a workflow")
-	public Response unlock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+  @DELETE
+  @Path("/{uuid}/lock")
+  @ApiOperation("Unlock a workflow")
+  public Response unlock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 }

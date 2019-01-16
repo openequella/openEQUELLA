@@ -64,232 +64,205 @@ import com.tle.web.sections.standard.model.HtmlValueState;
 import com.tle.web.sections.standard.model.Option;
 import com.tle.web.sections.standard.model.SimpleOption;
 
-/**
- * @author Andrew Gibb
- */
+/** @author Andrew Gibb */
 @SuppressWarnings("nls")
 @NonNullByDefault
-public class MultiEditBoxRenderer extends TagRenderer implements JSDisableable, DelayedRenderer<JSListComponent>
-{
-	static
-	{
-		PluginResourceHandler.init(MultiEditBoxRenderer.class);
-	}
+public class MultiEditBoxRenderer extends TagRenderer
+    implements JSDisableable, DelayedRenderer<JSListComponent> {
+  static {
+    PluginResourceHandler.init(MultiEditBoxRenderer.class);
+  }
 
-	@PlugURL("scripts/component/multieditbox.js")
-	private static String MULTI_SCRIPT;
-	@PlugURL("css/component/multieditbox.css")
-	private static String MULTI_STYLE;
-	@PlugKey("component.multiedit.showall")
-	private static String SHOW_ALL;
-	@PlugKey("component.multiedit.collapse")
-	private static Label COLLAPSE;
+  @PlugURL("scripts/component/multieditbox.js")
+  private static String MULTI_SCRIPT;
 
-	private static JSCallable SETUP_FUNC = new ExternallyDefinedFunction("setupMultiEdit",
-		new IncludeFile(MULTI_SCRIPT));
-	private static JSCallable DISABLE_FUNC = new ExternallyDefinedFunction("disableMultiEdit", new IncludeFile(
-		MULTI_SCRIPT));
+  @PlugURL("css/component/multieditbox.css")
+  private static String MULTI_STYLE;
 
-	private static final CssInclude CSS = CssInclude.include(MULTI_STYLE).hasRtl().make();
+  @PlugKey("component.multiedit.showall")
+  private static String SHOW_ALL;
 
-	private final MultiEditBoxState state;
+  @PlugKey("component.multiedit.collapse")
+  private static Label COLLAPSE;
 
-	private final HtmlValueState universal;
-	private final HtmlListState localeSelector;
-	private final HtmlLinkState collapse;
-	private final List<Pair<Label, HtmlValueState>> localeRows;
+  private static JSCallable SETUP_FUNC =
+      new ExternallyDefinedFunction("setupMultiEdit", new IncludeFile(MULTI_SCRIPT));
+  private static JSCallable DISABLE_FUNC =
+      new ExternallyDefinedFunction("disableMultiEdit", new IncludeFile(MULTI_SCRIPT));
 
-	private int size;
+  private static final CssInclude CSS = CssInclude.include(MULTI_STYLE).hasRtl().make();
 
-	public MultiEditBoxRenderer(FreemarkerFactory view, MultiEditBoxState state)
-	{
-		super("div", state);
-		this.state = state;
-		this.size = state.getSize();
-		addClass("multieditbox");
-		nestedRenderable = view.createResultWithModel("component/multieditbox.ftl", this);
+  private final MultiEditBoxState state;
 
-		universal = new HtmlValueState();
-		localeRows = new ArrayList<Pair<Label, HtmlValueState>>();
-		localeSelector = new HtmlListState();
-		localeSelector.setId(state.getId() + "_loc");
-		localeSelector.addRendererCallback(new RendererCallback()
-		{
-			@Override
-			public void rendererSelected(RenderContext info, SectionRenderable renderer)
-			{
-				info.setAttribute(MultiEditBoxRenderer.this, renderer);
-			}
-		});
-		collapse = new HtmlLinkState(COLLAPSE);
-	}
+  private final HtmlValueState universal;
+  private final HtmlListState localeSelector;
+  private final HtmlLinkState collapse;
+  private final List<Pair<Label, HtmlValueState>> localeRows;
 
-	@Override
-	public JSCallable createDisableFunction()
-	{
-		return new PrependedParameterFunction(DISABLE_FUNC, this);
-	}
+  private int size;
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		info.preRender(CSS);
-		if( hasMultipleLangs() )
-		{
-			JSCallable delayed = new DelayedFunction<JSListComponent>(this, "setloc", this, 1)
-			{
-				@Override
-				protected JSCallable createRealFunction(RenderContext info2, JSListComponent renderer)
-				{
-					return renderer.createSetFunction();
-				}
-			};
-			AppendedElementId id = new AppendedElementId(this, "_" + getDefaultLocale());
-			info.addReadyStatements(Js.call_s(SETUP_FUNC, this, id.getElementId(info), delayed));
-		}
-	}
+  public MultiEditBoxRenderer(FreemarkerFactory view, MultiEditBoxState state) {
+    super("div", state);
+    this.state = state;
+    this.size = state.getSize();
+    addClass("multieditbox");
+    nestedRenderable = view.createResultWithModel("component/multieditbox.ftl", this);
 
-	@Override
-	protected void writeMiddle(SectionWriter writer) throws IOException
-	{
-		List<Option<?>> opts = new ArrayList<Option<?>>();
+    universal = new HtmlValueState();
+    localeRows = new ArrayList<Pair<Label, HtmlValueState>>();
+    localeSelector = new HtmlListState();
+    localeSelector.setId(state.getId() + "_loc");
+    localeSelector.addRendererCallback(
+        new RendererCallback() {
+          @Override
+          public void rendererSelected(RenderContext info, SectionRenderable renderer) {
+            info.setAttribute(MultiEditBoxRenderer.this, renderer);
+          }
+        });
+    collapse = new HtmlLinkState(COLLAPSE);
+  }
 
-		for( String locale : state.getLocaleMap().keySet() )
-		{
-			AppendedElementId id = new AppendedElementId(this, "_" + locale);
+  @Override
+  public JSCallable createDisableFunction() {
+    return new PrependedParameterFunction(DISABLE_FUNC, this);
+  }
 
-			Pair<Label, HtmlValueState> localeRow = new Pair<Label, HtmlValueState>();
-			HtmlValueState valState = state.getLocaleMap().get(locale);
-			Label label = valState.getLabel();
-			localeRow.setFirst(label);
+  @Override
+  public void preRender(PreRenderContext info) {
+    info.preRender(CSS);
+    if (hasMultipleLangs()) {
+      JSCallable delayed =
+          new DelayedFunction<JSListComponent>(this, "setloc", this, 1) {
+            @Override
+            protected JSCallable createRealFunction(RenderContext info2, JSListComponent renderer) {
+              return renderer.createSetFunction();
+            }
+          };
+      AppendedElementId id = new AppendedElementId(this, "_" + getDefaultLocale());
+      info.addReadyStatements(Js.call_s(SETUP_FUNC, this, id.getElementId(info), delayed));
+    }
+  }
 
-			valState.setLabel(null); // Remove label to avoid duplicate.
-			valState.addClass(id.getElementId(writer));
-			valState.setElementId(id);
-			valState.setLabel(null);
-			localeRow.setSecond(valState);
+  @Override
+  protected void writeMiddle(SectionWriter writer) throws IOException {
+    List<Option<?>> opts = new ArrayList<Option<?>>();
 
-			localeRows.add(localeRow);
+    for (String locale : state.getLocaleMap().keySet()) {
+      AppendedElementId id = new AppendedElementId(this, "_" + locale);
 
-			opts.add(new SimpleOption<String>(label.getText(), id.getElementId(writer)));
-		}
+      Pair<Label, HtmlValueState> localeRow = new Pair<Label, HtmlValueState>();
+      HtmlValueState valState = state.getLocaleMap().get(locale);
+      Label label = valState.getLabel();
+      localeRow.setFirst(label);
 
-		opts.add(new KeyOption<String>(SHOW_ALL, "all", null));
+      valState.setLabel(null); // Remove label to avoid duplicate.
+      valState.addClass(id.getElementId(writer));
+      valState.setElementId(id);
+      valState.setLabel(null);
+      localeRow.setSecond(valState);
 
-		universal.addClass("universalinput");
+      localeRows.add(localeRow);
 
-		localeSelector.setOptions(opts);
-		localeSelector.addClass("localeselector");
-		Set<String> emptyList = Collections.emptySet();
-		localeSelector.setSelectedValues(emptyList);
+      opts.add(new SimpleOption<String>(label.getText(), id.getElementId(writer)));
+    }
 
-		collapse.addClass("collapse");
+    opts.add(new KeyOption<String>(SHOW_ALL, "all", null));
 
-		super.writeMiddle(writer);
-	}
+    universal.addClass("universalinput");
 
-	private String getDefaultLocale()
-	{
-		Map<String, HtmlValueState> localeMap = state.getLocaleMap();
-		TreeSet<Locale> editableLocales = new TreeSet<Locale>(localeComparator);
+    localeSelector.setOptions(opts);
+    localeSelector.addClass("localeselector");
+    Set<String> emptyList = Collections.emptySet();
+    localeSelector.setSelectedValues(emptyList);
 
-		Locale firstValidLoc = null;
-		for( Map.Entry<String, HtmlValueState> entry : localeMap.entrySet() )
-		{
-			Locale locale = LocaleUtils.parseLocale(entry.getKey());
-			if( !Check.isEmpty(entry.getValue().getValue()) && firstValidLoc == null )
-			{
-				firstValidLoc = locale;
-			}
-			editableLocales.add(locale);
-		}
+    collapse.addClass("collapse");
 
-		Locale currentLocale = CurrentLocale.getLocale();
+    super.writeMiddle(writer);
+  }
 
-		if( !editableLocales.contains(currentLocale) )
-		{
-			Locale closestLocale = LocaleUtils.getClosestLocale(editableLocales, currentLocale);
+  private String getDefaultLocale() {
+    Map<String, HtmlValueState> localeMap = state.getLocaleMap();
+    TreeSet<Locale> editableLocales = new TreeSet<Locale>(localeComparator);
 
-			if( closestLocale != null )
-			{
-				currentLocale = closestLocale;
+    Locale firstValidLoc = null;
+    for (Map.Entry<String, HtmlValueState> entry : localeMap.entrySet()) {
+      Locale locale = LocaleUtils.parseLocale(entry.getKey());
+      if (!Check.isEmpty(entry.getValue().getValue()) && firstValidLoc == null) {
+        firstValidLoc = locale;
+      }
+      editableLocales.add(locale);
+    }
 
-				if( !isEmpty(localeMap.values()) && Check.isEmpty(localeMap.get(closestLocale.toString()).getValue()) )
-				{
-					currentLocale = firstValidLoc;
-				}
-			}
-			else
-			{
-				currentLocale = editableLocales.first();
-			}
-		}
+    Locale currentLocale = CurrentLocale.getLocale();
 
-		return currentLocale.toString();
-	}
+    if (!editableLocales.contains(currentLocale)) {
+      Locale closestLocale = LocaleUtils.getClosestLocale(editableLocales, currentLocale);
 
-	private boolean isEmpty(Collection<HtmlValueState> values)
-	{
-		for( HtmlValueState valueState : values )
-		{
-			if( !Check.isEmpty(valueState.getValue()) )
-			{
-				return false;
-			}
-		}
-		return true;
-	}
+      if (closestLocale != null) {
+        currentLocale = closestLocale;
 
-	private boolean hasMultipleLangs()
-	{
-		return state.getLocaleMap().keySet().size() > 1;
-	}
+        if (!isEmpty(localeMap.values())
+            && Check.isEmpty(localeMap.get(closestLocale.toString()).getValue())) {
+          currentLocale = firstValidLoc;
+        }
+      } else {
+        currentLocale = editableLocales.first();
+      }
+    }
 
-	public HtmlValueState getUniversal()
-	{
-		return universal;
-	}
+    return currentLocale.toString();
+  }
 
-	public HtmlListState getLocaleSelector()
-	{
-		return localeSelector;
-	}
+  private boolean isEmpty(Collection<HtmlValueState> values) {
+    for (HtmlValueState valueState : values) {
+      if (!Check.isEmpty(valueState.getValue())) {
+        return false;
+      }
+    }
+    return true;
+  }
 
-	public List<Pair<Label, HtmlValueState>> getLocaleRows()
-	{
-		return localeRows;
-	}
+  private boolean hasMultipleLangs() {
+    return state.getLocaleMap().keySet().size() > 1;
+  }
 
-	public HtmlLinkState getCollapse()
-	{
-		return collapse;
-	}
+  public HtmlValueState getUniversal() {
+    return universal;
+  }
 
-	private final Comparator<Locale> localeComparator = new NumberStringComparator<Locale>()
-	{
-		private static final long serialVersionUID = 1L;
+  public HtmlListState getLocaleSelector() {
+    return localeSelector;
+  }
 
-		@Override
-		public String convertToString(Locale locale)
-		{
-			return locale.getDisplayName();
-		}
-	};
+  public List<Pair<Label, HtmlValueState>> getLocaleRows() {
+    return localeRows;
+  }
 
-	public int getSize()
-	{
-		return size;
-	}
+  public HtmlLinkState getCollapse() {
+    return collapse;
+  }
 
-	public void setSize(int size)
-	{
-		this.size = size;
-	}
+  private final Comparator<Locale> localeComparator =
+      new NumberStringComparator<Locale>() {
+        private static final long serialVersionUID = 1L;
 
-	@Nullable
-	@Override
-	public JSListComponent getSelectedRenderer(RenderContext info)
-	{
-		return (JSListComponent) info.getAttribute(this);
-	}
+        @Override
+        public String convertToString(Locale locale) {
+          return locale.getDisplayName();
+        }
+      };
+
+  public int getSize() {
+    return size;
+  }
+
+  public void setSize(int size) {
+    this.size = size;
+  }
+
+  @Nullable
+  @Override
+  public JSListComponent getSelectedRenderer(RenderContext info) {
+    return (JSListComponent) info.getAttribute(this);
+  }
 }

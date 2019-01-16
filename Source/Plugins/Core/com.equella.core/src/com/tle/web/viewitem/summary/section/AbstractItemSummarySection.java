@@ -55,106 +55,89 @@ import com.tle.web.viewurl.ViewItemViewer;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public abstract class AbstractItemSummarySection<I extends IItem<?>> extends TwoColumnLayout<TwoColumnModel>
-	implements
-		ViewItemViewer
-{
-	@PlugURL("css/itemsummary.css")
-	private static String LAYOUT_CSS;
+public abstract class AbstractItemSummarySection<I extends IItem<?>>
+    extends TwoColumnLayout<TwoColumnModel> implements ViewItemViewer {
+  @PlugURL("css/itemsummary.css")
+  private static String LAYOUT_CSS;
 
-	@TreeLookup
-	private ItemSummaryContent summarySection;
-	@TreeLookup
-	private ItemSummarySidebar sidebarSection;
-	@Inject
-	protected SelectionService selectionService;
-	@Inject
-	protected BundleCache bundleCache;
+  @TreeLookup private ItemSummaryContent summarySection;
+  @TreeLookup private ItemSummarySidebar sidebarSection;
+  @Inject protected SelectionService selectionService;
+  @Inject protected BundleCache bundleCache;
 
-	protected abstract String getContentBodyClass(SectionInfo info);
+  protected abstract String getContentBodyClass(SectionInfo info);
 
-	protected abstract I getItem(SectionInfo info);
+  protected abstract I getItem(SectionInfo info);
 
-	protected abstract Label getPageTitle(SectionInfo info);
+  protected abstract Label getPageTitle(SectionInfo info);
 
-	protected abstract boolean isPreview(SectionInfo info);
+  protected abstract boolean isPreview(SectionInfo info);
 
-	@Override
-	public SectionResult view(RenderContext info, ViewItemResource resource)
-	{
-		for( CssInclude css : getCssUrls(info) )
-		{
-			info.getPreRenderContext().addCss(css);
-		}
+  @Override
+  public SectionResult view(RenderContext info, ViewItemResource resource) {
+    for (CssInclude css : getCssUrls(info)) {
+      info.getPreRenderContext().addCss(css);
+    }
 
-		if( isPreview(info)
-			|| (selectionService.getCurrentSession(info) == null && Decorations.getDecorations(info).isMenuHidden()) )
-		{
-			info.getPreRenderContext().addCss(MenuSection.getHiddenMenuCSS());
-		}
+    if (isPreview(info)
+        || (selectionService.getCurrentSession(info) == null
+            && Decorations.getDecorations(info).isMenuHidden())) {
+      info.getPreRenderContext().addCss(MenuSection.getHiddenMenuCSS());
+    }
 
-		return renderHtml((RenderEventContext) info);
-	}
+    return renderHtml((RenderEventContext) info);
+  }
 
-	@Nullable
-	@Override
-	public IAttachment getAttachment(SectionInfo info, ViewItemResource resource)
-	{
-		return null;
-	}
+  @Nullable
+  @Override
+  public IAttachment getAttachment(SectionInfo info, ViewItemResource resource) {
+    return null;
+  }
 
-	protected List<CssInclude> getCssUrls(SectionInfo info)
-	{
-		return Lists.newArrayList(CssInclude.include(LAYOUT_CSS).hasRtl().make());
-	}
+  protected List<CssInclude> getCssUrls(SectionInfo info) {
+    return Lists.newArrayList(CssInclude.include(LAYOUT_CSS).hasRtl().make());
+  }
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		if( Check.isEmpty(decorations.getContentBodyClasses()) )
-		{
-			decorations.setContentBodyClass(getContentBodyClass(info));
-		}
-		if( decorations.getTitle() == null )
-		{
-			I item = getItem(info);
-			decorations.setTitle(new BundleLabel(item.getName(), item.getUuid(), bundleCache));
-		}
-		decorations.setBannerTitle(getPageTitle(info));
-	}
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    if (Check.isEmpty(decorations.getContentBodyClasses())) {
+      decorations.setContentBodyClass(getContentBodyClass(info));
+    }
+    if (decorations.getTitle() == null) {
+      I item = getItem(info);
+      decorations.setTitle(new BundleLabel(item.getName(), item.getUuid(), bundleCache));
+    }
+    decorations.setBannerTitle(getPageTitle(info));
+  }
 
-	@Override
-	protected TemplateResult setupTemplate(RenderEventContext info)
-	{
-		GenericTemplateResult template = new GenericTemplateResult();
-		template.addNamedResult(LEFT, renderSection(info, summarySection));
+  @Override
+  protected TemplateResult setupTemplate(RenderEventContext info) {
+    GenericTemplateResult template = new GenericTemplateResult();
+    template.addNamedResult(LEFT, renderSection(info, summarySection));
 
-		// This is really dirty (but not new)
-		SelectionSession ss = selectionService.getCurrentSession(info);
-		if( ss == null || ss.getLayout() != Layout.SKINNY && ss.getLayout() != Layout.COURSE )
-		{
-			template.addNamedResult(RIGHT, renderSection(info, sidebarSection));
-		}
+    // This is really dirty (but not new)
+    SelectionSession ss = selectionService.getCurrentSession(info);
+    if (ss == null || ss.getLayout() != Layout.SKINNY && ss.getLayout() != Layout.COURSE) {
+      template.addNamedResult(RIGHT, renderSection(info, sidebarSection));
+    }
 
-		info.processEvent(new BlueBarEvent(info));
-		return template;
-	}
+    info.processEvent(new BlueBarEvent(info));
+    return template;
+  }
 
-	@Override
-	public ViewAuditEntry getAuditEntry(SectionInfo info, ViewItemResource resource)
-	{
-		return new ViewAuditEntry(true);
-	}
+  @Override
+  public ViewAuditEntry getAuditEntry(SectionInfo info, ViewItemResource resource) {
+    return new ViewAuditEntry(true);
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "summ";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "summ";
+  }
 
-	@Override
-	public Class<TwoColumnModel> getModelClass()
-	{
-		return TwoColumnModel.class;
-	}
+  @Override
+  public Class<TwoColumnModel> getModelClass() {
+    return TwoColumnModel.class;
+  }
 }

@@ -22,24 +22,19 @@ import com.tle.common.util.Logger;
 
 import javax.inject.Inject;
 
-/**
- * @author aholland
- */
-public class LoggingScriptWrapper extends AbstractScriptWrapper implements LoggingScriptObject
-{
-	private static final long serialVersionUID = 1L;
+/** @author aholland */
+public class LoggingScriptWrapper extends AbstractScriptWrapper implements LoggingScriptObject {
+  private static final long serialVersionUID = 1L;
 
-	private final Logger logger;
+  private final Logger logger;
 
-	@Inject
-	protected LoggingScriptWrapper(@Assisted("logger") Logger logger)
-	{
-		this.logger = logger;
-	}
+  @Inject
+  protected LoggingScriptWrapper(@Assisted("logger") Logger logger) {
+    this.logger = logger;
+  }
 
-	@Override
-	public void log(String text)
-	{
-		logger.info(text);
-	}
+  @Override
+  public void log(String text) {
+    logger.info(text);
+  }
 }

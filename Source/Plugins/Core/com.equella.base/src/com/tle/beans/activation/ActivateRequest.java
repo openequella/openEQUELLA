@@ -36,234 +36,199 @@ import com.tle.beans.item.cal.request.CourseInfo;
 
 @Entity
 @AccessType("field")
-public class ActivateRequest implements Cloneable
-{
-	public static final int TYPE_ACTIVE = 0;
-	public static final int TYPE_INACTIVE = 1;
-	public static final int TYPE_PENDING = 2;
+public class ActivateRequest implements Cloneable {
+  public static final int TYPE_ACTIVE = 0;
+  public static final int TYPE_INACTIVE = 1;
+  public static final int TYPE_PENDING = 2;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	@Column(length = 40, nullable = false)
-	private String uuid;
+  @Column(length = 40, nullable = false)
+  private String uuid;
 
-	@Column(length = 8, nullable = false)
-	private String type;
+  @Column(length = 8, nullable = false)
+  private String type;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(nullable = false)
-	@Index(name = "activateRequestItem")
-	private Item item;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(nullable = false)
+  @Index(name = "activateRequestItem")
+  private Item item;
 
-	@Column(length = 45, nullable = false)
-	private String attachment;
+  @Column(length = 45, nullable = false)
+  private String attachment;
 
-	@Column(length = 256)
-	private String user;
-	private int status;
-	private Date time;
+  @Column(length = 256)
+  private String user;
 
-	private Date from;
-	private Date until;
+  private int status;
+  private Date time;
 
-	@ManyToOne
-	@JoinColumn(name = "course_info_id", nullable = false)
-	@Index(name = "activateRequestCourse")
-	private CourseInfo course;
+  private Date from;
+  private Date until;
 
-	@Column(length = 128)
-	private String citation;
-	@Column(length = 256)
-	private String locationName;
-	@Column(length = 256)
-	private String locationId;
+  @ManyToOne
+  @JoinColumn(name = "course_info_id", nullable = false)
+  @Index(name = "activateRequestCourse")
+  private CourseInfo course;
 
-	@Lob
-	private String overrideReason;
+  @Column(length = 128)
+  private String citation;
 
-	@Lob
-	private String description;
+  @Column(length = 256)
+  private String locationName;
 
-	public void setStatus(int status)
-	{
-		this.status = status;
-	}
+  @Column(length = 256)
+  private String locationId;
 
-	public ActivateRequest()
-	{
-		// nothing
-	}
+  @Lob private String overrideReason;
 
-	public ActivateRequest(ActivateRequest request)
-	{
-		id = request.id;
-		attachment = request.attachment;
-		user = request.user;
-		course = request.course;
-		status = request.status;
-		time = request.time;
-	}
+  @Lob private String description;
 
-	public CourseInfo getCourse()
-	{
-		return course;
-	}
+  public void setStatus(int status) {
+    this.status = status;
+  }
 
-	public Date getTime()
-	{
-		return time;
-	}
+  public ActivateRequest() {
+    // nothing
+  }
 
-	public void setTime(Date date)
-	{
-		this.time = date;
-	}
+  public ActivateRequest(ActivateRequest request) {
+    id = request.id;
+    attachment = request.attachment;
+    user = request.user;
+    course = request.course;
+    status = request.status;
+    time = request.time;
+  }
 
-	public String getAttachment()
-	{
-		return attachment;
-	}
+  public CourseInfo getCourse() {
+    return course;
+  }
 
-	public void setAttachment(String attachment)
-	{
-		this.attachment = attachment;
-	}
+  public Date getTime() {
+    return time;
+  }
 
-	public String getUser()
-	{
-		return user;
-	}
+  public void setTime(Date date) {
+    this.time = date;
+  }
 
-	public void setUser(String user)
-	{
-		this.user = user;
-	}
+  public String getAttachment() {
+    return attachment;
+  }
 
-	public long getId()
-	{
-		return id;
-	}
+  public void setAttachment(String attachment) {
+    this.attachment = attachment;
+  }
 
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  public String getUser() {
+    return user;
+  }
 
-	public Item getItem()
-	{
-		return item;
-	}
+  public void setUser(String user) {
+    this.user = user;
+  }
 
-	public void setItem(Item item)
-	{
-		this.item = item;
-	}
+  public long getId() {
+    return id;
+  }
 
-	public int getStatus()
-	{
-		return status;
-	}
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public void setCourse(CourseInfo course)
-	{
-		this.course = course;
-	}
+  public Item getItem() {
+    return item;
+  }
 
-	public String getCitation()
-	{
-		return citation;
-	}
+  public void setItem(Item item) {
+    this.item = item;
+  }
 
-	public void setCitation(String citation)
-	{
-		this.citation = citation;
-	}
+  public int getStatus() {
+    return status;
+  }
 
-	public String getDescription()
-	{
-		return description;
-	}
+  public void setCourse(CourseInfo course) {
+    this.course = course;
+  }
 
-	public void setDescription(String description)
-	{
-		this.description = description;
-	}
+  public String getCitation() {
+    return citation;
+  }
 
-	public String getLocationId()
-	{
-		return locationId;
-	}
+  public void setCitation(String citation) {
+    this.citation = citation;
+  }
 
-	public void setLocationId(String locationId)
-	{
-		this.locationId = locationId;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public String getLocationName()
-	{
-		return locationName;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public void setLocationName(String locationName)
-	{
-		this.locationName = locationName;
-	}
+  public String getLocationId() {
+    return locationId;
+  }
 
-	public Date getFrom()
-	{
-		return from;
-	}
+  public void setLocationId(String locationId) {
+    this.locationId = locationId;
+  }
 
-	public void setFrom(Date from)
-	{
-		this.from = from;
-	}
+  public String getLocationName() {
+    return locationName;
+  }
 
-	public Date getUntil()
-	{
-		return until;
-	}
+  public void setLocationName(String locationName) {
+    this.locationName = locationName;
+  }
 
-	public void setUntil(Date until)
-	{
-		this.until = until;
-	}
+  public Date getFrom() {
+    return from;
+  }
 
-	@Override
-	public Object clone() throws CloneNotSupportedException
-	{
-		return super.clone();
-	}
+  public void setFrom(Date from) {
+    this.from = from;
+  }
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  public Date getUntil() {
+    return until;
+  }
 
-	public void setUuid(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  public void setUntil(Date until) {
+    this.until = until;
+  }
 
-	public String getType()
-	{
-		return type;
-	}
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
+  }
 
-	public void setType(String type)
-	{
-		this.type = type;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public String getOverrideReason()
-	{
-		return overrideReason;
-	}
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-	public void setOverrideReason(String overrideReason)
-	{
-		this.overrideReason = overrideReason;
-	}
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public String getOverrideReason() {
+    return overrideReason;
+  }
+
+  public void setOverrideReason(String overrideReason) {
+    this.overrideReason = overrideReason;
+  }
 }

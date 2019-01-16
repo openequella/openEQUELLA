@@ -20,19 +20,18 @@ import java.io.Serializable;
 
 import com.tle.core.plugins.PluginService;
 
-public interface ClusteredTask extends Serializable
-{
-	boolean isTransient();
+public interface ClusteredTask extends Serializable {
+  boolean isTransient();
 
-	Serializable[] getArgs();
+  Serializable[] getArgs();
 
-	boolean isGlobal();
+  boolean isGlobal();
 
-	String getGlobalId();
+  String getGlobalId();
 
-	Task createTask(PluginService pluginService, Serializable[] args);
+  Task createTask(PluginService pluginService, Serializable[] args);
 
-	String getInternalId();
+  String getInternalId();
 
-	boolean isPriority();
+  boolean isPriority();
 }

@@ -41,76 +41,71 @@ import com.tle.web.sections.result.util.KeyLabel;
 
 /**
  * Provides a data model for shuffle list controls.
- * 
+ *
  * @author Nicholas Read
  */
-public class CShuffleList extends CMultiCtrl
-{
-	private static final long serialVersionUID = 1L;
+public class CShuffleList extends CMultiCtrl {
+  private static final long serialVersionUID = 1L;
 
-	private final boolean checkDuplication;
-	private final boolean forceUnique;
+  private final boolean checkDuplication;
+  private final boolean forceUnique;
 
-	public CShuffleList(WizardPage page, int controlNumber, int nestingLevel, WizardControl controlBean)
-		throws WizardPageException
-	{
-		super(page, controlNumber, nestingLevel, controlBean);
+  public CShuffleList(
+      WizardPage page, int controlNumber, int nestingLevel, WizardControl controlBean)
+      throws WizardPageException {
+    super(page, controlNumber, nestingLevel, controlBean);
 
-		ShuffleList sl = (ShuffleList) controlBean;
-		checkDuplication = sl.isCheckDuplication();
-		forceUnique = sl.isForceUnique();
+    ShuffleList sl = (ShuffleList) controlBean;
+    checkDuplication = sl.isCheckDuplication();
+    forceUnique = sl.isForceUnique();
 
-		setSeparator(" - "); //$NON-NLS-1$
+    setSeparator(" - "); // $NON-NLS-1$
 
-		EditBox editbox = new EditBox();
-		editbox.getTargetnodes().add(new TargetNode(Constants.BLANK, Constants.BLANK));
+    EditBox editbox = new EditBox();
+    editbox.getTargetnodes().add(new TargetNode(Constants.BLANK, Constants.BLANK));
 
-		wizardPage.createCtrls(Collections.singletonList((WizardControl) editbox), -1, controls);
-	}
+    wizardPage.createCtrls(Collections.singletonList((WizardControl) editbox), -1, controls);
+  }
 
-	@Override
-	public void validate()
-	{
-		if( checkDuplication || forceUnique )
-		{
-			final Set<String> values = new HashSet<String>();
-			for( NameValue nv : namesValues )
-			{
-				// nv.value is URL encoded, but the name is ok to use
-				values.add(nv.getName());
-			}
-			final ImmutableCollection<String> valuesReadonly = ImmutableSet.copyOf(values);
+  @Override
+  public void validate() {
+    if (checkDuplication || forceUnique) {
+      final Set<String> values = new HashSet<String>();
+      for (NameValue nv : namesValues) {
+        // nv.value is URL encoded, but the name is ok to use
+        values.add(nv.getName());
+      }
+      final ImmutableCollection<String> valuesReadonly = ImmutableSet.copyOf(values);
 
-			// We need to inform the wizard to check for uniqueness every time,
-			// no matter what
-			final boolean isUnique = getRepository().checkDataUniqueness(getFirstTarget().getXoqlPath(),
-				valuesReadonly, !forceUnique);
+      // We need to inform the wizard to check for uniqueness every time,
+      // no matter what
+      final boolean isUnique =
+          getRepository()
+              .checkDataUniqueness(getFirstTarget().getXoqlPath(), valuesReadonly, !forceUnique);
 
-			setInvalid(forceUnique && !isUnique && !isInvalid(),
-				new KeyLabel("wizard.controls.editbox.uniqueerror")); //$NON-NLS-1$
-		}
-	}
+      setInvalid(
+          forceUnique && !isUnique && !isInvalid(),
+          new KeyLabel("wizard.controls.editbox.uniqueerror")); // $NON-NLS-1$
+    }
+  }
 
-	@Override
-	public BaseQuery getPowerSearchQuery()
-	{
-		final boolean tokenise = ((ShuffleList) getControlBean()).isTokenise();
-		final Collection<String> vals = Lists.newArrayList(Lists.transform(namesValues,
-			new Function<NameValue, String>()
-			{
-				@Override
-				public String apply(NameValue nv)
-				{
-					try
-					{
-						return URLDecoder.decode(nv.getValue(), Constants.UTF8);
-					}
-					catch( UnsupportedEncodingException e )
-					{
-						throw new RuntimeException(e);
-					}
-				}
-			}));
-		return getDefaultPowerSearchQuery(vals, tokenise);
-	}
+  @Override
+  public BaseQuery getPowerSearchQuery() {
+    final boolean tokenise = ((ShuffleList) getControlBean()).isTokenise();
+    final Collection<String> vals =
+        Lists.newArrayList(
+            Lists.transform(
+                namesValues,
+                new Function<NameValue, String>() {
+                  @Override
+                  public String apply(NameValue nv) {
+                    try {
+                      return URLDecoder.decode(nv.getValue(), Constants.UTF8);
+                    } catch (UnsupportedEncodingException e) {
+                      throw new RuntimeException(e);
+                    }
+                  }
+                }));
+    return getDefaultPowerSearchQuery(vals, tokenise);
+  }
 }

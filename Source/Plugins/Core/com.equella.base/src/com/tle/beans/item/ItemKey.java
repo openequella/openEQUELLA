@@ -21,15 +21,13 @@ import java.io.Serializable;
 import com.tle.annotation.NonNullByDefault;
 
 @NonNullByDefault
-public interface ItemKey extends Serializable
-{
-	String getUuid();
+public interface ItemKey extends Serializable {
+  String getUuid();
 
-	int getVersion();
+  int getVersion();
 
-	@Override
-	String toString();
+  @Override
+  String toString();
 
-	String toString(int version);
-
+  String toString(int version);
 }

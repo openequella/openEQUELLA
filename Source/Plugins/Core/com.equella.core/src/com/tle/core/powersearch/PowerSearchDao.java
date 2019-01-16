@@ -23,14 +23,11 @@ import com.tle.beans.entity.PowerSearch;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.core.entity.dao.AbstractEntityDao;
 
-/**
- * @author Nicholas Read
- */
-public interface PowerSearchDao extends AbstractEntityDao<PowerSearch>
-{
-	List<Long> enumerateItemdefIds(long powerSearchId);
+/** @author Nicholas Read */
+public interface PowerSearchDao extends AbstractEntityDao<PowerSearch> {
+  List<Long> enumerateItemdefIds(long powerSearchId);
 
-	List<BaseEntityLabel> listAllForSchema(long schemaID);
+  List<BaseEntityLabel> listAllForSchema(long schemaID);
 
-	List<PowerSearch> getPowerSearchesReferencingItemDefinition(ItemDefinition itemDefinition);
+  List<PowerSearch> getPowerSearchesReferencingItemDefinition(ItemDefinition itemDefinition);
 }

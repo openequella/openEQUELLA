@@ -25,32 +25,27 @@ import com.tle.web.viewurl.ItemSectionInfo;
 
 @Bind
 @SuppressWarnings("nls")
-public class EditSection extends AbstractWizardViewItemActionSection
-{
-	@PlugKey("viewitem.actions.edit.title")
-	private static Label LABEL;
+public class EditSection extends AbstractWizardViewItemActionSection {
+  @PlugKey("viewitem.actions.edit.title")
+  private static Label LABEL;
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return LABEL;
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return LABEL;
+  }
 
-	@Override
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		return !status.isLocked() && itemInfo.hasPrivilege("EDIT_ITEM");
-	}
+  @Override
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    return !status.isLocked() && itemInfo.hasPrivilege("EDIT_ITEM");
+  }
 
-	@Override
-	protected void execute(SectionInfo info) throws Exception
-	{
-		forwardToWizard(info, true, false, false);
-	}
+  @Override
+  protected void execute(SectionInfo info) throws Exception {
+    forwardToWizard(info, true, false, false);
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return LABEL.getText();
-	}
+  @Override
+  public String getLinkText() {
+    return LABEL.getText();
+  }
 }

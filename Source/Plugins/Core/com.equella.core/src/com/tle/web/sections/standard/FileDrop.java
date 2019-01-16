@@ -19,36 +19,27 @@ package com.tle.web.sections.standard;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.standard.model.HtmlFileDropState;
 
-/**
- * @author Dongsheng Cai, Doolse
- */
-public class FileDrop extends AbstractFileUpload<HtmlFileDropState>
-{
-	private boolean disableInitialise;
+/** @author Dongsheng Cai, Doolse */
+public class FileDrop extends AbstractFileUpload<HtmlFileDropState> {
+  private boolean disableInitialise;
 
-	public FileDrop()
-	{
-		super(RendererConstants.FILEDROP);
-	}
+  public FileDrop() {
+    super(RendererConstants.FILEDROP);
+  }
 
-	@Override
-	public Class<HtmlFileDropState> getModelClass()
-	{
-		return HtmlFileDropState.class;
-	}
+  @Override
+  public Class<HtmlFileDropState> getModelClass() {
+    return HtmlFileDropState.class;
+  }
 
-	public void disableInitialise()
-	{
-		disableInitialise = true;
-	}
+  public void disableInitialise() {
+    disableInitialise = true;
+  }
 
-	@Override
-	protected HtmlFileDropState setupState(SectionInfo info, HtmlFileDropState state)
-	{
-		super.setupState(info, state);
-		state.setDontInitialise(disableInitialise);
-		return state;
-	}
-
-
+  @Override
+  protected HtmlFileDropState setupState(SectionInfo info, HtmlFileDropState state) {
+    super.setupState(info, state);
+    state.setDontInitialise(disableInitialise);
+    return state;
+  }
 }

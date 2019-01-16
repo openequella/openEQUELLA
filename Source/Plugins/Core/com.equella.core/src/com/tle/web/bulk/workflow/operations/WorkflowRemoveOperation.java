@@ -23,16 +23,13 @@ import com.tle.core.item.standard.operations.workflow.TaskOperation;
 import com.tle.core.security.impl.SecureInModeration;
 
 @SecureInModeration
-public class WorkflowRemoveOperation extends TaskOperation
-{
-	@Override
-	public boolean execute()
-	{
-		createHistory(HistoryEvent.Type.workflowremoved);
-		clearAllStatuses();
-		makeLive(true);
-		updateModeration();
-		return true;
-	}
-
+public class WorkflowRemoveOperation extends TaskOperation {
+  @Override
+  public boolean execute() {
+    createHistory(HistoryEvent.Type.workflowremoved);
+    clearAllStatuses();
+    makeLive(true);
+    updateModeration();
+    return true;
+  }
 }

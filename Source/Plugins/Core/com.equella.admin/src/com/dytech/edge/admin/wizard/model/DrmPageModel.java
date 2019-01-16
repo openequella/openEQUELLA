@@ -26,39 +26,31 @@ import com.tle.beans.entity.LanguageBundle;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @SuppressWarnings("nls")
-public class DrmPageModel extends AbstractPageModel<DRMPage>
-{
-	public DrmPageModel(ControlDefinition definition)
-	{
-		super(definition);
-	}
+public class DrmPageModel extends AbstractPageModel<DRMPage> {
+  public DrmPageModel(ControlDefinition definition) {
+    super(definition);
+  }
 
-	@Override
-	public List<?> getChildObjects()
-	{
-		return null;
-	}
+  @Override
+  public List<?> getChildObjects() {
+    return null;
+  }
 
-	@Override
-	public LanguageBundle getTitle()
-	{
-		return null;
-	}
+  @Override
+  public LanguageBundle getTitle() {
+    return null;
+  }
 
-	@Override
-	public String doValidation(ClientService clientService)
-	{
-		Container container = getPage().getContainer();
-		Date acceptStart = container.getAcceptStart();
-		Date acceptEnd = container.getAcceptEnd();
-		if( acceptStart == null ^ acceptEnd == null )
-		{
-			return CurrentLocale.get("drm.validation.needdates");
-		}
-		return null;
-	}
+  @Override
+  public String doValidation(ClientService clientService) {
+    Container container = getPage().getContainer();
+    Date acceptStart = container.getAcceptStart();
+    Date acceptEnd = container.getAcceptEnd();
+    if (acceptStart == null ^ acceptEnd == null) {
+      return CurrentLocale.get("drm.validation.needdates");
+    }
+    return null;
+  }
 }

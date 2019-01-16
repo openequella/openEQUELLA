@@ -30,34 +30,34 @@ import com.tle.web.sections.render.PreRenderable;
 import com.tle.web.sections.render.TagProcessor;
 
 @SuppressWarnings("nls")
-public class Bootstrap implements JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
+public class Bootstrap implements JavascriptModule {
+  private static final long serialVersionUID = 1L;
 
-	private static final PluginResourceHelper URL_HELPER = ResourcesService.getResourceHelper(Bootstrap.class);
+  private static final PluginResourceHelper URL_HELPER =
+      ResourcesService.getResourceHelper(Bootstrap.class);
 
-	public static final CssInclude CSS = CssInclude
-		.include(URL_HELPER.url("bootstrap/css/bootstrap.css")).hasMin()
-		.priority(Priority.LOWEST).make();
-	public static final PreRenderable PRERENDER = new IncludeFile(URL_HELPER.url("bootstrap/js/bootstrap.js"),
-			CSS, JQueryCore.PRERENDER).hasMin();
-	public static final TagProcessor TOGGLE_ATTR = new ExtraAttributes("data-toggle", "dropdown");
+  public static final CssInclude CSS =
+      CssInclude.include(URL_HELPER.url("bootstrap/css/bootstrap.css"))
+          .hasMin()
+          .priority(Priority.LOWEST)
+          .make();
+  public static final PreRenderable PRERENDER =
+      new IncludeFile(URL_HELPER.url("bootstrap/js/bootstrap.js"), CSS, JQueryCore.PRERENDER)
+          .hasMin();
+  public static final TagProcessor TOGGLE_ATTR = new ExtraAttributes("data-toggle", "dropdown");
 
-	@Override
-	public String getId()
-	{
-		return "bootstrap";
-	}
+  @Override
+  public String getId() {
+    return "bootstrap";
+  }
 
-	@Override
-	public String getDisplayName()
-	{
-		return CurrentLocale.get("com.tle.web.sections.bootstrap.name");
-	}
+  @Override
+  public String getDisplayName() {
+    return CurrentLocale.get("com.tle.web.sections.bootstrap.name");
+  }
 
-	@Override
-	public Object getPreRenderer()
-	{
-		return PRERENDER;
-	}
+  @Override
+  public Object getPreRenderer() {
+    return PRERENDER;
+  }
 }

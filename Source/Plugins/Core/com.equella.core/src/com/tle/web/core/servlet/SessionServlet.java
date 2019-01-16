@@ -32,43 +32,32 @@ import com.tle.exceptions.AuthenticationException;
 
 @Bind
 @Singleton
-public class SessionServlet extends HttpServlet
-{
-	private static final long serialVersionUID = 1L;
+public class SessionServlet extends HttpServlet {
+  private static final long serialVersionUID = 1L;
 
-	@Inject
-	private UserService userService;
+  @Inject private UserService userService;
 
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
-	{
-		String token = req.getParameter("token");
-		WebAuthenticationDetails details = userService.getWebAuthenticationDetails(req);
-		try
-		{
-			if( token != null )
-			{
-				userService.loginWithToken(token, details, true);
-			}
-			else
-			{
-				String username = req.getParameter("username");
-				String password = req.getParameter("password");
-				if( username != null )
-				{
-					userService.login(username, password, details, true);
-				}
-				else
-				{
-					resp.sendError(400);
-					return;
-				}
-			}
-			resp.setStatus(200);
-		}
-		catch( AuthenticationException ae )
-		{
-			resp.sendError(401);
-		}
-	}
+  @Override
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
+    String token = req.getParameter("token");
+    WebAuthenticationDetails details = userService.getWebAuthenticationDetails(req);
+    try {
+      if (token != null) {
+        userService.loginWithToken(token, details, true);
+      } else {
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
+        if (username != null) {
+          userService.login(username, password, details, true);
+        } else {
+          resp.sendError(400);
+          return;
+        }
+      }
+      resp.setStatus(200);
+    } catch (AuthenticationException ae) {
+      resp.sendError(401);
+    }
+  }
 }

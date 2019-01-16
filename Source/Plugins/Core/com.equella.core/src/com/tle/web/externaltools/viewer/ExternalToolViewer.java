@@ -26,24 +26,20 @@ import com.tle.web.viewurl.ViewableResource;
 
 @Bind
 @Singleton
-public class ExternalToolViewer extends AbstractResourceViewer
-{
+public class ExternalToolViewer extends AbstractResourceViewer {
 
-	@Override
-	public boolean supports(SectionInfo info, ViewableResource resource)
-	{
-		return resource.getMimeType().equals(ExternalToolConstants.MIME_TYPE);
-	}
+  @Override
+  public boolean supports(SectionInfo info, ViewableResource resource) {
+    return resource.getMimeType().equals(ExternalToolConstants.MIME_TYPE);
+  }
 
-	@Override
-	public String getViewerId()
-	{
-		return ExternalToolConstants.VIEWER_ID;
-	}
+  @Override
+  public String getViewerId() {
+    return ExternalToolConstants.VIEWER_ID;
+  }
 
-	@Override
-	public Class<? extends SectionId> getViewerSectionClass()
-	{
-		return ExternalToolViewerSection.class;
-	}
+  @Override
+  public Class<? extends SectionId> getViewerSectionClass() {
+    return ExternalToolViewerSection.class;
+  }
 }

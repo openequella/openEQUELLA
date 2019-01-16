@@ -37,55 +37,41 @@ import java.util.List;
 
 @Bind
 @Singleton
-public class JsonHelper
-{
-	private static final Logger LOGGER = Logger.getLogger(JsonHelper.class);
+public class JsonHelper {
+  private static final Logger LOGGER = Logger.getLogger(JsonHelper.class);
 
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private ObjectMapperService objectMapperService;
+  @Inject private FileSystemService fileSystemService;
+  @Inject private ObjectMapperService objectMapperService;
 
-	private ObjectMapper mapper;
+  private ObjectMapper mapper;
 
-	public synchronized ObjectMapper getMapper()
-	{
-		if( mapper == null )
-		{
-			mapper = objectMapperService.createObjectMapper();
-		}
+  public synchronized ObjectMapper getMapper() {
+    if (mapper == null) {
+      mapper = objectMapperService.createObjectMapper();
+    }
 
-		return mapper;
-	}
+    return mapper;
+  }
 
-	public List<String> getFileList(final TemporaryFileHandle folder)
-	{
-		return fileSystemService.grep(folder, "", "*/*.json");
-	}
+  public List<String> getFileList(final TemporaryFileHandle folder) {
+    return fileSystemService.grep(folder, "", "*/*.json");
+  }
 
-	@SuppressWarnings("unchecked")
-	public <O> O read(final TemporaryFileHandle file, String path, Class<O> type)
-	{
-		try( Reader reader = new UnicodeReader(fileSystemService.read(file, path), Constants.UTF8) )
-		{
-			return getMapper().readValue(reader, type);
-		}
-		catch( IOException re )
-		{
-			LOGGER.error("Error reading: " + file.getAbsolutePath());
-			throw new RuntimeException(re);
-		}
-	}
+  @SuppressWarnings("unchecked")
+  public <O> O read(final TemporaryFileHandle file, String path, Class<O> type) {
+    try (Reader reader = new UnicodeReader(fileSystemService.read(file, path), Constants.UTF8)) {
+      return getMapper().readValue(reader, type);
+    } catch (IOException re) {
+      LOGGER.error("Error reading: " + file.getAbsolutePath());
+      throw new RuntimeException(re);
+    }
+  }
 
-	public void write(TemporaryFileHandle file, String path, Object obj)
-	{
-		try( OutputStream outStream = fileSystemService.getOutputStream(file, path, false) )
-		{
-			getMapper().writeValue(outStream, obj);
-		}
-		catch( IOException ioe )
-		{
-			throw new RuntimeException("Error writing file " + file.getAbsolutePath(), ioe);
-		}
-	}
+  public void write(TemporaryFileHandle file, String path, Object obj) {
+    try (OutputStream outStream = fileSystemService.getOutputStream(file, path, false)) {
+      getMapper().writeValue(outStream, obj);
+    } catch (IOException ioe) {
+      throw new RuntimeException("Error writing file " + file.getAbsolutePath(), ioe);
+    }
+  }
 }

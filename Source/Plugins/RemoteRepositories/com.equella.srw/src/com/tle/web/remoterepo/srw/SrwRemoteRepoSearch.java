@@ -24,30 +24,24 @@ import com.tle.beans.search.SearchSettings;
 import com.tle.core.guice.Bind;
 import com.tle.web.remoterepo.impl.AbstractRemoteRepoSearch;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class SrwRemoteRepoSearch extends AbstractRemoteRepoSearch
-{
-	@Override
-	protected String getTreePath()
-	{
-		return "/access/srw.do"; //$NON-NLS-1$
-	}
+public class SrwRemoteRepoSearch extends AbstractRemoteRepoSearch {
+  @Override
+  protected String getTreePath() {
+    return "/access/srw.do"; //$NON-NLS-1$
+  }
 
-	@Override
-	public SearchSettings createSettings(FederatedSearch search)
-	{
-		SRWSettings settings = new SRWSettings();
-		settings.load(search);
-		return settings;
-	}
+  @Override
+  public SearchSettings createSettings(FederatedSearch search) {
+    SRWSettings settings = new SRWSettings();
+    settings.load(search);
+    return settings;
+  }
 
-	@Override
-	public String getContextKey()
-	{
-		return SrwRootRemoteRepoSection.CONTEXT_KEY;
-	}
+  @Override
+  public String getContextKey() {
+    return SrwRootRemoteRepoSection.CONTEXT_KEY;
+  }
 }

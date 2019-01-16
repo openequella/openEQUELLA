@@ -26,26 +26,22 @@ import com.tle.core.scripting.service.StandardScriptContextParams;
 import com.tle.core.security.impl.SecureOnCall;
 
 @SecureOnCall(priv = "EDIT_ITEM")
-public class ExecuteScriptOperation extends AbstractWorkflowOperation
-{
-	@Inject
-	ScriptingService scriptService;
-	private final String script;
+public class ExecuteScriptOperation extends AbstractWorkflowOperation {
+  @Inject ScriptingService scriptService;
+  private final String script;
 
-	@AssistedInject
-	public ExecuteScriptOperation(@Assisted("script") String script)
-	{
-		this.script = script;
-	}
+  @AssistedInject
+  public ExecuteScriptOperation(@Assisted("script") String script) {
+    this.script = script;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		StandardScriptContextParams params = new StandardScriptContextParams(getItemPack(), getStaging(), false, null);
+  @Override
+  public boolean execute() {
+    StandardScriptContextParams params =
+        new StandardScriptContextParams(getItemPack(), getStaging(), false, null);
 
-		ScriptContext scriptContext = scriptService.createScriptContext(params);
-		scriptService.executeScript(script, "bulkExecute", scriptContext, false);
-		return true;
-	}
-
+    ScriptContext scriptContext = scriptService.createScriptContext(params);
+    scriptService.executeScript(script, "bulkExecute", scriptContext, false);
+    return true;
+  }
 }

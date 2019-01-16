@@ -19,10 +19,8 @@ package com.tle.web.wizard.controls;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.wizard.controls.GroupsCtrl.ControlGroup;
 
-public interface WizardGroupListener
-{
-	void addNewGroup(ControlGroup controls, int index);
+public interface WizardGroupListener {
+  void addNewGroup(ControlGroup controls, int index);
 
-	void removeFromGroup(SectionInfo info, int i);
-
+  void removeFromGroup(SectionInfo info, int i);
 }

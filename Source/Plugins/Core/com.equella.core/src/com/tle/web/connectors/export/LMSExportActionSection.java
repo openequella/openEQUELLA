@@ -31,37 +31,31 @@ import com.tle.web.viewitem.summary.sidebar.actions.GenericMinorActionWithPageSe
 import com.tle.web.viewurl.ItemSectionInfo;
 
 @Bind
-public class LMSExportActionSection extends GenericMinorActionWithPageSection
-{
-	@PlugKey("export.link.itemaction")
-	private static Label LABEL_EXPORT_TO_SYSTEM_LINK;
-	@TreeLookup
-	private LMSExportSection exportSection;
-	@Inject
-	private ConnectorService connectorService;
+public class LMSExportActionSection extends GenericMinorActionWithPageSection {
+  @PlugKey("export.link.itemaction")
+  private static Label LABEL_EXPORT_TO_SYSTEM_LINK;
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return LABEL_EXPORT_TO_SYSTEM_LINK;
-	}
+  @TreeLookup private LMSExportSection exportSection;
+  @Inject private ConnectorService connectorService;
 
-	@Override
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		boolean allowPush = itemInfo.hasPrivilege(ConnectorConstants.PRIV_EXPORT_TO_LMS_ITEM);
-		return allowPush && (connectorService.listExportable().size() > 0);
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return LABEL_EXPORT_TO_SYSTEM_LINK;
+  }
 
-	@Override
-	protected SectionId getPageSection()
-	{
-		return exportSection;
-	}
+  @Override
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    boolean allowPush = itemInfo.hasPrivilege(ConnectorConstants.PRIV_EXPORT_TO_LMS_ITEM);
+    return allowPush && (connectorService.listExportable().size() > 0);
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return LABEL_EXPORT_TO_SYSTEM_LINK.getText();
-	}
+  @Override
+  protected SectionId getPageSection() {
+    return exportSection;
+  }
+
+  @Override
+  public String getLinkText() {
+    return LABEL_EXPORT_TO_SYSTEM_LINK.getText();
+  }
 }

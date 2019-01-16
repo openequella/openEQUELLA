@@ -23,40 +23,43 @@ import com.tle.upgrade.PropertyFileModifier;
 import com.tle.upgrade.PropertyMover;
 import com.tle.upgrade.UpgradeResult;
 
-public class MovePluginOptions extends AbstractUpgrader
-{
-	@Override
-	public String getId()
-	{
-		return "MovePluginOptions"; //$NON-NLS-1$
-	}
+public class MovePluginOptions extends AbstractUpgrader {
+  @Override
+  public String getId() {
+    return "MovePluginOptions"; //$NON-NLS-1$
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public void upgrade(UpgradeResult result, File tleInstallDir) throws Exception
-	{
-		File configFolder = new File(tleInstallDir, CONFIG_FOLDER);
-		File optionalConfig = new File(configFolder, PropertyFileModifier.OPTIONAL_CONFIG);
-		File freeTextConfig = new File(configFolder, "plugins/com.tle.core.freetext/optional.properties");
-		if( !freeTextConfig.exists() )
-		{
-			copyResource("freetext-optional.properties", freeTextConfig);
-		}
-		new PropertyMover(optionalConfig, freeTextConfig,
-			Pattern.compile("(.*)((?:freetextIndex|textExtracter)\\.\\S*)\\s*=\\s*(.*)"), "").move(result);
+  @SuppressWarnings("nls")
+  @Override
+  public void upgrade(UpgradeResult result, File tleInstallDir) throws Exception {
+    File configFolder = new File(tleInstallDir, CONFIG_FOLDER);
+    File optionalConfig = new File(configFolder, PropertyFileModifier.OPTIONAL_CONFIG);
+    File freeTextConfig =
+        new File(configFolder, "plugins/com.tle.core.freetext/optional.properties");
+    if (!freeTextConfig.exists()) {
+      copyResource("freetext-optional.properties", freeTextConfig);
+    }
+    new PropertyMover(
+            optionalConfig,
+            freeTextConfig,
+            Pattern.compile("(.*)((?:freetextIndex|textExtracter)\\.\\S*)\\s*=\\s*(.*)"),
+            "")
+        .move(result);
 
-		new PropertyMover(optionalConfig, new File(configFolder, "plugins/com.tle.web.search/optional.properties"),
-			Pattern.compile("(.*)rssHelper(\\.\\S*)\\s*=\\s*(.*)"), "com.tle.web.search.searcher.RSSSearchHelper")
-			.move(result);
+    new PropertyMover(
+            optionalConfig,
+            new File(configFolder, "plugins/com.tle.web.search/optional.properties"),
+            Pattern.compile("(.*)rssHelper(\\.\\S*)\\s*=\\s*(.*)"),
+            "com.tle.web.search.searcher.RSSSearchHelper")
+        .move(result);
 
-		new PropertyMover(optionalConfig, null, Pattern.compile("(.*)loginService(\\.\\S*)\\s*=\\s*(.*)"), "")
-			.move(result);
+    new PropertyMover(
+            optionalConfig, null, Pattern.compile("(.*)loginService(\\.\\S*)\\s*=\\s*(.*)"), "")
+        .move(result);
+  }
 
-	}
-
-	@Override
-	public boolean isBackwardsCompatible()
-	{
-		return true;
-	}
+  @Override
+  public boolean isBackwardsCompatible() {
+    return true;
+  }
 }

@@ -54,257 +54,245 @@ import com.tle.core.migration.MigrationResult;
 
 @Bind
 @Singleton
-public class PortletAclDatabaseMigration extends AbstractHibernateDataMigration
-{
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return count(session, "FROM Institution"); //$NON-NLS-1$
-	}
+public class PortletAclDatabaseMigration extends AbstractHibernateDataMigration {
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return count(session, "FROM Institution"); // $NON-NLS-1$
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-		throws Exception
-	{
-		final Query exprQuery = session.createQuery("FROM AccessExpression WHERE expression = :expression"); //$NON-NLS-1$
+  @SuppressWarnings("unchecked")
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception {
+    final Query exprQuery =
+        session.createQuery("FROM AccessExpression WHERE expression = :expression"); // $NON-NLS-1$
 
-		final FakeAccessExpression owner = getOrCreateExpression(session, exprQuery,
-			SecurityConstants.getRecipient(Recipient.OWNER));
-		final FakeAccessExpression absolutelyEverybodyInTheWholeWideWorld = getOrCreateExpression(session, exprQuery,
-			SecurityConstants.getRecipient(Recipient.EVERYONE));
+    final FakeAccessExpression owner =
+        getOrCreateExpression(session, exprQuery, SecurityConstants.getRecipient(Recipient.OWNER));
+    final FakeAccessExpression absolutelyEverybodyInTheWholeWideWorld =
+        getOrCreateExpression(
+            session, exprQuery, SecurityConstants.getRecipient(Recipient.EVERYONE));
 
-		List<FakeInstitution> institutions = session.createQuery("FROM Institution").list(); //$NON-NLS-1$
-		for( FakeInstitution institution : institutions )
-		{
-			final String target = "*"; //$NON-NLS-1$
+    List<FakeInstitution> institutions =
+        session.createQuery("FROM Institution").list(); // $NON-NLS-1$
+    for (FakeInstitution institution : institutions) {
+      final String target = "*"; // $NON-NLS-1$
 
-			grantPrivilege(session, "CREATE_PORTLET", absolutelyEverybodyInTheWholeWideWorld, target, //$NON-NLS-1$
-				institution);
+      grantPrivilege(
+          session,
+          "CREATE_PORTLET",
+          absolutelyEverybodyInTheWholeWideWorld,
+          target, //$NON-NLS-1$
+          institution);
 
-			grantPrivilege(session, "VIEW_PORTLET", owner, target, institution); //$NON-NLS-1$
-			grantPrivilege(session, "EDIT_PORTLET", owner, target, institution); //$NON-NLS-1$
-			grantPrivilege(session, "DELETE_PORTLET", owner, target, institution); //$NON-NLS-1$
-			result.incrementStatus();
-		}
-	}
+      grantPrivilege(session, "VIEW_PORTLET", owner, target, institution); // $NON-NLS-1$
+      grantPrivilege(session, "EDIT_PORTLET", owner, target, institution); // $NON-NLS-1$
+      grantPrivilege(session, "DELETE_PORTLET", owner, target, institution); // $NON-NLS-1$
+      result.incrementStatus();
+    }
+  }
 
-	@SuppressWarnings("unchecked")
-	private FakeAccessExpression getOrCreateExpression(Session session, Query exprQuery, String expression)
-	{
-		List<FakeAccessExpression> list = exprQuery.setParameter("expression", expression).list(); //$NON-NLS-1$
-		if( !list.isEmpty() )
-		{
-			return list.get(0);
-		}
-		else
-		{
-			FakeAccessExpression result = new FakeAccessExpression();
-			result.setExpression(expression);
-			result.parseExpression();
-			session.save(result);
-			return result;
-		}
-	}
+  @SuppressWarnings("unchecked")
+  private FakeAccessExpression getOrCreateExpression(
+      Session session, Query exprQuery, String expression) {
+    List<FakeAccessExpression> list =
+        exprQuery.setParameter("expression", expression).list(); // $NON-NLS-1$
+    if (!list.isEmpty()) {
+      return list.get(0);
+    } else {
+      FakeAccessExpression result = new FakeAccessExpression();
+      result.setExpression(expression);
+      result.parseExpression();
+      session.save(result);
+      return result;
+    }
+  }
 
-	private void grantPrivilege(Session session, String privilege, FakeAccessExpression expression, String target,
-		FakeInstitution institution)
-	{
-		addEntry(session, privilege, SecurityConstants.GRANT, expression, target, institution);
-	}
+  private void grantPrivilege(
+      Session session,
+      String privilege,
+      FakeAccessExpression expression,
+      String target,
+      FakeInstitution institution) {
+    addEntry(session, privilege, SecurityConstants.GRANT, expression, target, institution);
+  }
 
-	private void addEntry(Session session, String privilege, char grantRevoke, FakeAccessExpression expression,
-		String target, FakeInstitution institution)
-	{
-		FakeAccessEntry newEntry = new FakeAccessEntry();
-		newEntry.setGrantRevoke(grantRevoke);
-		newEntry.setPrivilege(privilege);
-		newEntry.setTargetObject(target);
-		newEntry.setAclPriority(SecurityConstants.PRIORITY_ALL_PORTLETS);
-		newEntry.setAclOrder(0);
-		newEntry.setExpression(expression);
-		newEntry.setInstitution(institution);
-		newEntry.generateAggregateOrdering();
+  private void addEntry(
+      Session session,
+      String privilege,
+      char grantRevoke,
+      FakeAccessExpression expression,
+      String target,
+      FakeInstitution institution) {
+    FakeAccessEntry newEntry = new FakeAccessEntry();
+    newEntry.setGrantRevoke(grantRevoke);
+    newEntry.setPrivilege(privilege);
+    newEntry.setTargetObject(target);
+    newEntry.setAclPriority(SecurityConstants.PRIORITY_ALL_PORTLETS);
+    newEntry.setAclOrder(0);
+    newEntry.setExpression(expression);
+    newEntry.setInstitution(institution);
+    newEntry.generateAggregateOrdering();
 
-		session.save(newEntry);
-		session.flush();
-		session.clear();
-	}
+    session.save(newEntry);
+    session.flush();
+    session.clear();
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{FakeInstitution.class, FakeAccessEntry.class, FakeAccessExpression.class,
-				TargetListEntry.class, ACLEntryMapping.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {
+      FakeInstitution.class,
+      FakeAccessEntry.class,
+      FakeAccessExpression.class,
+      TargetListEntry.class,
+      ACLEntryMapping.class
+    };
+  }
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo("com.tle.core.portal.migration.portletacls.title", Constants.BLANK); //$NON-NLS-1$
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(
+        "com.tle.core.portal.migration.portletacls.title", Constants.BLANK); // $NON-NLS-1$
+  }
 
-	@Entity(name = "AccessEntry")
-	@AccessType("field")
-	public static class FakeAccessEntry
-	{
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		long id;
+  @Entity(name = "AccessEntry")
+  @AccessType("field")
+  public static class FakeAccessEntry {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    long id;
 
-		@JoinColumn(nullable = false)
-		@ManyToOne(fetch = FetchType.LAZY)
-		@Index(name = "accessEntryExpression")
-		FakeAccessExpression expression;
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Index(name = "accessEntryExpression")
+    FakeAccessExpression expression;
 
-		@ManyToOne(fetch = FetchType.LAZY)
-		@JoinColumn(nullable = false)
-		@Index(name = "accessEntryInstitution")
-		FakeInstitution institution;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    @Index(name = "accessEntryInstitution")
+    FakeInstitution institution;
 
-		@Column(length = 80)
-		@Index(name = "targetObjectIndex")
-		String targetObject;
+    @Column(length = 80)
+    @Index(name = "targetObjectIndex")
+    String targetObject;
 
-		@Column(length = 30)
-		@Index(name = "privilegeIndex")
-		String privilege;
+    @Column(length = 30)
+    @Index(name = "privilegeIndex")
+    String privilege;
 
-		@Column(length = 12, nullable = false)
-		@Index(name = "aggregateOrderingIndex")
-		String aggregateOrdering;
+    @Column(length = 12, nullable = false)
+    @Index(name = "aggregateOrderingIndex")
+    String aggregateOrdering;
 
-		char grantRevoke;
-		int aclOrder;
-		int aclPriority;
+    char grantRevoke;
+    int aclOrder;
+    int aclPriority;
 
-		public void setId(long id)
-		{
-			this.id = id;
-		}
+    public void setId(long id) {
+      this.id = id;
+    }
 
-		public void setExpression(FakeAccessExpression expression)
-		{
-			this.expression = expression;
-		}
+    public void setExpression(FakeAccessExpression expression) {
+      this.expression = expression;
+    }
 
-		public void setInstitution(FakeInstitution institution)
-		{
-			this.institution = institution;
-		}
+    public void setInstitution(FakeInstitution institution) {
+      this.institution = institution;
+    }
 
-		public void setTargetObject(String targetObject)
-		{
-			this.targetObject = targetObject;
-		}
+    public void setTargetObject(String targetObject) {
+      this.targetObject = targetObject;
+    }
 
-		public void setPrivilege(String privilege)
-		{
-			this.privilege = privilege;
-		}
+    public void setPrivilege(String privilege) {
+      this.privilege = privilege;
+    }
 
-		public void setAggregateOrdering(String aggregateOrdering)
-		{
-			this.aggregateOrdering = aggregateOrdering;
-		}
+    public void setAggregateOrdering(String aggregateOrdering) {
+      this.aggregateOrdering = aggregateOrdering;
+    }
 
-		public void setGrantRevoke(char grantRevoke)
-		{
-			this.grantRevoke = grantRevoke;
-		}
+    public void setGrantRevoke(char grantRevoke) {
+      this.grantRevoke = grantRevoke;
+    }
 
-		public void setAclOrder(int aclOrder)
-		{
-			this.aclOrder = aclOrder;
-		}
+    public void setAclOrder(int aclOrder) {
+      this.aclOrder = aclOrder;
+    }
 
-		public void setAclPriority(int aclPriority)
-		{
-			this.aclPriority = aclPriority;
-		}
+    public void setAclPriority(int aclPriority) {
+      this.aclPriority = aclPriority;
+    }
 
-		public void generateAggregateOrdering()
-		{
-			aggregateOrdering = String.format("%04d %04d %c", //$NON-NLS-1$
-				(aclPriority + SecurityConstants.PRIORITY_MAX), aclOrder, grantRevoke);
-		}
-	}
+    public void generateAggregateOrdering() {
+      aggregateOrdering =
+          String.format(
+              "%04d %04d %c", //$NON-NLS-1$
+              (aclPriority + SecurityConstants.PRIORITY_MAX), aclOrder, grantRevoke);
+    }
+  }
 
-	@Entity(name = "Institution")
-	@AccessType("field")
-	public static class FakeInstitution
-	{
-		@Id
-		long id;
-	}
+  @Entity(name = "Institution")
+  @AccessType("field")
+  public static class FakeInstitution {
+    @Id long id;
+  }
 
-	@AccessType("field")
-	@Entity(name = "AccessExpression")
-	public static class FakeAccessExpression
-	{
-		static final List<String> OPERATORS = Arrays.asList("not", "or", "and");
-		static final List<Recipient> SET_AS_EVERYONE = Arrays.asList(IP_ADDRESS, HTTP_REFERRER);
+  @AccessType("field")
+  @Entity(name = "AccessExpression")
+  public static class FakeAccessExpression {
+    static final List<String> OPERATORS = Arrays.asList("not", "or", "and");
+    static final List<Recipient> SET_AS_EVERYONE = Arrays.asList(IP_ADDRESS, HTTP_REFERRER);
 
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    long id;
 
-		boolean dynamic;
+    boolean dynamic;
 
-		@Column(length = 1024)
-		String expression;
+    @Column(length = 1024)
+    String expression;
 
-		@ElementCollection(fetch = FetchType.LAZY)
-		@Column(name = "element")
-		List<String> expressionParts;
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Column(name = "element")
+    List<String> expressionParts;
 
-		public void setId(long id)
-		{
-			this.id = id;
-		}
+    public void setId(long id) {
+      this.id = id;
+    }
 
-		public void setDynamic(boolean dynamic)
-		{
-			this.dynamic = dynamic;
-		}
+    public void setDynamic(boolean dynamic) {
+      this.dynamic = dynamic;
+    }
 
-		public void setExpression(String expression)
-		{
-			this.expression = expression;
-		}
+    public void setExpression(String expression) {
+      this.expression = expression;
+    }
 
-		public void parseExpression()
-		{
-			if( expressionParts == null )
-			{
-				expressionParts = new ArrayList<String>();
-			}
-			else
-			{
-				expressionParts.clear();
-			}
+    public void parseExpression() {
+      if (expressionParts == null) {
+        expressionParts = new ArrayList<String>();
+      } else {
+        expressionParts.clear();
+      }
 
-			for( String part : expression.split("\\s") ) //$NON-NLS-1$
-			{
-				if( !OPERATORS.contains(part.toLowerCase()) )
-				{
-					Recipient type = SecurityConstants.getRecipientType(part);
+      for (String part : expression.split("\\s")) // $NON-NLS-1$
+      {
+        if (!OPERATORS.contains(part.toLowerCase())) {
+          Recipient type = SecurityConstants.getRecipientType(part);
 
-					if( type == OWNER )
-					{
-						dynamic = true;
-					}
+          if (type == OWNER) {
+            dynamic = true;
+          }
 
-					if( SET_AS_EVERYONE.contains(type) )
-					{
-						expressionParts.add(SecurityConstants.getRecipient(EVERYONE));
-					}
-					else
-					{
-						expressionParts.add(part);
-					}
-				}
-			}
-		}
-	}
+          if (SET_AS_EVERYONE.contains(type)) {
+            expressionParts.add(SecurityConstants.getRecipient(EVERYONE));
+          } else {
+            expressionParts.add(part);
+          }
+        }
+      }
+    }
+  }
 }

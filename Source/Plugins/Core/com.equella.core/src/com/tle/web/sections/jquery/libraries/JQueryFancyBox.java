@@ -26,39 +26,39 @@ import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.PreRenderable;
 
 @SuppressWarnings("nls")
-public class JQueryFancyBox implements JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
+public class JQueryFancyBox implements JavascriptModule {
+  private static final long serialVersionUID = 1L;
 
-	public static final CssInclude CSS = JQueryLibraryInclude.cssb("fancybox/jquery.fancybox.css").hasMin().make();
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.fancybox.js", CSS).hasMin();
+  public static final CssInclude CSS =
+      JQueryLibraryInclude.cssb("fancybox/jquery.fancybox.css").hasMin().make();
+  public static final PreRenderable PRERENDER =
+      new JQueryLibraryInclude("jquery.fancybox.js", CSS).hasMin();
 
-	public static final JSCallAndReference FANCYBOX = new ExternallyDefinedFunction("fancybox", -1, PRERENDER);
+  public static final JSCallAndReference FANCYBOX =
+      new ExternallyDefinedFunction("fancybox", -1, PRERENDER);
 
-	public static final JSCallAndReference FANCYBOX_STATIC = new ExternallyDefinedFunction(JQueryCore.JQUERY,
-		"fancybox", -1, PRERENDER);
+  public static final JSCallAndReference FANCYBOX_STATIC =
+      new ExternallyDefinedFunction(JQueryCore.JQUERY, "fancybox", -1, PRERENDER);
 
-	public static final JSCallAndReference CLOSE = new ExternallyDefinedFunction(FANCYBOX_STATIC, "close", -1);
-	public static final JSCallAndReference SHOW_ACTIVITY = new ExternallyDefinedFunction(FANCYBOX_STATIC,
-		"showActivity", 0);
-	public static final JSCallAndReference HIDE_ACTIVITY = new ExternallyDefinedFunction(FANCYBOX_STATIC,
-		"hideActivity", 0);
+  public static final JSCallAndReference CLOSE =
+      new ExternallyDefinedFunction(FANCYBOX_STATIC, "close", -1);
+  public static final JSCallAndReference SHOW_ACTIVITY =
+      new ExternallyDefinedFunction(FANCYBOX_STATIC, "showActivity", 0);
+  public static final JSCallAndReference HIDE_ACTIVITY =
+      new ExternallyDefinedFunction(FANCYBOX_STATIC, "hideActivity", 0);
 
-	@Override
-	public String getDisplayName()
-	{
-		return CurrentLocale.get("com.tle.web.sections.jquery.modules.fancybox.name");
-	}
+  @Override
+  public String getDisplayName() {
+    return CurrentLocale.get("com.tle.web.sections.jquery.modules.fancybox.name");
+  }
 
-	@Override
-	public String getId()
-	{
-		return "fancybox";
-	}
+  @Override
+  public String getId() {
+    return "fancybox";
+  }
 
-	@Override
-	public Object getPreRenderer()
-	{
-		return PRERENDER;
-	}
+  @Override
+  public Object getPreRenderer() {
+    return PRERENDER;
+  }
 }

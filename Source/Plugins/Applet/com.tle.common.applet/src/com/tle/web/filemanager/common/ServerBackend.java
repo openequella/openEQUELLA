@@ -18,26 +18,23 @@ package com.tle.web.filemanager.common;
 
 import java.util.List;
 
-public interface ServerBackend
-{
-	String getDownloadUrl(String wizardId, String filename);
+public interface ServerBackend {
+  String getDownloadUrl(String wizardId, String filename);
 
-	void delete(String wizardId, String filename);
+  void delete(String wizardId, String filename);
 
-	List<FileInfo> listFiles(String wizardId, String directory);
+  List<FileInfo> listFiles(String wizardId, String directory);
 
-	/**
-	 * @return true for a successful rename.
-	 */
-	boolean renameFile(String wizardId, String oldName, String newName);
+  /** @return true for a successful rename. */
+  boolean renameFile(String wizardId, String oldName, String newName);
 
-	void copy(String wizardId, String sourceFile, String destFile);
+  void copy(String wizardId, String sourceFile, String destFile);
 
-	void markAsResource(String wizardId, boolean mark, String fullPath);
+  void markAsResource(String wizardId, boolean mark, String fullPath);
 
-	void newFolder(String wizardId, String name);
+  void newFolder(String wizardId, String name);
 
-	void write(String wizardId, String filename, boolean append, byte[] upload);
+  void write(String wizardId, String filename, boolean append, byte[] upload);
 
-	void extractArchive(String wizardId, String filename, String destDir);
+  void extractArchive(String wizardId, String filename, String destDir);
 }

@@ -21,11 +21,8 @@ import com.tle.common.workflow.Workflow;
 import com.tle.web.api.baseentity.serializer.BaseEntityEditor;
 import com.tle.web.api.workflow.interfaces.beans.WorkflowBean;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
-public interface WorkflowEditor extends BaseEntityEditor<Workflow, WorkflowBean>
-{
-	// Nothing
+public interface WorkflowEditor extends BaseEntityEditor<Workflow, WorkflowBean> {
+  // Nothing
 }

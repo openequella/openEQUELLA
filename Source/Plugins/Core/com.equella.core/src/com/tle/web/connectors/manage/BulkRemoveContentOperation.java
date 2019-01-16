@@ -44,123 +44,101 @@ import com.tle.web.sections.standard.model.Option;
 
 @Bind
 @Singleton
-public class BulkRemoveContentOperation implements BulkOperationExtension
-{
-	static
-	{
-		PluginResourceHandler.init(BulkRemoveContentOperation.class);
-	}
+public class BulkRemoveContentOperation implements BulkOperationExtension {
+  static {
+    PluginResourceHandler.init(BulkRemoveContentOperation.class);
+  }
 
-	@Bind
-	public static class RemoveContentOperationExecutor implements BulkOperationExecutor
-	{
-		@Inject
-		private ConnectorOperationFactory operationFactory;
+  @Bind
+  public static class RemoveContentOperationExecutor implements BulkOperationExecutor {
+    @Inject private ConnectorOperationFactory operationFactory;
 
-		@Override
-		public WorkflowOperation[] getOperations()
-		{
-			return new WorkflowOperation[]{operationFactory.createDelete()};
-		}
+    @Override
+    public WorkflowOperation[] getOperations() {
+      return new WorkflowOperation[] {operationFactory.createDelete()};
+    }
 
-		@Override
-		public String getTitleKey()
-		{
+    @Override
+    public String getTitleKey() {
 
-			return "com.tle.web.connectors.bulk.removecontent.title";
-		}
-	}
+      return "com.tle.web.connectors.bulk.removecontent.title";
+    }
+  }
 
-	@PlugKey("operation.remove")
-	private static String KEY_NAME;
-	@PlugKey("connector.opresults.status")
-	private static String KEY_STATUS;
+  @PlugKey("operation.remove")
+  private static String KEY_NAME;
 
-	private static final String BULK_VALUE = "remove"; //$NON-NLS-1$
+  @PlugKey("connector.opresults.status")
+  private static String KEY_STATUS;
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
+  private static final String BULK_VALUE = "remove"; // $NON-NLS-1$
 
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {}
 
-	@Override
-	public void addOptions(SectionInfo info, List<Option<OperationInfo>> options)
-	{
+  @Override
+  public void addOptions(SectionInfo info, List<Option<OperationInfo>> options) {
 
-		options.add(new KeyOption<OperationInfo>(KEY_NAME, BULK_VALUE, new OperationInfo(this, BULK_VALUE)));
-	}
+    options.add(
+        new KeyOption<OperationInfo>(KEY_NAME, BULK_VALUE, new OperationInfo(this, BULK_VALUE)));
+  }
 
-	@Override
-	public BeanLocator<? extends BulkOperationExecutor> getExecutor(SectionInfo info, String operationId)
-	{
-		return new ClassBeanLocator<BulkOperationExecutor>(RemoveContentOperationExecutor.class);
-	}
+  @Override
+  public BeanLocator<? extends BulkOperationExecutor> getExecutor(
+      SectionInfo info, String operationId) {
+    return new ClassBeanLocator<BulkOperationExecutor>(RemoveContentOperationExecutor.class);
+  }
 
-	@Override
-	public void prepareDefaultOptions(SectionInfo info, String operationId)
-	{
+  @Override
+  public void prepareDefaultOptions(SectionInfo info, String operationId) {}
 
-	}
+  @Override
+  public SectionRenderable renderOptions(RenderContext context, String operationId) {
+    return null;
+  }
 
-	@Override
-	public SectionRenderable renderOptions(RenderContext context, String operationId)
-	{
-		return null;
-	}
+  @Override
+  public Label getStatusTitleLabel(SectionInfo info, String operationId) {
+    return new KeyLabel(KEY_STATUS, new KeyLabel(KEY_NAME + ".title")); // $NON-NLS-1$
+  }
 
-	@Override
-	public Label getStatusTitleLabel(SectionInfo info, String operationId)
-	{
-		return new KeyLabel(KEY_STATUS, new KeyLabel(KEY_NAME + ".title")); //$NON-NLS-1$
-	}
+  @Override
+  public boolean validateOptions(SectionInfo info, String operationId) {
+    return true;
+  }
 
-	@Override
-	public boolean validateOptions(SectionInfo info, String operationId)
-	{
-		return true;
-	}
+  @Override
+  public boolean areOptionsFinished(SectionInfo info, String operationId) {
+    return true;
+  }
 
-	@Override
-	public boolean areOptionsFinished(SectionInfo info, String operationId)
-	{
-		return true;
-	}
+  @Override
+  public boolean hasExtraOptions(SectionInfo info, String operationId) {
+    return false;
+  }
 
-	@Override
-	public boolean hasExtraOptions(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+  @Override
+  public boolean hasExtraNavigation(SectionInfo info, String operationId) {
+    return false;
+  }
 
-	@Override
-	public boolean hasExtraNavigation(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+  @Override
+  public Collection<Button> getExtraNavigation(SectionInfo info, String operationId) {
+    return null;
+  }
 
-	@Override
-	public Collection<Button> getExtraNavigation(SectionInfo info, String operationId)
-	{
-		return null;
-	}
+  @Override
+  public boolean hasPreview(SectionInfo info, String operationId) {
+    return false;
+  }
 
-	@Override
-	public boolean hasPreview(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+  @Override
+  public ItemPack runPreview(SectionInfo info, String operationId, long itemUuid) {
+    return null;
+  }
 
-	@Override
-	public ItemPack runPreview(SectionInfo info, String operationId, long itemUuid)
-	{
-		return null;
-	}
-
-	@Override
-	public boolean showPreviousButton(SectionInfo info, String opererationId)
-	{
-		return true;
-	}
-
+  @Override
+  public boolean showPreviousButton(SectionInfo info, String opererationId) {
+    return true;
+  }
 }

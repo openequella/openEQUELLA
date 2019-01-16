@@ -36,76 +36,66 @@ import com.tle.freetext.SupportedVideoMimeTypeExtension;
 
 @Bind(VideoService.class)
 @Singleton
-public class VideoServiceImpl implements VideoService
-{
-	private static final Logger LOGGER = Logger.getLogger(VideoServiceImpl.class);
+public class VideoServiceImpl implements VideoService {
+  private static final Logger LOGGER = Logger.getLogger(VideoServiceImpl.class);
 
-	@Inject
-	private LibAvService libAvService;
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private MimeTypeService mimeTypeService;
+  @Inject private LibAvService libAvService;
+  @Inject private FileSystemService fileSystemService;
+  @Inject private MimeTypeService mimeTypeService;
 
-	private PluginTracker<SupportedVideoMimeTypeExtension> supportedVideoAttachments;
+  private PluginTracker<SupportedVideoMimeTypeExtension> supportedVideoAttachments;
 
-	@Override
-	public boolean isVideo(Attachment attachment)
-	{
-		String mimeType = mimeTypeService.getMimeEntryForAttachment(attachment);
-		List<SupportedVideoMimeTypeExtension> supportedVideoTypes = supportedVideoAttachments.getBeanList();
-		for( SupportedVideoMimeTypeExtension type : supportedVideoTypes )
-		{
-			if( type.isSupportedMimeType(mimeType) )
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+  @Override
+  public boolean isVideo(Attachment attachment) {
+    String mimeType = mimeTypeService.getMimeEntryForAttachment(attachment);
+    List<SupportedVideoMimeTypeExtension> supportedVideoTypes =
+        supportedVideoAttachments.getBeanList();
+    for (SupportedVideoMimeTypeExtension type : supportedVideoTypes) {
+      if (type.isSupportedMimeType(mimeType)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
-	@Override
-	public boolean canConvertVideo(String filename)
-	{
-		return mimeTypeService.getMimeTypeForFilename(filename).startsWith("video");
-	}
+  @Override
+  public boolean canConvertVideo(String filename) {
+    return mimeTypeService.getMimeTypeForFilename(filename).startsWith("video");
+  }
 
-	@Override
-	public boolean videoPreviewExists(FileHandle handle, String filename)
-	{
-		final String thumbFile = FileSystemService.VIDEO_PREVIEW_FOLDER + '/' + filename
-			+ FileSystemService.VIDEO_PREVIEW_EXTENSION;
-		final File dstFile = fileSystemService.getExternalFile(handle, thumbFile);
-		return dstFile.exists();
-	}
+  @Override
+  public boolean videoPreviewExists(FileHandle handle, String filename) {
+    final String thumbFile =
+        FileSystemService.VIDEO_PREVIEW_FOLDER
+            + '/'
+            + filename
+            + FileSystemService.VIDEO_PREVIEW_EXTENSION;
+    final File dstFile = fileSystemService.getExternalFile(handle, thumbFile);
+    return dstFile.exists();
+  }
 
-	@Override
-	public boolean makeGalleryVideoPreviews(FileHandle handle, String filename)
-	{
-		if( libAvService.isLibavInstalled() )
-		{
-			try
-			{
+  @Override
+  public boolean makeGalleryVideoPreviews(FileHandle handle, String filename) {
+    if (libAvService.isLibavInstalled()) {
+      try {
 
-				libAvService.generatePreviewVideo(handle, filename);
-			}
-			catch( Exception ex )
-			{
-				LOGGER.error("Error generating video preview ", ex); //$NON-NLS-1$
-				return false;
-			}
-			return true;
-		}
+        libAvService.generatePreviewVideo(handle, filename);
+      } catch (Exception ex) {
+        LOGGER.error("Error generating video preview ", ex); // $NON-NLS-1$
+        return false;
+      }
+      return true;
+    }
 
-		// go away, libav is not even installed
-		return false;
-	}
+    // go away, libav is not even installed
+    return false;
+  }
 
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		supportedVideoAttachments = new PluginTracker<SupportedVideoMimeTypeExtension>(pluginService,
-			"com.tle.core.workflow.video", "supportedVideoMimeType", null);
-		supportedVideoAttachments.setBeanKey("bean");
-	}
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    supportedVideoAttachments =
+        new PluginTracker<SupportedVideoMimeTypeExtension>(
+            pluginService, "com.tle.core.workflow.video", "supportedVideoMimeType", null);
+    supportedVideoAttachments.setBeanKey("bean");
+  }
 }

@@ -34,60 +34,52 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 
 @Bind
 @Singleton
-public class AddDeleteModeratingMigration extends AbstractHibernateSchemaMigration
-{
-	private static final String keyPrefix = PluginServiceImpl.getMyPluginId(AddDeleteModeratingMigration.class) + "."; //$NON-NLS-1$
+public class AddDeleteModeratingMigration extends AbstractHibernateSchemaMigration {
+  private static final String keyPrefix =
+      PluginServiceImpl.getMyPluginId(AddDeleteModeratingMigration.class) + "."; // $NON-NLS-1$
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return 0;
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return 0;
+  }
 
-	@Override
-	public boolean isBackwardsCompatible()
-	{
-		return true;
-	}
+  @Override
+  public boolean isBackwardsCompatible() {
+    return true;
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-	{
-		// No data to migrate
-	}
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) {
+    // No data to migrate
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		return helper.getAddColumnsSQL("moderation_status", "deleted_moderating");
-	}
+  @Override
+  @SuppressWarnings("nls")
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    return helper.getAddColumnsSQL("moderation_status", "deleted_moderating");
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		return null;
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    return null;
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{ModerationStatusAdd.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {ModerationStatusAdd.class};
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(keyPrefix + "migratedel.title", keyPrefix + "migratedel.description");
-	}
+  @Override
+  @SuppressWarnings("nls")
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(keyPrefix + "migratedel.title", keyPrefix + "migratedel.description");
+  }
 
-	@Entity(name = "ModerationStatus")
-	@AccessType("field")
-	public class ModerationStatusAdd
-	{
-		@Id
-		long id;
-		Boolean deletedModerating;
-	}
+  @Entity(name = "ModerationStatus")
+  @AccessType("field")
+  public class ModerationStatusAdd {
+    @Id long id;
+    Boolean deletedModerating;
+  }
 }

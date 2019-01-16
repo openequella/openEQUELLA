@@ -35,66 +35,59 @@ import com.tle.core.workflow.migrate.beans.node.WorkflowNode;
 @Entity(name = "WorkflowItemStatus")
 @AccessType("field")
 @DiscriminatorValue("task")
-public class WorkflowItemStatus extends WorkflowNodeStatus
-{
-	private static final long serialVersionUID = 1L;
+public class WorkflowItemStatus extends WorkflowNodeStatus {
+  private static final long serialVersionUID = 1L;
 
-	private Date dateDue;
-	@Column(length = 40)
-	private String assignedTo;
+  private Date dateDue;
 
-	@ElementCollection
-	@JoinTable(name = "WorkflowNodeStatusAccepted", joinColumns = @JoinColumn(name = "workflow_node_status_id") )
-	@Column(name = "`user`", length = 255)
-	private Set<String> acceptedUsers = new HashSet<String>();
+  @Column(length = 40)
+  private String assignedTo;
 
-	// To delete
-	@Lob
-	@Column(name = "acceptedUsers")
-	public String oldAccepted;
+  @ElementCollection
+  @JoinTable(
+      name = "WorkflowNodeStatusAccepted",
+      joinColumns = @JoinColumn(name = "workflow_node_status_id"))
+  @Column(name = "`user`", length = 255)
+  private Set<String> acceptedUsers = new HashSet<String>();
 
-	public WorkflowItemStatus()
-	{
-		super();
-	}
+  // To delete
+  @Lob
+  @Column(name = "acceptedUsers")
+  public String oldAccepted;
 
-	public WorkflowItemStatus(WorkflowNode node)
-	{
-		super(node);
-	}
+  public WorkflowItemStatus() {
+    super();
+  }
 
-	public Set<String> getAcceptedUsers()
-	{
-		return acceptedUsers;
-	}
+  public WorkflowItemStatus(WorkflowNode node) {
+    super(node);
+  }
 
-	public void setAcceptedUsers(Set<String> acceptedUsers)
-	{
-		this.acceptedUsers = acceptedUsers;
-	}
+  public Set<String> getAcceptedUsers() {
+    return acceptedUsers;
+  }
 
-	public void addAccepted(String userId)
-	{
-		acceptedUsers.add(userId);
-	}
+  public void setAcceptedUsers(Set<String> acceptedUsers) {
+    this.acceptedUsers = acceptedUsers;
+  }
 
-	public String getAssignedTo()
-	{
-		return assignedTo;
-	}
+  public void addAccepted(String userId) {
+    acceptedUsers.add(userId);
+  }
 
-	public void setAssignedTo(String assignedTo)
-	{
-		this.assignedTo = assignedTo;
-	}
+  public String getAssignedTo() {
+    return assignedTo;
+  }
 
-	public Date getDateDue()
-	{
-		return dateDue;
-	}
+  public void setAssignedTo(String assignedTo) {
+    this.assignedTo = assignedTo;
+  }
 
-	public void setDateDue(Date dateDue)
-	{
-		this.dateDue = dateDue;
-	}
+  public Date getDateDue() {
+    return dateDue;
+  }
+
+  public void setDateDue(Date dateDue) {
+    this.dateDue = dateDue;
+  }
 }

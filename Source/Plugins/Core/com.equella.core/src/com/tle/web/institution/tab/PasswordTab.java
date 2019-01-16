@@ -43,146 +43,128 @@ import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 
 @SuppressWarnings("nls")
-public class PasswordTab extends AbstractPrototypeSection<PasswordTab.PasswordModel> implements HtmlRenderer
-{
-	@Inject
-	private SystemConfigService systemConfigService;
+public class PasswordTab extends AbstractPrototypeSection<PasswordTab.PasswordModel>
+    implements HtmlRenderer {
+  @Inject private SystemConfigService systemConfigService;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
 
-	@Component(stateful = false)
-	private TextField adminPassword;
-	@Component(stateful = false)
-	private TextField oldPassword;
-	@Component(stateful = false)
-	private TextField confirmPassword;
-	@Component
-	@PlugKey(value = "institutions.password.change", global = true)
-	private Button changeButton;
+  @Component(stateful = false)
+  private TextField adminPassword;
 
-	public static class PasswordModel
-	{
-		private String error;
-		private boolean requiresInitialPassword;
-		private boolean changeSuccessful;
+  @Component(stateful = false)
+  private TextField oldPassword;
 
-		public boolean isRequiresInitialPassword()
-		{
-			return requiresInitialPassword;
-		}
+  @Component(stateful = false)
+  private TextField confirmPassword;
 
-		public void setRequiresInitialPassword(boolean requiresInitialPassword)
-		{
-			this.requiresInitialPassword = requiresInitialPassword;
-		}
+  @Component
+  @PlugKey(value = "institutions.password.change", global = true)
+  private Button changeButton;
 
-		public String getError()
-		{
-			return error;
-		}
+  public static class PasswordModel {
+    private String error;
+    private boolean requiresInitialPassword;
+    private boolean changeSuccessful;
 
-		public void setError(String error)
-		{
-			this.error = error;
-		}
+    public boolean isRequiresInitialPassword() {
+      return requiresInitialPassword;
+    }
 
-		public void setChangeSuccessful(boolean changeSuccessful)
-		{
-			this.changeSuccessful = changeSuccessful;
-		}
+    public void setRequiresInitialPassword(boolean requiresInitialPassword) {
+      this.requiresInitialPassword = requiresInitialPassword;
+    }
 
-		public boolean isChangeSuccessful()
-		{
-			return changeSuccessful;
-		}
-	}
+    public String getError() {
+      return error;
+    }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "password";
-	}
+    public void setError(String error) {
+      this.error = error;
+    }
 
-	@Override
-	public Class<PasswordModel> getModelClass()
-	{
-		return PasswordModel.class;
-	}
+    public void setChangeSuccessful(boolean changeSuccessful) {
+      this.changeSuccessful = changeSuccessful;
+    }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		getModel(context).setRequiresInitialPassword(systemConfigService.adminPasswordNotSet());
-		return viewFactory.createResult("tab/password.ftl", context);
-	}
+    public boolean isChangeSuccessful() {
+      return changeSuccessful;
+    }
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		SubmitValuesFunction funcExpr = events.getSubmitValuesFunction("changePassword");
-		SimpleValidator validateCall = new SimpleValidator(new FunctionCallExpression("confirmAction",
-			adminPassword.createGetExpression(), confirmPassword.createGetExpression(), oldPassword));
-		changeButton.setClickHandler(new OverrideHandler(validateCall, new FunctionCallStatement(funcExpr)));
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "password";
+  }
 
-	@EventHandlerMethod
-	public void changePassword(SectionInfo info)
-	{
-		PasswordModel model = getModel(info);
-		boolean success = true;
-		String oldPasswordText = oldPassword.getValue(info);
-		String newPasswordText = adminPassword.getValue(info);
-		if( systemConfigService.adminPasswordNotSet() )
-		{
-			systemConfigService.setInitialAdminPassword(newPasswordText);
-			clearPasswords(info);
-		}
-		else
-		{
-			try
-			{
-				systemConfigService.setAdminPassword(oldPasswordText, newPasswordText);
-				clearPasswords(info);
-			}
-			catch( BadCredentialsException ex )
-			{
-				model.setError(CurrentLocale.get("institutions.password.incorrect"));
-				success = false;
+  @Override
+  public Class<PasswordModel> getModelClass() {
+    return PasswordModel.class;
+  }
 
-			}
-		}
-		model.setChangeSuccessful(success);
-		info.preventGET();
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    getModel(context).setRequiresInitialPassword(systemConfigService.adminPasswordNotSet());
+    return viewFactory.createResult("tab/password.ftl", context);
+  }
 
-	public void clearPasswords(SectionInfo info)
-	{
-		oldPassword.setValue(info, null);
-		adminPassword.setValue(info, null);
-		confirmPassword.setValue(info, null);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    SubmitValuesFunction funcExpr = events.getSubmitValuesFunction("changePassword");
+    SimpleValidator validateCall =
+        new SimpleValidator(
+            new FunctionCallExpression(
+                "confirmAction",
+                adminPassword.createGetExpression(),
+                confirmPassword.createGetExpression(),
+                oldPassword));
+    changeButton.setClickHandler(
+        new OverrideHandler(validateCall, new FunctionCallStatement(funcExpr)));
+  }
 
-	public TextField getAdminPassword()
-	{
-		return adminPassword;
-	}
+  @EventHandlerMethod
+  public void changePassword(SectionInfo info) {
+    PasswordModel model = getModel(info);
+    boolean success = true;
+    String oldPasswordText = oldPassword.getValue(info);
+    String newPasswordText = adminPassword.getValue(info);
+    if (systemConfigService.adminPasswordNotSet()) {
+      systemConfigService.setInitialAdminPassword(newPasswordText);
+      clearPasswords(info);
+    } else {
+      try {
+        systemConfigService.setAdminPassword(oldPasswordText, newPasswordText);
+        clearPasswords(info);
+      } catch (BadCredentialsException ex) {
+        model.setError(CurrentLocale.get("institutions.password.incorrect"));
+        success = false;
+      }
+    }
+    model.setChangeSuccessful(success);
+    info.preventGET();
+  }
 
-	public TextField getOldPassword()
-	{
-		return oldPassword;
-	}
+  public void clearPasswords(SectionInfo info) {
+    oldPassword.setValue(info, null);
+    adminPassword.setValue(info, null);
+    confirmPassword.setValue(info, null);
+  }
 
-	public TextField getConfirmPassword()
-	{
-		return confirmPassword;
-	}
+  public TextField getAdminPassword() {
+    return adminPassword;
+  }
 
-	public Button getChangeButton()
-	{
-		return changeButton;
-	}
+  public TextField getOldPassword() {
+    return oldPassword;
+  }
+
+  public TextField getConfirmPassword() {
+    return confirmPassword;
+  }
+
+  public Button getChangeButton() {
+    return changeButton;
+  }
 }

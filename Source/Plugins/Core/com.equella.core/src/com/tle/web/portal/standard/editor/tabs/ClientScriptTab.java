@@ -66,232 +66,226 @@ import com.tle.web.sections.standard.model.StringListModel;
 
 @NonNullByDefault
 @SuppressWarnings("nls")
-public class ClientScriptTab extends AbstractScriptingTab<ClientScriptTab.ClientScriptTabModel>
-{
-	private static final NameValue NAME = new BundleNameValue(ResourcesService.getResourceHelper(ServerScriptTab.class)
-		.key("editor.freemarker.tab.client.name"), "client");
+public class ClientScriptTab extends AbstractScriptingTab<ClientScriptTab.ClientScriptTabModel> {
+  private static final NameValue NAME =
+      new BundleNameValue(
+          ResourcesService.getResourceHelper(ServerScriptTab.class)
+              .key("editor.freemarker.tab.client.name"),
+          "client");
 
-	@PlugKey("editor.freemarker.tab.client.link.add")
-	private static Label LABEL_LINK_ADD;
-	@PlugKey("editor.freemarker.tab.client.link.delete")
-	private static Label LABEL_LINK_DELETE;
-	@PlugKey("editor.freemarker.tab.client.column.link")
-	private static Label LABEL_JAVASCRIPT;
-	@PlugKey("editor.freemarker.tab.client.empty")
-	private static Label LABEL_EMPTY_LIST;
+  @PlugKey("editor.freemarker.tab.client.link.add")
+  private static Label LABEL_LINK_ADD;
 
-	@Inject
-	private PortletService portletService;
-	@Inject
-	private UserScriptsService userScriptService;
+  @PlugKey("editor.freemarker.tab.client.link.delete")
+  private static Label LABEL_LINK_DELETE;
 
-	@Component(name = "escpt", stateful = false)
-	private TextField externalJs;
-	@Component(name = "cscpt")
-	private CodeMirror scriptEditor;
-	@Component
-	private Link addJavascriptLink;
-	@Component(name = "jfl", stateful = false)
-	private MutableList<String> javascriptFileList;
-	@Component(name = "jt")
-	private SelectionsTable javascriptTable;
-	@Component(name = "jsl")
-	@PlugKey("freemarker.scriptlist.action")
-	private SingleSelectionList<UserScript> javaScriptList;
+  @PlugKey("editor.freemarker.tab.client.column.link")
+  private static Label LABEL_JAVASCRIPT;
 
-	private JSCallable deleteFunction;
+  @PlugKey("editor.freemarker.tab.client.empty")
+  private static Label LABEL_EMPTY_LIST;
 
-	@Override
-	public NameValue getTabToAppearOn()
-	{
-		return NAME;
-	}
+  @Inject private PortletService portletService;
+  @Inject private UserScriptsService userScriptService;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		javaScriptList.setDisplayed(context, userScriptService.executableScriptsAvailable());
-		return thisView.createResult("edit/tabs/clientscripttab.ftl", context);
-	}
+  @Component(name = "escpt", stateful = false)
+  private TextField externalJs;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Component(name = "cscpt")
+  private CodeMirror scriptEditor;
 
-		javascriptFileList.setListModel(new StringListModel());
-		javascriptFileList.setStyle("display: none;");
+  @Component private Link addJavascriptLink;
 
-		scriptEditor.setEditorType(EditorType.JAVASCRIPT_EDITOR);
-		scriptEditor.setAllowFullScreen(true);
-		scriptEditor.setShowHelp(true);
+  @Component(name = "jfl", stateful = false)
+  private MutableList<String> javascriptFileList;
 
-		addJavascriptLink.setLabel(LABEL_LINK_ADD);
+  @Component(name = "jt")
+  private SelectionsTable javascriptTable;
 
-		addJavascriptLink.setClickHandler(
-			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("addJavascript"), "selectedJS"),
-			externalJs.createGetExpression());
+  @Component(name = "jsl")
+  @PlugKey("freemarker.scriptlist.action")
+  private SingleSelectionList<UserScript> javaScriptList;
 
-		deleteFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("deleteJavascript"),
-			ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), "selectedJS");
+  private JSCallable deleteFunction;
 
-		javascriptTable.setColumnHeadings(LABEL_JAVASCRIPT, null);
-		javascriptTable.setColumnSorts(Sort.PRIMARY_ASC, Sort.NONE);
-		javascriptTable.setSelectionsModel(new JavascriptTableModel());
-		javascriptTable.setNothingSelectedText(LABEL_EMPTY_LIST);
+  @Override
+  public NameValue getTabToAppearOn() {
+    return NAME;
+  }
 
-		javaScriptList.setListModel(new ScriptListModel(true));
-		javaScriptList.addChangeEventHandler(new StatementHandler(ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("loadUserScript"), "client-editor")));
-		javaScriptList.setDefaultRenderer(BootstrapDropDownRenderer.RENDER_CONSTANT);
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    javaScriptList.setDisplayed(context, userScriptService.executableScriptsAvailable());
+    return thisView.createResult("edit/tabs/clientscripttab.ftl", context);
+  }
 
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	public void customLoad(SectionInfo info, PortletEditingBean portlet)
-	{
-		PropBagEx config = !Check.isEmpty(portlet.getConfig()) ? new PropBagEx(portlet.getConfig()) : new PropBagEx();
-		scriptEditor.setValue(info, config.getNode("clientscript"));
-		List<String> javascript = config.getNodeList("external-javascript");
-		MutableListModel<String> listModel = javascriptFileList.getListModel();
-		for( String js : javascript )
-		{
-			if( !listModel.contains(info, js) )
-			{
-				listModel.add(info, js);
-			}
-		}
-	}
+    javascriptFileList.setListModel(new StringListModel());
+    javascriptFileList.setStyle("display: none;");
 
-	@EventHandlerMethod
-	public void deleteJavascript(SectionInfo info, String url)
-	{
-		if( !Check.isEmpty(url) )
-		{
-			javascriptFileList.getListModel().remove(info, url);
-			PortletEditingBean portlet = portletService.loadSession(freemarkerEditor.getModel(info).getSessionId())
-				.getBean();
+    scriptEditor.setEditorType(EditorType.JAVASCRIPT_EDITOR);
+    scriptEditor.setAllowFullScreen(true);
+    scriptEditor.setShowHelp(true);
 
-			PropBagEx config = !Check.isEmpty(portlet.getConfig()) ? new PropBagEx(portlet.getConfig())
-				: new PropBagEx();
-			config.deleteAll("external-javascript");
-			Collection<String> values = javascriptFileList.getListModel().getValues(info);
-			for( String val : values )
-			{
-				config.createNode("external-javascript", val);
-			}
-			portlet.setConfig(config.toString());
-		}
-	}
+    addJavascriptLink.setLabel(LABEL_LINK_ADD);
 
-	@EventHandlerMethod
-	public void addJavascript(SectionInfo info, String url)
-	{
-		if( !Check.isEmpty(url) )
-		{
-			MutableListModel<String> listModel = javascriptFileList.getListModel();
-			if( !listModel.contains(info, url) )
-			{
-				listModel.add(info, url);
-			}
-			externalJs.setValue(info, "");
-		}
-	}
+    addJavascriptLink.setClickHandler(
+        ajax.getAjaxUpdateDomFunction(
+            tree, this, events.getEventHandler("addJavascript"), "selectedJS"),
+        externalJs.createGetExpression());
 
-	@Override
-	public void customSave(SectionInfo info, PortletEditingBean portlet)
-	{
-		PropBagEx config = !Check.isEmpty(portlet.getConfig()) ? new PropBagEx(portlet.getConfig()) : new PropBagEx();
-		if( scriptEditor.getValue(info) != null )
-		{
-			config.setNode("clientscript", scriptEditor.getValue(info));
-		}
+    deleteFunction =
+        ajax.getAjaxUpdateDomFunction(
+            tree,
+            this,
+            events.getEventHandler("deleteJavascript"),
+            ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
+            "selectedJS");
 
-		config.deleteAll("external-javascript");
-		Collection<String> values = javascriptFileList.getListModel().getValues(info);
-		for( String url : values )
-		{
-			config.createNode("external-javascript", url);
-		}
-		portlet.setConfig(config.toString());
-	}
+    javascriptTable.setColumnHeadings(LABEL_JAVASCRIPT, null);
+    javascriptTable.setColumnSorts(Sort.PRIMARY_ASC, Sort.NONE);
+    javascriptTable.setSelectionsModel(new JavascriptTableModel());
+    javascriptTable.setNothingSelectedText(LABEL_EMPTY_LIST);
 
-	@Override
-	public void customClear(SectionInfo info)
-	{
-		scriptEditor.setValue(info, Constants.BLANK);
-		javascriptFileList.getListModel().clear(info);
-	}
+    javaScriptList.setListModel(new ScriptListModel(true));
+    javaScriptList.addChangeEventHandler(
+        new StatementHandler(
+            ajax.getAjaxUpdateDomFunction(
+                tree, this, events.getEventHandler("loadUserScript"), "client-editor")));
+    javaScriptList.setDefaultRenderer(BootstrapDropDownRenderer.RENDER_CONSTANT);
+  }
 
-	@Override
-	protected JSExpression getEditor()
-	{
-		ScriptVariable cm = new ScriptVariable("cm", scriptEditor);
-		return cm;
-	}
+  @Override
+  public void customLoad(SectionInfo info, PortletEditingBean portlet) {
+    PropBagEx config =
+        !Check.isEmpty(portlet.getConfig()) ? new PropBagEx(portlet.getConfig()) : new PropBagEx();
+    scriptEditor.setValue(info, config.getNode("clientscript"));
+    List<String> javascript = config.getNodeList("external-javascript");
+    MutableListModel<String> listModel = javascriptFileList.getListModel();
+    for (String js : javascript) {
+      if (!listModel.contains(info, js)) {
+        listModel.add(info, js);
+      }
+    }
+  }
 
-	public CodeMirror getScriptEditor()
-	{
-		return scriptEditor;
-	}
+  @EventHandlerMethod
+  public void deleteJavascript(SectionInfo info, String url) {
+    if (!Check.isEmpty(url)) {
+      javascriptFileList.getListModel().remove(info, url);
+      PortletEditingBean portlet =
+          portletService.loadSession(freemarkerEditor.getModel(info).getSessionId()).getBean();
 
-	@Override
-	public Class<ClientScriptTabModel> getModelClass()
-	{
-		return ClientScriptTabModel.class;
-	}
+      PropBagEx config =
+          !Check.isEmpty(portlet.getConfig())
+              ? new PropBagEx(portlet.getConfig())
+              : new PropBagEx();
+      config.deleteAll("external-javascript");
+      Collection<String> values = javascriptFileList.getListModel().getValues(info);
+      for (String val : values) {
+        config.createNode("external-javascript", val);
+      }
+      portlet.setConfig(config.toString());
+    }
+  }
 
-	public Link getAddJavascriptLink()
-	{
-		return addJavascriptLink;
-	}
+  @EventHandlerMethod
+  public void addJavascript(SectionInfo info, String url) {
+    if (!Check.isEmpty(url)) {
+      MutableListModel<String> listModel = javascriptFileList.getListModel();
+      if (!listModel.contains(info, url)) {
+        listModel.add(info, url);
+      }
+      externalJs.setValue(info, "");
+    }
+  }
 
-	public TextField getExternalJs()
-	{
-		return externalJs;
-	}
+  @Override
+  public void customSave(SectionInfo info, PortletEditingBean portlet) {
+    PropBagEx config =
+        !Check.isEmpty(portlet.getConfig()) ? new PropBagEx(portlet.getConfig()) : new PropBagEx();
+    if (scriptEditor.getValue(info) != null) {
+      config.setNode("clientscript", scriptEditor.getValue(info));
+    }
 
-	public MutableList<String> getJavascriptFileList()
-	{
-		return javascriptFileList;
-	}
+    config.deleteAll("external-javascript");
+    Collection<String> values = javascriptFileList.getListModel().getValues(info);
+    for (String url : values) {
+      config.createNode("external-javascript", url);
+    }
+    portlet.setConfig(config.toString());
+  }
 
-	public SelectionsTable getJavascriptTable()
-	{
-		return javascriptTable;
-	}
+  @Override
+  public void customClear(SectionInfo info) {
+    scriptEditor.setValue(info, Constants.BLANK);
+    javascriptFileList.getListModel().clear(info);
+  }
 
-	private class JavascriptTableModel extends DynamicSelectionsTableModel<String>
-	{
-		@Override
-		protected List<String> getSourceList(SectionInfo info)
-		{
-			return javascriptFileList.getListModel().getValues(info);
-		}
+  @Override
+  protected JSExpression getEditor() {
+    ScriptVariable cm = new ScriptVariable("cm", scriptEditor);
+    return cm;
+  }
 
-		@Override
-		protected void transform(SectionInfo info, SelectionsTableSelection selection, String url,
-			List<SectionRenderable> actions, int index)
-		{
-			selection.setViewAction(new LabelRenderer(new TextLabel(url)));
-			actions.add(makeRemoveAction(LABEL_LINK_DELETE, new OverrideHandler(deleteFunction, url)));
-		}
-	}
+  public CodeMirror getScriptEditor() {
+    return scriptEditor;
+  }
 
-	public static class ClientScriptTabModel
-	{
-		// nothing needs to exist in this model ...?
-	}
+  @Override
+  public Class<ClientScriptTabModel> getModelClass() {
+    return ClientScriptTabModel.class;
+  }
 
-	public SingleSelectionList<UserScript> getJavaScriptList()
-	{
-		return javaScriptList;
-	}
+  public Link getAddJavascriptLink() {
+    return addJavascriptLink;
+  }
 
-	@EventHandlerMethod(priority = SectionEvent.PRIORITY_HIGH)
-	public void loadUserScript(SectionInfo info)
-	{
-		String script = userScriptService.getByUuid(javaScriptList.getSelectedValueAsString(info)).getScript();
-		scriptEditor.setValue(info, script);
-	}
+  public TextField getExternalJs() {
+    return externalJs;
+  }
+
+  public MutableList<String> getJavascriptFileList() {
+    return javascriptFileList;
+  }
+
+  public SelectionsTable getJavascriptTable() {
+    return javascriptTable;
+  }
+
+  private class JavascriptTableModel extends DynamicSelectionsTableModel<String> {
+    @Override
+    protected List<String> getSourceList(SectionInfo info) {
+      return javascriptFileList.getListModel().getValues(info);
+    }
+
+    @Override
+    protected void transform(
+        SectionInfo info,
+        SelectionsTableSelection selection,
+        String url,
+        List<SectionRenderable> actions,
+        int index) {
+      selection.setViewAction(new LabelRenderer(new TextLabel(url)));
+      actions.add(makeRemoveAction(LABEL_LINK_DELETE, new OverrideHandler(deleteFunction, url)));
+    }
+  }
+
+  public static class ClientScriptTabModel {
+    // nothing needs to exist in this model ...?
+  }
+
+  public SingleSelectionList<UserScript> getJavaScriptList() {
+    return javaScriptList;
+  }
+
+  @EventHandlerMethod(priority = SectionEvent.PRIORITY_HIGH)
+  public void loadUserScript(SectionInfo info) {
+    String script =
+        userScriptService.getByUuid(javaScriptList.getSelectedValueAsString(info)).getScript();
+    scriptEditor.setValue(info, script);
+  }
 }

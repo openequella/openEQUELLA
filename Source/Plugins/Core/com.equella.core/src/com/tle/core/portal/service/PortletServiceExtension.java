@@ -21,17 +21,16 @@ import java.util.List;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.portal.entity.Portlet;
 
-public interface PortletServiceExtension
-{
-	void doValidation(PortletEditingBean newPortlet, List<ValidationError> errors);
+public interface PortletServiceExtension {
+  void doValidation(PortletEditingBean newPortlet, List<ValidationError> errors);
 
-	void deleteExtra(Portlet portlet);
+  void deleteExtra(Portlet portlet);
 
-	void edit(Portlet oldPortlet, PortletEditingBean newPortlet);
+  void edit(Portlet oldPortlet, PortletEditingBean newPortlet);
 
-	void add(Portlet portlet);
+  void add(Portlet portlet);
 
-	void loadExtra(Portlet portlet);
+  void loadExtra(Portlet portlet);
 
-	void changeUserId(String fromUserId, String toUserId);
+  void changeUserId(String fromUserId, String toUserId);
 }

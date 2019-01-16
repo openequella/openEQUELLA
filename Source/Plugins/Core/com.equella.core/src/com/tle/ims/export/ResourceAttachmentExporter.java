@@ -42,112 +42,107 @@ import com.tle.core.util.ims.extension.IMSAttachmentExporter;
 import com.tle.core.util.ims.extension.IMSManifestExporter;
 
 /**
- * Need to find a better place to put this Resource attachments always create a
- * LinkAttachment upon import.
- * 
+ * Need to find a better place to put this Resource attachments always create a LinkAttachment upon
+ * import.
+ *
  * @author Aaron
  */
 @Bind
 @Singleton
-public class ResourceAttachmentExporter implements IMSAttachmentExporter, IMSManifestExporter
-{
-	private static final String DATA_TYPE = "type"; //$NON-NLS-1$
-	private static final String DATA_UUID = "uuid"; //$NON-NLS-1$
-	private static final String DATA_VERSION = "version"; //$NON-NLS-1$
+public class ResourceAttachmentExporter implements IMSAttachmentExporter, IMSManifestExporter {
+  private static final String DATA_TYPE = "type"; // $NON-NLS-1$
+  private static final String DATA_UUID = "uuid"; // $NON-NLS-1$
+  private static final String DATA_VERSION = "version"; // $NON-NLS-1$
 
-	// @Inject
-	// private AttachmentResourceService resourceService;
-	@Inject
-	private InstitutionService institutionService;
+  // @Inject
+  // private AttachmentResourceService resourceService;
+  @Inject private InstitutionService institutionService;
 
-	// @Inject
-	// private ViewableItemFactory viewableItemFactory;
+  // @Inject
+  // private ViewableItemFactory viewableItemFactory;
 
-	@Override
-	public boolean exportAttachment(Item item, IAttachment attachment, List<IMSResource> resources, FileHandle imsRoot)
-	{
-		if( attachment.getAttachmentType() == AttachmentType.CUSTOM )
-		{
-			final CustomAttachment custom = (CustomAttachment) attachment;
-			if( custom.getType().equals("resource") )
-			{
-				// final ViewableItem vitem =
-				// viewableItemFactory.createNewViewableItem(item
-				// .getItemId());
-				// final ViewableResource viewableResource =
-				// resourceService.getViewableResource(info,
-				// vitem, attachment);
-				// final ViewItemUrl vurl =
-				// viewableResource.createDefaultViewerUrl();
-				// vurl.setBackTo(null);
+  @Override
+  public boolean exportAttachment(
+      Item item, IAttachment attachment, List<IMSResource> resources, FileHandle imsRoot) {
+    if (attachment.getAttachmentType() == AttachmentType.CUSTOM) {
+      final CustomAttachment custom = (CustomAttachment) attachment;
+      if (custom.getType().equals("resource")) {
+        // final ViewableItem vitem =
+        // viewableItemFactory.createNewViewableItem(item
+        // .getItemId());
+        // final ViewableResource viewableResource =
+        // resourceService.getViewableResource(info,
+        // vitem, attachment);
+        // final ViewItemUrl vurl =
+        // viewableResource.createDefaultViewerUrl();
+        // vurl.setBackTo(null);
 
-				final IMSMetadata data = new IMSMetadata();
-				final IMSCustomData customData = new IMSCustomData();
+        final IMSMetadata data = new IMSMetadata();
+        final IMSCustomData customData = new IMSCustomData();
 
-				PropBagEx xml = new PropBagEx("<equella/>");
-				xml.setNode("type", "resource");
-				PropBagEx resourceData = xml.aquireSubtree("resourcedata");
-				resourceData.setNode("description", custom.getDescription());
-				customData.setXml(xml);
+        PropBagEx xml = new PropBagEx("<equella/>");
+        xml.setNode("type", "resource");
+        PropBagEx resourceData = xml.aquireSubtree("resourcedata");
+        resourceData.setNode("description", custom.getDescription());
+        customData.setXml(xml);
 
-				data.setData(customData);
+        data.setData(customData);
 
-				final IMSResource res = new IMSResource();
-				res.setMetadata(data);
-				res.setIdentifier(attachment.getUuid());
+        final IMSResource res = new IMSResource();
+        res.setMetadata(data);
+        res.setIdentifier(attachment.getUuid());
 
-				// FIXME: the old way was better (see commented out crap) but
-				// relied on a section info
-				final Map<String, Object> attr = attachment.getDataAttributesReadOnly();
-				final String itemUuid = (String) attr.get(DATA_UUID);
-				final Integer itemVersion = (Integer) attr.get(DATA_VERSION);
-				final String type = (String) attr.get(DATA_TYPE);
-				String attachmentUuid = null;
-				if( type.equals("a") )
-				{
-					attachmentUuid = attachment.getUrl();
-				}
-				res.setHref(institutionService.institutionalise("items/" + itemUuid + "/" + itemVersion
-					+ (attachmentUuid == null ? "" : "/?attachment.uuid=" + URLUtils.urlEncode(attachmentUuid))));
+        // FIXME: the old way was better (see commented out crap) but
+        // relied on a section info
+        final Map<String, Object> attr = attachment.getDataAttributesReadOnly();
+        final String itemUuid = (String) attr.get(DATA_UUID);
+        final Integer itemVersion = (Integer) attr.get(DATA_VERSION);
+        final String type = (String) attr.get(DATA_TYPE);
+        String attachmentUuid = null;
+        if (type.equals("a")) {
+          attachmentUuid = attachment.getUrl();
+        }
+        res.setHref(
+            institutionService.institutionalise(
+                "items/"
+                    + itemUuid
+                    + "/"
+                    + itemVersion
+                    + (attachmentUuid == null
+                        ? ""
+                        : "/?attachment.uuid=" + URLUtils.urlEncode(attachmentUuid))));
 
-				resources.add(res);
-				return true;
-			}
-		}
-		return false;
-	}
+        resources.add(res);
+        return true;
+      }
+    }
+    return false;
+  }
 
-	@Override
-	public Attachment importAttachment(Item item, IMSResource resource, FileHandle root, String packageFolder)
-	{
-		IMSMetadata metadata = resource.getMetadata();
-		if( metadata != null )
-		{
-			IMSCustomData data = metadata.getData();
-			if( data != null )
-			{
-				PropBagEx xml = data.getXml();
-				String type = xml.getNode("type");
-				if( !Check.isEmpty(type) && type.equals("resource") )
-				{
-					LinkAttachment linkAttachment = new LinkAttachment();
-					linkAttachment.setUuid(resource.getIdentifier());
-					linkAttachment.setUrl(resource.getHref());
-					linkAttachment.setDescription(xml.getNode("resourcedata/description"));
-					return linkAttachment;
-				}
-			}
-		}
-		return null;
-	}
+  @Override
+  public Attachment importAttachment(
+      Item item, IMSResource resource, FileHandle root, String packageFolder) {
+    IMSMetadata metadata = resource.getMetadata();
+    if (metadata != null) {
+      IMSCustomData data = metadata.getData();
+      if (data != null) {
+        PropBagEx xml = data.getXml();
+        String type = xml.getNode("type");
+        if (!Check.isEmpty(type) && type.equals("resource")) {
+          LinkAttachment linkAttachment = new LinkAttachment();
+          linkAttachment.setUuid(resource.getIdentifier());
+          linkAttachment.setUrl(resource.getHref());
+          linkAttachment.setDescription(xml.getNode("resourcedata/description"));
+          return linkAttachment;
+        }
+      }
+    }
+    return null;
+  }
 
-	@Override
-	public void exportManifest(Item item, FileHandle staging, IMSManifest manifest)
-	{
-	}
+  @Override
+  public void exportManifest(Item item, FileHandle staging, IMSManifest manifest) {}
 
-	@Override
-	public void importManifest(Item item, FileHandle staging, IMSManifest manifest)
-	{
-	}
+  @Override
+  public void importManifest(Item item, FileHandle staging, IMSManifest manifest) {}
 }

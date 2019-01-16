@@ -21,10 +21,7 @@ import java.util.List;
 import com.tle.common.connectors.entity.Connector;
 import com.tle.core.entity.dao.AbstractEntityDao;
 
-/**
- * @author aholland
- */
-public interface ConnectorDao extends AbstractEntityDao<Connector>
-{
-	List<Connector> enumerateForUrl(String url);
+/** @author aholland */
+public interface ConnectorDao extends AbstractEntityDao<Connector> {
+  List<Connector> enumerateForUrl(String url);
 }

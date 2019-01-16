@@ -91,277 +91,266 @@ import com.tle.web.viewurl.ViewItemService;
 
 @SuppressWarnings("nls")
 @Bind
-public class MimeDefaultViewerSection extends AbstractPrototypeSection<MimeDefaultViewerSection.DefaultViewerModel>
-	implements
-		HtmlRenderer,
-		MimeEditExtension,
-		AfterTreeLookup
-{
-	private static final JSCallable OPEN_FUNC = new ExternallyDefinedFunction("openConfig", 7, new IncludeFile(
-		ResourcesService.getResourceHelper(MimeDefaultViewerSection.class).url("scripts/viewers.js")),
-		JQueryCore.PRERENDER);
+public class MimeDefaultViewerSection
+    extends AbstractPrototypeSection<MimeDefaultViewerSection.DefaultViewerModel>
+    implements HtmlRenderer, MimeEditExtension, AfterTreeLookup {
+  private static final JSCallable OPEN_FUNC =
+      new ExternallyDefinedFunction(
+          "openConfig",
+          7,
+          new IncludeFile(
+              ResourcesService.getResourceHelper(MimeDefaultViewerSection.class)
+                  .url("scripts/viewers.js")),
+          JQueryCore.PRERENDER);
 
-	private static final String VIEWERS = "viewers"; //$NON-NLS-1$
+  private static final String VIEWERS = "viewers"; // $NON-NLS-1$
 
-	private final Map<String, ResourceViewerConfigDialog> configDialogs = new HashMap<String, ResourceViewerConfigDialog>();
+  private final Map<String, ResourceViewerConfigDialog> configDialogs =
+      new HashMap<String, ResourceViewerConfigDialog>();
 
-	@PlugKey("viewers.head.default")
-	private static Label LABEL_HEADER_DEFAULT;
-	@PlugKey("viewers.head.enabled")
-	private static Label LABEL_HEADER_ENABLED;
-	@PlugKey("viewers.head.name")
-	private static Label LABEL_HEADER_NAME;
-	@PlugKey("viewers.configure")
-	private static Label LABEL_CONFIG_BUTTON;
+  @PlugKey("viewers.head.default")
+  private static Label LABEL_HEADER_DEFAULT;
 
-	@Inject
-	private ViewItemService viewItemService;
-	@Inject
-	private MimeTypeService mimeTypeService;
-	@Inject
-	private ComponentFactory componentFactory;
-	@Inject
-	private DialogTemplate dialogTemplate;
+  @PlugKey("viewers.head.enabled")
+  private static Label LABEL_HEADER_ENABLED;
 
-	@TreeLookup
-	private MimeDetailsSection detailsSection;
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @PlugKey("viewers.head.name")
+  private static Label LABEL_HEADER_NAME;
 
-	@Component(name = "dv")
-	private SingleSelectionList<NameValue> defaultViewer;
-	@Component(name = "ev")
-	private MultiSelectionList<NameValue> enabledViewers;
-	@Component(name = "vc")
-	private MappedStrings viewerConfigs;
-	@Component(name = "dvt")
-	private Table defaultViewersTable;
+  @PlugKey("viewers.configure")
+  private static Label LABEL_CONFIG_BUTTON;
 
-	public static class DefaultViewerModel
-	{
-		private Collection<ResourceViewerConfigDialog> dialogs;
+  @Inject private ViewItemService viewItemService;
+  @Inject private MimeTypeService mimeTypeService;
+  @Inject private ComponentFactory componentFactory;
+  @Inject private DialogTemplate dialogTemplate;
 
-		public Collection<ResourceViewerConfigDialog> getDialogs()
-		{
-			return dialogs;
-		}
+  @TreeLookup private MimeDetailsSection detailsSection;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-		public void setDialogs(Collection<ResourceViewerConfigDialog> dialogs)
-		{
-			this.dialogs = dialogs;
-		}
-	}
+  @Component(name = "dv")
+  private SingleSelectionList<NameValue> defaultViewer;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		DefaultViewerConfigDialog defaultDialog = componentFactory.createComponent(id,
-			"config", tree, DefaultViewerConfigDialog.class, true); //$NON-NLS-1$
-		defaultDialog.setTemplate(dialogTemplate);
-		List<NameValue> viewers = viewItemService.getViewerNames();
-		for( NameValue nameValue : viewers )
-		{
-			String viewerId = nameValue.getValue();
-			ResourceViewer viewer = viewItemService.getViewer(viewerId);
-			configDialogs.put(viewerId, viewer.createConfigDialog(id, tree, defaultDialog));
-		}
+  @Component(name = "ev")
+  private MultiSelectionList<NameValue> enabledViewers;
 
-		defaultViewersTable.setColumnHeadings(LABEL_HEADER_DEFAULT, LABEL_HEADER_ENABLED, LABEL_HEADER_NAME, null);
-		defaultViewersTable.setColumnSorts(Sort.NONE, Sort.NONE, Sort.PRIMARY_ASC, Sort.NONE);
+  @Component(name = "vc")
+  private MappedStrings viewerConfigs;
 
-		ViewerListModel viewerListModel = new ViewerListModel();
-		defaultViewer.setListModel(viewerListModel);
-		enabledViewers.setListModel(viewerListModel);
-		defaultViewer.setAlwaysSelect(true);
-		defaultViewer.setDefaultRenderer(RendererConstants.BOOLEANLIST);
-		enabledViewers.setDefaultRenderer(RendererConstants.BOOLEANLIST);
-	}
+  @Component(name = "dvt")
+  private Table defaultViewersTable;
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new DefaultViewerModel();
-	}
+  public static class DefaultViewerModel {
+    private Collection<ResourceViewerConfigDialog> dialogs;
 
-	public class ViewerListModel extends DynamicHtmlListModel<NameValue>
-	{
-		@Override
-		protected Iterable<NameValue> populateModel(SectionInfo info)
-		{
-			List<NameValue> viewers = Lists.newArrayList();
-			TextField mimeTypeField = detailsSection.getType();
-			List<NameValue> nvs = viewItemService.getViewerNames();
-			FakeMimeTypeResource mimeResource = new FakeMimeTypeResource(mimeTypeField.getValue(info));
-			for( NameValue viewer : nvs )
-			{
-				String viewerId = viewer.getValue();
-				ResourceViewer resViewer = viewItemService.getViewer(viewerId);
-				if( resViewer == null || resViewer.supports(info, mimeResource) )
-				{
-					viewers.add(viewer);
-				}
-			}
-			return viewers;
-		}
-	}
+    public Collection<ResourceViewerConfigDialog> getDialogs() {
+      return dialogs;
+    }
 
-	@Override
-	public void loadEntry(SectionInfo info, MimeEntry entry)
-	{
-		if( entry != null )
-		{
-			Map<String, String> attr = entry.getAttributes();
-			String defaultId = attr.get(MimeTypeConstants.KEY_DEFAULT_VIEWERID);
-			if( defaultId == null )
-			{
-				defaultId = MimeTypeConstants.VAL_DEFAULT_VIEWERID;
-			}
-			defaultViewer.setSelectedStringValue(info, defaultId);
-			List<String> enabledList = new ArrayList<String>(mimeTypeService.getListFromAttribute(entry,
-				MimeTypeConstants.KEY_ENABLED_VIEWERS, String.class));
-			if( !attr.containsKey(MimeTypeConstants.KEY_DISABLE_FILEVIEWER) )
-			{
-				enabledList.add(MimeTypeConstants.VAL_DEFAULT_VIEWERID);
-			}
-			enabledViewers.setSelectedStringValues(info, enabledList);
-			Map<String, String> configMap = new HashMap<String, String>();
-			for( String viewer : enabledList )
-			{
-				configMap.put(viewer, attr.get(MimeTypeConstants.KEY_VIEWER_CONFIG_PREFIX + viewer));
-			}
-			viewerConfigs.setValuesMap(info, configMap);
-		}
-	}
+    public void setDialogs(Collection<ResourceViewerConfigDialog> dialogs) {
+      this.dialogs = dialogs;
+    }
+  }
 
-	@Override
-	public void saveEntry(SectionInfo info, MimeEntry entry)
-	{
-		String viewerId = defaultViewer.getSelectedValueAsString(info);
-		Map<String, String> attr = entry.getAttributes();
-		if( !Check.isEmpty(viewerId) && !viewerId.equals(MimeTypeConstants.VAL_DEFAULT_VIEWERID) )
-		{
-			attr.put(MimeTypeConstants.KEY_DEFAULT_VIEWERID, viewerId);
-		}
-		else
-		{
-			attr.remove(MimeTypeConstants.KEY_DEFAULT_VIEWERID);
-		}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    DefaultViewerConfigDialog defaultDialog =
+        componentFactory.createComponent(
+            id, "config", tree, DefaultViewerConfigDialog.class, true); // $NON-NLS-1$
+    defaultDialog.setTemplate(dialogTemplate);
+    List<NameValue> viewers = viewItemService.getViewerNames();
+    for (NameValue nameValue : viewers) {
+      String viewerId = nameValue.getValue();
+      ResourceViewer viewer = viewItemService.getViewer(viewerId);
+      configDialogs.put(viewerId, viewer.createConfigDialog(id, tree, defaultDialog));
+    }
 
-		Set<String> enabledSet = new HashSet<String>(enabledViewers.getSelectedValuesAsStrings(info));
-		if( !enabledSet.contains(MimeTypeConstants.VAL_DEFAULT_VIEWERID) )
-		{
-			attr.put(MimeTypeConstants.KEY_DISABLE_FILEVIEWER, "true"); //$NON-NLS-1$
-		}
-		else
-		{
-			attr.remove(MimeTypeConstants.KEY_DISABLE_FILEVIEWER);
-		}
-		mimeTypeService.clearAllForPrefix(entry, MimeTypeConstants.KEY_VIEWER_CONFIG_PREFIX);
+    defaultViewersTable.setColumnHeadings(
+        LABEL_HEADER_DEFAULT, LABEL_HEADER_ENABLED, LABEL_HEADER_NAME, null);
+    defaultViewersTable.setColumnSorts(Sort.NONE, Sort.NONE, Sort.PRIMARY_ASC, Sort.NONE);
 
-		Map<String, String> configMap = viewerConfigs.getValuesMap(info);
-		for( String viewer : enabledSet )
-		{
-			String configJSON = configMap.get(viewer);
-			if( !Check.isEmpty(configJSON) )
-			{
-				attr.put(MimeTypeConstants.KEY_VIEWER_CONFIG_PREFIX + viewer, configJSON);
-			}
-		}
-		enabledSet.remove(MimeTypeConstants.VAL_DEFAULT_VIEWERID);
-		mimeTypeService.setListAttribute(entry, MimeTypeConstants.KEY_ENABLED_VIEWERS, enabledSet);
-	}
+    ViewerListModel viewerListModel = new ViewerListModel();
+    defaultViewer.setListModel(viewerListModel);
+    enabledViewers.setListModel(viewerListModel);
+    defaultViewer.setAlwaysSelect(true);
+    defaultViewer.setDefaultRenderer(RendererConstants.BOOLEANLIST);
+    enabledViewers.setDefaultRenderer(RendererConstants.BOOLEANLIST);
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "dv"; //$NON-NLS-1$
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new DefaultViewerModel();
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		Map<ResourceViewerConfigDialog, ResourceViewerConfigDialog> dialogs = new IdentityHashMap<ResourceViewerConfigDialog, ResourceViewerConfigDialog>();
-		BooleanListRenderer defaultViewerRenderer = (BooleanListRenderer) renderSection(context, defaultViewer);
-		BooleanListRenderer enabledViewerRenderer = (BooleanListRenderer) renderSection(context, enabledViewers);
+  public class ViewerListModel extends DynamicHtmlListModel<NameValue> {
+    @Override
+    protected Iterable<NameValue> populateModel(SectionInfo info) {
+      List<NameValue> viewers = Lists.newArrayList();
+      TextField mimeTypeField = detailsSection.getType();
+      List<NameValue> nvs = viewItemService.getViewerNames();
+      FakeMimeTypeResource mimeResource = new FakeMimeTypeResource(mimeTypeField.getValue(info));
+      for (NameValue viewer : nvs) {
+        String viewerId = viewer.getValue();
+        ResourceViewer resViewer = viewItemService.getViewer(viewerId);
+        if (resViewer == null || resViewer.supports(info, mimeResource)) {
+          viewers.add(viewer);
+        }
+      }
+      return viewers;
+    }
+  }
 
-		TableState tableState = defaultViewersTable.getState(context);
-		int i = 0;
-		List<ListOption<NameValue>> defaultViewers = defaultViewerRenderer.renderOptionList(context);
-		List<ListOption<NameValue>> enabledViewerList = enabledViewerRenderer.renderOptionList(context);
-		for( ListOption<NameValue> defaultOption : defaultViewers )
-		{
-			ListOption<NameValue> enabledOption = enabledViewerList.get(i);
-			NameValue viewer = defaultOption.getOption().getObject();
-			String viewerId = viewer.getValue();
-			String defaultConfig = JSONObject.fromObject(new ResourceViewerConfig()).toString();
-			HtmlComponentState buttonState = new HtmlComponentState(RendererConstants.BUTTON);
-			buttonState.addClass("button");
-			buttonState.setLabel(LABEL_CONFIG_BUTTON);
-			buttonState.setId(getSectionId() + "cb" + viewerId);
+  @Override
+  public void loadEntry(SectionInfo info, MimeEntry entry) {
+    if (entry != null) {
+      Map<String, String> attr = entry.getAttributes();
+      String defaultId = attr.get(MimeTypeConstants.KEY_DEFAULT_VIEWERID);
+      if (defaultId == null) {
+        defaultId = MimeTypeConstants.VAL_DEFAULT_VIEWERID;
+      }
+      defaultViewer.setSelectedStringValue(info, defaultId);
+      List<String> enabledList =
+          new ArrayList<String>(
+              mimeTypeService.getListFromAttribute(
+                  entry, MimeTypeConstants.KEY_ENABLED_VIEWERS, String.class));
+      if (!attr.containsKey(MimeTypeConstants.KEY_DISABLE_FILEVIEWER)) {
+        enabledList.add(MimeTypeConstants.VAL_DEFAULT_VIEWERID);
+      }
+      enabledViewers.setSelectedStringValues(info, enabledList);
+      Map<String, String> configMap = new HashMap<String, String>();
+      for (String viewer : enabledList) {
+        configMap.put(viewer, attr.get(MimeTypeConstants.KEY_VIEWER_CONFIG_PREFIX + viewer));
+      }
+      viewerConfigs.setValuesMap(info, configMap);
+    }
+  }
 
-			HtmlBooleanState enabledState = enabledOption.getBooleanState();
-			CheckboxRenderer enabledCheck = new CheckboxRenderer(enabledState);
+  @Override
+  public void saveEntry(SectionInfo info, MimeEntry entry) {
+    String viewerId = defaultViewer.getSelectedValueAsString(info);
+    Map<String, String> attr = entry.getAttributes();
+    if (!Check.isEmpty(viewerId) && !viewerId.equals(MimeTypeConstants.VAL_DEFAULT_VIEWERID)) {
+      attr.put(MimeTypeConstants.KEY_DEFAULT_VIEWERID, viewerId);
+    } else {
+      attr.remove(MimeTypeConstants.KEY_DEFAULT_VIEWERID);
+    }
 
-			TextFieldRenderer configField = new TextFieldRenderer(viewerConfigs.getValueState(context, viewerId));
-			configField.setHidden(true);
+    Set<String> enabledSet = new HashSet<String>(enabledViewers.getSelectedValuesAsStrings(info));
+    if (!enabledSet.contains(MimeTypeConstants.VAL_DEFAULT_VIEWERID)) {
+      attr.put(MimeTypeConstants.KEY_DISABLE_FILEVIEWER, "true"); // $NON-NLS-1$
+    } else {
+      attr.remove(MimeTypeConstants.KEY_DISABLE_FILEVIEWER);
+    }
+    mimeTypeService.clearAllForPrefix(entry, MimeTypeConstants.KEY_VIEWER_CONFIG_PREFIX);
 
-			ResourceViewerConfigDialog dialog = configDialogs.get(viewerId);
-			ButtonRenderer configButton = null;
-			if( dialog != null )
-			{
-				dialogs.put(dialog, dialog);
-				configButton = new ButtonRenderer(buttonState);
-				buttonState.setDisabled(!enabledState.isChecked());
-				enabledState.setEventHandler(
-					JSHandler.EVENT_CHANGE,
-					new StatementHandler(configButton.createDisableFunction(), new NotExpression(enabledCheck
-						.createGetExpression())));
-				AnonymousFunction updateFunc = new AnonymousFunction(new FunctionCallStatement(
-					configField.createSetFunction(), new FunctionCallExpression(dialog.getCollectFunction())));
+    Map<String, String> configMap = viewerConfigs.getValuesMap(info);
+    for (String viewer : enabledSet) {
+      String configJSON = configMap.get(viewer);
+      if (!Check.isEmpty(configJSON)) {
+        attr.put(MimeTypeConstants.KEY_VIEWER_CONFIG_PREFIX + viewer, configJSON);
+      }
+    }
+    enabledSet.remove(MimeTypeConstants.VAL_DEFAULT_VIEWERID);
+    mimeTypeService.setListAttribute(entry, MimeTypeConstants.KEY_ENABLED_VIEWERS, enabledSet);
+  }
 
-				buttonState.setClickHandler(new OverrideHandler(OPEN_FUNC, configField.createGetExpression(),
-					updateFunc, defaultConfig, dialog.getOpenFunction(), dialog.getCloseFunction(), new JQuerySelector(
-						dialog.getOkButton()), dialog.getPopulateFunction()));
-			}
+  @Override
+  public String getDefaultPropertyName() {
+    return "dv"; //$NON-NLS-1$
+  }
 
-			//@formatter:off
-			tableState.addRow(
-					new RadioButtonRenderer(defaultOption.getBooleanState()), 
-					enabledCheck, 
-					new TextLabel(viewer.getName()), 
-					new TableCell(configButton, configField)
-				);
-			//@formatter:on
-			i++;
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    Map<ResourceViewerConfigDialog, ResourceViewerConfigDialog> dialogs =
+        new IdentityHashMap<ResourceViewerConfigDialog, ResourceViewerConfigDialog>();
+    BooleanListRenderer defaultViewerRenderer =
+        (BooleanListRenderer) renderSection(context, defaultViewer);
+    BooleanListRenderer enabledViewerRenderer =
+        (BooleanListRenderer) renderSection(context, enabledViewers);
 
-		DefaultViewerModel model = getModel(context);
+    TableState tableState = defaultViewersTable.getState(context);
+    int i = 0;
+    List<ListOption<NameValue>> defaultViewers = defaultViewerRenderer.renderOptionList(context);
+    List<ListOption<NameValue>> enabledViewerList = enabledViewerRenderer.renderOptionList(context);
+    for (ListOption<NameValue> defaultOption : defaultViewers) {
+      ListOption<NameValue> enabledOption = enabledViewerList.get(i);
+      NameValue viewer = defaultOption.getOption().getObject();
+      String viewerId = viewer.getValue();
+      String defaultConfig = JSONObject.fromObject(new ResourceViewerConfig()).toString();
+      HtmlComponentState buttonState = new HtmlComponentState(RendererConstants.BUTTON);
+      buttonState.addClass("button");
+      buttonState.setLabel(LABEL_CONFIG_BUTTON);
+      buttonState.setId(getSectionId() + "cb" + viewerId);
 
-		model.setDialogs(dialogs.keySet());
-		return viewFactory.createResult("defaultviewer.ftl", context); //$NON-NLS-1$
-	}
+      HtmlBooleanState enabledState = enabledOption.getBooleanState();
+      CheckboxRenderer enabledCheck = new CheckboxRenderer(enabledState);
 
-	@Override
-	public NameValue getTabToAppearOn()
-	{
-		return MimeTypesEditSection.TAB_VIEWERS;
-	}
+      TextFieldRenderer configField =
+          new TextFieldRenderer(viewerConfigs.getValueState(context, viewerId));
+      configField.setHidden(true);
 
-	@Override
-	public boolean isVisible(SectionInfo info)
-	{
-		return true;
-	}
+      ResourceViewerConfigDialog dialog = configDialogs.get(viewerId);
+      ButtonRenderer configButton = null;
+      if (dialog != null) {
+        dialogs.put(dialog, dialog);
+        configButton = new ButtonRenderer(buttonState);
+        buttonState.setDisabled(!enabledState.isChecked());
+        enabledState.setEventHandler(
+            JSHandler.EVENT_CHANGE,
+            new StatementHandler(
+                configButton.createDisableFunction(),
+                new NotExpression(enabledCheck.createGetExpression())));
+        AnonymousFunction updateFunc =
+            new AnonymousFunction(
+                new FunctionCallStatement(
+                    configField.createSetFunction(),
+                    new FunctionCallExpression(dialog.getCollectFunction())));
 
-	public Table getDefaultViewersTable()
-	{
-		return defaultViewersTable;
-	}
+        buttonState.setClickHandler(
+            new OverrideHandler(
+                OPEN_FUNC,
+                configField.createGetExpression(),
+                updateFunc,
+                defaultConfig,
+                dialog.getOpenFunction(),
+                dialog.getCloseFunction(),
+                new JQuerySelector(dialog.getOkButton()),
+                dialog.getPopulateFunction()));
+      }
 
-	@Override
-	public void afterTreeLookup(SectionTree tree)
-	{
-		detailsSection.addAjaxId(VIEWERS);
-	}
+      // @formatter:off
+      tableState.addRow(
+          new RadioButtonRenderer(defaultOption.getBooleanState()),
+          enabledCheck,
+          new TextLabel(viewer.getName()),
+          new TableCell(configButton, configField));
+      // @formatter:on
+      i++;
+    }
+
+    DefaultViewerModel model = getModel(context);
+
+    model.setDialogs(dialogs.keySet());
+    return viewFactory.createResult("defaultviewer.ftl", context); // $NON-NLS-1$
+  }
+
+  @Override
+  public NameValue getTabToAppearOn() {
+    return MimeTypesEditSection.TAB_VIEWERS;
+  }
+
+  @Override
+  public boolean isVisible(SectionInfo info) {
+    return true;
+  }
+
+  public Table getDefaultViewersTable() {
+    return defaultViewersTable;
+  }
+
+  @Override
+  public void afterTreeLookup(SectionTree tree) {
+    detailsSection.addAjaxId(VIEWERS);
+  }
 }

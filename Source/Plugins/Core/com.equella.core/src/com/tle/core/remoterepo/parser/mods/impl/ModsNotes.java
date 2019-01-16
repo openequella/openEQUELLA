@@ -25,30 +25,23 @@ import org.w3c.dom.Node;
 
 import com.tle.core.xml.XmlDocument;
 
-/**
- * @author aholland
- */
-public class ModsNotes extends ModsPart
-{
-	protected Map<String, Set<String>> notes;
-	protected Set<String> allNotes;
+/** @author aholland */
+public class ModsNotes extends ModsPart {
+  protected Map<String, Set<String>> notes;
+  protected Set<String> allNotes;
 
-	public ModsNotes(XmlDocument xml, Node context)
-	{
-		super(xml, context);
-	}
+  public ModsNotes(XmlDocument xml, Node context) {
+    super(xml, context);
+  }
 
-	public Set<String> getNotes()
-	{
-		if( allNotes == null )
-		{
-			allNotes = new HashSet<String>();
-			notes = new HashMap<String, Set<String>>();
-			for( Node n : xml.nodeList("note", context) )
-			{
-				allNotes.add(XmlDocument.getTextContent(n));
-			}
-		}
-		return allNotes;
-	}
+  public Set<String> getNotes() {
+    if (allNotes == null) {
+      allNotes = new HashSet<String>();
+      notes = new HashMap<String, Set<String>>();
+      for (Node n : xml.nodeList("note", context)) {
+        allNotes.add(XmlDocument.getTextContent(n));
+      }
+    }
+    return allNotes;
+  }
 }

@@ -41,173 +41,151 @@ import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.annotations.Component;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public class MerlotQuerySection extends RemoteRepoQuerySection<MerlotRemoteRepoSearchEvent>
-{
-	@Inject
-	private MerlotWebService merlotWebService;
-	@Inject
-	private RemoteRepoWebService repoWebService;
+public class MerlotQuerySection extends RemoteRepoQuerySection<MerlotRemoteRepoSearchEvent> {
+  @Inject private MerlotWebService merlotWebService;
+  @Inject private RemoteRepoWebService repoWebService;
 
-	@TreeLookup
-	private RemoteRepoResultsSection<?, ?, ?> searchResults;
+  @TreeLookup private RemoteRepoResultsSection<?, ?, ?> searchResults;
 
-	@Component(name = "cm")
-	private SingleSelectionList<NameValue> communities;
-	@Component(name = "m")
-	private SingleSelectionList<NameValue> materialTypes;
-	@Component(name = "c")
-	private SingleSelectionList<NameValue> categories;
-	@Component(name = "s")
-	private SingleSelectionList<NameValue> subcategories;
+  @Component(name = "cm")
+  private SingleSelectionList<NameValue> communities;
 
-	@ViewFactory
-	private FreemarkerFactory view;
+  @Component(name = "m")
+  private SingleSelectionList<NameValue> materialTypes;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final FederatedSearch search = repoWebService.getRemoteRepository(context);
-		final MerlotSettings settings = new MerlotSettings();
-		settings.load(search);
-		if( settings.isAdvancedApi() )
-		{
-			// try to get the options. we may not be able to talk to MERLOT and
-			// we want a proper error page, not an embedded freemarker stack
-			// trace.
-			communities.getListModel().getOptions(context);
+  @Component(name = "c")
+  private SingleSelectionList<NameValue> categories;
 
-			MerlotModel model = (MerlotModel) getModel(context);
-			model.setTitle(CurrentLocale.get(search.getName()));
-			model.setCategorySelected(!Check.isEmpty(categories.getSelectedValueAsString(context)));
-			return view.createResult("advancedquery.ftl", this);
-		}
-		return super.renderHtml(context);
-	}
+  @Component(name = "s")
+  private SingleSelectionList<NameValue> subcategories;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		categories.setListModel(new MerlotFilterListModel(ROOT_CATEGORIES));
-		subcategories.setListModel(new MerlotFilterListModel(SUB_CATEGORIES));
-		materialTypes.setListModel(new MerlotFilterListModel(MATERIAL_TYPES));
-		communities.setListModel(new MerlotFilterListModel(COMMUNITIES));
-	}
+  @ViewFactory private FreemarkerFactory view;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    final FederatedSearch search = repoWebService.getRemoteRepository(context);
+    final MerlotSettings settings = new MerlotSettings();
+    settings.load(search);
+    if (settings.isAdvancedApi()) {
+      // try to get the options. we may not be able to talk to MERLOT and
+      // we want a proper error page, not an embedded freemarker stack
+      // trace.
+      communities.getListModel().getOptions(context);
 
-		final JSHandler reSearch = searchResults.getRestartSearchHandler(tree);
-		subcategories.addEventStatements(JSHandler.EVENT_CHANGE, reSearch);
-		materialTypes.addEventStatements(JSHandler.EVENT_CHANGE, reSearch);
-		communities.addEventStatements(JSHandler.EVENT_CHANGE, reSearch);
+      MerlotModel model = (MerlotModel) getModel(context);
+      model.setTitle(CurrentLocale.get(search.getName()));
+      model.setCategorySelected(!Check.isEmpty(categories.getSelectedValueAsString(context)));
+      return view.createResult("advancedquery.ftl", this);
+    }
+    return super.renderHtml(context);
+  }
 
-		// Also need to reload the subcategories control when this changes.
-		categories.addEventStatements(JSHandler.EVENT_CHANGE,
-			new OverrideHandler(searchResults.getResultsUpdater(tree, null, "subcategories")));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    categories.setListModel(new MerlotFilterListModel(ROOT_CATEGORIES));
+    subcategories.setListModel(new MerlotFilterListModel(SUB_CATEGORIES));
+    materialTypes.setListModel(new MerlotFilterListModel(MATERIAL_TYPES));
+    communities.setListModel(new MerlotFilterListModel(COMMUNITIES));
+  }
 
-	@Override
-	protected JSValidator createValidator()
-	{
-		return null;
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
 
-	@Override
-	public void prepareSearch(SectionInfo info, MerlotRemoteRepoSearchEvent event) throws Exception
-	{
-		event.filterByTextQuery(getParsedQuery(info), true);
-		event.setMaterialType(materialTypes.getSelectedValueAsString(info));
-		event.setCommunity(communities.getSelectedValueAsString(info));
+    final JSHandler reSearch = searchResults.getRestartSearchHandler(tree);
+    subcategories.addEventStatements(JSHandler.EVENT_CHANGE, reSearch);
+    materialTypes.addEventStatements(JSHandler.EVENT_CHANGE, reSearch);
+    communities.addEventStatements(JSHandler.EVENT_CHANGE, reSearch);
 
-		String cat = categories.getSelectedValueAsString(info);
-		if( !Check.isEmpty(cat) )
-		{
-			String subcat = subcategories.getSelectedValueAsString(info);
-			event.setCategory(Check.isEmpty(subcat) ? cat : subcat);
-		}
-	}
+    // Also need to reload the subcategories control when this changes.
+    categories.addEventStatements(
+        JSHandler.EVENT_CHANGE,
+        new OverrideHandler(searchResults.getResultsUpdater(tree, null, "subcategories")));
+  }
 
-	public SingleSelectionList<NameValue> getCommunities()
-	{
-		return communities;
-	}
+  @Override
+  protected JSValidator createValidator() {
+    return null;
+  }
 
-	public SingleSelectionList<NameValue> getMaterialTypes()
-	{
-		return materialTypes;
-	}
+  @Override
+  public void prepareSearch(SectionInfo info, MerlotRemoteRepoSearchEvent event) throws Exception {
+    event.filterByTextQuery(getParsedQuery(info), true);
+    event.setMaterialType(materialTypes.getSelectedValueAsString(info));
+    event.setCommunity(communities.getSelectedValueAsString(info));
 
-	public SingleSelectionList<NameValue> getCategories()
-	{
-		return categories;
-	}
+    String cat = categories.getSelectedValueAsString(info);
+    if (!Check.isEmpty(cat)) {
+      String subcat = subcategories.getSelectedValueAsString(info);
+      event.setCategory(Check.isEmpty(subcat) ? cat : subcat);
+    }
+  }
 
-	public SingleSelectionList<NameValue> getSubcategories()
-	{
-		return subcategories;
-	}
+  public SingleSelectionList<NameValue> getCommunities() {
+    return communities;
+  }
 
-	private final MerlotFilterType COMMUNITIES = new MerlotFilterType()
-	{
-		@Override
-		public Collection<NameValue> getValues(SectionInfo info)
-		{
-			return merlotWebService.getCommunities(info);
-		}
-	};
+  public SingleSelectionList<NameValue> getMaterialTypes() {
+    return materialTypes;
+  }
 
-	private final MerlotFilterType MATERIAL_TYPES = new MerlotFilterType()
-	{
-		@Override
-		public Collection<NameValue> getValues(SectionInfo info)
-		{
-			return merlotWebService.getMaterialTypes(info);
-		}
-	};
+  public SingleSelectionList<NameValue> getCategories() {
+    return categories;
+  }
 
-	private final MerlotFilterType ROOT_CATEGORIES = new MerlotFilterType()
-	{
-		@Override
-		public Collection<NameValue> getValues(SectionInfo info)
-		{
-			return merlotWebService.getCategories(info, null);
-		}
-	};
+  public SingleSelectionList<NameValue> getSubcategories() {
+    return subcategories;
+  }
 
-	private final MerlotFilterType SUB_CATEGORIES = new MerlotFilterType()
-	{
-		@Override
-		public Collection<NameValue> getValues(SectionInfo info)
-		{
-			return merlotWebService.getCategories(info, categories.getSelectedValueAsString(info));
-		}
-	};
+  private final MerlotFilterType COMMUNITIES =
+      new MerlotFilterType() {
+        @Override
+        public Collection<NameValue> getValues(SectionInfo info) {
+          return merlotWebService.getCommunities(info);
+        }
+      };
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new MerlotModel();
-	}
+  private final MerlotFilterType MATERIAL_TYPES =
+      new MerlotFilterType() {
+        @Override
+        public Collection<NameValue> getValues(SectionInfo info) {
+          return merlotWebService.getMaterialTypes(info);
+        }
+      };
 
-	public static class MerlotModel extends RemoteRepoQueryModel
-	{
-		private boolean categorySelected;
+  private final MerlotFilterType ROOT_CATEGORIES =
+      new MerlotFilterType() {
+        @Override
+        public Collection<NameValue> getValues(SectionInfo info) {
+          return merlotWebService.getCategories(info, null);
+        }
+      };
 
-		public boolean isCategorySelected()
-		{
-			return categorySelected;
-		}
+  private final MerlotFilterType SUB_CATEGORIES =
+      new MerlotFilterType() {
+        @Override
+        public Collection<NameValue> getValues(SectionInfo info) {
+          return merlotWebService.getCategories(info, categories.getSelectedValueAsString(info));
+        }
+      };
 
-		public void setCategorySelected(boolean categorySelected)
-		{
-			this.categorySelected = categorySelected;
-		}
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new MerlotModel();
+  }
+
+  public static class MerlotModel extends RemoteRepoQueryModel {
+    private boolean categorySelected;
+
+    public boolean isCategorySelected() {
+      return categorySelected;
+    }
+
+    public void setCategorySelected(boolean categorySelected) {
+      this.categorySelected = categorySelected;
+    }
+  }
 }

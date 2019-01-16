@@ -26,17 +26,16 @@ import com.tle.web.sections.standard.RendererFactory;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.renderers.FreemarkerComponentRendererFactory;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class NavBarRendererFactory extends FreemarkerComponentRendererFactory
-{
-	@Override
-	public SectionRenderable getRenderer(RendererFactory rendererFactory, SectionInfo info, String renderer,
-		HtmlComponentState state)
-	{
-		return new NavBarRenderer(factory, (NavBarState) state);
-	}
+public class NavBarRendererFactory extends FreemarkerComponentRendererFactory {
+  @Override
+  public SectionRenderable getRenderer(
+      RendererFactory rendererFactory,
+      SectionInfo info,
+      String renderer,
+      HtmlComponentState state) {
+    return new NavBarRenderer(factory, (NavBarState) state);
+  }
 }

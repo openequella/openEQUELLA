@@ -43,90 +43,78 @@ import com.tle.web.viewurl.ViewAttachmentUrl;
 import com.tle.web.viewurl.ViewItemUrl;
 import com.tle.web.viewurl.ViewItemUrlFactory;
 
-public abstract class AbstractCopyrightFilestoreFilter<H extends Holding, P extends Portion, S extends Section>
-	implements
-		FilestoreContentFilter
-{
-	private static final Log LOGGER = LogFactory.getLog(AbstractCopyrightFilestoreFilter.class);
+public abstract class AbstractCopyrightFilestoreFilter<
+        H extends Holding, P extends Portion, S extends Section>
+    implements FilestoreContentFilter {
+  private static final Log LOGGER = LogFactory.getLog(AbstractCopyrightFilestoreFilter.class);
 
-	@Inject
-	private ViewItemUrlFactory urlFactory;
-	@Inject
-	private TLEAclManager aclService;
+  @Inject private ViewItemUrlFactory urlFactory;
+  @Inject private TLEAclManager aclService;
 
-	@Override
-	public FilestoreContentStream filter(FilestoreContentStream contentStream, HttpServletRequest request,
-		HttpServletResponse response) throws IOException
-	{
-		String filepath = contentStream.getFilepath();
+  @Override
+  public FilestoreContentStream filter(
+      FilestoreContentStream contentStream,
+      HttpServletRequest request,
+      HttpServletResponse response)
+      throws IOException {
+    String filepath = contentStream.getFilepath();
 
-		ItemKey itemKey = contentStream.getItemId();
-		CopyrightService<H, P, S> copyrightService = getCopyrightService();
-		ItemId itemId = ItemId.fromKey(itemKey);
-		Item item = copyrightService.getCopyrightedItem(itemId);
-		if( item != null )
-		{
-			Attachment attachment = copyrightService.getSectionAttachmentForFilepath(item, filepath);
-			if( attachment == null )
-			{
-				return contentStream;
-			}
+    ItemKey itemKey = contentStream.getItemId();
+    CopyrightService<H, P, S> copyrightService = getCopyrightService();
+    ItemId itemId = ItemId.fromKey(itemKey);
+    Item item = copyrightService.getCopyrightedItem(itemId);
+    if (item != null) {
+      Attachment attachment = copyrightService.getSectionAttachmentForFilepath(item, filepath);
+      if (attachment == null) {
+        return contentStream;
+      }
 
-			AgreementStatus status;
-			try
-			{
-				status = copyrightService.getAgreementStatus(item, attachment);
-			}
-			catch( IllegalStateException bad )
-			{
-				LOGGER.error("Error getting AgreementStatus", bad); //$NON-NLS-1$
-				return contentStream;
-			}
+      AgreementStatus status;
+      try {
+        status = copyrightService.getAgreementStatus(item, attachment);
+      } catch (IllegalStateException bad) {
+        LOGGER.error("Error getting AgreementStatus", bad); // $NON-NLS-1$
+        return contentStream;
+      }
 
-			if( status.isInactive()
-				&& aclService.filterNonGrantedPrivileges(ActivationConstants.VIEW_INACTIVE_PORTIONS).isEmpty() )
-			{
-				throw copyrightService.createViolation(item);
-			}
+      if (status.isInactive()
+          && aclService
+              .filterNonGrantedPrivileges(ActivationConstants.VIEW_INACTIVE_PORTIONS)
+              .isEmpty()) {
+        throw copyrightService.createViolation(item);
+      }
 
-			if( status.isNeedsAgreement() )
-			{
-				// FIXME: This creates /items/ urls, what if they came from
-				// /integ/ ?
-				ViewItemUrl vurl = urlFactory.createFullItemUrl(itemKey);
-				vurl.add(new ViewAttachmentUrl(attachment.getUuid()));
-				response.sendRedirect(vurl.getHref());
-				return null;
-			}
-		}
-		return contentStream;
-	}
+      if (status.isNeedsAgreement()) {
+        // FIXME: This creates /items/ urls, what if they came from
+        // /integ/ ?
+        ViewItemUrl vurl = urlFactory.createFullItemUrl(itemKey);
+        vurl.add(new ViewAttachmentUrl(attachment.getUuid()));
+        response.sendRedirect(vurl.getHref());
+        return null;
+      }
+    }
+    return contentStream;
+  }
 
-	@Override
-	public boolean canView(Item i, IAttachment attach)
-	{
-		CopyrightService<H, P, S> copyrightService = getCopyrightService();
-		Item item = copyrightService.getCopyrightedItem(i.getItemId());
-		if( item != null )
-		{
-			AgreementStatus status;
-			try
-			{
-				status = copyrightService.getAgreementStatus(item, attach);
-			}
-			catch( IllegalStateException bad )
-			{
+  @Override
+  public boolean canView(Item i, IAttachment attach) {
+    CopyrightService<H, P, S> copyrightService = getCopyrightService();
+    Item item = copyrightService.getCopyrightedItem(i.getItemId());
+    if (item != null) {
+      AgreementStatus status;
+      try {
+        status = copyrightService.getAgreementStatus(item, attach);
+      } catch (IllegalStateException bad) {
 
-				return false;
-			}
+        return false;
+      }
 
-			if( status.isNeedsAgreement() )
-			{
-				return false;
-			}
-		}
-		return true;
-	}
+      if (status.isNeedsAgreement()) {
+        return false;
+      }
+    }
+    return true;
+  }
 
-	protected abstract CopyrightService<H, P, S> getCopyrightService();
+  protected abstract CopyrightService<H, P, S> getCopyrightService();
 }

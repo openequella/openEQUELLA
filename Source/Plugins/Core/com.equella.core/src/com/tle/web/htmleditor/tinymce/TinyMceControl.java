@@ -41,102 +41,103 @@ import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @SuppressWarnings("nls")
-public class TinyMceControl extends AbstractPrototypeSection<TinyMceModel> implements HtmlEditorControl, PreRenderable
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+public class TinyMceControl extends AbstractPrototypeSection<TinyMceModel>
+    implements HtmlEditorControl, PreRenderable {
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@PlugKey("editor.link.fullscreen")
-	@Component
-	protected Link fullscreen;
-	@Component(stateful = false)
-	protected TextField html;
+  @PlugKey("editor.link.fullscreen")
+  @Component
+  protected Link fullscreen;
 
-	private String defaultPropertyName = "mct";
+  @Component(stateful = false)
+  protected TextField html;
 
-	@Inject
-	private TinyMceService tinyMceService;
+  private String defaultPropertyName = "mct";
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		return viewFactory.createResult("editor/htmleditorctl.ftl", context, this);
-	}
+  @Inject private TinyMceService tinyMceService;
 
-	@Override
-	public void preRender(PreRenderContext context)
-	{
-		final TinyMceModel model = getModel(context);
-		tinyMceService.preRender(context, html, model);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    return viewFactory.createResult("editor/htmleditorctl.ftl", context, this);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		html.setEventHandler(JSHandler.EVENT_PRESUBMIT, tinyMceService.getPreSubmitHandler(html));
-		fullscreen.setClickHandler(tinyMceService.getToggleFullscreeenHandler(html, fullscreen));
-	}
+  @Override
+  public void preRender(PreRenderContext context) {
+    final TinyMceModel model = getModel(context);
+    tinyMceService.preRender(context, html, model);
+  }
 
-	@Override
-	public void setData(SectionInfo info, Map<String, String> properties, boolean restrictedCollections,
-		boolean restrictedDynacolls, boolean restrictedSearches, boolean restrictedContributables,
-		Map<Class<?>, Set<String>> searchableUuids, Set<String> contributableUuids, String formId,
-		ScriptContextFactory scriptContextFactory)
-		throws Exception
-	{
-		properties.put("fid", formId);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    html.setEventHandler(JSHandler.EVENT_PRESUBMIT, tinyMceService.getPreSubmitHandler(html));
+    fullscreen.setClickHandler(tinyMceService.getToggleFullscreeenHandler(html, fullscreen));
+  }
 
-		TinyMceModel model = getModel(info);
-		model.setScriptContextFactory(scriptContextFactory);
-		tinyMceService.populateModel(info, model, properties, restrictedCollections, restrictedDynacolls,
-			restrictedSearches, restrictedContributables, searchableUuids, contributableUuids);
+  @Override
+  public void setData(
+      SectionInfo info,
+      Map<String, String> properties,
+      boolean restrictedCollections,
+      boolean restrictedDynacolls,
+      boolean restrictedSearches,
+      boolean restrictedContributables,
+      Map<Class<?>, Set<String>> searchableUuids,
+      Set<String> contributableUuids,
+      String formId,
+      ScriptContextFactory scriptContextFactory)
+      throws Exception {
+    properties.put("fid", formId);
 
-		html.setValue(info, properties.get("html"));
-	}
+    TinyMceModel model = getModel(info);
+    model.setScriptContextFactory(scriptContextFactory);
+    tinyMceService.populateModel(
+        info,
+        model,
+        properties,
+        restrictedCollections,
+        restrictedDynacolls,
+        restrictedSearches,
+        restrictedContributables,
+        searchableUuids,
+        contributableUuids);
 
-	@Override
-	public String getHtml(SectionInfo info)
-	{
-		return html.getValue(info);
-	}
+    html.setValue(info, properties.get("html"));
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return defaultPropertyName;
-	}
+  @Override
+  public String getHtml(SectionInfo info) {
+    return html.getValue(info);
+  }
 
-	@Override
-	public void setDefaultPropertyName(String defaultPropertyName)
-	{
-		this.defaultPropertyName = defaultPropertyName;
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return defaultPropertyName;
+  }
 
-	@Override
-	public Class<TinyMceModel> getModelClass()
-	{
-		return TinyMceModel.class;
-	}
+  @Override
+  public void setDefaultPropertyName(String defaultPropertyName) {
+    this.defaultPropertyName = defaultPropertyName;
+  }
 
-	@Override
-	public JSCallable createDisableFunction()
-	{
-		return tinyMceService.getDisableFunction(html, fullscreen);
-	}
+  @Override
+  public Class<TinyMceModel> getModelClass() {
+    return TinyMceModel.class;
+  }
 
-	public TextField getHtml()
-	{
-		return html;
-	}
+  @Override
+  public JSCallable createDisableFunction() {
+    return tinyMceService.getDisableFunction(html, fullscreen);
+  }
 
-	public Link getFullscreenLink()
-	{
-		return fullscreen;
-	}
+  public TextField getHtml() {
+    return html;
+  }
+
+  public Link getFullscreenLink() {
+    return fullscreen;
+  }
 }

@@ -27,51 +27,43 @@ import com.tle.common.i18n.CurrentLocale;
 
 @Entity
 @AccessType("field")
-public class CustomLink extends BaseEntity
-{
-	private static final long serialVersionUID = 1L;
+public class CustomLink extends BaseEntity {
+  private static final long serialVersionUID = 1L;
 
-	@Column(nullable = false)
-	@Lob
-	private String url;
+  @Column(nullable = false)
+  @Lob
+  private String url;
 
-	@Column(nullable = false)
-	private int order;
+  @Column(nullable = false)
+  private int order;
 
-	public CustomLink()
-	{
-		super();
-	}
+  public CustomLink() {
+    super();
+  }
 
-	public CustomLink(long id)
-	{
-		setId(id);
-	}
+  public CustomLink(long id) {
+    setId(id);
+  }
 
-	public void setUrl(String url)
-	{
-		this.url = url;
-	}
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-	public String getUrl()
-	{
-		return url;
-	}
+  public String getUrl() {
+    return url;
+  }
 
-	public void setOrder(int order)
-	{
-		this.order = order;
-	}
+  public void setOrder(int order) {
+    this.order = order;
+  }
 
-	public int getOrder()
-	{
-		return order;
-	}
+  public int getOrder() {
+    return order;
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	public String toString()
-	{
-		return CurrentLocale.get(getName(), "") + " - " + url;
-	}
+  @Override
+  @SuppressWarnings("nls")
+  public String toString() {
+    return CurrentLocale.get(getName(), "") + " - " + url;
+  }
 }

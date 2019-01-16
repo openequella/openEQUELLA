@@ -21,107 +21,92 @@ import java.util.List;
 import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.render.SectionRenderable;
 
-/**
- * @author aholland
- */
-public class MyPagesContributeModel
-{
-	@Bookmarked(name = "m")
-	private boolean modal;
-	@Bookmarked(name = "s")
-	private String session;
-	@Bookmarked(name = "p")
-	private String pageUuid;
-	@Bookmarked(name = "i")
-	private String itemId;
-	@Bookmarked(name = "c")
-	private String finishedCallback;
+/** @author aholland */
+public class MyPagesContributeModel {
+  @Bookmarked(name = "m")
+  private boolean modal;
 
-	// used just once upon entry, then reset
-	@Bookmarked(name = "l")
-	private boolean load;
+  @Bookmarked(name = "s")
+  private String session;
 
-	private boolean showPreviewCheckBox;
+  @Bookmarked(name = "p")
+  private String pageUuid;
 
-	public boolean isShowPreviewCheckBox()
-	{
-		return showPreviewCheckBox;
-	}
+  @Bookmarked(name = "i")
+  private String itemId;
 
-	public void setShowPreviewCheckBox(boolean showPreviewCheckBox)
-	{
-		this.showPreviewCheckBox = showPreviewCheckBox;
-	}
+  @Bookmarked(name = "c")
+  private String finishedCallback;
 
-	private List<SectionRenderable> renderables;
+  // used just once upon entry, then reset
+  @Bookmarked(name = "l")
+  private boolean load;
 
-	public boolean isModal()
-	{
-		return modal;
-	}
+  private boolean showPreviewCheckBox;
 
-	public void setModal(boolean modal)
-	{
-		this.modal = modal;
-	}
+  public boolean isShowPreviewCheckBox() {
+    return showPreviewCheckBox;
+  }
 
-	public String getSession()
-	{
-		return session;
-	}
+  public void setShowPreviewCheckBox(boolean showPreviewCheckBox) {
+    this.showPreviewCheckBox = showPreviewCheckBox;
+  }
 
-	public void setSession(String session)
-	{
-		this.session = session;
-	}
+  private List<SectionRenderable> renderables;
 
-	public String getPageUuid()
-	{
-		return pageUuid;
-	}
+  public boolean isModal() {
+    return modal;
+  }
 
-	public void setPageUuid(String pageUuid)
-	{
-		this.pageUuid = pageUuid;
-	}
+  public void setModal(boolean modal) {
+    this.modal = modal;
+  }
 
-	public String getItemId()
-	{
-		return itemId;
-	}
+  public String getSession() {
+    return session;
+  }
 
-	public void setItemId(String itemId)
-	{
-		this.itemId = itemId;
-	}
+  public void setSession(String session) {
+    this.session = session;
+  }
 
-	public boolean isLoad()
-	{
-		return load;
-	}
+  public String getPageUuid() {
+    return pageUuid;
+  }
 
-	public void setLoad(boolean load)
-	{
-		this.load = load;
-	}
+  public void setPageUuid(String pageUuid) {
+    this.pageUuid = pageUuid;
+  }
 
-	public String getFinishedCallback()
-	{
-		return finishedCallback;
-	}
+  public String getItemId() {
+    return itemId;
+  }
 
-	public void setFinishedCallback(String finishedCallback)
-	{
-		this.finishedCallback = finishedCallback;
-	}
+  public void setItemId(String itemId) {
+    this.itemId = itemId;
+  }
 
-	public List<SectionRenderable> getRenderables()
-	{
-		return renderables;
-	}
+  public boolean isLoad() {
+    return load;
+  }
 
-	public void setRenderables(List<SectionRenderable> renderables)
-	{
-		this.renderables = renderables;
-	}
+  public void setLoad(boolean load) {
+    this.load = load;
+  }
+
+  public String getFinishedCallback() {
+    return finishedCallback;
+  }
+
+  public void setFinishedCallback(String finishedCallback) {
+    this.finishedCallback = finishedCallback;
+  }
+
+  public List<SectionRenderable> getRenderables() {
+    return renderables;
+  }
+
+  public void setRenderables(List<SectionRenderable> renderables) {
+    this.renderables = renderables;
+  }
 }

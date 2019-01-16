@@ -23,44 +23,35 @@ import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.TreeIndexed;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @NonNullByDefault
-public class CloudItemSectionInfo
-{
-	private final CloudViewableItem viewableItem;
+public class CloudItemSectionInfo {
+  private final CloudViewableItem viewableItem;
 
-	public CloudItemSectionInfo(CloudViewableItem viewableItem)
-	{
-		this.viewableItem = viewableItem;
-	}
+  public CloudItemSectionInfo(CloudViewableItem viewableItem) {
+    this.viewableItem = viewableItem;
+  }
 
-	public CloudViewableItem getViewableItem()
-	{
-		return viewableItem;
-	}
+  public CloudViewableItem getViewableItem() {
+    return viewableItem;
+  }
 
-	public ItemKey getItemId()
-	{
-		return viewableItem.getItemId();
-	}
+  public ItemKey getItemId() {
+    return viewableItem.getItemId();
+  }
 
-	public static CloudItemSectionInfo getItemInfo(SectionInfo info)
-	{
-		CloudItemSectionInfo iinfo = info.getAttribute(CloudItemSectionInfo.class);
-		if( iinfo == null )
-		{
-			CloudItemSectionInfoFactory factory = info.lookupSection(CloudItemSectionInfoFactory.class);
-			iinfo = factory.createCloudItemSectionInfo(info);
-			info.setAttribute(CloudItemSectionInfo.class, iinfo);
-		}
-		return iinfo;
-	}
+  public static CloudItemSectionInfo getItemInfo(SectionInfo info) {
+    CloudItemSectionInfo iinfo = info.getAttribute(CloudItemSectionInfo.class);
+    if (iinfo == null) {
+      CloudItemSectionInfoFactory factory = info.lookupSection(CloudItemSectionInfoFactory.class);
+      iinfo = factory.createCloudItemSectionInfo(info);
+      info.setAttribute(CloudItemSectionInfo.class, iinfo);
+    }
+    return iinfo;
+  }
 
-	@TreeIndexed
-	public interface CloudItemSectionInfoFactory extends SectionId
-	{
-		CloudItemSectionInfo createCloudItemSectionInfo(SectionInfo info);
-	}
+  @TreeIndexed
+  public interface CloudItemSectionInfoFactory extends SectionId {
+    CloudItemSectionInfo createCloudItemSectionInfo(SectionInfo info);
+  }
 }

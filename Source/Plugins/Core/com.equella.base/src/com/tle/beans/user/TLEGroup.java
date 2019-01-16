@@ -50,156 +50,133 @@ import com.tle.common.institution.TreeNodeInterface;
 @Entity
 @AccessType("field")
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"uuid", "institution_id"})})
-public class TLEGroup implements TreeNodeInterface<TLEGroup>, FieldEquality<TLEGroup>
-{
-	private static final long serialVersionUID = 1L;
+public class TLEGroup implements TreeNodeInterface<TLEGroup>, FieldEquality<TLEGroup> {
+  private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	@Column(length = 40, nullable = false)
-	@Index(name = "groupUuidIndex")
-	private String uuid;
+  @Column(length = 40, nullable = false)
+  @Index(name = "groupUuidIndex")
+  private String uuid;
 
-	@Column(length = 100)
-	private String name;
+  @Column(length = 100)
+  private String name;
 
-	@Lob
-	private String description;
+  @Lob private String description;
 
-	@ManyToOne
-	@Index(name = "parentGroup")
-	private TLEGroup parent;
+  @ManyToOne
+  @Index(name = "parentGroup")
+  private TLEGroup parent;
 
-	@ManyToMany
-	@IndexColumn(name = "list_position")
-	private List<TLEGroup> allParents = new ArrayList<TLEGroup>();
+  @ManyToMany
+  @IndexColumn(name = "list_position")
+  private List<TLEGroup> allParents = new ArrayList<TLEGroup>();
 
-	@JoinColumn(nullable = false)
-	@Index(name = "groupInstitutionIndex")
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Institution institution;
+  @JoinColumn(nullable = false)
+  @Index(name = "groupInstitutionIndex")
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Institution institution;
 
-	@ElementCollection(fetch = FetchType.LAZY)
-	@Fetch(value = FetchMode.SUBSELECT)
-	@Column(name = "element")
-	private Set<String> users;
+  @ElementCollection(fetch = FetchType.LAZY)
+  @Fetch(value = FetchMode.SUBSELECT)
+  @Column(name = "element")
+  private Set<String> users;
 
-	public TLEGroup()
-	{
-		super();
-	}
+  public TLEGroup() {
+    super();
+  }
 
-	@Override
-	public long getId()
-	{
-		return id;
-	}
+  @Override
+  public long getId() {
+    return id;
+  }
 
-	@Override
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  @Override
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	@Override
-	public String getUuid()
-	{
-		return uuid;
-	}
+  @Override
+  public String getUuid() {
+    return uuid;
+  }
 
-	@Override
-	public void setUuid(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  @Override
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-	public String getName()
-	{
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	@Override
-	public TLEGroup getParent()
-	{
-		return parent;
-	}
+  @Override
+  public TLEGroup getParent() {
+    return parent;
+  }
 
-	@Override
-	public void setParent(TLEGroup parent)
-	{
-		this.parent = parent;
-	}
+  @Override
+  public void setParent(TLEGroup parent) {
+    this.parent = parent;
+  }
 
-	@Override
-	public void setAllParents(List<TLEGroup> allParents)
-	{
-		this.allParents = allParents;
-	}
+  @Override
+  public void setAllParents(List<TLEGroup> allParents) {
+    this.allParents = allParents;
+  }
 
-	@Override
-	public List<TLEGroup> getAllParents()
-	{
-		return allParents;
-	}
+  @Override
+  public List<TLEGroup> getAllParents() {
+    return allParents;
+  }
 
-	public String getDescription()
-	{
-		return description;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public void setDescription(String description)
-	{
-		this.description = description;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	@Override
-	public Institution getInstitution()
-	{
-		return institution;
-	}
+  @Override
+  public Institution getInstitution() {
+    return institution;
+  }
 
-	@Override
-	public void setInstitution(Institution institution)
-	{
-		this.institution = institution;
-	}
+  @Override
+  public void setInstitution(Institution institution) {
+    this.institution = institution;
+  }
 
-	public Set<String> getUsers()
-	{
-		if( users == null )
-		{
-			users = new HashSet<String>();
-		}
-		return users;
-	}
+  public Set<String> getUsers() {
+    if (users == null) {
+      users = new HashSet<String>();
+    }
+    return users;
+  }
 
-	public void setUsers(Set<String> users)
-	{
-		this.users = users;
-	}
+  public void setUsers(Set<String> users) {
+    this.users = users;
+  }
 
-	@Override
-	public int hashCode()
-	{
-		return Check.getHashCode(id);
-	}
+  @Override
+  public int hashCode() {
+    return Check.getHashCode(id);
+  }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		return Check.commonEquals(this, obj);
-	}
+  @Override
+  public boolean equals(Object obj) {
+    return Check.commonEquals(this, obj);
+  }
 
-	@Override
-	public boolean checkFields(TLEGroup rhs)
-	{
-		return Objects.equals(id, rhs.id);
-	}
+  @Override
+  public boolean checkFields(TLEGroup rhs) {
+    return Objects.equals(id, rhs.id);
+  }
 }

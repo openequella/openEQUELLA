@@ -20,11 +20,10 @@ import java.util.List;
 
 import com.tle.beans.item.cal.request.CourseInfo;
 
-public interface RemoteCourseInfoService extends RemoteAbstractEntityService<CourseInfo>
-{
-	String ENTITY_TYPE = "COURSE_INFO"; //$NON-NLS-1$
+public interface RemoteCourseInfoService extends RemoteAbstractEntityService<CourseInfo> {
+  String ENTITY_TYPE = "COURSE_INFO"; // $NON-NLS-1$
 
-	List<String> getAllCitations();
+  List<String> getAllCitations();
 
-	List<CourseInfo> bulkImport(byte[] file, boolean override);
+  List<CourseInfo> bulkImport(byte[] file, boolean override);
 }

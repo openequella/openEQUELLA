@@ -34,123 +34,106 @@ import javax.swing.event.ListSelectionListener;
 import com.dytech.gui.TableLayout;
 import com.tle.common.i18n.CurrentLocale;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @SuppressWarnings("nls")
-public class NetworkShuffleList extends JComponent implements ActionListener, ListSelectionListener
-{
-	protected JButton add;
-	protected JButton remove;
-	protected JList list;
-	protected DefaultListModel model;
-	protected JScrollPane listScroll;
+public class NetworkShuffleList extends JComponent
+    implements ActionListener, ListSelectionListener {
+  protected JButton add;
+  protected JButton remove;
+  protected JList list;
+  protected DefaultListModel model;
+  protected JScrollPane listScroll;
 
-	public NetworkShuffleList()
-	{
-		setup();
-	}
+  public NetworkShuffleList() {
+    setup();
+  }
 
-	@Override
-	public void setEnabled(boolean b)
-	{
-		super.setEnabled(b);
-		refreshButtons();
-	}
+  @Override
+  public void setEnabled(boolean b) {
+    super.setEnabled(b);
+    refreshButtons();
+  }
 
-	public Network getNetworkAt(int index)
-	{
-		return (Network) model.getElementAt(index);
-	}
+  public Network getNetworkAt(int index) {
+    return (Network) model.getElementAt(index);
+  }
 
-	public int getNetworkCount()
-	{
-		return model.getSize();
-	}
+  public int getNetworkCount() {
+    return model.getSize();
+  }
 
-	public void removeAllNetworks()
-	{
-		model.clear();
-	}
+  public void removeAllNetworks() {
+    model.clear();
+  }
 
-	public void addNetwork(Network network)
-	{
-		model.addElement(network);
-	}
+  public void addNetwork(Network network) {
+    model.addElement(network);
+  }
 
-	private void setup()
-	{
-		add = new JButton(CurrentLocale.get("com.dytech.edge.admin.helper.networkshufflelist.add"));
-		remove = new JButton(CurrentLocale.get("com.dytech.edge.admin.helper.networkshufflelist.remove"));
+  private void setup() {
+    add = new JButton(CurrentLocale.get("com.dytech.edge.admin.helper.networkshufflelist.add"));
+    remove =
+        new JButton(CurrentLocale.get("com.dytech.edge.admin.helper.networkshufflelist.remove"));
 
-		add.addActionListener(this);
-		remove.addActionListener(this);
+    add.addActionListener(this);
+    remove.addActionListener(this);
 
-		model = new DefaultListModel();
-		list = new JList(model);
-		list.addListSelectionListener(this);
+    model = new DefaultListModel();
+    list = new JList(model);
+    list.addListSelectionListener(this);
 
-		listScroll = new JScrollPane(list);
+    listScroll = new JScrollPane(list);
 
-		final int height1 = add.getPreferredSize().height;
-		final int width1 = add.getPreferredSize().width;
+    final int height1 = add.getPreferredSize().height;
+    final int width1 = add.getPreferredSize().width;
 
-		final int[] rows = new int[]{height1, height1, TableLayout.FILL};
-		final int[] columns = new int[]{width1, TableLayout.FILL};
+    final int[] rows = new int[] {height1, height1, TableLayout.FILL};
+    final int[] columns = new int[] {width1, TableLayout.FILL};
 
-		TableLayout layout = new TableLayout(rows, columns, 5, 5);
-		setLayout(layout);
+    TableLayout layout = new TableLayout(rows, columns, 5, 5);
+    setLayout(layout);
 
-		add(add, new Rectangle(0, 0, 1, 1));
-		add(remove, new Rectangle(0, 1, 1, 1));
-		add(listScroll, new Rectangle(1, 0, 1, 3));
+    add(add, new Rectangle(0, 0, 1, 1));
+    add(remove, new Rectangle(0, 1, 1, 1));
+    add(listScroll, new Rectangle(1, 0, 1, 3));
 
-		refreshButtons();
-	}
+    refreshButtons();
+  }
 
-	private void refreshButtons()
-	{
-		boolean enabled = super.isEnabled();
-		boolean selection = !list.isSelectionEmpty();
+  private void refreshButtons() {
+    boolean enabled = super.isEnabled();
+    boolean selection = !list.isSelectionEmpty();
 
-		list.setEnabled(enabled);
-		listScroll.setEnabled(enabled);
-		add.setEnabled(enabled);
-		remove.setEnabled(enabled && selection);
-	}
+    list.setEnabled(enabled);
+    listScroll.setEnabled(enabled);
+    add.setEnabled(enabled);
+    remove.setEnabled(enabled && selection);
+  }
 
-	// // EVENT HANDLERS //////////////////////////////////////////////////////
+  // // EVENT HANDLERS //////////////////////////////////////////////////////
 
-	@Override
-	public void valueChanged(ListSelectionEvent e)
-	{
-		refreshButtons();
-	}
+  @Override
+  public void valueChanged(ListSelectionEvent e) {
+    refreshButtons();
+  }
 
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		if( e.getSource() == add )
-		{
-			Window w = SwingUtilities.getWindowAncestor(this);
-			NetworkDetails nd = new NetworkDetails((Dialog) w);
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    if (e.getSource() == add) {
+      Window w = SwingUtilities.getWindowAncestor(this);
+      NetworkDetails nd = new NetworkDetails((Dialog) w);
 
-			nd.setVisible(true);
+      nd.setVisible(true);
 
-			if( nd.getResult() == NetworkDetails.RESULT_OK )
-			{
-				model.addElement(nd.getNetwork());
-				list.setSelectedIndex(model.getSize() - 1);
-			}
-		}
-		else if( e.getSource() == remove )
-		{
-			int[] is = list.getSelectedIndices();
-			for( int i = is.length - 1; i >= 0; i-- )
-			{
-				model.removeElementAt(is[i]);
-			}
-		}
-	}
-
+      if (nd.getResult() == NetworkDetails.RESULT_OK) {
+        model.addElement(nd.getNetwork());
+        list.setSelectedIndex(model.getSize() - 1);
+      }
+    } else if (e.getSource() == remove) {
+      int[] is = list.getSelectedIndices();
+      for (int i = is.length - 1; i >= 0; i--) {
+        model.removeElementAt(is[i]);
+      }
+    }
+  }
 }

@@ -30,49 +30,58 @@ import com.tle.common.filesystem.handle.ImportFile;
 import com.tle.core.institution.convert.InstitutionInfo;
 import com.tle.core.plugins.PluginTracker;
 
-public interface InstitutionImportService
-{
-	public enum ConvertType
-	{
-		DELETE, EXPORT, IMPORT, CLONE
-	}
+public interface InstitutionImportService {
+  public enum ConvertType {
+    DELETE,
+    EXPORT,
+    IMPORT,
+    CLONE
+  }
 
-	Map<String, String> validate(Institution inst);
+  Map<String, String> validate(Institution inst);
 
-	Institution update(Institution institution);
+  Institution update(Institution institution);
 
-	void delete(Institution institution, ListProgressCallback callback);
+  void delete(Institution institution, ListProgressCallback callback);
 
-	void clone(long targetSchemaId, Institution newInstitution, long cloneFrom, ListProgressCallback callback,
-		Set<String> conversions);
+  void clone(
+      long targetSchemaId,
+      Institution newInstitution,
+      long cloneFrom,
+      ListProgressCallback callback,
+      Set<String> conversions);
 
-	String exportInstitution(Institution i, ListProgressCallback callback, Set<String> conversions);
+  String exportInstitution(Institution i, ListProgressCallback callback, Set<String> conversions);
 
-	InstitutionInfo getInstitutionInfo(ImportFile staging);
+  InstitutionInfo getInstitutionInfo(ImportFile staging);
 
-	Institution importInstitution(ImportFile staging, long targetSchemaId, InstitutionInfo imported,
-		ListProgressCallback callback);
+  Institution importInstitution(
+      ImportFile staging,
+      long targetSchemaId,
+      InstitutionInfo imported,
+      ListProgressCallback callback);
 
-	/**
-	 * Simply deletes the staging file
-	 * 
-	 * @param staging
-	 */
-	void cancelImport(ImportFile staging);
+  /**
+   * Simply deletes the staging file
+   *
+   * @param staging
+   */
+  void cancelImport(ImportFile staging);
 
-	Collection<NameValue> getMatchingConversions(Collection<String> name);
+  Collection<NameValue> getMatchingConversions(Collection<String> name);
 
-	Set<String> getMatchingIds(Collection<String> values);
+  Set<String> getMatchingIds(Collection<String> values);
 
-	List<String> getConverterTasks(ConvertType type, InstitutionInfo info);
+  List<String> getConverterTasks(ConvertType type, InstitutionInfo info);
 
-	InstitutionInfo getInfoForCurrentInstitution();
+  InstitutionInfo getInfoForCurrentInstitution();
 
-	Set<String> getAllConversions();
+  Set<String> getAllConversions();
 
-	Set<String> convertToFlags(Set<String> conversions);
+  Set<String> convertToFlags(Set<String> conversions);
 
-	Set<Extension> orderExtsByDependencies(PluginTracker<?> tracker, Collection<Extension> extensions);
+  Set<Extension> orderExtsByDependencies(
+      PluginTracker<?> tracker, Collection<Extension> extensions);
 
-	InstitutionInfo getInstitutionInfo(Institution institution);
+  InstitutionInfo getInstitutionInfo(Institution institution);
 }

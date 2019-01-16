@@ -52,159 +52,141 @@ import com.tle.web.viewurl.ViewItemUrlFactory;
 
 /**
  * Deals with real items, not IItem stuff
- * 
+ *
  * @author Aaron
  */
-public abstract class AbstractItemListEntry extends AbstractItemlikeListEntry<Item> implements ItemListEntry
-{
-	private static final String KEY_ALLATTACHMENTS = "attachments";
+public abstract class AbstractItemListEntry extends AbstractItemlikeListEntry<Item>
+    implements ItemListEntry {
+  private static final String KEY_ALLATTACHMENTS = "attachments";
 
-	static
-	{
-		PluginResourceHandler.init(AbstractItemListEntry.class);
-	}
+  static {
+    PluginResourceHandler.init(AbstractItemListEntry.class);
+  }
 
-	@PlugKey("lastupdated")
-	private static Label LABEL_LASTUPDATED;
-	@PlugKey("itemlist.inmoderation")
-	private static Label LABEL_INMODERATION;
-	@PlugKey("itemlist.status.status")
-	private static Label LABEL_STATUS;
-	@PlugKey("itemlist.status.relevance")
-	private static Label LABEL_RELEVANCE;
-	@PlugKey("itemlist.keywordfound")
-	private static Label LABEL_KEYWORDFOUND;
+  @PlugKey("lastupdated")
+  private static Label LABEL_LASTUPDATED;
 
-	@Inject
-	private ViewItemUrlFactory itemUrls;
-	@Inject
-	private ViewableItemFactory viewableItemFactory;
-	@Inject
-	private HtmlEditorService htmlEditorService;
-	@Inject
-	private ItemService itemService;
+  @PlugKey("itemlist.inmoderation")
+  private static Label LABEL_INMODERATION;
 
-	@Override
-	protected Bookmark getTitleLink()
-	{
-		final Item item = getItem();
-		if( item != null )
-		{
-			return itemUrls.createItemUrl(info, item.getItemId());
-		}
-		return new SimpleBookmark("#");
-	}
+  @PlugKey("itemlist.status.status")
+  private static Label LABEL_STATUS;
 
-	@Override
-	protected ViewableItem<Item> createViewableItem()
-	{
-		final Item item = getItem();
-		if( item != null )
-		{
-			return viewableItemFactory.createNewViewableItem(item.getItemId());
-		}
-		return null;
-	}
+  @PlugKey("itemlist.status.relevance")
+  private static Label LABEL_RELEVANCE;
 
-	@Override
-	protected UnmodifiableAttachments loadAttachments()
-	{
-		Multimap<Item, Attachment> attachmentsForItems = listSettings.getAttribute(KEY_ALLATTACHMENTS);
-		if( attachmentsForItems == null )
-		{
-			List<ItemListEntry> entries2 = (List<ItemListEntry>) listSettings.getEntries();
-			attachmentsForItems = itemService
-				.getAttachmentsForItems(AbstractItemlikeListEntry.<Item>getItems(entries2));
-			listSettings.setAttribute(KEY_ALLATTACHMENTS, attachmentsForItems);
-		}
-		return new UnmodifiableAttachments(Lists.<IAttachment>newArrayList(attachmentsForItems.get(getItem())));
-	}
+  @PlugKey("itemlist.keywordfound")
+  private static Label LABEL_KEYWORDFOUND;
 
-	@Override
-	protected void setupMetadata(RenderContext context)
-	{
-		final Item item = getItem();
-		if( item != null )
-		{
-			List<Pair<LanguageBundle, LanguageBundle>> details = item.getSearchDetails();
+  @Inject private ViewItemUrlFactory itemUrls;
+  @Inject private ViewableItemFactory viewableItemFactory;
+  @Inject private HtmlEditorService htmlEditorService;
+  @Inject private ItemService itemService;
 
-			if( details != null )
-			{
-				for( Pair<LanguageBundle, LanguageBundle> detail : details )
-				{
-					final SectionRenderable html = htmlEditorService.getHtmlRenderable(context,
-						new BundleLabel(detail.getSecond(), bundleCache).setHtml(true).getText());
-					final SectionRenderable renderable = new SpanRenderer(HtmlEditorService.DISPLAY_CLASS, html);
-					entries.add(new StdMetadataEntry(new BundleLabel(detail.getFirst(), bundleCache), renderable));
-				}
-			}
-			List<Object> statusMeta = Lists.newArrayList();
-			final ItemStatus status = item.getStatus();
-			if( status != ItemStatus.PERSONAL )
-			{
-				statusMeta.add(getStatusLabel());
-			}
+  @Override
+  protected Bookmark getTitleLink() {
+    final Item item = getItem();
+    if (item != null) {
+      return itemUrls.createItemUrl(info, item.getItemId());
+    }
+    return new SimpleBookmark("#");
+  }
 
-			final SectionRenderable lastModified = getLastModified();
-			if( lastModified != null )
-			{
-				statusMeta.add(SectionUtils.convertToRenderer(LABEL_LASTUPDATED, lastModified));
-			}
-			addDelimitedMetadata(LABEL_STATUS, statusMeta);
-			if( item.isModerating() )
-			{
-				addDelimitedMetadata(LABEL_INMODERATION, getTimeRenderer(item.getModeration().getStart()));
-			}
+  @Override
+  protected ViewableItem<Item> createViewableItem() {
+    final Item item = getItem();
+    if (item != null) {
+      return viewableItemFactory.createNewViewableItem(item.getItemId());
+    }
+    return null;
+  }
 
-			List<Object> relevanceMeta = Lists.newArrayList();
-			FreetextResult freetextResult = getFreetextData();
+  @Override
+  protected UnmodifiableAttachments loadAttachments() {
+    Multimap<Item, Attachment> attachmentsForItems = listSettings.getAttribute(KEY_ALLATTACHMENTS);
+    if (attachmentsForItems == null) {
+      List<ItemListEntry> entries2 = (List<ItemListEntry>) listSettings.getEntries();
+      attachmentsForItems =
+          itemService.getAttachmentsForItems(AbstractItemlikeListEntry.<Item>getItems(entries2));
+      listSettings.setAttribute(KEY_ALLATTACHMENTS, attachmentsForItems);
+    }
+    return new UnmodifiableAttachments(
+        Lists.<IAttachment>newArrayList(attachmentsForItems.get(getItem())));
+  }
 
-			if( freetextResult != null && freetextResult.isSortByRelevance() )
-			{
-				DecimalFormat df = new DecimalFormat("#0.###");
-				String strRelevance = df.format(freetextResult.getRelevance());
-				relevanceMeta.add(strRelevance);
-			}
+  @Override
+  protected void setupMetadata(RenderContext context) {
+    final Item item = getItem();
+    if (item != null) {
+      List<Pair<LanguageBundle, LanguageBundle>> details = item.getSearchDetails();
 
-			if( freetextResult != null && freetextResult.isKeywordFoundInAttachment() )
-			{
-				relevanceMeta.add(LABEL_KEYWORDFOUND);
-			}
+      if (details != null) {
+        for (Pair<LanguageBundle, LanguageBundle> detail : details) {
+          final SectionRenderable html =
+              htmlEditorService.getHtmlRenderable(
+                  context,
+                  new BundleLabel(detail.getSecond(), bundleCache).setHtml(true).getText());
+          final SectionRenderable renderable =
+              new SpanRenderer(HtmlEditorService.DISPLAY_CLASS, html);
+          entries.add(
+              new StdMetadataEntry(new BundleLabel(detail.getFirst(), bundleCache), renderable));
+        }
+      }
+      List<Object> statusMeta = Lists.newArrayList();
+      final ItemStatus status = item.getStatus();
+      if (status != ItemStatus.PERSONAL) {
+        statusMeta.add(getStatusLabel());
+      }
 
-			if( !relevanceMeta.isEmpty() )
-			{
-				addDelimitedMetadata(LABEL_RELEVANCE, relevanceMeta);
-			}
-		}
-	}
+      final SectionRenderable lastModified = getLastModified();
+      if (lastModified != null) {
+        statusMeta.add(SectionUtils.convertToRenderer(LABEL_LASTUPDATED, lastModified));
+      }
+      addDelimitedMetadata(LABEL_STATUS, statusMeta);
+      if (item.isModerating()) {
+        addDelimitedMetadata(LABEL_INMODERATION, getTimeRenderer(item.getModeration().getStart()));
+      }
 
-	@Override
-	public int getRating()
-	{
-		Item item = getItem();
-		if( item != null )
-		{
-			int rating = (int) item.getRating();
-			if( rating < 0 )
-			{
-				return 0;
-			}
-			if( rating > 5 )
-			{
-				return 5;
-			}
-			return rating;
-		}
-		return 0;
-	}
+      List<Object> relevanceMeta = Lists.newArrayList();
+      FreetextResult freetextResult = getFreetextData();
 
-	public Label getStatusLabel()
-	{
-		Item item = getItem();
-		if( item != null )
-		{
-			return new KeyLabel(ItemStatusKeys.get(getItem().getStatus()));
-		}
-		return null;
-	}
+      if (freetextResult != null && freetextResult.isSortByRelevance()) {
+        DecimalFormat df = new DecimalFormat("#0.###");
+        String strRelevance = df.format(freetextResult.getRelevance());
+        relevanceMeta.add(strRelevance);
+      }
+
+      if (freetextResult != null && freetextResult.isKeywordFoundInAttachment()) {
+        relevanceMeta.add(LABEL_KEYWORDFOUND);
+      }
+
+      if (!relevanceMeta.isEmpty()) {
+        addDelimitedMetadata(LABEL_RELEVANCE, relevanceMeta);
+      }
+    }
+  }
+
+  @Override
+  public int getRating() {
+    Item item = getItem();
+    if (item != null) {
+      int rating = (int) item.getRating();
+      if (rating < 0) {
+        return 0;
+      }
+      if (rating > 5) {
+        return 5;
+      }
+      return rating;
+    }
+    return 0;
+  }
+
+  public Label getStatusLabel() {
+    Item item = getItem();
+    if (item != null) {
+      return new KeyLabel(ItemStatusKeys.get(getItem().getStatus()));
+    }
+    return null;
+  }
 }

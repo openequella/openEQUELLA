@@ -25,34 +25,28 @@ import com.tle.common.workflow.RemoteWorkflowService;
 import com.tle.common.workflow.Workflow;
 import com.tle.core.remoting.RemoteAbstractEntityService;
 
-public class WorkflowTool extends BaseEntityTool<Workflow>
-{
-	public WorkflowTool() throws Exception
-	{
-		super(Workflow.class, RemoteWorkflowService.ENTITY_TYPE);
-	}
+public class WorkflowTool extends BaseEntityTool<Workflow> {
+  public WorkflowTool() throws Exception {
+    super(Workflow.class, RemoteWorkflowService.ENTITY_TYPE);
+  }
 
-	@Override
-	protected RemoteAbstractEntityService<Workflow> getService(ClientService client)
-	{
-		return client.getService(RemoteWorkflowService.class);
-	}
+  @Override
+  protected RemoteAbstractEntityService<Workflow> getService(ClientService client) {
+    return client.getService(RemoteWorkflowService.class);
+  }
 
-	@Override
-	protected String getErrorPath()
-	{
-		return "workflow";
-	}
+  @Override
+  protected String getErrorPath() {
+    return "workflow";
+  }
 
-	@Override
-	protected BaseEntityEditor<Workflow> createEditor(boolean readonly)
-	{
-		return new WorkflowEditor(this, readonly);
-	}
+  @Override
+  protected BaseEntityEditor<Workflow> createEditor(boolean readonly) {
+    return new WorkflowEditor(this, readonly);
+  }
 
-	@Override
-	protected String getEntityName()
-	{
-		return CurrentLocale.get("com.tle.admin.gui.workflowtool.name");
-	}
+  @Override
+  protected String getEntityName() {
+    return CurrentLocale.get("com.tle.admin.gui.workflowtool.name");
+  }
 }

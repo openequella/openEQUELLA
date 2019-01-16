@@ -29,21 +29,23 @@ import com.tle.web.resources.ResourcesService;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class HtmlEditorPluginPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeProvider<HtmlEditorPlugin>
-{
-	private static final PluginResourceHelper resources = ResourcesService
-		.getResourceHelper(HtmlEditorPluginPrivilegeTreeProvider.class);
+public class HtmlEditorPluginPrivilegeTreeProvider
+    extends AbstractEntityPrivilegeTreeProvider<HtmlEditorPlugin> {
+  private static final PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(HtmlEditorPluginPrivilegeTreeProvider.class);
 
-	@Inject
-	public HtmlEditorPluginPrivilegeTreeProvider(HtmlEditorPluginService htmleditorService)
-	{
-		super(htmleditorService, Node.ALL_HTMLEDITOR_PLUGINS, resources.key("securitytree.allhtmleditorplugin"),
-			Node.HTMLEDITOR_PLUGIN, resources.key("securitytree.htmleditorplugin"));
-	}
+  @Inject
+  public HtmlEditorPluginPrivilegeTreeProvider(HtmlEditorPluginService htmleditorService) {
+    super(
+        htmleditorService,
+        Node.ALL_HTMLEDITOR_PLUGINS,
+        resources.key("securitytree.allhtmleditorplugin"),
+        Node.HTMLEDITOR_PLUGIN,
+        resources.key("securitytree.htmleditorplugin"));
+  }
 
-	@Override
-	protected HtmlEditorPlugin createEntity()
-	{
-		return new HtmlEditorPlugin();
-	}
+  @Override
+  protected HtmlEditorPlugin createEntity() {
+    return new HtmlEditorPlugin();
+  }
 }

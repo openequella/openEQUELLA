@@ -27,265 +27,218 @@ import com.tle.common.interfaces.I18NString;
 import com.tle.common.interfaces.I18NStrings;
 
 @JsonSerialize(include = Inclusion.NON_DEFAULT)
-public class WorkflowNodeBean
-{
-	private String uuid;
-	private I18NString name;
-	private I18NStrings nameStrings;
-	private char type;
-	private boolean rejectPoint;
-	private List<WorkflowNodeBean> nodes = new LinkedList<WorkflowNodeBean>();
+public class WorkflowNodeBean {
+  private String uuid;
+  private I18NString name;
+  private I18NStrings nameStrings;
+  private char type;
+  private boolean rejectPoint;
+  private List<WorkflowNodeBean> nodes = new LinkedList<WorkflowNodeBean>();
 
-	// WorkflowItem
-	private Set<String> users;
-	private Set<String> groups;
-	private Set<String> roles;
-	private I18NString description;
-	private I18NStrings descriptionStrings;
-	// WTF?
-	private boolean unanimousacceptance;
-	private boolean escalate;
-	// WTF?
-	private int escalationdays;
-	private boolean allowEditing;
-	private String moveLive;
-	private String autoAction;
-	private int priority;
-	private int actionDays;
-	private String userPath;
-	private String dueDatePath;
+  // WorkflowItem
+  private Set<String> users;
+  private Set<String> groups;
+  private Set<String> roles;
+  private I18NString description;
+  private I18NStrings descriptionStrings;
+  // WTF?
+  private boolean unanimousacceptance;
+  private boolean escalate;
+  // WTF?
+  private int escalationdays;
+  private boolean allowEditing;
+  private String moveLive;
+  private String autoAction;
+  private int priority;
+  private int actionDays;
+  private String userPath;
+  private String dueDatePath;
 
-	// DecisionNode
-	private String script;
-	private BaseEntityReference collection;
+  // DecisionNode
+  private String script;
+  private BaseEntityReference collection;
 
-	public Set<String> getGroups()
-	{
-		return groups;
-	}
+  public Set<String> getGroups() {
+    return groups;
+  }
 
-	public void setGroups(Set<String> groups)
-	{
-		this.groups = groups;
-	}
+  public void setGroups(Set<String> groups) {
+    this.groups = groups;
+  }
 
-	public Set<String> getRoles()
-	{
-		return roles;
-	}
+  public Set<String> getRoles() {
+    return roles;
+  }
 
-	public void setRoles(Set<String> roles)
-	{
-		this.roles = roles;
-	}
+  public void setRoles(Set<String> roles) {
+    this.roles = roles;
+  }
 
-	public I18NString getDescription()
-	{
-		return description;
-	}
+  public I18NString getDescription() {
+    return description;
+  }
 
-	public void setDescription(I18NString description)
-	{
-		this.description = description;
-	}
+  public void setDescription(I18NString description) {
+    this.description = description;
+  }
 
-	public boolean isUnanimousacceptance()
-	{
-		return unanimousacceptance;
-	}
+  public boolean isUnanimousacceptance() {
+    return unanimousacceptance;
+  }
 
-	public void setUnanimousacceptance(boolean unanimousacceptance)
-	{
-		this.unanimousacceptance = unanimousacceptance;
-	}
+  public void setUnanimousacceptance(boolean unanimousacceptance) {
+    this.unanimousacceptance = unanimousacceptance;
+  }
 
-	public boolean isEscalate()
-	{
-		return escalate;
-	}
+  public boolean isEscalate() {
+    return escalate;
+  }
 
-	public void setEscalate(boolean escalate)
-	{
-		this.escalate = escalate;
-	}
+  public void setEscalate(boolean escalate) {
+    this.escalate = escalate;
+  }
 
-	public int getEscalationdays()
-	{
-		return escalationdays;
-	}
+  public int getEscalationdays() {
+    return escalationdays;
+  }
 
-	public void setEscalationdays(int escalationdays)
-	{
-		this.escalationdays = escalationdays;
-	}
+  public void setEscalationdays(int escalationdays) {
+    this.escalationdays = escalationdays;
+  }
 
-	public boolean isAllowEditing()
-	{
-		return allowEditing;
-	}
+  public boolean isAllowEditing() {
+    return allowEditing;
+  }
 
-	public void setAllowEditing(boolean allowEditing)
-	{
-		this.allowEditing = allowEditing;
-	}
+  public void setAllowEditing(boolean allowEditing) {
+    this.allowEditing = allowEditing;
+  }
 
-	public int getPriority()
-	{
-		return priority;
-	}
+  public int getPriority() {
+    return priority;
+  }
 
-	public void setPriority(int priority)
-	{
-		this.priority = priority;
-	}
+  public void setPriority(int priority) {
+    this.priority = priority;
+  }
 
-	public int getActionDays()
-	{
-		return actionDays;
-	}
+  public int getActionDays() {
+    return actionDays;
+  }
 
-	public void setActionDays(int actionDays)
-	{
-		this.actionDays = actionDays;
-	}
+  public void setActionDays(int actionDays) {
+    this.actionDays = actionDays;
+  }
 
-	public String getUserPath()
-	{
-		return userPath;
-	}
+  public String getUserPath() {
+    return userPath;
+  }
 
-	public void setUserPath(String userPath)
-	{
-		this.userPath = userPath;
-	}
+  public void setUserPath(String userPath) {
+    this.userPath = userPath;
+  }
 
-	public String getDueDatePath()
-	{
-		return dueDatePath;
-	}
+  public String getDueDatePath() {
+    return dueDatePath;
+  }
 
-	public void setDueDatePath(String dueDatePath)
-	{
-		this.dueDatePath = dueDatePath;
-	}
+  public void setDueDatePath(String dueDatePath) {
+    this.dueDatePath = dueDatePath;
+  }
 
-	public String getScript()
-	{
-		return script;
-	}
+  public String getScript() {
+    return script;
+  }
 
-	public void setScript(String script)
-	{
-		this.script = script;
-	}
+  public void setScript(String script) {
+    this.script = script;
+  }
 
-	public BaseEntityReference getCollection()
-	{
-		return collection;
-	}
+  public BaseEntityReference getCollection() {
+    return collection;
+  }
 
-	public void setCollection(BaseEntityReference collection)
-	{
-		this.collection = collection;
-	}
+  public void setCollection(BaseEntityReference collection) {
+    this.collection = collection;
+  }
 
-	public char getType()
-	{
-		return type;
-	}
+  public char getType() {
+    return type;
+  }
 
-	public void setType(char type)
-	{
-		this.type = type;
-	}
+  public void setType(char type) {
+    this.type = type;
+  }
 
-	public boolean isRejectPoint()
-	{
-		return rejectPoint;
-	}
+  public boolean isRejectPoint() {
+    return rejectPoint;
+  }
 
-	public void setRejectPoint(boolean rejectPoint)
-	{
-		this.rejectPoint = rejectPoint;
-	}
+  public void setRejectPoint(boolean rejectPoint) {
+    this.rejectPoint = rejectPoint;
+  }
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public void setUuid(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-	public I18NString getName()
-	{
-		return name;
-	}
+  public I18NString getName() {
+    return name;
+  }
 
-	public void setName(I18NString name)
-	{
-		this.name = name;
-	}
+  public void setName(I18NString name) {
+    this.name = name;
+  }
 
-	public I18NStrings getNameStrings()
-	{
-		return nameStrings;
-	}
+  public I18NStrings getNameStrings() {
+    return nameStrings;
+  }
 
-	public void setNameStrings(I18NStrings nameStrings)
-	{
-		this.nameStrings = nameStrings;
-	}
+  public void setNameStrings(I18NStrings nameStrings) {
+    this.nameStrings = nameStrings;
+  }
 
-	public List<WorkflowNodeBean> getNodes()
-	{
-		return nodes;
-	}
+  public List<WorkflowNodeBean> getNodes() {
+    return nodes;
+  }
 
-	public void setNodes(List<WorkflowNodeBean> nodes)
-	{
-		this.nodes = nodes;
-	}
+  public void setNodes(List<WorkflowNodeBean> nodes) {
+    this.nodes = nodes;
+  }
 
-	public Set<String> getUsers()
-	{
-		return users;
-	}
+  public Set<String> getUsers() {
+    return users;
+  }
 
-	public void setUsers(Set<String> users)
-	{
-		this.users = users;
-	}
+  public void setUsers(Set<String> users) {
+    this.users = users;
+  }
 
-	public I18NStrings getDescriptionStrings()
-	{
-		return descriptionStrings;
-	}
+  public I18NStrings getDescriptionStrings() {
+    return descriptionStrings;
+  }
 
-	public void setDescriptionStrings(I18NStrings descriptionStrings)
-	{
-		this.descriptionStrings = descriptionStrings;
-	}
+  public void setDescriptionStrings(I18NStrings descriptionStrings) {
+    this.descriptionStrings = descriptionStrings;
+  }
 
-	public String getMoveLive()
-	{
-		return moveLive;
-	}
+  public String getMoveLive() {
+    return moveLive;
+  }
 
-	public void setMoveLive(String moveLive)
-	{
-		this.moveLive = moveLive;
-	}
+  public void setMoveLive(String moveLive) {
+    this.moveLive = moveLive;
+  }
 
-	public String getAutoAction()
-	{
-		return autoAction;
-	}
+  public String getAutoAction() {
+    return autoAction;
+  }
 
-	public void setAutoAction(String autoAction)
-	{
-		this.autoAction = autoAction;
-	}
+  public void setAutoAction(String autoAction) {
+    this.autoAction = autoAction;
+  }
 }

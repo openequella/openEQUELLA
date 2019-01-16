@@ -16,23 +16,22 @@
 
 package com.tle.web.sections.standard.model;
 
-public interface Option<T>
-{
-	T getObject();
+public interface Option<T> {
+  T getObject();
 
-	String getName();
+  String getName();
 
-	String getValue();
+  String getValue();
 
-	String getAltTitleAttr();
+  String getAltTitleAttr();
 
-	String getGroupName();
+  String getGroupName();
 
-	boolean isDisabled();
+  boolean isDisabled();
 
-	void setDisabled(boolean disabled);
+  void setDisabled(boolean disabled);
 
-	boolean isNameHtml();
+  boolean isNameHtml();
 
-	boolean hasAltTitleAttr();
+  boolean hasAltTitleAttr();
 }

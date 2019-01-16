@@ -27,113 +27,95 @@ import com.tle.common.URLUtils;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.core.mimetypes.MimeTypeService;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
-public class WebdavProps
-{
-	private final MimeTypeService mimeTypeService;
+public class WebdavProps {
+  private final MimeTypeService mimeTypeService;
 
-	private final Set<String> requestedProperties;
-	private final Set<String> notFoundProperties;
-	private final List<Pair<String, String>> props;
+  private final Set<String> requestedProperties;
+  private final Set<String> notFoundProperties;
+  private final List<Pair<String, String>> props;
 
-	/**
-	 * @param requestedProperties If null then "allprop"
-	 */
-	public WebdavProps(final MimeTypeService mimeTypeService, final Set<String> requestedProperties)
-	{
-		this.requestedProperties = requestedProperties;
-		notFoundProperties = new HashSet<String>();
-		if( requestedProperties != null )
-		{
-			notFoundProperties.addAll(requestedProperties);
-		}
+  /** @param requestedProperties If null then "allprop" */
+  public WebdavProps(final MimeTypeService mimeTypeService, final Set<String> requestedProperties) {
+    this.requestedProperties = requestedProperties;
+    notFoundProperties = new HashSet<String>();
+    if (requestedProperties != null) {
+      notFoundProperties.addAll(requestedProperties);
+    }
 
-		this.props = new ArrayList<Pair<String, String>>();
-		this.mimeTypeService = mimeTypeService;
-	}
+    this.props = new ArrayList<Pair<String, String>>();
+    this.mimeTypeService = mimeTypeService;
+  }
 
-	public void addProp(String key, String value)
-	{
-		// Remove from not found props
-		String keyRoot = key;
-		int slashIndex = key.indexOf('/');
-		if( slashIndex >= 0 )
-		{
-			keyRoot = key.substring(0, slashIndex);
-		}
+  public void addProp(String key, String value) {
+    // Remove from not found props
+    String keyRoot = key;
+    int slashIndex = key.indexOf('/');
+    if (slashIndex >= 0) {
+      keyRoot = key.substring(0, slashIndex);
+    }
 
-		if( requestedProperties == null || requestedProperties.contains(keyRoot) )
-		{
-			props.add(new Pair<String, String>(key, value));
-			notFoundProperties.remove(keyRoot);
-		}
-	}
+    if (requestedProperties == null || requestedProperties.contains(keyRoot)) {
+      props.add(new Pair<String, String>(key, value));
+      notFoundProperties.remove(keyRoot);
+    }
+  }
 
-	public PropBagEx createResponsePropstats(final PropBagEx responseNode)
-	{
-		final PropBagEx okPropstat = responseNode.newSubtree("propstat");
-		okPropstat.createNode("status", "HTTP/1.1 200 OK");
-		final PropBagEx okProps = okPropstat.newSubtree("prop");
+  public PropBagEx createResponsePropstats(final PropBagEx responseNode) {
+    final PropBagEx okPropstat = responseNode.newSubtree("propstat");
+    okPropstat.createNode("status", "HTTP/1.1 200 OK");
+    final PropBagEx okProps = okPropstat.newSubtree("prop");
 
-		for( Pair<String, String> property : props )
-		{
-			final String key = property.getFirst();
-			okProps.createNode(key, property.getSecond());
-		}
+    for (Pair<String, String> property : props) {
+      final String key = property.getFirst();
+      okProps.createNode(key, property.getSecond());
+    }
 
-		if( notFoundProperties.size() > 0 )
-		{
-			final PropBagEx notFoundPropstat = responseNode.newSubtree("propstat");
-			notFoundPropstat.createNode("status", "HTTP/1.1 404 Not Found");
-			final PropBagEx notFoundProps = notFoundPropstat.newSubtree("prop");
-			for( String notFound : notFoundProperties )
-			{
-				notFoundProps.createNode(notFound, "");
-			}
-		}
+    if (notFoundProperties.size() > 0) {
+      final PropBagEx notFoundPropstat = responseNode.newSubtree("propstat");
+      notFoundPropstat.createNode("status", "HTTP/1.1 404 Not Found");
+      final PropBagEx notFoundProps = notFoundPropstat.newSubtree("prop");
+      for (String notFound : notFoundProperties) {
+        notFoundProps.createNode(notFound, "");
+      }
+    }
 
-		return responseNode;
-	}
+    return responseNode;
+  }
 
-	public void addFileProps(String parentName, FileEntry file)
-	{
-		final String filename = file.getName();
-		addProp("resourcetype", "");
-		addProp("getcontenttype", mimeTypeService.getMimeTypeForFilename(filename));
-		addProp("getcontentlength", Long.toString(file.getLength()));
-		addProp("iscollection", "0");
-		addProp("isfolder", "0");
-		addCommonProps(parentName, filename);
-	}
+  public void addFileProps(String parentName, FileEntry file) {
+    final String filename = file.getName();
+    addProp("resourcetype", "");
+    addProp("getcontenttype", mimeTypeService.getMimeTypeForFilename(filename));
+    addProp("getcontentlength", Long.toString(file.getLength()));
+    addProp("iscollection", "0");
+    addProp("isfolder", "0");
+    addCommonProps(parentName, filename);
+  }
 
-	public void addFolderProps(String parentName, String filename, boolean isRoot)
-	{
-		addProp("resourcetype/collection", "");
-		addProp("iscollection", "1");
-		addProp("isfolder", "1");
+  public void addFolderProps(String parentName, String filename, boolean isRoot) {
+    addProp("resourcetype/collection", "");
+    addProp("iscollection", "1");
+    addProp("isfolder", "1");
 
-		if( isRoot )
-		{
-			addProp("isroot", "1");
-			addProp("name", "root");
-			addProp("displayname", "root");
-		}
+    if (isRoot) {
+      addProp("isroot", "1");
+      addProp("name", "root");
+      addProp("displayname", "root");
+    }
 
-		addCommonProps(parentName, filename);
-	}
+    addCommonProps(parentName, filename);
+  }
 
-	private void addCommonProps(String parentName, String filename)
-	{
-		addProp("displayname", filename);
-		addProp("name", filename);
-		addProp("parentname", parentName);
+  private void addCommonProps(String parentName, String filename) {
+    addProp("displayname", filename);
+    addProp("name", filename);
+    addProp("parentname", parentName);
 
-		addProp("href", URLUtils.urlEncode(filename));
+    addProp("href", URLUtils.urlEncode(filename));
 
-		addProp("ishidden", "0");
-		addProp("isreadonly", "0");
-	}
+    addProp("ishidden", "0");
+    addProp("isreadonly", "0");
+  }
 }

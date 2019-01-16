@@ -60,148 +60,136 @@ import com.tle.core.services.impl.Task;
 @Singleton
 @SecureEntity(RemoteHarvesterProfileService.ENTITY_TYPE)
 public class HarvesterProfileServiceImpl
-	extends
-		AbstractEntityServiceImpl<EntityEditingBean, HarvesterProfile, HarvesterProfileService>
-	implements
-		HarvesterProfileService
-{
-	private final HarvesterProfileDao harvesterProfileDao;
-	private static String KEY_PFX = AbstractPluginService.getMyPluginId(HarvesterProfileServiceImpl.class)+".";
+    extends AbstractEntityServiceImpl<EntityEditingBean, HarvesterProfile, HarvesterProfileService>
+    implements HarvesterProfileService {
+  private final HarvesterProfileDao harvesterProfileDao;
+  private static String KEY_PFX =
+      AbstractPluginService.getMyPluginId(HarvesterProfileServiceImpl.class) + ".";
 
-	@Inject
-	private RunAsInstitution runAs;
+  @Inject private RunAsInstitution runAs;
 
-	@Inject
-	private TaskService taskService;
+  @Inject private TaskService taskService;
 
-	@Inject
-	private PluginService pluginService;
+  @Inject private PluginService pluginService;
 
-	@Inject
-	public HarvesterProfileServiceImpl(HarvesterProfileDao harvesterProfileDao)
-	{
-		super(Node.HARVESTER_PROFILE, harvesterProfileDao);
-		this.harvesterProfileDao = harvesterProfileDao;
-	}
+  @Inject
+  public HarvesterProfileServiceImpl(HarvesterProfileDao harvesterProfileDao) {
+    super(Node.HARVESTER_PROFILE, harvesterProfileDao);
+    this.harvesterProfileDao = harvesterProfileDao;
+  }
 
-	@Override
-	@Transactional
-	public void updateLastRun(HarvesterProfile profile, Date lastRun)
-	{
-		harvesterProfileDao.updateLastRun(profile, lastRun);
-	}
+  @Override
+  @Transactional
+  public void updateLastRun(HarvesterProfile profile, Date lastRun) {
+    harvesterProfileDao.updateLastRun(profile, lastRun);
+  }
 
-	@Override
-	protected void doValidation(EntityEditingSession<EntityEditingBean, HarvesterProfile> session,
-		HarvesterProfile entity, List<ValidationError> errors)
-	{
-		// Nothing to validate
-	}
+  @Override
+  protected void doValidation(
+      EntityEditingSession<EntityEditingBean, HarvesterProfile> session,
+      HarvesterProfile entity,
+      List<ValidationError> errors) {
+    // Nothing to validate
+  }
 
-	@Override
-	@Transactional
-	public List<HarvesterProfile> enumerateEnabledProfiles()
-	{
-		return findAllWithCriterion(Restrictions.eq("enabled", true));
-	}
+  @Override
+  @Transactional
+  public List<HarvesterProfile> enumerateEnabledProfiles() {
+    return findAllWithCriterion(Restrictions.eq("enabled", true));
+  }
 
-	@Override
-	public void startHarvesterTask(String uuid, boolean manualKickoff)
-	{
-		long instId = CurrentInstitution.get().getUniqueId();
-		String taskName = "HarvesterTask-" + instId + uuid;
-		BeanClusteredTask task = new BeanClusteredTask(taskName, HarvesterProfileService.class, "createHarvesterTask",
-			uuid, instId, manualKickoff);
-		taskService.getGlobalTask(task, TimeUnit.MINUTES.toMillis(1));
-	}
+  @Override
+  public void startHarvesterTask(String uuid, boolean manualKickoff) {
+    long instId = CurrentInstitution.get().getUniqueId();
+    String taskName = "HarvesterTask-" + instId + uuid;
+    BeanClusteredTask task =
+        new BeanClusteredTask(
+            taskName,
+            HarvesterProfileService.class,
+            "createHarvesterTask",
+            uuid,
+            instId,
+            manualKickoff);
+    taskService.getGlobalTask(task, TimeUnit.MINUTES.toMillis(1));
+  }
 
-	public Task createHarvesterTask(String harvesterUuid, long institutionId, boolean manualKickoff)
-	{
-		return new HarvesterTask(harvesterUuid, institutionId, manualKickoff);
-	}
+  public Task createHarvesterTask(String harvesterUuid, long institutionId, boolean manualKickoff) {
+    return new HarvesterTask(harvesterUuid, institutionId, manualKickoff);
+  }
 
-	public int runProfile(String profileUuid, boolean testOnly) throws Exception
-	{
-		HarvesterProfile profile = getForExecutre(profileUuid);
-		final SortedMap<String, String> plugins = new TreeMap<String, String>();
-		final Map<String, Extension> tools = new HashMap<String, Extension>();
+  public int runProfile(String profileUuid, boolean testOnly) throws Exception {
+    HarvesterProfile profile = getForExecutre(profileUuid);
+    final SortedMap<String, String> plugins = new TreeMap<String, String>();
+    final Map<String, Extension> tools = new HashMap<String, Extension>();
 
-		Collection<Extension> extensions = pluginService.getConnectedExtensions("com.tle.core.harvester",
-			"harvesterProtocol");
-		for( Extension extension : extensions )
-		{
-			String type = extension.getParameter("type").valueAsString();
-			String name = extension.getParameter("name").valueAsString();
-			plugins.put(name, type);
-			tools.put(type, extension);
-		}
+    Collection<Extension> extensions =
+        pluginService.getConnectedExtensions("com.tle.core.harvester", "harvesterProtocol");
+    for (Extension extension : extensions) {
+      String type = extension.getParameter("type").valueAsString();
+      String name = extension.getParameter("name").valueAsString();
+      plugins.put(name, type);
+      tools.put(type, extension);
+    }
 
-		Extension extension = tools.get(profile.getType());
+    Extension extension = tools.get(profile.getType());
 
-		ContentRepository contentRepository = (ContentRepository) pluginService
-			.getBean(extension.getDeclaringPluginDescriptor(), extension.getParameter("class").valueAsString());
+    ContentRepository contentRepository =
+        (ContentRepository)
+            pluginService.getBean(
+                extension.getDeclaringPluginDescriptor(),
+                extension.getParameter("class").valueAsString());
 
-		return contentRepository.setupAndRun(profile, testOnly);
-	}
+    return contentRepository.setupAndRun(profile, testOnly);
+  }
 
-	@Transactional
-	protected HarvesterProfile getForExecutre(String profileUuid)
-	{
-		HarvesterProfile profile = getByUuid(profileUuid);
-		profile.getAttributes();
-		return profile;
-	}
+  @Transactional
+  protected HarvesterProfile getForExecutre(String profileUuid) {
+    HarvesterProfile profile = getByUuid(profileUuid);
+    profile.getAttributes();
+    return profile;
+  }
 
-	public final class HarvesterTask extends SingleShotTask
-	{
-		private final String profileUuid;
-		private final long institutionId;
-		private final boolean manualKickoff;
+  public final class HarvesterTask extends SingleShotTask {
+    private final String profileUuid;
+    private final long institutionId;
+    private final boolean manualKickoff;
 
-		public HarvesterTask(String profileUuid, long institutionId, boolean manualKickoff)
-		{
-			this.profileUuid = profileUuid;
-			this.institutionId = institutionId;
-			this.manualKickoff = manualKickoff;
-		}
+    public HarvesterTask(String profileUuid, long institutionId, boolean manualKickoff) {
+      this.profileUuid = profileUuid;
+      this.institutionId = institutionId;
+      this.manualKickoff = manualKickoff;
+    }
 
-		@Override
-		protected String getTitleKey()
-		{
-			return KEY_PFX+"harvester.task.title";
-		}
+    @Override
+    protected String getTitleKey() {
+      return KEY_PFX + "harvester.task.title";
+    }
 
-		@Override
-		public Priority getPriority()
-		{
-			return manualKickoff ? Priority.NORMAL : Priority.BACKGROUND;
-		}
+    @Override
+    public Priority getPriority() {
+      return manualKickoff ? Priority.NORMAL : Priority.BACKGROUND;
+    }
 
-		@Override
-		public void runTask() throws Exception
-		{
-			runAs.executeAsSystem(institutionService.getInstitution(institutionId), new Callable<Void>()
-			{
-				@Override
-				public Void call() throws Exception
-				{
-					runProfile(profileUuid, false);
-					return null;
-				}
-			});
-		}
-	}
+    @Override
+    public void runTask() throws Exception {
+      runAs.executeAsSystem(
+          institutionService.getInstitution(institutionId),
+          new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+              runProfile(profileUuid, false);
+              return null;
+            }
+          });
+    }
+  }
 
-	@Override
-	public int testProfile(String profileUuid)
-	{
-		try
-		{
-			return runProfile(profileUuid, true);
-		}
-		catch( Exception ex )
-		{
-			throw new RuntimeApplicationException(ex.getMessage());
-		}
-	}
+  @Override
+  public int testProfile(String profileUuid) {
+    try {
+      return runProfile(profileUuid, true);
+    } catch (Exception ex) {
+      throw new RuntimeApplicationException(ex.getMessage());
+    }
+  }
 }

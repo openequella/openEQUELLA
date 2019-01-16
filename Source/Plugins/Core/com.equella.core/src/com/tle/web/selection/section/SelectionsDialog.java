@@ -37,116 +37,96 @@ import com.tle.web.selection.section.SelectionsDialog.ItemVersionSelectionModel;
 
 @Bind
 @SuppressWarnings("nls")
-public class SelectionsDialog extends AbstractOkayableDialog<ItemVersionSelectionModel>
-{
-	@PlugKey("versiondialog.title")
-	private static Label DIALOG_TITLE_LABEL;
+public class SelectionsDialog extends AbstractOkayableDialog<ItemVersionSelectionModel> {
+  @PlugKey("versiondialog.title")
+  private static Label DIALOG_TITLE_LABEL;
 
-	@Inject
-	private SelectionService selectionService;
-	@Inject
-	private VersionSelectionSection versionSelectionSection;
+  @Inject private SelectionService selectionService;
+  @Inject private VersionSelectionSection versionSelectionSection;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	public SelectionsDialog()
-	{
-		setAjax(true);
-	}
+  public SelectionsDialog() {
+    setAjax(true);
+  }
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		final ItemVersionSelectionModel model = getModel(context);
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    final ItemVersionSelectionModel model = getModel(context);
 
-		String courseName = selectionService.getCurrentSession(context).getStructure().getName();
-		model.setCourseTitle(courseName);
+    String courseName = selectionService.getCurrentSession(context).getStructure().getName();
+    model.setCourseTitle(courseName);
 
-		return viewFactory.createResult("selection/dialog/selections.ftl", this);
-	}
+    return viewFactory.createResult("selection/dialog/selections.ftl", this);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		versionSelectionSection.setAjaxDivId("table-div");
-		tree.registerInnerSection(versionSelectionSection, id);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    versionSelectionSection.setAjaxDivId("table-div");
+    tree.registerInnerSection(versionSelectionSection, id);
+  }
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return DIALOG_TITLE_LABEL;
-	}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return DIALOG_TITLE_LABEL;
+  }
 
-	@Override
-	public ItemVersionSelectionModel instantiateDialogModel(SectionInfo info)
-	{
-		return new ItemVersionSelectionModel();
-	}
+  @Override
+  public ItemVersionSelectionModel instantiateDialogModel(SectionInfo info) {
+    return new ItemVersionSelectionModel();
+  }
 
-	@Override
-	protected JSHandler createOkHandler(SectionTree tree)
-	{
-		return events.getNamedHandler("saveVersions");
-	}
+  @Override
+  protected JSHandler createOkHandler(SectionTree tree) {
+    return events.getNamedHandler("saveVersions");
+  }
 
-	@EventHandlerMethod
-	public void saveVersions(SectionInfo info)
-	{
-		versionSelectionSection.saveVersionChoices(info);
-		closeDialog(info, getOkCallback());
-	}
+  @EventHandlerMethod
+  public void saveVersions(SectionInfo info) {
+    versionSelectionSection.saveVersionChoices(info);
+    closeDialog(info, getOkCallback());
+  }
 
-	@Override
-	protected ParameterizedEvent getAjaxShowEvent()
-	{
-		return events.getEventHandler("showFolder");
-	}
+  @Override
+  protected ParameterizedEvent getAjaxShowEvent() {
+    return events.getEventHandler("showFolder");
+  }
 
-	@EventHandlerMethod
-	public void showFolder(SectionInfo info, String folderId, boolean showAll)
-	{
-		versionSelectionSection.setFolder(info, folderId, showAll);
-		super.showDialog(info);
-	}
+  @EventHandlerMethod
+  public void showFolder(SectionInfo info, String folderId, boolean showAll) {
+    versionSelectionSection.setFolder(info, folderId, showAll);
+    super.showDialog(info);
+  }
 
-	@Override
-	public String getHeight()
-	{
-		return "400px";
-	}
+  @Override
+  public String getHeight() {
+    return "400px";
+  }
 
-	@Override
-	public String getWidth()
-	{
-		return "725px";
-	}
+  @Override
+  public String getWidth() {
+    return "725px";
+  }
 
-	@Override
-	protected String getContentBodyClass(RenderContext context)
-	{
-		return "vsdialog";
-	}
+  @Override
+  protected String getContentBodyClass(RenderContext context) {
+    return "vsdialog";
+  }
 
-	public VersionSelectionSection getVersionSelectionSection()
-	{
-		return versionSelectionSection;
-	}
+  public VersionSelectionSection getVersionSelectionSection() {
+    return versionSelectionSection;
+  }
 
-	public static class ItemVersionSelectionModel extends DialogModel
-	{
-		private String courseTitle;
+  public static class ItemVersionSelectionModel extends DialogModel {
+    private String courseTitle;
 
-		public String getCourseTitle()
-		{
-			return courseTitle;
-		}
+    public String getCourseTitle() {
+      return courseTitle;
+    }
 
-		public void setCourseTitle(String courseTitle)
-		{
-			this.courseTitle = courseTitle;
-		}
-	}
+    public void setCourseTitle(String courseTitle) {
+      this.courseTitle = courseTitle;
+    }
+  }
 }

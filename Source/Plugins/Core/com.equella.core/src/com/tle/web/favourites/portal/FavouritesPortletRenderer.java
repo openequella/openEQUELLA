@@ -66,176 +66,149 @@ import com.tle.web.viewurl.ViewItemUrlFactory;
 @NonNullByDefault
 @SuppressWarnings("nls")
 @Bind
-public class FavouritesPortletRenderer extends PortletContentRenderer<FavouritesPortletRenderer.Model>
-{
-	private static int MAX_ENTRIES = 5;
+public class FavouritesPortletRenderer
+    extends PortletContentRenderer<FavouritesPortletRenderer.Model> {
+  private static int MAX_ENTRIES = 5;
 
-	@EventFactory
-	private EventGenerator events;
-	@ResourceHelper
-	private PluginResourceHelper RESOURCES;
+  @EventFactory private EventGenerator events;
+  @ResourceHelper private PluginResourceHelper RESOURCES;
 
-	@Inject
-	private BookmarkService favItemService;
-	@Inject
-	private FavouriteSearchService favSearchService;
-	@Inject
-	private FreeTextService freeTextService;
-	@Inject
-	private SelectionService selectionService;
-	@Inject
-	private TLEAclManager aclService;
+  @Inject private BookmarkService favItemService;
+  @Inject private FavouriteSearchService favSearchService;
+  @Inject private FreeTextService freeTextService;
+  @Inject private SelectionService selectionService;
+  @Inject private TLEAclManager aclService;
 
-	@Inject
-	private BundleCache bundleCache;
-	@Inject
-	private ViewItemUrlFactory itemUrls;
+  @Inject private BundleCache bundleCache;
+  @Inject private ViewItemUrlFactory itemUrls;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Component
-	@PlugKey("portal.showall")
-	private Button showAll;
+  @Component
+  @PlugKey("portal.showall")
+  private Button showAll;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		showAll.setClickHandler(events.getNamedHandler("showFavourites"));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    showAll.setClickHandler(events.getNamedHandler("showFavourites"));
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		List<FavouriteRow> favs = new ArrayList<FavouriteRow>();
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    List<FavouriteRow> favs = new ArrayList<FavouriteRow>();
 
-		final SelectionSession session = selectionService.getCurrentSession(context);
-		final String priv = (session != null && session.isUseDownloadPrivilege() ? "DOWNLOAD_ITEM" : "DISCOVER_ITEM");
-		final Collection<Item> bookmarkItems = aclService.filterNonGrantedObjects(Collections.singleton(priv),
-			searchFavItems());
+    final SelectionSession session = selectionService.getCurrentSession(context);
+    final String priv =
+        (session != null && session.isUseDownloadPrivilege() ? "DOWNLOAD_ITEM" : "DISCOVER_ITEM");
+    final Collection<Item> bookmarkItems =
+        aclService.filterNonGrantedObjects(Collections.singleton(priv), searchFavItems());
 
-		for( Bookmark b : favItemService.getBookmarksForItems(bookmarkItems).values() )
-		{
-			favs.add(new FavouriteRow(b, context));
-		}
+    for (Bookmark b : favItemService.getBookmarksForItems(bookmarkItems).values()) {
+      favs.add(new FavouriteRow(b, context));
+    }
 
-		for( FavouriteSearch fs : favSearchService.getSearchesForOwner(CurrentUser.getUserID(), MAX_ENTRIES) )
-		{
-			favs.add(new FavouriteRow(fs));
-		}
+    for (FavouriteSearch fs :
+        favSearchService.getSearchesForOwner(CurrentUser.getUserID(), MAX_ENTRIES)) {
+      favs.add(new FavouriteRow(fs));
+    }
 
-		// Sort by date
-		Collections.sort(favs, new Comparator<FavouriteRow>()
-		{
-			@Override
-			public int compare(FavouriteRow f1, FavouriteRow f2)
-			{
-				return -f1.getDateModified().compareTo(f2.getDateModified());
-			}
-		});
+    // Sort by date
+    Collections.sort(
+        favs,
+        new Comparator<FavouriteRow>() {
+          @Override
+          public int compare(FavouriteRow f1, FavouriteRow f2) {
+            return -f1.getDateModified().compareTo(f2.getDateModified());
+          }
+        });
 
-		if( favs.size() > MAX_ENTRIES )
-		{
-			favs = favs.subList(0, MAX_ENTRIES);
-		}
-		getModel(context).setFavourites(favs);
+    if (favs.size() > MAX_ENTRIES) {
+      favs = favs.subList(0, MAX_ENTRIES);
+    }
+    getModel(context).setFavourites(favs);
 
-		return viewFactory.createResult("portal/favouritesportal.ftl", this);
-	}
+    return viewFactory.createResult("portal/favouritesportal.ftl", this);
+  }
 
-	@EventHandlerMethod
-	public void showFavourites(SectionInfo info)
-	{
-		info.forward(info.createForward("/access/favourites.do"));
-	}
+  @EventHandlerMethod
+  public void showFavourites(SectionInfo info) {
+    info.forward(info.createForward("/access/favourites.do"));
+  }
 
-	private List<Item> searchFavItems()
-	{
-		FavouritesSearch search = new FavouritesSearch();
-		search.setSortFields(new SortField(FreeTextQuery.FIELD_BOOKMARK_DATE + CurrentUser.getUserID(), true));
-		return freeTextService.search(search, 0, MAX_ENTRIES).getResults();
-	}
+  private List<Item> searchFavItems() {
+    FavouritesSearch search = new FavouritesSearch();
+    search.setSortFields(
+        new SortField(FreeTextQuery.FIELD_BOOKMARK_DATE + CurrentUser.getUserID(), true));
+    return freeTextService.search(search, 0, MAX_ENTRIES).getResults();
+  }
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		return true;
-	}
+  @Override
+  public boolean canView(SectionInfo info) {
+    return true;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "fav";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "fav";
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model();
+  }
 
-	@EventHandlerMethod
-	public void execSearch(SectionInfo info, long searchId)
-	{
-		favSearchService.executeSearch(info, searchId);
-	}
+  @EventHandlerMethod
+  public void execSearch(SectionInfo info, long searchId) {
+    favSearchService.executeSearch(info, searchId);
+  }
 
-	public static class Model
-	{
-		private List<FavouriteRow> favourites = new ArrayList<FavouriteRow>();
+  public static class Model {
+    private List<FavouriteRow> favourites = new ArrayList<FavouriteRow>();
 
-		public List<FavouriteRow> getFavourites()
-		{
-			return favourites;
-		}
+    public List<FavouriteRow> getFavourites() {
+      return favourites;
+    }
 
-		public void setFavourites(List<FavouriteRow> favourites)
-		{
-			this.favourites = favourites;
-		}
-	}
+    public void setFavourites(List<FavouriteRow> favourites) {
+      this.favourites = favourites;
+    }
+  }
 
-	public class FavouriteRow
-	{
-		private final Label label;
-		private final HtmlComponentState link;
-		private final Date dateModified;
+  public class FavouriteRow {
+    private final Label label;
+    private final HtmlComponentState link;
+    private final Date dateModified;
 
-		public FavouriteRow(FavouriteSearch search)
-		{
-			KeyLabel linkLabel = new KeyLabel(RESOURCES.key("portal.searchresult"), search.getName());
-			linkLabel.setHtml(false);
-			this.label = linkLabel;
-			this.link = new HtmlLinkState(events.getNamedHandler("execSearch", search.getId()));
-			this.dateModified = search.getDateModified();
-		}
+    public FavouriteRow(FavouriteSearch search) {
+      KeyLabel linkLabel = new KeyLabel(RESOURCES.key("portal.searchresult"), search.getName());
+      linkLabel.setHtml(false);
+      this.label = linkLabel;
+      this.link = new HtmlLinkState(events.getNamedHandler("execSearch", search.getId()));
+      this.dateModified = search.getDateModified();
+    }
 
-		public FavouriteRow(Bookmark bookmark, SectionInfo info)
-		{
-			this.label = new BundleLabel(bookmark.getItem().getName(), bookmark.getItem().getUuid(), bundleCache);
-			this.link = new HtmlLinkState(itemUrls.createItemUrl(info, bookmark.getItem().getItemId()));
-			this.dateModified = bookmark.getDateModified();
-		}
+    public FavouriteRow(Bookmark bookmark, SectionInfo info) {
+      this.label =
+          new BundleLabel(bookmark.getItem().getName(), bookmark.getItem().getUuid(), bundleCache);
+      this.link = new HtmlLinkState(itemUrls.createItemUrl(info, bookmark.getItem().getItemId()));
+      this.dateModified = bookmark.getDateModified();
+    }
 
-		public Label getLabel()
-		{
-			return label;
-		}
+    public Label getLabel() {
+      return label;
+    }
 
-		public HtmlComponentState getLink()
-		{
-			return link;
-		}
+    public HtmlComponentState getLink() {
+      return link;
+    }
 
-		public Date getDateModified()
-		{
-			return dateModified;
-		}
-	}
+    public Date getDateModified() {
+      return dateModified;
+    }
+  }
 
-	public Button getShowAll()
-	{
-		return showAll;
-	}
+  public Button getShowAll() {
+    return showAll;
+  }
 }

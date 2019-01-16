@@ -37,150 +37,152 @@ import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.i18n.BundleCache;
 
-/**
- * @author Nicholas Read
- */
-public class DetailsTab extends AbstractTopicEditorTab
-{
-	private static final long serialVersionUID = 1L;
+/** @author Nicholas Read */
+public class DetailsTab extends AbstractTopicEditorTab {
+  private static final long serialVersionUID = 1L;
 
-	private final EntityCache cache;
+  private final EntityCache cache;
 
-	private I18nTextField topicName;
-	private I18nTextArea shortDescription;
-	private I18nTextArea longDescription;
+  private I18nTextField topicName;
+  private I18nTextArea shortDescription;
+  private I18nTextArea longDescription;
 
-	private I18nTextField subtopicsSection;
-	private I18nTextField searchResultsSection;
+  private I18nTextField subtopicsSection;
+  private I18nTextField searchResultsSection;
 
-	private JCheckBox hideSubtopicsWithNoResults;
+  private JCheckBox hideSubtopicsWithNoResults;
 
-	private JComboBox advancedSearchSelector;
+  private JComboBox advancedSearchSelector;
 
-	public DetailsTab(EntityCache cache)
-	{
-		this.cache = cache;
-	}
+  public DetailsTab(EntityCache cache) {
+    this.cache = cache;
+  }
 
-	@Override
-	public void setup(ChangeDetector changeDetector)
-	{
-		JLabel topicNameLabel = new JLabel(getString("detailstab.topicname")); //$NON-NLS-1$
-		JLabel shortLabel = new JLabel(getString("detailstab.shortdesc")); //$NON-NLS-1$
-		JLabel longLabel = new JLabel(getString("detailstab.fulldesc")); //$NON-NLS-1$
-		JLabel sectionsLabel = new JLabel(getString("detailstab.sectionnames")); //$NON-NLS-1$
-		JLabel subtopicsLabel = new JLabel(getString("detailstab.subtopics")); //$NON-NLS-1$
-		JLabel searchResultsLabel = new JLabel(
-			getString("detailstab.searchresults")); //$NON-NLS-1$
-		JLabel advancedSearchLabel = new JLabel(
-			getString("detailstab.advancedsearch")); //$NON-NLS-1$
+  @Override
+  public void setup(ChangeDetector changeDetector) {
+    JLabel topicNameLabel = new JLabel(getString("detailstab.topicname")); // $NON-NLS-1$
+    JLabel shortLabel = new JLabel(getString("detailstab.shortdesc")); // $NON-NLS-1$
+    JLabel longLabel = new JLabel(getString("detailstab.fulldesc")); // $NON-NLS-1$
+    JLabel sectionsLabel = new JLabel(getString("detailstab.sectionnames")); // $NON-NLS-1$
+    JLabel subtopicsLabel = new JLabel(getString("detailstab.subtopics")); // $NON-NLS-1$
+    JLabel searchResultsLabel = new JLabel(getString("detailstab.searchresults")); // $NON-NLS-1$
+    JLabel advancedSearchLabel = new JLabel(getString("detailstab.advancedsearch")); // $NON-NLS-1$
 
-		topicName = new I18nTextField(BundleCache.getLanguages());
+    topicName = new I18nTextField(BundleCache.getLanguages());
 
-		subtopicsSection = new I18nTextField(BundleCache.getLanguages());
-		searchResultsSection = new I18nTextField(BundleCache.getLanguages());
+    subtopicsSection = new I18nTextField(BundleCache.getLanguages());
+    searchResultsSection = new I18nTextField(BundleCache.getLanguages());
 
-		shortDescription = new I18nTextArea(BundleCache.getLanguages());
-		longDescription = new I18nTextArea(BundleCache.getLanguages());
+    shortDescription = new I18nTextArea(BundleCache.getLanguages());
+    longDescription = new I18nTextArea(BundleCache.getLanguages());
 
-		hideSubtopicsWithNoResults = new JCheckBox(
-			getString("detailstab.hidesubtopicswithnoresults")); //$NON-NLS-1$
+    hideSubtopicsWithNoResults =
+        new JCheckBox(getString("detailstab.hidesubtopicswithnoresults")); // $NON-NLS-1$
 
-		advancedSearchSelector = new JComboBox();
-		advancedSearchSelector.addItem(getString("detailstab.nopowersearch")); //$NON-NLS-1$
-		AppletGuiUtils.addItemsToJCombo(advancedSearchSelector, cache.getPowerSearches());
+    advancedSearchSelector = new JComboBox();
+    advancedSearchSelector.addItem(getString("detailstab.nopowersearch")); // $NON-NLS-1$
+    AppletGuiUtils.addItemsToJCombo(advancedSearchSelector, cache.getPowerSearches());
 
-		final int width1 = 20;
-		final int width2 = topicNameLabel.getPreferredSize().width - width1;
-		final int width3 = Math.max(searchResultsLabel.getPreferredSize().width,
-			searchResultsLabel.getPreferredSize().width) - width2;
+    final int width1 = 20;
+    final int width2 = topicNameLabel.getPreferredSize().width - width1;
+    final int width3 =
+        Math.max(
+                searchResultsLabel.getPreferredSize().width,
+                searchResultsLabel.getPreferredSize().width)
+            - width2;
 
-		final int[] rows = {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED,
-				TableLayout.FILL, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED,
-				TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED,};
-		final int[] cols = {width1, width2, width3, TableLayout.FILL,};
+    final int[] rows = {
+      TableLayout.PREFERRED,
+      TableLayout.PREFERRED,
+      TableLayout.FILL,
+      TableLayout.PREFERRED,
+      TableLayout.FILL,
+      TableLayout.PREFERRED,
+      TableLayout.PREFERRED,
+      TableLayout.PREFERRED,
+      TableLayout.PREFERRED,
+      TableLayout.PREFERRED,
+      TableLayout.PREFERRED,
+      TableLayout.PREFERRED,
+    };
+    final int[] cols = {
+      width1, width2, width3, TableLayout.FILL,
+    };
 
-		setLayout(new TableLayout(rows, cols));
+    setLayout(new TableLayout(rows, cols));
 
-		int row = 0;
-		add(topicNameLabel, new Rectangle(0, row, 2, 1));
-		add(topicName, new Rectangle(2, row++, 2, 1));
+    int row = 0;
+    add(topicNameLabel, new Rectangle(0, row, 2, 1));
+    add(topicName, new Rectangle(2, row++, 2, 1));
 
-		add(shortLabel, new Rectangle(0, row++, 4, 1));
-		add(shortDescription, new Rectangle(1, row++, 3, 1));
+    add(shortLabel, new Rectangle(0, row++, 4, 1));
+    add(shortDescription, new Rectangle(1, row++, 3, 1));
 
-		add(longLabel, new Rectangle(0, row++, 4, 1));
-		add(longDescription, new Rectangle(1, row++, 3, 1));
+    add(longLabel, new Rectangle(0, row++, 4, 1));
+    add(longDescription, new Rectangle(1, row++, 3, 1));
 
-		add(sectionsLabel, new Rectangle(0, row++, 4, 1));
+    add(sectionsLabel, new Rectangle(0, row++, 4, 1));
 
-		add(subtopicsLabel, new Rectangle(1, row, 2, 1));
-		add(subtopicsSection, new Rectangle(3, row++, 1, 1));
-		add(searchResultsLabel, new Rectangle(1, row, 2, 1));
-		add(searchResultsSection, new Rectangle(3, row++, 1, 1));
+    add(subtopicsLabel, new Rectangle(1, row, 2, 1));
+    add(subtopicsSection, new Rectangle(3, row++, 1, 1));
+    add(searchResultsLabel, new Rectangle(1, row, 2, 1));
+    add(searchResultsSection, new Rectangle(3, row++, 1, 1));
 
-		add(hideSubtopicsWithNoResults, new Rectangle(0, row++, 4, 1));
+    add(hideSubtopicsWithNoResults, new Rectangle(0, row++, 4, 1));
 
-		add(advancedSearchLabel, new Rectangle(0, row++, 4, 1));
-		add(advancedSearchSelector, new Rectangle(1, row++, 3, 1));
+    add(advancedSearchLabel, new Rectangle(0, row++, 4, 1));
+    add(advancedSearchSelector, new Rectangle(1, row++, 3, 1));
 
-		changeDetector.watch(topicName);
-		changeDetector.watch(shortDescription);
-		changeDetector.watch(longDescription);
-		changeDetector.watch(subtopicsSection);
-		changeDetector.watch(searchResultsSection);
-		changeDetector.watch(advancedSearchSelector);
-	}
+    changeDetector.watch(topicName);
+    changeDetector.watch(shortDescription);
+    changeDetector.watch(longDescription);
+    changeDetector.watch(subtopicsSection);
+    changeDetector.watch(searchResultsSection);
+    changeDetector.watch(advancedSearchSelector);
+  }
 
-	@Override
-	public void load(HierarchyPack pack)
-	{
-		HierarchyTopic topic = pack.getTopic();
+  @Override
+  public void load(HierarchyPack pack) {
+    HierarchyTopic topic = pack.getTopic();
 
-		topicName.load(topic.getName());
-		shortDescription.load(topic.getShortDescription());
-		longDescription.load(topic.getLongDescription());
+    topicName.load(topic.getName());
+    shortDescription.load(topic.getShortDescription());
+    longDescription.load(topic.getLongDescription());
 
-		subtopicsSection.load(topic.getSubtopicsSectionName());
-		searchResultsSection.load(topic.getResultsSectionName());
+    subtopicsSection.load(topic.getSubtopicsSectionName());
+    searchResultsSection.load(topic.getResultsSectionName());
 
-		hideSubtopicsWithNoResults.setSelected(topic.isHideSubtopicsWithNoResults());
+    hideSubtopicsWithNoResults.setSelected(topic.isHideSubtopicsWithNoResults());
 
-		if( topic.getAdvancedSearch() != null )
-		{
-			AppletGuiUtils.selectInJCombo(advancedSearchSelector, new NameId(null, topic.getAdvancedSearch().getId()),
-				0);
-		}
-	}
+    if (topic.getAdvancedSearch() != null) {
+      AppletGuiUtils.selectInJCombo(
+          advancedSearchSelector, new NameId(null, topic.getAdvancedSearch().getId()), 0);
+    }
+  }
 
-	@Override
-	public void save(HierarchyPack pack)
-	{
-		HierarchyTopic topic = pack.getTopic();
+  @Override
+  public void save(HierarchyPack pack) {
+    HierarchyTopic topic = pack.getTopic();
 
-		topic.setName(topicName.save());
-		topic.setShortDescription(shortDescription.save());
-		topic.setLongDescription(longDescription.save());
+    topic.setName(topicName.save());
+    topic.setShortDescription(shortDescription.save());
+    topic.setLongDescription(longDescription.save());
 
-		topic.setSubtopicsSectionName(subtopicsSection.save());
-		topic.setResultsSectionName(searchResultsSection.save());
+    topic.setSubtopicsSectionName(subtopicsSection.save());
+    topic.setResultsSectionName(searchResultsSection.save());
 
-		topic.setHideSubtopicsWithNoResults(hideSubtopicsWithNoResults.isSelected());
+    topic.setHideSubtopicsWithNoResults(hideSubtopicsWithNoResults.isSelected());
 
-		if( advancedSearchSelector.getSelectedIndex() == 0 )
-		{
-			topic.setAdvancedSearch(null);
-		}
-		else
-		{
-			long id = ((NameId) advancedSearchSelector.getSelectedItem()).getId();
-			topic.setAdvancedSearch(new PowerSearch(id));
-		}
-	}
+    if (advancedSearchSelector.getSelectedIndex() == 0) {
+      topic.setAdvancedSearch(null);
+    } else {
+      long id = ((NameId) advancedSearchSelector.getSelectedItem()).getId();
+      topic.setAdvancedSearch(new PowerSearch(id));
+    }
+  }
 
-	@Override
-	public void validation() throws EditorException
-	{
-		// nothing to validate
-	}
+  @Override
+  public void validation() throws EditorException {
+    // nothing to validate
+  }
 }

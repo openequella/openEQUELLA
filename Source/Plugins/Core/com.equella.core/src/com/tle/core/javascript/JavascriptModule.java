@@ -22,25 +22,23 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 
 /**
- * The JavascriptLibrary is the top level (e.g. JQuery), the JavascriptModule is
- * a subset of the library (e.g. JQuery UI)
- * 
+ * The JavascriptLibrary is the top level (e.g. JQuery), the JavascriptModule is a subset of the
+ * library (e.g. JQuery UI)
+ *
  * @author aholland
  */
 @NonNullByDefault
-public interface JavascriptModule extends Serializable
-{
-	String getId();
+public interface JavascriptModule extends Serializable {
+  String getId();
 
-	String getDisplayName();
+  String getDisplayName();
 
-	/**
-	 * Don't assume that you won't get a null back from this. You may very well
-	 * get one.
-	 * 
-	 * @return Usually (ok, always) a sections PreRenderable. Obviously a core
-	 *         plugin cannot reference a web one though.
-	 */
-	@Nullable
-	Object getPreRenderer();
+  /**
+   * Don't assume that you won't get a null back from this. You may very well get one.
+   *
+   * @return Usually (ok, always) a sections PreRenderable. Obviously a core plugin cannot reference
+   *     a web one though.
+   */
+  @Nullable
+  Object getPreRenderer();
 }

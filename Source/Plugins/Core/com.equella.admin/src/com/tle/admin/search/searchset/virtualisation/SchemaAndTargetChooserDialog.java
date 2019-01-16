@@ -55,174 +55,159 @@ import com.tle.core.remoting.RemoteSchemaService;
 import com.tle.i18n.BundleCache;
 
 @SuppressWarnings("nls")
-public class SchemaAndTargetChooserDialog
-{
-	private final ClientService clientService;
-	private final JComboBox chooser;
-	private final SchemaTree tree;
-	private final SchemaModel model;
-	private final JPanel panel;
-	private final JDialog dialog;
-	private final boolean indexedForPowersearchOnly;
+public class SchemaAndTargetChooserDialog {
+  private final ClientService clientService;
+  private final JComboBox chooser;
+  private final SchemaTree tree;
+  private final SchemaModel model;
+  private final JPanel panel;
+  private final JDialog dialog;
+  private final boolean indexedForPowersearchOnly;
 
-	private String selectedNode;
-	private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
+  private String selectedNode;
+  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
 
-	protected String getString(String key)
-	{
-		return CurrentLocale.get(getKey(key));
-	}
+  protected String getString(String key) {
+    return CurrentLocale.get(getKey(key));
+  }
 
-	protected String getKey(String key)
-	{
-		return KEY_PFX+key;
-	}
+  protected String getKey(String key) {
+    return KEY_PFX + key;
+  }
 
-	public SchemaAndTargetChooserDialog(final ClientService clientService, final JComponent parent,
-		final boolean indexedForPowersearchOnly)
-	{
-		this.clientService = clientService;
-		this.indexedForPowersearchOnly = indexedForPowersearchOnly;
+  public SchemaAndTargetChooserDialog(
+      final ClientService clientService,
+      final JComponent parent,
+      final boolean indexedForPowersearchOnly) {
+    this.clientService = clientService;
+    this.indexedForPowersearchOnly = indexedForPowersearchOnly;
 
-		chooser = new JComboBox();
+    chooser = new JComboBox();
 
-		model = new SchemaModel();
+    model = new SchemaModel();
 
-		tree = new SchemaTree(model, indexedForPowersearchOnly);
-		tree.setEnabled(false);
-		tree.addMouseListener(new TreeDoubleClickListener(tree, okAction));
-		tree.addTreeSelectionListener(new TreeSelectionListener()
-		{
-			@Override
-			public void valueChanged(TreeSelectionEvent e)
-			{
-				updateActions();
-			}
-		});
+    tree = new SchemaTree(model, indexedForPowersearchOnly);
+    tree.setEnabled(false);
+    tree.addMouseListener(new TreeDoubleClickListener(tree, okAction));
+    tree.addTreeSelectionListener(
+        new TreeSelectionListener() {
+          @Override
+          public void valueChanged(TreeSelectionEvent e) {
+            updateActions();
+          }
+        });
 
-		panel = new JPanel(new MigLayout("wrap, fill", "[grow, fill]", "[][grow, fill][]"));
-		panel.add(chooser);
-		panel.add(new JScrollPane(tree));
-		panel.add(new JButton(okAction), "split, alignx right, tag ok");
-		panel.add(new JButton(cancelAction), "tag cancel");
+    panel = new JPanel(new MigLayout("wrap, fill", "[grow, fill]", "[][grow, fill][]"));
+    panel.add(chooser);
+    panel.add(new JScrollPane(tree));
+    panel.add(new JButton(okAction), "split, alignx right, tag ok");
+    panel.add(new JButton(cancelAction), "tag cancel");
 
-		updateActions();
+    updateActions();
 
-		dialog = ComponentHelper.createJDialog(parent);
-		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		dialog.setContentPane(panel);
-		dialog.setTitle(getString("searchset.virtualisation.xpathchooser.dialogtitle"));
-		dialog.setModal(true);
-		dialog.pack();
+    dialog = ComponentHelper.createJDialog(parent);
+    dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    dialog.setContentPane(panel);
+    dialog.setTitle(getString("searchset.virtualisation.xpathchooser.dialogtitle"));
+    dialog.setModal(true);
+    dialog.pack();
 
-		ComponentHelper.ensureMinimumSize(dialog, 500, 500);
-		ComponentHelper.centreOnScreen(dialog);
-	}
+    ComponentHelper.ensureMinimumSize(dialog, 500, 500);
+    ComponentHelper.centreOnScreen(dialog);
+  }
 
-	public String showDialog()
-	{
-		if( chooser.getItemCount() == 0 )
-		{
-			populateSchemasWorker.setComponent(panel);
-			populateSchemasWorker.start();
-		}
+  public String showDialog() {
+    if (chooser.getItemCount() == 0) {
+      populateSchemasWorker.setComponent(panel);
+      populateSchemasWorker.start();
+    }
 
-		dialog.setVisible(true);
+    dialog.setVisible(true);
 
-		return selectedNode;
-	}
+    return selectedNode;
+  }
 
-	private void updateActions()
-	{
-		okAction.update();
-		cancelAction.update();
-	}
+  private void updateActions() {
+    okAction.update();
+    cancelAction.update();
+  }
 
-	private final TLEAction okAction = new OkAction()
-	{
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			SchemaNode node = (SchemaNode) tree.getLastSelectedPathComponent();
-			selectedNode = node.toString();
-			dialog.dispose();
-		}
+  private final TLEAction okAction =
+      new OkAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          SchemaNode node = (SchemaNode) tree.getLastSelectedPathComponent();
+          selectedNode = node.toString();
+          dialog.dispose();
+        }
 
-		@Override
-		public void update()
-		{
-			setEnabled(false);
-			if( tree.isEnabled() && !tree.isSelectionEmpty() )
-			{
-				SchemaNode node = (SchemaNode) tree.getLastSelectedPathComponent();
-				if( !node.hasNonAttributeChildren() && (indexedForPowersearchOnly && node.isField()) )
-				{
-					setEnabled(true);
-				}
-			}
-		}
-	};
+        @Override
+        public void update() {
+          setEnabled(false);
+          if (tree.isEnabled() && !tree.isSelectionEmpty()) {
+            SchemaNode node = (SchemaNode) tree.getLastSelectedPathComponent();
+            if (!node.hasNonAttributeChildren() && (indexedForPowersearchOnly && node.isField())) {
+              setEnabled(true);
+            }
+          }
+        }
+      };
 
-	private final TLEAction cancelAction = new CancelAction()
-	{
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			dialog.dispose();
-		}
-	};
+  private final TLEAction cancelAction =
+      new CancelAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          dialog.dispose();
+        }
+      };
 
-	private final GlassSwingWorker<?> populateSchemasWorker = new GlassSwingWorker<List<NameValue>>()
-	{
-		@Override
-		public List<NameValue> construct() throws Exception
-		{
-			List<BaseEntityLabel> schemas = clientService.getService(RemoteSchemaService.class).listAll();
-			List<NameValue> nvs = BundleCache.getNameValues(schemas);
-			Collections.sort(nvs, Format.NAME_VALUE_COMPARATOR);
-			return nvs;
-		}
+  private final GlassSwingWorker<?> populateSchemasWorker =
+      new GlassSwingWorker<List<NameValue>>() {
+        @Override
+        public List<NameValue> construct() throws Exception {
+          List<BaseEntityLabel> schemas =
+              clientService.getService(RemoteSchemaService.class).listAll();
+          List<NameValue> nvs = BundleCache.getNameValues(schemas);
+          Collections.sort(nvs, Format.NAME_VALUE_COMPARATOR);
+          return nvs;
+        }
 
-		@Override
-		public void finished()
-		{
-			chooser.addItem(new NameValue(getString("searchset.virtualisation.xpathchooser.schemadropdown"), ""));
-			AppletGuiUtils.addItemsToJCombo(chooser, get());
+        @Override
+        public void finished() {
+          chooser.addItem(
+              new NameValue(getString("searchset.virtualisation.xpathchooser.schemadropdown"), ""));
+          AppletGuiUtils.addItemsToJCombo(chooser, get());
 
-			chooser.addActionListener(schemaChoiceListener);
-		}
-	};
+          chooser.addActionListener(schemaChoiceListener);
+        }
+      };
 
-	private final ActionListener schemaChoiceListener = new ActionListener()
-	{
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			String value = ((NameValue) chooser.getSelectedItem()).getValue();
-			if( Check.isEmpty(value) )
-			{
-				tree.setEnabled(false);
-				return;
-			}
+  private final ActionListener schemaChoiceListener =
+      new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          String value = ((NameValue) chooser.getSelectedItem()).getValue();
+          if (Check.isEmpty(value)) {
+            tree.setEnabled(false);
+            return;
+          }
 
-			final long schemaId = Long.parseLong(value);
-			GlassSwingWorker<?> worker = new GlassSwingWorker<Schema>()
-			{
-				@Override
-				public Schema construct() throws Exception
-				{
-					return clientService.getService(RemoteSchemaService.class).get(schemaId);
-				}
+          final long schemaId = Long.parseLong(value);
+          GlassSwingWorker<?> worker =
+              new GlassSwingWorker<Schema>() {
+                @Override
+                public Schema construct() throws Exception {
+                  return clientService.getService(RemoteSchemaService.class).get(schemaId);
+                }
 
-				@Override
-				public void finished()
-				{
-					model.loadSchema(get().getDefinitionNonThreadSafe());
-					tree.setEnabled(true);
-				}
-			};
-			worker.setComponent(panel);
-			worker.start();
-		}
-	};
+                @Override
+                public void finished() {
+                  model.loadSchema(get().getDefinitionNonThreadSafe());
+                  tree.setEnabled(true);
+                }
+              };
+          worker.setComponent(panel);
+          worker.start();
+        }
+      };
 }

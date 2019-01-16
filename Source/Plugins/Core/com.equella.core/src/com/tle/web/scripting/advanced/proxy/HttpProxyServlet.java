@@ -45,110 +45,96 @@ import com.tle.core.services.http.Response;
 import com.tle.common.usermanagement.user.CurrentUser;
 
 /**
- * <p>
  * Found at p/geturl
- * <p>
- * URL parameter is "url"
- * <p>
- * E.g. http://inst/p/geturl?url=http%3A%2F%2Fwww.theveronicas.com
- * 
+ *
+ * <p>URL parameter is "url"
+ *
+ * <p>E.g. http://inst/p/geturl?url=http%3A%2F%2Fwww.theveronicas.com
+ *
  * @author Aaron
  */
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class HttpProxyServlet extends HttpServlet
-{
-	// private static final Logger LOGGER =
-	// Logger.getLogger(HttpProxyServlet.class);
-	private static final long serialVersionUID = 1L;
+public class HttpProxyServlet extends HttpServlet {
+  // private static final Logger LOGGER =
+  // Logger.getLogger(HttpProxyServlet.class);
+  private static final long serialVersionUID = 1L;
 
-	@Inject
-	private HttpService httpService;
-	@Inject
-	private ConfigurationService configService;
-	@Inject(optional = true)
-	@Named("httpProxyServlet.enabled")
-	private boolean enabled;
+  @Inject private HttpService httpService;
+  @Inject private ConfigurationService configService;
 
-	@Override
-	@SuppressWarnings("unchecked")
-	protected void service(HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException
-	{
-		if (!enabled)
-		{
-			resp.sendError(404);
-			return;
-		}
-		if( CurrentUser.isGuest() )
-		{
-			resp.sendError(HttpServletResponse.SC_FORBIDDEN,
-				CurrentLocale.get("com.tle.web.scripting.advanced.redirectionservlet.error.notloggedin"));
-			return;
-		}
+  @Inject(optional = true)
+  @Named("httpProxyServlet.enabled")
+  private boolean enabled;
 
-		final String url = req.getParameter("url");
-		if( Check.isEmpty(url) )
-		{
-			resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
-				CurrentLocale.get("com.tle.web.scripting.advanced.redirectionservlet.error.parammissing", "url"));
-			return;
-		}
+  @Override
+  @SuppressWarnings("unchecked")
+  protected void service(HttpServletRequest req, final HttpServletResponse resp)
+      throws ServletException, IOException {
+    if (!enabled) {
+      resp.sendError(404);
+      return;
+    }
+    if (CurrentUser.isGuest()) {
+      resp.sendError(
+          HttpServletResponse.SC_FORBIDDEN,
+          CurrentLocale.get("com.tle.web.scripting.advanced.redirectionservlet.error.notloggedin"));
+      return;
+    }
 
-		Map<String, String[]> forwardedParams = Maps.newHashMap(req.getParameterMap());
-		forwardedParams.remove("url");
+    final String url = req.getParameter("url");
+    if (Check.isEmpty(url)) {
+      resp.sendError(
+          HttpServletResponse.SC_BAD_REQUEST,
+          CurrentLocale.get(
+              "com.tle.web.scripting.advanced.redirectionservlet.error.parammissing", "url"));
+      return;
+    }
 
-		final Request request = new Request(url);
-		request.setMethod(Method.fromString(req.getMethod()));
-		final Enumeration<String> parameterNames = req.getParameterNames();
-		while( parameterNames.hasMoreElements() )
-		{
-			final String pname = parameterNames.nextElement();
-			final String[] vals = req.getParameterValues(pname);
-			if( vals != null )
-			{
-				for( String val : vals )
-				{
-					request.addParameter(pname, val);
-				}
-			}
-		}
-		if( request.getMethod() == Method.POST )
-		{
-			final StringWriter sw = new StringWriter();
-			final ServletInputStream inputStream = req.getInputStream();
-			if( inputStream != null )
-			{
-				try( InputStreamReader from = new InputStreamReader(inputStream) )
-				{
-					CharStreams.copy(from, sw);
-				}
-			}
-			request.setBody(sw.toString());
-			request.setMimeType(req.getContentType());
-			request.setCharset(req.getCharacterEncoding());
-		}
+    Map<String, String[]> forwardedParams = Maps.newHashMap(req.getParameterMap());
+    forwardedParams.remove("url");
 
-		final Response response = httpService.getWebContent(request, configService.getProxyDetails());
-		// Copy over all the headers, except for Set-Cookie, as we
-		// don't want to
-		// overwrite our EQUELLA session.
-		for( NameValue header : response.getHeaders() )
-		{
-			final String name = header.getName();
-			if( !"Set-Cookie".equals(name) && !"Transfer-Encoding".equals(name) )
-			{
-				resp.addHeader(name, header.getValue());
-			}
-		}
-		if( !response.isOk() )
-		{
-			resp.sendError(response.getCode(), response.getMessage());
-		}
-		else
-		{
-			response.copy(resp.getOutputStream());
-		}
-		response.close();
-	}
+    final Request request = new Request(url);
+    request.setMethod(Method.fromString(req.getMethod()));
+    final Enumeration<String> parameterNames = req.getParameterNames();
+    while (parameterNames.hasMoreElements()) {
+      final String pname = parameterNames.nextElement();
+      final String[] vals = req.getParameterValues(pname);
+      if (vals != null) {
+        for (String val : vals) {
+          request.addParameter(pname, val);
+        }
+      }
+    }
+    if (request.getMethod() == Method.POST) {
+      final StringWriter sw = new StringWriter();
+      final ServletInputStream inputStream = req.getInputStream();
+      if (inputStream != null) {
+        try (InputStreamReader from = new InputStreamReader(inputStream)) {
+          CharStreams.copy(from, sw);
+        }
+      }
+      request.setBody(sw.toString());
+      request.setMimeType(req.getContentType());
+      request.setCharset(req.getCharacterEncoding());
+    }
+
+    final Response response = httpService.getWebContent(request, configService.getProxyDetails());
+    // Copy over all the headers, except for Set-Cookie, as we
+    // don't want to
+    // overwrite our EQUELLA session.
+    for (NameValue header : response.getHeaders()) {
+      final String name = header.getName();
+      if (!"Set-Cookie".equals(name) && !"Transfer-Encoding".equals(name)) {
+        resp.addHeader(name, header.getValue());
+      }
+    }
+    if (!response.isOk()) {
+      resp.sendError(response.getCode(), response.getMessage());
+    } else {
+      response.copy(resp.getOutputStream());
+    }
+    response.close();
+  }
 }

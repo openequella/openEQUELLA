@@ -28,38 +28,30 @@ import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.common.usermanagement.util.UserBeanUtils;
 import com.tle.core.remoting.RemoteUserService;
 
-public class FilterUserModel extends FilterModel<NameValue>
-{
-	private static final Log LOGGER = LogFactory.getLog(FilterUserModel.class);
+public class FilterUserModel extends FilterModel<NameValue> {
+  private static final Log LOGGER = LogFactory.getLog(FilterUserModel.class);
 
-	private final RemoteUserService userService;
+  private final RemoteUserService userService;
 
-	public FilterUserModel(RemoteUserService userService)
-	{
-		this.userService = userService;
-	}
+  public FilterUserModel(RemoteUserService userService) {
+    this.userService = userService;
+  }
 
-	@Override
-	public List<NameValue> search(String pattern)
-	{
-		try
-		{
-			return removeExclusions(pairUp(userService.searchUsers(pattern)));
-		}
-		catch( Exception ex )
-		{
-			LOGGER.warn("Error searching for users matching " + pattern, ex);
-			return new ArrayList<NameValue>(0);
-		}
-	}
+  @Override
+  public List<NameValue> search(String pattern) {
+    try {
+      return removeExclusions(pairUp(userService.searchUsers(pattern)));
+    } catch (Exception ex) {
+      LOGGER.warn("Error searching for users matching " + pattern, ex);
+      return new ArrayList<NameValue>(0);
+    }
+  }
 
-	protected List<NameValue> pairUp(List<UserBean> users)
-	{
-		List<NameValue> results = new ArrayList<NameValue>(users.size());
-		for( UserBean user : users )
-		{
-			results.add(UserBeanUtils.formatUser(user));
-		}
-		return results;
-	}
+  protected List<NameValue> pairUp(List<UserBean> users) {
+    List<NameValue> results = new ArrayList<NameValue>(users.size());
+    for (UserBean user : users) {
+      results.add(UserBeanUtils.formatUser(user));
+    }
+    return results;
+  }
 }

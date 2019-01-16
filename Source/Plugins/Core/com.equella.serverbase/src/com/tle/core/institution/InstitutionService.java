@@ -26,52 +26,50 @@ import com.google.common.collect.Multimap;
 import com.tle.beans.Institution;
 import com.tle.core.migration.SchemaInfo;
 
-public interface InstitutionService
-{
-	Collection<InstitutionStatus> getAllInstitutions();
+public interface InstitutionService {
+  Collection<InstitutionStatus> getAllInstitutions();
 
-	InstitutionStatus getInstitutionStatus(long institutionId);
+  InstitutionStatus getInstitutionStatus(long institutionId);
 
-	Collection<Institution> enumerateAvailable();
+  Collection<Institution> enumerateAvailable();
 
-	long getSchemaIdForInstitution(Institution institution);
+  long getSchemaIdForInstitution(Institution institution);
 
-	Institution getInstitution(long institutionId);
+  Institution getInstitution(long institutionId);
 
-	void update(Institution institution);
+  void update(Institution institution);
 
-	void setEnabled(long instId, boolean enabled);
+  void setEnabled(long instId, boolean enabled);
 
-	void deleteInstitution(Institution institution);
+  void deleteInstitution(Institution institution);
 
-	Institution createInstitution(Institution newInstitution, long schemaId);
+  Institution createInstitution(Institution newInstitution, long schemaId);
 
-	boolean canAddInstitution();
+  boolean canAddInstitution();
 
-	Multimap<Long, Institution> getAvailableMap();
+  Multimap<Long, Institution> getAvailableMap();
 
-	List<InstitutionValidationError> validate(Institution institution);
+  List<InstitutionValidationError> validate(Institution institution);
 
-	<T> InstitutionCache<T> newInstitutionAwareCache(CacheLoader<Institution, T> loader);
+  <T> InstitutionCache<T> newInstitutionAwareCache(CacheLoader<Institution, T> loader);
 
-	List<SchemaInfo> getAllSchemaInfos();
+  List<SchemaInfo> getAllSchemaInfos();
 
-	URL getInstitutionUrl();
+  URL getInstitutionUrl();
 
-	URI getInstitutionUri();
+  URI getInstitutionUri();
 
-	URL getInstitutionUrl(Institution institution);
+  URL getInstitutionUrl(Institution institution);
 
-	String institutionalise(String url);
+  String institutionalise(String url);
 
-	/**
-	 * Does not check to see if the url is actually an institution URL in the
-	 * first place. Take care.
-	 * 
-	 * @param url
-	 * @return
-	 */
-	String removeInstitution(String url);
+  /**
+   * Does not check to see if the url is actually an institution URL in the first place. Take care.
+   *
+   * @param url
+   * @return
+   */
+  String removeInstitution(String url);
 
-	boolean isInstitutionUrl(String url);
+  boolean isInstitutionUrl(String url);
 }

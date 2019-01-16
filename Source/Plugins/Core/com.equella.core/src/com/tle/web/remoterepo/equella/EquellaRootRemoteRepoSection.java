@@ -29,52 +29,42 @@ import com.tle.web.sections.events.RenderEventContext;
 
 @SuppressWarnings("nls")
 @Bind
-public class EquellaRootRemoteRepoSection extends AbstractRootRemoteRepoSection
-{
-	protected static final String CONTEXT_KEY = "equellaRepoContext";
+public class EquellaRootRemoteRepoSection extends AbstractRootRemoteRepoSection {
+  protected static final String CONTEXT_KEY = "equellaRepoContext";
 
-	@Inject
-	private EquellaRepoDownloadProgressSection progressSection;
+  @Inject private EquellaRepoDownloadProgressSection progressSection;
 
-	@Override
-	protected ContentLayout getDefaultLayout(SectionInfo info)
-	{
-		return ContentLayout.ONE_COLUMN;
-	}
+  @Override
+  protected ContentLayout getDefaultLayout(SectionInfo info) {
+    return ContentLayout.ONE_COLUMN;
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.registerInnerSection(progressSection, id);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.registerInnerSection(progressSection, id);
+  }
 
-	@Override
-	protected String getContentBodyClasses()
-	{
-		return "repo-onecol";
-	}
+  @Override
+  protected String getContentBodyClasses() {
+    return "repo-onecol";
+  }
 
-	@Override
-	protected String getSessionKey()
-	{
-		return CONTEXT_KEY;
-	}
+  @Override
+  protected String getSessionKey() {
+    return CONTEXT_KEY;
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( progressSection.isShowing(context) )
-		{
-			setModalSection(context, progressSection);
-		}
-		return super.renderHtml(context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (progressSection.isShowing(context)) {
+      setModalSection(context, progressSection);
+    }
+    return super.renderHtml(context);
+  }
 
-	@Override
-	protected RemoteRepoViewResultSection<?, ?, ?> getViewSection()
-	{
-		return null;
-	}
-
+  @Override
+  protected RemoteRepoViewResultSection<?, ?, ?> getViewSection() {
+    return null;
+  }
 }

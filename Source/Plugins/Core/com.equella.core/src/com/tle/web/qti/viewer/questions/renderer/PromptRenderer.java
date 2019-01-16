@@ -30,43 +30,35 @@ import com.tle.web.qti.viewer.QtiViewerContext;
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.events.PreRenderContext;
 
-/**
- * @author Aaron
- */
-public class PromptRenderer extends QtiNodeRenderer
-{
-	private final Prompt model;
+/** @author Aaron */
+public class PromptRenderer extends QtiNodeRenderer {
+  private final Prompt model;
 
-	@AssistedInject
-	public PromptRenderer(@Assisted Prompt model, @Assisted QtiViewerContext context)
-	{
-		super(model, context);
-		this.model = model;
-	}
+  @AssistedInject
+  public PromptRenderer(@Assisted Prompt model, @Assisted QtiViewerContext context) {
+    super(model, context);
+    this.model = model;
+  }
 
-	@Override
-	public void preProcess()
-	{
-		// Nah
-	}
+  @Override
+  public void preProcess() {
+    // Nah
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		// Nah
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    // Nah
+  }
 
-	@Override
-	public void realRender(SectionWriter writer) throws IOException
-	{
-		Map<String, String> attr = Maps.newHashMap();
-		attr.put("class", "prompt");
-		writer.writeTag("div", attr);
-		List<InlineStatic> inlines = model.getChildren();
-		for( InlineStatic inline : inlines )
-		{
-			qfac.chooseRenderer(inline, getContext()).realRender(writer);
-		}
-		writer.endTag("div");
-	}
+  @Override
+  public void realRender(SectionWriter writer) throws IOException {
+    Map<String, String> attr = Maps.newHashMap();
+    attr.put("class", "prompt");
+    writer.writeTag("div", attr);
+    List<InlineStatic> inlines = model.getChildren();
+    for (InlineStatic inline : inlines) {
+      qfac.chooseRenderer(inline, getContext()).realRender(writer);
+    }
+    writer.endTag("div");
+  }
 }

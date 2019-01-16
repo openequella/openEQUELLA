@@ -22,9 +22,9 @@ import com.tle.common.security.Privilege;
 
 public interface ItemXmlSecurity {
 
-    boolean hasPrivilege(Item bean, Privilege privilege);
+  boolean hasPrivilege(Item bean, Privilege privilege);
 
-    boolean isUrlDisabled(String url);
+  boolean isUrlDisabled(String url);
 
-    boolean checkRestrictedAttachment(Item bean, Attachment attachment);
+  boolean checkRestrictedAttachment(Item bean, Attachment attachment);
 }

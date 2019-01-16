@@ -37,48 +37,43 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.renderers.DivRenderer;
 
 @SuppressWarnings("nls")
-public class InfoControlRenderer extends QtiNodeRenderer
-{
-	private static final PluginResourceHelper resources = ResourcesService.getResourceHelper(InfoControlRenderer.class);
-	private static final IncludeFile JS_INCLUDE = new IncludeFile(resources.url("scripts/qtiplayviewer.js"));
-	private static final ExternallyDefinedFunction TOGGLE_HINT = new ExternallyDefinedFunction("toggleHint", JS_INCLUDE);
+public class InfoControlRenderer extends QtiNodeRenderer {
+  private static final PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(InfoControlRenderer.class);
+  private static final IncludeFile JS_INCLUDE =
+      new IncludeFile(resources.url("scripts/qtiplayviewer.js"));
+  private static final ExternallyDefinedFunction TOGGLE_HINT =
+      new ExternallyDefinedFunction("toggleHint", JS_INCLUDE);
 
-	/**
-	 * Standard sections components factory
-	 */
-	@Inject
-	private RendererFactory renderFactory;
+  /** Standard sections components factory */
+  @Inject private RendererFactory renderFactory;
 
-	private final InfoControl model;
-	private final HtmlComponentState state = new HtmlComponentState();
+  private final InfoControl model;
+  private final HtmlComponentState state = new HtmlComponentState();
 
-	@AssistedInject
-	public InfoControlRenderer(@Assisted InfoControl model, @Assisted QtiViewerContext context)
-	{
-		super(model, context);
-		this.model = model;
-		state.setId("hint");
-	}
+  @AssistedInject
+  public InfoControlRenderer(@Assisted InfoControl model, @Assisted QtiViewerContext context) {
+    super(model, context);
+    this.model = model;
+    state.setId("hint");
+  }
 
-	@Override
-	protected SectionRenderable createTopRenderable()
-	{
-		final HtmlLinkState linkState = new HtmlLinkState();
-		linkState.addClass("hintlink");
-		linkState.setClickHandler(Js.handler(TOGGLE_HINT, Jq.$(state)));
-		linkState.setLabel(new TextLabel(model.getTitle()));
-		return renderFactory.getRenderer(getContext().getRenderContext(), linkState);
-	}
+  @Override
+  protected SectionRenderable createTopRenderable() {
+    final HtmlLinkState linkState = new HtmlLinkState();
+    linkState.addClass("hintlink");
+    linkState.setClickHandler(Js.handler(TOGGLE_HINT, Jq.$(state)));
+    linkState.setLabel(new TextLabel(model.getTitle()));
+    return renderFactory.getRenderer(getContext().getRenderContext(), linkState);
+  }
 
-	@Override
-	protected boolean isNestedTop()
-	{
-		return false;
-	}
+  @Override
+  protected boolean isNestedTop() {
+    return false;
+  }
 
-	@Override
-	public SectionRenderable getNestedRenderable()
-	{
-		return new DivRenderer(state, "hint alert alert-info", super.getNestedRenderable());
-	}
+  @Override
+  public SectionRenderable getNestedRenderable() {
+    return new DivRenderer(state, "hint alert alert-info", super.getNestedRenderable());
+  }
 }

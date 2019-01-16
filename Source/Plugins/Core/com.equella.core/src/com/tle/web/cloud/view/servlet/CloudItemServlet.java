@@ -56,204 +56,181 @@ import com.tle.web.sections.render.Label;
 @NonNullByDefault
 @Bind
 @Singleton
-public class CloudItemServlet extends HttpServlet
-{
-	@PlugKey("viewitem.error.notfound.remoteserver")
-	private static Label LABEL_ITEM_NOT_FOUND;
+public class CloudItemServlet extends HttpServlet {
+  @PlugKey("viewitem.error.notfound.remoteserver")
+  private static Label LABEL_ITEM_NOT_FOUND;
 
-	static
-	{
-		PluginResourceHandler.init(CloudItemServlet.class);
-	}
+  static {
+    PluginResourceHandler.init(CloudItemServlet.class);
+  }
 
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private UrlService urlService;
-	@Inject
-	private SectionsController controller;
-	@Inject
-	private TreeRegistry treeRegistry;
-	@Inject
-	private CloudService cloudService;
+  @Inject private InstitutionService institutionService;
+  @Inject private UrlService urlService;
+  @Inject private SectionsController controller;
+  @Inject private TreeRegistry treeRegistry;
+  @Inject private CloudService cloudService;
 
-	@Override
-	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException
-	{
-		final CloudItemUrlParser parser = new CloudItemUrlParser();
+  @Override
+  public void service(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException {
+    final CloudItemUrlParser parser = new CloudItemUrlParser();
 
-		try
-		{
-			parser.parse(request);
+    try {
+      parser.parse(request);
 
-			final String redirectUrl = parser.getRedirectUrl();
-			if( redirectUrl != null )
-			{
-				response.sendRedirect(redirectUrl);
-				return;
-			}
+      final String redirectUrl = parser.getRedirectUrl();
+      if (redirectUrl != null) {
+        response.sendRedirect(redirectUrl);
+        return;
+      }
 
-			final Map<String, String[]> params = new HashMap<String, String[]>(request.getParameterMap());
-			final SectionTree tree = treeRegistry.getTreeForPath("/cloud/viewitem.do");
-			final URI uri = urlService.getUriForRequest(request, null);
-			final URI baseUri = urlService.getBaseUriFromRequest(request);
-			final String servletPath = '/' + baseUri.relativize(uri).getPath();
+      final Map<String, String[]> params = new HashMap<String, String[]>(request.getParameterMap());
+      final SectionTree tree = treeRegistry.getTreeForPath("/cloud/viewitem.do");
+      final URI uri = urlService.getUriForRequest(request, null);
+      final URI baseUri = urlService.getBaseUriFromRequest(request);
+      final String servletPath = '/' + baseUri.relativize(uri).getPath();
 
-			final CloudItem item = cloudService.getItem(parser.getUuid(), parser.getVersion());
-			if( item == null )
-			{
-				throw new NotFoundException(LABEL_ITEM_NOT_FOUND.getText());
-			}
-			final CloudViewableItem vitem = new CloudViewableItem(item, "summary".equals(parser.getToggle()));
-			vitem.setFromRequest(true);
-			final MutableSectionInfo info = controller.createInfo(tree, servletPath, request, response, null, params,
-				Collections.singletonMap(CloudViewableItem.class, vitem));
+      final CloudItem item = cloudService.getItem(parser.getUuid(), parser.getVersion());
+      if (item == null) {
+        throw new NotFoundException(LABEL_ITEM_NOT_FOUND.getText());
+      }
+      final CloudViewableItem vitem =
+          new CloudViewableItem(item, "summary".equals(parser.getToggle()));
+      vitem.setFromRequest(true);
+      final MutableSectionInfo info =
+          controller.createInfo(
+              tree,
+              servletPath,
+              request,
+              response,
+              null,
+              params,
+              Collections.singletonMap(CloudViewableItem.class, vitem));
 
-			final RootCloudViewItemSection root = info.lookupSection(RootCloudViewItemSection.class);
-			root.setAttachment(info, parser.getAttachmentUuid());
+      final RootCloudViewItemSection root = info.lookupSection(RootCloudViewItemSection.class);
+      root.setAttachment(info, parser.getAttachmentUuid());
 
-			controller.execute(info);
-		}
-		catch( Exception p )
-		{
-			SectionInfo info = controller.createInfo("/cloud/viewitem.do", request, response, null, null, null);
-			controller.handleException(info, p, null);
-		}
-	}
+      controller.execute(info);
+    } catch (Exception p) {
+      SectionInfo info =
+          controller.createInfo("/cloud/viewitem.do", request, response, null, null, null);
+      controller.handleException(info, p, null);
+    }
+  }
 
-	@NonNullByDefault(false)
-	public class CloudItemUrlParser
-	{
-		private String uuid;
-		private int version;
-		private String toggle;
-		private String attachmentUuid;
-		private String redirectUrl;
-		private String context;
-		private HttpServletRequest request;
-		private List<String> partList;
-		private String originalUrl;
+  @NonNullByDefault(false)
+  public class CloudItemUrlParser {
+    private String uuid;
+    private int version;
+    private String toggle;
+    private String attachmentUuid;
+    private String redirectUrl;
+    private String context;
+    private HttpServletRequest request;
+    private List<String> partList;
+    private String originalUrl;
 
-		public String getUuid()
-		{
-			return uuid;
-		}
+    public String getUuid() {
+      return uuid;
+    }
 
-		public int getVersion()
-		{
-			return version;
-		}
+    public int getVersion() {
+      return version;
+    }
 
-		public String getToggle()
-		{
-			return toggle;
-		}
+    public String getToggle() {
+      return toggle;
+    }
 
-		public String getAttachmentUuid()
-		{
-			return attachmentUuid;
-		}
+    public String getAttachmentUuid() {
+      return attachmentUuid;
+    }
 
-		public String getRedirectUrl()
-		{
-			return redirectUrl;
-		}
+    public String getRedirectUrl() {
+      return redirectUrl;
+    }
 
-		public void parse(HttpServletRequest request) throws ParseException
-		{
-			this.request = request;
-			this.originalUrl = request.getPathInfo();
+    public void parse(HttpServletRequest request) throws ParseException {
+      this.request = request;
+      this.originalUrl = request.getPathInfo();
 
-			partList = new ArrayList<String>();
-			for( String part : originalUrl.split("/") )
-			{
-				if( !Check.isEmpty(part) )
-				{
-					partList.add(part);
-				}
-			}
+      partList = new ArrayList<String>();
+      for (String part : originalUrl.split("/")) {
+        if (!Check.isEmpty(part)) {
+          partList.add(part);
+        }
+      }
 
-			setupContext();
+      setupContext();
 
-			if( partList.size() < 2 )
-			{
-				throw new ParseException("Invalid URL missing UUID and/or version: " + originalUrl, 1);
-			}
+      if (partList.size() < 2) {
+        throw new ParseException("Invalid URL missing UUID and/or version: " + originalUrl, 1);
+      }
 
-			uuid = partList.get(0);
-			try
-			{
-				version = Integer.parseInt(partList.get(1));
-			}
-			catch( NumberFormatException nfe )
-			{
-				version = 0;
-			}
+      uuid = partList.get(0);
+      try {
+        version = Integer.parseInt(partList.get(1));
+      } catch (NumberFormatException nfe) {
+        version = 0;
+      }
 
-			int attachStart = 2;
-			// may contain "summary" or "attachment"
-			if( partList.size() > 2 )
-			{
-				String p3 = partList.get(2);
-				if( p3.equals("summary") || p3.equals("attachment") )
-				{
-					toggle = p3;
-					attachStart = 3;
-				}
-			}
+      int attachStart = 2;
+      // may contain "summary" or "attachment"
+      if (partList.size() > 2) {
+        String p3 = partList.get(2);
+        if (p3.equals("summary") || p3.equals("attachment")) {
+          toggle = p3;
+          attachStart = 3;
+        }
+      }
 
-			if( partList.size() > attachStart )
-			{
-				attachmentUuid = partList.get(attachStart);
-			}
-			checkForRedirect();
-		}
+      if (partList.size() > attachStart) {
+        attachmentUuid = partList.get(attachStart);
+      }
+      checkForRedirect();
+    }
 
-		protected void checkForRedirect()
-		{
-			if( version == 0 )
-			{
-				redirToLatest();
-			}
-		}
+    protected void checkForRedirect() {
+      if (version == 0) {
+        redirToLatest();
+      }
+    }
 
-		protected void redirToLatest()
-		{
-			// get latest version from cloud
-			final int version = cloudService.getLiveItemVersion(uuid);
-			if( !(this.version == version) )
-			{
-				setupRedirectFromPath(context + uuid + '/' + version + '/' + (toggle == null ? "" : toggle + '/')
-					+ (attachmentUuid == null ? "" : attachmentUuid + '/'));
-			}
-		}
+    protected void redirToLatest() {
+      // get latest version from cloud
+      final int version = cloudService.getLiveItemVersion(uuid);
+      if (!(this.version == version)) {
+        setupRedirectFromPath(
+            context
+                + uuid
+                + '/'
+                + version
+                + '/'
+                + (toggle == null ? "" : toggle + '/')
+                + (attachmentUuid == null ? "" : attachmentUuid + '/'));
+      }
+    }
 
-		protected void setupRedirectFromPath(String path)
-		{
-			try
-			{
-				redirectUrl = new URL(institutionService.getInstitutionUrl(), URLUtils.urlEncode(path, false))
-					.toString();
-				String queryString = request.getQueryString();
-				if( queryString != null )
-				{
-					redirectUrl += '?' + queryString;
-				}
-			}
-			catch( Exception e )
-			{
-				throw new RuntimeException(e);
-			}
-		}
+    protected void setupRedirectFromPath(String path) {
+      try {
+        redirectUrl =
+            new URL(institutionService.getInstitutionUrl(), URLUtils.urlEncode(path, false))
+                .toString();
+        String queryString = request.getQueryString();
+        if (queryString != null) {
+          redirectUrl += '?' + queryString;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
 
-		protected void setupContext()
-		{
-			context = request.getServletPath().substring(1) + '/';
-		}
+    protected void setupContext() {
+      context = request.getServletPath().substring(1) + '/';
+    }
 
-		public String getOriginalUrl()
-		{
-			return originalUrl;
-		}
-	}
+    public String getOriginalUrl() {
+      return originalUrl;
+    }
+  }
 }

@@ -50,120 +50,106 @@ import com.tle.web.viewurl.ViewItemService;
 import com.tle.web.viewurl.ViewItemServiceImpl.CachedTree;
 
 @SuppressWarnings("nls")
-public class MainItemContentSection extends AbstractContentSection<MainItemContentSection.SummaryPageModel>
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+public class MainItemContentSection
+    extends AbstractContentSection<MainItemContentSection.SummaryPageModel> {
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Inject
-	private RegistrationController registrationController;
-	@Inject
-	private ViewItemService viewItemService;
+  @Inject private RegistrationController registrationController;
+  @Inject private ViewItemService viewItemService;
 
-	private PluginTracker<DisplaySectionConfiguration> extensionTracker;
+  private PluginTracker<DisplaySectionConfiguration> extensionTracker;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext info)
-	{
-		final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(info);
-		final ResultListCollector results = new ResultListCollector(true);
+  @Override
+  public SectionResult renderHtml(RenderEventContext info) {
+    final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(info);
+    final ResultListCollector results = new ResultListCollector(true);
 
-		addDefaultBreadcrumbs(info, itemInfo, null);
+    addDefaultBreadcrumbs(info, itemInfo, null);
 
-		SectionTree tree = getModel(info).getTree();
-		List<SectionId> children = tree.getChildIds(tree.getRootId());
+    SectionTree tree = getModel(info).getTree();
+    List<SectionId> children = tree.getChildIds(tree.getRootId());
 
-		SectionUtils.renderSectionIds(info, children, results);
-		SectionUtils.renderSectionIds(info, info.getChildIds(info), results);
+    SectionUtils.renderSectionIds(info, children, results);
+    SectionUtils.renderSectionIds(info, info.getChildIds(info), results);
 
-		SectionRenderable sr = results.getFirstResult();
-		return sr;
-	}
+    SectionRenderable sr = results.getFirstResult();
+    return sr;
+  }
 
-	public void ensureTree(SectionInfo info, ViewItemResource resource)
-	{
-		ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(info);
-		ItemDefinition collection = itemInfo.getItemdef();
-		Date dateModified = collection.getDateModified();
+  public void ensureTree(SectionInfo info, ViewItemResource resource) {
+    ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(info);
+    ItemDefinition collection = itemInfo.getItemdef();
+    Date dateModified = collection.getDateModified();
 
-		CachedTree cachedTree = viewItemService.getCachedTree(collection);
-		if( cachedTree == null || cachedTree.getLastModified().before(dateModified) )
-		{
-			DefaultSectionTree sectionTree = new DefaultSectionTree(registrationController, new SectionNode("sc_"));
-			for( SummarySectionsConfig displaySection : collection.getItemSummaryDisplayTemplate().getConfigList() )
-			{
-				Extension extension = extensionTracker.getExtension(displaySection.getValue());
-				// extension could be null from previous configurations
-				if( extension != null )
-				{
-					DisplaySectionConfiguration renderer = extensionTracker.getNewBeanByExtension(extension);
-					sectionTree.registerSections(renderer, null);
-					renderer.associateConfiguration(displaySection);
-				}
-			}
-			sectionTree.treeFinished();
-			cachedTree = new CachedTree(dateModified, sectionTree);
-			viewItemService.putCachedTree(collection, cachedTree);
-		}
+    CachedTree cachedTree = viewItemService.getCachedTree(collection);
+    if (cachedTree == null || cachedTree.getLastModified().before(dateModified)) {
+      DefaultSectionTree sectionTree =
+          new DefaultSectionTree(registrationController, new SectionNode("sc_"));
+      for (SummarySectionsConfig displaySection :
+          collection.getItemSummaryDisplayTemplate().getConfigList()) {
+        Extension extension = extensionTracker.getExtension(displaySection.getValue());
+        // extension could be null from previous configurations
+        if (extension != null) {
+          DisplaySectionConfiguration renderer = extensionTracker.getNewBeanByExtension(extension);
+          sectionTree.registerSections(renderer, null);
+          renderer.associateConfiguration(displaySection);
+        }
+      }
+      sectionTree.treeFinished();
+      cachedTree = new CachedTree(dateModified, sectionTree);
+      viewItemService.putCachedTree(collection, cachedTree);
+    }
 
-		SectionTree tree = cachedTree.getTree();
-		MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
-		minfo.addTreeToBottom(tree, true);
-		getModel(info).setTree(tree);
-	}
+    SectionTree tree = cachedTree.getTree();
+    MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
+    minfo.addTreeToBottom(tree, true);
+    getModel(info).setTree(tree);
+  }
 
-	@Override
-	public SectionRenderable renderHelp(RenderContext context)
-	{
-		if( !isCourseSelectionSession(context) )
-		{
-			return viewFactory.createResult("viewitem/summary/help/summary.ftl", this);
-		}
-		return null;
-	}
+  @Override
+  public SectionRenderable renderHelp(RenderContext context) {
+    if (!isCourseSelectionSession(context)) {
+      return viewFactory.createResult("viewitem/summary/help/summary.ftl", this);
+    }
+    return null;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "summSections";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "summSections";
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new SummaryPageModel();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new SummaryPageModel();
+  }
 
-	public static class SummaryPageModel
-	{
-		private List<SummarySectionsConfig> sections;
-		private SectionTree tree;
+  public static class SummaryPageModel {
+    private List<SummarySectionsConfig> sections;
+    private SectionTree tree;
 
-		public void setSections(List<SummarySectionsConfig> sections)
-		{
-			this.sections = sections;
-		}
+    public void setSections(List<SummarySectionsConfig> sections) {
+      this.sections = sections;
+    }
 
-		public List<SummarySectionsConfig> getSections()
-		{
-			return sections;
-		}
+    public List<SummarySectionsConfig> getSections() {
+      return sections;
+    }
 
-		public SectionTree getTree()
-		{
-			return tree;
-		}
+    public SectionTree getTree() {
+      return tree;
+    }
 
-		public void setTree(SectionTree tree)
-		{
-			this.tree = tree;
-		}
-	}
+    public void setTree(SectionTree tree) {
+      this.tree = tree;
+    }
+  }
 
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		extensionTracker = new PluginTracker<DisplaySectionConfiguration>(pluginService, "com.tle.web.viewitem.summary",
-			"summaryTabExtension", "id").setBeanKey("class");
-	}
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    extensionTracker =
+        new PluginTracker<DisplaySectionConfiguration>(
+                pluginService, "com.tle.web.viewitem.summary", "summaryTabExtension", "id")
+            .setBeanKey("class");
+  }
 }

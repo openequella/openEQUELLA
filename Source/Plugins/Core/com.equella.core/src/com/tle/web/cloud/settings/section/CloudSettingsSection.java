@@ -33,48 +33,37 @@ import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.standard.Checkbox;
 import com.tle.web.sections.standard.annotations.Component;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 public class CloudSettingsSection extends AbstractPrototypeSection<Object>
-	implements
-		SearchSettingsExtension,
-		HtmlRenderer
-{
-	@Component(name = "dc")
-	private Checkbox disableCloudCheckbox;
+    implements SearchSettingsExtension, HtmlRenderer {
+  @Component(name = "dc")
+  private Checkbox disableCloudCheckbox;
 
-	@ViewFactory
-	private FreemarkerFactory view;
+  @ViewFactory private FreemarkerFactory view;
 
-	@Inject
-	private ConfigurationService configService;
+  @Inject private ConfigurationService configService;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		final CloudSettings cloudSettings = getCloudSettings();
-		disableCloudCheckbox.setChecked(context, cloudSettings.isDisabled());
-		return view.createResult("cloudsetting.ftl", context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    final CloudSettings cloudSettings = getCloudSettings();
+    disableCloudCheckbox.setChecked(context, cloudSettings.isDisabled());
+    return view.createResult("cloudsetting.ftl", context);
+  }
 
-	@Override
-	public void save(SectionInfo info, SearchSettings settings)
-	{
-		final CloudSettings cloudSettings = getCloudSettings();
-		cloudSettings.setDisabled(disableCloudCheckbox.isChecked(info));
-		configService.setProperties(cloudSettings);
-	}
+  @Override
+  public void save(SectionInfo info, SearchSettings settings) {
+    final CloudSettings cloudSettings = getCloudSettings();
+    cloudSettings.setDisabled(disableCloudCheckbox.isChecked(info));
+    configService.setProperties(cloudSettings);
+  }
 
-	private CloudSettings getCloudSettings()
-	{
-		return configService.getProperties(new CloudSettings());
-	}
+  private CloudSettings getCloudSettings() {
+    return configService.getProperties(new CloudSettings());
+  }
 
-	public Checkbox getDisableCloudCheckbox()
-	{
-		return disableCloudCheckbox;
-	}
+  public Checkbox getDisableCloudCheckbox() {
+    return disableCloudCheckbox;
+  }
 }

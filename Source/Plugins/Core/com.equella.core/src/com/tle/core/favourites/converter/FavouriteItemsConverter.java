@@ -43,95 +43,82 @@ import com.tle.core.institution.convert.service.impl.InstitutionImportServiceImp
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class FavouriteItemsConverter extends AbstractMigratableConverter<Object>
-{
-	private static final String MY_FAVOURITES_IMPORT_EXPORT_FOLDER = "myfavourites";
+public class FavouriteItemsConverter extends AbstractMigratableConverter<Object> {
+  private static final String MY_FAVOURITES_IMPORT_EXPORT_FOLDER = "myfavourites";
 
-	@Inject
-	private BookmarkDao bookmarkDao;
+  @Inject private BookmarkDao bookmarkDao;
 
-	private XStream xstream;
+  private XStream xstream;
 
-	@Override
-	public void doDelete(Institution institution, ConverterParams callback)
-	{
-		bookmarkDao.deleteAll();
-		bookmarkDao.flush();
-		bookmarkDao.clear();
-	}
+  @Override
+  public void doDelete(Institution institution, ConverterParams callback) {
+    bookmarkDao.deleteAll();
+    bookmarkDao.flush();
+    bookmarkDao.clear();
+  }
 
-	@Override
-	public void addTasks(ConvertType type, ConverterTasks tasks, ConverterParams params)
-	{
-		if( !params.hasFlag(ConverterParams.NO_ITEMS) )
-		{
-			super.addTasks(type, tasks, params);
-		}
-	}
+  @Override
+  public void addTasks(ConvertType type, ConverterTasks tasks, ConverterParams params) {
+    if (!params.hasFlag(ConverterParams.NO_ITEMS)) {
+      super.addTasks(type, tasks, params);
+    }
+  }
 
-	@Override
-	public void doExport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
-		throws IOException
-	{
-		if( !params.hasFlag(ConverterParams.NO_ITEMS) )
-		{
-			final SubTemporaryFile allBookmarksExportFolder = new SubTemporaryFile(staging,
-				MY_FAVOURITES_IMPORT_EXPORT_FOLDER);
-			// write out the format details
-			xmlHelper.writeExportFormatXmlFile(allBookmarksExportFolder, true);
+  @Override
+  public void doExport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
+      throws IOException {
+    if (!params.hasFlag(ConverterParams.NO_ITEMS)) {
+      final SubTemporaryFile allBookmarksExportFolder =
+          new SubTemporaryFile(staging, MY_FAVOURITES_IMPORT_EXPORT_FOLDER);
+      // write out the format details
+      xmlHelper.writeExportFormatXmlFile(allBookmarksExportFolder, true);
 
-			final XStream locXstream = getXStream();
+      final XStream locXstream = getXStream();
 
-			List<Bookmark> bookmarks = bookmarkDao.listAll();
-			for( Bookmark bookmark : bookmarks )
-			{
-				initialiserService.initialise(bookmark);
-				final BucketFile bucketFolder = new BucketFile(allBookmarksExportFolder, bookmark.getId());
-				xmlHelper.writeXmlFile(bucketFolder, bookmark.getId() + ".xml", bookmark, locXstream);
-			}
-		}
-	}
+      List<Bookmark> bookmarks = bookmarkDao.listAll();
+      for (Bookmark bookmark : bookmarks) {
+        initialiserService.initialise(bookmark);
+        final BucketFile bucketFolder = new BucketFile(allBookmarksExportFolder, bookmark.getId());
+        xmlHelper.writeXmlFile(bucketFolder, bookmark.getId() + ".xml", bookmark, locXstream);
+      }
+    }
+  }
 
-	@Override
-	public void doImport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
-		throws IOException
-	{
-		final SubTemporaryFile allBookmarksImportFolder = new SubTemporaryFile(staging,
-			MY_FAVOURITES_IMPORT_EXPORT_FOLDER);
+  @Override
+  public void doImport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
+      throws IOException {
+    final SubTemporaryFile allBookmarksImportFolder =
+        new SubTemporaryFile(staging, MY_FAVOURITES_IMPORT_EXPORT_FOLDER);
 
-		final XStream locXstream = getXStream();
+    final XStream locXstream = getXStream();
 
-		final List<String> entries = xmlHelper.getXmlFileList(allBookmarksImportFolder);
-		for( String entry : entries )
-		{
-			Bookmark bookmark = xmlHelper.readXmlFile(allBookmarksImportFolder, entry, locXstream);
-			bookmark.setInstitution(institution);
-			bookmark.setId(0);
+    final List<String> entries = xmlHelper.getXmlFileList(allBookmarksImportFolder);
+    for (String entry : entries) {
+      Bookmark bookmark = xmlHelper.readXmlFile(allBookmarksImportFolder, entry, locXstream);
+      bookmark.setInstitution(institution);
+      bookmark.setId(0);
 
-			Map<Long, Long> itemMap = params.getItems();
-			Long newItemId = itemMap.get(bookmark.getItem().getId());
-			bookmark.getItem().setId(newItemId.longValue());
+      Map<Long, Long> itemMap = params.getItems();
+      Long newItemId = itemMap.get(bookmark.getItem().getId());
+      bookmark.getItem().setId(newItemId.longValue());
 
-			bookmarkDao.save(bookmark);
-			bookmarkDao.flush();
-			bookmarkDao.clear();
-		}
-	}
+      bookmarkDao.save(bookmark);
+      bookmarkDao.flush();
+      bookmarkDao.clear();
+    }
+  }
 
-	@Override
-	public String getStringId()
-	{
-		return "MYFAVOURITES";
-	}
+  @Override
+  public String getStringId() {
+    return "MYFAVOURITES";
+  }
 
-	private XStream getXStream()
-	{
-		if( xstream == null )
-		{
-			xstream = xmlHelper.createXStream(getClass().getClassLoader());
-			xstream.addDefaultImplementation(HashSet.class, Collection.class); // NOSONAR
-			xstream.registerConverter(new IdOnlyConverter(Item.class));
-		}
-		return xstream;
-	}
+  private XStream getXStream() {
+    if (xstream == null) {
+      xstream = xmlHelper.createXStream(getClass().getClassLoader());
+      xstream.addDefaultImplementation(HashSet.class, Collection.class); // NOSONAR
+      xstream.registerConverter(new IdOnlyConverter(Item.class));
+    }
+    return xstream;
+  }
 }

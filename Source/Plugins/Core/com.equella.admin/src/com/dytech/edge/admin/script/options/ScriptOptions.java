@@ -20,17 +20,16 @@ import java.util.List;
 
 import com.tle.common.NameValue;
 
-public interface ScriptOptions
-{
-	boolean hasWorkflow();
+public interface ScriptOptions {
+  boolean hasWorkflow();
 
-	boolean hasItemStatus();
+  boolean hasItemStatus();
 
-	boolean restrictItemStatusForModeration();
+  boolean restrictItemStatusForModeration();
 
-	List<NameValue> getWorkflowSteps();
+  List<NameValue> getWorkflowSteps();
 
-	String getWorkflowStepName(String value);
+  String getWorkflowStepName(String value);
 
-	boolean hasUserIsModerator();
+  boolean hasUserIsModerator();
 }

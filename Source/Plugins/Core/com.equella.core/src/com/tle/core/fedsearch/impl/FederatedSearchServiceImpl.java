@@ -46,82 +46,72 @@ import com.tle.core.security.impl.SecureOnReturn;
 @Singleton
 @SecureEntity(RemoteFederatedSearchService.ENTITY_TYPE)
 public class FederatedSearchServiceImpl
-	extends
-		AbstractEntityServiceImpl<EntityEditingBean, FederatedSearch, FederatedSearchService>
-	implements
-		FederatedSearchService
-{
-	private static final String[] BLANKS = {"name", "type"};
+    extends AbstractEntityServiceImpl<EntityEditingBean, FederatedSearch, FederatedSearchService>
+    implements FederatedSearchService {
+  private static final String[] BLANKS = {"name", "type"};
 
-	private final FederatedSearchDao federatedSearchDao;
+  private final FederatedSearchDao federatedSearchDao;
 
-	@Inject
-	public FederatedSearchServiceImpl(FederatedSearchDao federatedSearchDao)
-	{
-		super(Node.FEDERATED_SEARCH, federatedSearchDao);
-		this.federatedSearchDao = federatedSearchDao;
-	}
+  @Inject
+  public FederatedSearchServiceImpl(FederatedSearchDao federatedSearchDao) {
+    super(Node.FEDERATED_SEARCH, federatedSearchDao);
+    this.federatedSearchDao = federatedSearchDao;
+  }
 
-	@Override
-	@SecureOnReturn(priv = FedSearchPrivileges.SEARCH_FEDERATED_SEARCH)
-	public List<BaseEntityLabel> listSearchable()
-	{
-		return listAll();
-	}
+  @Override
+  @SecureOnReturn(priv = FedSearchPrivileges.SEARCH_FEDERATED_SEARCH)
+  public List<BaseEntityLabel> listSearchable() {
+    return listAll();
+  }
 
-	@Override
-	@SecureOnReturn(priv = FedSearchPrivileges.SEARCH_FEDERATED_SEARCH)
-	public List<BaseEntityLabel> listEnabledSearchable()
-	{
-		return federatedSearchDao.listEnabled();
-	}
+  @Override
+  @SecureOnReturn(priv = FedSearchPrivileges.SEARCH_FEDERATED_SEARCH)
+  public List<BaseEntityLabel> listEnabledSearchable() {
+    return federatedSearchDao.listEnabled();
+  }
 
-	@Override
-	public List<Long> findEngineNamesForType(String type)
-	{
-		return federatedSearchDao.findEngineNamesByType(type);
-	}
+  @Override
+  public List<Long> findEngineNamesForType(String type) {
+    return federatedSearchDao.findEngineNamesByType(type);
+  }
 
-	@Override
-	protected void doValidation(EntityEditingSession<EntityEditingBean, FederatedSearch> session,
-		FederatedSearch entity, List<ValidationError> errors)
-	{
-		ValidationHelper.checkBlankFields(entity, BLANKS, errors);
-	}
+  @Override
+  protected void doValidation(
+      EntityEditingSession<EntityEditingBean, FederatedSearch> session,
+      FederatedSearch entity,
+      List<ValidationError> errors) {
+    ValidationHelper.checkBlankFields(entity, BLANKS, errors);
+  }
 
-	@Override
-	protected void processClone(EntityPack<FederatedSearch> pack)
-	{
-		FederatedSearch searchGateway = pack.getEntity();
-		searchGateway.setAttributes(searchGateway.getAttributes());
-	}
+  @Override
+  protected void processClone(EntityPack<FederatedSearch> pack) {
+    FederatedSearch searchGateway = pack.getEntity();
+    searchGateway.setAttributes(searchGateway.getAttributes());
+  }
 
-	@Override
-	@SecureOnReturn(priv = FedSearchPrivileges.SEARCH_FEDERATED_SEARCH)
-	public FederatedSearch getForSearching(String uuid)
-	{
-		return getByUuid(uuid);
-	}
+  @Override
+  @SecureOnReturn(priv = FedSearchPrivileges.SEARCH_FEDERATED_SEARCH)
+  public FederatedSearch getForSearching(String uuid) {
+    return getByUuid(uuid);
+  }
 
-	@Override
-	@Transactional
-	@SecureOnReturn(priv = FedSearchPrivileges.SEARCH_FEDERATED_SEARCH)
-	public List<FederatedSearch> getForCollectionUuid(String uuid)
-	{
-		return federatedSearchDao.findAllByCriteria(Restrictions.eq("collectionUuid", uuid), getInstitutionCriterion());
-	}
+  @Override
+  @Transactional
+  @SecureOnReturn(priv = FedSearchPrivileges.SEARCH_FEDERATED_SEARCH)
+  public List<FederatedSearch> getForCollectionUuid(String uuid) {
+    return federatedSearchDao.findAllByCriteria(
+        Restrictions.eq("collectionUuid", uuid), getInstitutionCriterion());
+  }
 
-	@Override
-	@SecureOnReturn(priv = FedSearchPrivileges.SEARCH_FEDERATED_SEARCH)
-	public List<FederatedSearch> enumerateSearchable()
-	{
-		return enumerate();
-	}
+  @Override
+  @SecureOnReturn(priv = FedSearchPrivileges.SEARCH_FEDERATED_SEARCH)
+  public List<FederatedSearch> enumerateSearchable() {
+    return enumerate();
+  }
 
-	@Override
-	@SecureOnReturn(priv = FedSearchPrivileges.SEARCH_FEDERATED_SEARCH)
-	public List<FederatedSearch> enumerateEnabledSearchable()
-	{
-		return findAllWithCriterion(Restrictions.eq("disabled", false));
-	}
+  @Override
+  @SecureOnReturn(priv = FedSearchPrivileges.SEARCH_FEDERATED_SEARCH)
+  public List<FederatedSearch> enumerateEnabledSearchable() {
+    return findAllWithCriterion(Restrictions.eq("disabled", false));
+  }
 }

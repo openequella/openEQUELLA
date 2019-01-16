@@ -23,46 +23,38 @@ import com.tle.beans.item.ItemPack;
 import com.tle.core.item.operations.ItemOperationParams;
 import com.tle.core.item.operations.WorkflowOperation;
 
-public abstract class AbstractContentOperation implements WorkflowOperation
-{
-	@Inject
-	private ConnectorRepositoryService repositoryService;
+public abstract class AbstractContentOperation implements WorkflowOperation {
+  @Inject private ConnectorRepositoryService repositoryService;
 
-	protected ItemOperationParams params;
+  protected ItemOperationParams params;
 
-	@Override
-	public Item getItem()
-	{
-		return null;
-	}
+  @Override
+  public Item getItem() {
+    return null;
+  }
 
-	@Override
-	public ItemPack getItemPack()
-	{
-		return null;
-	}
+  @Override
+  public ItemPack getItemPack() {
+    return null;
+  }
 
-	@Override
-	public boolean isReadOnly()
-	{
-		return true;
-	}
+  @Override
+  public boolean isReadOnly() {
+    return true;
+  }
 
-	@Override
-	public void setParams(ItemOperationParams params)
-	{
-		this.params = params;
-	}
+  @Override
+  public void setParams(ItemOperationParams params) {
+    this.params = params;
+  }
 
-	@Override
-	public boolean failedToAutowire()
-	{
-		return repositoryService == null;
-	}
+  @Override
+  public boolean failedToAutowire() {
+    return repositoryService == null;
+  }
 
-	@Override
-	public boolean isDeleteLike()
-	{
-		return false;
-	}
+  @Override
+  public boolean isDeleteLike() {
+    return false;
+  }
 }

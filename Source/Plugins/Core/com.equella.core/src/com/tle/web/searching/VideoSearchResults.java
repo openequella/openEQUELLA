@@ -34,50 +34,43 @@ import com.tle.web.sections.generic.AbstractPrototypeSection;
 
 @SuppressWarnings("nls")
 @Bind
-public class VideoSearchResults extends AbstractPrototypeSection<SearchResultsModel> implements StandardSearchResultType
-{
-	private static PluginResourceHelper helper = ResourcesService.getResourceHelper(VideoSearchResults.class);
+public class VideoSearchResults extends AbstractPrototypeSection<SearchResultsModel>
+    implements StandardSearchResultType {
+  private static PluginResourceHelper helper =
+      ResourcesService.getResourceHelper(VideoSearchResults.class);
 
-	@Inject
-	private VideoItemList videoItemList;
-	@Inject
-	private ConfigurationService configService;
+  @Inject private VideoItemList videoItemList;
+  @Inject private ConfigurationService configService;
 
-	@Override
-	public AbstractItemList<StandardItemListEntry, ?> getCustomItemList()
-	{
-		return videoItemList;
-	}
+  @Override
+  public AbstractItemList<StandardItemListEntry, ?> getCustomItemList() {
+    return videoItemList;
+  }
 
-	@Override
-	public String getKey()
-	{
-		return helper.key("result.type.video");
-	}
+  @Override
+  public String getKey() {
+    return helper.key("result.type.video");
+  }
 
-	@Override
-	public String getValue()
-	{
-		return "video";
-	}
+  @Override
+  public String getValue() {
+    return "video";
+  }
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-		tree.registerInnerSection(videoItemList, parentId);
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+    tree.registerInnerSection(videoItemList, parentId);
+  }
 
-	@Override
-	public void addResultTypeDefaultRestrictions(DefaultSearch defaultSearch)
-	{
-		defaultSearch.addMust(FreeTextQuery.FIELD_VIDEO_THUMB, "true");
-	}
+  @Override
+  public void addResultTypeDefaultRestrictions(DefaultSearch defaultSearch) {
+    defaultSearch.addMust(FreeTextQuery.FIELD_VIDEO_THUMB, "true");
+  }
 
-	@Override
-	public boolean isDisabled()
-	{
-		SearchSettings properties = configService.getProperties(new SearchSettings());
-		return properties.isSearchingDisableVideos();
-	}
+  @Override
+  public boolean isDisabled() {
+    SearchSettings properties = configService.getProperties(new SearchSettings());
+    return properties.isSearchingDisableVideos();
+  }
 }

@@ -27,31 +27,23 @@ import com.tle.web.sections.annotations.TreeLookup;
 import com.tle.web.workflow.manage.TaskManagementItemList.TaskManagementListEntry;
 
 public class TaskManagementResultsSection
-	extends
-		AbstractFreetextResultsSection<TaskManagementListEntry, SearchResultsModel>
-{
+    extends AbstractFreetextResultsSection<TaskManagementListEntry, SearchResultsModel> {
 
-	@Inject
-	private TaskManagementItemList taskItemList;
-	@TreeLookup
-	private TaskManagementQuerySection querySection;
+  @Inject private TaskManagementItemList taskItemList;
+  @TreeLookup private TaskManagementQuerySection querySection;
 
-	@Override
-	protected void registerItemList(SectionTree tree, String id)
-	{
-		tree.registerInnerSection(taskItemList, id);
-	}
+  @Override
+  protected void registerItemList(SectionTree tree, String id) {
+    tree.registerInnerSection(taskItemList, id);
+  }
 
-	@Override
-	public TaskManagementItemList getItemList(SectionInfo info)
-	{
-		return taskItemList;
-	}
+  @Override
+  public TaskManagementItemList getItemList(SectionInfo info) {
+    return taskItemList;
+  }
 
-	@Override
-	protected DefaultSearch createDefaultSearch(SectionInfo info)
-	{
-		return querySection.createSearch(info);
-	}
-
+  @Override
+  protected DefaultSearch createDefaultSearch(SectionInfo info) {
+    return querySection.createSearch(info);
+  }
 }

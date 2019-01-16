@@ -34,36 +34,31 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.settings.SettingsList;
 
 @Bind
-public class RootConnectorsSection extends AbstractRootEntitySection<OneColumnLayoutModel>
-{
-	@PlugKey("connectors.page.title")
-	private static Label TITLE_LABEL;
+public class RootConnectorsSection extends AbstractRootEntitySection<OneColumnLayoutModel> {
+  @PlugKey("connectors.page.title")
+  private static Label TITLE_LABEL;
 
-	@Inject
-	private TLEAclManager aclService;
+  @Inject private TLEAclManager aclService;
 
-	@Override
-	public Class<OneColumnLayoutModel> getModelClass()
-	{
-		return OneColumnLayoutModel.class;
-	}
+  @Override
+  public Class<OneColumnLayoutModel> getModelClass() {
+    return OneColumnLayoutModel.class;
+  }
 
-	@Override
-	protected boolean canView(SectionInfo info)
-	{
-		return !aclService.filterNonGrantedPrivileges(Arrays.asList(PRIV_EDIT_CONNECTOR, PRIV_CREATE_CONNECTOR))
-			.isEmpty();
-	}
+  @Override
+  protected boolean canView(SectionInfo info) {
+    return !aclService
+        .filterNonGrantedPrivileges(Arrays.asList(PRIV_EDIT_CONNECTOR, PRIV_CREATE_CONNECTOR))
+        .isEmpty();
+  }
 
-	@Override
-	protected Label getTitleLabel(SectionInfo info)
-	{
-		return TITLE_LABEL;
-	}
+  @Override
+  protected Label getTitleLabel(SectionInfo info) {
+    return TITLE_LABEL;
+  }
 
-	@Override
-	protected HtmlLinkState getShowEntitiesLink(SectionInfo info)
-	{
-		return SettingsList.asLinkOrNull(SettingsList.connectorSettings());
-	}
+  @Override
+  protected HtmlLinkState getShowEntitiesLink(SectionInfo info) {
+    return SettingsList.asLinkOrNull(SettingsList.connectorSettings());
+  }
 }

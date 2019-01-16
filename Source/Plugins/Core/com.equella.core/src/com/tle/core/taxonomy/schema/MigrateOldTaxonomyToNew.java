@@ -74,355 +74,341 @@ import com.tle.core.xml.service.XmlService;
 
 @Bind
 @SuppressWarnings("nls")
-public class MigrateOldTaxonomyToNew extends AbstractHibernateSchemaMigration
-{
-	private static final String KEY_PREFIX = PluginServiceImpl.getMyPluginId(MigrateOldTaxonomyToNew.class)
-		+ ".migration.";
+public class MigrateOldTaxonomyToNew extends AbstractHibernateSchemaMigration {
+  private static final String KEY_PREFIX =
+      PluginServiceImpl.getMyPluginId(MigrateOldTaxonomyToNew.class) + ".migration.";
 
-	@Inject
-	private XmlService xmlService;
+  @Inject private XmlService xmlService;
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		System.out.println("create migrate old taxonomy");
-		return new MigrationInfo(KEY_PREFIX + "title", KEY_PREFIX + "description");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    System.out.println("create migrate old taxonomy");
+    return new MigrationInfo(KEY_PREFIX + "title", KEY_PREFIX + "description");
+  }
 
-	@Override
-	public boolean isBackwardsCompatible()
-	{
-		return false;
-	}
+  @Override
+  public boolean isBackwardsCompatible() {
+    return false;
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{TaxonomyNode.class, FakeTerm.class, FakeTermAttribute.class, FakeTaxonomy.class,
-				FakeBaseEntity.class, LanguageBundle.class, Institution.class, LanguageString.class,
-				FakeItemdefBlobs.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {
+      TaxonomyNode.class,
+      FakeTerm.class,
+      FakeTermAttribute.class,
+      FakeTaxonomy.class,
+      FakeBaseEntity.class,
+      LanguageBundle.class,
+      Institution.class,
+      LanguageString.class,
+      FakeItemdefBlobs.class
+    };
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		List<String> sql = helper.getCreationSql(new TablesOnlyFilter("taxonomy", "term", "term_attributes"));
-		for( String s : sql )
-		{
-			System.out.println(s);
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    List<String> sql =
+        helper.getCreationSql(new TablesOnlyFilter("taxonomy", "term", "term_attributes"));
+    for (String s : sql) {
+      System.out.println(s);
+    }
+    sql.add(helper.getAddNamedIndex("taxonomy_node_all_parents", "temptnap", "all_parents_id"));
+    return sql;
+  }
 
-		}
-		sql.add(helper.getAddNamedIndex("taxonomy_node_all_parents", "temptnap", "all_parents_id"));
-		return sql;
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    return helper.getDropTableSql("taxonomy_node_all_parents", "taxonomy_node");
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		return helper.getDropTableSql("taxonomy_node_all_parents", "taxonomy_node");
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return count(session, "FROM TaxonomyNode") + count(session, "FROM ItemdefBlobs");
+  }
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return count(session, "FROM TaxonomyNode") + count(session, "FROM ItemdefBlobs");
-	}
+  @Override
+  @SuppressWarnings("unchecked")
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session)
+      throws XPathExpressionException {
+    final Date now = new Date();
+    final Map<Long, Integer> totalChildCounts = getTotalChildCounts(session);
 
-	@Override
-	@SuppressWarnings("unchecked")
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-		throws XPathExpressionException
-	{
-		final Date now = new Date();
-		final Map<Long, Integer> totalChildCounts = getTotalChildCounts(session);
+    // Convert TaxonomyNodes to Taxonomy & Terms
+    final List<TaxonomyNode> roots =
+        session.createQuery("FROM TaxonomyNode WHERE parent IS NULL").list();
+    for (TaxonomyNode root : roots) {
+      final FakeTaxonomy taxonomy = new FakeTaxonomy();
+      taxonomy.uuid = root.getUuid();
+      taxonomy.institution = root.getInstitution();
+      taxonomy.dataSourcePluginId = TaxonomyConstants.INTERNAL_DATASOURCE;
+      taxonomy.name = LangUtils.createTextTempLangugageBundle(root.getName());
+      taxonomy.dateCreated = now;
+      taxonomy.dateModified = now;
 
-		// Convert TaxonomyNodes to Taxonomy & Terms
-		final List<TaxonomyNode> roots = session.createQuery("FROM TaxonomyNode WHERE parent IS NULL").list();
-		for( TaxonomyNode root : roots )
-		{
-			final FakeTaxonomy taxonomy = new FakeTaxonomy();
-			taxonomy.uuid = root.getUuid();
-			taxonomy.institution = root.getInstitution();
-			taxonomy.dataSourcePluginId = TaxonomyConstants.INTERNAL_DATASOURCE;
-			taxonomy.name = LangUtils.createTextTempLangugageBundle(root.getName());
-			taxonomy.dateCreated = now;
-			taxonomy.dateModified = now;
+      session.save(taxonomy);
+      result.incrementStatus();
 
-			session.save(taxonomy);
-			result.incrementStatus();
+      processTermChildren(totalChildCounts, result, session, taxonomy, root, null);
 
-			processTermChildren(totalChildCounts, result, session, taxonomy, root, null);
+      session.flush();
+    }
 
-			session.flush();
-		}
+    // Convert Pick List controls to Term Selector controls
+    final XStream xstream = xmlService.createDefault(getClass().getClassLoader());
+    xstream.alias("com.dytech.edge.wizard.beans.control.PickList", PickList.class);
+    XPathFactory factory = XPathFactory.newInstance();
+    XPath xpath = factory.newXPath();
+    XPathExpression xpression = xpath.compile("//com.dytech.edge.wizard.beans.control.PickList");
 
-		// Convert Pick List controls to Term Selector controls
-		final XStream xstream = xmlService.createDefault(getClass().getClassLoader());
-		xstream.alias("com.dytech.edge.wizard.beans.control.PickList", PickList.class);
-		XPathFactory factory = XPathFactory.newInstance();
-		XPath xpath = factory.newXPath();
-		XPathExpression xpression = xpath.compile("//com.dytech.edge.wizard.beans.control.PickList");
+    final List<FakeItemdefBlobs> idbs = session.createQuery("FROM ItemdefBlobs").list();
+    for (FakeItemdefBlobs idb : idbs) {
+      boolean changed = false;
 
-		final List<FakeItemdefBlobs> idbs = session.createQuery("FROM ItemdefBlobs").list();
-		for( FakeItemdefBlobs idb : idbs )
-		{
-			boolean changed = false;
+      PropBagEx wizardBag = new PropBagEx(idb.getWizard());
+      Document wizardDocument = wizardBag.getRootElement().getOwnerDocument();
+      NodeList matched =
+          (NodeList) xpression.evaluate(wizardBag.getRootElement(), XPathConstants.NODESET);
 
-			PropBagEx wizardBag = new PropBagEx(idb.getWizard());
-			Document wizardDocument = wizardBag.getRootElement().getOwnerDocument();
-			NodeList matched = (NodeList) xpression.evaluate(wizardBag.getRootElement(), XPathConstants.NODESET);
+      for (int i = 0; i < matched.getLength(); i++) {
+        Node pickNode = matched.item(i);
+        PickList pickList = (PickList) xstream.fromXML(new PropBagEx(pickNode).toString());
+        CustomControl customControl = convertPicklist(pickList);
+        PropBagEx newControl = new PropBagEx(xstream.toXML(customControl));
+        Element newControlElem = newControl.getRootElement();
+        pickNode
+            .getParentNode()
+            .replaceChild(wizardDocument.importNode(newControlElem, true), pickNode);
+        changed = true;
+      }
+      if (changed) {
+        idb.setWizard(wizardBag.toString());
+        session.update(idb);
+        session.flush();
+      }
 
-			for( int i = 0; i < matched.getLength(); i++ )
-			{
-				Node pickNode = matched.item(i);
-				PickList pickList = (PickList) xstream.fromXML(new PropBagEx(pickNode).toString());
-				CustomControl customControl = convertPicklist(pickList);
-				PropBagEx newControl = new PropBagEx(xstream.toXML(customControl));
-				Element newControlElem = newControl.getRootElement();
-				pickNode.getParentNode().replaceChild(wizardDocument.importNode(newControlElem, true), pickNode);
-				changed = true;
-			}
-			if( changed )
-			{
-				idb.setWizard(wizardBag.toString());
-				session.update(idb);
-				session.flush();
-			}
+      result.incrementStatus();
+    }
+  }
 
-			result.incrementStatus();
-		}
-	}
+  @SuppressWarnings("unchecked")
+  private Map<Long, Integer> getTotalChildCounts(Session session) {
+    // get total child counts in one hit
+    // NOTE THAT THIS IS NOT HQL!!! IT IS PRETTY MUCH SQL!!!
+    final StringBuilder sql =
+        new StringBuilder(
+            "SELECT all_parents_id, COUNT(*) AS CHILD_COUNT FROM taxonomy_node_all_parents GROUP BY all_parents_id");
 
-	@SuppressWarnings("unchecked")
-	private Map<Long, Integer> getTotalChildCounts(Session session)
-	{
-		// get total child counts in one hit
-		// NOTE THAT THIS IS NOT HQL!!! IT IS PRETTY MUCH SQL!!!
-		final StringBuilder sql = new StringBuilder(
-			"SELECT all_parents_id, COUNT(*) AS CHILD_COUNT FROM taxonomy_node_all_parents GROUP BY all_parents_id");
+    final Map<Long, Integer> totalChildCounts = new HashMap<Long, Integer>();
+    final SQLQuery countQuery = session.createSQLQuery(sql.toString());
+    final List<Object[]> countResults = countQuery.list();
+    for (Object[] countResult : countResults) {
+      totalChildCounts.put(
+          ((Number) countResult[0]).longValue(), ((Number) countResult[1]).intValue());
+    }
+    return totalChildCounts;
+  }
 
-		final Map<Long, Integer> totalChildCounts = new HashMap<Long, Integer>();
-		final SQLQuery countQuery = session.createSQLQuery(sql.toString());
-		final List<Object[]> countResults = countQuery.list();
-		for( Object[] countResult : countResults )
-		{
-			totalChildCounts.put(((Number) countResult[0]).longValue(), ((Number) countResult[1]).intValue());
-		}
-		return totalChildCounts;
-	}
+  @SuppressWarnings("unchecked")
+  private void processTermChildren(
+      Map<Long, Integer> totalChildCounts,
+      MigrationResult result,
+      Session session,
+      FakeTaxonomy taxonomy,
+      TaxonomyNode parentNode,
+      FakeTerm parentTerm) {
+    int left = parentTerm == null ? 0 : parentTerm.left + 1;
 
-	@SuppressWarnings("unchecked")
-	private void processTermChildren(Map<Long, Integer> totalChildCounts, MigrationResult result, Session session,
-		FakeTaxonomy taxonomy, TaxonomyNode parentNode, FakeTerm parentTerm)
-	{
-		int left = parentTerm == null ? 0 : parentTerm.left + 1;
+    // Oracle bitched about ScrollableResults
+    final List<TaxonomyNode> nodes =
+        session
+            .createQuery("FROM TaxonomyNode WHERE parent = :parent ORDER BY name")
+            .setParameter("parent", parentNode)
+            .list();
+    for (TaxonomyNode tn : nodes) {
+      if (!Check.isEmpty(tn.getName())) {
+        Integer childCount = totalChildCounts.get(tn.getId());
+        if (childCount == null) {
+          childCount = 0;
+        }
+        final int right = left + (childCount * 2) + 1;
 
-		// Oracle bitched about ScrollableResults
-		final List<TaxonomyNode> nodes = session.createQuery("FROM TaxonomyNode WHERE parent = :parent ORDER BY name")
-			.setParameter("parent", parentNode).list();
-		for( TaxonomyNode tn : nodes )
-		{
-			if( !Check.isEmpty(tn.getName()) )
-			{
-				Integer childCount = totalChildCounts.get(tn.getId());
-				if( childCount == null )
-				{
-					childCount = 0;
-				}
-				final int right = left + (childCount * 2) + 1;
+        final FakeTerm t = new FakeTerm();
+        t.left = left;
+        t.right = right;
+        t.taxonomy = taxonomy;
+        t.parent = parentTerm;
+        t.value = tn.getName();
+        t.fullValue = tn.getFullpath();
 
-				final FakeTerm t = new FakeTerm();
-				t.left = left;
-				t.right = right;
-				t.taxonomy = taxonomy;
-				t.parent = parentTerm;
-				t.value = tn.getName();
-				t.fullValue = tn.getFullpath();
+        session.save(t);
+        session.flush();
+        session.clear();
+        result.incrementStatus();
 
-				session.save(t);
-				session.flush();
-				session.clear();
-				result.incrementStatus();
+        // Move the left count along
+        left = right + 1;
 
-				// Move the left count along
-				left = right + 1;
+        // Recurse
+        processTermChildren(totalChildCounts, result, session, taxonomy, tn, t);
+      } else {
+        result.incrementStatus();
+      }
+    }
+  }
 
-				// Recurse
-				processTermChildren(totalChildCounts, result, session, taxonomy, tn, t);
-			}
-			else
-			{
-				result.incrementStatus();
-			}
-		}
-	}
+  private CustomControl convertPicklist(PickList plc) {
+    final TermSelectorControl tsc = new TermSelectorControl();
 
-	private CustomControl convertPicklist(PickList plc)
-	{
-		final TermSelectorControl tsc = new TermSelectorControl();
+    tsc.setAfterSaveScript(plc.getAfterSaveScript());
+    tsc.setAllowMultiple(plc.isMultiple());
+    tsc.setCustomName(plc.getCustomName());
+    tsc.setDescription(plc.getDescription());
+    tsc.setDisplayType("popupBrowser");
+    tsc.setMandatory(plc.isMandatory());
+    tsc.setReload(plc.isReload());
+    tsc.setScript(plc.getScript());
+    tsc.setSelectedTaxonomy(plc.getTaxonomy());
+    tsc.setSelectionRestriction(SelectionRestriction.UNRESTRICTED);
+    tsc.setTargetnodes(plc.getTargetnodes());
+    tsc.setTermStorageFormat(TermStorageFormat.FULL_PATH);
+    tsc.setTitle(plc.getTitle());
+    tsc.setValidateScript(plc.getValidateScript());
 
-		tsc.setAfterSaveScript(plc.getAfterSaveScript());
-		tsc.setAllowMultiple(plc.isMultiple());
-		tsc.setCustomName(plc.getCustomName());
-		tsc.setDescription(plc.getDescription());
-		tsc.setDisplayType("popupBrowser");
-		tsc.setMandatory(plc.isMandatory());
-		tsc.setReload(plc.isReload());
-		tsc.setScript(plc.getScript());
-		tsc.setSelectedTaxonomy(plc.getTaxonomy());
-		tsc.setSelectionRestriction(SelectionRestriction.UNRESTRICTED);
-		tsc.setTargetnodes(plc.getTargetnodes());
-		tsc.setTermStorageFormat(TermStorageFormat.FULL_PATH);
-		tsc.setTitle(plc.getTitle());
-		tsc.setValidateScript(plc.getValidateScript());
+    // Swap the PickList for the TermSelector!
+    return new CustomControl(tsc);
+  }
 
-		// Swap the PickList for the TermSelector!
-		return new CustomControl(tsc);
-	}
+  @Entity(name = "BaseEntity")
+  @AccessType("field")
+  @Inheritance(strategy = InheritanceType.JOINED)
+  public static class FakeBaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    long id;
 
-	@Entity(name = "BaseEntity")
-	@AccessType("field")
-	@Inheritance(strategy = InheritanceType.JOINED)
-	public static class FakeBaseEntity
-	{
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		long id;
-		String uuid;
-		@JoinColumn(nullable = false)
-		@ManyToOne(fetch = FetchType.LAZY)
-		Institution institution;
-		@Column(nullable = false)
-		Date dateModified;
-		@Column(nullable = false)
-		Date dateCreated;
-		LanguageBundle name;
-	}
+    String uuid;
 
-	@AccessType("field")
-	@Entity(name = "Taxonomy")
-	public static class FakeTaxonomy extends FakeBaseEntity
-	{
-		@Column(length = 100)
-		private String dataSourcePluginId;
-	}
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    Institution institution;
 
-	@Entity(name = "Term")
-	@AccessType("field")
-	public static class FakeTerm
-	{
-		@Id
-		long id;
+    @Column(nullable = false)
+    Date dateModified;
 
-		@ManyToOne(fetch = FetchType.LAZY)
-		@Index(name = "term_parent")
-		private FakeTerm parent;
+    @Column(nullable = false)
+    Date dateCreated;
 
-		@Column(name = "lft")
-		@Index(name = "term_left_position")
-		@XStreamOmitField
-		private int left;
+    LanguageBundle name;
+  }
 
-		@Column(name = "rht")
-		@Index(name = "term_right_position")
-		@XStreamOmitField
-		private int right;
+  @AccessType("field")
+  @Entity(name = "Taxonomy")
+  public static class FakeTaxonomy extends FakeBaseEntity {
+    @Column(length = 100)
+    private String dataSourcePluginId;
+  }
 
-		@JoinColumn(nullable = false)
-		@ManyToOne(fetch = FetchType.LAZY)
-		FakeTaxonomy taxonomy;
+  @Entity(name = "Term")
+  @AccessType("field")
+  public static class FakeTerm {
+    @Id long id;
 
-		@Column(length = 4000)
-		@Type(type = "blankable")
-		@Index(name = "term_full_value")
-		String fullValue;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Index(name = "term_parent")
+    private FakeTerm parent;
 
-		@Column(length = 1024, nullable = false)
-		private String value;
+    @Column(name = "lft")
+    @Index(name = "term_left_position")
+    @XStreamOmitField
+    private int left;
 
-		@Column(length = 32)
-		private String valueHash;
-	}
+    @Column(name = "rht")
+    @Index(name = "term_right_position")
+    @XStreamOmitField
+    private int right;
 
-	@Entity(name = "ItemdefBlobs")
-	@AccessType("field")
-	public static class FakeItemdefBlobs implements Serializable
-	{
-		private static final long serialVersionUID = 1L;
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    FakeTaxonomy taxonomy;
 
-		@Id
-		public long id;
+    @Column(length = 4000)
+    @Type(type = "blankable")
+    @Index(name = "term_full_value")
+    String fullValue;
 
-		@Lob
-		private String wizard;
+    @Column(length = 1024, nullable = false)
+    private String value;
 
-		public long getId()
-		{
-			return id;
-		}
+    @Column(length = 32)
+    private String valueHash;
+  }
 
-		public void setId(long id)
-		{
-			this.id = id;
-		}
+  @Entity(name = "ItemdefBlobs")
+  @AccessType("field")
+  public static class FakeItemdefBlobs implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-		public String getWizard()
-		{
-			return wizard;
-		}
+    @Id public long id;
 
-		public void setWizard(String wizard)
-		{
-			this.wizard = wizard;
-		}
-	}
+    @Lob private String wizard;
 
-	@Entity(name = "TermAttributes")
-	@AccessType("field")
-	public static class FakeTermAttribute
-	{
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		@XStreamOmitField
-		long id;
+    public long getId() {
+      return id;
+    }
 
-		@ManyToOne
-		@JoinColumn(name = "term_id", insertable = false, nullable = false, updatable = false)
-		@XStreamOmitField
-		@Index(name = "termAttrIndex")
-		private FakeTerm term;
+    public void setId(long id) {
+      this.id = id;
+    }
 
-		@Column(length = 64, nullable = false)
-		private String key;
+    public String getWizard() {
+      return wizard;
+    }
 
-		@Lob
-		private String value;
+    public void setWizard(String wizard) {
+      this.wizard = wizard;
+    }
+  }
 
-		public FakeTermAttribute()
-		{
-			// Required by Hibernate
-		}
+  @Entity(name = "TermAttributes")
+  @AccessType("field")
+  public static class FakeTermAttribute {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @XStreamOmitField
+    long id;
 
-		public FakeTermAttribute(String key, String value)
-		{
-			this.key = key;
-			this.value = value;
-		}
+    @ManyToOne
+    @JoinColumn(name = "term_id", insertable = false, nullable = false, updatable = false)
+    @XStreamOmitField
+    @Index(name = "termAttrIndex")
+    private FakeTerm term;
 
-		public String getKey()
-		{
-			return key;
-		}
+    @Column(length = 64, nullable = false)
+    private String key;
 
-		public String getValue()
-		{
-			return Check.nullToEmpty(value);
-		}
+    @Lob private String value;
 
-		public FakeTerm getTerm()
-		{
-			return term;
-		}
-	}
+    public FakeTermAttribute() {
+      // Required by Hibernate
+    }
 
+    public FakeTermAttribute(String key, String value) {
+      this.key = key;
+      this.value = value;
+    }
+
+    public String getKey() {
+      return key;
+    }
+
+    public String getValue() {
+      return Check.nullToEmpty(value);
+    }
+
+    public FakeTerm getTerm() {
+      return term;
+    }
+  }
 }

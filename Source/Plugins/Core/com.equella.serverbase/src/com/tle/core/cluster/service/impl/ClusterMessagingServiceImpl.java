@@ -71,264 +71,230 @@ import com.tle.core.zookeeper.ZookeeperService;
 @Singleton
 @SuppressWarnings("nls")
 @Bind(ClusterMessagingService.class)
-public class ClusterMessagingServiceImpl implements ClusterMessagingService, StartupBean, PathChildrenCacheListener
-{
-	private static final Logger LOGGER = Logger.getLogger(ClusterMessagingServiceImpl.class);
-	private static final String MESSAGING_ZKPATH = "messaging";
+public class ClusterMessagingServiceImpl
+    implements ClusterMessagingService, StartupBean, PathChildrenCacheListener {
+  private static final Logger LOGGER = Logger.getLogger(ClusterMessagingServiceImpl.class);
+  private static final String MESSAGING_ZKPATH = "messaging";
 
-	@Inject(optional = true)
-	@Named("messaging.bindAddress")
-	private String bindAddress;
-	@Inject(optional = true)
-	@Named("messaging.useHostname")
-	private boolean useHostname;
-	@Inject(optional = true)
-	@Named("messaging.bindPort")
-	private int bindPort;
+  @Inject(optional = true)
+  @Named("messaging.bindAddress")
+  private String bindAddress;
 
-	@Inject
-	private PluginTracker<ClusterMessageHandler> handlerTracker;
-	@Inject
-	private ZookeeperService zookeeperService;
+  @Inject(optional = true)
+  @Named("messaging.useHostname")
+  private boolean useHostname;
 
-	private final ExecutorService msgExecutor = Executors.newFixedThreadPool(
-		Runtime.getRuntime().availableProcessors() * 2, new NamedThreadFactory("ClusterMessagingServiceImpl.handlers"));
-	private final ExecutorService senderExecutor = Executors
-		.newCachedThreadPool(new NamedThreadFactory("ClusterMessagingServiceImpl.sender"));
-	private final ExecutorService receiverExecutor = Executors
-		.newCachedThreadPool(new NamedThreadFactory("ClusterMessagingServiceImpl.receiver"));
+  @Inject(optional = true)
+  @Named("messaging.bindPort")
+  private int bindPort;
 
-	private final Map<String, MessageReceiver> receivers = Maps.newConcurrentMap();
-	private final LoadingCache<String, MessageSender> senders = CacheBuilder.newBuilder()
-		.expireAfterAccess(30, TimeUnit.MINUTES).removalListener(new RemovalListener<String, MessageSender>()
-		{
-			@Override
-			public void onRemoval(RemovalNotification<String, MessageSender> notification)
-			{
-				if( LOGGER.isDebugEnabled() )
-				{
-					LOGGER.debug("Removing stale sender from cache for NODE: " + notification.getKey());
-				}
-			}
+  @Inject private PluginTracker<ClusterMessageHandler> handlerTracker;
+  @Inject private ZookeeperService zookeeperService;
 
-		}).build(new CacheLoader<String, MessageSender>()
-		{
-			@Override
-			public MessageSender load(String receiverId) throws Exception
-			{
-				if( LOGGER.isDebugEnabled() )
-				{
-					LOGGER.debug("Loading sender cache for NODE: " + receiverId);
-				}
-				return new MessageSender(receiverId);
-			}
-		});
+  private final ExecutorService msgExecutor =
+      Executors.newFixedThreadPool(
+          Runtime.getRuntime().availableProcessors() * 2,
+          new NamedThreadFactory("ClusterMessagingServiceImpl.handlers"));
+  private final ExecutorService senderExecutor =
+      Executors.newCachedThreadPool(new NamedThreadFactory("ClusterMessagingServiceImpl.sender"));
+  private final ExecutorService receiverExecutor =
+      Executors.newCachedThreadPool(new NamedThreadFactory("ClusterMessagingServiceImpl.receiver"));
 
-	@Override
-	public void startup()
-	{
-		if( !zookeeperService.hasStarted() )
-		{
-			throw new RuntimeException("Dependent ZK service not started!");
-		}
-		if( zookeeperService.isCluster() )
-		{
-			Thread thread = new Thread()
-			{
-				@Override
-				public void run()
-				{
-					setupBindAddress();
-					try
-					{
-						@SuppressWarnings("resource")
-						ServerSocket server = new ServerSocket();
-						LOGGER.info("Binding to " + bindAddress + ":" + bindPort);
-						server.bind(new InetSocketAddress(bindAddress, bindPort));
-						zookeeperService.createNode(MESSAGING_ZKPATH, bindAddress + ":" + bindPort);
-						zookeeperService.createPathCache(MESSAGING_ZKPATH, true, ClusterMessagingServiceImpl.this);
+  private final Map<String, MessageReceiver> receivers = Maps.newConcurrentMap();
+  private final LoadingCache<String, MessageSender> senders =
+      CacheBuilder.newBuilder()
+          .expireAfterAccess(30, TimeUnit.MINUTES)
+          .removalListener(
+              new RemovalListener<String, MessageSender>() {
+                @Override
+                public void onRemoval(RemovalNotification<String, MessageSender> notification) {
+                  if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug(
+                        "Removing stale sender from cache for NODE: " + notification.getKey());
+                  }
+                }
+              })
+          .build(
+              new CacheLoader<String, MessageSender>() {
+                @Override
+                public MessageSender load(String receiverId) throws Exception {
+                  if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Loading sender cache for NODE: " + receiverId);
+                  }
+                  return new MessageSender(receiverId);
+                }
+              });
 
-						// Keep accepting connections while the socket is valid.
-						do
-						{
-							final Socket sock = server.accept();
-							senderExecutor.execute(new Runnable()
-							{
-								String receiverId;
+  @Override
+  public void startup() {
+    if (!zookeeperService.hasStarted()) {
+      throw new RuntimeException("Dependent ZK service not started!");
+    }
+    if (zookeeperService.isCluster()) {
+      Thread thread =
+          new Thread() {
+            @Override
+            public void run() {
+              setupBindAddress();
+              try {
+                @SuppressWarnings("resource")
+                ServerSocket server = new ServerSocket();
+                LOGGER.info("Binding to " + bindAddress + ":" + bindPort);
+                server.bind(new InetSocketAddress(bindAddress, bindPort));
+                zookeeperService.createNode(MESSAGING_ZKPATH, bindAddress + ":" + bindPort);
+                zookeeperService.createPathCache(
+                    MESSAGING_ZKPATH, true, ClusterMessagingServiceImpl.this);
 
-								@Override
-								public void run()
-								{
-									try( Socket s = sock;
-										DataInputStream dis = new DataInputStream(sock.getInputStream());
-										DataOutputStream dos = new DataOutputStream(
-											new BufferedOutputStream(sock.getOutputStream())); )
-									{
-										sock.setSoTimeout(10000);
-										String thisId = dis.readUTF();
-										if( !isThisNode(thisId) )
-										{
-											throw new IOException(
-												"Remote NODE trying to communicate with stale reference to this NODE");
-										}
-										receiverId = dis.readUTF();
-										LOGGER.info("Successful connection from NODE: " + receiverId);
-										MessageSender ms = senders.get(receiverId);
-										ms.checkExpectedOffset(dis);
-										while( true )
-										{
-											ms.sendMessages(dos, dis);
-											ms = senders.get(receiverId);
-										}
-									}
-									catch( IOException ex )
-									{
-										logError(receiverId, ex);
-									}
-									catch( Throwable t )
-									{
-										LOGGER.error("An unexpected error occurred: ", t);
-									}
-								}
+                // Keep accepting connections while the socket is valid.
+                do {
+                  final Socket sock = server.accept();
+                  senderExecutor.execute(
+                      new Runnable() {
+                        String receiverId;
 
-								private void logError(String nodeId, Exception e)
-								{
-									LOGGER.error(MessageFormat.format(
-										"Error communicating with NODE: {0}, Error message was: {1}", nodeId,
-										e.getMessage()));
-								}
-							});
-						}
-						while( !server.isClosed() && server.isBound() );
-					}
-					catch( IOException ex )
-					{
-						LOGGER.error("Error while binding or accepting socket " + bindAddress + ":" + bindPort, ex);
-						Throwables.propagate(ex);
-					}
-				}
-			};
-			thread.setName("ClusterMessagingServiceImpl.serverSocket");
-			thread.start();
-		}
-	}
+                        @Override
+                        public void run() {
+                          try (Socket s = sock;
+                              DataInputStream dis = new DataInputStream(sock.getInputStream());
+                              DataOutputStream dos =
+                                  new DataOutputStream(
+                                      new BufferedOutputStream(sock.getOutputStream())); ) {
+                            sock.setSoTimeout(10000);
+                            String thisId = dis.readUTF();
+                            if (!isThisNode(thisId)) {
+                              throw new IOException(
+                                  "Remote NODE trying to communicate with stale reference to this NODE");
+                            }
+                            receiverId = dis.readUTF();
+                            LOGGER.info("Successful connection from NODE: " + receiverId);
+                            MessageSender ms = senders.get(receiverId);
+                            ms.checkExpectedOffset(dis);
+                            while (true) {
+                              ms.sendMessages(dos, dis);
+                              ms = senders.get(receiverId);
+                            }
+                          } catch (IOException ex) {
+                            logError(receiverId, ex);
+                          } catch (Throwable t) {
+                            LOGGER.error("An unexpected error occurred: ", t);
+                          }
+                        }
 
-	private void setupBindAddress()
-	{
-		try
-		{
-			// Verify the bind address
-			if( Check.isEmpty(bindAddress) )
-			{
-				if (useHostname)
-				{
-					bindAddress = InetAddress.getLocalHost().getHostName();
-				}
-				else
-				{
-					List<Pair<NetworkInterface, InetAddress>> inetAddresses = NetworkUtils.getInetAddresses();
-					if (inetAddresses.size() == 1) {
-						bindAddress = inetAddresses.get(0).getSecond().getHostAddress();
-					} else {
-						throw new RuntimeException("messaging.bindAddress has not been defined in"
-								+ " optional-config.properties, and EQUELLA could not determine a suitable"
-								+ " network interface to bind to.");
-					}
-				}
-			}
-			else
-			{
-				bindAddress = InetAddress.getByName(bindAddress).getHostAddress();
-			}
-		}
-		catch( UnknownHostException e )
-		{
-			Throwables.propagate(e);
-		}
-	}
+                        private void logError(String nodeId, Exception e) {
+                          LOGGER.error(
+                              MessageFormat.format(
+                                  "Error communicating with NODE: {0}, Error message was: {1}",
+                                  nodeId, e.getMessage()));
+                        }
+                      });
+                } while (!server.isClosed() && server.isBound());
+              } catch (IOException ex) {
+                LOGGER.error(
+                    "Error while binding or accepting socket " + bindAddress + ":" + bindPort, ex);
+                Throwables.propagate(ex);
+              }
+            }
+          };
+      thread.setName("ClusterMessagingServiceImpl.serverSocket");
+      thread.start();
+    }
+  }
 
-	@Override
-	public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception
-	{
-		Type type = event.getType();
-		if( type.equals(Type.CHILD_ADDED) || type.equals(Type.CHILD_UPDATED) || type.equals(Type.CHILD_REMOVED) )
-		{
-			String remoteId = ZKPaths.getNodeFromPath(event.getData().getPath());
-			String[] clientInfo = new String(event.getData().getData()).split(":");
-			if( !isThisNode(remoteId) && !hasSameInfo(clientInfo) )
-			{
-				if( type.equals(Type.CHILD_ADDED) )
-				{
-					senders.get(remoteId);
-					addReceiver(remoteId, clientInfo);
-				}
-				else if( type.equals(Type.CHILD_UPDATED) )
-				{
-					senders.get(remoteId);
-					removeReceiver(remoteId);
-					addReceiver(remoteId, clientInfo);
-				}
-				else
-				{
-					removeReceiver(remoteId);
-				}
-			}
-		}
-	}
+  private void setupBindAddress() {
+    try {
+      // Verify the bind address
+      if (Check.isEmpty(bindAddress)) {
+        if (useHostname) {
+          bindAddress = InetAddress.getLocalHost().getHostName();
+        } else {
+          List<Pair<NetworkInterface, InetAddress>> inetAddresses = NetworkUtils.getInetAddresses();
+          if (inetAddresses.size() == 1) {
+            bindAddress = inetAddresses.get(0).getSecond().getHostAddress();
+          } else {
+            throw new RuntimeException(
+                "messaging.bindAddress has not been defined in"
+                    + " optional-config.properties, and EQUELLA could not determine a suitable"
+                    + " network interface to bind to.");
+          }
+        }
+      } else {
+        bindAddress = InetAddress.getByName(bindAddress).getHostAddress();
+      }
+    } catch (UnknownHostException e) {
+      Throwables.propagate(e);
+    }
+  }
 
-	private boolean hasSameInfo(String[] clientInfo)
-	{
-		return clientInfo[0].equals(bindAddress) && (Integer.parseInt(clientInfo[1]) == bindPort);
-	}
+  @Override
+  public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
+    Type type = event.getType();
+    if (type.equals(Type.CHILD_ADDED)
+        || type.equals(Type.CHILD_UPDATED)
+        || type.equals(Type.CHILD_REMOVED)) {
+      String remoteId = ZKPaths.getNodeFromPath(event.getData().getPath());
+      String[] clientInfo = new String(event.getData().getData()).split(":");
+      if (!isThisNode(remoteId) && !hasSameInfo(clientInfo)) {
+        if (type.equals(Type.CHILD_ADDED)) {
+          senders.get(remoteId);
+          addReceiver(remoteId, clientInfo);
+        } else if (type.equals(Type.CHILD_UPDATED)) {
+          senders.get(remoteId);
+          removeReceiver(remoteId);
+          addReceiver(remoteId, clientInfo);
+        } else {
+          removeReceiver(remoteId);
+        }
+      }
+    }
+  }
 
-	private void addReceiver(String remoteId, String[] clientInfo)
-	{
-		MessageReceiver messageReceiver = new MessageReceiver(clientInfo[0], Integer.parseInt(clientInfo[1]),
-			zookeeperService.getNodeId(), remoteId, handlerTracker.getBeanList(), msgExecutor);
-		receiverExecutor.submit(messageReceiver);
-		receivers.put(remoteId, messageReceiver);
-	}
+  private boolean hasSameInfo(String[] clientInfo) {
+    return clientInfo[0].equals(bindAddress) && (Integer.parseInt(clientInfo[1]) == bindPort);
+  }
 
-	private void removeReceiver(String nodeId)
-	{
-		MessageReceiver removed = receivers.remove(nodeId);
-		if( removed != null )
-		{
-			removed.kill();
-		}
-	}
+  private void addReceiver(String remoteId, String[] clientInfo) {
+    MessageReceiver messageReceiver =
+        new MessageReceiver(
+            clientInfo[0],
+            Integer.parseInt(clientInfo[1]),
+            zookeeperService.getNodeId(),
+            remoteId,
+            handlerTracker.getBeanList(),
+            msgExecutor);
+    receiverExecutor.submit(messageReceiver);
+    receivers.put(remoteId, messageReceiver);
+  }
 
-	private boolean isThisNode(String nodeId)
-	{
-		return zookeeperService.getNodeId().equals(nodeId);
-	}
+  private void removeReceiver(String nodeId) {
+    MessageReceiver removed = receivers.remove(nodeId);
+    if (removed != null) {
+      removed.kill();
+    }
+  }
 
-	@Override
-	public void postMessage(Serializable msg)
-	{
-		postMessage(null, msg);
-	}
+  private boolean isThisNode(String nodeId) {
+    return zookeeperService.getNodeId().equals(nodeId);
+  }
 
-	@Override
-	public void postMessage(String toNodeIdOnly, Serializable msg)
-	{
-		Collection<String> recipients;
-		byte[] message = PluginAwareObjectOutputStream.toBytes(msg);
-		if( toNodeIdOnly != null )
-		{
-			recipients = Collections.singletonList(toNodeIdOnly);
-		}
-		else
-		{
-			recipients = senders.asMap().keySet();
-		}
-		for( String nodeId : recipients )
-		{
-			MessageSender ms = senders.getIfPresent(nodeId);
-			if( ms != null )
-			{
-				ms.queueMessage(message);
-			}
-		}
-	}
+  @Override
+  public void postMessage(Serializable msg) {
+    postMessage(null, msg);
+  }
+
+  @Override
+  public void postMessage(String toNodeIdOnly, Serializable msg) {
+    Collection<String> recipients;
+    byte[] message = PluginAwareObjectOutputStream.toBytes(msg);
+    if (toNodeIdOnly != null) {
+      recipients = Collections.singletonList(toNodeIdOnly);
+    } else {
+      recipients = senders.asMap().keySet();
+    }
+    for (String nodeId : recipients) {
+      MessageSender ms = senders.getIfPresent(nodeId);
+      if (ms != null) {
+        ms.queueMessage(message);
+      }
+    }
+  }
 }

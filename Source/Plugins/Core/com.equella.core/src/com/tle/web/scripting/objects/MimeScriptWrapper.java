@@ -28,64 +28,52 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind(MimeScriptObject.class)
 @Singleton
-public class MimeScriptWrapper extends AbstractScriptWrapper implements MimeScriptObject
-{
-	private static final long serialVersionUID = 1L;
+public class MimeScriptWrapper extends AbstractScriptWrapper implements MimeScriptObject {
+  private static final long serialVersionUID = 1L;
 
-	@Inject
-	private MimeTypeService mimeService;
+  @Inject private MimeTypeService mimeService;
 
-	@Override
-	public MimeTypeScriptType getMimeTypeForFilename(String filename)
-	{
-		MimeEntry entry = mimeService.getEntryForFilename(filename);
-		if( entry != null )
-		{
-			return new MimeTypeScriptTypeImpl(entry);
-		}
-		return null;
-	}
+  @Override
+  public MimeTypeScriptType getMimeTypeForFilename(String filename) {
+    MimeEntry entry = mimeService.getEntryForFilename(filename);
+    if (entry != null) {
+      return new MimeTypeScriptTypeImpl(entry);
+    }
+    return null;
+  }
 
-	public static class MimeTypeScriptTypeImpl implements MimeTypeScriptType
-	{
-		private static final long serialVersionUID = 1L;
+  public static class MimeTypeScriptTypeImpl implements MimeTypeScriptType {
+    private static final long serialVersionUID = 1L;
 
-		private final MimeEntry wrapped;
-		private List<String> otherExtensions;
+    private final MimeEntry wrapped;
+    private List<String> otherExtensions;
 
-		public MimeTypeScriptTypeImpl(MimeEntry wrapped)
-		{
-			this.wrapped = wrapped;
-		}
+    public MimeTypeScriptTypeImpl(MimeEntry wrapped) {
+      this.wrapped = wrapped;
+    }
 
-		@Override
-		public String getDescription()
-		{
-			// null safe it
-			String description = wrapped.getDescription();
-			return (description == null ? "" : description); //$NON-NLS-1$
-		}
+    @Override
+    public String getDescription() {
+      // null safe it
+      String description = wrapped.getDescription();
+      return (description == null ? "" : description); // $NON-NLS-1$
+    }
 
-		@Override
-		public List<String> getFileExtensions()
-		{
-			if( otherExtensions == null )
-			{
-				otherExtensions = new ArrayList<String>(wrapped.getExtensions());
-				Collections.sort(otherExtensions);
-			}
-			return otherExtensions;
-		}
+    @Override
+    public List<String> getFileExtensions() {
+      if (otherExtensions == null) {
+        otherExtensions = new ArrayList<String>(wrapped.getExtensions());
+        Collections.sort(otherExtensions);
+      }
+      return otherExtensions;
+    }
 
-		@Override
-		public String getType()
-		{
-			return wrapped.getType();
-		}
-	}
+    @Override
+    public String getType() {
+      return wrapped.getType();
+    }
+  }
 }

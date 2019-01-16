@@ -42,74 +42,63 @@ import com.google.common.collect.Lists;
 import com.tle.beans.IdCloneable;
 import com.tle.common.qti.entity.enums.QtiSessionStatus;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Entity
 @AccessType("field")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class QtiAbstractResult implements Serializable, IdCloneable
-{
+public class QtiAbstractResult implements Serializable, IdCloneable {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	@Index(name = "qtiResultDateIdx")
-	@Column(nullable = false)
-	private Date datestamp;
+  @Index(name = "qtiResultDateIdx")
+  @Column(nullable = false)
+  private Date datestamp;
 
-	// This is an itemResult field only. In the case of the assessmentResult it
-	// is the _least_ complete value of all itemResults. This case is NOT in the
-	// QTI spec.
-	@Column(nullable = false)
-	private int sessionStatus;
+  // This is an itemResult field only. In the case of the assessmentResult it
+  // is the _least_ complete value of all itemResults. This case is NOT in the
+  // QTI spec.
+  @Column(nullable = false)
+  private int sessionStatus;
 
-	@IndexColumn(name = "varindex", nullable = false)
-	@JoinColumn(name = "result_id", nullable = false)
-	@Fetch(value = FetchMode.JOIN)
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-	private List<QtiItemVariable> itemVariables = Lists.newArrayList();
+  @IndexColumn(name = "varindex", nullable = false)
+  @JoinColumn(name = "result_id", nullable = false)
+  @Fetch(value = FetchMode.JOIN)
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  private List<QtiItemVariable> itemVariables = Lists.newArrayList();
 
-	@Override
-	public long getId()
-	{
-		return id;
-	}
+  @Override
+  public long getId() {
+    return id;
+  }
 
-	@Override
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  @Override
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public Date getDatestamp()
-	{
-		return datestamp;
-	}
+  public Date getDatestamp() {
+    return datestamp;
+  }
 
-	public void setDatestamp(Date datestamp)
-	{
-		this.datestamp = datestamp;
-	}
+  public void setDatestamp(Date datestamp) {
+    this.datestamp = datestamp;
+  }
 
-	public QtiSessionStatus getSessionStatus()
-	{
-		return QtiSessionStatus.values()[sessionStatus];
-	}
+  public QtiSessionStatus getSessionStatus() {
+    return QtiSessionStatus.values()[sessionStatus];
+  }
 
-	public void setSessionStatus(QtiSessionStatus sessionStatus)
-	{
-		this.sessionStatus = sessionStatus.ordinal();
-	}
+  public void setSessionStatus(QtiSessionStatus sessionStatus) {
+    this.sessionStatus = sessionStatus.ordinal();
+  }
 
-	public List<QtiItemVariable> getItemVariables()
-	{
-		return itemVariables;
-	}
+  public List<QtiItemVariable> getItemVariables() {
+    return itemVariables;
+  }
 
-	public void setItemVariables(List<QtiItemVariable> itemVariables)
-	{
-		this.itemVariables = itemVariables;
-	}
+  public void setItemVariables(List<QtiItemVariable> itemVariables) {
+    this.itemVariables = itemVariables;
+  }
 }

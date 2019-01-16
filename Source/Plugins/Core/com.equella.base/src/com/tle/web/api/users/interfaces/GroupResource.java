@@ -40,31 +40,32 @@ import io.swagger.annotations.ApiParam;
 @Produces(MediaType.APPLICATION_JSON)
 @Path("localgroup/")
 @Api(value = "Local groups", description = "localgroup")
-public interface GroupResource
-{
-	@GET
-	@Path("/{uuid}")
-	@ApiOperation("Retrieve a group")
-	public GroupBean getGroup(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+public interface GroupResource {
+  @GET
+  @Path("/{uuid}")
+  @ApiOperation("Retrieve a group")
+  public GroupBean getGroup(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@GET
-	@Path("/{uuid}/user")
-	@ApiOperation("Get users in a group")
-	public SearchBean<UserBean> getUsersInGroup(@Context UriInfo uriInfo, @PathParam("uuid") String uuid,
-		@QueryParam("recursive") boolean recursive);
+  @GET
+  @Path("/{uuid}/user")
+  @ApiOperation("Get users in a group")
+  public SearchBean<UserBean> getUsersInGroup(
+      @Context UriInfo uriInfo,
+      @PathParam("uuid") String uuid,
+      @QueryParam("recursive") boolean recursive);
 
-	@PUT
-	@Path("/{uuid}")
-	@ApiOperation("Edit a group")
-	public Response editGroup(@PathParam("uuid") String uuid, @ApiParam GroupBean group);
+  @PUT
+  @Path("/{uuid}")
+  @ApiOperation("Edit a group")
+  public Response editGroup(@PathParam("uuid") String uuid, @ApiParam GroupBean group);
 
-	@DELETE
-	@Path("/{uuid}")
-	@ApiOperation("Delete a group")
-	public Response deleteGroup(@PathParam("uuid") String uuid);
+  @DELETE
+  @Path("/{uuid}")
+  @ApiOperation("Delete a group")
+  public Response deleteGroup(@PathParam("uuid") String uuid);
 
-	@POST
-	@Path("/")
-	@ApiOperation("Add a group")
-	public Response addGroup(@ApiParam GroupBean group);
+  @POST
+  @Path("/")
+  @ApiOperation("Add a group")
+  public Response addGroup(@ApiParam GroupBean group);
 }

@@ -52,135 +52,119 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 @SuppressWarnings("nls")
 @Bind
 public class FavouritesDisplay extends AbstractPrototypeSection<Object>
-	implements
-		ItemlikeListEntryExtension<Item, ItemListEntry>
-{
-	@PlugKey("searchresults.add")
-	private static Label ADD_LABEL;
-	@PlugKey("searchresults.add.receipt")
-	private static Label ADD_RECEIPT_LABEL;
-	@PlugKey("searchresults.remove")
-	private static Label REMOVE_LABEL;
-	@PlugKey("searchresults.remove.confirm")
-	private static Label REMOVE_CONFIRM_LABEL;
-	@PlugKey("searchresults.remove.receipt")
-	private static Label REMOVE_RECEIPT_LABEL;
+    implements ItemlikeListEntryExtension<Item, ItemListEntry> {
+  @PlugKey("searchresults.add")
+  private static Label ADD_LABEL;
 
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("searchresults.add.receipt")
+  private static Label ADD_RECEIPT_LABEL;
 
-	@Inject
-	private BookmarkService bookmarkService;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private ReceiptService receiptService;
+  @PlugKey("searchresults.remove")
+  private static Label REMOVE_LABEL;
 
-	@Inject
-	@Component
-	private FavouritesDialog dialog;
+  @PlugKey("searchresults.remove.confirm")
+  private static Label REMOVE_CONFIRM_LABEL;
 
-	private JSCallable removeFunc;
+  @PlugKey("searchresults.remove.receipt")
+  private static Label REMOVE_RECEIPT_LABEL;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @EventFactory private EventGenerator events;
 
-		removeFunc = events.getSubmitValuesFunction("removeFavourite");
+  @Inject private BookmarkService bookmarkService;
+  @Inject private ItemService itemService;
+  @Inject private ReceiptService receiptService;
 
-		dialog.setOkCallback(events.getSubmitValuesFunction("addFavourite"));
-	}
+  @Inject @Component private FavouritesDialog dialog;
 
-	@Override
-	public ProcessEntryCallback<Item, ItemListEntry> processEntries(RenderContext context, List<ItemListEntry> entries,
-		final ListSettings<ItemListEntry> settings)
-	{
+  private JSCallable removeFunc;
 
-		if( CurrentUser.wasAutoLoggedIn() )
-		{
-			return null;
-		}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		final List<Item> bookmarked = bookmarkService.filterNonBookmarkedItems(AbstractItemlikeListEntry
-			.getItems(entries));
+    removeFunc = events.getSubmitValuesFunction("removeFavourite");
 
-		return new ProcessEntryCallback<Item, ItemListEntry>()
-		{
-			@Override
-			public void processEntry(ItemListEntry entry)
-			{
-				if( entry.isFlagSet("com.tle.web.favourites.DontShow") )
-				{
-					return;
-				}
+    dialog.setOkCallback(events.getSubmitValuesFunction("addFavourite"));
+  }
 
-				final Item item = entry.getItem();
-				final HtmlLinkState link;
-				final boolean isBookmarked = bookmarked.contains(item);
+  @Override
+  public ProcessEntryCallback<Item, ItemListEntry> processEntries(
+      RenderContext context,
+      List<ItemListEntry> entries,
+      final ListSettings<ItemListEntry> settings) {
 
-				if( !CurrentUser.isGuest() )
-				{
-					// string literal so don't have to include
-					// com.tle.web.searching
-					if( settings.getAttribute("gallery.result") != null
-						|| settings.getAttribute("video.result") != null )
-					{
-						link = new HtmlLinkState(isBookmarked ? new IconLabel(Icon.FAVOURITES, null, true)
-							: new IconLabel(Icon.FAVOURITES_EMPTY, null, true));
-						link.setTitle(isBookmarked ? REMOVE_LABEL : ADD_LABEL);
-						link.addClass("gallery-action");
-					}
-					else
-					{
-						link = new HtmlLinkState(isBookmarked ? REMOVE_LABEL : ADD_LABEL);
-					}
+    if (CurrentUser.wasAutoLoggedIn()) {
+      return null;
+    }
 
-					if( isBookmarked )
-					{
-						link.setClickHandler(new OverrideHandler(removeFunc, item.getItemId())
-							.addValidator(new Confirm(REMOVE_CONFIRM_LABEL)));
-					}
-					else
-					{
-						link.setClickHandler(new OverrideHandler(dialog.getOpenFunction(), item.getItemId()));
-					}
-					entry.addRatingMetadata(link);
-				}
-			}
-		};
-	}
+    final List<Item> bookmarked =
+        bookmarkService.filterNonBookmarkedItems(AbstractItemlikeListEntry.getItems(entries));
 
-	@EventHandlerMethod
-	public void removeFavourite(SectionInfo info, String itemId)
-	{
-		bookmarkService.delete(bookmarkService.getByItem(new ItemId(itemId)).getId());
-		receiptService.setReceipt(REMOVE_RECEIPT_LABEL);
-	}
+    return new ProcessEntryCallback<Item, ItemListEntry>() {
+      @Override
+      public void processEntry(ItemListEntry entry) {
+        if (entry.isFlagSet("com.tle.web.favourites.DontShow")) {
+          return;
+        }
 
-	@EventHandlerMethod
-	public void addFavourite(SectionInfo info, String tagString, boolean latest, String itemId)
-	{
-		Item item = itemService.get(new ItemId(itemId));
-		bookmarkService.add(item, tagString, latest);
-		receiptService.setReceipt(ADD_RECEIPT_LABEL);
-	}
+        final Item item = entry.getItem();
+        final HtmlLinkState link;
+        final boolean isBookmarked = bookmarked.contains(item);
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-	}
+        if (!CurrentUser.isGuest()) {
+          // string literal so don't have to include
+          // com.tle.web.searching
+          if (settings.getAttribute("gallery.result") != null
+              || settings.getAttribute("video.result") != null) {
+            link =
+                new HtmlLinkState(
+                    isBookmarked
+                        ? new IconLabel(Icon.FAVOURITES, null, true)
+                        : new IconLabel(Icon.FAVOURITES_EMPTY, null, true));
+            link.setTitle(isBookmarked ? REMOVE_LABEL : ADD_LABEL);
+            link.addClass("gallery-action");
+          } else {
+            link = new HtmlLinkState(isBookmarked ? REMOVE_LABEL : ADD_LABEL);
+          }
 
-	@Override
-	public Class<Object> getModelClass()
-	{
-		return Object.class;
-	}
+          if (isBookmarked) {
+            link.setClickHandler(
+                new OverrideHandler(removeFunc, item.getItemId())
+                    .addValidator(new Confirm(REMOVE_CONFIRM_LABEL)));
+          } else {
+            link.setClickHandler(new OverrideHandler(dialog.getOpenFunction(), item.getItemId()));
+          }
+          entry.addRatingMetadata(link);
+        }
+      }
+    };
+  }
 
-	@Override
-	public String getItemExtensionType()
-	{
-		return null;
-	}
+  @EventHandlerMethod
+  public void removeFavourite(SectionInfo info, String itemId) {
+    bookmarkService.delete(bookmarkService.getByItem(new ItemId(itemId)).getId());
+    receiptService.setReceipt(REMOVE_RECEIPT_LABEL);
+  }
+
+  @EventHandlerMethod
+  public void addFavourite(SectionInfo info, String tagString, boolean latest, String itemId) {
+    Item item = itemService.get(new ItemId(itemId));
+    bookmarkService.add(item, tagString, latest);
+    receiptService.setReceipt(ADD_RECEIPT_LABEL);
+  }
+
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+  }
+
+  @Override
+  public Class<Object> getModelClass() {
+    return Object.class;
+  }
+
+  @Override
+  public String getItemExtensionType() {
+    return null;
+  }
 }

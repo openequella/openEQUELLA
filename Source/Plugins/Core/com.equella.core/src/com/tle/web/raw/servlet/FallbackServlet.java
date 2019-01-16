@@ -35,42 +35,43 @@ import com.tle.web.resources.AbstractResourcesServlet;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class FallbackServlet extends AbstractResourcesServlet
-{
-	private static final Map<String, String> CONTENT_TYPES = ImmutableMap.of("js", "application/javascript", "css",
-		"text/css", "gif", "image/gif", "png", "image/png");
+public class FallbackServlet extends AbstractResourcesServlet {
+  private static final Map<String, String> CONTENT_TYPES =
+      ImmutableMap.of(
+          "js",
+          "application/javascript",
+          "css",
+          "text/css",
+          "gif",
+          "image/gif",
+          "png",
+          "image/png");
 
-	@Inject
-	private PluginService pluginService;
+  @Inject private PluginService pluginService;
 
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-		IOException
-	{
-		String pathInfo = request.getPathInfo();
-		String mofo = request.getServletPath() + Strings.nullToEmpty(pathInfo);
-		String mimeType = null;
+  @Override
+  protected void service(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    String pathInfo = request.getPathInfo();
+    String mofo = request.getServletPath() + Strings.nullToEmpty(pathInfo);
+    String mimeType = null;
 
-		if( !Strings.isNullOrEmpty(pathInfo) )
-		{
-			String ext = PathUtils.extension(pathInfo);
-			if( ext != null && CONTENT_TYPES.containsKey(ext) )
-			{
-				mimeType = CONTENT_TYPES.get(ext);
-			}
-		}
-		service(request, response, mofo, mimeType);
-	}
+    if (!Strings.isNullOrEmpty(pathInfo)) {
+      String ext = PathUtils.extension(pathInfo);
+      if (ext != null && CONTENT_TYPES.containsKey(ext)) {
+        mimeType = CONTENT_TYPES.get(ext);
+      }
+    }
+    service(request, response, mofo, mimeType);
+  }
 
-	@Override
-	public String getRootPath()
-	{
-		return "web/";
-	}
+  @Override
+  public String getRootPath() {
+    return "web/";
+  }
 
-	@Override
-	public String getPluginId(HttpServletRequest request)
-	{
-		return pluginService.getPluginIdForObject(FallbackServlet.class);
-	}
+  @Override
+  public String getPluginId(HttpServletRequest request) {
+    return pluginService.getPluginIdForObject(FallbackServlet.class);
+  }
 }

@@ -59,141 +59,137 @@ import com.tle.web.sections.standard.annotations.Component;
 
 @SuppressWarnings("nls")
 @Bind
-public class EchoServerListSection extends AbstractPrototypeSection<EchoServerListSection.ListEchoServersSectionModel>
-	implements
-		HtmlRenderer
-{
-	@PlugKey("serverlist.link.add")
-	private static Label LABEL_LINK_ADD;
-	@PlugKey("serverlist.emptylist")
-	private static Label LABEL_EMPTY_LIST;
-	@PlugKey("serverlist.link.edit")
-	private static Label LABEL_LINK_EDIT;
-	@PlugKey("serverlist.link.delete")
-	private static Label LABEL_LINK_DELETE;
-	@PlugKey("serverlist.column.echoserver")
-	private static Label LABEL_ECHO_SERVER;
+public class EchoServerListSection
+    extends AbstractPrototypeSection<EchoServerListSection.ListEchoServersSectionModel>
+    implements HtmlRenderer {
+  @PlugKey("serverlist.link.add")
+  private static Label LABEL_LINK_ADD;
 
-	@PlugKey("serverlist.confirm.delete")
-	private static Confirm CONFIRM_DELETE;
+  @PlugKey("serverlist.emptylist")
+  private static Label LABEL_EMPTY_LIST;
 
-	@EventFactory
-	private EventGenerator events;
-	@AjaxFactory
-	private AjaxGenerator ajax;
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @PlugKey("serverlist.link.edit")
+  private static Label LABEL_LINK_EDIT;
 
-	@Inject
-	private BundleCache bundleCache;
-	@Inject
-	private EchoService echoService;
-	@Inject
-	private TLEAclManager aclService;
+  @PlugKey("serverlist.link.delete")
+  private static Label LABEL_LINK_DELETE;
 
-	@Component
-	private Link addServerLink;
-	@Component(name = "c")
-	private SelectionsTable serversTable;
+  @PlugKey("serverlist.column.echoserver")
+  private static Label LABEL_ECHO_SERVER;
 
-	@TreeLookup
-	private EchoServerEditorSection addServerSection;
+  @PlugKey("serverlist.confirm.delete")
+  private static Confirm CONFIRM_DELETE;
 
-	private JSCallable editFunction;
-	private JSCallable deleteFunction;
+  @EventFactory private EventGenerator events;
+  @AjaxFactory private AjaxGenerator ajax;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Inject private BundleCache bundleCache;
+  @Inject private EchoService echoService;
+  @Inject private TLEAclManager aclService;
 
-		addServerLink.setLabel(LABEL_LINK_ADD);
-		addServerLink.setClickHandler(events.getNamedHandler("newEchoServer"));
+  @Component private Link addServerLink;
 
-		deleteFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("deleteEchoServer"),
-			ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), "echoservers");
+  @Component(name = "c")
+  private SelectionsTable serversTable;
 
-		editFunction = events.getSubmitValuesFunction("editEchoServer");
+  @TreeLookup private EchoServerEditorSection addServerSection;
 
-		serversTable.setColumnHeadings(LABEL_ECHO_SERVER, null);
-		serversTable.setColumnSorts(Sort.PRIMARY_ASC, Sort.NONE);
-		serversTable.setSelectionsModel(new EchoServerModel());
-		serversTable.setNothingSelectedText(LABEL_EMPTY_LIST);
-		serversTable.setAddAction(addServerLink);
-	}
+  private JSCallable editFunction;
+  private JSCallable deleteFunction;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final boolean canAdd = !aclService.filterNonGrantedPrivileges(EchoConstants.PRIV_CREATE_ECHO).isEmpty();
-		addServerLink.setDisplayed(context, canAdd);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		return viewFactory.createNamedResult(OneColumnLayout.BODY, "echoservers.ftl", this);
-	}
+    addServerLink.setLabel(LABEL_LINK_ADD);
+    addServerLink.setClickHandler(events.getNamedHandler("newEchoServer"));
 
-	@EventHandlerMethod
-	public void editEchoServer(SectionInfo info, String uuid)
-	{
-		addServerSection.startEdit(info, uuid);
-	}
+    deleteFunction =
+        ajax.getAjaxUpdateDomFunction(
+            tree,
+            this,
+            events.getEventHandler("deleteEchoServer"),
+            ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
+            "echoservers");
 
-	@EventHandlerMethod
-	public void newEchoServer(SectionInfo info)
-	{
-		addServerSection.createNew(info);
-	}
+    editFunction = events.getSubmitValuesFunction("editEchoServer");
 
-	@EventHandlerMethod
-	public void deleteEchoServer(SectionInfo info, String uuid)
-	{
-		echoService.delete(echoService.getByUuid(uuid), false);
-	}
+    serversTable.setColumnHeadings(LABEL_ECHO_SERVER, null);
+    serversTable.setColumnSorts(Sort.PRIMARY_ASC, Sort.NONE);
+    serversTable.setSelectionsModel(new EchoServerModel());
+    serversTable.setNothingSelectedText(LABEL_EMPTY_LIST);
+    serversTable.setAddAction(addServerLink);
+  }
 
-	@Override
-	public Class<ListEchoServersSectionModel> getModelClass()
-	{
-		return ListEchoServersSectionModel.class;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    final boolean canAdd =
+        !aclService.filterNonGrantedPrivileges(EchoConstants.PRIV_CREATE_ECHO).isEmpty();
+    addServerLink.setDisplayed(context, canAdd);
 
-	private class EchoServerModel extends DynamicSelectionsTableModel<BaseEntityLabel>
-	{
-		@Override
-		protected List<BaseEntityLabel> getSourceList(SectionInfo info)
-		{
-			return echoService.listEditable();
-		}
+    return viewFactory.createNamedResult(OneColumnLayout.BODY, "echoservers.ftl", this);
+  }
 
-		@Override
-		protected void transform(SectionInfo info, SelectionsTableSelection selection, BaseEntityLabel echoServer,
-			List<SectionRenderable> actions, int index)
-		{
-			selection.setViewAction(new LabelRenderer(new BundleLabel(echoServer.getBundleId(), bundleCache)));
-			final String uuid = echoServer.getUuid();
+  @EventHandlerMethod
+  public void editEchoServer(SectionInfo info, String uuid) {
+    addServerSection.startEdit(info, uuid);
+  }
 
-			if( echoService.canEdit(echoServer) )
-			{
-				actions.add(makeAction(LABEL_LINK_EDIT, new OverrideHandler(editFunction, uuid), "edit"));
-			}
-			if( echoService.canDelete(echoServer) )
-			{
-				actions.add(makeAction(LABEL_LINK_DELETE,
-					new OverrideHandler(deleteFunction, uuid).addValidator(CONFIRM_DELETE), "delete"));
-			}
-		}
-	}
+  @EventHandlerMethod
+  public void newEchoServer(SectionInfo info) {
+    addServerSection.createNew(info);
+  }
 
-	public static class ListEchoServersSectionModel extends OneColumnLayout.OneColumnLayoutModel
-	{
-		// Here there be dragons
-	}
+  @EventHandlerMethod
+  public void deleteEchoServer(SectionInfo info, String uuid) {
+    echoService.delete(echoService.getByUuid(uuid), false);
+  }
 
-	public Link getAddServerLink()
-	{
-		return addServerLink;
-	}
+  @Override
+  public Class<ListEchoServersSectionModel> getModelClass() {
+    return ListEchoServersSectionModel.class;
+  }
 
-	public SelectionsTable getServersTable()
-	{
-		return serversTable;
-	}
+  private class EchoServerModel extends DynamicSelectionsTableModel<BaseEntityLabel> {
+    @Override
+    protected List<BaseEntityLabel> getSourceList(SectionInfo info) {
+      return echoService.listEditable();
+    }
+
+    @Override
+    protected void transform(
+        SectionInfo info,
+        SelectionsTableSelection selection,
+        BaseEntityLabel echoServer,
+        List<SectionRenderable> actions,
+        int index) {
+      selection.setViewAction(
+          new LabelRenderer(new BundleLabel(echoServer.getBundleId(), bundleCache)));
+      final String uuid = echoServer.getUuid();
+
+      if (echoService.canEdit(echoServer)) {
+        actions.add(makeAction(LABEL_LINK_EDIT, new OverrideHandler(editFunction, uuid), "edit"));
+      }
+      if (echoService.canDelete(echoServer)) {
+        actions.add(
+            makeAction(
+                LABEL_LINK_DELETE,
+                new OverrideHandler(deleteFunction, uuid).addValidator(CONFIRM_DELETE),
+                "delete"));
+      }
+    }
+  }
+
+  public static class ListEchoServersSectionModel extends OneColumnLayout.OneColumnLayoutModel {
+    // Here there be dragons
+  }
+
+  public Link getAddServerLink() {
+    return addServerLink;
+  }
+
+  public SelectionsTable getServersTable() {
+    return serversTable;
+  }
 }

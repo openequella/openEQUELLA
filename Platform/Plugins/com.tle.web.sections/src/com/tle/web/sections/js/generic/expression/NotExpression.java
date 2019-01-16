@@ -24,24 +24,20 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.JSExpression;
 
 @NonNullByDefault
-public class NotExpression extends BooleanExpression
-{
-	private JSExpression inner;
+public class NotExpression extends BooleanExpression {
+  private JSExpression inner;
 
-	public NotExpression(JSExpression inner)
-	{
-		this.inner = inner;
-	}
+  public NotExpression(JSExpression inner) {
+    this.inner = inner;
+  }
 
-	@Override
-	public String getExpression(@Nullable RenderContext info)
-	{
-		return "!(" + inner.getExpression(info) + ")"; //$NON-NLS-1$//$NON-NLS-2$
-	}
+  @Override
+  public String getExpression(@Nullable RenderContext info) {
+    return "!(" + inner.getExpression(info) + ")"; // $NON-NLS-1$//$NON-NLS-2$
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		SectionUtils.preRender(info, inner);
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    SectionUtils.preRender(info, inner);
+  }
 }

@@ -57,139 +57,132 @@ import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 
 @SuppressWarnings("nls")
-public class RootShortcutUrlsSettingsSection extends OneColumnLayout<ShortcutUrlsSettingsModel>
-{
-	@PlugKey("shortcuts.page.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("shortcuts.table.heading.text")
-	private static Label LABEL_SHORTCUT_TEXT;
-	@PlugKey("shortcuts.table.heading.url")
-	private static Label LABEL_SHORTCUT_URL;
-	@PlugKey("shortcuts.table.emptylist")
-	private static Label LABEL_EMPTY;
-	@PlugKey("shortcuts.table.delete")
-	private static Label DELETE_LABEL;
-	@PlugKey("shortcuts.table.confirm.delete")
-	private static Confirm CONFIRM_DELETE;
+public class RootShortcutUrlsSettingsSection extends OneColumnLayout<ShortcutUrlsSettingsModel> {
+  @PlugKey("shortcuts.page.title")
+  private static Label LABEL_TITLE;
 
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("shortcuts.table.heading.text")
+  private static Label LABEL_SHORTCUT_TEXT;
 
-	@Inject
-	private ConfigurationService configService;
-	@Inject
-	private ShortcutUrlsSettingsPrivilegeTreeProvider securityProvider;
+  @PlugKey("shortcuts.table.heading.url")
+  private static Label LABEL_SHORTCUT_URL;
 
-	@Component
-	private SelectionsTable shortcutsTable;
-	@Inject
-	@Component
-	private AddShortcutUrlDialog addShortcutUrlDialog;
-	@PlugKey("shortcuts.link.add")
-	@Component
-	private Link addShortcutUrlLink;
+  @PlugKey("shortcuts.table.emptylist")
+  private static Label LABEL_EMPTY;
 
-	private JSCallable deleteFunc;
+  @PlugKey("shortcuts.table.delete")
+  private static Label DELETE_LABEL;
 
-	@Override
-	public void registered(final String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		addShortcutUrlDialog.setOkCallback(new ReloadFunction());
-		addShortcutUrlLink.setClickHandler(addShortcutUrlDialog.getOpenFunction());
+  @PlugKey("shortcuts.table.confirm.delete")
+  private static Confirm CONFIRM_DELETE;
 
-		deleteFunc = events.getSubmitValuesFunction("delete");
+  @EventFactory private EventGenerator events;
 
-		shortcutsTable.setColumnHeadings(LABEL_SHORTCUT_TEXT, LABEL_SHORTCUT_URL, null);
-		shortcutsTable.setColumnSorts(Sort.PRIMARY_ASC, Sort.SORTABLE_ASC, Sort.NONE);
-		shortcutsTable.setSelectionsModel(new ShortcutURLModel());
-		shortcutsTable.setNothingSelectedText(LABEL_EMPTY);
-		shortcutsTable.setAddAction(addShortcutUrlLink);
-	}
+  @Inject private ConfigurationService configService;
+  @Inject private ShortcutUrlsSettingsPrivilegeTreeProvider securityProvider;
 
-	@Override
-	protected TemplateResult setupTemplate(RenderEventContext context)
-	{
-		securityProvider.checkAuthorised();
-		getModel(context).setBaseUrl(CurrentInstitution.get().getUrl());
-		return new GenericTemplateResult(viewFactory.createNamedResult(BODY, "shortcuturlssettings.ftl", this));
-	}
+  @Component private SelectionsTable shortcutsTable;
+  @Inject @Component private AddShortcutUrlDialog addShortcutUrlDialog;
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		decorations.setTitle(LABEL_TITLE);
-		crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
-	}
+  @PlugKey("shortcuts.link.add")
+  @Component
+  private Link addShortcutUrlLink;
 
-	private ShortcutUrls getShortcutUrls()
-	{
-		return configService.getProperties(new ShortcutUrls());
-	}
+  private JSCallable deleteFunc;
 
-	@EventHandlerMethod
-	public void delete(SectionInfo info, String key)
-	{
-		ShortcutUrls shortcutUrls = getShortcutUrls();
-		shortcutUrls.getShortcuts().remove(key);
-		configService.setProperties(shortcutUrls);
-	}
+  @Override
+  public void registered(final String id, SectionTree tree) {
+    super.registered(id, tree);
+    addShortcutUrlDialog.setOkCallback(new ReloadFunction());
+    addShortcutUrlLink.setClickHandler(addShortcutUrlDialog.getOpenFunction());
 
-	@Override
-	public Class<RootShortcutUrlsSettingsSection.ShortcutUrlsSettingsModel> getModelClass()
-	{
-		return ShortcutUrlsSettingsModel.class;
-	}
+    deleteFunc = events.getSubmitValuesFunction("delete");
 
-	private class ShortcutURLModel extends DynamicSelectionsTableModel<Pair<String, String>>
-	{
-		@Override
-		protected List<Pair<String, String>> getSourceList(SectionInfo info)
-		{
-			List<Pair<String, String>> shortcutUrls = Lists.newArrayList();
-			Map<String, String> scUrls = getShortcutUrls().getShortcuts();
-			for( Entry<String, String> sc : scUrls.entrySet() )
-			{
-				shortcutUrls.add(new Pair<String, String>(sc.getKey(), sc.getValue()));
-			}
+    shortcutsTable.setColumnHeadings(LABEL_SHORTCUT_TEXT, LABEL_SHORTCUT_URL, null);
+    shortcutsTable.setColumnSorts(Sort.PRIMARY_ASC, Sort.SORTABLE_ASC, Sort.NONE);
+    shortcutsTable.setSelectionsModel(new ShortcutURLModel());
+    shortcutsTable.setNothingSelectedText(LABEL_EMPTY);
+    shortcutsTable.setAddAction(addShortcutUrlLink);
+  }
 
-			return shortcutUrls;
-		}
+  @Override
+  protected TemplateResult setupTemplate(RenderEventContext context) {
+    securityProvider.checkAuthorised();
+    getModel(context).setBaseUrl(CurrentInstitution.get().getUrl());
+    return new GenericTemplateResult(
+        viewFactory.createNamedResult(BODY, "shortcuturlssettings.ftl", this));
+  }
 
-		@Override
-		protected void transform(SectionInfo info, SelectionsTableSelection selection, Pair<String, String> shortcutUrl,
-			List<SectionRenderable> actions, int index)
-		{
-			String shortcut = shortcutUrl.getFirst();
-			String url = shortcutUrl.getSecond();
-			selection.setName(new TextLabel(shortcut));
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    decorations.setTitle(LABEL_TITLE);
+    crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
+  }
 
-			TableCell urlCell = new TableCell(url);
-			urlCell.addClass("middle");
-			selection.getCells().add(urlCell);
+  private ShortcutUrls getShortcutUrls() {
+    return configService.getProperties(new ShortcutUrls());
+  }
 
-			actions.add(
-				makeRemoveAction(DELETE_LABEL, new OverrideHandler(deleteFunc, shortcut).addValidator(CONFIRM_DELETE)));
-		}
-	}
+  @EventHandlerMethod
+  public void delete(SectionInfo info, String key) {
+    ShortcutUrls shortcutUrls = getShortcutUrls();
+    shortcutUrls.getShortcuts().remove(key);
+    configService.setProperties(shortcutUrls);
+  }
 
-	public static class ShortcutUrlsSettingsModel extends OneColumnLayout.OneColumnLayoutModel
-	{
-		private String baseUrl;
+  @Override
+  public Class<RootShortcutUrlsSettingsSection.ShortcutUrlsSettingsModel> getModelClass() {
+    return ShortcutUrlsSettingsModel.class;
+  }
 
-		public String getBaseUrl()
-		{
-			return baseUrl;
-		}
+  private class ShortcutURLModel extends DynamicSelectionsTableModel<Pair<String, String>> {
+    @Override
+    protected List<Pair<String, String>> getSourceList(SectionInfo info) {
+      List<Pair<String, String>> shortcutUrls = Lists.newArrayList();
+      Map<String, String> scUrls = getShortcutUrls().getShortcuts();
+      for (Entry<String, String> sc : scUrls.entrySet()) {
+        shortcutUrls.add(new Pair<String, String>(sc.getKey(), sc.getValue()));
+      }
 
-		public void setBaseUrl(String baseUrl)
-		{
-			this.baseUrl = baseUrl;
-		}
-	}
+      return shortcutUrls;
+    }
 
-	public SelectionsTable getShortcutsTable()
-	{
-		return shortcutsTable;
-	}
+    @Override
+    protected void transform(
+        SectionInfo info,
+        SelectionsTableSelection selection,
+        Pair<String, String> shortcutUrl,
+        List<SectionRenderable> actions,
+        int index) {
+      String shortcut = shortcutUrl.getFirst();
+      String url = shortcutUrl.getSecond();
+      selection.setName(new TextLabel(shortcut));
+
+      TableCell urlCell = new TableCell(url);
+      urlCell.addClass("middle");
+      selection.getCells().add(urlCell);
+
+      actions.add(
+          makeRemoveAction(
+              DELETE_LABEL,
+              new OverrideHandler(deleteFunc, shortcut).addValidator(CONFIRM_DELETE)));
+    }
+  }
+
+  public static class ShortcutUrlsSettingsModel extends OneColumnLayout.OneColumnLayoutModel {
+    private String baseUrl;
+
+    public String getBaseUrl() {
+      return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+      this.baseUrl = baseUrl;
+    }
+  }
+
+  public SelectionsTable getShortcutsTable() {
+    return shortcutsTable;
+  }
 }

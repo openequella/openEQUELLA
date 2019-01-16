@@ -34,32 +34,31 @@ import com.tle.web.template.section.MenuContributor;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class FavouritesMenuContributor implements MenuContributor
-{
-	private static final Label LABEL_KEY = new KeyLabel(ResourcesService.getResourceHelper(
-		FavouritesMenuContributor.class).key("menu.favourites"));
-	private static final String ICON_PATH = ResourcesService.getResourceHelper(FavouritesMenuContributor.class).url(
-		"images/menu-icon-favourites.png");
+public class FavouritesMenuContributor implements MenuContributor {
+  private static final Label LABEL_KEY =
+      new KeyLabel(
+          ResourcesService.getResourceHelper(FavouritesMenuContributor.class)
+              .key("menu.favourites"));
+  private static final String ICON_PATH =
+      ResourcesService.getResourceHelper(FavouritesMenuContributor.class)
+          .url("images/menu-icon-favourites.png");
 
-	@Override
-	public void clearCachedData()
-	{
-		// Boom
-	}
+  @Override
+  public void clearCachedData() {
+    // Boom
+  }
 
-	@Override
-	public List<MenuContribution> getMenuContributions(SectionInfo info)
-	{
-		if( CurrentUser.wasAutoLoggedIn() )
-		{
-			return Collections.emptyList();
-		}
+  @Override
+  public List<MenuContribution> getMenuContributions(SectionInfo info) {
+    if (CurrentUser.wasAutoLoggedIn()) {
+      return Collections.emptyList();
+    }
 
-		// TODO: We should be generating a bookmark to the section rather than
-		// hard-coding the URL
-		HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/favourites.do"));
-		hls.setLabel(LABEL_KEY);
-		MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 2, "star_rate");
-		return Collections.singletonList(mc);
-	}
+    // TODO: We should be generating a bookmark to the section rather than
+    // hard-coding the URL
+    HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/favourites.do"));
+    hls.setLabel(LABEL_KEY);
+    MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 2, "star_rate");
+    return Collections.singletonList(mc);
+  }
 }

@@ -50,136 +50,124 @@ import com.tle.core.oauth.service.OAuthService;
 import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.xml.service.impl.XmlServiceImpl;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class OAuthTokenConverter extends AbstractConverter<OAuthToken>
-{
-	private static final String PREFIX = AbstractPluginService.getMyPluginId(OAuthTokenConverter.class)+".";
-	private static final String OAUTHTOKENS = "oauthtoken";
+public class OAuthTokenConverter extends AbstractConverter<OAuthToken> {
+  private static final String PREFIX =
+      AbstractPluginService.getMyPluginId(OAuthTokenConverter.class) + ".";
+  private static final String OAUTHTOKENS = "oauthtoken";
 
-	@Inject
-	private OAuthTokenDao tokenDao;
-	@Inject
-	private OAuthService oauthService;
-	private XStream xstream;
+  @Inject private OAuthTokenDao tokenDao;
+  @Inject private OAuthService oauthService;
+  private XStream xstream;
 
-	@Override
-	public String getStringId()
-	{
-		return OAUTHTOKENS;
-	}
+  @Override
+  public String getStringId() {
+    return OAUTHTOKENS;
+  }
 
-	@Override
-	protected NameValue getStandardTask()
-	{
-		return new BundleNameValue(PREFIX + "converter.name", getStringId());
-	}
+  @Override
+  protected NameValue getStandardTask() {
+    return new BundleNameValue(PREFIX + "converter.name", getStringId());
+  }
 
-	@Override
-	public void doExport(TemporaryFileHandle staging, Institution institution, ConverterParams callback)
-			throws IOException
-	{
-		final DefaultMessageCallback message = new DefaultMessageCallback(PREFIX + "converter.exportmsg");
-		callback.setMessageCallback(message);
-		final List<OAuthToken> tokens = tokenDao.enumerateAll();
-		message.setTotal(tokens.size());
+  @Override
+  public void doExport(
+      TemporaryFileHandle staging, Institution institution, ConverterParams callback)
+      throws IOException {
+    final DefaultMessageCallback message =
+        new DefaultMessageCallback(PREFIX + "converter.exportmsg");
+    callback.setMessageCallback(message);
+    final List<OAuthToken> tokens = tokenDao.enumerateAll();
+    message.setTotal(tokens.size());
 
-		final SubTemporaryFile exportFolder = new SubTemporaryFile(staging, OAUTHTOKENS);
-		xmlHelper.writeExportFormatXmlFile(exportFolder, true);
-		for( OAuthToken token : tokens )
-		{
-			final long id = token.getId();
-			final BucketFile bucketFolder = new BucketFile(exportFolder, id);
-			xmlHelper.writeXmlFile(bucketFolder, id + ".xml", token, getXStream());
+    final SubTemporaryFile exportFolder = new SubTemporaryFile(staging, OAUTHTOKENS);
+    xmlHelper.writeExportFormatXmlFile(exportFolder, true);
+    for (OAuthToken token : tokens) {
+      final long id = token.getId();
+      final BucketFile bucketFolder = new BucketFile(exportFolder, id);
+      xmlHelper.writeXmlFile(bucketFolder, id + ".xml", token, getXStream());
 
-			message.incrementCurrent();
-		}
-	}
+      message.incrementCurrent();
+    }
+  }
 
-	@Override
-	public void doImport(TemporaryFileHandle staging, Institution institution, ConverterParams callback)
-			throws IOException
-	{
-		final DefaultMessageCallback message = new DefaultMessageCallback(PREFIX + "converter.importmsg");
-		callback.setMessageCallback(message);
-		final SubTemporaryFile importFolder = new SubTemporaryFile(staging, OAUTHTOKENS);
-		final List<String> tokenFiles = xmlHelper.getXmlFileList(importFolder);
-		message.setTotal(tokenFiles.size());
+  @Override
+  public void doImport(
+      TemporaryFileHandle staging, Institution institution, ConverterParams callback)
+      throws IOException {
+    final DefaultMessageCallback message =
+        new DefaultMessageCallback(PREFIX + "converter.importmsg");
+    callback.setMessageCallback(message);
+    final SubTemporaryFile importFolder = new SubTemporaryFile(staging, OAUTHTOKENS);
+    final List<String> tokenFiles = xmlHelper.getXmlFileList(importFolder);
+    message.setTotal(tokenFiles.size());
 
-		for( String tokenFile : tokenFiles )
-		{
-			final OAuthToken token = xmlHelper.readXmlFile(importFolder, tokenFile, getXStream());
-			token.setInstitution(institution);
+    for (String tokenFile : tokenFiles) {
+      final OAuthToken token = xmlHelper.readXmlFile(importFolder, tokenFile, getXStream());
+      token.setInstitution(institution);
 
-			tokenDao.save(token);
-			tokenDao.flush();
-			tokenDao.clear();
-			message.incrementCurrent();
-		}
-	}
+      tokenDao.save(token);
+      tokenDao.flush();
+      tokenDao.clear();
+      message.incrementCurrent();
+    }
+  }
 
-	@Override
-	public void doDelete(Institution institution, ConverterParams callback)
-	{
-		final DefaultMessageCallback message = new DefaultMessageCallback(PREFIX + "converter.deletemsg");
-		callback.setMessageCallback(message);
-		final List<OAuthToken> tokens = tokenDao.enumerateAll();
-		message.setTotal(tokens.size());
+  @Override
+  public void doDelete(Institution institution, ConverterParams callback) {
+    final DefaultMessageCallback message =
+        new DefaultMessageCallback(PREFIX + "converter.deletemsg");
+    callback.setMessageCallback(message);
+    final List<OAuthToken> tokens = tokenDao.enumerateAll();
+    message.setTotal(tokens.size());
 
-		for( final OAuthToken token : tokens )
-		{
-			tokenDao.delete(token);
-			tokenDao.flush();
-			tokenDao.clear();
-			message.incrementCurrent();
-		}
-	}
+    for (final OAuthToken token : tokens) {
+      tokenDao.delete(token);
+      tokenDao.flush();
+      tokenDao.clear();
+      message.incrementCurrent();
+    }
+  }
 
-	private synchronized XStream getXStream()
-	{
-		if( xstream == null )
-		{
-			xstream = new XmlServiceImpl.ExtXStream(getClass().getClassLoader()) {
-				@Override
-				protected MapperWrapper wrapMapper(MapperWrapper next) {
-					return new HibernateMapper(next);
-				}
-			};
-			xstream.registerConverter(new HibernateProxyConverter());
-			xstream.registerConverter(new HibernatePersistentCollectionConverter(xstream.getMapper()));
-			xstream.alias("com.tle.core.oauth.beans.OAuthToken", OAuthToken.class);
-			xstream.alias("com.tle.core.oauth.beans.OAuthClient", OAuthClient.class);
-			xstream.registerConverter(new ClientXStreamConverter());
-		}
-		return xstream;
-	}
+  private synchronized XStream getXStream() {
+    if (xstream == null) {
+      xstream =
+          new XmlServiceImpl.ExtXStream(getClass().getClassLoader()) {
+            @Override
+            protected MapperWrapper wrapMapper(MapperWrapper next) {
+              return new HibernateMapper(next);
+            }
+          };
+      xstream.registerConverter(new HibernateProxyConverter());
+      xstream.registerConverter(new HibernatePersistentCollectionConverter(xstream.getMapper()));
+      xstream.alias("com.tle.core.oauth.beans.OAuthToken", OAuthToken.class);
+      xstream.alias("com.tle.core.oauth.beans.OAuthClient", OAuthClient.class);
+      xstream.registerConverter(new ClientXStreamConverter());
+    }
+    return xstream;
+  }
 
-	private class ClientXStreamConverter implements Converter
-	{
-		@SuppressWarnings("rawtypes")
-		@Override
-		public boolean canConvert(Class clazz)
-		{
-			return OAuthClient.class == clazz;
-		}
+  private class ClientXStreamConverter implements Converter {
+    @SuppressWarnings("rawtypes")
+    @Override
+    public boolean canConvert(Class clazz) {
+      return OAuthClient.class == clazz;
+    }
 
-		@Override
-		public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext context)
-		{
-			OAuthClient client = (OAuthClient) obj;
-			String uuid = client.getUuid();
-			writer.addAttribute("uuid", uuid);
-		}
+    @Override
+    public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext context) {
+      OAuthClient client = (OAuthClient) obj;
+      String uuid = client.getUuid();
+      writer.addAttribute("uuid", uuid);
+    }
 
-		@Override
-		public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context)
-		{
-			String uuidFromStream = reader.getAttribute("uuid");
-			return oauthService.getByUuid(uuidFromStream);
-		}
-	}
+    @Override
+    public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+      String uuidFromStream = reader.getAttribute("uuid");
+      return oauthService.getByUuid(uuidFromStream);
+    }
+  }
 }

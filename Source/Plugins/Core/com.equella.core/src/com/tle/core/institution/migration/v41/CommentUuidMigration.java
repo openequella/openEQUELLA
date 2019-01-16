@@ -45,103 +45,95 @@ import com.tle.core.migration.MigrationResult;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class CommentUuidMigration extends AbstractHibernateSchemaMigration
-{
-	private static final int BATCH_SIZE = 1000;
-	private static final String TABLE = "comments";
-	private static final String COLUMN = "uuid";
+public class CommentUuidMigration extends AbstractHibernateSchemaMigration {
+  private static final int BATCH_SIZE = 1000;
+  private static final String TABLE = "comments";
+  private static final String COLUMN = "uuid";
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo("com.tle.core.entity.services.migration.commentuuid.title");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo("com.tle.core.entity.services.migration.commentuuid.title");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class[]{FakeComment.class, FakeItem.class,};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class[] {
+      FakeComment.class, FakeItem.class,
+    };
+  }
 
-	@Override
-	public boolean isBackwardsCompatible()
-	{
-		return false;
-	}
+  @Override
+  public boolean isBackwardsCompatible() {
+    return false;
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		List<String> sql = new ArrayList<String>();
-		sql.addAll(helper.getAddColumnsSQL(TABLE, COLUMN));
-		return sql;
-	}
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    List<String> sql = new ArrayList<String>();
+    sql.addAll(helper.getAddColumnsSQL(TABLE, COLUMN));
+    return sql;
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		List<String> dropModify = new ArrayList<String>();
-		dropModify.addAll(helper.getAddNotNullSQL(TABLE, COLUMN));
-		dropModify.addAll(helper.getAddIndexesAndConstraintsForColumns(TABLE, COLUMN));
-		return dropModify;
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    List<String> dropModify = new ArrayList<String>();
+    dropModify.addAll(helper.getAddNotNullSQL(TABLE, COLUMN));
+    dropModify.addAll(helper.getAddIndexesAndConstraintsForColumns(TABLE, COLUMN));
+    return dropModify;
+  }
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return count(session, "FROM Comment");
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return count(session, "FROM Comment");
+  }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-	{
-		List<FakeComment> comments = session.createQuery("FROM Comment").list();
-		session.clear();
+  @Override
+  @SuppressWarnings("unchecked")
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) {
+    List<FakeComment> comments = session.createQuery("FROM Comment").list();
+    session.clear();
 
-		int i = 0;
-		for( FakeComment c : comments )
-		{
-			c.uuid = UUID.randomUUID().toString();
-			if( Check.isEmpty(c.comment) )
-			{
-				c.comment = null;
-			}
-			session.update(c);
-			i++;
-			if( i % BATCH_SIZE == 0 )
-			{
-				session.flush();
-				session.clear();
-			}
-			result.incrementStatus();
-		}
-		session.flush();
-		session.clear();
-	}
+    int i = 0;
+    for (FakeComment c : comments) {
+      c.uuid = UUID.randomUUID().toString();
+      if (Check.isEmpty(c.comment)) {
+        c.comment = null;
+      }
+      session.update(c);
+      i++;
+      if (i % BATCH_SIZE == 0) {
+        session.flush();
+        session.clear();
+      }
+      result.incrementStatus();
+    }
+    session.flush();
+    session.clear();
+  }
 
-	@Entity(name = "Comment")
-	@Table(name = "comments", uniqueConstraints = {@UniqueConstraint(columnNames = {"item_id", "uuid"})})
-	@AccessType("field")
-	public static class FakeComment
-	{
-		@Id
-		long id;
-		@Column(length = 40, nullable = false)
-		@Index(name = "commentUuidIndex")
-		String uuid;
-		@Lob
-		String comment;
-		@JoinColumn(nullable = false)
-		@ManyToOne(fetch = FetchType.LAZY)
-		FakeItem item;
-	}
+  @Entity(name = "Comment")
+  @Table(
+      name = "comments",
+      uniqueConstraints = {@UniqueConstraint(columnNames = {"item_id", "uuid"})})
+  @AccessType("field")
+  public static class FakeComment {
+    @Id long id;
 
-	@Entity(name = "Item")
-	@AccessType("field")
-	public static class FakeItem
-	{
-		@Id
-		long id;
-	}
+    @Column(length = 40, nullable = false)
+    @Index(name = "commentUuidIndex")
+    String uuid;
+
+    @Lob String comment;
+
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    FakeItem item;
+  }
+
+  @Entity(name = "Item")
+  @AccessType("field")
+  public static class FakeItem {
+    @Id long id;
+  }
 }

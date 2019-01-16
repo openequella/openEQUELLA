@@ -26,11 +26,10 @@ import com.tle.core.institution.convert.XmlMigrator;
 
 @Bind
 @Singleton
-public class DeleteBadUrlsInKeyResourcesMigration extends XmlMigrator
-{
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) throws Exception
-	{
-		// Nothing to do
-	}
+public class DeleteBadUrlsInKeyResourcesMigration extends XmlMigrator {
+  @Override
+  public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
+      throws Exception {
+    // Nothing to do
+  }
 }

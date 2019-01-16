@@ -53,117 +53,108 @@ import com.tle.web.sections.standard.model.TableState.TableHeaderRow;
 @SuppressWarnings("nls")
 @Bind
 public class ModerationQueueItemList
-	extends
-		AbstractItemList<ModerationQueueEntry, AbstractItemList.Model<ModerationQueueEntry>>
-{
-	@PlugKey("modqueue.comment")
-	private static Label LABEL_COMMENT;
-	@PlugKey("listhead.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("listhead.status")
-	private static Label LABEL_STATUS;
-	@PlugKey("listhead.submitted")
-	private static Label LABEL_SUBMITTED;
-	@PlugKey("listhead.lastaction")
-	private static Label LABEL_LAST_ACTION;
+    extends AbstractItemList<ModerationQueueEntry, AbstractItemList.Model<ModerationQueueEntry>> {
+  @PlugKey("modqueue.comment")
+  private static Label LABEL_COMMENT;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@Inject
-	private Provider<ModerationQueueEntry> factory;
-	@Inject
-	private WorkflowService workflowService;
-	@Component
-	@Inject
-	private ModerationQueueCommentDialog commentDialog;
-	@Component(name = "mt")
-	private Table table;
-	@Inject
-	private DateRendererFactory dateRendererFactory;
+  @PlugKey("listhead.title")
+  private static Label LABEL_TITLE;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @PlugKey("listhead.status")
+  private static Label LABEL_STATUS;
 
-		TableHeaderRow header = table.setColumnHeadings(LABEL_TITLE, LABEL_STATUS, LABEL_SUBMITTED, LABEL_LAST_ACTION);
-		header.getCells().get(0).addClass("modqueue-title");
-	}
+  @PlugKey("listhead.submitted")
+  private static Label LABEL_SUBMITTED;
 
-	@Override
-	protected SectionRenderable getRenderable(RenderEventContext context)
-	{
-		TableState tableState = table.getState(context);
-		tableState.setFilterable(false);
-		List<ModerationQueueEntry> items = getModel(context).getItems();
-		for( ModerationQueueEntry item : items )
-		{
-			TableCell statusCell = new TableCell(item.getStatusLabel());
-			statusCell.addClass("nowrap");
-			if( item.getRejectMessage() != null )
-			{
-				statusCell.addContent(" (");
-				statusCell.addContent(item.getRejectMessage());
-				statusCell.addContent(")");
-			}
+  @PlugKey("listhead.lastaction")
+  private static Label LABEL_LAST_ACTION;
 
-			Date submittedDate = item.getSubmittedDate();
-			SectionRenderable lastActionRenderer;
-			Date lastActionDate = item.getLastActionDate();
-			if( lastActionDate == null )
-			{
-				lastActionRenderer = new SimpleSectionResult("");
-			}
-			else
-			{
-				lastActionRenderer = dateRendererFactory.createDateRenderer(lastActionDate);
-			}
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @Inject private Provider<ModerationQueueEntry> factory;
+  @Inject private WorkflowService workflowService;
+  @Component @Inject private ModerationQueueCommentDialog commentDialog;
 
-			tableState.addRow(item.getTitle(), statusCell, dateRendererFactory.createDateRenderer(submittedDate),
-				lastActionRenderer);
-		}
+  @Component(name = "mt")
+  private Table table;
 
-		return viewFactory.createResult("queuelist.ftl", this);
-	}
+  @Inject private DateRendererFactory dateRendererFactory;
 
-	@Override
-	protected Set<String> getExtensionTypes()
-	{
-		return Sets.<String>newHashSet();
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	protected ModerationQueueEntry createItemListEntry(SectionInfo info, Item item, FreetextResult result)
-	{
-		final ModerationQueueEntry entry = factory.get();
-		entry.setItem(item);
-		entry.setInfo(info);
-		return entry;
-	}
+    TableHeaderRow header =
+        table.setColumnHeadings(LABEL_TITLE, LABEL_STATUS, LABEL_SUBMITTED, LABEL_LAST_ACTION);
+    header.getCells().get(0).addClass("modqueue-title");
+  }
 
-	@Override
-	protected void customiseListEntries(RenderContext context, List<ModerationQueueEntry> entries)
-	{
-		super.customiseListEntries(context, entries);
-		for( ModerationQueueEntry entry : entries )
-		{
-			final Item item = entry.getItem();
-			if( item.getStatus() == ItemStatus.REJECTED )
-			{
-				String message = workflowService.getLastRejectionMessage(item);
-				if( !Check.isEmpty(message) )
-				{
-					final HtmlLinkState hcs = new HtmlLinkState(
-						new OverrideHandler(commentDialog.getOpenFunction(), item.getItemId().toString()));
-					hcs.setLabel(LABEL_COMMENT);
-					entry.setRejectMessage(hcs);
-				}
-			}
-		}
-	}
+  @Override
+  protected SectionRenderable getRenderable(RenderEventContext context) {
+    TableState tableState = table.getState(context);
+    tableState.setFilterable(false);
+    List<ModerationQueueEntry> items = getModel(context).getItems();
+    for (ModerationQueueEntry item : items) {
+      TableCell statusCell = new TableCell(item.getStatusLabel());
+      statusCell.addClass("nowrap");
+      if (item.getRejectMessage() != null) {
+        statusCell.addContent(" (");
+        statusCell.addContent(item.getRejectMessage());
+        statusCell.addContent(")");
+      }
 
-	public Table getTable()
-	{
-		return table;
-	}
+      Date submittedDate = item.getSubmittedDate();
+      SectionRenderable lastActionRenderer;
+      Date lastActionDate = item.getLastActionDate();
+      if (lastActionDate == null) {
+        lastActionRenderer = new SimpleSectionResult("");
+      } else {
+        lastActionRenderer = dateRendererFactory.createDateRenderer(lastActionDate);
+      }
+
+      tableState.addRow(
+          item.getTitle(),
+          statusCell,
+          dateRendererFactory.createDateRenderer(submittedDate),
+          lastActionRenderer);
+    }
+
+    return viewFactory.createResult("queuelist.ftl", this);
+  }
+
+  @Override
+  protected Set<String> getExtensionTypes() {
+    return Sets.<String>newHashSet();
+  }
+
+  @Override
+  protected ModerationQueueEntry createItemListEntry(
+      SectionInfo info, Item item, FreetextResult result) {
+    final ModerationQueueEntry entry = factory.get();
+    entry.setItem(item);
+    entry.setInfo(info);
+    return entry;
+  }
+
+  @Override
+  protected void customiseListEntries(RenderContext context, List<ModerationQueueEntry> entries) {
+    super.customiseListEntries(context, entries);
+    for (ModerationQueueEntry entry : entries) {
+      final Item item = entry.getItem();
+      if (item.getStatus() == ItemStatus.REJECTED) {
+        String message = workflowService.getLastRejectionMessage(item);
+        if (!Check.isEmpty(message)) {
+          final HtmlLinkState hcs =
+              new HtmlLinkState(
+                  new OverrideHandler(
+                      commentDialog.getOpenFunction(), item.getItemId().toString()));
+          hcs.setLabel(LABEL_COMMENT);
+          entry.setRejectMessage(hcs);
+        }
+      }
+    }
+  }
+
+  public Table getTable() {
+    return table;
+  }
 }

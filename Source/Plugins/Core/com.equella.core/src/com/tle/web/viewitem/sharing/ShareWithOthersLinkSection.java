@@ -42,97 +42,80 @@ import com.tle.web.viewurl.ItemSectionInfo;
 import com.tle.web.workflow.tasks.ModerationService;
 
 @Bind
-public class ShareWithOthersLinkSection extends AbstractParentViewItemSection<ShareWithOthersLinkModel>
-	implements
-		HideableFromDRMSection
-{
-	@PlugURL("css/share.css")
-	private static String CSS;
+public class ShareWithOthersLinkSection
+    extends AbstractParentViewItemSection<ShareWithOthersLinkModel>
+    implements HideableFromDRMSection {
+  @PlugURL("css/share.css")
+  private static String CSS;
 
-	@EventFactory
-	protected EventGenerator events;
+  @EventFactory protected EventGenerator events;
 
-	@Inject
-	private ModerationService moderationService;
+  @Inject private ModerationService moderationService;
 
-	@TreeLookup
-	private ItemSummaryContentSection contentSection;
-	@TreeLookup
-	private ShareWithOthersContentSection shareWithOthersContentSection;
+  @TreeLookup private ItemSummaryContentSection contentSection;
+  @TreeLookup private ShareWithOthersContentSection shareWithOthersContentSection;
 
-	@Component
-	@PlugKey("summary.sidebar.actions.share.title")
-	private Button button;
+  @Component
+  @PlugKey("summary.sidebar.actions.share.title")
+  private Button button;
 
-	@Override
-	@SuppressWarnings("nls")
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  @SuppressWarnings("nls")
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		button.setClickHandler(events.getNamedHandler("execute"));
-		button.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
-		button.setStyleClass("shareButton");
-		button.addPrerenderables(CssInclude.include(CSS).hasRtl().make());
-	}
+    button.setClickHandler(events.getNamedHandler("execute"));
+    button.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
+    button.setStyleClass("shareButton");
+    button.addPrerenderables(CssInclude.include(CSS).hasRtl().make());
+  }
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		boolean hide = getModel(info).isHide();
+  @Override
+  public boolean canView(SectionInfo info) {
+    boolean hide = getModel(info).isHide();
 
-		if( hide )
-		{
-			return false;
-		}
-		else
-		{
-			ItemSectionInfo itemInfo = getItemInfo(info);
-			return itemInfo.getViewableItem().isItemForReal() && !moderationService.isModerating(info)
-				&& shareWithOthersContentSection.canView(info);
-		}
-	}
+    if (hide) {
+      return false;
+    } else {
+      ItemSectionInfo itemInfo = getItemInfo(info);
+      return itemInfo.getViewableItem().isItemForReal()
+          && !moderationService.isModerating(info)
+          && shareWithOthersContentSection.canView(info);
+    }
+  }
 
-	@EventHandlerMethod
-	public void execute(SectionInfo info)
-	{
-		contentSection.setSummaryId(info, shareWithOthersContentSection);
-	}
+  @EventHandlerMethod
+  public void execute(SectionInfo info) {
+    contentSection.setSummaryId(info, shareWithOthersContentSection);
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		if( !canView(context) )
-		{
-			return null;
-		}
-		return SectionUtils.renderSectionResult(context, button);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    if (!canView(context)) {
+      return null;
+    }
+    return SectionUtils.renderSectionResult(context, button);
+  }
 
-	@Override
-	public void showSection(SectionInfo info, boolean show)
-	{
-		getModel(info).setHide(!show);
-	}
+  @Override
+  public void showSection(SectionInfo info, boolean show) {
+    getModel(info).setHide(!show);
+  }
 
-	@Override
-	public Class<ShareWithOthersLinkModel> getModelClass()
-	{
-		return ShareWithOthersLinkModel.class;
-	}
+  @Override
+  public Class<ShareWithOthersLinkModel> getModelClass() {
+    return ShareWithOthersLinkModel.class;
+  }
 
-	public static class ShareWithOthersLinkModel
-	{
-		private boolean hide;
+  public static class ShareWithOthersLinkModel {
+    private boolean hide;
 
-		public boolean isHide()
-		{
-			return hide;
-		}
+    public boolean isHide() {
+      return hide;
+    }
 
-		public void setHide(boolean hide)
-		{
-			this.hide = hide;
-		}
-	}
+    public void setHide(boolean hide) {
+      this.hide = hide;
+    }
+  }
 }

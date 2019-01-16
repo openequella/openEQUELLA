@@ -31,34 +31,40 @@ import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.generic.NumberOrderComparator;
 
 @Bind(MyResourcesService.class)
-public class MyResourcesServiceImpl implements MyResourcesService
-{
+public class MyResourcesServiceImpl implements MyResourcesService {
 
-	private PluginResourceHelper helper = ResourcesService.getResourceHelper(getClass());
-	private PluginTracker<MyResourcesSubSearch> tracker;
+  private PluginResourceHelper helper = ResourcesService.getResourceHelper(getClass());
+  private PluginTracker<MyResourcesSubSearch> tracker;
 
-	@Override
-	public List<MyResourcesSubSearch> listSearches()
-	{
-		List<MyResourcesSubSearch> subSearches = new ArrayList<MyResourcesSubSearch>();
-		subSearches.add(new ItemStatusSubSearch(helper.key("subsearch.published"), "published", 100, ItemStatus.LIVE,
-			ItemStatus.REVIEW));
-		subSearches.add(new ItemStatusSubSearch(helper.key("subsearch.draft"), "draft", 200, ItemStatus.DRAFT));
-		ItemStatusSubSearch archiveSearch = new ItemStatusSubSearch(helper.key("subsearch.archived"), "archived", 500,
-			ItemStatus.ARCHIVED);
-		archiveSearch.setShownOnPortal(false);
-		subSearches.add(archiveSearch);
-		subSearches.add(new AllResourcesSubSearch(helper.key("subsearch.all")));
-		subSearches.addAll(tracker.getNewBeanList());
-		Collections.sort(subSearches, NumberOrderComparator.LOWEST_FIRST);
-		return subSearches;
-	}
+  @Override
+  public List<MyResourcesSubSearch> listSearches() {
+    List<MyResourcesSubSearch> subSearches = new ArrayList<MyResourcesSubSearch>();
+    subSearches.add(
+        new ItemStatusSubSearch(
+            helper.key("subsearch.published"),
+            "published",
+            100,
+            ItemStatus.LIVE,
+            ItemStatus.REVIEW));
+    subSearches.add(
+        new ItemStatusSubSearch(helper.key("subsearch.draft"), "draft", 200, ItemStatus.DRAFT));
+    ItemStatusSubSearch archiveSearch =
+        new ItemStatusSubSearch(
+            helper.key("subsearch.archived"), "archived", 500, ItemStatus.ARCHIVED);
+    archiveSearch.setShownOnPortal(false);
+    subSearches.add(archiveSearch);
+    subSearches.add(new AllResourcesSubSearch(helper.key("subsearch.all")));
+    subSearches.addAll(tracker.getNewBeanList());
+    Collections.sort(subSearches, NumberOrderComparator.LOWEST_FIRST);
+    return subSearches;
+  }
 
-	@SuppressWarnings("nls")
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		tracker = new PluginTracker<MyResourcesSubSearch>(pluginService, "com.tle.web.myresources", "subsearch", null)
-			.setBeanKey("bean");
-	}
+  @SuppressWarnings("nls")
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    tracker =
+        new PluginTracker<MyResourcesSubSearch>(
+                pluginService, "com.tle.web.myresources", "subsearch", null)
+            .setBeanKey("bean");
+  }
 }

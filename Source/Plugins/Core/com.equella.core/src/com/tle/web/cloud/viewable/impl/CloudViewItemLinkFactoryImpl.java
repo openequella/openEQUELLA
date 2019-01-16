@@ -39,74 +39,61 @@ import com.tle.web.sections.standard.model.SimpleBookmark;
 @Bind(CloudViewItemLinkFactory.class)
 @Singleton
 @SuppressWarnings("nls")
-public class CloudViewItemLinkFactoryImpl implements CloudViewItemLinkFactory
-{
-	private static final String CLOUD = "cloud/";
+public class CloudViewItemLinkFactoryImpl implements CloudViewItemLinkFactory {
+  private static final String CLOUD = "cloud/";
 
-	@Inject
-	private CloudService cloudService;
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private WebMimeTypeService webMimeTypeService;
+  @Inject private CloudService cloudService;
+  @Inject private InstitutionService institutionService;
+  @Inject private WebMimeTypeService webMimeTypeService;
 
-	@Override
-	public Bookmark createCloudViewLink(ItemKey itemId)
-	{
-		return new CloudBookmark(itemId, null);
-	}
+  @Override
+  public Bookmark createCloudViewLink(ItemKey itemId) {
+    return new CloudBookmark(itemId, null);
+  }
 
-	@Override
-	public Bookmark createCloudViewAttachmentLink(ItemKey itemId, String attachmentUuid)
-	{
-		return new CloudBookmark(itemId, attachmentUuid);
-	}
+  @Override
+  public Bookmark createCloudViewAttachmentLink(ItemKey itemId, String attachmentUuid) {
+    return new CloudBookmark(itemId, attachmentUuid);
+  }
 
-	@Override
-	public Bookmark createThumbnailLink(CloudItem item)
-	{
-		return new SimpleBookmark(
-			webMimeTypeService.getIconForEntry(webMimeTypeService.getEntryForMimeType("equella/item")).toString());
-	}
+  @Override
+  public Bookmark createThumbnailLink(CloudItem item) {
+    return new SimpleBookmark(
+        webMimeTypeService
+            .getIconForEntry(webMimeTypeService.getEntryForMimeType("equella/item"))
+            .toString());
+  }
 
-	@Override
-	public Bookmark createThumbnailAttachmentLink(CloudAttachment attachment, @Nullable MimeEntry mimeType)
-	{
-		final String thumbnail = attachment.getThumbnail();
-		if( thumbnail == null )
-		{
-			final MimeEntry mime = (mimeType == null ? cloudService.getMimeType(attachment) : mimeType);
-			return new SimpleBookmark(webMimeTypeService.getIconForEntry(mime).toString());
-		}
-		return new SimpleBookmark(thumbnail);
-	}
+  @Override
+  public Bookmark createThumbnailAttachmentLink(
+      CloudAttachment attachment, @Nullable MimeEntry mimeType) {
+    final String thumbnail = attachment.getThumbnail();
+    if (thumbnail == null) {
+      final MimeEntry mime = (mimeType == null ? cloudService.getMimeType(attachment) : mimeType);
+      return new SimpleBookmark(webMimeTypeService.getIconForEntry(mime).toString());
+    }
+    return new SimpleBookmark(thumbnail);
+  }
 
-	public class CloudBookmark implements Bookmark
-	{
-		protected final ItemKey itemKey;
-		@Nullable
-		protected final String attUuid;
+  public class CloudBookmark implements Bookmark {
+    protected final ItemKey itemKey;
+    @Nullable protected final String attUuid;
 
-		public CloudBookmark(ItemKey itemKey, @Nullable String attUuid)
-		{
-			this.itemKey = itemKey;
-			this.attUuid = attUuid;
-		}
+    public CloudBookmark(ItemKey itemKey, @Nullable String attUuid) {
+      this.itemKey = itemKey;
+      this.attUuid = attUuid;
+    }
 
-		@Override
-		public String getHref()
-		{
-			final String url;
-			final String itemBase = PathUtils.urlPath(CLOUD, itemKey.toString());
-			if( !Strings.isNullOrEmpty(attUuid) )
-			{
-				url = PathUtils.urlPath(itemBase, "attachment", attUuid);
-			}
-			else
-			{
-				url = itemBase;
-			}
-			return institutionService.institutionalise(url);
-		}
-	}
+    @Override
+    public String getHref() {
+      final String url;
+      final String itemBase = PathUtils.urlPath(CLOUD, itemKey.toString());
+      if (!Strings.isNullOrEmpty(attUuid)) {
+        url = PathUtils.urlPath(itemBase, "attachment", attUuid);
+      } else {
+        url = itemBase;
+      }
+      return institutionService.institutionalise(url);
+    }
+  }
 }

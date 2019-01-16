@@ -45,167 +45,150 @@ import com.tle.core.institution.convert.DefaultMessageCallback;
 import com.tle.core.institution.convert.service.InstitutionImportService.ConvertType;
 import com.tle.core.institution.convert.service.impl.InstitutionImportServiceImpl.ConverterTasks;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class AuditLogConverter extends AbstractConverter<Object>
-{
-	private static final int PER_XML_FILE = 1000;
-	private static final String AUDITLOGS = "auditlogs";
-	private static final String AUDITLOGS2 = "auditlogs2";
+public class AuditLogConverter extends AbstractConverter<Object> {
+  private static final int PER_XML_FILE = 1000;
+  private static final String AUDITLOGS = "auditlogs";
+  private static final String AUDITLOGS2 = "auditlogs2";
 
-	private static final String KEY_NAME = "com.tle.core.entity.services.auditlogs.converter";
+  private static final String KEY_NAME = "com.tle.core.entity.services.auditlogs.converter";
 
-	@Inject
-	private AuditLogService auditLogService;
+  @Inject private AuditLogService auditLogService;
 
-	private XStream xstream;
+  private XStream xstream;
 
-	@PostConstruct
-	protected void setupXStream() {
-		xstream = xmlHelper.createXStream(getClass().getClassLoader());
-		xstream.aliasType("com.tle.beans.audit.AuditLogEntry", AuditLogEntryXml.class);
-	}
+  @PostConstruct
+  protected void setupXStream() {
+    xstream = xmlHelper.createXStream(getClass().getClassLoader());
+    xstream.aliasType("com.tle.beans.audit.AuditLogEntry", AuditLogEntryXml.class);
+  }
 
-	@Override
-	public void doDelete(Institution institution, ConverterParams params)
-	{
-		auditLogService.removeEntriesForInstitution(institution);
-	}
+  @Override
+  public void doDelete(Institution institution, ConverterParams params) {
+    auditLogService.removeEntriesForInstitution(institution);
+  }
 
-	private long getExportCount(final Institution institution)
-	{
-		long auditLogEntryCount = AuditLogJavaDao.countForInstitution(institution);
+  private long getExportCount(final Institution institution) {
+    long auditLogEntryCount = AuditLogJavaDao.countForInstitution(institution);
 
-		long numberOfLogs = (long) Math.ceil((double) auditLogEntryCount / PER_XML_FILE);
+    long numberOfLogs = (long) Math.ceil((double) auditLogEntryCount / PER_XML_FILE);
 
-		Collection<AuditLogExtension> extensions = auditLogService.getExtensions();
-		for( AuditLogExtension auditLogExtension : extensions )
-		{
-			GenericDao<? extends AuditLogTable, Long> dao = auditLogExtension.getDao();
-			long auditLogTableCount = dao.countByCriteria(null, Restrictions.eq("institution", institution));
-			numberOfLogs += (long) Math.ceil((double) auditLogTableCount / PER_XML_FILE);
-		}
+    Collection<AuditLogExtension> extensions = auditLogService.getExtensions();
+    for (AuditLogExtension auditLogExtension : extensions) {
+      GenericDao<? extends AuditLogTable, Long> dao = auditLogExtension.getDao();
+      long auditLogTableCount =
+          dao.countByCriteria(null, Restrictions.eq("institution", institution));
+      numberOfLogs += (long) Math.ceil((double) auditLogTableCount / PER_XML_FILE);
+    }
 
-		return numberOfLogs;
-	}
+    return numberOfLogs;
+  }
 
-	@Override
-	public void doExport(TemporaryFileHandle staging, final Institution institution, ConverterParams callback)
-		throws IOException
-	{
-		int offs = 0;
-		int size = -1;
-		SubTemporaryFile auditFolder = new SubTemporaryFile(staging, AUDITLOGS);
-		final DefaultMessageCallback message = new DefaultMessageCallback(
-			"institutions.converter.generic.calculateitems");
-		callback.setMessageCallback(message);
-		message.setKey("institutions.converter.items.itemsmsg");
-		message.setTotal((int) getExportCount(institution));
+  @Override
+  public void doExport(
+      TemporaryFileHandle staging, final Institution institution, ConverterParams callback)
+      throws IOException {
+    int offs = 0;
+    int size = -1;
+    SubTemporaryFile auditFolder = new SubTemporaryFile(staging, AUDITLOGS);
+    final DefaultMessageCallback message =
+        new DefaultMessageCallback("institutions.converter.generic.calculateitems");
+    callback.setMessageCallback(message);
+    message.setKey("institutions.converter.items.itemsmsg");
+    message.setTotal((int) getExportCount(institution));
 
-		// write out the format details
-		xmlHelper.writeExportFormatXmlFile(auditFolder, true);
-		AuditLogJavaDao.writeExport(auditFolder, PER_XML_FILE, institution, message, xmlHelper, xstream);
+    // write out the format details
+    xmlHelper.writeExportFormatXmlFile(auditFolder, true);
+    AuditLogJavaDao.writeExport(
+        auditFolder, PER_XML_FILE, institution, message, xmlHelper, xstream);
 
-		Collection<AuditLogExtension> extensions = auditLogService.getExtensions();
-		for( AuditLogExtension auditLogExtension : extensions )
-		{
-			GenericDao<? extends AuditLogTable, Long> dao = auditLogExtension.getDao();
-			offs = 0;
-			size = -1;
-			auditFolder = new SubTemporaryFile(staging, AUDITLOGS2 + '/' + auditLogExtension.getShortName());
-			// write out the format details
-			xmlHelper.writeExportFormatXmlFile(auditFolder, true);
-			do
-			{
-				List<? extends AuditLogTable> entries = dao.findAllByCriteria(null, offs, PER_XML_FILE,
-					Restrictions.eq("institution", institution));
-				size = entries.size();
-				if( size != 0 )
-				{
-					final BucketFile bucketFolder = new BucketFile(auditFolder, offs);
-					xmlHelper.writeXmlFile(bucketFolder, offs + "-" + (offs + size) + ".xml", entries);
-					offs += size;
-					message.incrementCurrent();
-				}
-			}
-			while( size != 0 );
-		}
+    Collection<AuditLogExtension> extensions = auditLogService.getExtensions();
+    for (AuditLogExtension auditLogExtension : extensions) {
+      GenericDao<? extends AuditLogTable, Long> dao = auditLogExtension.getDao();
+      offs = 0;
+      size = -1;
+      auditFolder =
+          new SubTemporaryFile(staging, AUDITLOGS2 + '/' + auditLogExtension.getShortName());
+      // write out the format details
+      xmlHelper.writeExportFormatXmlFile(auditFolder, true);
+      do {
+        List<? extends AuditLogTable> entries =
+            dao.findAllByCriteria(
+                null, offs, PER_XML_FILE, Restrictions.eq("institution", institution));
+        size = entries.size();
+        if (size != 0) {
+          final BucketFile bucketFolder = new BucketFile(auditFolder, offs);
+          xmlHelper.writeXmlFile(bucketFolder, offs + "-" + (offs + size) + ".xml", entries);
+          offs += size;
+          message.incrementCurrent();
+        }
+      } while (size != 0);
+    }
+  }
 
-	}
+  @Override
+  public void doImport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
+      throws IOException {
 
-	@Override
-	public void doImport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
-		throws IOException
+    SubTemporaryFile auditImportFolder = new SubTemporaryFile(staging, AUDITLOGS);
 
-	{
-		SubTemporaryFile auditImportFolder = new SubTemporaryFile(staging, AUDITLOGS);
+    List<String> filenames = xmlHelper.getXmlFileList(auditImportFolder);
+    DefaultMessageCallback message =
+        new DefaultMessageCallback("institutions.converter.generic.genericmsg");
+    params.setMessageCallback(message);
+    message.setTotal(filenames.size());
+    message.setType(CurrentLocale.get(KEY_NAME));
+    message.setCurrent(0);
+    for (String xmlFilename : filenames) {
+      final List<AuditLogEntryXml> entries =
+          xmlHelper.readXmlFile(auditImportFolder, xmlFilename, xstream);
+      for (AuditLogEntryXml entry : entries) {
+        AuditLogJavaDao.insertFromXml(institution, entry);
+      }
+      message.incrementCurrent();
+    }
+    Collection<AuditLogExtension> extensions = auditLogService.getExtensions();
+    for (AuditLogExtension auditLogExtension : extensions) {
+      auditImportFolder =
+          new SubTemporaryFile(staging, AUDITLOGS2 + '/' + auditLogExtension.getShortName());
 
-		List<String> filenames = xmlHelper.getXmlFileList(auditImportFolder);
-		DefaultMessageCallback message = new DefaultMessageCallback("institutions.converter.generic.genericmsg");
-		params.setMessageCallback(message);
-		message.setTotal(filenames.size());
-		message.setType(CurrentLocale.get(KEY_NAME));
-		message.setCurrent(0);
-		for( String xmlFilename : filenames )
-		{
-			final List<AuditLogEntryXml> entries = xmlHelper.readXmlFile(auditImportFolder, xmlFilename, xstream);
-			for( AuditLogEntryXml entry : entries )
-			{
-				AuditLogJavaDao.insertFromXml(institution, entry);
-			}
-			message.incrementCurrent();
-		}
-		Collection<AuditLogExtension> extensions = auditLogService.getExtensions();
-		for( AuditLogExtension auditLogExtension : extensions )
-		{
-			auditImportFolder = new SubTemporaryFile(staging, AUDITLOGS2 + '/' + auditLogExtension.getShortName());
+      filenames = xmlHelper.getXmlFileList(auditImportFolder);
+      message = new DefaultMessageCallback("institutions.converter.generic.genericmsg");
+      params.setMessageCallback(message);
+      message.setTotal(filenames.size());
+      message.setType(CurrentLocale.get(KEY_NAME));
+      message.setCurrent(0);
+      GenericDao<? extends AuditLogTable, Long> dao = auditLogExtension.getDao();
+      for (String xmlFilename : filenames) {
+        final List<AuditLogTable> entries = xmlHelper.readXmlFile(auditImportFolder, xmlFilename);
+        for (AuditLogTable entry : entries) {
+          entry.setInstitution(institution);
+          entry.setId(0);
+          dao.saveAny(entry);
+          dao.flush();
+          dao.clear();
+        }
+        message.incrementCurrent();
+      }
+    }
+  }
 
-			filenames = xmlHelper.getXmlFileList(auditImportFolder);
-			message = new DefaultMessageCallback("institutions.converter.generic.genericmsg");
-			params.setMessageCallback(message);
-			message.setTotal(filenames.size());
-			message.setType(CurrentLocale.get(KEY_NAME));
-			message.setCurrent(0);
-			GenericDao<? extends AuditLogTable, Long> dao = auditLogExtension.getDao();
-			for( String xmlFilename : filenames )
-			{
-				final List<AuditLogTable> entries = xmlHelper.readXmlFile(auditImportFolder, xmlFilename);
-				for( AuditLogTable entry : entries )
-				{
-					entry.setInstitution(institution);
-					entry.setId(0);
-					dao.saveAny(entry);
-					dao.flush();
-					dao.clear();
-				}
-				message.incrementCurrent();
-			}
-		}
-	}
+  @Override
+  public String getStringId() {
+    return "AUDITLOGS";
+  }
 
-	@Override
-	public String getStringId()
-	{
-		return "AUDITLOGS";
-	}
-
-	@Override
-	public void addTasks(ConvertType type, ConverterTasks tasks, ConverterParams params)
-	{
-		if( !params.hasFlag(ConverterParams.NO_AUDITLOGS) )
-		{
-			if( type == ConvertType.DELETE )
-			{
-				tasks.addAfter(getStandardTask());
-			}
-			else
-			{
-				super.addTasks(type, tasks, params);
-			}
-		}
-	}
+  @Override
+  public void addTasks(ConvertType type, ConverterTasks tasks, ConverterParams params) {
+    if (!params.hasFlag(ConverterParams.NO_AUDITLOGS)) {
+      if (type == ConvertType.DELETE) {
+        tasks.addAfter(getStandardTask());
+      } else {
+        super.addTasks(type, tasks, params);
+      }
+    }
+  }
 }

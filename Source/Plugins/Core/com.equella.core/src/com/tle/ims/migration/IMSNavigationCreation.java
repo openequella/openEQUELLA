@@ -38,37 +38,32 @@ import com.tle.ims.service.IMSService;
 
 @Bind
 @Singleton
-public class IMSNavigationCreation implements PostReadMigrator<ItemConverterInfo>
-{
-	@Inject
-	private IMSService imsService;
-	@Inject
-	private IMSNavigationHelper navHelper;
+public class IMSNavigationCreation implements PostReadMigrator<ItemConverterInfo> {
+  @Inject private IMSService imsService;
+  @Inject private IMSNavigationHelper navHelper;
 
-	@Override
-	public void migrate(ItemConverterInfo info) throws IOException
-	{
-		Item item = info.getItem();
-		FileHandle attachFiles = info.getFileHandle();
-		Attachments attachments = new UnmodifiableAttachments(item);
-		List<ImsAttachment> imsAttachments = attachments.getList(AttachmentType.IMS);
-		if( imsAttachments.isEmpty() )
-		{
-			return;
-		}
-		ImsAttachment imsAttachment = imsAttachments.get(0);
-		String szPackage = imsAttachment.getUrl();
+  @Override
+  public void migrate(ItemConverterInfo info) throws IOException {
+    Item item = info.getItem();
+    FileHandle attachFiles = info.getFileHandle();
+    Attachments attachments = new UnmodifiableAttachments(item);
+    List<ImsAttachment> imsAttachments = attachments.getList(AttachmentType.IMS);
+    if (imsAttachments.isEmpty()) {
+      return;
+    }
+    ImsAttachment imsAttachment = imsAttachments.get(0);
+    String szPackage = imsAttachment.getUrl();
 
-		// treeBuilder.createTree(fileSystemService, item, attachFiles,
-		// szPackage);
-		IMSManifest manifest = imsService.getImsManifest(attachFiles, szPackage, true);
-		String scormVersion = imsService.getScormVersion(attachFiles, szPackage);
+    // treeBuilder.createTree(fileSystemService, item, attachFiles,
+    // szPackage);
+    IMSManifest manifest = imsService.getImsManifest(attachFiles, szPackage, true);
+    String scormVersion = imsService.getScormVersion(attachFiles, szPackage);
 
-		boolean expand = imsAttachment.isExpand();
+    boolean expand = imsAttachment.isExpand();
 
-		if( manifest != null )
-		{
-			navHelper.createTree(manifest, item, attachFiles, szPackage, !Check.isEmpty(scormVersion), expand);
-		}
-	}
+    if (manifest != null) {
+      navHelper.createTree(
+          manifest, item, attachFiles, szPackage, !Check.isEmpty(scormVersion), expand);
+    }
+  }
 }

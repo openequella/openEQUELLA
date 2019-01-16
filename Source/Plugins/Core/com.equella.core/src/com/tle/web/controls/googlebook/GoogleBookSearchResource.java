@@ -30,23 +30,18 @@ import com.tle.web.viewurl.attachments.AttachmentResourceExtension;
 @Bind
 @Singleton
 public class GoogleBookSearchResource
-	implements
-		AttachmentResourceExtension<CustomAttachment>,
-		RegisterMimeTypeExtension<CustomAttachment>
-{
-	@Inject
-	private SelectionService selection;
+    implements AttachmentResourceExtension<CustomAttachment>,
+        RegisterMimeTypeExtension<CustomAttachment> {
+  @Inject private SelectionService selection;
 
-	@Override
-	public ViewableResource process(SectionInfo info, ViewableResource resource, CustomAttachment attachment)
-	{
-		return new GoogleBookSearchViewableResource(resource, attachment, selection, info);
-	}
+  @Override
+  public ViewableResource process(
+      SectionInfo info, ViewableResource resource, CustomAttachment attachment) {
+    return new GoogleBookSearchViewableResource(resource, attachment, selection, info);
+  }
 
-	@Override
-	public String getMimeType(CustomAttachment attachment)
-	{
-		return GoogleBookConstants.MIME_TYPE;
-	}
-
+  @Override
+  public String getMimeType(CustomAttachment attachment) {
+    return GoogleBookConstants.MIME_TYPE;
+  }
 }

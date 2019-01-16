@@ -22,7 +22,6 @@ import com.tle.web.sections.TreeIndexed;
 
 @NonNullByDefault
 @TreeIndexed
-public interface ItemList<LE extends ItemListEntry> extends ItemlikeList<Item, LE>
-{
-	// FIXME: do the needful
+public interface ItemList<LE extends ItemListEntry> extends ItemlikeList<Item, LE> {
+  // FIXME: do the needful
 }

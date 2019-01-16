@@ -44,118 +44,104 @@ import com.tle.web.sections.standard.model.Option;
 
 @SuppressWarnings("nls")
 public class ConnectorManagementQuerySection
-	extends
-		AbstractResetFiltersQuerySection<AbstractResetFiltersQuerySection.AbstractQuerySectionModel, ConnectorManagementSearchEvent>
-{
+    extends AbstractResetFiltersQuerySection<
+        AbstractResetFiltersQuerySection.AbstractQuerySectionModel,
+        ConnectorManagementSearchEvent> {
 
-	@PlugKey("manage.selectconnector")
-	private static String KEY_SELECT;
-	@PlugKey("manage.query.search")
-	private static Label LABEL_SEARCH;
+  @PlugKey("manage.selectconnector")
+  private static String KEY_SELECT;
 
-	private static final String DIV_QUERY = "searchform";
+  @PlugKey("manage.query.search")
+  private static Label LABEL_SEARCH;
 
-	@Inject
-	private ConnectorService connectorService;
+  private static final String DIV_QUERY = "searchform";
 
-	@Component(parameter = "connector", supported = true)
-	private SingleSelectionList<BaseEntityLabel> connectorList;
+  @Inject private ConnectorService connectorService;
 
-	@Inject
-	private BundleCache bundleCache;
+  @Component(parameter = "connector", supported = true)
+  private SingleSelectionList<BaseEntityLabel> connectorList;
 
-	@TreeLookup
-	private ConnectorManagementResultsSection searchResults;
-	@TreeLookup
-	private ConnectorBulkSelectionSection bulkSection;
+  @Inject private BundleCache bundleCache;
 
-	@EventFactory
-	private EventGenerator events;
+  @TreeLookup private ConnectorManagementResultsSection searchResults;
+  @TreeLookup private ConnectorBulkSelectionSection bulkSection;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		connectorList.setListModel(new ConnectorsListModel());
-		searchButton.setLabel(LABEL_SEARCH);
-	}
+  @EventFactory private EventGenerator events;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		searchButton.setClickHandler(searchResults.getRestartSearchHandler(tree));
-		connectorList.addChangeEventHandler(new StatementHandler(searchResults.getResultsUpdater(tree,
-			events.getEventHandler("resetSearch"), "searchactions-filters", "bulk-selection", "searchactions-sort")));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    connectorList.setListModel(new ConnectorsListModel());
+    searchButton.setLabel(LABEL_SEARCH);
+  }
 
-	@EventHandlerMethod
-	public void resetSearch(SectionInfo info)
-	{
-		getResetFiltersSection().resetFilters(info);
-		bulkSection.unselectAll(info);
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    searchButton.setClickHandler(searchResults.getRestartSearchHandler(tree));
+    connectorList.addChangeEventHandler(
+        new StatementHandler(
+            searchResults.getResultsUpdater(
+                tree,
+                events.getEventHandler("resetSearch"),
+                "searchactions-filters",
+                "bulk-selection",
+                "searchactions-sort")));
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		renderQueryActions(context, getModel(context));
-		return viewFactory.createResult("manage-query.ftl", this);
-	}
+  @EventHandlerMethod
+  public void resetSearch(SectionInfo info) {
+    getResetFiltersSection().resetFilters(info);
+    bulkSection.unselectAll(info);
+  }
 
-	public SingleSelectionList<BaseEntityLabel> getConnectorList()
-	{
-		return connectorList;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    renderQueryActions(context, getModel(context));
+    return viewFactory.createResult("manage-query.ftl", this);
+  }
 
-	public Connector getConnector(SectionInfo info)
-	{
-		BaseEntityLabel label = connectorList.getSelectedValue(info);
-		if( label == null )
-		{
-			return null;
+  public SingleSelectionList<BaseEntityLabel> getConnectorList() {
+    return connectorList;
+  }
 
-		}
-		return connectorService.get(label.getId());
-	}
+  public Connector getConnector(SectionInfo info) {
+    BaseEntityLabel label = connectorList.getSelectedValue(info);
+    if (label == null) {
+      return null;
+    }
+    return connectorService.get(label.getId());
+  }
 
-	@Override
-	protected String getAjaxDiv()
-	{
-		return DIV_QUERY;
-	}
+  @Override
+  protected String getAjaxDiv() {
+    return DIV_QUERY;
+  }
 
-	@Override
-	public AbstractQuerySectionModel instantiateModel(SectionInfo info)
-	{
-		return new AbstractQuerySectionModel();
-	}
+  @Override
+  public AbstractQuerySectionModel instantiateModel(SectionInfo info) {
+    return new AbstractQuerySectionModel();
+  }
 
-	public class ConnectorsListModel extends DynamicHtmlListModel<BaseEntityLabel>
-	{
-		public ConnectorsListModel()
-		{
-			setSort(true);
-		}
+  public class ConnectorsListModel extends DynamicHtmlListModel<BaseEntityLabel> {
+    public ConnectorsListModel() {
+      setSort(true);
+    }
 
-		@Override
-		protected Option<BaseEntityLabel> getTopOption()
-		{
-			return new KeyOption<BaseEntityLabel>(KEY_SELECT, "", null);
-		}
+    @Override
+    protected Option<BaseEntityLabel> getTopOption() {
+      return new KeyOption<BaseEntityLabel>(KEY_SELECT, "", null);
+    }
 
-		@Override
-		protected Iterable<BaseEntityLabel> populateModel(SectionInfo info)
-		{
-			return connectorService.listForViewing();
-		}
+    @Override
+    protected Iterable<BaseEntityLabel> populateModel(SectionInfo info) {
+      return connectorService.listForViewing();
+    }
 
-		@Override
-		protected Option<BaseEntityLabel> convertToOption(SectionInfo info, BaseEntityLabel bent)
-		{
-			return new NameValueOption<BaseEntityLabel>(new BundleNameValue(bent.getBundleId(), bent.getUuid(),
-				bundleCache), bent);
-		}
-	}
-
+    @Override
+    protected Option<BaseEntityLabel> convertToOption(SectionInfo info, BaseEntityLabel bent) {
+      return new NameValueOption<BaseEntityLabel>(
+          new BundleNameValue(bent.getBundleId(), bent.getUuid(), bundleCache), bent);
+    }
+  }
 }

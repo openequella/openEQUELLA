@@ -22,33 +22,29 @@ import com.tle.core.javascript.JavascriptModule;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.render.PreRenderable;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
-public class StandardModule implements JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
+public class StandardModule implements JavascriptModule {
+  private static final long serialVersionUID = 1L;
 
-	public static final ExternallyDefinedFunction SET_TIMEOUT = new ExternallyDefinedFunction("setTimeout");
+  public static final ExternallyDefinedFunction SET_TIMEOUT =
+      new ExternallyDefinedFunction("setTimeout");
 
-	public static final ExternallyDefinedFunction POPUP_PERCENT = new ExternallyDefinedFunction("popup_percent_xy");
+  public static final ExternallyDefinedFunction POPUP_PERCENT =
+      new ExternallyDefinedFunction("popup_percent_xy");
 
-	@Override
-	public String getDisplayName()
-	{
-		return CoreStrings.lookup().getString("js.modules.standard.name");
-	}
+  @Override
+  public String getDisplayName() {
+    return CoreStrings.lookup().getString("js.modules.standard.name");
+  }
 
-	@Override
-	public String getId()
-	{
-		return "standard";
-	}
+  @Override
+  public String getId() {
+    return "standard";
+  }
 
-	@Override
-	public PreRenderable getPreRenderer()
-	{
-		return null;
-	}
+  @Override
+  public PreRenderable getPreRenderer() {
+    return null;
+  }
 }

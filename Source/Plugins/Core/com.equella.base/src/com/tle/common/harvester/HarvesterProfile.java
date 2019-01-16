@@ -27,58 +27,49 @@ import com.tle.beans.entity.BaseEntity;
 
 @Entity
 @AccessType("field")
-public class HarvesterProfile extends BaseEntity
-{
-	private static final long serialVersionUID = 1L;
+public class HarvesterProfile extends BaseEntity {
+  private static final long serialVersionUID = 1L;
 
-	@Column(length = 64)
-	private String type;
-	private Date lastRun;
-	private Boolean enabled;
-	private Boolean newVersionOnHarvest;
+  @Column(length = 64)
+  private String type;
 
-	public HarvesterProfile()
-	{
-		super();
-	}
+  private Date lastRun;
+  private Boolean enabled;
+  private Boolean newVersionOnHarvest;
 
-	public String getType()
-	{
-		return type;
-	}
+  public HarvesterProfile() {
+    super();
+  }
 
-	public void setType(String type)
-	{
-		this.type = type;
-	}
+  public String getType() {
+    return type;
+  }
 
-	public void setLastRun(Date lastRun)
-	{
-		this.lastRun = lastRun;
-	}
+  public void setType(String type) {
+    this.type = type;
+  }
 
-	public Date getLastRun()
-	{
-		return lastRun;
-	}
+  public void setLastRun(Date lastRun) {
+    this.lastRun = lastRun;
+  }
 
-	public void setEnabled(Boolean enabled)
-	{
-		this.enabled = enabled;
-	}
+  public Date getLastRun() {
+    return lastRun;
+  }
 
-	public Boolean getEnabled()
-	{
-		return enabled;
-	}
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
+  }
 
-	public void setNewVersionOnHarvest(Boolean newVersionOnHarvest)
-	{
-		this.newVersionOnHarvest = newVersionOnHarvest;
-	}
+  public Boolean getEnabled() {
+    return enabled;
+  }
 
-	public Boolean getNewVersionOnHarvest()
-	{
-		return newVersionOnHarvest;
-	}
+  public void setNewVersionOnHarvest(Boolean newVersionOnHarvest) {
+    this.newVersionOnHarvest = newVersionOnHarvest;
+  }
+
+  public Boolean getNewVersionOnHarvest() {
+    return newVersionOnHarvest;
+  }
 }

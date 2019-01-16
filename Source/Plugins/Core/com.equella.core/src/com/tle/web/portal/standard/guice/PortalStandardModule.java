@@ -22,17 +22,15 @@ import com.tle.web.freemarker.BasicFreemarkerFactory;
 import com.tle.web.portal.standard.renderer.SearchPortletRenderer;
 import com.tle.web.sections.equella.guice.SectionsModule;
 
-public class PortalStandardModule extends SectionsModule
-{
+public class PortalStandardModule extends SectionsModule {
 
-	@SuppressWarnings("nls")
-	@Override
-	protected void configure()
-	{
-		NodeProvider node = node(PortalSearchWrapper.class);
-		node.child(SearchPortletRenderer.class);
-		bind(Object.class).annotatedWith(Names.named("com.tle.web.portal.standard.searchSelectionPortal")).toProvider(
-			node);
-	}
-
+  @SuppressWarnings("nls")
+  @Override
+  protected void configure() {
+    NodeProvider node = node(PortalSearchWrapper.class);
+    node.child(SearchPortletRenderer.class);
+    bind(Object.class)
+        .annotatedWith(Names.named("com.tle.web.portal.standard.searchSelectionPortal"))
+        .toProvider(node);
+  }
 }

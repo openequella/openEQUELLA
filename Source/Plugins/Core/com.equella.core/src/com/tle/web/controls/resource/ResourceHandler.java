@@ -69,335 +69,303 @@ import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.AttachmentResourceService;
 import com.tle.web.wizard.WizardState;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @NonNullByDefault
 public class ResourceHandler
-	extends
-		AbstractDetailsAttachmentHandler<ResourceHandler.ResourceHandlerModel, ResourceUniversalAttachment>
-{
-	public static final String TYPE_RESOURCE = "resource";
-	public static final String DATA_TYPE = "type";
-	public static final String DATA_UUID = "uuid";
-	public static final String DATA_VERSION = "version";
+    extends AbstractDetailsAttachmentHandler<
+        ResourceHandler.ResourceHandlerModel, ResourceUniversalAttachment> {
+  public static final String TYPE_RESOURCE = "resource";
+  public static final String DATA_TYPE = "type";
+  public static final String DATA_UUID = "uuid";
+  public static final String DATA_VERSION = "version";
 
-	@PlugKey("label.handler.name")
-	private static Label LABEL_NAME;
-	@PlugKey("label.handler.description")
-	private static Label LABEL_DESCRIPTION;
-	@PlugKey("label.title.edit")
-	private static Label LABEL_TITLE_EDIT;
+  @PlugKey("label.handler.name")
+  private static Label LABEL_NAME;
 
-	@PlugKey("ressel.details.item.desc")
-	private static Label ITEM_DESC;
+  @PlugKey("label.handler.description")
+  private static Label LABEL_DESCRIPTION;
 
-	@PlugKey("ressel.details.item.viewlink")
-	private static Label VIEW_LINK_LABEL;
+  @PlugKey("label.title.edit")
+  private static Label LABEL_TITLE_EDIT;
 
-	@Inject
-	private SelectionService selectionService;
-	@Inject
-	private RelationService relationService;
-	@Inject
-	private SelectionHomeSelectable homeSelectable;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private BundleCache bundleCache;
-	@Inject
-	private AttachmentResourceService attachmentResourceService;
+  @PlugKey("ressel.details.item.desc")
+  private static Label ITEM_DESC;
 
-	private JSCallAndReference resultsCallback;
+  @PlugKey("ressel.details.item.viewlink")
+  private static Label VIEW_LINK_LABEL;
 
-	private ResourceSettings resourceSettings;
-	private String selectionsKey;
+  @Inject private SelectionService selectionService;
+  @Inject private RelationService relationService;
+  @Inject private SelectionHomeSelectable homeSelectable;
+  @Inject private ItemService itemService;
+  @Inject private BundleCache bundleCache;
+  @Inject private AttachmentResourceService attachmentResourceService;
 
-	@Override
-	public String getHandlerId()
-	{
-		return "resourceHandler";
-	}
+  private JSCallAndReference resultsCallback;
 
-	@Override
-	public AttachmentHandlerLabel getLabel()
-	{
-		return new AttachmentHandlerLabel(LABEL_NAME, LABEL_DESCRIPTION);
-	}
+  private ResourceSettings resourceSettings;
+  private String selectionsKey;
 
-	@Override
-	protected SectionRenderable renderDetails(RenderContext context, DialogRenderOptions renderOptions)
-	{
-		// Common details
-		ResourceHandlerModel model = getModel(context);
-		final CustomAttachment attachment = (CustomAttachment) getDetailsAttachment(context);
-		ItemSectionInfo itemInfo = context.getAttributeForClass(ItemSectionInfo.class);
-		final ViewableResource viewable = attachmentResourceService.getViewableResource(context,
-			itemInfo.getViewableItem(), attachment);
-		List<AttachmentDetail> commonAttachmentDetails = viewable.getCommonAttachmentDetails();
-		addAttachmentDetails(context, commonAttachmentDetails);
+  @Override
+  public String getHandlerId() {
+    return "resourceHandler";
+  }
 
-		// Thumbnail (set thumb)
-		ImageRenderer thumbRenderer = viewable.createStandardThumbnailRenderer(new TextLabel(attachment
-			.getDescription()));
-		model.setThumbnail(thumbRenderer.addClass("file-thumbnail"));
+  @Override
+  public AttachmentHandlerLabel getLabel() {
+    return new AttachmentHandlerLabel(LABEL_NAME, LABEL_DESCRIPTION);
+  }
 
-		// Additional details
-		String type = (String) attachment.getData(DATA_TYPE);
-		if( type.equals(Character.toString(SelectedResource.TYPE_PATH)) && attachment.getUrl().isEmpty() )
-		{
-			int version = (Integer) attachment.getData(DATA_VERSION);
-			String uuid = (String) attachment.getData(DATA_UUID);
-			if( version == 0 )
-			{
-				version = itemService.getLiveItemVersion(uuid);
-			}
-			ItemId itemId = new ItemId(uuid, version);
-			Map<String, Object> allInfo = itemService.getItemInfo(itemId);
+  @Override
+  protected SectionRenderable renderDetails(
+      RenderContext context, DialogRenderOptions renderOptions) {
+    // Common details
+    ResourceHandlerModel model = getModel(context);
+    final CustomAttachment attachment = (CustomAttachment) getDetailsAttachment(context);
+    ItemSectionInfo itemInfo = context.getAttributeForClass(ItemSectionInfo.class);
+    final ViewableResource viewable =
+        attachmentResourceService.getViewableResource(
+            context, itemInfo.getViewableItem(), attachment);
+    List<AttachmentDetail> commonAttachmentDetails = viewable.getCommonAttachmentDetails();
+    addAttachmentDetails(context, commonAttachmentDetails);
 
-			if( !Check.isEmpty(allInfo) )
-			{
-				BundleLabel desc = new BundleLabel(allInfo.get("description_id"), "", bundleCache);
-				model.addSpecificDetail("itemdesc", new Pair<Label, Object>(ITEM_DESC, desc)); // Description
-			}
-		}
+    // Thumbnail (set thumb)
+    ImageRenderer thumbRenderer =
+        viewable.createStandardThumbnailRenderer(new TextLabel(attachment.getDescription()));
+    model.setThumbnail(thumbRenderer.addClass("file-thumbnail"));
 
-		HtmlLinkState linkState = new HtmlLinkState(VIEW_LINK_LABEL, viewable.createCanonicalUrl());
-		linkState.setTarget(HtmlLinkState.TARGET_BLANK);
-		model.setViewlink(new LinkRenderer(linkState));
-		return viewFactory.createResult("resource/resource-edit.ftl", this);
-	}
+    // Additional details
+    String type = (String) attachment.getData(DATA_TYPE);
+    if (type.equals(Character.toString(SelectedResource.TYPE_PATH))
+        && attachment.getUrl().isEmpty()) {
+      int version = (Integer) attachment.getData(DATA_VERSION);
+      String uuid = (String) attachment.getData(DATA_UUID);
+      if (version == 0) {
+        version = itemService.getLiveItemVersion(uuid);
+      }
+      ItemId itemId = new ItemId(uuid, version);
+      Map<String, Object> allInfo = itemService.getItemInfo(itemId);
 
-	@Override
-	protected SectionRenderable renderAdd(RenderContext context, DialogRenderOptions renderOptions)
-	{
-		SelectionSession session = new SelectionSession(new ParentFrameSelectionCallback(resultsCallback, false));
+      if (!Check.isEmpty(allInfo)) {
+        BundleLabel desc = new BundleLabel(allInfo.get("description_id"), "", bundleCache);
+        model.addSpecificDetail(
+            "itemdesc", new Pair<Label, Object>(ITEM_DESC, desc)); // Description
+      }
+    }
 
-		final AllowedSelection as = resourceSettings.getAllowedSelection();
-		session.setHomeSelectable("home");
-		session.setSelectAttachments(as.isAttachments());
-		session.setSelectItem(as.isItems());
-		// session.setSelectPackage(as.isPackages());
-		session.setSelectMultiple(isMultipleAllowed(context));
-		session.setSelectDraft(true);
-		session.setSkipCheckoutPage(resourceSettings.isSkipCheckoutPage());
+    HtmlLinkState linkState = new HtmlLinkState(VIEW_LINK_LABEL, viewable.createCanonicalUrl());
+    linkState.setTarget(HtmlLinkState.TARGET_BLANK);
+    model.setViewlink(new LinkRenderer(linkState));
+    return viewFactory.createResult("resource/resource-edit.ftl", this);
+  }
 
-		session.setAllCollections(!resourceSettings.isRestricted(ResourceSettings.KEY_RESTRICT_COLLECTIONS));
+  @Override
+  protected SectionRenderable renderAdd(RenderContext context, DialogRenderOptions renderOptions) {
+    SelectionSession session =
+        new SelectionSession(new ParentFrameSelectionCallback(resultsCallback, false));
 
-		if( !session.isAllCollections() )
-		{
-			Set<String> collections = resourceSettings.getRestrictedTo(ResourceSettings.KEY_RESTRICT_COLLECTIONS);
-			session.setCollectionUuids(collections);
-		}
+    final AllowedSelection as = resourceSettings.getAllowedSelection();
+    session.setHomeSelectable("home");
+    session.setSelectAttachments(as.isAttachments());
+    session.setSelectItem(as.isItems());
+    // session.setSelectPackage(as.isPackages());
+    session.setSelectMultiple(isMultipleAllowed(context));
+    session.setSelectDraft(true);
+    session.setSkipCheckoutPage(resourceSettings.isSkipCheckoutPage());
 
-		session.setAllPowerSearches(!resourceSettings.isRestricted(ResourceSettings.KEY_RESTRICT_POWERSEARCHES));
-		if( !session.isAllPowerSearches() )
-		{
-			Set<String> powerSearches = resourceSettings.getRestrictedTo(ResourceSettings.KEY_RESTRICT_POWERSEARCHES);
-			session.setPowerSearchIds(powerSearches);
-		}
+    session.setAllCollections(
+        !resourceSettings.isRestricted(ResourceSettings.KEY_RESTRICT_COLLECTIONS));
 
-		session.setAllContributionCollections(!resourceSettings
-			.isRestricted(ResourceSettings.KEY_RESTRICT_CONTRIBUTION));
-		if( !session.isAllContributionCollections() )
-		{
-			Set<String> contributeCol = resourceSettings.getRestrictedTo(ResourceSettings.KEY_RESTRICT_CONTRIBUTION);
-			session.setContributionCollectionIds(contributeCol);
-		}
+    if (!session.isAllCollections()) {
+      Set<String> collections =
+          resourceSettings.getRestrictedTo(ResourceSettings.KEY_RESTRICT_COLLECTIONS);
+      session.setCollectionUuids(collections);
+    }
 
-		session.setAllDynamicCollections(!resourceSettings.isRestricted(ResourceSettings.KEY_RESTRICT_DYNACOLLECTION));
-		if( !session.isAllDynamicCollections() )
-		{
-			Set<String> contributeCol = resourceSettings.getRestrictedTo(ResourceSettings.KEY_RESTRICT_DYNACOLLECTION);
-			session.setDynamicCollectionIds(contributeCol);
-		}
+    session.setAllPowerSearches(
+        !resourceSettings.isRestricted(ResourceSettings.KEY_RESTRICT_POWERSEARCHES));
+    if (!session.isAllPowerSearches()) {
+      Set<String> powerSearches =
+          resourceSettings.getRestrictedTo(ResourceSettings.KEY_RESTRICT_POWERSEARCHES);
+      session.setPowerSearchIds(powerSearches);
+    }
 
-		SectionInfo forward = homeSelectable.createSectionInfo(context, session);
-		selectionService.setupSelectionSession(forward, session);
-		getModel(context).setIntegrationUrl(forward.getPublicBookmark().getHref());
-		renderOptions.setFullscreen(true);
-		return viewFactory.createResult("resource/resource-add.ftl", this);
-	}
+    session.setAllContributionCollections(
+        !resourceSettings.isRestricted(ResourceSettings.KEY_RESTRICT_CONTRIBUTION));
+    if (!session.isAllContributionCollections()) {
+      Set<String> contributeCol =
+          resourceSettings.getRestrictedTo(ResourceSettings.KEY_RESTRICT_CONTRIBUTION);
+      session.setContributionCollectionIds(contributeCol);
+    }
 
-	@Override
-	public Label getTitleLabel(RenderContext context, boolean editing)
-	{
-		return LABEL_TITLE_EDIT;
-	}
+    session.setAllDynamicCollections(
+        !resourceSettings.isRestricted(ResourceSettings.KEY_RESTRICT_DYNACOLLECTION));
+    if (!session.isAllDynamicCollections()) {
+      Set<String> contributeCol =
+          resourceSettings.getRestrictedTo(ResourceSettings.KEY_RESTRICT_DYNACOLLECTION);
+      session.setDynamicCollectionIds(contributeCol);
+    }
 
-	@Override
-	public void onRegister(SectionTree tree, String parentId, UniversalControlState state)
-	{
-		super.onRegister(tree, parentId, state);
-		resourceSettings = new ResourceSettings(state.getControlConfiguration());
-		selectionsKey = getSectionId() + ":" + getHandlerId();
-	}
+    SectionInfo forward = homeSelectable.createSectionInfo(context, session);
+    selectionService.setupSelectionSession(forward, session);
+    getModel(context).setIntegrationUrl(forward.getPublicBookmark().getHref());
+    renderOptions.setFullscreen(true);
+    return viewFactory.createResult("resource/resource-add.ftl", this);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		resultsCallback = new PassThroughFunction("r" + id, events.getSubmitValuesFunction("results"));
-	}
+  @Override
+  public Label getTitleLabel(RenderContext context, boolean editing) {
+    return LABEL_TITLE_EDIT;
+  }
 
-	@Override
-	public boolean supports(IAttachment attachment)
-	{
-		if( attachment instanceof CustomAttachment )
-		{
-			CustomAttachment custom = (CustomAttachment) attachment;
-			return custom.getType().equals(TYPE_RESOURCE);
-		}
-		return false;
-	}
+  @Override
+  public void onRegister(SectionTree tree, String parentId, UniversalControlState state) {
+    super.onRegister(tree, parentId, state);
+    resourceSettings = new ResourceSettings(state.getControlConfiguration());
+    selectionsKey = getSectionId() + ":" + getHandlerId();
+  }
 
-	@Override
-	public void remove(SectionInfo info, Attachment attachment, boolean willBeReplaced)
-	{
-		super.remove(info, attachment, willBeReplaced);
-		RelationModify relOp = getRelationModifier();
-		relOp.getState().deleteByResourceId(attachment.getUuid());
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    resultsCallback = new PassThroughFunction("r" + id, events.getSubmitValuesFunction("results"));
+  }
 
-	private void addRelation(SelectedResourceDetails resource, String resourceId)
-	{
-		String relationType = resourceSettings.getRelationType();
-		if( !Check.isEmpty(relationType) )
-		{
-			RelationModify relOp = getRelationModifier();
-			final RelationOperationState relationState = relOp.getState();
-			relationState.deleteByType(relationType);
-			relationState.add(new ItemId(resource.getUuid(), resource.getVersion()), relationType, resourceId);
-		}
-	}
+  @Override
+  public boolean supports(IAttachment attachment) {
+    if (attachment instanceof CustomAttachment) {
+      CustomAttachment custom = (CustomAttachment) attachment;
+      return custom.getType().equals(TYPE_RESOURCE);
+    }
+    return false;
+  }
 
-	@EventHandlerMethod
-	public void results(SectionInfo info, List<SelectedResourceDetails> selectedResources)
-	{
-		dialogState.setAttribute(info, selectionsKey, selectedResources);
-		if( selectedResources.size() == 0 )
-		{
-			dialogState.cancel(info);
-		}
-		else
-		{
-			dialogState.save(info);
-		}
-	}
+  @Override
+  public void remove(SectionInfo info, Attachment attachment, boolean willBeReplaced) {
+    super.remove(info, attachment, willBeReplaced);
+    RelationModify relOp = getRelationModifier();
+    relOp.getState().deleteByResourceId(attachment.getUuid());
+  }
 
-	@Override
-	protected void addOrReplace(SectionInfo info, ResourceUniversalAttachment attachment, String replacementUuid)
-	{
-		super.addOrReplace(info, attachment, replacementUuid);
-		SelectedResourceDetails selection = attachment.getSelection();
-		if( selection != null )
-		{
-			addRelation(selection, attachment.getAttachment().getUuid());
-		}
-	}
+  private void addRelation(SelectedResourceDetails resource, String resourceId) {
+    String relationType = resourceSettings.getRelationType();
+    if (!Check.isEmpty(relationType)) {
+      RelationModify relOp = getRelationModifier();
+      final RelationOperationState relationState = relOp.getState();
+      relationState.deleteByType(relationType);
+      relationState.add(
+          new ItemId(resource.getUuid(), resource.getVersion()), relationType, resourceId);
+    }
+  }
 
-	@Override
-	protected ResourceUniversalAttachment createUniversalAttachmentForEdit(SectionInfo info, Attachment attachment)
-	{
-		return new ResourceUniversalAttachment(null, (CustomAttachment) attachment);
-	}
+  @EventHandlerMethod
+  public void results(SectionInfo info, List<SelectedResourceDetails> selectedResources) {
+    dialogState.setAttribute(info, selectionsKey, selectedResources);
+    if (selectedResources.size() == 0) {
+      dialogState.cancel(info);
+    } else {
+      dialogState.save(info);
+    }
+  }
 
-	@Override
-	protected List<ResourceUniversalAttachment> createUniversalAttachments(SectionInfo info)
-	{
-		List<ResourceUniversalAttachment> attachments = Lists.newArrayList();
-		List<SelectedResourceDetails> selectedResources = dialogState.getAttribute(info, selectionsKey);
-		for( SelectedResourceDetails resource : selectedResources )
-		{
-			attachments.add(new ResourceUniversalAttachment(resource, makeAttachment(resource)));
-		}
-		return attachments;
-	}
+  @Override
+  protected void addOrReplace(
+      SectionInfo info, ResourceUniversalAttachment attachment, String replacementUuid) {
+    super.addOrReplace(info, attachment, replacementUuid);
+    SelectedResourceDetails selection = attachment.getSelection();
+    if (selection != null) {
+      addRelation(selection, attachment.getAttachment().getUuid());
+    }
+  }
 
-	private CustomAttachment makeAttachment(SelectedResourceDetails resource)
-	{
-		final char type = resource.getType();
-		final int version = Check.isEmpty(resourceSettings.getRelationType()) && resource.isLatest() ? 0 : resource
-			.getVersion();
-		final String attachmentUuid = resource.getAttachmentUuid();
+  @Override
+  protected ResourceUniversalAttachment createUniversalAttachmentForEdit(
+      SectionInfo info, Attachment attachment) {
+    return new ResourceUniversalAttachment(null, (CustomAttachment) attachment);
+  }
 
-		final CustomAttachment attachment = new CustomAttachment();
-		if( type == SelectedResource.TYPE_ATTACHMENT )
-		{
-			attachment.setUrl(attachmentUuid);
-		}
-		else
-		{
-			attachment.setUrl(resource.getUrl());
-		}
-		attachment.setType(TYPE_RESOURCE);
-		attachment.setDescription(resource.getTitle());
-		attachment.setData(DATA_UUID, resource.getUuid());
-		attachment.setData(DATA_VERSION, version);
-		attachment.setData(DATA_TYPE, Character.toString(type));
-		return attachment;
-	}
+  @Override
+  protected List<ResourceUniversalAttachment> createUniversalAttachments(SectionInfo info) {
+    List<ResourceUniversalAttachment> attachments = Lists.newArrayList();
+    List<SelectedResourceDetails> selectedResources = dialogState.getAttribute(info, selectionsKey);
+    for (SelectedResourceDetails resource : selectedResources) {
+      attachments.add(new ResourceUniversalAttachment(resource, makeAttachment(resource)));
+    }
+    return attachments;
+  }
 
-	private RelationModify getRelationModifier()
-	{
-		final WizardState state = dialogState.getRepository().getState();
-		RelationModify relOp = (RelationModify) state.getWizardSaveOperation(RelationModify.NAME);
-		if( relOp == null )
-		{
-			final RelationOperationState relState = new RelationOperationState();
-			if( !state.isNewItem() )
-			{
-				relState.initForCurrent(relationService.getAllByFromItem(state.getItem()));
-			}
-			relOp = new RelationModify(relState);
-			state.setWizardSaveOperation(RelationModify.NAME, relOp);
-		}
-		return relOp;
-	}
+  private CustomAttachment makeAttachment(SelectedResourceDetails resource) {
+    final char type = resource.getType();
+    final int version =
+        Check.isEmpty(resourceSettings.getRelationType()) && resource.isLatest()
+            ? 0
+            : resource.getVersion();
+    final String attachmentUuid = resource.getAttachmentUuid();
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new ResourceHandlerModel();
-	}
+    final CustomAttachment attachment = new CustomAttachment();
+    if (type == SelectedResource.TYPE_ATTACHMENT) {
+      attachment.setUrl(attachmentUuid);
+    } else {
+      attachment.setUrl(resource.getUrl());
+    }
+    attachment.setType(TYPE_RESOURCE);
+    attachment.setDescription(resource.getTitle());
+    attachment.setData(DATA_UUID, resource.getUuid());
+    attachment.setData(DATA_VERSION, version);
+    attachment.setData(DATA_TYPE, Character.toString(type));
+    return attachment;
+  }
 
-	public JSCallAndReference getResultsCallback()
-	{
-		return resultsCallback;
-	}
+  private RelationModify getRelationModifier() {
+    final WizardState state = dialogState.getRepository().getState();
+    RelationModify relOp = (RelationModify) state.getWizardSaveOperation(RelationModify.NAME);
+    if (relOp == null) {
+      final RelationOperationState relState = new RelationOperationState();
+      if (!state.isNewItem()) {
+        relState.initForCurrent(relationService.getAllByFromItem(state.getItem()));
+      }
+      relOp = new RelationModify(relState);
+      state.setWizardSaveOperation(RelationModify.NAME, relOp);
+    }
+    return relOp;
+  }
 
-	public static class ResourceHandlerModel extends AbstractDetailsAttachmentHandler.AbstractAttachmentHandlerModel
-	{
-		private String integrationUrl;
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new ResourceHandlerModel();
+  }
 
-		public String getIntegrationUrl()
-		{
-			return integrationUrl;
-		}
+  public JSCallAndReference getResultsCallback() {
+    return resultsCallback;
+  }
 
-		public void setIntegrationUrl(String integrationUrl)
-		{
-			this.integrationUrl = integrationUrl;
-		}
-	}
+  public static class ResourceHandlerModel
+      extends AbstractDetailsAttachmentHandler.AbstractAttachmentHandlerModel {
+    private String integrationUrl;
 
-	@Override
-	protected boolean validateAddPage(SectionInfo info)
-	{
-		return true;
-	}
+    public String getIntegrationUrl() {
+      return integrationUrl;
+    }
 
-	@Override
-	public String getMimeType(SectionInfo info)
-	{
-		return MimeTypeConstants.MIME_ITEM;
-	}
+    public void setIntegrationUrl(String integrationUrl) {
+      this.integrationUrl = integrationUrl;
+    }
+  }
 
-	@Override
-	public boolean canRestrictAttachments()
-	{
-		return false;
-	}
+  @Override
+  protected boolean validateAddPage(SectionInfo info) {
+    return true;
+  }
+
+  @Override
+  public String getMimeType(SectionInfo info) {
+    return MimeTypeConstants.MIME_ITEM;
+  }
+
+  @Override
+  public boolean canRestrictAttachments() {
+    return false;
+  }
 }

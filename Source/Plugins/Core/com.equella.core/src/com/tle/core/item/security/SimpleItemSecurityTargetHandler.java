@@ -28,47 +28,39 @@ import com.tle.core.security.SecurityTargetHandler;
 
 @Bind
 @Singleton
-public class SimpleItemSecurityTargetHandler implements SecurityTargetHandler
-{
+public class SimpleItemSecurityTargetHandler implements SecurityTargetHandler {
 
-	@Override
-	public void gatherAllLabels(Set<String> labels, Object target)
-	{
-		SimpleItemSecurity itemSecurity = (SimpleItemSecurity) target;
-		long collectionId = itemSecurity.getCollectionId();
-		String status = itemSecurity.getStatus();
+  @Override
+  public void gatherAllLabels(Set<String> labels, Object target) {
+    SimpleItemSecurity itemSecurity = (SimpleItemSecurity) target;
+    long collectionId = itemSecurity.getCollectionId();
+    String status = itemSecurity.getStatus();
 
-		labels.add(SecurityConstants.TARGET_ITEM + ':' + itemSecurity.getItemId());
-		labels.add(SecurityConstants.TARGET_ITEM_STATUS + ':' + status);
-		labels.add(SecurityConstants.TARGET_ITEM_STATUS + ':' + collectionId + ':' + status);
-		labels.add(SecurityConstants.TARGET_BASEENTITY + ':' + collectionId);
+    labels.add(SecurityConstants.TARGET_ITEM + ':' + itemSecurity.getItemId());
+    labels.add(SecurityConstants.TARGET_ITEM_STATUS + ':' + status);
+    labels.add(SecurityConstants.TARGET_ITEM_STATUS + ':' + collectionId + ':' + status);
+    labels.add(SecurityConstants.TARGET_BASEENTITY + ':' + collectionId);
 
-		Collection<String> metadataTargets = itemSecurity.getMetadataTargets();
-		if( !Check.isEmpty(metadataTargets) )
-		{
-			for( String metaTarget : metadataTargets )
-			{
-				labels.add(SecurityConstants.TARGET_ITEM_METADATA + ':' + collectionId + ':' + metaTarget);
-			}
-		}
-	}
+    Collection<String> metadataTargets = itemSecurity.getMetadataTargets();
+    if (!Check.isEmpty(metadataTargets)) {
+      for (String metaTarget : metadataTargets) {
+        labels.add(SecurityConstants.TARGET_ITEM_METADATA + ':' + collectionId + ':' + metaTarget);
+      }
+    }
+  }
 
-	@Override
-	public String getPrimaryLabel(Object target)
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public String getPrimaryLabel(Object target) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public Object transform(Object target)
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public Object transform(Object target) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public boolean isOwner(Object target, String userId)
-	{
-		return ((SimpleItemSecurity) target).isOwner();
-	}
-
+  @Override
+  public boolean isOwner(Object target, String userId) {
+    return ((SimpleItemSecurity) target).isOwner();
+  }
 }

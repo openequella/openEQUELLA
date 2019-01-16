@@ -23,22 +23,23 @@ import com.tle.web.viewable.ViewableItemResolverExtension;
 import com.tle.web.viewurl.attachments.AttachmentResourceExtension;
 import com.tle.web.viewurl.attachments.AttachmentTreeExtension;
 
-public class ViewUrlModule extends PluginTrackerModule
-{
+public class ViewUrlModule extends PluginTrackerModule {
 
-	@Override
-	protected String getPluginId()
-	{
-		return "com.tle.web.viewurl";
-	}
+  @Override
+  protected String getPluginId() {
+    return "com.tle.web.viewurl";
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	protected void configure()
-	{
-		bindTracker(Types.newParameterizedType(AttachmentResourceExtension.class, IAttachment.class),
-			"attachmentResource", "class").orderByParameter("order");
-		bindTracker(AttachmentTreeExtension.class, "attachmentTree", "bean");
-		bindTracker(ViewableItemResolverExtension.class, "viewableItemResolver", "bean").setIdParam("id");
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected void configure() {
+    bindTracker(
+            Types.newParameterizedType(AttachmentResourceExtension.class, IAttachment.class),
+            "attachmentResource",
+            "class")
+        .orderByParameter("order");
+    bindTracker(AttachmentTreeExtension.class, "attachmentTree", "bean");
+    bindTracker(ViewableItemResolverExtension.class, "viewableItemResolver", "bean")
+        .setIdParam("id");
+  }
 }

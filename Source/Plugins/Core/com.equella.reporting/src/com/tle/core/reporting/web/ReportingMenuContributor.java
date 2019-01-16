@@ -37,58 +37,49 @@ import com.tle.web.template.section.MenuContributor;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class ReportingMenuContributor implements MenuContributor
-{
-	private static final Label LABEL_KEY = new KeyLabel(ResourcesService.getResourceHelper(
-		ReportingMenuContributor.class).key("menu.reporting"));
-	private static final String ICON_PATH = ResourcesService.getResourceHelper(ReportingMenuContributor.class).url(
-		"images/reports-menu-icon.png");
-	private static final String SESSION_KEY = "REPORTING-MENU";
+public class ReportingMenuContributor implements MenuContributor {
+  private static final Label LABEL_KEY =
+      new KeyLabel(
+          ResourcesService.getResourceHelper(ReportingMenuContributor.class).key("menu.reporting"));
+  private static final String ICON_PATH =
+      ResourcesService.getResourceHelper(ReportingMenuContributor.class)
+          .url("images/reports-menu-icon.png");
+  private static final String SESSION_KEY = "REPORTING-MENU";
 
-	@Inject
-	private ReportingService reportingService;
-	@Inject
-	private UserSessionService userSessionService;
+  @Inject private ReportingService reportingService;
+  @Inject private UserSessionService userSessionService;
 
-	@Override
-	public void clearCachedData()
-	{
-		userSessionService.removeAttribute(SESSION_KEY);
-	}
+  @Override
+  public void clearCachedData() {
+    userSessionService.removeAttribute(SESSION_KEY);
+  }
 
-	@Override
-	public List<MenuContribution> getMenuContributions(SectionInfo info)
-	{
-		Boolean show = userSessionService.getAttribute(SESSION_KEY);
+  @Override
+  public List<MenuContribution> getMenuContributions(SectionInfo info) {
+    Boolean show = userSessionService.getAttribute(SESSION_KEY);
 
-		if( show == null )
-		{
-			show = false;
-			List<Report> reports = reportingService.enumerateExecutable();
-			for( Report report : reports )
-			{
-				if( !report.isHideReport() )
-				{
-					show = true;
-					break;
-				}
-			}
-			userSessionService.setAttribute(SESSION_KEY, show);
-		}
+    if (show == null) {
+      show = false;
+      List<Report> reports = reportingService.enumerateExecutable();
+      for (Report report : reports) {
+        if (!report.isHideReport()) {
+          show = true;
+          break;
+        }
+      }
+      userSessionService.setAttribute(SESSION_KEY, show);
+    }
 
-		if( show )
-		{
-			// TODO: We should be generating a bookmark to the section rather
-			// than hard-coding the URL
+    if (show) {
+      // TODO: We should be generating a bookmark to the section rather
+      // than hard-coding the URL
 
-			HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/reports.do"));
-			hls.setLabel(LABEL_KEY);
-			MenuContribution mc = new MenuContribution(hls, ICON_PATH, 30, 20, "insert_chart");
-			return Collections.singletonList(mc);
-		}
-		else
-		{
-			return Collections.emptyList();
-		}
-	}
+      HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/reports.do"));
+      hls.setLabel(LABEL_KEY);
+      MenuContribution mc = new MenuContribution(hls, ICON_PATH, 30, 20, "insert_chart");
+      return Collections.singletonList(mc);
+    } else {
+      return Collections.emptyList();
+    }
+  }
 }

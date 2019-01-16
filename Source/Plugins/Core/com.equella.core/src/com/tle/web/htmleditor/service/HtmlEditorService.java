@@ -29,38 +29,35 @@ import com.tle.web.sections.render.SectionRenderable;
 
 @NonNullByDefault
 @SuppressWarnings("nls")
-public interface HtmlEditorService
-{
-	String DISPLAY_CLASS = "htmlcontent";
-	String CONTENT_DIRECTORY = "_HtmlControlContent";
+public interface HtmlEditorService {
+  String DISPLAY_CLASS = "htmlcontent";
+  String CONTENT_DIRECTORY = "_HtmlControlContent";
 
-	HtmlEditorInterface getEditor();
+  HtmlEditorInterface getEditor();
 
-	HtmlEditorControl getControl();
+  HtmlEditorControl getControl();
 
-	HtmlEditorConfiguration getEditorConfig();
+  HtmlEditorConfiguration getEditorConfig();
 
-	HtmlEditorConfigurationEditingSession createEditorConfigEditingSession();
+  HtmlEditorConfigurationEditingSession createEditorConfigEditingSession();
 
-	HtmlEditorConfigurationEditingSession getEditorConfigEditingSession(String sessionId);
+  HtmlEditorConfigurationEditingSession getEditorConfigEditingSession(String sessionId);
 
-	void cancelEditorConfigEditingSession(String sessionId);
+  void cancelEditorConfigEditingSession(String sessionId);
 
-	void commitEditorConfigEditingSession(String sessionId);
+  void commitEditorConfigEditingSession(String sessionId);
 
-	void validateEditorOptions(String editorOptions) throws InvalidDataException;
+  void validateEditorOptions(String editorOptions) throws InvalidDataException;
 
-	String getStylesheetContents();
+  String getStylesheetContents();
 
-	void setStylesheetContents(String css);
+  void setStylesheetContents(String css);
 
-	/**
-	 * @return Will return null if no user styles have been created
-	 */
-	@Nullable
-	String getStylesheetRelativeUrl();
+  /** @return Will return null if no user styles have been created */
+  @Nullable
+  String getStylesheetRelativeUrl();
 
-	void exportStylesheet(FileHandle handle, @Nullable String folder);
+  void exportStylesheet(FileHandle handle, @Nullable String folder);
 
-	SectionRenderable getHtmlRenderable(RenderContext context, String html);
+  SectionRenderable getHtmlRenderable(RenderContext context, String html);
 }

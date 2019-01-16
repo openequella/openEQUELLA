@@ -36,177 +36,139 @@ import com.tle.common.Check;
  * they are simply thrown away.
  * @author nick
  */
-public class ThreadSafeSimpleDateFormat
-{
-	private final DateFormatFactory dateFormatFactory;
-	private final LocaleProvider localeProvider;
-	private final int poolSizePerLocale;
+public class ThreadSafeSimpleDateFormat {
+  private final DateFormatFactory dateFormatFactory;
+  private final LocaleProvider localeProvider;
+  private final int poolSizePerLocale;
 
-	private final Object mutex = new Object();
+  private final Object mutex = new Object();
 
-	/**
-	 * LinkedList implementing at least the Deque interface
-	 */
-	private transient Map<Locale, Deque<DateFormat>> pool;
+  /** LinkedList implementing at least the Deque interface */
+  private transient Map<Locale, Deque<DateFormat>> pool;
 
-	public ThreadSafeSimpleDateFormat(final String format)
-	{
-		this(new BasicDateFormatFactory(format));
-	}
+  public ThreadSafeSimpleDateFormat(final String format) {
+    this(new BasicDateFormatFactory(format));
+  }
 
-	public ThreadSafeSimpleDateFormat(DateFormatFactory dateFormatFactory)
-	{
-		this(dateFormatFactory, new LocaleProvider()
-		{
-			@Override
-			public Locale getCurrentLocale()
-			{
-				return Locale.getDefault();
-			}
-		});
-	}
+  public ThreadSafeSimpleDateFormat(DateFormatFactory dateFormatFactory) {
+    this(
+        dateFormatFactory,
+        new LocaleProvider() {
+          @Override
+          public Locale getCurrentLocale() {
+            return Locale.getDefault();
+          }
+        });
+  }
 
-	public ThreadSafeSimpleDateFormat(String format, LocaleProvider localeProvider)
-	{
-		this(new BasicDateFormatFactory(format), localeProvider);
-	}
+  public ThreadSafeSimpleDateFormat(String format, LocaleProvider localeProvider) {
+    this(new BasicDateFormatFactory(format), localeProvider);
+  }
 
-	public ThreadSafeSimpleDateFormat(DateFormatFactory dateFormatFactory, LocaleProvider localeProvider)
-	{
-		this(dateFormatFactory, localeProvider, 5);
-	}
+  public ThreadSafeSimpleDateFormat(
+      DateFormatFactory dateFormatFactory, LocaleProvider localeProvider) {
+    this(dateFormatFactory, localeProvider, 5);
+  }
 
-	public ThreadSafeSimpleDateFormat(DateFormatFactory dateFormatFactory, LocaleProvider localeProvider,
-		int poolSizePerLocale)
-	{
-		Check.checkNotNull(dateFormatFactory);
-		Check.checkNotNull(localeProvider);
+  public ThreadSafeSimpleDateFormat(
+      DateFormatFactory dateFormatFactory, LocaleProvider localeProvider, int poolSizePerLocale) {
+    Check.checkNotNull(dateFormatFactory);
+    Check.checkNotNull(localeProvider);
 
-		this.dateFormatFactory = dateFormatFactory;
-		this.localeProvider = localeProvider;
-		this.poolSizePerLocale = poolSizePerLocale;
-	}
+    this.dateFormatFactory = dateFormatFactory;
+    this.localeProvider = localeProvider;
+    this.poolSizePerLocale = poolSizePerLocale;
+  }
 
-	public String format(Date date, TimeZone tz, Locale locale)
-	{
-		DateFormat format = aquire(locale);
-		try
-		{
-			if( tz == null )
-			{
-				return format.format(date);
-			}
-			else
-			{
-				// need to mutate the format...
-				DateFormat clone = (DateFormat) format.clone();
-				clone.setTimeZone(tz);
-				return clone.format(date);
-			}
-		}
-		finally
-		{
-			release(format, locale);
-		}
-	}
+  public String format(Date date, TimeZone tz, Locale locale) {
+    DateFormat format = aquire(locale);
+    try {
+      if (tz == null) {
+        return format.format(date);
+      } else {
+        // need to mutate the format...
+        DateFormat clone = (DateFormat) format.clone();
+        clone.setTimeZone(tz);
+        return clone.format(date);
+      }
+    } finally {
+      release(format, locale);
+    }
+  }
 
-	public String format(Date date, TimeZone tz)
-	{
-		return format(date, tz, localeProvider.getCurrentLocale());
-	}
+  public String format(Date date, TimeZone tz) {
+    return format(date, tz, localeProvider.getCurrentLocale());
+  }
 
-	public Date parse(String date, TimeZone tz, Locale locale) throws ParseException
-	{
-		DateFormat format = aquire(locale);
-		try
-		{
-			if( tz == null )
-			{
-				return format.parse(date);
-			}
-			else
-			{
-				// need to mutate the format...
-				DateFormat clone = (DateFormat) format.clone();
-				clone.setTimeZone(tz);
-				return clone.parse(date);
-			}
-		}
-		finally
-		{
-			release(format, locale);
-		}
-	}
+  public Date parse(String date, TimeZone tz, Locale locale) throws ParseException {
+    DateFormat format = aquire(locale);
+    try {
+      if (tz == null) {
+        return format.parse(date);
+      } else {
+        // need to mutate the format...
+        DateFormat clone = (DateFormat) format.clone();
+        clone.setTimeZone(tz);
+        return clone.parse(date);
+      }
+    } finally {
+      release(format, locale);
+    }
+  }
 
-	public Date parse(String date, TimeZone tz) throws ParseException
-	{
-		return parse(date, tz, localeProvider.getCurrentLocale());
-	}
+  public Date parse(String date, TimeZone tz) throws ParseException {
+    return parse(date, tz, localeProvider.getCurrentLocale());
+  }
 
-	private DateFormat aquire(Locale locale)
-	{
-		synchronized( mutex )
-		{
-			Deque<DateFormat> sp = getSubpool(locale);
-			return !sp.isEmpty() ? sp.removeFirst() : dateFormatFactory.createDateFormat(locale);
-		}
-	}
+  private DateFormat aquire(Locale locale) {
+    synchronized (mutex) {
+      Deque<DateFormat> sp = getSubpool(locale);
+      return !sp.isEmpty() ? sp.removeFirst() : dateFormatFactory.createDateFormat(locale);
+    }
+  }
 
-	private void release(DateFormat format, Locale locale)
-	{
-		synchronized( mutex )
-		{
-			Deque<DateFormat> sp = getSubpool(locale);
-			if( sp.size() >= poolSizePerLocale )
-			{
-				sp.addFirst(format);
-			}
-		}
-	}
+  private void release(DateFormat format, Locale locale) {
+    synchronized (mutex) {
+      Deque<DateFormat> sp = getSubpool(locale);
+      if (sp.size() >= poolSizePerLocale) {
+        sp.addFirst(format);
+      }
+    }
+  }
 
-	/**
-	 * Only to be called by methods holding the mutex lock
-	 */
-	private Deque<DateFormat> getSubpool(Locale locale)
-	{
-		if( pool == null )
-		{
-			pool = new HashMap<Locale, Deque<DateFormat>>(1);
-		}
+  /** Only to be called by methods holding the mutex lock */
+  private Deque<DateFormat> getSubpool(Locale locale) {
+    if (pool == null) {
+      pool = new HashMap<Locale, Deque<DateFormat>>(1);
+    }
 
-		Deque<DateFormat> sp = pool.get(locale);
-		if( sp == null )
-		{
-			sp = new LinkedList<DateFormat>();
-			pool.put(locale, sp);
-		}
+    Deque<DateFormat> sp = pool.get(locale);
+    if (sp == null) {
+      sp = new LinkedList<DateFormat>();
+      pool.put(locale, sp);
+    }
 
-		return sp;
-	}
+    return sp;
+  }
 
-	public interface DateFormatFactory
-	{
-		DateFormat createDateFormat(Locale locale);
-	}
+  public interface DateFormatFactory {
+    DateFormat createDateFormat(Locale locale);
+  }
 
-	public interface LocaleProvider
-	{
-		Locale getCurrentLocale();
-	}
+  public interface LocaleProvider {
+    Locale getCurrentLocale();
+  }
 
-	public static class BasicDateFormatFactory implements DateFormatFactory
-	{
-		private final String format;
+  public static class BasicDateFormatFactory implements DateFormatFactory {
+    private final String format;
 
-		public BasicDateFormatFactory(String format)
-		{
-			this.format = format;
-		}
+    public BasicDateFormatFactory(String format) {
+      this.format = format;
+    }
 
-		@Override
-		public DateFormat createDateFormat(Locale locale)
-		{
-			return new SimpleDateFormat(format, locale);
-		}
-	}
+    @Override
+    public DateFormat createDateFormat(Locale locale) {
+      return new SimpleDateFormat(format, locale);
+    }
+  }
 }

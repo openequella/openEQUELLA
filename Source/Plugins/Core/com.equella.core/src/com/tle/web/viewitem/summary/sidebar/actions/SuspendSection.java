@@ -28,47 +28,44 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.viewurl.ItemSectionInfo;
 
 @Bind
-public class SuspendSection extends GenericMinorActionSection
-{
-	@PlugKey("summary.sidebar.actions.suspend.title")
-	private static Label LINK_LABEL;
-	@PlugKey("summary.sidebar.actions.suspend.confirm")
-	private static Label CONFIRM_LABEL;
-	@PlugKey("summary.sidebar.actions.suspend.receipt")
-	private static Label RECEIPT_LABEL;
-	@Inject
-	private ItemOperationFactory workflowFactory;
+public class SuspendSection extends GenericMinorActionSection {
+  @PlugKey("summary.sidebar.actions.suspend.title")
+  private static Label LINK_LABEL;
 
-	@Override
-	@SuppressWarnings("nls")
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		return !status.isLocked() && itemInfo.hasPrivilege("SUSPEND_ITEM")
-			&& !status.getStatusName().equals(ItemStatus.SUSPENDED);
-	}
+  @PlugKey("summary.sidebar.actions.suspend.confirm")
+  private static Label CONFIRM_LABEL;
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return LINK_LABEL;
-	}
+  @PlugKey("summary.sidebar.actions.suspend.receipt")
+  private static Label RECEIPT_LABEL;
 
-	@Override
-	protected Label getConfirmation()
-	{
-		return CONFIRM_LABEL;
-	}
+  @Inject private ItemOperationFactory workflowFactory;
 
-	@Override
-	public void execute(SectionInfo info)
-	{
-		getItemInfo(info).modify(workflowFactory.suspend());
-		setReceipt(RECEIPT_LABEL);
-	}
+  @Override
+  @SuppressWarnings("nls")
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    return !status.isLocked()
+        && itemInfo.hasPrivilege("SUSPEND_ITEM")
+        && !status.getStatusName().equals(ItemStatus.SUSPENDED);
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return LINK_LABEL.getText();
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return LINK_LABEL;
+  }
+
+  @Override
+  protected Label getConfirmation() {
+    return CONFIRM_LABEL;
+  }
+
+  @Override
+  public void execute(SectionInfo info) {
+    getItemInfo(info).modify(workflowFactory.suspend());
+    setReceipt(RECEIPT_LABEL);
+  }
+
+  @Override
+  public String getLinkText() {
+    return LINK_LABEL.getText();
+  }
 }

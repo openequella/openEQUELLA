@@ -30,107 +30,90 @@ import com.tle.web.scripting.types.AttachmentScriptTypeImpl;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind(SystemScriptObject.class)
 @Singleton
-public class SystemScriptWrapper implements SystemScriptObject
-{
-	@Inject
-	private FileSystemService fileSystem;
+public class SystemScriptWrapper implements SystemScriptObject {
+  @Inject private FileSystemService fileSystem;
 
-	// @Override
-	// public BinaryDataScriptType executeWithBinaryResult(String programPath,
-	// String[] parameters)
-	// {
-	// final ExecResult res = ExecUtils.exec(getCommand(programPath,
-	// parameters));
-	//
-	// return null;
-	// }
+  // @Override
+  // public BinaryDataScriptType executeWithBinaryResult(String programPath,
+  // String[] parameters)
+  // {
+  // final ExecResult res = ExecUtils.exec(getCommand(programPath,
+  // parameters));
+  //
+  // return null;
+  // }
 
-	@Override
-	public ExecutionResultScriptType execute(String programPath, Object[] parameters)
-	{
-		return new ExecutionResultTypeImpl(ExecUtils.exec(getCommand(programPath, parameters)));
-	}
+  @Override
+  public ExecutionResultScriptType execute(String programPath, Object[] parameters) {
+    return new ExecutionResultTypeImpl(ExecUtils.exec(getCommand(programPath, parameters)));
+  }
 
-	@Override
-	public void executeInBackground(String programPath, Object[] parameters)
-	{
-		final String[] cmd = getCommand(programPath, parameters);
-		new Thread("SystemScriptWrapper execution thread")
-		{
-			@Override
-			public void run()
-			{
-				ExecUtils.exec(cmd);
-			}
-		}.start();
-	}
+  @Override
+  public void executeInBackground(String programPath, Object[] parameters) {
+    final String[] cmd = getCommand(programPath, parameters);
+    new Thread("SystemScriptWrapper execution thread") {
+      @Override
+      public void run() {
+        ExecUtils.exec(cmd);
+      }
+    }.start();
+  }
 
-	private String[] getCommand(String programPath, Object[] parameters)
-	{
-		final String[] cmd = new String[parameters.length + 1];
-		cmd[0] = programPath;
-		// System.arraycopy(parameters, 0, cmd, 1, parameters.length);
-		for( int i = 0; i < parameters.length; i++ )
-		{
-			Object param = parameters[i];
-			// munge the param
-			String strParam = "";
-			if( param instanceof String )
-			{
-				strParam = (String) param;
-			}
-			else if( param instanceof Number )
-			{
-				strParam = Integer.toString(((Number) param).intValue());
-			}
-			else if( param instanceof AttachmentScriptType )
-			{
-				AttachmentScriptTypeImpl attachmentType = ((AttachmentScriptTypeImpl) param);
-				strParam = fileSystem.getExternalFile(attachmentType.getStagingFile(), attachmentType.getUrl())
-					.getAbsolutePath();
-			}
-			else if( param instanceof FileHandleScriptType )
-			{
-				FileHandleScriptTypeImpl fileType = ((FileHandleScriptTypeImpl) param);
-				strParam = fileSystem.getExternalFile(fileType.getHandle(), fileType.getFilepath()).getAbsolutePath();
-			}
+  private String[] getCommand(String programPath, Object[] parameters) {
+    final String[] cmd = new String[parameters.length + 1];
+    cmd[0] = programPath;
+    // System.arraycopy(parameters, 0, cmd, 1, parameters.length);
+    for (int i = 0; i < parameters.length; i++) {
+      Object param = parameters[i];
+      // munge the param
+      String strParam = "";
+      if (param instanceof String) {
+        strParam = (String) param;
+      } else if (param instanceof Number) {
+        strParam = Integer.toString(((Number) param).intValue());
+      } else if (param instanceof AttachmentScriptType) {
+        AttachmentScriptTypeImpl attachmentType = ((AttachmentScriptTypeImpl) param);
+        strParam =
+            fileSystem
+                .getExternalFile(attachmentType.getStagingFile(), attachmentType.getUrl())
+                .getAbsolutePath();
+      } else if (param instanceof FileHandleScriptType) {
+        FileHandleScriptTypeImpl fileType = ((FileHandleScriptTypeImpl) param);
+        strParam =
+            fileSystem
+                .getExternalFile(fileType.getHandle(), fileType.getFilepath())
+                .getAbsolutePath();
+      }
 
-			cmd[i + 1] = strParam;
-		}
-		return cmd;
-	}
+      cmd[i + 1] = strParam;
+    }
+    return cmd;
+  }
 
-	public static class ExecutionResultTypeImpl implements ExecutionResultScriptType
-	{
-		private final ExecResult execResult;
+  public static class ExecutionResultTypeImpl implements ExecutionResultScriptType {
+    private final ExecResult execResult;
 
-		public ExecutionResultTypeImpl(ExecResult execResult)
-		{
-			this.execResult = execResult;
-		}
+    public ExecutionResultTypeImpl(ExecResult execResult) {
+      this.execResult = execResult;
+    }
 
-		@Override
-		public int getCode()
-		{
-			return execResult.getExitStatus();
-		}
+    @Override
+    public int getCode() {
+      return execResult.getExitStatus();
+    }
 
-		@Override
-		public String getErrorOutput()
-		{
-			return execResult.getStderr();
-		}
+    @Override
+    public String getErrorOutput() {
+      return execResult.getStderr();
+    }
 
-		@Override
-		public String getStandardOutput()
-		{
-			return execResult.getStdout();
-		}
-	}
+    @Override
+    public String getStandardOutput() {
+      return execResult.getStdout();
+    }
+  }
 }

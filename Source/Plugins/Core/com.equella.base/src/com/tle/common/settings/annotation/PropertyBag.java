@@ -20,7 +20,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PropertyBag
-{
-	String key();
+public @interface PropertyBag {
+  String key();
 }

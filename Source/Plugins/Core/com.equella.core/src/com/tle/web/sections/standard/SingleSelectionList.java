@@ -29,84 +29,68 @@ import com.tle.web.sections.standard.renderers.list.DropDownRenderer;
 
 /**
  * A single selection list component.
- * <p>
- * It provides methods for getting and setting the single value. <br>
+ *
+ * <p>It provides methods for getting and setting the single value. <br>
  * The default renderer is usually {@link DropDownRenderer}.
- * 
+ *
  * @author jmaginnis
  */
-public class SingleSelectionList<T> extends MultiSelectionList<T>
-{
-	private boolean grouped;
+public class SingleSelectionList<T> extends MultiSelectionList<T> {
+  private boolean grouped;
 
-	@Override
-	protected void extraHtmlRender(SectionInfo info)
-	{
-		HtmlListState state = getState(info);
-		state.setMultiple(false);
-		state.setGrouped(grouped);
-	}
+  @Override
+  protected void extraHtmlRender(SectionInfo info) {
+    HtmlListState state = getState(info);
+    state.setMultiple(false);
+    state.setGrouped(grouped);
+  }
 
-	@Override
-	protected void handleListParameters(SectionInfo info, ParametersEvent event)
-	{
-		String param = event.getParameter(getParameterId(), false);
-		if( param != null )
-		{
-			setValuesInternal(info, Collections.singleton(param));
-		}
-	}
+  @Override
+  protected void handleListParameters(SectionInfo info, ParametersEvent event) {
+    String param = event.getParameter(getParameterId(), false);
+    if (param != null) {
+      setValuesInternal(info, Collections.singleton(param));
+    }
+  }
 
-	public T getSelectedValue(SectionInfo info)
-	{
-		Collection<T> vals = getSelectedValues(info);
-		if( !vals.isEmpty() )
-		{
-			return vals.iterator().next();
-		}
-		return null;
-	}
+  public T getSelectedValue(SectionInfo info) {
+    Collection<T> vals = getSelectedValues(info);
+    if (!vals.isEmpty()) {
+      return vals.iterator().next();
+    }
+    return null;
+  }
 
-	public void setSelectedValue(SectionInfo info, T type)
-	{
-		if( type == null )
-		{
-			setSelectedStringValue(info, null);
-		}
-		else
-		{
-			setSelectedStringValue(info, listModel.getStringValue(info, type));
-		}
-	}
+  public void setSelectedValue(SectionInfo info, T type) {
+    if (type == null) {
+      setSelectedStringValue(info, null);
+    } else {
+      setSelectedStringValue(info, listModel.getStringValue(info, type));
+    }
+  }
 
-	public String getSelectedValueAsString(SectionInfo info)
-	{
-		Collection<String> vals = getSelectedValuesAsStrings(info);
-		if( vals != null && !vals.isEmpty() )
-		{
-			return vals.iterator().next();
-		}
-		return null;
-	}
+  public String getSelectedValueAsString(SectionInfo info) {
+    Collection<String> vals = getSelectedValuesAsStrings(info);
+    if (vals != null && !vals.isEmpty()) {
+      return vals.iterator().next();
+    }
+    return null;
+  }
 
-	public void addChangeEventHandler(JSHandler handler)
-	{
-		setEventHandler(JSHandler.EVENT_CHANGE, handler);
-	}
+  public void addChangeEventHandler(JSHandler handler) {
+    setEventHandler(JSHandler.EVENT_CHANGE, handler);
+  }
 
-	public void addChangeEventHandler(JSCallable callable, Object... args)
-	{
-		setEventHandler(JSHandler.EVENT_CHANGE, new StatementHandler(callable, args));
-	}
+  public void addChangeEventHandler(JSCallable callable, Object... args) {
+    setEventHandler(JSHandler.EVENT_CHANGE, new StatementHandler(callable, args));
+  }
 
-	@Override
-	protected String getValueType()
-	{
-		return String.class.getName();
-	}
+  @Override
+  protected String getValueType() {
+    return String.class.getName();
+  }
 
-	public void setGrouped(boolean grouped)
-	{
-		this.grouped = grouped;
-	}
+  public void setGrouped(boolean grouped) {
+    this.grouped = grouped;
+  }
 }

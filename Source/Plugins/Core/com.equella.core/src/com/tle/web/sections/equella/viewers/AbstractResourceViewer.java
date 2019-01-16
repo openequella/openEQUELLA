@@ -49,141 +49,131 @@ import com.tle.web.viewurl.ViewItemViewer;
 import com.tle.web.viewurl.ViewableResource;
 
 @NonNullByDefault
-public abstract class AbstractResourceViewer implements ResourceViewer
-{
-	@Inject
-	private MimeTypeService mimeTypeService;
+public abstract class AbstractResourceViewer implements ResourceViewer {
+  @Inject private MimeTypeService mimeTypeService;
 
-	@Inject
-	protected DialogTemplate dialogTemplate;
+  @Inject protected DialogTemplate dialogTemplate;
 
-	public abstract String getViewerId();
+  public abstract String getViewerId();
 
-	@Nullable
-	public abstract Class<? extends SectionId> getViewerSectionClass();
+  @Nullable
+  public abstract Class<? extends SectionId> getViewerSectionClass();
 
-	@Override
-	public LinkTagRenderer createLinkRenderer(SectionInfo info, ViewableResource resource, Bookmark viewUrl)
-	{
-		HtmlLinkState state = new HtmlLinkState(viewUrl);
-		LinkTagRenderer renderer = null;
-		ResourceViewerConfig config = getViewerConfig(resource);
-		if( config != null )
-		{
-			renderer = createLinkFromConfig(info, resource, config, state);
-		}
-		if( renderer == null )
-		{
-			renderer = new LinkRenderer(state);
-		}
-		renderer.setDisabled(resource.isDisabled());
-		return renderer;
-	}
+  @Override
+  public LinkTagRenderer createLinkRenderer(
+      SectionInfo info, ViewableResource resource, Bookmark viewUrl) {
+    HtmlLinkState state = new HtmlLinkState(viewUrl);
+    LinkTagRenderer renderer = null;
+    ResourceViewerConfig config = getViewerConfig(resource);
+    if (config != null) {
+      renderer = createLinkFromConfig(info, resource, config, state);
+    }
+    if (renderer == null) {
+      renderer = new LinkRenderer(state);
+    }
+    renderer.setDisabled(resource.isDisabled());
+    return renderer;
+  }
 
-	@Override
-	public LinkTagRenderer createLinkRenderer(SectionInfo info, ViewableResource resource)
-	{
-		return createLinkRenderer(info, resource, createStreamUrl(info, resource));
-	}
+  @Override
+  public LinkTagRenderer createLinkRenderer(SectionInfo info, ViewableResource resource) {
+    return createLinkRenderer(info, resource, createStreamUrl(info, resource));
+  }
 
-	@Nullable
-	protected ResourceViewerConfig getViewerConfig(ViewableResource resource)
-	{
-		MimeEntry entry = mimeTypeService.getEntryForMimeType(resource.getMimeType());
-		if( entry == null )
-		{
-			return null;
-		}
-		ResourceViewerConfig config = mimeTypeService.getBeanFromAttribute(entry,
-			MimeTypeConstants.KEY_VIEWER_CONFIG_PREFIX + getViewerId(), ResourceViewerConfig.class);
-		return config;
-	}
+  @Nullable
+  protected ResourceViewerConfig getViewerConfig(ViewableResource resource) {
+    MimeEntry entry = mimeTypeService.getEntryForMimeType(resource.getMimeType());
+    if (entry == null) {
+      return null;
+    }
+    ResourceViewerConfig config =
+        mimeTypeService.getBeanFromAttribute(
+            entry,
+            MimeTypeConstants.KEY_VIEWER_CONFIG_PREFIX + getViewerId(),
+            ResourceViewerConfig.class);
+    return config;
+  }
 
-	@SuppressWarnings("nls")
-	@Nullable
-	protected LinkTagRenderer createLinkFromConfig(SectionInfo info, ViewableResource resource,
-		ResourceViewerConfig config, HtmlLinkState state)
-	{
-		if( !config.isOpenInNewWindow() )
-		{
-			return null;
-		}
+  @SuppressWarnings("nls")
+  @Nullable
+  protected LinkTagRenderer createLinkFromConfig(
+      SectionInfo info,
+      ViewableResource resource,
+      ResourceViewerConfig config,
+      HtmlLinkState state) {
+    if (!config.isOpenInNewWindow()) {
+      return null;
+    }
 
-		if( config.isThickbox() )
-		{
+    if (config.isThickbox()) {
 
-			String height = config.getHeight();
-			String width = config.getWidth();
+      String height = config.getHeight();
+      String width = config.getWidth();
 
-			ObjectExpression exp = new ObjectExpression();
+      ObjectExpression exp = new ObjectExpression();
 
-			if( !Check.isEmpty(height) )
-			{
-				exp.put("height", height.contains("%") ? height : Integer.valueOf(height));
-			}
+      if (!Check.isEmpty(height)) {
+        exp.put("height", height.contains("%") ? height : Integer.valueOf(height));
+      }
 
-			if( !Check.isEmpty(width) )
-			{
-				exp.put("width", width.contains("%") ? width : Integer.valueOf(width));
-			}
+      if (!Check.isEmpty(width)) {
+        exp.put("width", width.contains("%") ? width : Integer.valueOf(width));
+      }
 
-			state.setClickHandler(new OverrideHandler());
-			state.addClass("iframe");
-			state.addReadyStatements(Js.handler(JQuerySelector.methodCallExpression(state,
-				new ExternallyDefinedFunction("fancybox", JQueryFancyBox.PRERENDER), exp)));
-			LinkRenderer linkRenderer = new LinkRenderer(state);
+      state.setClickHandler(new OverrideHandler());
+      state.addClass("iframe");
+      state.addReadyStatements(
+          Js.handler(
+              JQuerySelector.methodCallExpression(
+                  state,
+                  new ExternallyDefinedFunction("fancybox", JQueryFancyBox.PRERENDER),
+                  exp)));
+      LinkRenderer linkRenderer = new LinkRenderer(state);
 
-			return linkRenderer;
-		}
-		PopupLinkRenderer popup = new PopupLinkRenderer(state);
-		popup.setWidth(config.getWidth());
-		popup.setHeight(config.getHeight());
-		return popup;
-	}
+      return linkRenderer;
+    }
+    PopupLinkRenderer popup = new PopupLinkRenderer(state);
+    popup.setWidth(config.getWidth());
+    popup.setHeight(config.getHeight());
+    return popup;
+  }
 
-	@Override
-	public ViewItemUrl createViewItemUrl(SectionInfo info, ViewableResource resource)
-	{
-		ViewItemUrl viewerUrl = resource.createDefaultViewerUrl();
-		viewerUrl.setViewer(getViewerId());
-		return viewerUrl;
-	}
+  @Override
+  public ViewItemUrl createViewItemUrl(SectionInfo info, ViewableResource resource) {
+    ViewItemUrl viewerUrl = resource.createDefaultViewerUrl();
+    viewerUrl.setViewer(getViewerId());
+    return viewerUrl;
+  }
 
-	@Override
-	public Bookmark createStreamUrl(SectionInfo info, ViewableResource resource)
-	{
-		return createViewItemUrl(info, resource);
-	}
+  @Override
+  public Bookmark createStreamUrl(SectionInfo info, ViewableResource resource) {
+    return createViewItemUrl(info, resource);
+  }
 
-	@Nullable
-	@Override
-	public ViewItemViewer getViewer(SectionInfo info, ViewItemResource resource)
-	{
-		Class<? extends SectionId> viewerSectionClass = getViewerSectionClass();
-		if( viewerSectionClass != null )
-		{
-			return (ViewItemViewer) info.lookupSection(viewerSectionClass);
-		}
-		return null;
-	}
+  @Nullable
+  @Override
+  public ViewItemViewer getViewer(SectionInfo info, ViewItemResource resource) {
+    Class<? extends SectionId> viewerSectionClass = getViewerSectionClass();
+    if (viewerSectionClass != null) {
+      return (ViewItemViewer) info.lookupSection(viewerSectionClass);
+    }
+    return null;
+  }
 
-	@Nullable
-	@Override
-	public ResourceViewerConfigDialog createConfigDialog(String parentId, SectionTree tree,
-		ResourceViewerConfigDialog defaultDialog)
-	{
-		return defaultDialog;
-	}
+  @Nullable
+  @Override
+  public ResourceViewerConfigDialog createConfigDialog(
+      String parentId, SectionTree tree, ResourceViewerConfigDialog defaultDialog) {
+    return defaultDialog;
+  }
 
-	// Implements part of the ViewItemViewer interface
-	@Nullable
-	public IAttachment getAttachment(SectionInfo info, ViewItemResource resource)
-	{
-		final ViewableResource viewableResource = resource.getAttribute(ViewableResource.class);
-		if( viewableResource != null )
-		{
-			return viewableResource.getAttachment();
-		}
-		return null;
-	}
+  // Implements part of the ViewItemViewer interface
+  @Nullable
+  public IAttachment getAttachment(SectionInfo info, ViewItemResource resource) {
+    final ViewableResource viewableResource = resource.getAttribute(ViewableResource.class);
+    if (viewableResource != null) {
+      return viewableResource.getAttachment();
+    }
+    return null;
+  }
 }

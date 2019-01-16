@@ -41,143 +41,127 @@ import com.tle.web.remoterepo.service.RemoteRepoWebService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.wizard.WebWizardService;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind(RemoteRepoWebService.class)
 @Singleton
-public class RemoteRepoWebServiceImpl implements RemoteRepoWebService
-{
-	@Inject
-	private WebWizardService webWizardService;
-	@Inject
-	private SchemaService schemaService;
-	@Inject
-	private XsltService xsltService;
-	@Inject
-	private ItemDefinitionService collectionService;
-	@Inject
-	private FederatedSearchService fedService;
-	@Inject
-	private UserSessionService userSessionService;
+public class RemoteRepoWebServiceImpl implements RemoteRepoWebService {
+  @Inject private WebWizardService webWizardService;
+  @Inject private SchemaService schemaService;
+  @Inject private XsltService xsltService;
+  @Inject private ItemDefinitionService collectionService;
+  @Inject private FederatedSearchService fedService;
+  @Inject private UserSessionService userSessionService;
 
-	private PluginTracker<RemoteRepoSearch> remoteRepoSearches;
+  private PluginTracker<RemoteRepoSearch> remoteRepoSearches;
 
-	@Override
-	public void forwardToWizard(SectionInfo info, PropBagEx xml, FederatedSearch search)
-	{
-		forwardToWizard(info, null, xml, search);
-	}
+  @Override
+  public void forwardToWizard(SectionInfo info, PropBagEx xml, FederatedSearch search) {
+    forwardToWizard(info, null, xml, search);
+  }
 
-	@Override
-	public void forwardToWizard(SectionInfo info, StagingFile staging, PropBagEx xml, FederatedSearch search)
-	{
-		try
-		{
-			final ItemDefinition collection = collectionService.getByUuid(search.getCollectionUuid());
-			if( collection == null )
-			{
-				throw new Error("No import collection for this Remote Repository");
-			}
+  @Override
+  public void forwardToWizard(
+      SectionInfo info, StagingFile staging, PropBagEx xml, FederatedSearch search) {
+    try {
+      final ItemDefinition collection = collectionService.getByUuid(search.getCollectionUuid());
+      if (collection == null) {
+        throw new Error("No import collection for this Remote Repository");
+      }
 
-			webWizardService.forwardToNewItemWizard(info, collection.getUuid(),
-				getInitialXml(info, staging, xml, search, collection), staging, true);
-		}
-		catch( Exception e )
-		{
-			throw new RuntimeException(e);
-		}
-	}
+      webWizardService.forwardToNewItemWizard(
+          info,
+          collection.getUuid(),
+          getInitialXml(info, staging, xml, search, collection),
+          staging,
+          true);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-	protected PropBagEx getInitialXml(SectionInfo info, StagingFile staging, PropBagEx xml, FederatedSearch search,
-		ItemDefinition collection) throws Exception
-	{
-		SearchSettings settings = getRemoteRepoSearch(search).createSettings(search);
-		if( settings instanceof XmlBasedSearchSettings )
-		{
-			String transformName = ((XmlBasedSearchSettings) settings).getSchemaInputTransform();
-			final PropBagEx initXml;
-			if( transformName != null )
-			{
-				initXml = new PropBagEx(
-					schemaService.transformForImport(collection.getSchema().getId(), transformName, xml));
-			}
-			else
-			{
-				initXml = xml;
-			}
-			return initXml;
-		}
-		return null;
-	}
+  protected PropBagEx getInitialXml(
+      SectionInfo info,
+      StagingFile staging,
+      PropBagEx xml,
+      FederatedSearch search,
+      ItemDefinition collection)
+      throws Exception {
+    SearchSettings settings = getRemoteRepoSearch(search).createSettings(search);
+    if (settings instanceof XmlBasedSearchSettings) {
+      String transformName = ((XmlBasedSearchSettings) settings).getSchemaInputTransform();
+      final PropBagEx initXml;
+      if (transformName != null) {
+        initXml =
+            new PropBagEx(
+                schemaService.transformForImport(
+                    collection.getSchema().getId(), transformName, xml));
+      } else {
+        initXml = xml;
+      }
+      return initXml;
+    }
+    return null;
+  }
 
-	@Override
-	public void forwardToSearch(SectionInfo info, FederatedSearch search, boolean clearContext)
-	{
-		RemoteRepoSearch remoteRepoSearch = getRemoteRepoSearch(search);
-		if( clearContext )
-		{
-			userSessionService.removeAttribute(remoteRepoSearch.getContextKey());
-		}
-		remoteRepoSearch.forward(info, search);
-	}
+  @Override
+  public void forwardToSearch(SectionInfo info, FederatedSearch search, boolean clearContext) {
+    RemoteRepoSearch remoteRepoSearch = getRemoteRepoSearch(search);
+    if (clearContext) {
+      userSessionService.removeAttribute(remoteRepoSearch.getContextKey());
+    }
+    remoteRepoSearch.forward(info, search);
+  }
 
-	@Override
-	public FederatedSearch getRemoteRepository(SectionInfo info)
-	{
-		FederatedSearch search = info.getAttributeForClass(FederatedSearch.class);
-		if( search == null )
-		{
-			RemoteRepoSection remoteRepoSection = info.lookupSection(RemoteRepoSection.class);
-			final String searchUuid = remoteRepoSection.getSearchUuid(info);
-			if( searchUuid != null )
-			{
-				search = fedService.getForSearching(searchUuid);
-				info.setAttribute(FederatedSearch.class, search);
-			}
-		}
-		return search;
-	}
+  @Override
+  public FederatedSearch getRemoteRepository(SectionInfo info) {
+    FederatedSearch search = info.getAttributeForClass(FederatedSearch.class);
+    if (search == null) {
+      RemoteRepoSection remoteRepoSection = info.lookupSection(RemoteRepoSection.class);
+      final String searchUuid = remoteRepoSection.getSearchUuid(info);
+      if (searchUuid != null) {
+        search = fedService.getForSearching(searchUuid);
+        info.setAttribute(FederatedSearch.class, search);
+      }
+    }
+    return search;
+  }
 
-	@Override
-	public void setRemoteRepository(SectionInfo info, String searchUuid)
-	{
-		final RemoteRepoSection repoSection = info.lookupSection(RemoteRepoSection.class);
-		repoSection.setSearchUuid(info, searchUuid);
-	}
+  @Override
+  public void setRemoteRepository(SectionInfo info, String searchUuid) {
+    final RemoteRepoSection repoSection = info.lookupSection(RemoteRepoSection.class);
+    repoSection.setSearchUuid(info, searchUuid);
+  }
 
-	protected RemoteRepoSearch getRemoteRepoSearch(FederatedSearch search)
-	{
-		String type = search.getType();
-		RemoteRepoSearch remote = remoteRepoSearches.getBeanMap().get(type);
-		if( remote == null )
-		{
-			throw new Error("No plugin extension found for Remote Repository type '" + type + "'"); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-		return remote;
-	}
+  protected RemoteRepoSearch getRemoteRepoSearch(FederatedSearch search) {
+    String type = search.getType();
+    RemoteRepoSearch remote = remoteRepoSearches.getBeanMap().get(type);
+    if (remote == null) {
+      throw new Error(
+          "No plugin extension found for Remote Repository type '"
+              + type
+              + "'"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+    return remote;
+  }
 
-	@Override
-	public String getDisplayText(FederatedSearch search, PropBagEx xml)
-	{
-		SearchSettings settings = getRemoteRepoSearch(search).createSettings(search);
-		if( settings instanceof XmlBasedSearchSettings )
-		{
-			String transformXslt = ((XmlBasedSearchSettings) settings).getDisplayXslt();
-			if( !Check.isEmpty(transformXslt) )
-			{
-				return xsltService.transform(new EntityFile(search), transformXslt, xml, true);
-			}
-		}
-		return null;
-	}
+  @Override
+  public String getDisplayText(FederatedSearch search, PropBagEx xml) {
+    SearchSettings settings = getRemoteRepoSearch(search).createSettings(search);
+    if (settings instanceof XmlBasedSearchSettings) {
+      String transformXslt = ((XmlBasedSearchSettings) settings).getDisplayXslt();
+      if (!Check.isEmpty(transformXslt)) {
+        return xsltService.transform(new EntityFile(search), transformXslt, xml, true);
+      }
+    }
+    return null;
+  }
 
-	@SuppressWarnings("nls")
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		remoteRepoSearches = new PluginTracker<RemoteRepoSearch>(pluginService, "com.tle.web.fedsearch",
-			"remoteRepoSearch", "type");
-		remoteRepoSearches.setBeanKey("class");
-	}
+  @SuppressWarnings("nls")
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    remoteRepoSearches =
+        new PluginTracker<RemoteRepoSearch>(
+            pluginService, "com.tle.web.fedsearch", "remoteRepoSearch", "type");
+    remoteRepoSearches.setBeanKey("class");
+  }
 }
