@@ -1,0 +1,34 @@
+### Intellij ###
+## https://intellij-support.jetbrains.com/hc/en-us/articles/206544839-How-to-manage-projects-under-Version-Control-Systems
+
+/artifacts/
+/httpRequests/
+
+# User-specific stuff:
+/workspace.xml
+/tasks.xml
+/dictionaries
+/vcs.xml
+/jsLibraryMappings.xml
+
+# Sensitive or high-churn files:
+/dataSources.ids
+/dataSources.xml
+/dataSources.local.xml
+/dataSources/
+/sqlDataSources.xml
+/dynamic.xml
+/uiDesigner.xml
+
+## And seeing SBT projects also regenerates .iml module files
+## lets ignore them all:
+/modules/
+/modules.xml
+
+/libraries/
+/sonarlint/
+/scala_compiler.xml
+/hydra.xml
+/inspectionProfiles/Project_Default.xml
+
+### Intellij - END ###

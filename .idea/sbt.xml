@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ScalaSbtSettings">
+    <option name="linkedExternalProjectsSettings">
+      <SbtProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/Dev/learningedge-config" />
+            <option value="$PROJECT_DIR$/Installer" />
+            <option value="$PROJECT_DIR$/Platform/Plugins/com.tle.core.guice" />
+            <option value="$PROJECT_DIR$/Platform/Plugins/com.tle.platform.common" />
+            <option value="$PROJECT_DIR$/Platform/Plugins/com.tle.web.sections" />
+            <option value="$PROJECT_DIR$/Source/Plugins" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Admin/com.tle.web.adminconsole" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Admin/com.tle.web.adminconsole/jarsrc" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Admin/com.tle.webstart.admin" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Applet/com.tle.common.applet" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Applet/com.tle.common.inplaceeditor" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Applet/com.tle.web.filemanager.applet" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Applet/com.tle.web.filemanager.applet/appletsrc" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Birt/org.eclipse.birt.osgi" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Core/com.equella.admin" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Core/com.equella.base" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Core/com.equella.core" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Core/com.equella.core/jarsrc" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Core/com.equella.reporting" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Core/com.equella.serverbase" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Generic/org.hibernate" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Logging/com.tle.log4j" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Platform/com.tle.platform.equella" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Platform/com.tle.platform.swing" />
+            <option value="$PROJECT_DIR$/Source/Plugins/RemoteRepositories/com.equella.oai" />
+            <option value="$PROJECT_DIR$/Source/Plugins/RemoteRepositories/com.equella.srw" />
+            <option value="$PROJECT_DIR$/Source/Plugins/RemoteRepositories/com.equella.z3950" />
+            <option value="$PROJECT_DIR$/Source/Plugins/Security/com.tle.core.security" />
+            <option value="$PROJECT_DIR$/Source/Server/adminTool" />
+            <option value="$PROJECT_DIR$/Source/Server/conversion" />
+            <option value="$PROJECT_DIR$/Source/Server/equellaserver" />
+            <option value="$PROJECT_DIR$/Source/Tools/UpgradeInstallation" />
+            <option value="$PROJECT_DIR$/Source/Tools/UpgradeManager" />
+            <option value="$PROJECT_DIR$/project" />
+          </set>
+        </option>
+        <option name="sbtVersion" value="1.1.1" />
+      </SbtProjectSettings>
+    </option>
+  </component>
+</project>
