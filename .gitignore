@@ -1,7 +1,7 @@
 *.pyc
 *.pmd
 *.iml
-
+.idea
 target/
 build.conf
 generated.keystore
