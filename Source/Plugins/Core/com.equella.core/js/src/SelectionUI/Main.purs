@@ -128,7 +128,11 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
     renderError _ = []
 
 
-    render {props:{classes,selection,sessionParams:sp}, state:s@{title, route: Just (Route params r), selectedFolder,selections}} = case r of 
+    render {props:{classes,selection,sessionParams:sp}, 
+            state:s@{title, 
+              route: Just (Route params r), 
+              selectedFolder,selections}
+            } = case r of 
       Search -> let 
         renderTemplate {queryBar,content} = rootTag classes.root $ [ 
           appBar {position: sticky} [ 
@@ -146,7 +150,8 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
                 page, 
                 contentUpdated: \_ -> pure unit, 
                 userUpdated: traceM "UPDATED",
-                redirected: d <<< Redirected
+                redirected: d <<< Redirected,
+                onError: d <<< Errored <<< _.error
               } ],  
             right:[
               renderStructure selection {selectedFolder, selections}
@@ -159,10 +164,12 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
             ]
           ],
           dualPane {
-            left: [viewItem {uuid,version, 
+            left: [
+              viewItem {uuid,version, 
                 onError: mkEffectFn1 $ d <<< Errored,
                 onSelect: Just $ d <<< SelectionMade,
-                courseCode: selection.integration >>= _.courseInfoCode}],  
+                courseCode: selection.integration >>= _.courseInfoCode}
+            ],  
             right:[
               renderStructure selection {selectedFolder, selections}
             ]

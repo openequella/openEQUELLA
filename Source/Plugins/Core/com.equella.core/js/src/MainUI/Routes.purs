@@ -16,7 +16,7 @@ import OEQ.Data.LegacyContent (LegacyURI(..), legacyRoute, legacyURIToString)
 import OEQ.UI.Common (ClickableHref)
 import React.SyntheticEvent (SyntheticEvent_, preventDefault, stopPropagation)
 import Routing (match)
-import Routing.Match (Match, int, lit, str)
+import Routing.Match (Match, end, int, lit, str)
 import Routing.PushState (PushStateInterface, makeInterface)
 
 data Route = 
@@ -41,14 +41,15 @@ globalNav = navGlobals.nav
 emptyPreventNav :: forall route. EffectFn1 route Boolean
 emptyPreventNav = mkEffectFn1 $ const $ pure false
 
-homeSlash :: Match Unit
-homeSlash = lit ""
+homeRoute :: Route 
+homeRoute = LegacyPage (LegacyURI "home.do" Object.empty)
 
 routeMatch :: Match Route
 routeMatch = 
     ViewItemPage <$> (ItemRef <$> (lit "integ" *> lit "gen" *> str) <*> int) <|>
-    SettingsPage <$ (lit "access" *> lit "settings.do")
-    <|> lit "page" *>
+    SettingsPage <$ (lit "access" *> lit "settings.do") <|>
+    homeRoute <$ end <|> 
+    lit "page" *>
         (SearchPage <$ (lit "search") <|>
         SettingsPage <$ (lit "settings") <|>
         NewCourse <$ (lit "course" *> lit "new") <|>

@@ -180,6 +180,7 @@ type LegacyContentProps = {
   , contentUpdated :: PageContent -> Effect Unit
   , userUpdated :: Effect Unit
   , redirected :: {href :: String, external :: Boolean} -> Effect Unit
+  , onError :: {error::ErrorResponse, fullScreen :: Boolean} -> Effect Unit
 }
 
 type PageContent = {
@@ -202,17 +203,20 @@ data Command =
 
 type State = {
   content :: Maybe PageContent,
-  errored :: Maybe ErrorResponse,
   state :: Object (Array String),
   pagePath :: String,
   noForm :: Boolean
 }
+
+emptyContent :: PageContent 
+emptyContent = {html:Object.empty, script:"", title:"", contentId: "0", fullscreenMode: "NO", menuMode:"NO", hideAppBar: false, preventUnload:false, afterHtml: pure unit}
+
 legacyContent :: LegacyContentProps -> ReactElement
 legacyContent = unsafeCreateLeafElement $ withStyles styles $ component "LegacyContent" $ \this -> do
   let 
     d = eval >>> affAction this
 
-    render {state:s@{content,errored}, props:{classes}} = case content of 
+    render {state:s@{content}, props:{classes}} = case content of 
         Nothing -> div' []
         Just (c@{contentId, html,title,script, afterHtml}) -> 
           let extraClass = case c.fullscreenMode of 
@@ -240,8 +244,9 @@ legacyContent = unsafeCreateLeafElement $ withStyles styles $ component "LegacyC
 
     submitWithPath fullError path opts = do 
         (lift $ submitRequest path opts) >>= case _ of 
-          Left errorPage -> modifyState \s -> s {errored = Just errorPage, 
-                        content = if fullError then Nothing else s.content}
+          Left error -> do 
+            {onError} <- getProps
+            liftEffect $ onError {error, fullScreen:fullError }
           Right resp -> updateContent resp
 
     eval = case _ of 
@@ -249,10 +254,7 @@ legacyContent = unsafeCreateLeafElement $ withStyles styles $ component "LegacyC
         {page} <- getProps
         if oldPage /= page then eval LoadPage else pure unit
       LoadPage -> do 
-        {page: LegacyURI _pagePath params} <- getProps 
-        let pagePath = case _pagePath of 
-              "" -> "home.do"
-              o -> o
+        {page: LegacyURI pagePath params} <- getProps 
         modifyState _ {pagePath = pagePath}
         submitWithPath true pagePath {vals: params, callback: toNullable Nothing}
         liftEffect $ scrollWindowToTop
@@ -284,15 +286,17 @@ legacyContent = unsafeCreateLeafElement $ withStyles styles $ component "LegacyC
         doRefresh userUpdated
         deleteSheets <- lift $ updateIncludes true css js
         contentId <- liftEffect newUUID
+        let newContent = {contentId,  html, script, title, fullscreenMode, menuMode, 
+                            hideAppBar, preventUnload, afterHtml: deleteSheets}
+        {contentUpdated} <- getProps 
+        liftEffect $ contentUpdated newContent                    
         modifyState \s -> s {noForm = lc.noForm,
-          content = Just {contentId,  html, script, title, fullscreenMode, menuMode, 
-            hideAppBar, preventUnload, afterHtml: deleteSheets}, state = state}
+          content = Just newContent, state = state}
 
   pure {
     state:{ 
       content: Nothing, 
       pagePath: "", 
-      errored: Nothing, 
       state: Object.empty, 
       noForm: false
     } :: State, 
