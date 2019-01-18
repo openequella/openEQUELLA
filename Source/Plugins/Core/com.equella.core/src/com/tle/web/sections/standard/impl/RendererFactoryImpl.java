@@ -260,6 +260,12 @@ public class RendererFactoryImpl implements RendererFactory
 			RendererKey other = (RendererKey) obj;
 			return type.equals(other.type) && clazz == other.clazz;
 		}
+
+		@Override
+		public String toString()
+		{
+			return type + "_" + clazz.getSimpleName();
+		}
 	}
 
 	@SuppressWarnings("nls")

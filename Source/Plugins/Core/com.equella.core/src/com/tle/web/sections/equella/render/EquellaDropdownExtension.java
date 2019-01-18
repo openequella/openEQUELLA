@@ -67,7 +67,7 @@ public class EquellaDropdownExtension implements RendererFactoryExtension
 		{
 			return new BootstrapSplitDropDownRenderer((HtmlListState) state, ButtonType.NAV);
 		}
-		else if (renderer.equals(AUTOCOMPLETE_FULL))
+		else if (renderer.equals(AUTOCOMPLETE_FULL) || renderer.equals(AUTOCOMPLETE_RENDERER))
 		{
 			return new AutocompleteDropdownRenderer(htmlListState);
 		}

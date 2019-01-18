@@ -1475,3 +1475,16 @@ Expandable button
 .equella-dropdown-list {
     z-index: 999999 !important;
 }
+.select2-results__group {
+  display: block;
+	font-weight: bold;
+	font-size: 14px;
+	padding: 5px 6px;
+	color: #F6A03D;
+	margin: 0;
+}
+.select2-results__option[role="group"] {
+  display: inline-block;
+  float: left;
+  width: 33%;
+}

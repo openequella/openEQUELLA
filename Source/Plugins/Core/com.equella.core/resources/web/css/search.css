@@ -138,7 +138,7 @@
 
 .searchresults-header,
 .repo-onecol .searchresults-header,
-.search-layout .searchresults-header 
+.search-layout .searchresults-header
 {
 	position: relative;
 	background-color: #D7D6D2;
@@ -266,7 +266,7 @@ div.skinnysearch {
 }
 
 #col #searchform .query-wrapper SELECT {
-	width: 700px;
+	width: 714px;
 }
 
 #searchform #wherecontainer #searchform-where {

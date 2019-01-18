@@ -24,6 +24,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import com.tle.web.sections.equella.render.EquellaDropdownExtension;
 import org.apache.log4j.Logger;
 
 import com.dytech.devlib.PropBagEx;
@@ -208,6 +209,8 @@ public class SearchQuerySection
 	@Override
 	public SectionResult renderHtml(RenderEventContext context) throws Exception
 	{
+		collectionList.setRendererType(context, EquellaDropdownExtension.AUTOCOMPLETE_RENDERER);
+
 		final SearchQueryModel model = getModel(context);
 
 		if( isPowerSelected(context) )
@@ -279,7 +282,6 @@ public class SearchQuerySection
 		searchButton.setComponentAttribute(ButtonTrait.class, ButtonTrait.PRIMARY);
 
 		collectionList.setListModel(searchWhereModel);
-		collectionList.setDefaultRenderer("richdropdown");
 		collectionList.setGrouped(true);
 
 		reloadFunction = PageUpdateCallback.getReloadFunction(ajax.getAjaxFunction("reloadControls"));

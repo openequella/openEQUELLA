@@ -48,7 +48,7 @@ import com.tle.web.sections.standard.RendererSelectable;
  * <p>
  * This class itself is useful for {@code Section}s and Renderers which only
  * need event processing and don't store any other state, such as {@link Button}.
- * 
+ *
  * @author jmaginnis
  */
 public class HtmlComponentState extends TagState implements RendererSelectable
@@ -250,5 +250,11 @@ public class HtmlComponentState extends TagState implements RendererSelectable
 	public void setTitle(Label title)
 	{
 		this.title = title;
+	}
+
+	@Override
+	public String toString()
+	{
+		return this.getClass().getSimpleName() + "(" + this.getId() + ")";
 	}
 }
