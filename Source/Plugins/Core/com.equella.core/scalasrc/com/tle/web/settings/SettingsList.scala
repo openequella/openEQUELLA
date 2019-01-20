@@ -60,7 +60,10 @@ object SettingsList {
   }
 
   val uiSettings = CoreSettingsRest("ui", "ui", "uisettings.name", "uisettings.desc", "api/settings/ui",
-    AclChecks.filterNonGrantedPrivileges(Iterable("EDIT_SYSTEM_SETTINGS"), false))
+    AclChecks.filterNonGrantedPrivileges(Iterable("EDIT_SYSTEM_SETTINGS"),true))
+
+  val loginNoticeSettings = CoreSettingsPage("loginnotice", General, "loginnotice.settings.title", "loginnotice.settings.description","page/loginconfiguration",
+    () => aclManager.filterNonGrantedPrivileges(Iterable("EDIT_SYSTEM_SETTINGS")).isEmpty)
 
   val echoSettings = CoreSettingsPage("echo", Integration, "echo.settings.title", "echo.settings.description",
     "access/echoservers.do", () => !aclManager.filterNonGrantedPrivileges(EchoConstants.PRIV_CREATE_ECHO, EchoConstants.PRIV_EDIT_ECHO).isEmpty)
@@ -88,7 +91,7 @@ object SettingsList {
 
   val allSettings : mutable.Buffer[EditableSettings] = mutable.Buffer(
     connectorSettings, echoSettings, ltiConsumersSettings, userScriptSettings,
-    oauthSettings, htmlEditorSettings, externalToolsSettings, uiSettings,
+    oauthSettings, htmlEditorSettings, externalToolsSettings, uiSettings, loginNoticeSettings,
 
     CoreSettingsPage("shortcuts", General, "shortcuts.settings.title", "shortcuts.settings.description",
       "access/shortcuturlssettings.do", shortcutPrivProvider.isAuthorised),

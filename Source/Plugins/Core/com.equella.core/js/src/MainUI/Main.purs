@@ -23,7 +23,7 @@ import OEQ.Utils.Polyfills (polyfill)
 import React (component, unsafeCreateLeafElement)
 import React.DOM (div')
 import Routing.PushState (matchesWith)
-import TSComponents (courseEdit, coursesPage, themePageClass)
+import TSComponents (courseEdit, coursesPage, themePageClass, loginNoticeConfigPageClass)
 import Web.HTML (window)
 import Web.HTML.Location (pathname)
 import Web.HTML.Window (location)
@@ -60,6 +60,7 @@ main = do
           CoursesPage -> coursesPage
           NewCourse -> courseEdit Nothing
           ThemePage -> unsafeCreateLeafElement themePageClass {bridge:tsBridge}
+          LoginNoticeConfigPage -> unsafeCreateLeafElement loginNoticeConfigPageClass {bridge:tsBridge}
           CourseEdit cid -> courseEdit $ Just cid
           ViewItemPage (ItemRef uuid version) -> viewItemPage {uuid,version}
           LegacyPage page -> legacy {page} 
