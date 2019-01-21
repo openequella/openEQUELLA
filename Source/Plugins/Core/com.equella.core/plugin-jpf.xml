@@ -121,6 +121,7 @@
     <parameter id="class" value="com.tle.core.xslt.guice.XsltModule" />
     <parameter id="class" value="com.tle.integration.lti.brightspace.guice.BrightspaceIntegrationModule" />
     <parameter id="class" value="com.tle.integration.lti.canvasextension.guice.CanvasIntegrationModule" />
+    <parameter id="class" value="com.tle.integration.lti.blackboard.guice.BlackboardLtiIntegrationModule" />
     <parameter id="class" value="com.tle.integration.standard.guice.StandardIntegrationModule" />
     <parameter id="class" value="com.tle.mycontent.guice.MyContentModule" />
     <parameter id="class" value="com.tle.mypages.guice.MyPagesModule" />
@@ -2167,6 +2168,10 @@
     <parameter id="id" value="canvas" />
     <parameter id="class" value="bean:com.tle.integration.lti.canvasextension.CanvasIntegration" />
   </extension>
+  <extension plugin-id="com.tle.web.integration" point-id="integration" id="blackboardltiintegration">
+    <parameter id="id" value="blackboardlti" />
+    <parameter id="class" value="bean:com.tle.integration.lti.blackboard.BlackboardLtiIntegration" />
+  </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="signon_2">
     <parameter id="path" value="/canvassignon.do" />
     <parameter id="root" value="bean:/canvassignon" />
@@ -2175,9 +2180,22 @@
     <parameter id="path" value="/canvascipreturn.do" />
     <parameter id="root" value="bean:/canvascipreturn" />
   </extension>
+  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="signon_blackboardLti">
+    <parameter id="path" value="/blackboardltisignon.do" />
+    <parameter id="root" value="bean:/blackboardltisignon" />
+  </extension>
+  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="contentItemPlacementsReturnBlackboardLti">
+    <parameter id="path" value="/blackboardlticipreturn.do" />
+    <parameter id="root" value="bean:/blackboardlticipreturn" />
+  </extension>
   <extension plugin-id="com.tle.web.lti" point-id="ltiWrapperExtension" id="canvasLtiExt">
     <parameter id="id" value="canvas" />
     <parameter id="bean" value="bean:com.tle.integration.lti.canvasextension.CanvasLtiWrapperExtension" />
+    <parameter id="order" value="1000" />
+  </extension>
+  <extension plugin-id="com.tle.web.lti" point-id="ltiWrapperExtension" id="blackboardLtiExt">
+    <parameter id="id" value="bblti" />
+    <parameter id="bean" value="bean:com.tle.integration.lti.blackboard.BlackboardLtiWrapperExtension" />
     <parameter id="order" value="1000" />
   </extension>
   <extension plugin-id="com.tle.web.connectors" point-id="connectorEditor" id="moodleEditor">
