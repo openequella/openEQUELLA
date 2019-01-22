@@ -1,0 +1,10 @@
+{
+    "extends": [
+      "config:base",
+      ":rebaseStalePrs",
+      ":preserveSemverRanges",
+      ":semanticPrefixChore",
+      ":disableRateLimiting"
+    ],
+    "renovateFork": true
+  }
