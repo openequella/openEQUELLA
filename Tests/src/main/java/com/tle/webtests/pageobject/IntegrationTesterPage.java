@@ -55,15 +55,7 @@ public class IntegrationTesterPage extends AbstractPage<IntegrationTesterPage>
 	
 	public static String getUrl(PageContext context)
 	{
-		try
-		{
-			return new URL(context.getTestConfig().getProperty("testinteg.url")).toString();
-		}
-		catch( MalformedURLException e )
-		{
-			throw new RuntimeException(e);
-		}
-		
+		return context.getTestConfig().getIntegTesterUrl();
 	}
 
 	@Override

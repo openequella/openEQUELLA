@@ -429,7 +429,7 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest
 			"dtec14515 Can use POST for information passing");
 		wizard.editbox(1, itemName);
 
-		String echoServerUrl = context.getTestConfig().getProperty("echoserver.url") + "/index.do";
+		String echoServerUrl = context.getTestConfig().getEchoServerUrl()+"/index.do";
 		context.getDriver().findElement(By.id("submitto")).sendKeys(echoServerUrl);
 		final String toEcho = "Echo This!";
 		context.getDriver().findElement(By.id("query")).sendKeys(toEcho);

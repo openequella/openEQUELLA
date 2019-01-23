@@ -2,16 +2,19 @@
   "name": "integ-tester",
   "private": true,
   "scripts": {
-    "install": "psc-package install",
-    "build": "pulp browserify --to dist/www/app.js",
-    "watch": "pulp -w browserify --to dist/www/app.js"
+    "install": "psc-package install && mkdirp dist/www",
+    "build": "yarn install && pulp browserify --to dist/www/app.js",
+    "watch": "pulp -w browserify --to ../target/scala-2.12/classes/www/app.js"
   },
   "dependencies": {
     "js-md5": "^0.7.3",
-    "psc-package": "^3.0.1",
-    "pulp": "^12.3.0",
-    "purescript": "^0.12.1",
     "react": "^16.4.2",
     "react-dom": "^16.4.2"
+  },
+  "devDependencies": {
+    "pulp": "^12.3.0",
+    "purescript": "^0.12.1",
+    "psc-package": "^3.0.1",
+    "mkdirp": "^0.5.1"
   }
 }

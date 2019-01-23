@@ -414,4 +414,14 @@ public class TestConfig
 		}
 		return _browserTimeZone;
 	}
+
+	public String getIntegTesterUrl()
+	{
+		return integtester.IntegTester.integTesterUrl();
+	}
+
+	public String getEchoServerUrl()
+	{
+		return integtester.IntegTester.echoServerUrl();
+	}
 }

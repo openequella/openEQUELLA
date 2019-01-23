@@ -109,6 +109,7 @@ public class StandardDriverFactory {
                 options.addArguments("no-sandbox");
                 if (chromeHeadless) {
                     options.addArguments("headless");
+                    options.addArguments("--lang=en-US");
                 }
                 options.addArguments("window-size=1200,800");
 

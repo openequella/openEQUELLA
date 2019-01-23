@@ -5,7 +5,9 @@ import org.jdom2.input.sax.XMLReaders
 import sbt.Keys.{scalaVersion, version}
 import sbt.complete.DefaultParsers.spaceDelimited
 
-import scala.collection.JavaConversions._
+import scala.sys.process._
+import Path.rebase
+import scala.collection.JavaConverters._
 
 name := "equella-autotests"
 
@@ -17,28 +19,15 @@ lazy val common = Seq(
 )
 
 common
-//
-//lazy val platform = (project in file("Platform/Plugins/com.tle.platform.common")).settings(common).settings(
-//  javaSource in Compile := baseDirectory.value / "src",
-//  javaSource in Test := baseDirectory.value / "test",
-//  libraryDependencies ++= Seq(
-//    "org.apache.commons" % "commons-compress" % "1.1",
-//    "com.github.equella.jpf" % "jpf" % "1.0.7",
-//    "com.google.guava" % "guava" % "18.0",
-//    "commons-beanutils" % "commons-beanutils" % "1.9.3",
-//    "org.slf4j" % "slf4j-api" % "1.7.5",
-//    "commons-codec" % "commons-codec" % "1.7",
-//    "junit" % "junit" % "4.12" % Test
-//  )
-//)
 
 lazy val config = (project in file("config")).settings(resourceDirectory in Compile := baseDirectory.value / "resources").settings(common)
 
-lazy val Tests = (project in file("Tests")).settings(common).dependsOn(config)
+lazy val IntegTester = project in file("IntegTester")
+
+lazy val Tests = (project in file("Tests")).settings(common).dependsOn(config, IntegTester)
 
 lazy val OldTests = (project in file("OldTests")).settings(common).dependsOn(Tests, config)
 
-val IntegTester = project in file("IntegTester")
 
 buildConfig in ThisBuild := {
   val defaultConfig = ConfigFactory.parseFile(file("project/build-defaults.conf"))
@@ -59,7 +48,8 @@ installDir := optPath(installConfig.value, "basedir").getOrElse(baseDirectory.va
 
 installOptions := {
   val ic = installConfig.value
-  val jacoco = Option(ic.getString("jacoco")).filter(_.nonEmpty).map(o => JacocoAgent(coverageJar.value, o))
+  val jacocoJar = coverageJar.value
+  val jacoco = Option(ic.getString("jacoco")).filter(_.nonEmpty).map(o => JacocoAgent(jacocoJar, o))
   val db = ic.getConfig("db")
   InstallOptions(
     installDir.value, file(sys.props("java.home")),
@@ -88,8 +78,11 @@ lazy val relevantClasses: Seq[String] => Boolean = {
 }
 
 coverageJar := {
-  update.value.select(module = moduleFilter("org.jacoco", "org.jacoco.agent"),
-    artifact = artifactFilter(classifier = "runtime")).head
+  update.value.select(
+    configurationFilter(AllPassFilter),
+    moduleFilter("org.jacoco", "org.jacoco.agent"),
+    artifactFilter(classifier = "runtime")
+  ).head
 }
 
 dumpCoverage := {
@@ -107,7 +100,7 @@ coverageLoader := {
     log.info(s"Loading coverage data from ${f.absolutePath}")
     l.load(f)
   }
-  cc.getStringList("hosts").foreach { h =>
+  cc.getStringList("hosts").asScala.foreach { h =>
     val ind = h.indexOf(':')
     val (hname, port) = if (ind == -1) (h, 6300) else (h.substring(0, ind), h.substring(ind + 1).toInt)
     log.info(s"Collecting coverage from $h")
@@ -171,9 +164,7 @@ installEquella := {
     val baseInstaller = (installFiles * "*").get.head
     val installerJar = baseInstaller / "enterprise-install.jar"
     opts.writeXML(installSettings, baseInstaller)
-    val o = ForkOptions(runJVMOptions = Seq(
-      "-jar", installerJar.absolutePath
-    ))
+    val o = ForkOptions().withRunJVMOptions(Vector("-jar", installerJar.absolutePath))
     val args = Seq("--unsupported", installSettings.absolutePath)
     Fork.java(o, args)
     baseInstaller
@@ -182,7 +173,7 @@ installEquella := {
 
 def serviceCommand(opts: InstallOptions, cmd: String): Unit = {
   val serverScript = opts.installDir / "manager/equellaserver"
-  List(serverScript.absolutePath, cmd).!
+  List(serverScript.absolutePath, cmd) !
 }
 
 startEquella := serviceCommand(installOptions.value, "start")
@@ -197,7 +188,10 @@ setupForTests := {
   run.run("equellatests.SetupForTests", (fullClasspath in (TestPrj, Test)).value.files, spaceDelimited("<arg>").parsed, log)
 }
 
-configureInstall := (runMain in (TestPrj, Test)).toTask(" equellatests.InstallFirstTime").value
+configureInstall := {
+  val run = (runner in (TestPrj, Test)).value
+  run.run("equellatests.InstallFirstTime", (fullClasspath in (TestPrj, Test)).value.files, Seq(), sLog.value)
+}
 
 aggregate in test := false
 

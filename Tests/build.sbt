@@ -1,5 +1,5 @@
 val circeVersion = "0.9.3"
-val http4sVersion = "0.18.4"
+val http4sVersion = "0.18.14"
 val catsVersion = "1.1.0"
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
@@ -47,4 +47,3 @@ testOptions in Test := Seq(
 )
 
 parallelExecution in Test := buildConfig.value.getBoolean("tests.parallel")
-

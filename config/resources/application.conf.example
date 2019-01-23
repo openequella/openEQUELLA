@@ -1,8 +1,6 @@
 server.url = "http://hostname:8080/"
 server.password = autotestpassword
 
-//echoserver.url = "http://localhost:8083/echo"
-//testinteg.url = "http://localhost:8083/index.html"
 //tests.insts = null //"fiveo"
 //
 webdriver {
@@ -16,8 +14,8 @@ webdriver {
 }
 
 tests {
-//  suitenames = ["testng.xml"]
-//  parallel = false
+//  suitenames = ["testng-codebuild.yaml"]
+//  parallel = true
 }
 
 //install {

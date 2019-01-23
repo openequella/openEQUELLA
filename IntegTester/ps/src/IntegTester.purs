@@ -12,24 +12,21 @@ import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Newtype (unwrap)
 import Data.Number.Format (fixed, toStringWith)
 import Data.Tuple (Tuple(..))
-import Debug.Trace (spy, traceM)
 import Dispatcher.React (modifyState, stateRenderer)
 import Effect (Effect)
 import Effect.Now (now)
 import Effect.Unsafe (unsafePerformEffect)
-import Global.Unsafe (unsafeEncodeURIComponent)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (a, div, div', form, input, label', option, select, text, textarea)
 import React.DOM.Props (Props, _type, action, checked, className, href, method, name, onChange, onClick, value)
 import Text.Parsing.Parser.String (oneOf)
 import URI.Common (printEncoded, unreserved)
-import URI.Extra.QueryPairs (QueryPairs(..), Value(..), keyFromString, unsafeValueFromString, valueFromString)
+import URI.Extra.QueryPairs (QueryPairs(..), Value, keyFromString, unsafeValueFromString)
 import URI.Extra.QueryPairs as QueryPairs
 import URI.Query as Query
 import Unsafe.Coerce (unsafeCoerce)
 import Web.HTML (window)
 import Web.HTML.Location (host, pathname)
-import Web.HTML.Location (href) as L
 import Web.HTML.Window (location)
 
 foreign import md5AndBase64 :: String -> String
@@ -145,7 +142,7 @@ createToken s = let timeStr = toStringWith (fixed 0) (unwrap $ unInstant s.curTi
     in s.username
     <> ":" <> s.id
     <> ":" <> timeStr
-    <> ":" <> spy "BASE64" (md5AndBase64 $ s.username <> s.id <> timeStr <> s.sharedSecret)
+    <> ":" <> (md5AndBase64 $ s.username <> s.id <> timeStr <> s.sharedSecret)
     <> (fromMaybe "" $ (append ":") <$> s.data)
 
 strToValue :: String -> Value

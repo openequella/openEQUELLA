@@ -15,32 +15,11 @@ server.password = systempassword
 For Chrome you must also edit `webdriver.chrome.driver` to point to the `chromedriver` binary.
 
 
-## Compiling and running the support server
+## Support server
 
-Some of the tests require supplementary services which are contained in a Scala/Purescript project.
-In order to build and run this service you need the node package manager installed (npm).
-
-Install purescript and pulp:
-
-```bash
-yarn global add purescript pulp
-```
-
-**NOTE**
- 
- If you get an error message saying one (or more) of the packages failed to install, check your NodeJS version. This has been confirmed to work on NodeJS v8.10.0.
-
-Compile and run the support server:
-
-```bash
-cd IntegTester/ps
-yarn install
-yarn run build
-cd ../../
-sbt IntegTester/assembly
-java -jar IntegTester/target/scala-2.12/IntegTester-assembly-1.0.jar &
-```
-
+Some of the tests require supplementary services which are contained in a Scala/Purescript [project](IntegTester/).
+The services are started up as part of the tests, however you will need to have `yarn` installed globally before
+the Javascript client side of these services can be built. The support server contains two services, one for simulating an LMS integration and the other a simple service for echoing HTTP requests.
 
 ## Setting up for tests
 
@@ -107,6 +86,17 @@ sudo -u postgres psql
 
 You can run the services scripts inside the `manager` folder of `equella-install` or you can run the `startEquella` and `stopEquella` sbt tasks.
 
+**NOTE**
+
+Ensure before starting openEQUELLA that `equella-install/learningedge-config/optional-config.properties` contains the correct `exiftool.path` and the `libav.path` so that the tests that 
+involve them run properly. LibAV has been replaced with FFMPeg, though you can use symbolic links to map the functions together. 
+
+```bash
+sudo ln -s /usr/bin/ffprobe /usr/bin/avprobe
+sudo ln -s /usr/bin/ffplay /usr/bin/avplay
+sudo ln -s /usr/bin/ffmpeg /usr/bin/avconv
+```
+
 ### Install configuration and test institution importing
 
 You can run an SBT task to configure the install options:
@@ -126,6 +116,16 @@ sbt setupForTests
 ```
 
 ## Running all tests
+
+Before running the tests, ensure that the `application.conf` file contains the following:
+
+```conf
+tests {
+  suitenames = ["testng-codebuild.yaml"]
+  parallel = true
+}
+```
+This will set the TestNG suite to be the same as is run on the AWS CodeBuild server.
 
 The tests are seperated into two projects, one which is ScalaCheck property
 tests (`Tests`) and the other are TestNG based (`OldTests`):
