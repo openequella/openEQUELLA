@@ -27,7 +27,6 @@ import javax.inject.Singleton;
 import java.util.Collections;
 
 @Singleton
-@SuppressWarnings("nls")
 @Bind(LoginNoticeService.class)
 public class LoginNoticeServiceImpl implements LoginNoticeService
 {
@@ -42,12 +41,12 @@ public class LoginNoticeServiceImpl implements LoginNoticeService
 	@Override
 	public String getNotice()
 	{
-//		checkPermissions();
 		String loginNotice = configurationService.getProperty(LOGIN_NOTICE_KEY);
-		if(loginNotice!=null){
+		if(loginNotice != null)
+		{
 			return loginNotice;
 		}
-		return "loginNotice was null";
+		return "";
 	}
 
 	@Override
@@ -69,6 +68,4 @@ public class LoginNoticeServiceImpl implements LoginNoticeService
 			throw new PrivilegeRequiredException(PERMISSION_KEY);
 		}
 	}
-
-
 }
