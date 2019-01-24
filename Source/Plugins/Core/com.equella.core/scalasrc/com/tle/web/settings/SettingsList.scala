@@ -19,7 +19,6 @@ package com.tle.web.settings
 import com.tle.common.connectors.ConnectorConstants.{PRIV_CREATE_CONNECTOR, PRIV_EDIT_CONNECTOR}
 import com.tle.common.externaltools.constants.ExternalToolConstants
 import com.tle.common.lti.consumers.LtiConsumerConstants
-import com.tle.common.security.SecurityConstants
 import com.tle.common.userscripts.UserScriptsConstants
 import com.tle.core.activation.service.CourseInfoService
 import com.tle.core.db.{DB, RunWithDB}
@@ -63,7 +62,7 @@ object SettingsList {
     AclChecks.filterNonGrantedPrivileges(Iterable("EDIT_SYSTEM_SETTINGS"),true))
 
   val loginNoticeSettings = CoreSettingsPage("loginnotice", General, "loginnotice.settings.title", "loginnotice.settings.description","page/loginconfiguration",
-    () => aclManager.filterNonGrantedPrivileges(Iterable("EDIT_SYSTEM_SETTINGS")).isEmpty)
+    () => !aclManager.filterNonGrantedPrivileges("EDIT_SYSTEM_SETTINGS").isEmpty)
 
   val echoSettings = CoreSettingsPage("echo", Integration, "echo.settings.title", "echo.settings.description",
     "access/echoservers.do", () => !aclManager.filterNonGrantedPrivileges(EchoConstants.PRIV_CREATE_ECHO, EchoConstants.PRIV_EDIT_ECHO).isEmpty)
