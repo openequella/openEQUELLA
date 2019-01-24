@@ -59,9 +59,7 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps &
     axios.put(
       `${Config.baseUrl}api/loginnotice/settings/`,
       this.state.notice
-    ).then(() => {
-      window.location.reload();
-    });
+    )
   };
 
   handleTextFieldChange = (e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement) => {
@@ -81,11 +79,11 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps &
     return (
       <Template title={strings.title}>
         <Card className={styles.card} raised>
-          <TextField className={styles.input} label={strings.label} rows={10} variant={"outlined"} multiline autoFocus
+          <TextField id={"noticeField"} className={styles.input} label={strings.label} rows={10} variant={"outlined"} multiline autoFocus
                      placeholder={"<div></div>"} onChange={e => this.handleTextFieldChange(e.target)}
                      value={this.state.notice}/>
           <CardActions className={styles.cardActions}>
-            <Button onClick={this.handleSubmitTheme} className={styles.button} variant={"contained"}>Apply</Button>
+            <Button id={"applyButton"} onClick={this.handleSubmitTheme} className={styles.button} variant={"contained"}>Apply</Button>
           </CardActions>
         </Card>
       </Template>);
