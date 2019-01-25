@@ -4,3 +4,4 @@ exports.editCourse = require("course/EditCourse").default;
 exports.appBarQueryClass = require("components/AppBarQuery").default;
 exports.courseSelectClass = require("components/CourseSelect").default;
 exports.themePageClass = require("theme/ThemePage").default;
+exports.loginNoticeConfigPageClass = require("loginnotice/LoginNoticeConfigPage").default;

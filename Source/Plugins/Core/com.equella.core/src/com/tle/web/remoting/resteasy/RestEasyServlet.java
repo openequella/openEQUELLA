@@ -38,6 +38,7 @@ import com.tle.web.api.institution.AclResource;
 import com.tle.web.api.institution.GdprResource;
 import com.tle.web.api.item.SelectionApi;
 import com.tle.web.api.language.LanguageResource;
+import com.tle.web.api.loginnotice.LoginNoticeResource;
 import com.tle.web.api.searches.SearchConfigApi;
 import com.tle.web.api.users.UserQueryResource;
 import com.tle.web.remoting.rest.resource.InstitutionSecurityFilter;
@@ -120,7 +121,8 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 		classes.add(AclResource.class);
 		registry.addResourceFactory(new BeanLocatorResource(NewUIThemeResource.class, coreLocator));
 		classes.add(NewUIThemeResource.class);
-
+		registry.addResourceFactory(new BeanLocatorResource(LoginNoticeResource.class, coreLocator));
+		classes.add(LoginNoticeResource.class);
 		registry.addSingletonResource(new GdprResource());
 		classes.add(GdprResource.class);
 		registry.addSingletonResource(new LegacyContentApi());
