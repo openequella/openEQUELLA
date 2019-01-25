@@ -1,32 +1,10 @@
 import * as React from "react";
 import {Bridge} from "../api/bridge";
 import {prepLangStrings} from "../util/langstrings";
-import {
-  Button, Card, CardActions,
-  createStyles, TextField,
-  withStyles, WithStyles
-} from "@material-ui/core";
+import {Button, Grid, TextField} from "@material-ui/core";
 import axios, {AxiosResponse} from "axios";
 import {Config} from "../config";
-
-const styles = createStyles({
-  card: {
-    marginTop: "16px",
-    marginBottom: "16px",
-    overflow: "visible"
-  },
-  input: {
-    margin: "16px",
-    width: "500px"
-  },
-  cardActions: {
-    marginBottom: "16px"
-  },
-  button: {
-    marginTop: "8px",
-    marginBottom: "8px"
-  }
-});
+import SettingsMenuContainer from "../components/SettingsMenuContainer";
 
 interface LoginNoticeConfigPageProps {
   bridge: Bridge;
@@ -43,11 +21,10 @@ export const strings = prepLangStrings("loginnoticepage",
   }
 );
 
-class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps & WithStyles<typeof styles>, LoginNoticeConfigPageState> {
+class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, LoginNoticeConfigPageState> {
 
-  constructor(props:LoginNoticeConfigPageProps&WithStyles<typeof styles>){
+  constructor(props:LoginNoticeConfigPageProps) {
     super(props);
-
   };
 
   state: LoginNoticeConfigPageState = {
@@ -72,33 +49,32 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps &
   };
 
   render() {
-    const styles = this.props.classes;
     const {Template} = this.props.bridge;
     return (
-      <Template title = {strings.title}>
-        <Card className = {styles.card} raised>
-          <TextField id = "noticeField"
-                     className = {styles.input}
-                     label = {strings.label}
-                     rows = {10}
-                     variant = "outlined"
-                     multiline autoFocus
-                     placeholder = "<div></div>"
-                     onChange = {e => this.handleTextFieldChange(e.target)}
-                     value = {this.state.notice}
-          />
-          <CardActions className={styles.cardActions}>
-            <Button id="applyButton"
-                    className={styles.button}
-                    onClick={this.handleSubmitNotice}
-                    variant="contained">
-              Apply
-            </Button>
-          </CardActions>
-        </Card>
+      <Template title={strings.title}>
+        <SettingsMenuContainer>
+            <Grid container spacing={8} direction="column">
+              <Grid item>
+                <TextField id="noticeField"
+                           label={strings.label}
+                           rows={10}
+                           variant="outlined"
+                           multiline autoFocus
+                           placeholder="<div></div>"
+                           onChange={e => this.handleTextFieldChange(e.target)}
+                           value={this.state.notice}/>
+              </Grid>
+              <Grid item>
+                <Button id="applyButton"
+                        onClick={this.handleSubmitNotice}
+                        variant="contained">
+                  Apply
+                </Button>
+              </Grid>
+            </Grid>
+        </SettingsMenuContainer>
       </Template>
     );
   }
 }
-
-export default withStyles(styles)(LoginNoticeConfigPage);
+export default LoginNoticeConfigPage;
