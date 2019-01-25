@@ -24,6 +24,8 @@
 ## lets ignore them all:
 /modules/
 /modules.xml
+/compiler.xml
+/sbt.xml
 
 /libraries/
 /sonarlint/
