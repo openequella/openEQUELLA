@@ -57,7 +57,7 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
               <Grid item>
                 <TextField id="noticeField"
                            label={strings.label}
-                           rows={10}
+                           rows= "10"
                            variant="outlined"
                            multiline autoFocus
                            placeholder="<div></div>"
