@@ -17,7 +17,6 @@ import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
 import Data.Traversable (traverse)
-import Debug.Trace (traceM)
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer)
 import Effect (Effect)
@@ -391,7 +390,6 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
     componentDidMount: d Init, 
     componentDidUpdate: \oldProps@{fullscreenMode:oldfsm} _ _ -> do
       p@{preventNavigation, title, fullscreenMode} <- R.getProps this
-      traceM title
       let isTrue = fromMaybe false <<< toMaybe
           newPN = isTrue preventNavigation
       maybeEff (isTrue oldProps.preventNavigation /= newPN) $ setPreventUnload newPN

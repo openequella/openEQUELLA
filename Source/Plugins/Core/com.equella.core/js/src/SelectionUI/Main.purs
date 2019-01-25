@@ -17,7 +17,6 @@ import Data.String (Pattern(..), stripPrefix)
 import Data.Symbol (SProxy(..))
 import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..))
-import Debug.Trace (traceM)
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer)
 import Effect (Effect)
@@ -149,7 +148,7 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
               legacyContent {
                 page, 
                 contentUpdated: \_ -> pure unit, 
-                userUpdated: traceM "UPDATED",
+                userUpdated: pure unit,
                 redirected: d <<< Redirected,
                 onError: d <<< Errored <<< _.error
               } ],  
