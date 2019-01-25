@@ -1,20 +1,18 @@
 package com.tle.core.connectors.blackboard.service.impl;
 
+import com.dytech.devlib.Base64;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.tle.annotation.Nullable;
 import com.tle.beans.Institution;
-import com.tle.beans.UserPreference;
 import com.tle.beans.item.IItem;
-import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ViewableItemType;
 import com.tle.common.connectors.ConnectorContent;
 import com.tle.common.connectors.ConnectorCourse;
@@ -25,19 +23,13 @@ import com.tle.common.searching.SearchResults;
 import com.tle.common.util.BlindSSLSocketFactory;
 import com.tle.core.connectors.blackboard.beans.Course;
 import com.tle.core.connectors.blackboard.beans.Courses;
-import com.tle.core.connectors.blackboard.service.BlackboardConnectorService;
+import com.tle.core.connectors.blackboard.beans.Token;
 import com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService;
-import com.tle.core.connectors.brightspace.BrightspaceUserContext;
-import com.tle.core.connectors.brightspace.beans.AbstractPagedResults;
-import com.tle.core.connectors.brightspace.beans.EnrollmentsPagedResults;
-import com.tle.core.connectors.brightspace.beans.MyOrgUnitInfo;
-import com.tle.core.connectors.brightspace.beans.OrgUnitInfo;
 import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.service.AbstractIntegrationConnectorRespository;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.institution.InstitutionCache;
 import com.tle.core.institution.InstitutionService;
-import com.tle.core.item.service.impl.ItemFileServiceImpl;
 import com.tle.core.services.HttpService;
 import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Response;
@@ -45,8 +37,6 @@ import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.selection.SelectedResource;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -136,9 +126,22 @@ public class BlackboardRESTConnectorServiceImpl  extends AbstractIntegrationConn
 									@Override
 									public String load(String fixedKey)
 									{
-										// fixedKey is ignored
-										//FIXME: fetch new token from BB
-										return null;
+										// fixedKey is ignored. It's alwasy TOKEN
+										final String b64 = new Base64().encode((BB_API_KEY + ":" + BB_API_SECRET).getBytes());
+										final Request req = new Request("https://ec2-100-26-190-16.compute-1.amazonaws.com/learn/api/public/v1/oauth2/token");
+										req.setMethod(Request.Method.POST);
+										req.addHeader("Content-Type", "application/x-www-form-urlencoded");
+										req.addHeader("Authorization", "Basic " + b64);
+										req.addParameter("grant_type", "client_credentials");
+										try (final Response resp = httpService.getWebContent(null, configService.getProxyDetails()))
+										{
+											final Token token = jsonMapper.readValue(resp.getInputStream(), Token.class);
+											return token.getAccessToken();
+										}
+										catch( Exception e )
+										{
+											throw Throwables.propagate(e);
+										}
 									}
 								});
 						}
@@ -359,6 +362,7 @@ public class BlackboardRESTConnectorServiceImpl  extends AbstractIntegrationConn
 
 			final Request request = new Request(uri.toString());
 			request.setMethod(method);
+			request.addHeader("Accept", "application/json");
 			if( LOGGER.isTraceEnabled() )
 			{
 				LOGGER.trace(method + " to Blackboard: " + request.getUrl());
@@ -382,7 +386,8 @@ public class BlackboardRESTConnectorServiceImpl  extends AbstractIntegrationConn
 			{
 				LOGGER.trace("Sending " + prettyJson(body));
 			}
-			//FIXME: attach cached token. (Cache knows how to get a new one)
+			// attach cached token. (Cache knows how to get a new one)
+			request.addHeader("Authorization", "Bearer " + getToken(connector.getUuid()));
 
 			//FIXME: Watch for an expired token response.
 			//FIXME: If invalid: clear the token cache and then make the request again with the token from the cache
@@ -442,9 +447,7 @@ public class BlackboardRESTConnectorServiceImpl  extends AbstractIntegrationConn
 		}
 		catch (ExecutionException e)
 		{
-			//FIXME: ??
-			e.printStackTrace();
+			throw Throwables.propagate(e);
 		}
-		//if (token )
 	}
 }
