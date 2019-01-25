@@ -7,12 +7,8 @@ phases:
   install:
     commands:
       - . setupBuildCommands
-      - npm install -g yarn
-      - mkdir -p ~/.sbt/1.0/
-      - cp codebuild/global.sbt ~/.sbt/1.0/
       - service postgresql start
-      - curl -OL https://chromedriver.storage.googleapis.com/2.45/chromedriver_linux64.zip
-      - unzip -o -d ${HOME} chromedriver_linux64.zip
+      - npm install -g yarn
       - (cd $HOME && curl -OL $INSTALLER_DOWNLOAD)
   build:
     commands:

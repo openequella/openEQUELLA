@@ -16,6 +16,7 @@ webdriver {
 tests {
 //  suitenames = ["testng-codebuild.yaml"]
 //  parallel = true
+//  maxthreads = 2
 }
 
 //install {

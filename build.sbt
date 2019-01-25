@@ -209,6 +209,20 @@ collectArtifacts := {
   results
 }
 
+concurrentRestrictions in Global := {
+  val testConfig = buildConfig.value.getConfig("tests")
+  if (testConfig.hasPath("maxthreads"))
+  {
+    Seq(
+      Tags.limit(Tags.Test, testConfig.getInt("maxthreads"))
+    )
+  }
+  else {
+    Seq()
+  }
+}
+
+
 /*
 Steps to clusterize install
 Change freetext path to local dir - mandatory config
