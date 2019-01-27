@@ -335,6 +335,10 @@
     <parameter id="id" value="blackboard" />
     <parameter id="class" value="bean:com.tle.web.connectors.blackboard.editor.BlackboardConnectorEditor" />
   </extension>
+  <extension plugin-id="com.tle.web.connectors" point-id="connectorEditor" id="blackboardRESTEditor">
+    <parameter id="id" value="blackboardrest" />
+    <parameter id="class" value="bean:com.tle.web.connectors.blackboard.editor.BlackboardRESTConnectorEditor" />
+  </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="userScriptsObjects">
     <parameter id="class" value="com.tle.common.userscripts.entity.UserScript" />
   </extension>
@@ -4272,8 +4276,17 @@
     <parameter id="type" value="blackboard" />
     <parameter id="class" value="bean:com.tle.core.connectors.blackboard.service.BlackboardConnectorService" />
   </extension>
+  <extension plugin-id="com.tle.core.connectors" point-id="connectorImplementation" id="blackboardrest">
+    <parameter id="type" value="blackboardrest" />
+    <parameter id="class" value="bean:com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService" />
+  </extension>
   <extension plugin-id="com.tle.core.connectors" point-id="connectorType" id="blackboardConnector">
     <parameter id="id" value="blackboard" />
+    <parameter id="nameKey" value="com.equella.core.connector.name" />
+    <parameter id="descriptionKey" value="com.equella.core.connector.description" />
+  </extension>
+  <extension plugin-id="com.tle.core.connectors" point-id="connectorType" id="blackboardRESTConnector">
+    <parameter id="id" value="blackboardrest" />
     <parameter id="nameKey" value="com.equella.core.connector.name" />
     <parameter id="descriptionKey" value="com.equella.core.connector.description" />
   </extension>

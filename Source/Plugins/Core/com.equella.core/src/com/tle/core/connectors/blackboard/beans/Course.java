@@ -183,37 +183,6 @@ public class Course
 	}
 
 	@XmlRootElement
-	public static class Availability
-	{
-		private String available; //Yes
-
-		public String getAvailable()
-		{
-			return available;
-		}
-
-		public void setAvailable(String available)
-		{
-			this.available = available;
-		}
-
-		public static class Duration
-		{
-			private String type; //Continuous
-
-			public String getType()
-			{
-				return type;
-			}
-
-			public void setType(String type)
-			{
-				this.type = type;
-			}
-		}
-	}
-
-	@XmlRootElement
 	public static class Enrollment
 	{
 		private String type; //InstructorLed

@@ -10,6 +10,7 @@ import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.Institution;
 import com.tle.beans.item.IItem;
@@ -21,13 +22,16 @@ import com.tle.common.connectors.ConnectorTerminology;
 import com.tle.common.connectors.entity.Connector;
 import com.tle.common.searching.SearchResults;
 import com.tle.common.util.BlindSSLSocketFactory;
-import com.tle.core.connectors.blackboard.beans.Course;
-import com.tle.core.connectors.blackboard.beans.Courses;
-import com.tle.core.connectors.blackboard.beans.Token;
+import com.tle.core.connectors.blackboard.beans.*;
+import com.tle.core.connectors.blackboard.service.BlackboardConnectorService;
 import com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService;
 import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.service.AbstractIntegrationConnectorRespository;
+import com.tle.core.connectors.service.ConnectorRepositoryImplementation;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
+import com.tle.core.connectors.service.ConnectorService;
+import com.tle.core.guice.Bind;
+import com.tle.core.guice.Bindings;
 import com.tle.core.institution.InstitutionCache;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.services.HttpService;
@@ -41,6 +45,7 @@ import org.apache.log4j.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -48,7 +53,11 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-public class BlackboardRESTConnectorServiceImpl  extends AbstractIntegrationConnectorRespository implements BlackboardRESTConnectorService
+@NonNullByDefault
+@SuppressWarnings({"nls", "deprecation"})
+@Bind(BlackboardRESTConnectorService.class)
+@Singleton
+public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConnectorRespository implements BlackboardRESTConnectorService
 {
 	private static final Logger LOGGER = Logger.getLogger(BlackboardRESTConnectorService.class);
 
@@ -63,6 +72,8 @@ public class BlackboardRESTConnectorServiceImpl  extends AbstractIntegrationConn
 	private HttpService httpService;
 	@Inject
 	private ConfigurationService configService;
+	@Inject
+	private ConnectorService connectorService;
 
 	private InstitutionCache<LoadingCache<String, LoadingCache<String, String>>> tokenCache;
 
@@ -115,7 +126,7 @@ public class BlackboardRESTConnectorServiceImpl  extends AbstractIntegrationConn
 					.build(new CacheLoader<String,  LoadingCache<String,String>>()
 					{
 						@Override
-						public LoadingCache<String,String> load(String connectorUuid) throws Exception
+						public LoadingCache<String,String> load(final String connectorUuid) throws Exception
 						{
 							// BB tokens last one hour, so no point holding onto it longer than that. Of course, we need to handle the case
 							// where we are still holding onto an expired token.
@@ -127,13 +138,17 @@ public class BlackboardRESTConnectorServiceImpl  extends AbstractIntegrationConn
 									public String load(String fixedKey)
 									{
 										// fixedKey is ignored. It's alwasy TOKEN
-										final String b64 = new Base64().encode((BB_API_KEY + ":" + BB_API_SECRET).getBytes());
-										final Request req = new Request("https://ec2-100-26-190-16.compute-1.amazonaws.com/learn/api/public/v1/oauth2/token");
+										final Connector connector = connectorService.getByUuid(connectorUuid);
+										final String b64 = new Base64().encode((BB_API_KEY + ":" + BB_API_SECRET).getBytes())
+											.replace("\n", "").replace("\r", "");
+
+										//FIXME: check for ending slash
+										final Request req = new Request(connector.getServerUrl() + "/learn/api/public/v1/oauth2/token");
 										req.setMethod(Request.Method.POST);
-										req.addHeader("Content-Type", "application/x-www-form-urlencoded");
+										req.setMimeType("application/x-www-form-urlencoded");
 										req.addHeader("Authorization", "Basic " + b64);
-										req.addParameter("grant_type", "client_credentials");
-										try (final Response resp = httpService.getWebContent(null, configService.getProxyDetails()))
+										req.setBody("grant_type=client_credentials");
+										try (final Response resp = httpService.getWebContent(req, configService.getProxyDetails()))
 										{
 											final Token token = jsonMapper.readValue(resp.getInputStream(), Token.class);
 											return token.getAccessToken();
@@ -247,13 +262,39 @@ public class BlackboardRESTConnectorServiceImpl  extends AbstractIntegrationConn
 	@Override
 	public List<ConnectorFolder> getFoldersForCourse(Connector connector, String username, String courseId, boolean management) throws LmsUserNotFoundException
 	{
-		return null;
+		final List<ConnectorFolder> list = new ArrayList<>();
+
+		// FIXME: courses for current user...?
+		final String url = bbApi + "/courses/" + courseId + "/contents";
+
+		final Contents contents = sendBlackboardData(connector, url,
+			Contents.class, null, Request.Method.GET);
+		final ConnectorCourse course = new ConnectorCourse(courseId);
+		final List<Content> results = contents.getResults();
+		for( Content content : results )
+		{
+			final Content.ContentHandler handler = content.getContentHandler();
+			if (handler != null && "resource/x-bb-folder".equals(handler.getId()))
+			{
+				// FIXME: filter only user visible folders?
+				final ConnectorFolder cc = new ConnectorFolder(content.getId(), course);
+				// TODO: null safe it
+				cc.setAvailable("Yes".equals(content.getAvailability().getAvailable()));
+				cc.setName(content.getTitle());
+				cc.setLeaf(content.getHasChildren() != null && !content.getHasChildren());
+				//cc.setModifiedDate(content.getCreated());
+				list.add(cc);
+			}
+		}
+
+		return list;
 	}
 
 	@Override
 	public List<ConnectorFolder> getFoldersForFolder(Connector connector, String username, String courseId, String folderId, boolean management) throws LmsUserNotFoundException
 	{
-		return null;
+		final List<ConnectorFolder> list = new ArrayList<>();
+		return list;
 	}
 
 	@Override
@@ -301,31 +342,36 @@ public class BlackboardRESTConnectorServiceImpl  extends AbstractIntegrationConn
 	@Override
 	public ConnectorTerminology getConnectorTerminology()
 	{
-		return null;
+		ConnectorTerminology terms = new ConnectorTerminology();
+		terms.setShowArchived(getKey("finduses.showarchived"));
+		terms.setShowArchivedLocations(getKey("finduses.showarchived.courses"));
+		terms.setCourseHeading(getKey("finduses.course"));
+		terms.setLocationHeading(getKey("finduses.location"));
+		return terms;
 	}
 
 	@Override
 	public boolean supportsExport()
 	{
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean supportsEdit()
 	{
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean supportsView()
 	{
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean supportsDelete()
 	{
-		return false;
+		return true;
 	}
 
 	@Override
@@ -337,7 +383,7 @@ public class BlackboardRESTConnectorServiceImpl  extends AbstractIntegrationConn
 	@Override
 	public boolean supportsFindUses()
 	{
-		return false;
+		return true;
 	}
 
 	@Override
@@ -358,7 +404,8 @@ public class BlackboardRESTConnectorServiceImpl  extends AbstractIntegrationConn
 	{
 		try
 		{
-			final URI uri = URI.create(path);
+			// FIXME; slash check
+			final URI uri = URI.create(connector.getServerUrl() + path);
 
 			final Request request = new Request(uri.toString());
 			request.setMethod(method);
@@ -449,5 +496,10 @@ public class BlackboardRESTConnectorServiceImpl  extends AbstractIntegrationConn
 		{
 			throw Throwables.propagate(e);
 		}
+	}
+
+	private String getKey(String partKey)
+	{
+		return "com.tle.core.connectors.blackboard." + partKey;
 	}
 }
