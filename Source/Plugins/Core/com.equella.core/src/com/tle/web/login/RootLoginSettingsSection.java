@@ -137,8 +137,8 @@ public class RootLoginSettingsSection extends OneColumnLayout<RootLoginSettingsS
 	@PlugKey("ipaddress.dialog.title")
 	private Link addIpAddressLink;
 
-	@Component(name = "lnf")
-	private TextField loginNoticeField;
+//	@Component(name = "lnf")
+//	private TextField loginNoticeField;
 
 	@Component
 	@PlugKey("settings.save.button")
@@ -223,7 +223,7 @@ public class RootLoginSettingsSection extends OneColumnLayout<RootLoginSettingsS
 				addIpAddress(info, ipAddr);
 			}
 
-			loginNoticeField.setValue(info, settings.getLoginNotice());
+//			loginNoticeField.setValue(info, settings.getLoginNotice());
 			model.setLoaded(true);
 		}
 		else
@@ -354,7 +354,7 @@ public class RootLoginSettingsSection extends OneColumnLayout<RootLoginSettingsS
 				ipAddesses.clear();
 				ipAddesses.addAll(newAddressess);
 			}
-			settings.setLoginNotice(loginNoticeField.getValue(info));
+//			settings.setLoginNotice(loginNoticeField.getValue(info));
 			model.setLoaded(false);
 			configService.setProperties(settings);
 			userService.refreshSettings();
@@ -405,10 +405,10 @@ public class RootLoginSettingsSection extends OneColumnLayout<RootLoginSettingsS
 		return !Check.isEmpty(ipAddresses);
 	}
 
-	public TextField getLoginNoticeField()
-	{
-		return loginNoticeField;
-	}
+//	public TextField getLoginNoticeField()
+//	{
+//		return loginNoticeField;
+//	}
 
 	public Button getSaveButton()
 	{
