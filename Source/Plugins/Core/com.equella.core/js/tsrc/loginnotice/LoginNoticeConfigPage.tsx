@@ -2,12 +2,12 @@ import * as React from "react";
 import {Bridge} from "../api/bridge";
 import {prepLangStrings} from "../util/langstrings";
 import {Button, Grid, TextField} from "@material-ui/core";
-import axios, {AxiosError, AxiosResponse} from "axios";
-import {Config} from "../config";
+import {AxiosError, AxiosResponse} from "axios";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
 import {commonString} from "../util/commonstrings";
 import MessageInfo from "../components/MessageInfo";
 import {ErrorResponse, generateFromAxiosError} from "../api/errors";
+import {deleteNotice, getNotice, submitNotice} from "./LoginNoticeModule";
 
 interface LoginNoticeConfigPageProps {
   bridge: Bridge;
@@ -58,16 +58,18 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
   };
 
   handleSubmitNotice = () => {
-    axios.put(`${Config.baseUrl}api/loginnotice`, this.state.notice)
-      .then(() => this.setState({saved: true}))
-      .catch((error) => {
-        this.handleError(error);
-      });
+    if(this.state.notice!=undefined){
+      submitNotice(this.state.notice)
+        .then(() => this.setState({saved: true}))
+        .catch((error) => {
+          this.handleError(error);
+        });
+    }
   };
 
   handleDeleteNotice = () => {
     this.setState({notice: ""});
-    axios.delete(`${Config.baseUrl}api/loginnotice`)
+    deleteNotice()
       .then(() => this.setState({deleted: true}))
       .catch((error) => {
         this.handleError(error);
@@ -79,8 +81,7 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
   };
 
   componentDidMount = () => {
-    axios
-      .get(`${Config.baseUrl}api/loginnotice`)
+    getNotice()
       .then((response: AxiosResponse) => {
         this.setState({notice: response.data});
       })
