@@ -16,6 +16,12 @@
 
 package com.tle.integration.lti.blackboard;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.PrettyPrinter;
+import com.fasterxml.jackson.core.util.MinimalPrettyPrinter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
@@ -26,6 +32,7 @@ import com.tle.beans.item.ViewableItemType;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
+import com.tle.common.connectors.ConnectorFolder;
 import com.tle.common.connectors.entity.Connector;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.usermanagement.user.UserState;
@@ -33,6 +40,7 @@ import com.tle.core.connectors.blackboard.service.BlackboardConnectorService;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.connectors.service.ConnectorService;
 import com.tle.core.guice.Bind;
+import com.tle.core.replicatedcache.ReplicatedCacheService;
 import com.tle.web.integration.AbstractIntegrationService;
 import com.tle.web.integration.IntegrationActionInfo;
 import com.tle.web.integration.SingleSignonForm;
@@ -115,11 +123,11 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
 	private ConnectorRepositoryService connectorRepoService;
 	// Omitted logic for now...
 	//
-//	@Inject
-//	private ReplicatedCacheService cacheService;
+	@Inject
+	private ReplicatedCacheService cacheService;
 
-//	private ReplicatedCache<String> courseStructureCache;
-//	private final ObjectMapper objectMapper = new ObjectMapper();
+	private ReplicatedCacheService.ReplicatedCache<String> courseStructureCache;
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
 //	private static final Multimap<String, String> CONTENT_TYPES_TO_MIME = HashMultimap.create(6, 6);
 //
@@ -171,7 +179,8 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
 			final LtiData ltiData = ltiUserState.getData();
 			if( ltiData != null )
 			{
-//				data.setApiDomain(ltiData.getCustom(CUSTOM_CANVAS_API_DOMAIN));
+				//FIXME: does BB pass anything about this?
+				data.setApiDomain(null); //ltiData.getCustom(CUSTOM_CANVAS_API_DOMAIN));
 				courseId = form.getCourseId();
 				if( Strings.isNullOrEmpty(courseId) )
 				{
@@ -247,10 +256,10 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
 
 		// Setup the structure param before super.setupSelectionSession so the
 		// extension can setup the TargetStructure
-//		if( structured )
-//		{
-//			form.setStructure(initStructure(data, session, form));
-//		}
+		if( structured )
+		{
+			form.setStructure(initStructure(data, session, form));
+		}
 
 		final SelectionSession s = super.setupSelectionSession(info, data, session, form);
 //		if( s != null )
@@ -282,61 +291,61 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
 		return s;
 	}
 
-//	@Nullable
-//	private String initStructure(CanvasSessionData data, SelectionSession session, SingleSignonForm form)
-//	{
-//		final String courseId = data.getCourseId();
-//		String structure = form.getStructure();
-//		if( structure == null )
-//		{
-//			// if course ID is empty then there is nothing we can do...
-//			if( Strings.isNullOrEmpty(courseId) )
-//			{
-//				throw new RuntimeException(LABEL_ERROR_NO_COURSE.getText());
-//			}
-//			structure = courseStructureCache.get(courseId).orNull();
-//		}
-//		// if no structure, get from Canvas
-//		if( structure == null )
-//		{
-//			final ObjectNode root = objectMapper.createObjectNode();
-//			root.put("id", courseId);
-//			root.put("name", data.getContextTitle());
-//			root.put("targetable", false);
-//			final ArrayNode foldersNode = objectMapper.createArrayNode();
-//			root.put("folders", foldersNode);
-//
-//			final Connector connector = findConnector(data);
-//			final List<ConnectorFolder> folders = connectorRepoService.getFoldersForCourse(connector,
-//				CurrentUser.getUsername(), courseId, false);
-//			boolean first = true;
-//			for( ConnectorFolder folder : folders )
-//			{
-//				final ObjectNode folderNode = objectMapper.createObjectNode();
-//				folderNode.put("id", folder.getId());
-//				folderNode.put("name", folder.getName());
-//				folderNode.put("targetable", true);
-//				folderNode.put("defaultFolder", first);
-//				foldersNode.add(folderNode);
-//				first = false;
-//			}
-//
-//			final PrettyPrinter pp = new MinimalPrettyPrinter();
-//			try
-//			{
-//				structure = objectMapper.writer().with(pp).writeValueAsString(root);
-//			}
-//			catch( JsonProcessingException e )
-//			{
-//				throw Throwables.propagate(e);
-//			}
-//		}
-//		if( structure != null )
-//		{
-//			courseStructureCache.put(courseId, structure);
-//		}
-//		return structure;
-//	}
+	@Nullable
+	private String initStructure(BlackboardLtiSessionData data, SelectionSession session, SingleSignonForm form)
+	{
+		final String courseId = data.getCourseId();
+		String structure = form.getStructure();
+		if( structure == null )
+		{
+			// if course ID is empty then there is nothing we can do...
+			if( Strings.isNullOrEmpty(courseId) )
+			{
+				throw new RuntimeException(LABEL_ERROR_NO_COURSE.getText());
+			}
+			structure = courseStructureCache.get(courseId).orNull();
+		}
+		// if no structure, get from Canvas
+		if( structure == null )
+		{
+			final ObjectNode root = objectMapper.createObjectNode();
+			root.put("id", courseId);
+			root.put("name", data.getContextTitle());
+			root.put("targetable", false);
+			final ArrayNode foldersNode = objectMapper.createArrayNode();
+			root.put("folders", foldersNode);
+
+			final Connector connector = findConnector(data);
+			final List<ConnectorFolder> folders = connectorRepoService.getFoldersForCourse(connector,
+				CurrentUser.getUsername(), courseId, false);
+			boolean first = true;
+			for( ConnectorFolder folder : folders )
+			{
+				final ObjectNode folderNode = objectMapper.createObjectNode();
+				folderNode.put("id", folder.getId());
+				folderNode.put("name", folder.getName());
+				folderNode.put("targetable", true);
+				folderNode.put("defaultFolder", first);
+				foldersNode.add(folderNode);
+				first = false;
+			}
+
+			final PrettyPrinter pp = new MinimalPrettyPrinter();
+			try
+			{
+				structure = objectMapper.writer().with(pp).writeValueAsString(root);
+			}
+			catch( JsonProcessingException e )
+			{
+				throw Throwables.propagate(e);
+			}
+		}
+		if( structure != null )
+		{
+			courseStructureCache.put(courseId, structure);
+		}
+		return structure;
+	}
 
 	private Connector findConnector(BlackboardLtiSessionData data)
 	{
