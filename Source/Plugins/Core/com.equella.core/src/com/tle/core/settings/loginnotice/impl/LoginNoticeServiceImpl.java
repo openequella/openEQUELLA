@@ -41,12 +41,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService
 	@Override
 	public String getNotice()
 	{
-		String loginNotice = configurationService.getProperty(LOGIN_NOTICE_KEY);
-		if(loginNotice != null)
-		{
-			return loginNotice;
-		}
-		return null;
+		return configurationService.getProperty(LOGIN_NOTICE_KEY);
 	}
 
 	@Override
