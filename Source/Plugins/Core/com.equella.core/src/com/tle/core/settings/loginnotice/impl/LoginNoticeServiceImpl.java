@@ -46,7 +46,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService
 		{
 			return loginNotice;
 		}
-		return "";
+		return null;
 	}
 
 	@Override

@@ -4,7 +4,7 @@ import {AxiosError} from "axios";
 export interface ErrorResponse
 {
   id: string;
-  code: number;
+  code?: number|string;
   error: string; 
   description?: string;
 }
@@ -19,7 +19,7 @@ export const generateNewErrorID = (error:string, code?:number, description?:stri
 };
 
 export const generateFromAxiosError = (error: AxiosError) =>{
-  return{
+  return {
     id: v4(),
     code:error.code,
     error:error.name,

@@ -2,11 +2,12 @@ import * as React from "react";
 import {Bridge} from "../api/bridge";
 import {prepLangStrings} from "../util/langstrings";
 import {Button, Grid, TextField} from "@material-ui/core";
-import axios, {AxiosResponse} from "axios";
+import axios, {AxiosError, AxiosResponse} from "axios";
 import {Config} from "../config";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
 import {commonString} from "../util/commonstrings";
 import MessageInfo from "../components/MessageInfo";
+import {ErrorResponse, generateFromAxiosError} from "../api/errors";
 
 interface LoginNoticeConfigPageProps {
   bridge: Bridge;
@@ -15,7 +16,8 @@ interface LoginNoticeConfigPageProps {
 interface LoginNoticeConfigPageState {
   notice?: string,
   saved: boolean,
-  deleted: boolean
+  deleted: boolean,
+  error?: ErrorResponse
 }
 
 export const strings = prepLangStrings("loginnoticepage",
@@ -35,21 +37,41 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
     super(props);
   };
 
-  state: LoginNoticeConfigPageState = {
+  state:LoginNoticeConfigPageState = {
     notice: "",
     saved: false,
-    deleted: false
+    deleted: false,
+    error: undefined
+  };
+
+  handleError = (axiosError:AxiosError) => {
+    if(axiosError.response!=undefined){
+      switch (axiosError.response.status) {
+        case 404:
+          //do nothing, this simply means that there is no current login notice
+          break;
+        default:
+          this.setState({error: generateFromAxiosError(axiosError)});
+          break;
+      }
+    }
   };
 
   handleSubmitNotice = () => {
     axios.put(`${Config.baseUrl}api/loginnotice`, this.state.notice)
-      .then(() => this.setState({saved: true}));
+      .then(() => this.setState({saved: true}))
+      .catch((error) => {
+        this.handleError(error);
+      });
   };
 
   handleDeleteNotice = () => {
     this.setState({notice: ""});
     axios.delete(`${Config.baseUrl}api/loginnotice`)
-      .then(() => this.setState({deleted: true}));
+      .then(() => this.setState({deleted: true}))
+      .catch((error) => {
+        this.handleError(error);
+      });
   };
 
   handleTextFieldChange = (e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement) => {
@@ -61,13 +83,16 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
       .get(`${Config.baseUrl}api/loginnotice`)
       .then((response: AxiosResponse) => {
         this.setState({notice: response.data});
+      })
+      .catch((error) => {
+        this.handleError(error);
       });
   };
 
   render() {
     const {Template} = this.props.bridge;
     return (
-      <Template title={strings.title}>
+      <Template title={strings.title} errorResponse={this.state.error||undefined}>
         <SettingsMenuContainer>
           <Grid container spacing={8} direction="column">
             <Grid item>

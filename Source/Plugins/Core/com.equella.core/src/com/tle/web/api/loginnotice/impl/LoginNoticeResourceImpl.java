@@ -35,7 +35,10 @@ public class LoginNoticeResourceImpl implements LoginNoticeResource
 	public Response retrieveNotice()
 	{
 		String loginNotice = noticeService.getNotice();
-		return Response.ok(loginNotice, "text/plain").build();
+		if (loginNotice != null){
+			return Response.ok(loginNotice, "text/plain").build();
+		}
+		return Response.status(Response.Status.NOT_FOUND).entity(null).build();
 	}
 
 	@Override
