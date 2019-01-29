@@ -219,7 +219,7 @@ Located in the "project" folder is a series of SBT AutoPlugins which are respons
 some of what the ant build used to do:
 
 * `JPFScanPlugin` - scanning for plug-in projects
-* `JPFPlugin` - default folder layout and settings for JPF plug-sin projects
+* `JPFPlugin` - default folder layout and settings for JPF plug-in projects
 * `JPFRunnerPlugin` - collecting plug-ins for deployment or running
 
 The root plug-in manually defines the sub-project location and their inter-project dependencies:
