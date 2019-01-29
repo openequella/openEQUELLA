@@ -1,23 +1,31 @@
 import * as React from "react";
 import {Bridge} from "../api/bridge";
 import {prepLangStrings} from "../util/langstrings";
-import {Button, Grid, TextField} from "@material-ui/core";
+import {Button, Grid, IconButton, Snackbar, TextField} from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
 import axios, {AxiosResponse} from "axios";
 import {Config} from "../config";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
+import {commonString} from "../util/commonstrings";
 
 interface LoginNoticeConfigPageProps {
   bridge: Bridge;
 }
 
 interface LoginNoticeConfigPageState {
-  notice?: string
+  notice?: string,
+  saved: boolean,
+  deleted: boolean
 }
 
 export const strings = prepLangStrings("loginnoticepage",
   {
     title: "Login Notice Editor",
-    label: "Login Notice"
+    label: "Login Notice",
+    notifications:{
+      saveddescription: "Login notice saved successfully.",
+      deletedescription: "Login notice deleted successfully."
+    }
   }
 );
 
@@ -28,11 +36,20 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
   };
 
   state: LoginNoticeConfigPageState = {
-    notice: ""
+    notice: "",
+    saved: false,
+    deleted: false
   };
 
   handleSubmitNotice = () => {
-    axios.put(`${Config.baseUrl}api/loginnotice/settings/`, this.state.notice);
+    axios.put(`${Config.baseUrl}api/loginnotice/settings/`, this.state.notice)
+      .then(() => this.setState({saved:true}));
+  };
+
+  handleDeleteNotice = () => {
+    this.setState({notice: ""});
+    axios.delete(`${Config.baseUrl}api/loginnotice/settings/`)
+      .then( () => this.setState({deleted:true}));
   };
 
   handleTextFieldChange = (e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement) => {
@@ -46,6 +63,50 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
       {
         this.setState({notice: response.data});
       });
+  };
+
+  handleSaveDescriptionClose = () => {
+    this.setState({saved: false});
+  };
+
+  handleDeletedDescriptionClose = () => {
+    this.setState({deleted: false});
+  };
+
+  Notifications = () => {
+    return (
+      <div>
+        <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}}
+                  autoHideDuration={5000}
+                  message={<span id="message-id">{strings.notifications.saveddescription}</span>}
+                  open={this.state.saved}
+                  onClose={this.handleSaveDescriptionClose}
+                  action={[
+                    <IconButton
+                      key="close"
+                      color="inherit"
+                      onClick={this.handleSaveDescriptionClose}
+                    >
+                      <CloseIcon/>
+                    </IconButton>
+                  ]}
+        />
+        <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}}
+                  autoHideDuration={5000}
+                  message={<span id="message-id">{strings.notifications.deletedescription}</span>}
+                  open={this.state.deleted}
+                  onClose={this.handleDeletedDescriptionClose}
+                  action={[
+                    <IconButton
+                      key="close"
+                      color="inherit"
+                      onClick={this.handleDeletedDescriptionClose}
+                    >
+                      <CloseIcon/>
+                    </IconButton>
+                  ]}
+        />
+      </div>);
   };
 
   render() {
@@ -68,10 +129,16 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
                 <Button id="applyButton"
                         onClick={this.handleSubmitNotice}
                         variant="contained">
-                  Apply
+                  {commonString.action.apply}
+                </Button>
+                <Button id="deleteButton"
+                        onClick={this.handleDeleteNotice}
+                        variant="contained">
+                  {commonString.action.delete}
                 </Button>
               </Grid>
             </Grid>
+          <this.Notifications/>
         </SettingsMenuContainer>
       </Template>
     );
