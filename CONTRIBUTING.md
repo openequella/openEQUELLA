@@ -60,7 +60,7 @@ part of your PR and/or details of any manual tests you performed.
 
 The project is mostly aligned with the [Git Flow
 workflow](https://nvie.com/posts/a-successful-git-branching-model/). Each new piece of work has a
-new branch created. Code reviews/PRs then take place on this branch, which on completion is merged
+new branch created. Code reviews/PRs then take place on this branch, which on completion are merged
 back to `develop`.
 
 There are a number of Git tools which provide Git Flow tooling. Most dedicated Git GUI's provide
@@ -71,7 +71,7 @@ this (recommended).
 
 With Git Flow this essentially means our `develop` branch is our unstable branch where we're working
 towards the next version. And `master` is our currently stable branch. We also have historically
-stable branches which we use for back porting which have the naming format of `stable-<version>` -
+stable branches which we use for back porting and have the name format of `stable-<version>` -
 e.g. `stable-6.6`.
 
 Historically some branches did not follow that format, so if you're looking for an older
