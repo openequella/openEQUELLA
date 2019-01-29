@@ -14,7 +14,6 @@ type MessageInfoProps = (
     open :: Boolean,
     onClose :: Effect Unit,
     title :: String,
-    code :: Nullable Int,
     variant :: OneOf (
         typed :: StringConst "success", 
         typed :: StringConst "warning", 
