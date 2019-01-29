@@ -118,8 +118,8 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
       courseControl]
 
 
-    renderError {error:Just {error:title,code}, errorOpen} = [ messageInfo {open:errorOpen, variant: Enum.error, 
-      onClose: d CloseError, title, code: toNullable $ Just code  } ]
+    renderError {error:Just {error:title}, errorOpen} = [ messageInfo {open:errorOpen, variant: Enum.error,
+      onClose: d CloseError, title  } ]
     renderError _ = []
 
     render {props:{classes,selection}, state:s@{title, route: Just (Route params r), selectedFolder,selections}} = case r of 

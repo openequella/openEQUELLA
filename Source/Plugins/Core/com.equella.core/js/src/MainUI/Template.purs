@@ -225,11 +225,10 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
             button {onClick: d $ NavAway true, color: primary} [text commonString.action.discard]
           ]
         ] ] <> catMaybes [
-        toMaybe props.errorResponse <#> \{code, error, description} -> messageInfo {
+        toMaybe props.errorResponse <#> \{error, description} -> messageInfo {
                               open: state.errorOpen, 
                               onClose: d CloseError, 
-                              title: fromMaybe error $ toMaybe description, 
-                              code: toNullable $ Just code, 
+                              title: fromMaybe error $ toMaybe description,
                               variant: String.error 
                             }
       ]
