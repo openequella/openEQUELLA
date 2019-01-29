@@ -22,7 +22,7 @@ export const strings = prepLangStrings("loginnoticepage",
   {
     title: "Login Notice Editor",
     label: "Login Notice",
-    notifications:{
+    notifications: {
       saveddescription: "Login notice saved successfully.",
       deletedescription: "Login notice deleted successfully."
     }
@@ -31,7 +31,7 @@ export const strings = prepLangStrings("loginnoticepage",
 
 class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, LoginNoticeConfigPageState> {
 
-  constructor(props:LoginNoticeConfigPageProps) {
+  constructor(props: LoginNoticeConfigPageProps) {
     super(props);
   };
 
@@ -43,13 +43,13 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
 
   handleSubmitNotice = () => {
     axios.put(`${Config.baseUrl}api/loginnotice/settings/`, this.state.notice)
-      .then(() => this.setState({saved:true}));
+      .then(() => this.setState({saved: true}));
   };
 
   handleDeleteNotice = () => {
     this.setState({notice: ""});
     axios.delete(`${Config.baseUrl}api/loginnotice/settings/`)
-      .then( () => this.setState({deleted:true}));
+      .then(() => this.setState({deleted: true}));
   };
 
   handleTextFieldChange = (e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement) => {
@@ -59,8 +59,7 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
   componentDidMount = () => {
     axios
       .get(`${Config.baseUrl}api/loginnotice/settings/`)
-      .then((response: AxiosResponse) =>
-      {
+      .then((response: AxiosResponse) => {
         this.setState({notice: response.data});
       });
   };
@@ -114,23 +113,26 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
     return (
       <Template title={strings.title}>
         <SettingsMenuContainer>
-            <Grid container spacing={8} direction="column">
-              <Grid item>
-                <TextField id="noticeField"
-                           label={strings.label}
-                           rows= "10"
-                           variant="outlined"
-                           multiline autoFocus
-                           placeholder="<div></div>"
-                           onChange={e => this.handleTextFieldChange(e.target)}
-                           value={this.state.notice}/>
-              </Grid>
+          <Grid container spacing={8} direction="column">
+            <Grid item>
+              <TextField id="noticeField"
+                         label={strings.label}
+                         rows="10"
+                         variant="outlined"
+                         multiline autoFocus
+                         placeholder="<div></div>"
+                         onChange={e => this.handleTextFieldChange(e.target)}
+                         value={this.state.notice}/>
+            </Grid>
+            <Grid item container spacing={8} direction="row">
               <Grid item>
                 <Button id="applyButton"
                         onClick={this.handleSubmitNotice}
                         variant="contained">
                   {commonString.action.apply}
                 </Button>
+              </Grid>
+              <Grid item>
                 <Button id="deleteButton"
                         onClick={this.handleDeleteNotice}
                         variant="contained">
@@ -138,10 +140,12 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
                 </Button>
               </Grid>
             </Grid>
+          </Grid>
           <this.Notifications/>
         </SettingsMenuContainer>
       </Template>
     );
   }
 }
+
 export default LoginNoticeConfigPage;
