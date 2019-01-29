@@ -33,7 +33,7 @@ subscribe to the Open EQUELLA Google Group as outlined above and discuss your co
 the other developers. You will also need to sign a
 [Contributor License Agreement](https://www.apereo.org/node/676).
 
-But after that, as per usual GitHub, please first fork the project and then branch off `master` or a
+But after that, as per usual GitHub, please first fork the project and then branch off `develop` or a
 stable branch (see below) to use a 'feature' branch. Branches should follow the naming convention of:
 
     feature/<issue#>-<short_desc>
@@ -58,12 +58,21 @@ part of your PR and/or details of any manual tests you performed.
 
 ### Git Workflow and Layout
 
-The project is utilising a basic feature branching git workflow. Each new piece of work has a
-new branch created. Code reviews/PRs then take place on this branch, which on completion
-is then merged back to `master`.
+The project is mostly aligned with the [Git Flow
+workflow](https://nvie.com/posts/a-successful-git-branching-model/). Each new piece of work has a
+new branch created. Code reviews/PRs then take place on this branch, which on completion are merged
+back to `develop`.
 
-The next version is worked towards on `master`, and then once complete a branch is created for
-the version with the name `stable-<version>` - e.g. `stable-6.6`.
+There are a number of Git tools which provide Git Flow tooling. Most dedicated Git GUI's provide
+support (such as SourceTree and GitKraken), but perhaps the simplest approach (assuming you're
+comfortable with the Git CLI) is to install the [gitflow git
+extension](https://github.com/nvie/gitflow). Most linux distributions provide a package to install
+this (recommended).
+
+With Git Flow this essentially means our `develop` branch is our unstable branch where we're working
+towards the next version. And `master` is our currently stable branch. We also have historically
+stable branches which we use for back porting and have the name format of `stable-<version>` -
+e.g. `stable-6.6`.
 
 Historically some branches did not follow that format, so if you're looking for an older
 version:
@@ -77,9 +86,17 @@ version:
 Subsequent revision releases are done from the matching stable branches. And if suitable,
 fixes are merged to other versions - and especially to `master`.
 
+NOTE: There are problems with building 6.4 as it still has references to the old commercial build
+environment. Effort was undertaken in 6.5 to remove these linkages.
+
 ## Setting up a development environment
 
-Note: There are a couple of changes to the build process, and some discussion on Scala / Java and the frontend that should be understood when working on Equella code - please take a look at this [Google Group thread](https://groups.google.com/a/apereo.org/forum/#!topic/equella-users/bLV_XXQFOTI) and this [issue ticket](https://github.com/equella/Equella/issues/437). This page will be updated once the React UI code is a bit more solidified.
+Note: There are a couple of changes to the build process, and some discussion on Scala / Java and
+the frontend that should be understood when working on Equella code - please take a look at this
+[Google Group
+thread](https://groups.google.com/a/apereo.org/forum/#!topic/equella-users/bLV_XXQFOTI) and this
+[issue ticket](https://github.com/equella/Equella/issues/437). This page will be updated once the
+React UI code is a bit more solidified.
 
 ### IDE
 
@@ -91,12 +108,13 @@ what most developers are using.
 
 Import as an SBT project and use the default settings.
 
-If you get compile errors in the IDE, but standalone `sbt compile` works, do an sbt refresh from the IntelliJ `SBT tool window`.
+If you get compile errors in the IDE, but standalone `sbt compile` works, do an sbt refresh from the
+IntelliJ `SBT tool window`.
 
 #### Eclipse - Scala IDE 4.6
 
-You must use the [sbteclipse](https://github.com/typesafehub/sbteclipse) plugin to write projects out Eclipse projects
-and you must configure it with the following settings:
+You must use the [sbteclipse](https://github.com/typesafehub/sbteclipse) plug-in to write projects
+out Eclipse projects and you must configure it with the following settings:
 
 ```sbtshell
 import com.typesafe.sbteclipse.plugin.EclipsePlugin._
@@ -123,9 +141,10 @@ The default admin url will be: `http://localhost:8080/`
 
 #### Updating plugin library jars for dev mode
 
-When running the server in dev mode, the server runner doesn't have access to the SBT build information, so it
-can't find the jar libraries which some of the plugins require, so an extra SBT task is required to copy the jars
-into a known location for the runner. This task is run by the `prepareDevConfig` task too.
+When running the server in dev mode, the server runner doesn't have access to the SBT build
+information, so it can't find the jar libraries which some of the plugins require, so an extra SBT
+task is required to copy the jars into a known location for the runner. This task is run by the
+`prepareDevConfig` task too.
 
 ```bash
 ~$ sbt jpfWriteDevJars
@@ -133,9 +152,9 @@ into a known location for the runner. This task is run by the `prepareDevConfig`
 
 #### Running SBT task to generate non-java resources
 
-When you build EQUELLA from within IntelliJ, it will only compile Scala/Java sources and copy resources
-from the resource folders, it won't run any of the scripts that generate resoureces
-(such as compile code to Javascript), in order to do this you can run:
+When you build EQUELLA from within IntelliJ, it will only compile Scala/Java sources and copy
+resources from the resource folders, it won't run any of the scripts that generate resoureces (such
+as compile code to Javascript), in order to do this you can run:
 
 ```bash
 ~$ sbt resources
@@ -185,9 +204,10 @@ watch for source changes and re-build if required.
 
 ### SBT Notes
 
-The new build uses SBT (very flexible and has a large set of useful plugins available). You can customize pretty much any aspect of your build process using Scala scripts.
+The new build uses SBT (very flexible and has a large set of useful plug-ins available). You can
+customize pretty much any aspect of your build process using Scala scripts.
 
-Plugins are global to the build but can be turned on/off on a per project basis.
+Plug-ins are global to the build but can be turned on/off on a per project basis.
 
 The root build is located in the following files:
 
@@ -195,25 +215,27 @@ The root build is located in the following files:
 * `project/*.scala`
 * `project/plugins.sbt`
 
-Located in the "project" folder is a series of SBT AutoPlugins which are responsible for replicating some of what the ant build used to do:
+Located in the "project" folder is a series of SBT AutoPlugins which are responsible for replicating
+some of what the ant build used to do:
 
-* `JPFScanPlugin` - scanning for plugin projects
-* `JPFPlugin` - default folder layout and settings for JPF plugin projects
-* `JPFRunnerPlugin` - collecting plugins for deployment or running
+* `JPFScanPlugin` - scanning for plug-in projects
+* `JPFPlugin` - default folder layout and settings for JPF plug-in projects
+* `JPFRunnerPlugin` - collecting plug-ins for deployment or running
 
-The root plugin manually defines the sub-project location and their inter-project dependencies:
+The root plug-in manually defines the sub-project location and their inter-project dependencies:
 
-* `equellaserver` - contains the server bootstrap code and contains the dependency list for the server, produces the upgrade zip
+* `equellaserver` - contains the server bootstrap code and contains the dependency list for the
+  server, produces the upgrade zip
 * `InstallerZip` - produces the installer zip
 * `UpgradeZip` - produces the upgrade zip
 * `UpgradeInstallation` - the installation upgrader which is part of the upgrade zip
 * `UpgradeManager` - the upgrade manager web app
 * `conversion` - the conversion service
-* `allPlugins` - an aggregate project which can be used for building all the JPF plugins
+* `allPlugins` - an aggregate project which can be used for building all the JPF plug-ins
 * `adminTool` - contains the admin console client launcher
 
 #### Misc
 
-if you get a deduplicate dependencies on commons logging, SLF4J has a moonlighting jar that
+If you get a deduplicate dependencies on commons logging, SLF4J has a moonlighting jar that
 says it's commons logging. Use the build.sbt directive of exclude dependencies like the
 adminConsole does.
