@@ -90,6 +90,7 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
               </Grid>
               <Grid item>
                 <Button id="deleteButton"
+                        disabled={this.state.notice == ""}
                         onClick={this.handleDeleteNotice}
                         variant="contained">
                   {commonString.action.delete}
