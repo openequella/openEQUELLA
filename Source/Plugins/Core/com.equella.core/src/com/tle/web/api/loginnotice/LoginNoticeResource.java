@@ -31,14 +31,11 @@ public interface LoginNoticeResource
 {
 	@GET
 	@Produces("text/plain")
-	@Path("settings")
 	Response retrieveNotice();
 
 	@PUT
-	@Path("settings")
 	Response setNotice(String loginNotice);
 
 	@DELETE
-	@Path("settings")
 	Response deleteNotice();
 }
