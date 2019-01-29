@@ -1,12 +1,12 @@
 import * as React from "react";
 import {Bridge} from "../api/bridge";
 import {prepLangStrings} from "../util/langstrings";
-import {Button, Grid, IconButton, Snackbar, TextField} from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
+import {Button, Grid, TextField} from "@material-ui/core";
 import axios, {AxiosResponse} from "axios";
 import {Config} from "../config";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
 import {commonString} from "../util/commonstrings";
+import MessageInfo from "../components/MessageInfo";
 
 interface LoginNoticeConfigPageProps {
   bridge: Bridge;
@@ -64,50 +64,6 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
       });
   };
 
-  handleSaveDescriptionClose = () => {
-    this.setState({saved: false});
-  };
-
-  handleDeletedDescriptionClose = () => {
-    this.setState({deleted: false});
-  };
-
-  Notifications = () => {
-    return (
-      <div>
-        <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}}
-                  autoHideDuration={5000}
-                  message={<span id="message-id">{strings.notifications.saveddescription}</span>}
-                  open={this.state.saved}
-                  onClose={this.handleSaveDescriptionClose}
-                  action={[
-                    <IconButton
-                      key="close"
-                      color="inherit"
-                      onClick={this.handleSaveDescriptionClose}
-                    >
-                      <CloseIcon/>
-                    </IconButton>
-                  ]}
-        />
-        <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}}
-                  autoHideDuration={5000}
-                  message={<span id="message-id">{strings.notifications.deletedescription}</span>}
-                  open={this.state.deleted}
-                  onClose={this.handleDeletedDescriptionClose}
-                  action={[
-                    <IconButton
-                      key="close"
-                      color="inherit"
-                      onClick={this.handleDeletedDescriptionClose}
-                    >
-                      <CloseIcon/>
-                    </IconButton>
-                  ]}
-        />
-      </div>);
-  };
-
   render() {
     const {Template} = this.props.bridge;
     return (
@@ -141,7 +97,10 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
               </Grid>
             </Grid>
           </Grid>
-          <this.Notifications/>
+          <MessageInfo title={strings.notifications.saveddescription} open={this.state.saved}
+                       onClose={() => this.setState({saved:false})} variant="success"/>
+          <MessageInfo title={strings.notifications.deletedescription} open={this.state.deleted}
+                       onClose={() => this.setState({deleted:false})} variant="success"/>
         </SettingsMenuContainer>
       </Template>
     );
