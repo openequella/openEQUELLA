@@ -99,9 +99,9 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
             </Grid>
           </Grid>
           <MessageInfo title={strings.notifications.saveddescription} open={this.state.saved}
-                       onClose={() => this.setState({saved:false})} variant="success"/>
+                       onClose={() => this.setState({saved: false})} variant="success"/>
           <MessageInfo title={strings.notifications.deletedescription} open={this.state.deleted}
-                       onClose={() => this.setState({deleted:false})} variant="success"/>
+                       onClose={() => this.setState({deleted: false})} variant="success"/>
         </SettingsMenuContainer>
       </Template>
     );
