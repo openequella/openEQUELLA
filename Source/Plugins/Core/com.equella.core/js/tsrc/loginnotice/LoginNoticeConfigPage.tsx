@@ -12,8 +12,6 @@ interface LoginNoticeConfigPageProps {
 }
 
 interface LoginNoticeConfigPageState {
-  preNotice?: string,
-  postNotice?: string,
   saved: boolean,
   deleted: boolean,
   error?: ErrorResponse
