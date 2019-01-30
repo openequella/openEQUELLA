@@ -7,7 +7,7 @@ import SettingsMenuContainer from "../components/SettingsMenuContainer";
 import {commonString} from "../util/commonstrings";
 import MessageInfo from "../components/MessageInfo";
 import {ErrorResponse, generateFromAxiosError} from "../api/errors";
-import {deleteNotice, getNotice, submitNotice} from "./LoginNoticeModule";
+import {deletePreLoginNotice, getPreLoginNotice, submitPreLoginNotice} from "./LoginNoticeModule";
 
 interface LoginNoticeConfigPageProps {
   bridge: Bridge;
@@ -59,7 +59,7 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
 
   handleSubmitNotice = () => {
     if(this.state.notice!=undefined){
-      submitNotice(this.state.notice)
+      submitPreLoginNotice(this.state.notice)
         .then(() => this.setState({saved: true}))
         .catch((error) => {
           this.handleError(error);
@@ -69,7 +69,7 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
 
   handleDeleteNotice = () => {
     this.setState({notice: ""});
-    deleteNotice()
+    deletePreLoginNotice()
       .then(() => this.setState({deleted: true}))
       .catch((error) => {
         this.handleError(error);
@@ -81,7 +81,7 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
   };
 
   componentDidMount = () => {
-    getNotice()
+    getPreLoginNotice()
       .then((response: AxiosResponse) => {
         this.setState({notice: response.data});
       })

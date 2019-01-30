@@ -78,6 +78,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService
 		checkPermissions();
 		configurationService.deleteProperty(POST_LOGIN_NOTICE_KEY);
 	}
+
 	private void checkPermissions() {
 		if (tleAclManager.filterNonGrantedPrivileges(Collections.singleton(PERMISSION_KEY), false).isEmpty()) {
 			throw new PrivilegeRequiredException(PERMISSION_KEY);

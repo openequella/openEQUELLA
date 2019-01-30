@@ -25,17 +25,17 @@ import javax.ws.rs.core.Response;
  * @author Samantha Fisher
  */
 
-@Path("loginnotice/")
-@Api("Login Notice")
-public interface LoginNoticeResource
+@Path("postloginnotice/")
+@Api("Post Login Notice")
+public interface PostLoginNoticeResource
 {
 	@GET
 	@Produces("text/plain")
-	Response retrievePreLoginNotice();
+	Response retrievePostLoginNotice();
 
 	@PUT
-	Response setPreLoginNotice(String loginNotice);
+	Response setPostLoginNotice(String loginNotice);
 
 	@DELETE
-	Response deletePreLoginNotice();
+	Response deletePostLoginNotice();
 }
