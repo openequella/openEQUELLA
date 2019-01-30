@@ -1,16 +1,29 @@
 import axios, {AxiosPromise} from "axios";
 import {Config} from "../config";
 
-export const apiURL = `${Config.baseUrl}api/loginnotice`;
+export const PRE_LOGIN_NOTICE_API_URL = `${Config.baseUrl}api/preloginnotice`;
+export const POST_LOGIN_NOTICE_API_URL = `${Config.baseUrl}api/postloginnotice`;
 
-export function submitNotice(notice:string):AxiosPromise{
-  return axios.put(apiURL, notice);
+export function submitPreLoginNotice(notice:string):AxiosPromise{
+  return axios.put(PRE_LOGIN_NOTICE_API_URL, notice);
 }
 
-export function getNotice():AxiosPromise{
-  return axios.get(apiURL);
+export function getPreLoginNotice():AxiosPromise{
+  return axios.get(PRE_LOGIN_NOTICE_API_URL);
 }
 
-export function deleteNotice():AxiosPromise{
-  return axios.delete(apiURL);
+export function deletePreLoginNotice():AxiosPromise{
+  return axios.delete(PRE_LOGIN_NOTICE_API_URL);
+}
+
+export function submitPostLoginNotice(notice:string):AxiosPromise{
+  return axios.put(POST_LOGIN_NOTICE_API_URL, notice);
+}
+
+export function getPostLoginNotice():AxiosPromise{
+  return axios.get(POST_LOGIN_NOTICE_API_URL);
+}
+
+export function deletePostLoginNotice():AxiosPromise{
+  return axios.delete(POST_LOGIN_NOTICE_API_URL);
 }

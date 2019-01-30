@@ -26,6 +26,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.services.user.UserPreferenceService;
 import com.tle.core.services.user.UserSessionService;
+import com.tle.core.settings.loginnotice.LoginNoticeService;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
@@ -52,7 +53,7 @@ public class LogonNoticeSection extends AbstractPrototypeSection<LogonNoticeSect
 	private static Label TITLE_LABEL;
 
 	@Inject
-	private ConfigurationService configService;
+	private LoginNoticeService loginNoticeService;
 	@Inject
 	private UserPreferenceService userPreferenceService;
 	@Inject
@@ -94,7 +95,7 @@ public class LogonNoticeSection extends AbstractPrototypeSection<LogonNoticeSect
 	public void checkForNotices(SectionInfo info) throws Exception
 	{
 		final boolean hideNotice = userPreferenceService.isHideLoginNotice();
-		String loginNotice = configService.getProperties(new AutoLogin()).getLoginNotice();
+		String loginNotice = loginNoticeService.getPostLoginNotice();
 		final String notice = Check.nullToEmpty(hideNotice ? null : loginNotice).replaceAll("\\\\n", "\n");
 
 		getModel(info).setNotice(notice);

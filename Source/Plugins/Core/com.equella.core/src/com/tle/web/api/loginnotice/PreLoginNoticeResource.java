@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-package com.tle.core.settings.loginnotice;
+package com.tle.web.api.loginnotice;
 
-public interface LoginNoticeService
+import io.swagger.annotations.Api;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
+
+/**
+ * @author Samantha Fisher
+ */
+
+@Path("preloginnotice/")
+@Api("Pre Login Notice")
+public interface PreLoginNoticeResource
 {
-	String getPreLoginNotice();
+	@GET
+	@Produces("text/plain")
+	Response retrievePreLoginNotice();
 
-	void setPreLoginNotice(String notice);
+	@PUT
+	Response setPreLoginNotice(String loginNotice);
 
-	void deletePreLoginNotice();
-
-	String getPostLoginNotice();
-
-	void setPostLoginNotice(String notice);
-
-	void deletePostLoginNotice();
-
+	@DELETE
+	Response deletePreLoginNotice();
 }

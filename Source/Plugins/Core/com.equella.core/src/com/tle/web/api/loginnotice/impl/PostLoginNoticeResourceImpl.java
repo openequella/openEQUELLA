@@ -18,23 +18,23 @@ package com.tle.web.api.loginnotice.impl;
 
 import com.tle.core.guice.Bind;
 import com.tle.core.settings.loginnotice.LoginNoticeService;
-import com.tle.web.api.loginnotice.LoginNoticeResource;
+import com.tle.web.api.loginnotice.PostLoginNoticeResource;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Response;
 
-@Bind(LoginNoticeResource.class)
+@Bind(PostLoginNoticeResource.class)
 @Singleton
-public class LoginNoticeResourceImpl implements LoginNoticeResource
+public class PostLoginNoticeResourceImpl implements PostLoginNoticeResource
 {
 	@Inject
 	LoginNoticeService noticeService;
 
 	@Override
-	public Response retrieveNotice()
+	public Response retrievePostLoginNotice()
 	{
-		String loginNotice = noticeService.getNotice();
+		String loginNotice = noticeService.getPostLoginNotice();
 		if (loginNotice != null){
 			return Response.ok(loginNotice, "text/plain").build();
 		}
@@ -42,16 +42,16 @@ public class LoginNoticeResourceImpl implements LoginNoticeResource
 	}
 
 	@Override
-	public Response setNotice(String loginNotice)
+	public Response setPostLoginNotice(String loginNotice)
 	{
-		noticeService.setNotice(loginNotice);
+		noticeService.setPostLoginNotice(loginNotice);
 		return Response.ok().build();
 	}
 
 	@Override
-	public Response deleteNotice()
+	public Response deletePostLoginNotice()
 	{
-		noticeService.deleteNotice();
+		noticeService.deletePostLoginNotice();
 		return Response.ok().build();
 	}
 }

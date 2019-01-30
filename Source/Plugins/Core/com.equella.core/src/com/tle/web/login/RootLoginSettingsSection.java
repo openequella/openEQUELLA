@@ -62,7 +62,6 @@ import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.Checkbox;
 import com.tle.web.sections.standard.Link;
-import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.settings.menu.SettingsUtils;
@@ -137,8 +136,6 @@ public class RootLoginSettingsSection extends OneColumnLayout<RootLoginSettingsS
 	@PlugKey("ipaddress.dialog.title")
 	private Link addIpAddressLink;
 
-	@Component(name = "lnf")
-	private TextField loginNoticeField;
 
 	@Component
 	@PlugKey("settings.save.button")
@@ -223,7 +220,6 @@ public class RootLoginSettingsSection extends OneColumnLayout<RootLoginSettingsS
 				addIpAddress(info, ipAddr);
 			}
 
-			loginNoticeField.setValue(info, settings.getLoginNotice());
 			model.setLoaded(true);
 		}
 		else
@@ -354,7 +350,6 @@ public class RootLoginSettingsSection extends OneColumnLayout<RootLoginSettingsS
 				ipAddesses.clear();
 				ipAddesses.addAll(newAddressess);
 			}
-			settings.setLoginNotice(loginNoticeField.getValue(info));
 			model.setLoaded(false);
 			configService.setProperties(settings);
 			userService.refreshSettings();
@@ -403,11 +398,6 @@ public class RootLoginSettingsSection extends OneColumnLayout<RootLoginSettingsS
 	{
 		List<String> ipAddresses = getModel(info).getIpAddresses();
 		return !Check.isEmpty(ipAddresses);
-	}
-
-	public TextField getLoginNoticeField()
-	{
-		return loginNoticeField;
 	}
 
 	public Button getSaveButton()
