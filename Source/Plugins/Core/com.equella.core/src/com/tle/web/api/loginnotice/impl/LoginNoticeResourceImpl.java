@@ -32,9 +32,9 @@ public class LoginNoticeResourceImpl implements LoginNoticeResource
 	LoginNoticeService noticeService;
 
 	@Override
-	public Response retrieveNotice()
+	public Response retrievePreLoginNotice()
 	{
-		String loginNotice = noticeService.getNotice();
+		String loginNotice = noticeService.getPreLoginNotice();
 		if (loginNotice != null){
 			return Response.ok(loginNotice, "text/plain").build();
 		}
@@ -42,16 +42,16 @@ public class LoginNoticeResourceImpl implements LoginNoticeResource
 	}
 
 	@Override
-	public Response setNotice(String loginNotice)
+	public Response setPreLoginNotice(String loginNotice)
 	{
-		noticeService.setNotice(loginNotice);
+		noticeService.setPreLoginNotice(loginNotice);
 		return Response.ok().build();
 	}
 
 	@Override
-	public Response deleteNotice()
+	public Response deletePreLoginNotice()
 	{
-		noticeService.deleteNotice();
+		noticeService.deletePreLoginNotice();
 		return Response.ok().build();
 	}
 }

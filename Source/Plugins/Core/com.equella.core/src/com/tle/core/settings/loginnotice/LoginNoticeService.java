@@ -18,10 +18,16 @@ package com.tle.core.settings.loginnotice;
 
 public interface LoginNoticeService
 {
-	String getNotice();
+	String getPreLoginNotice();
 
-	void setNotice(String notice);
+	void setPreLoginNotice(String notice);
 
-	void deleteNotice();
+	void deletePreLoginNotice();
+
+	String getPostLoginNotice();
+
+	void setPostLoginNotice(String notice);
+
+	void deletePostLoginNotice();
 
 }

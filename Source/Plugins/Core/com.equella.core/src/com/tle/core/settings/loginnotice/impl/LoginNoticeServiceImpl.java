@@ -36,28 +36,48 @@ public class LoginNoticeServiceImpl implements LoginNoticeService
 	ConfigurationService configurationService;
 
 	private static final String PERMISSION_KEY = "EDIT_SYSTEM_SETTINGS";
-	private static final String LOGIN_NOTICE_KEY = "login.notice.settings";
+	private static final String PRE_LOGIN_NOTICE_KEY = "pre.login.notice";
+	private static final String POST_LOGIN_NOTICE_KEY = "post.login.notice";
 
 	@Override
-	public String getNotice()
+	public String getPreLoginNotice()
 	{
-		return configurationService.getProperty(LOGIN_NOTICE_KEY);
+		return configurationService.getProperty(PRE_LOGIN_NOTICE_KEY);
 	}
 
 	@Override
-	public void setNotice(String notice)
-	{
-		checkPermissions();
-		configurationService.setProperty(LOGIN_NOTICE_KEY, notice);
-	}
-
-	@Override
-	public void deleteNotice()
+	public void setPreLoginNotice(String notice)
 	{
 		checkPermissions();
-		configurationService.deleteProperty(LOGIN_NOTICE_KEY);
+		configurationService.setProperty(PRE_LOGIN_NOTICE_KEY, notice);
 	}
 
+	@Override
+	public void deletePreLoginNotice()
+	{
+		checkPermissions();
+		configurationService.deleteProperty(PRE_LOGIN_NOTICE_KEY);
+	}
+
+	@Override
+	public String getPostLoginNotice()
+	{
+		return configurationService.getProperty(POST_LOGIN_NOTICE_KEY);
+	}
+
+	@Override
+	public void setPostLoginNotice(String notice)
+	{
+		checkPermissions();
+		configurationService.setProperty(POST_LOGIN_NOTICE_KEY, notice);
+	}
+
+	@Override
+	public void deletePostLoginNotice()
+	{
+		checkPermissions();
+		configurationService.deleteProperty(POST_LOGIN_NOTICE_KEY);
+	}
 	private void checkPermissions() {
 		if (tleAclManager.filterNonGrantedPrivileges(Collections.singleton(PERMISSION_KEY), false).isEmpty()) {
 			throw new PrivilegeRequiredException(PERMISSION_KEY);

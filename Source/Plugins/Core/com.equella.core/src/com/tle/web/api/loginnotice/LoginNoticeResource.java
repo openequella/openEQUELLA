@@ -31,11 +31,11 @@ public interface LoginNoticeResource
 {
 	@GET
 	@Produces("text/plain")
-	Response retrieveNotice();
+	Response retrievePreLoginNotice();
 
 	@PUT
-	Response setNotice(String loginNotice);
+	Response setPreLoginNotice(String loginNotice);
 
 	@DELETE
-	Response deleteNotice();
+	Response deletePreLoginNotice();
 }
