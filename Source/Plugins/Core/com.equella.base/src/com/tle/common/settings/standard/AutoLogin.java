@@ -60,9 +60,6 @@ public class AutoLogin implements ConfigurationProperties
 	@PropertyList(key = "login.auto.addresses")
 	private final List<String> addresses = new ArrayList<String>();
 
-	@Property(key = "post.login.notice")
-	private String loginNotice;
-
 	@Property(key = "login.anon.ip.httpref.acl")
 	private boolean enableIpReferAcl;
 
@@ -149,16 +146,6 @@ public class AutoLogin implements ConfigurationProperties
 	{
 		this.transientDrmAcceptances = transientDrmAcceptances;
 	}
-
-//	public String getLoginNotice()
-//	{
-//		return loginNotice;
-//	}
-//
-//	public void setLoginNotice(String loginNotice)
-//	{
-//		this.loginNotice = loginNotice;
-//	}
 
 	public boolean isEnableIpReferAcl()
 	{
