@@ -24,9 +24,11 @@ export const strings = prepLangStrings("loginnoticepage",
     title: "Login Notice Editor",
     prelogin: {
       label: "Before Login Notice",
+      description: "Write a plaintext message to be displayed before login..."
     },
     postlogin: {
       label: "After Login Notice",
+      description: "Write a plaintext message to be displayed after login..."
     },
     notifications: {
       saveddescription: "Login notice saved successfully.",

@@ -5,6 +5,7 @@ import {Button, Grid, TextField} from "@material-ui/core";
 import {commonString} from "../util/commonstrings";
 import {deletePreLoginNotice, getPreLoginNotice, submitPreLoginNotice} from "./LoginNoticeModule";
 import {AxiosError, AxiosResponse} from "axios";
+import Typography from "@material-ui/core/Typography";
 
 interface PreLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
@@ -61,14 +62,14 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
   render() {
     return (
       <SettingsMenuContainer>
+        <Typography color="textSecondary" variant="subheading">{strings.prelogin.label}</Typography>
         <Grid container spacing={8} direction="column">
           <Grid item>
             <TextField id="noticeField"
-                       label={strings.prelogin.label}
                        rows="10"
                        variant="outlined"
-                       multiline autoFocus
-                       placeholder="<div></div>"
+                       multiline
+                       placeholder={strings.prelogin.description}
                        onChange={e => this.handlePreTextFieldChange(e.target)}
                        value={this.state.preNotice}/>
           </Grid>

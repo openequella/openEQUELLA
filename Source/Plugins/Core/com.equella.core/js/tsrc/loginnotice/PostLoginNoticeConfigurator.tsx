@@ -5,6 +5,7 @@ import {Button, Grid, TextField} from "@material-ui/core";
 import {commonString} from "../util/commonstrings";
 import {deletePostLoginNotice, getPostLoginNotice, submitPostLoginNotice} from "./LoginNoticeModule";
 import {AxiosError, AxiosResponse} from "axios";
+import Typography from "@material-ui/core/Typography";
 
 interface PostLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
@@ -61,14 +62,14 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
   render() {
     return (
       <SettingsMenuContainer>
+        <Typography color="textSecondary" variant="subheading">{strings.postlogin.label}</Typography>
         <Grid container spacing={8} direction="column">
           <Grid item>
             <TextField id="noticeField"
-                       label={strings.postlogin.label}
                        rows="10"
                        variant="outlined"
-                       multiline autoFocus
-                       placeholder="<div></div>"
+                       multiline
+                       placeholder={strings.postlogin.description}
                        onChange={e => this.handlePostTextFieldChange(e.target)}
                        value={this.state.postNotice}/>
           </Grid>
