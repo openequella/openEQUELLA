@@ -63,9 +63,9 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
     return (
       <SettingsMenuContainer>
         <Typography color="textSecondary" variant="subheading">{strings.prelogin.label}</Typography>
-        <Grid container spacing={8} direction="column">
+        <Grid id="preLoginConfig" container spacing={8} direction="column">
           <Grid item>
-            <TextField id="noticeField"
+            <TextField id="preNoticeField"
                        rows="10"
                        variant="outlined"
                        multiline
@@ -75,14 +75,14 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
           </Grid>
           <Grid item container spacing={8} direction="row">
             <Grid item>
-              <Button id="applyButton"
+              <Button id="preApplyButton"
                       onClick={this.handleSubmitPreNotice}
                       variant="contained">
                 {commonString.action.apply}
               </Button>
             </Grid>
             <Grid item>
-              <Button id="deleteButton"
+              <Button id="preDeleteButton"
                       disabled={this.state.preNotice == ""}
                       onClick={this.handleDeletePreNotice}
                       variant="contained">

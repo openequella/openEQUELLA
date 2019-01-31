@@ -63,9 +63,9 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
     return (
       <SettingsMenuContainer>
         <Typography color="textSecondary" variant="subheading">{strings.postlogin.label}</Typography>
-        <Grid container spacing={8} direction="column">
+        <Grid id="postLoginConfig" container spacing={8} direction="column">
           <Grid item>
-            <TextField id="noticeField"
+            <TextField id="postNoticeField"
                        rows="10"
                        variant="outlined"
                        multiline
@@ -75,14 +75,14 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
           </Grid>
           <Grid item container spacing={8} direction="row">
             <Grid item>
-              <Button id="applyButton"
+              <Button id="postApplyButton"
                       onClick={this.handleSubmitPostNotice}
                       variant="contained">
                 {commonString.action.apply}
               </Button>
             </Grid>
             <Grid item>
-              <Button id="deleteButton"
+              <Button id="postDeleteButton"
                       disabled={this.state.postNotice == ""}
                       onClick={this.handleDeletePostNotice}
                       variant="contained">
