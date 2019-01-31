@@ -48,8 +48,12 @@ public class LoginNoticeServiceImpl implements LoginNoticeService
 	@Override
 	public void setPreLoginNotice(String notice)
 	{
-		checkPermissions();
-		configurationService.setProperty(PRE_LOGIN_NOTICE_KEY, notice);
+		if(notice.equals("")) {
+			deletePreLoginNotice();
+		} else {
+			checkPermissions();
+			configurationService.setProperty(PRE_LOGIN_NOTICE_KEY, notice);
+		}
 	}
 
 	@Override
@@ -68,8 +72,12 @@ public class LoginNoticeServiceImpl implements LoginNoticeService
 	@Override
 	public void setPostLoginNotice(String notice)
 	{
-		checkPermissions();
-		configurationService.setProperty(POST_LOGIN_NOTICE_KEY, notice);
+		if(notice.equals("")){
+			deletePostLoginNotice();
+		}else{
+			checkPermissions();
+			configurationService.setProperty(POST_LOGIN_NOTICE_KEY, notice);
+		}
 	}
 
 	@Override

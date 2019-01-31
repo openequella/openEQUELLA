@@ -253,9 +253,7 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
 		decorations.setTitle(TITLE_LABEL);
 		decorations.setMenuMode(MenuMode.HIDDEN);
 		String loginNotice = loginNoticeService.getPreLoginNotice();
-
-		if (loginNotice!=null&&!loginNotice.isEmpty())
-			model.setLoginNotice(loginNotice);
+		model.setLoginNotice(loginNotice);
 
 		model.setChildSections(renderChildren(context, this, new ResultListCollector(true)).getFirstResult());
 		final List<SectionRenderable> loginLinksRenderables = new ArrayList<>();
