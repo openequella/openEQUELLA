@@ -95,8 +95,8 @@ public interface EquellaSearchResource extends SearchResource
 			@ApiParam(value="Reverse the order of the search results", allowableValues = ",true,false", defaultValue = "false", required = false)
 			@QueryParam("reverse")
 				String reverse,
-			
-			@ApiParam(value="The where-clause in the same format as the old SOAP one. See https://equella.github.io/",
+
+			@ApiParam(value="For details on structuring the where clause see https://equella.github.io/guides/RestAPIGuide.html#searching",
 						required = false)
 			@QueryParam("where")
 				String where,

@@ -124,12 +124,12 @@ public class SearchMyResource
 		@ApiParam(value="Reverse the order of the search results", allowableValues = "true,false", defaultValue = "false", required = false) 
 		@QueryParam("reverse") 
 			String reverse,
-		@ApiParam(value="The where-clause in the same format as the old SOAP one. See https://equella.github.io/",
-					required = false) @QueryParam("where") 
-			String where, 
-		@ApiParam(value="How much information to return for the results", required = false, 
-					allowableValues = ItemResource.ALL_ALLOWABLE_INFOS, 
-					allowMultiple = true) @QueryParam("info") 
+		@ApiParam(value="For details on structuring the where clause see https://equella.github.io/guides/RestAPIGuide.html#searching",
+					required = false) @QueryParam("where")
+			String where,
+		@ApiParam(value="How much information to return for the results", required = false,
+					allowableValues = ItemResource.ALL_ALLOWABLE_INFOS,
+					allowMultiple = true) @QueryParam("info")
 			CsvList info
 		)
 		// @formatter:on
