@@ -4287,8 +4287,8 @@
   </extension>
   <extension plugin-id="com.tle.core.connectors" point-id="connectorType" id="blackboardRESTConnector">
     <parameter id="id" value="blackboardrest" />
-    <parameter id="nameKey" value="com.equella.core.connector.name" />
-    <parameter id="descriptionKey" value="com.equella.core.connector.description" />
+    <parameter id="nameKey" value="com.equella.core.bbRest.connector.name" />
+    <parameter id="descriptionKey" value="com.equella.core.bbRest.connector.description" />
   </extension>
   <extension plugin-id="com.tle.core.scheduler" point-id="scheduledTask" id="bbConnectorTask">
     <parameter id="id" value="Blackboard Connector Synchronisation" />

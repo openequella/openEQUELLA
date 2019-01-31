@@ -39,6 +39,7 @@ import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Response;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.selection.SelectedResource;
+import net.sf.json.JSONObject;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -300,6 +301,47 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 	@Override
 	public ConnectorFolder addItemToCourse(Connector connector, String username, String courseId, String folderId, IItem<?> item, SelectedResource selectedResource) throws LmsUserNotFoundException
 	{
+		final List<ConnectorFolder> list = new ArrayList<>();
+
+		final String url = bbApi + "/courses/" + courseId + "/contents/" + folderId;
+
+		JSONObject jsonData = new JSONObject();
+		jsonData.put("title", "A TP link from oE! - " + selectedResource.getTitle());
+		//FIXME Only set parentId for non-top level content
+		//jsonData.put("parentId", folderId);
+		jsonData.put("body", selectedResource.getDescription());
+
+		JSONObject jsonAvailabilityData = new JSONObject();
+		jsonAvailabilityData.put("available", "Yes");
+		jsonAvailabilityData.put("allowGuests", false);
+		jsonData.put("availability", jsonAvailabilityData);
+
+		JSONObject jsonContentHandlerData = new JSONObject();
+		jsonContentHandlerData.put("id", "resource/x-bb-blti-link");
+		//FIXME set the real resource URL
+		jsonContentHandlerData.put("url", "http://192.168.1.138:8080/demo/items/" + selectedResource.getUuid() + "/" + selectedResource.getVersion());
+		jsonData.put("contentHandler", jsonContentHandlerData);
+		LOGGER.info("Attempting to add ["+jsonData.toString()+"] to ["+url+"]");
+
+		final Contents contents = sendBlackboardData(connector, url,
+			Contents.class, jsonData, Request.Method.POST);
+//		final ConnectorCourse course = new ConnectorCourse(courseId);
+//		final List<Content> results = contents.getResults();
+//		for( Content content : results )
+//		{
+//			final Content.ContentHandler handler = content.getContentHandler();
+//			if (handler != null && "resource/x-bb-folder".equals(handler.getId()))
+//			{
+//				// FIXME: filter only user visible folders?
+//				final ConnectorFolder cc = new ConnectorFolder(content.getId(), course);
+//				// TODO: null safe it
+//				cc.setAvailable("Yes".equals(content.getAvailability().getAvailable()));
+//				cc.setName(content.getTitle());
+//				cc.setLeaf(content.getHasChildren() != null && !content.getHasChildren());
+//				//cc.setModifiedDate(content.getCreated());
+//				list.add(cc);
+//			}
+//		}
 		return null;
 	}
 
