@@ -21,6 +21,7 @@ import com.tle.core.security.TLEAclManager;
 import com.tle.core.settings.loginnotice.LoginNoticeService;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.exceptions.PrivilegeRequiredException;
+import org.apache.cxf.common.util.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -48,10 +49,10 @@ public class LoginNoticeServiceImpl implements LoginNoticeService
 	@Override
 	public void setPreLoginNotice(String notice)
 	{
-		if(notice.equals("")) {
-			deletePreLoginNotice();
+		checkPermissions();
+		if(StringUtils.isEmpty(notice)) {
+			configurationService.deleteProperty(PRE_LOGIN_NOTICE_KEY);
 		} else {
-			checkPermissions();
 			configurationService.setProperty(PRE_LOGIN_NOTICE_KEY, notice);
 		}
 	}
@@ -72,10 +73,10 @@ public class LoginNoticeServiceImpl implements LoginNoticeService
 	@Override
 	public void setPostLoginNotice(String notice)
 	{
-		if(notice.equals("")){
-			deletePostLoginNotice();
-		}else{
-			checkPermissions();
+		checkPermissions();
+		if(StringUtils.isEmpty(notice)) {
+			configurationService.deleteProperty(POST_LOGIN_NOTICE_KEY);
+		} else {
 			configurationService.setProperty(POST_LOGIN_NOTICE_KEY, notice);
 		}
 	}
