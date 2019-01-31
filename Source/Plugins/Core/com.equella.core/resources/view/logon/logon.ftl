@@ -37,3 +37,8 @@
 		<@render link />
 	</#list>
 </div>
+<#if m.loginNotice??>
+  <div class="area">
+    ${m.loginNotice?html}
+  </div>
+</#if>

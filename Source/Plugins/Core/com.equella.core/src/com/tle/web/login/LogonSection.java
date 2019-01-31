@@ -41,6 +41,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.services.user.UserService;
 import com.tle.core.services.user.UserSessionService;
+import com.tle.core.settings.loginnotice.LoginNoticeService;
 import com.tle.exceptions.AccountExpiredException;
 import com.tle.exceptions.AuthenticationException;
 import com.tle.exceptions.BadCredentialsException;
@@ -69,10 +70,7 @@ import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
-import com.tle.web.sections.render.HtmlRenderer;
-import com.tle.web.sections.render.Label;
-import com.tle.web.sections.render.ResultListCollector;
-import com.tle.web.sections.render.SectionRenderable;
+import com.tle.web.sections.render.*;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
@@ -109,6 +107,8 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
 	private AuditLogService auditLogService;
 	@Inject
 	private PluginTracker<LoginLink> loginLinkTracker;
+	@Inject
+	LoginNoticeService loginNoticeService;
 
 	@ViewFactory
 	private FreemarkerFactory viewFactory;
@@ -252,7 +252,7 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
 		Decorations decorations = Decorations.getDecorations(context);
 		decorations.setTitle(TITLE_LABEL);
 		decorations.setMenuMode(MenuMode.HIDDEN);
-
+		model.setLoginNotice(loginNoticeService.getPreLoginNotice());
 		model.setChildSections(renderChildren(context, this, new ResultListCollector(true)).getFirstResult());
 		final List<SectionRenderable> loginLinksRenderables = new ArrayList<>();
 		for( LoginLink link : loginLinkTracker.getBeanList() )
@@ -365,6 +365,8 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
 		@Bookmarked
 		private String error;
 
+		private String loginNotice;
+
 		private String failed;
 		private WebAuthenticationDetails details;
 		private SectionRenderable childSections;
@@ -438,6 +440,16 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
 		public void setLoginLinks(List<SectionRenderable> loginLinks)
 		{
 			this.loginLinks = loginLinks;
+		}
+
+		public String getLoginNotice()
+		{
+			return loginNotice;
+		}
+
+		public void setLoginNotice(String loginNotice)
+		{
+			this.loginNotice = loginNotice;
 		}
 	}
 
