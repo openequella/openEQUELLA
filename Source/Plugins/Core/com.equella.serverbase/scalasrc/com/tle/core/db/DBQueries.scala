@@ -44,7 +44,9 @@ case class ViewCountQueries(writeItemCounts: WriteQueries[JDBCIO, ItemViewCount]
                             deleteForItemId: ((InstId, DbUUID, Int)) => Stream[JDBCIO, WriteOp]
                            )
 
-case class SettingsQueries(write: WriteQueries[JDBCIO, Setting], query: ((InstId, String)) => Stream[JDBCIO, Setting])
+case class SettingsQueries(write: WriteQueries[JDBCIO, Setting],
+                           query: ((InstId, String)) => Stream[JDBCIO, Setting],
+                           prefixQuery: ((InstId, String)) => Stream[JDBCIO, Setting])
 
 
 object DBQueries

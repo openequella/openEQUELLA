@@ -2,6 +2,7 @@ module OEQ.MainUI.Main where
 
 import Prelude
 
+import Bridge (tsBridge)
 import Control.Monad.Reader (runReaderT)
 import Data.Either (either)
 import Data.Maybe (Maybe(..), fromMaybe)
@@ -23,11 +24,10 @@ import OEQ.Utils.Polyfills (polyfill)
 import React (component, unsafeCreateLeafElement)
 import React.DOM (div')
 import Routing.PushState (matchesWith)
-import TSComponents (courseEdit, coursesPage, themePageClass, loginNoticeConfigPageClass)
+import TSComponents (courseEdit, coursesPage, searchConfigsClass, loginNoticeConfigPageClass, themePageClass)
 import Web.HTML (window)
 import Web.HTML.Location (pathname)
 import Web.HTML.Window (location)
-import Bridge (tsBridge)
 
 data RouterCommand = Init | ChangeRoute Route
 type State = {route::Maybe Route}
@@ -63,6 +63,7 @@ main = do
           LoginNoticeConfigPage -> unsafeCreateLeafElement loginNoticeConfigPageClass {bridge:tsBridge}
           CourseEdit cid -> courseEdit $ Just cid
           ViewItemPage (ItemRef uuid version) -> viewItemPage {uuid,version}
+          SearchConfigsPage -> unsafeCreateLeafElement searchConfigsClass {bridge:tsBridge}
           LegacyPage page -> legacy {page} 
         render _ = div' []
 

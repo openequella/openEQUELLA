@@ -33,6 +33,15 @@ import javax.ws.rs.core.Response.Status
 class SearchConfigApi {
 
   @GET
+  @Path("config")
+  @ApiOperation(value = "List all search configurations", response = classOf[SearchConfig], responseContainer = "List")
+  def listConfigs: Response = ApiHelper.runAndBuild {
+    SettingsDB.ensureEditSystem {
+      ApiHelper.allEntities(SearchConfigDB.readAllConfigs)
+    }
+  }
+
+  @GET
   @Path("config/{uuid}")
   @ApiOperation(value = "Get search configuration", response = classOf[SearchConfig])
   def getConfig(@PathParam("uuid") configId: UUID): Response = ApiHelper.runAndBuild {

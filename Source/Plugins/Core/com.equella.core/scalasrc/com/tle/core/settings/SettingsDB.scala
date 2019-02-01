@@ -19,14 +19,14 @@ package com.tle.core.settings
 import cats.data.{Kleisli, OptionT}
 import cats.syntax.applicative._
 import com.tle.core.db.tables.Setting
-import com.tle.core.db.{DB, DBSchema}
+import com.tle.core.db._
 import com.tle.core.security.AclChecks
 import io.circe.parser._
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder}
 import io.doolse.simpledba.jdbc._
 import io.doolse.simpledba.syntax._
-
+import fs2.Stream
 
 
 object SettingsDB {
@@ -41,9 +41,17 @@ object SettingsDB {
     }
   }
 
-  def jsonProperty[A](name: String)(implicit dec: Decoder[A]): OptionT[DB, A] = singleProperty(name).map {
-    s => parse(s.value).flatMap(dec.decodeJson).fold(throw _, identity)
-  }
+  def multiProperties(prefix: String): Stream[DB, Setting] =
+    dbStream(uc => q.prefixQuery(uc.inst, prefix))
+
+  def decodeSetting[A](f: Setting => A => A)(s: Setting)(implicit dec: Decoder[A]): A =
+    parse(s.value).flatMap(dec.decodeJson).fold(throw _, f(s))
+
+  def jsonProperty[A : Decoder](name: String): OptionT[DB, A] =
+    singleProperty(name).map(decodeSetting[A](_ => identity))
+
+  def jsonProperties[A : Decoder](prefix: String, f: String => A => A): Stream[DB, A] =
+    multiProperties(prefix+"%").map(decodeSetting[A](s => f(s.property.substring(prefix.length))))
 
   def mkSetting(name: String, value: String): DB[Setting] = Kleisli {
     uc => Setting(uc.inst, name, value).pure[JDBCIO]
