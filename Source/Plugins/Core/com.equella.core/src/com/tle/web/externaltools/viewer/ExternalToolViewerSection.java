@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import com.tle.web.oauth.service.OAuthWebService;
 import org.apache.log4j.Logger;
 
 import javax.inject.Inject;
@@ -106,6 +107,8 @@ public class ExternalToolViewerSection extends AbstractViewerSection<ExternalToo
 
 	@Inject
 	private ExternalToolsService toolService;
+	@Inject
+	private OAuthWebService oauthWebService;
 	@Inject
 	private InstitutionService institutionService;
 	@Inject
@@ -544,7 +547,7 @@ public class ExternalToolViewerSection extends AbstractViewerSection<ExternalToo
 	 * We extend the original lis_result_sourcedid with such information as
 	 * EQUELLA can use to identify where to onsend the gradebook results back
 	 * to.
-	 * 
+	 *
 	 * @param formParams
 	 * @param request
 	 */
@@ -594,7 +597,7 @@ public class ExternalToolViewerSection extends AbstractViewerSection<ExternalToo
 	 * irrelevant, but conformance to imsglobal certifications requires that we
 	 * throw an error if resource_link_id is absent. Consumer could send any
 	 * random stuff and we'd be happy.
-	 * 
+	 *
 	 * @param servletRequest
 	 */
 	private void verifyLTIConformance(HttpServletRequest servletRequest)
@@ -669,10 +672,10 @@ public class ExternalToolViewerSection extends AbstractViewerSection<ExternalToo
 	 * the OAuth signature, but ensure that the original URL including its query
 	 * string, and params (without the added query-string pairs) are what's sent
 	 * to the provider.
-	 * 
+	 *
 	 * @param formParams
 	 * @param sharedSecret
-	 * @param launchUrl
+	 * @param urlLaunchURL
 	 */
 	private void calculateAndAddOauth(Map<String, String> formParams, String consumerKey, String sharedSecret,
 		URL urlLaunchURL)
@@ -710,7 +713,7 @@ public class ExternalToolViewerSection extends AbstractViewerSection<ExternalToo
 			// parameters to the final output formParams collection - which we
 			// specifically DON'T want here - is to only add the oauth_
 			// parameters
-			List<Entry<String, String>> oauthExtendedParams = toolService.getOauthSignatureParams(consumerKey,
+			List<Entry<String, String>> oauthExtendedParams = oauthWebService.getOauthSignatureParams(consumerKey,
 				sharedSecret, urlStr, queryPaddedFormParams);
 			for( Entry<String, String> entry : oauthExtendedParams )
 			{
@@ -738,7 +741,7 @@ public class ExternalToolViewerSection extends AbstractViewerSection<ExternalToo
 
 	/**
 	 * Copy a Map<String, String> to a Map<String, String[]>
-	 * 
+	 *
 	 * @param formParams
 	 * @return Map of identical contents except single string values are an
 	 *         array of a single string

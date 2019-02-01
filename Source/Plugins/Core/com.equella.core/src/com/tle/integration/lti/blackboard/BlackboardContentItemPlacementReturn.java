@@ -17,16 +17,24 @@
 package com.tle.integration.lti.blackboard;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.util.Throwables;
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.service.ItemResolver;
+import com.tle.core.lti.consumers.service.LtiConsumerService;
 import com.tle.web.integration.Integration.LmsLink;
 import com.tle.web.integration.IntegrationInterface;
 import com.tle.web.integration.service.IntegrationService;
+import com.tle.web.lti.LtiData;
+import com.tle.web.lti.usermanagement.LtiUserState;
+import com.tle.web.oauth.service.OAuthWebService;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
@@ -41,6 +49,8 @@ import com.tle.web.selection.SelectedResource;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.template.Decorations;
+import net.oauth.OAuthAccessor;
+import net.oauth.OAuthConsumer;
 import org.apache.log4j.Logger;
 
 import javax.inject.Inject;
@@ -63,6 +73,10 @@ public class BlackboardContentItemPlacementReturn extends AbstractPrototypeSecti
 	private BlackboardLtiIntegration blackboardLtiIntegration;
 	@Inject
 	private ItemResolver itemResolver;
+	@Inject
+	private OAuthWebService oauthWebService;
+	@Inject
+	private LtiConsumerService consumerService;
 
 	private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -85,11 +99,41 @@ public class BlackboardContentItemPlacementReturn extends AbstractPrototypeSecti
 
 		final String launchUrl = data.getContentItemReturnUrl();
 
-		final Map<String, String> formParams = new TreeMap<String, String>();
-		formParams.put("lti_message_type", "ContentItemSelection");
-		formParams.put("lti_version", "LTI-1p0");
-		formParams.put("data", data.getBbData());
+		final Map<String, String[]> formParams = new TreeMap<>();
+		addParameter(formParams,"lti_message_type", "ContentItemSelection");
+		addParameter(formParams,"lti_version", "LTI-1p0");
+		addParameter(formParams,"data", data.getBbData());
+		addParameter(formParams,"content_items", buildSelectionJson(link));
 
+		final FormTag formTag = context.getForm();
+		formTag.setName("ltiLaunchForm");
+		formTag.setElementId(new SimpleElementId("ltiLaunchForm"));
+		formTag.setAction(new SimpleFormAction(launchUrl));
+		formTag.setEncoding("application/x-www-form-urlencoded");
+		formTag.setMethod("POST");
+
+		final List<Map.Entry<String, String>> finalParams = signParameters(launchUrl, formParams);
+		for( Entry<String, String> param : finalParams )
+		{
+			final String val = param.getValue();
+			if( !Check.isEmpty(val) )
+			{
+				formTag.addHidden(new HiddenInput(param.getKey(), val));
+			}
+		}
+
+		formTag.addReadyStatements(
+			Js.statement(Js.methodCall(Jq.$('#' + formTag.getElementId(context)), Js.function("submit"))));
+		return null;
+	}
+
+	private void addParameter(Map<String, String[]> params, String key, String value)
+	{
+		params.put(key, new String[]{ value });
+	}
+
+	private String buildSelectionJson(LmsLink link)
+	{
 		final ContentItemSelection selection = new ContentItemSelection();
 		selection.context = "http://purl.imsglobal.org/ctx/lti/v1/ContentItem";
 		final ContentItemSelection.ContentItemGraph graph = new ContentItemSelection.ContentItemGraph();
@@ -107,25 +151,38 @@ public class BlackboardContentItemPlacementReturn extends AbstractPrototypeSecti
 		graphList.add(graph);
 		selection.graph = graphList;
 
-		final String json = mapper.writeValueAsString(selection);
-		formParams.put("content_items", json);
-		LOGGER.debug("BlackboardContentItemPlacementReturn.renderHtml:  setting 'content_items' to: " + json);
-		final FormTag formTag = context.getForm();
-		formTag.setName("ltiLaunchForm");
-		formTag.setElementId(new SimpleElementId("ltiLaunchForm"));
-		formTag.setAction(new SimpleFormAction(launchUrl));
-		formTag.setEncoding("application/x-www-form-urlencoded");
-		formTag.setMethod("POST");
-		for( Entry<String, String> param : formParams.entrySet() )
+		try
 		{
-			final String val = param.getValue();
-			if( !Check.isEmpty(val) )
+			return mapper.writeValueAsString(selection);
+		}
+		catch (JsonProcessingException ex)
+		{
+			throw Throwables.propagate(ex);
+		}
+	}
+
+	private List<Map.Entry<String, String>> signParameters(String launchUrl, Map<String, String[]> formParams)
+	{
+		final LtiData.OAuthData oauthData = getOAuthData();
+		if (oauthData == null)
+		{
+			throw new RuntimeException("Not currently in an LTI session");
+		}
+
+		return oauthWebService.getOauthSignatureParams(oauthData.getConsumerKey(), oauthData.getConsumerSecret(), launchUrl, formParams);
+	}
+
+	private LtiData.OAuthData getOAuthData()
+	{
+		final UserState userState = CurrentUser.getUserState();
+		if( userState instanceof LtiUserState)
+		{
+			final LtiData ltiData = ((LtiUserState) userState).getData();
+			if ( ltiData != null )
 			{
-				formTag.addHidden(new HiddenInput(param.getKey(), val));
+				return ltiData.getOAuthData();
 			}
 		}
-		formTag.addReadyStatements(
-			Js.statement(Js.methodCall(Jq.$('#' + formTag.getElementId(context)), Js.function("submit"))));
 		return null;
 	}
 

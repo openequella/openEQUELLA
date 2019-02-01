@@ -40,7 +40,7 @@ public class BlackboardLtiSessionData implements IntegrationSessionData
 	private String courseInfoCode;
 	private String contextTitle;
 	private String connectorUuid;
-	private String bbData;
+	private final String bbData;
 
 	public BlackboardLtiSessionData()
 	{
@@ -177,11 +177,6 @@ public class BlackboardLtiSessionData implements IntegrationSessionData
 	public String getBbData()
 	{
 		return bbData;
-	}
-
-	public void setBbData(String bbData)
-	{
-		this.bbData = bbData;
 	}
 
 	public String getLtiMessageType()

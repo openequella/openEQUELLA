@@ -18,6 +18,8 @@ package com.tle.web.oauth.service;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -39,7 +41,7 @@ public interface OAuthWebService
 
 	/**
 	 * User details are extracted from the code
-	 * 
+	 *
 	 * @param client
 	 * @param code
 	 * @return
@@ -49,8 +51,8 @@ public interface OAuthWebService
 
 	/**
 	 * Uses the user details of the pre-configured user
-	 * 
-	 * @param clientId
+	 *
+	 * @param client
 	 * @param clientSecret
 	 * @return
 	 * @throws WebException
@@ -60,7 +62,7 @@ public interface OAuthWebService
 	/**
 	 * Requires that the user login to EQUELLA if the client is not
 	 * pre-configured for a user
-	 * 
+	 *
 	 * @param client
 	 * @return
 	 * @throws WebException
@@ -78,13 +80,27 @@ public interface OAuthWebService
 
 	/**
 	 * Ensures this code cannot be used again
-	 * 
+	 *
 	 * @param code .
 	 */
 	boolean invalidateCode(String code);
 
 	void validateMessage(OAuthMessage message, OAuthAccessor accessor) throws OAuthException, IOException,
 		URISyntaxException;
+
+
+	/**
+	 * Method for creating OAuth V1 signature parameters. Creates an oauth message
+	 * and signs it which adds the signature to the message's parameters. Only
+	 * the parameters are returned.
+	 *
+	 * @param consumerKey consumer key
+	 * @param secret shared secret
+	 * @param url launch URL
+	 * @return all parameters needed to sign a POST message
+	 */
+	List<Map.Entry<String, String>> getOauthSignatureParams(String consumerKey, String secret, String url,
+																   Map<String, String[]> postParams);
 
 	public static class AuthorisationDetails
 	{
@@ -104,7 +120,7 @@ public interface OAuthWebService
 
 		/**
 		 * Not guaranteed to have any value!
-		 * 
+		 *
 		 * @return
 		 */
 		public String getUsername()
