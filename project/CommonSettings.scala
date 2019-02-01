@@ -48,7 +48,6 @@ object CommonSettings extends AutoPlugin {
     compileOrder := CompileOrder.Mixed,
     headerLicense := Some(HeaderLicense.ALv2("2017", "Apereo")),
     resolvers ++= Seq(
-      "EBI Nexus" at "http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/",
       Resolver.bintrayRepo("omegat-org", "maven")
     ),
     libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % Test
