@@ -44,6 +44,7 @@ import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.plugins.BeanLocator;
 import com.tle.core.plugins.FactoryMethodLocator;
+import com.tle.web.activation.section.ActivationResultsDialog;
 import com.tle.web.bulk.operation.BulkOperationExecutor;
 import com.tle.web.bulk.operation.BulkOperationExtension;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -52,6 +53,7 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
+import com.tle.web.sections.annotations.TreeLookup;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.component.CourseSelectionList;
 import com.tle.web.sections.equella.utils.KeyOption;
@@ -85,6 +87,9 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object> impl
 	private static String KEY_NAME;
 	@PlugKey("opresults.status")
 	private static String KEY_STATUS;
+
+	@TreeLookup
+	private ActivationResultsDialog activationResultsDialog;
 
 	@ViewFactory
 	private FreemarkerFactory viewFactory;
@@ -254,7 +259,7 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object> impl
 	@Override
 	public boolean areOptionsFinished(SectionInfo info, String operationId)
 	{
-		return validateOptions(info, operationId);
+		return validateOptions(info,operationId)&& activationResultsDialog.getModel(info).isShowOptions();
 	}
 
 	@Override
