@@ -29,6 +29,7 @@ import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.service.ItemResolver;
 import com.tle.core.lti.consumers.service.LtiConsumerService;
+import com.tle.integration.lti.LtiSessionData;
 import com.tle.web.integration.Integration.LmsLink;
 import com.tle.web.integration.IntegrationInterface;
 import com.tle.web.integration.service.IntegrationService;
@@ -49,8 +50,6 @@ import com.tle.web.selection.SelectedResource;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.template.Decorations;
-import net.oauth.OAuthAccessor;
-import net.oauth.OAuthConsumer;
 import org.apache.log4j.Logger;
 
 import javax.inject.Inject;
@@ -60,6 +59,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+//TODO: we should be able to make this a generic LTI return
 @Bind
 public class BlackboardContentItemPlacementReturn extends AbstractPrototypeSection<Object> implements HtmlRenderer
 {
@@ -95,14 +95,14 @@ public class BlackboardContentItemPlacementReturn extends AbstractPrototypeSecti
 			.getLmsLink();
 
 		final IntegrationInterface integ = integrationService.getIntegrationInterface(context);
-		final BlackboardLtiSessionData data = (BlackboardLtiSessionData) integ.getData();
+		final LtiSessionData data = (LtiSessionData) integ.getData();
 
 		final String launchUrl = data.getContentItemReturnUrl();
 
 		final Map<String, String[]> formParams = new TreeMap<>();
 		addParameter(formParams,"lti_message_type", "ContentItemSelection");
 		addParameter(formParams,"lti_version", "LTI-1p0");
-		addParameter(formParams,"data", data.getBbData());
+		addParameter(formParams,"data", data.getData());
 		addParameter(formParams,"content_items", buildSelectionJson(link));
 
 		final FormTag formTag = context.getForm();
@@ -209,6 +209,7 @@ public class BlackboardContentItemPlacementReturn extends AbstractPrototypeSecti
 		return item;
 	}
 
+	//TODO: move to generic LTI area
 	public static class ContentItemSelection
 	{
 		@JsonProperty("@context")

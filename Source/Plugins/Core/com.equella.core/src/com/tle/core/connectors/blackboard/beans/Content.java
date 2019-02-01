@@ -6,7 +6,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Content
 {
 	private String id;
+	private String parentId;
 	private String title;
+	private String description;
 	private String created;
 	private Integer position;
 	private Boolean hasChildren;
@@ -23,6 +25,16 @@ public class Content
 		this.id = id;
 	}
 
+	public String getParentId()
+	{
+		return parentId;
+	}
+
+	public void setParentId(String parentId)
+	{
+		this.parentId = parentId;
+	}
+
 	public String getTitle()
 	{
 		return title;
@@ -32,6 +44,17 @@ public class Content
 	{
 		this.title = title;
 	}
+
+	public String getDescription()
+	{
+		return description;
+	}
+
+	public void setDescription(String description)
+	{
+		this.description = description;
+	}
+
 
 	public String getCreated()
 	{
@@ -87,6 +110,7 @@ public class Content
 	public static class ContentHandler
 	{
 		private String id; // resource/x-bb-folder
+		private String url;
 
 		public String getId()
 		{
@@ -96,6 +120,16 @@ public class Content
 		public void setId(String id)
 		{
 			this.id = id;
+		}
+
+		public String getUrl()
+		{
+			return url;
+		}
+
+		public void setUrl(String url)
+		{
+			this.url = url;
 		}
 	}
 }

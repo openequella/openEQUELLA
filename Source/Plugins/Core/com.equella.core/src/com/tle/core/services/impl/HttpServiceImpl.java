@@ -21,11 +21,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_PAYMENT_REQUIRED;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -51,6 +47,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.io.CharStreams;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -60,12 +57,7 @@ import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpOptions;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.params.HttpClientParams;
@@ -251,14 +243,42 @@ public class HttpServiceImpl implements HttpService
 		return client;
 	}
 
-	private HttpResponse exec(HttpClient client, HttpRequestBase method, Cookies cookies) throws Exception
+	private HttpResponse exec(HttpClient client, HttpRequestBase request, Cookies cookies) throws Exception
 	{
-		addCookies(method, cookies);
+		addCookies(request, cookies);
 
-		LOGGER.debug(method.getMethod() + "ing " + method.getURI());
+		LOGGER.debug(request.getMethod() + "ing " + request.getURI());
 
-		final HttpResponse response = client.execute(method);
-		extractCookies(method.getURI(), response, cookies);
+		if ( LOGGER.isTraceEnabled() )
+		{
+			// Log request in RFC 2616 format
+			final StringBuilder trace = new StringBuilder(request.getMethod());
+			trace.append(" ").append(request.getURI()).append(" HTTP/1.1").append("\n");
+			for (Header header : request.getAllHeaders())
+			{
+				trace.append(header.getName()).append(": ").append(header.getValue()).append("\n");
+			}
+			if (request instanceof HttpEntityEnclosingRequestBase)
+			{
+				final HttpEntityEnclosingRequestBase entityRequest = (HttpEntityEnclosingRequestBase)request;
+				final HttpEntity entity = entityRequest.getEntity();
+
+				if (entity.isRepeatable())
+				{
+					final String stringContent = CharStreams.toString(new InputStreamReader(
+						entity.getContent(), Constants.UTF8));
+					trace.append("\n").append(stringContent);
+				}
+				else
+				{
+					trace.append("\n[Non repeatable stream content]");
+				}
+			}
+			LOGGER.trace(trace.toString());
+		}
+
+		final HttpResponse response = client.execute(request);
+		extractCookies(request.getURI(), response, cookies);
 
 		return response;
 	}
@@ -397,12 +417,7 @@ public class HttpServiceImpl implements HttpService
 	}
 
 	/**
-	 * @param url
-	 * @param method
-	 * @param params
-	 * @param postHtml If method == post and postHtml == true, then set the
-	 *            content type to 'application/x-www-form-urlencoded;
-	 *            charset=UTF-8'
+	 * @param request
 	 * @return null if the method can't be handled
 	 */
 	@SuppressWarnings("deprecation")
@@ -716,7 +731,7 @@ public class HttpServiceImpl implements HttpService
 	/**
 	 * Appends a query string to a URL, detecting if the URL already contains a
 	 * query string
-	 * 
+	 *
 	 * @param url
 	 * @param queryString
 	 * @return
@@ -754,7 +769,7 @@ public class HttpServiceImpl implements HttpService
 	/**
 	 * Turns a list of NameValuePair into a query string. e.g
 	 * param1=val1&param2=val2
-	 * 
+	 *
 	 * @param params
 	 * @return
 	 */
@@ -781,7 +796,7 @@ public class HttpServiceImpl implements HttpService
 
 	/**
 	 * URL <em>path</em> encodes a value
-	 * 
+	 *
 	 * @param value
 	 * @return
 	 */
@@ -807,7 +822,7 @@ public class HttpServiceImpl implements HttpService
 
 	/**
 	 * Encodes a URL parameter value
-	 * 
+	 *
 	 * @param value
 	 * @return
 	 */

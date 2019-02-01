@@ -23,23 +23,21 @@ import com.tle.common.connectors.entity.Connector;
 import com.tle.common.searching.SearchResults;
 import com.tle.common.util.BlindSSLSocketFactory;
 import com.tle.core.connectors.blackboard.beans.*;
-import com.tle.core.connectors.blackboard.service.BlackboardConnectorService;
 import com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService;
 import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.service.AbstractIntegrationConnectorRespository;
-import com.tle.core.connectors.service.ConnectorRepositoryImplementation;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.connectors.service.ConnectorService;
 import com.tle.core.guice.Bind;
-import com.tle.core.guice.Bindings;
 import com.tle.core.institution.InstitutionCache;
 import com.tle.core.institution.InstitutionService;
+import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.services.HttpService;
 import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Response;
 import com.tle.core.settings.service.ConfigurationService;
+import com.tle.web.integration.Integration;
 import com.tle.web.selection.SelectedResource;
-import net.sf.json.JSONObject;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -61,6 +59,7 @@ import java.util.concurrent.TimeUnit;
 public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConnectorRespository implements BlackboardRESTConnectorService
 {
 	private static final Logger LOGGER = Logger.getLogger(BlackboardRESTConnectorService.class);
+	private static final String KEY_PFX = AbstractPluginService.getMyPluginId(BlackboardRESTConnectorService.class)+".";
 
 	private static final String API_ROOT = "/learn/api/public";
 
@@ -169,13 +168,13 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 	@Override
 	protected ViewableItemType getViewableItemType()
 	{
-		return null;
+		return ViewableItemType.GENERIC;
 	}
 
 	@Override
 	protected String getIntegrationId()
 	{
-		return null;
+		return "gen";
 	}
 
 	@Override
@@ -301,16 +300,30 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 	@Override
 	public ConnectorFolder addItemToCourse(Connector connector, String username, String courseId, String folderId, IItem<?> item, SelectedResource selectedResource) throws LmsUserNotFoundException
 	{
-		final List<ConnectorFolder> list = new ArrayList<>();
+		final String url = bbApi + "/courses/" + courseId + "/contents/" + folderId + "/children";
 
-		final String url = bbApi + "/courses/" + courseId + "/contents/" + folderId;
+		final Integration.LmsLinkInfo linkInfo = getLmsLink(item, selectedResource);
+		final Integration.LmsLink lmsLink = linkInfo.getLmsLink();
 
-		JSONObject jsonData = new JSONObject();
-		jsonData.put("title", "A TP link from oE! - " + selectedResource.getTitle());
+		final Content content = new Content();
+		//content.setParentId(folderId);
+		content.setTitle(lmsLink.getName());
+		content.setDescription(lmsLink.getDescription());
+		final Content.ContentHandler contentHandler = new Content.ContentHandler();
+		contentHandler.setId("resource/x-bb-blti-link");
+		contentHandler.setUrl(lmsLink.getUrl());
+		content.setContentHandler(contentHandler);
+		final Availability availability = new Availability();
+		availability.setAvailable("Yes");
+		availability.setAllowGuests(true);
+		content.setAvailability(availability);
+
+		//JSONObject jsonData = new JSONObject();
+		//jsonData.put("title", "A TP link from oE! - " + selectedResource.getTitle());
 		//FIXME Only set parentId for non-top level content
 		//jsonData.put("parentId", folderId);
-		jsonData.put("body", selectedResource.getDescription());
-
+		//jsonData.put("body", selectedResource.getDescription());
+/*
 		JSONObject jsonAvailabilityData = new JSONObject();
 		jsonAvailabilityData.put("available", "Yes");
 		jsonAvailabilityData.put("allowGuests", false);
@@ -322,9 +335,11 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 		jsonContentHandlerData.put("url", "http://192.168.1.138:8080/demo/items/" + selectedResource.getUuid() + "/" + selectedResource.getVersion());
 		jsonData.put("contentHandler", jsonContentHandlerData);
 		LOGGER.info("Attempting to add ["+jsonData.toString()+"] to ["+url+"]");
+*/
+		sendBlackboardData(connector, url,
+			null, content, Request.Method.POST);
 
-		final Contents contents = sendBlackboardData(connector, url,
-			Contents.class, jsonData, Request.Method.POST);
+		return new ConnectorFolder(folderId, new ConnectorCourse(courseId));
 //		final ConnectorCourse course = new ConnectorCourse(courseId);
 //		final List<Content> results = contents.getResults();
 //		for( Content content : results )
@@ -342,7 +357,6 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 //				list.add(cc);
 //			}
 //		}
-		return null;
 	}
 
 	@Override
@@ -542,6 +556,6 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
 	private String getKey(String partKey)
 	{
-		return "com.tle.core.connectors.blackboard." + partKey;
+		return KEY_PFX + "blackboardrest." + partKey;
 	}
 }
