@@ -173,7 +173,7 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
               renderStructure selection {selectedFolder, selections}
             ]
           }
-      ] <> renderError s 
+      ] <> renderError s
     render _ = div' [text "NOTHING"]
 
     eval = case _ of 
