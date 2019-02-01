@@ -50,7 +50,7 @@ type IntegrationData = {
 decodeIntegration :: Json -> Either String IntegrationData 
 decodeIntegration v = do 
   o <- decodeJson v 
-  courseInfoCode <- o .?? "courseInfoCode"
+  courseInfoCode <- o .? "courseInfoCode" >>= decodeJson
   pure $ {courseInfoCode}
 
 findDefaultFolder :: CourseStructure -> Maybe String
@@ -71,6 +71,6 @@ decodeCourseNode v = do
 decodeStructure :: Json -> Either String CourseStructure
 decodeStructure v = do 
     o <- decodeJson v
-    folders <- o .? "folders" >>= traverse decodeCourseNode  
-    name <- o .? "name"
+    folders <- o .? "folders" >>= traverse decodeCourseNode
+    name <- fromMaybe "<untitled>" <$> o .? "name"
     pure $ {name,folders}

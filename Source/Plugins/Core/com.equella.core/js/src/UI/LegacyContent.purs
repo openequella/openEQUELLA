@@ -3,31 +3,39 @@ module OEQ.UI.LegacyContent where
 import Prelude
 
 import Control.Monad.Maybe.Trans (MaybeT(..), lift, runMaybeT)
-import Data.Array (filter, length, mapWithIndex)
+import Data.Array (catMaybes, filter, length, mapWithIndex)
 import Data.Either (Either(..))
 import Data.Map as Map
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Nullable (Nullable, toNullable)
 import Data.Set (Set)
 import Data.Set as Set
+import Data.String (joinWith)
 import Data.Traversable (sequence_, traverse, traverse_)
 import Data.Tuple (Tuple(..))
-import Debug.Trace (traceM)
-import Dispatcher.React (propsRenderer, saveRef, withRef)
+import Dispatcher (affAction)
+import Dispatcher.React (getProps, getState, modifyState, propsRenderer, renderer, saveRef, withRef)
 import Effect (Effect)
 import Effect.Aff (Aff, makeAff, nonCanceler, runAff_)
 import Effect.Class (liftEffect)
 import Effect.Ref as Ref
 import Effect.Uncurried (EffectFn1, EffectFn2, mkEffectFn1, mkEffectFn2, runEffectFn1)
-import Foreign.Object (Object)
-import OEQ.Data.LegacyContent (SubmitOptions)
+import Foreign.Object (Object, lookup)
+import Foreign.Object as Object
+import MaterialUI.Styles (withStyles)
+import OEQ.API.LegacyContent (submitRequest)
+import OEQ.Data.Error (ErrorResponse)
+import OEQ.Data.LegacyContent (ContentResponse(..), LegacyURI(..), SubmitOptions)
 import OEQ.Environment (baseUrl)
+import OEQ.UI.Common (scrollWindowToTop)
 import OEQ.Utils.QueryString (toTuples)
+import OEQ.Utils.UUID (newUUID)
 import Partial.Unsafe (unsafePartial)
 import React (ReactElement, ReactRef, component, unsafeCreateLeafElement)
 import React as R
+import React.DOM (div')
 import React.DOM as D
-import React.DOM.Props (Props, _type, onSubmit)
+import React.DOM.Props (Props, _id, _type, onSubmit)
 import React.DOM.Props as DP
 import React.SyntheticEvent (preventDefault)
 import Web.DOM.Document (createElement, getElementsByTagName, toNonElementParentNode)
@@ -166,3 +174,157 @@ writeForm state content = D.form [DP.name "eqForm", DP._id "eqpageForm", onSubmi
   where 
     stateinp (Tuple name value) = D.input [_type "hidden", DP.name name, DP.value value ]
     hiddenState = D.div [DP.style {display: "none"}, DP.className "_hiddenstate"] $ (stateinp <$> toTuples state)
+
+type LegacyContentProps = {
+    page :: LegacyURI
+  , contentUpdated :: PageContent -> Effect Unit
+  , userUpdated :: Effect Unit
+  , redirected :: {href :: String, external :: Boolean} -> Effect Unit
+  , onError :: {error::ErrorResponse, fullScreen :: Boolean} -> Effect Unit
+}
+
+type PageContent = {
+  html:: Object String,
+  script :: String,
+  title :: String, 
+  contentId :: String,
+  fullscreenMode :: String, 
+  menuMode :: String,
+  hideAppBar :: Boolean, 
+  preventUnload :: Boolean,
+  afterHtml :: Effect Unit
+}
+
+data Command = 
+    Submit SubmitOptions
+  | LoadPage 
+  | Updated LegacyURI
+  | UpdateForm FormUpdate
+
+type State = {
+  content :: Maybe PageContent,
+  state :: Object (Array String),
+  pagePath :: String,
+  noForm :: Boolean
+}
+
+emptyContent :: PageContent 
+emptyContent = {html:Object.empty, script:"", title:"", contentId: "0", fullscreenMode: "NO", menuMode:"NO", hideAppBar: false, preventUnload:false, afterHtml: pure unit}
+
+legacyContent :: LegacyContentProps -> ReactElement
+legacyContent = unsafeCreateLeafElement $ withStyles styles $ component "LegacyContent" $ \this -> do
+  let 
+    d = eval >>> affAction this
+
+    render {state:s@{content}, props:{classes}} = case content of 
+        Nothing -> div' []
+        Just (c@{contentId, html,title,script, afterHtml}) -> 
+          let extraClass = case c.fullscreenMode of 
+                "YES" -> []
+                "YES_WITH_TOOLBAR" -> []
+                _ -> case c.menuMode of
+                  "HIDDEN" -> [] 
+                  _ -> [classes.withPadding]
+              jqueryDiv f h = divWithHtml $ f {
+                contentId, 
+                divProps:[], 
+                script:Nothing, 
+                afterHtml: Nothing, 
+                html:h }
+              jqueryDiv_ = jqueryDiv identity
+
+              actualContent = D.div [DP.className $ joinWith " " $ ["content"] <> extraClass] $ catMaybes [ 
+                  (jqueryDiv (_ {divProps = [_id "breadcrumbs"]}) <$> lookup "crumbs" html),
+                  jqueryDiv_  <$> lookup "upperbody" html,
+                  (jqueryDiv _ {script = Just script, afterHtml = Just afterHtml}) <$> lookup "body" html ]
+              mainContent = if s.noForm 
+                then actualContent
+                else writeForm s.state actualContent
+          in mainContent
+
+    submitWithPath fullError path opts = do 
+        (lift $ submitRequest path opts) >>= case _ of 
+          Left error -> do 
+            {onError} <- getProps
+            liftEffect $ onError {error, fullScreen:fullError }
+          Right resp -> updateContent resp
+
+    eval = case _ of 
+      Updated oldPage -> do 
+        {page} <- getProps
+        if oldPage /= page then eval LoadPage else pure unit
+      LoadPage -> do 
+        {page: LegacyURI pagePath params} <- getProps 
+        modifyState _ {pagePath = pagePath}
+        submitWithPath true pagePath {vals: params, callback: toNullable Nothing}
+        liftEffect $ scrollWindowToTop
+
+      Submit s -> do 
+        {pagePath} <- getState
+        submitWithPath false pagePath s
+      UpdateForm {state,partial} -> do 
+        modifyState \s -> s {state = if partial then Object.union s.state state else state}
+
+    doRefresh = if _ then do 
+        {userUpdated} <- getProps 
+        liftEffect $ userUpdated
+      else pure unit
+
+    doRedir href external = do 
+        {redirected} <- getProps 
+        liftEffect $ redirected {href,external}
+
+    updateContent = case _ of 
+      Callback cb -> liftEffect cb
+      Redirect href -> do 
+        doRedir href true
+      ChangeRoute redir userUpdated -> do 
+        doRefresh userUpdated
+        doRedir redir false
+      LegacyContent lc@{css, js, state, html,script, title, 
+                      fullscreenMode, menuMode, hideAppBar, preventUnload} userUpdated -> do 
+        doRefresh userUpdated
+        deleteSheets <- lift $ updateIncludes true css js
+        contentId <- liftEffect newUUID
+        let newContent = {contentId,  html, script, title, fullscreenMode, menuMode, 
+                            hideAppBar, preventUnload, afterHtml: deleteSheets}
+        {contentUpdated} <- getProps 
+        liftEffect $ contentUpdated newContent                    
+        modifyState \s -> s {noForm = lc.noForm,
+          content = Just newContent, state = state}
+
+  pure {
+    state:{ 
+      content: Nothing, 
+      pagePath: "", 
+      state: Object.empty, 
+      noForm: false
+    } :: State, 
+    render: renderer render this, 
+    componentDidMount: do 
+      setupLegacyHooks (d <<< Submit) (d <<< UpdateForm)
+      d $ LoadPage,
+    componentDidUpdate: \{page} _ _ -> d $ Updated page,
+    componentWillUnmount: runAff_ (const $ pure unit) $ do 
+      deleteSheets <- updateStylesheets true []
+      liftEffect deleteSheets
+
+  }
+  where 
+  styles t = {
+    screenOptions: {
+        margin: 20
+    },
+    withPadding: {
+      padding: t.spacing.unit * 2
+    }, 
+    progress: {
+      display: "flex",
+      justifyContent: "center"
+    }, 
+    errorPage: {
+      display: "flex",
+      justifyContent: "center", 
+      marginTop: t.spacing.unit * 8
+    }
+  }

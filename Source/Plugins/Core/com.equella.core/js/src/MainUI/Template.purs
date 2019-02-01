@@ -16,10 +16,7 @@ import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, isJust, maybe)
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
-import Data.TSCompat (OneOf, StringConst)
-import Data.TSCompat.Class (class IsTSEq, asTS)
 import Data.Traversable (traverse)
-import Debug.Trace (spy)
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer)
 import Effect (Effect)
@@ -38,7 +35,7 @@ import MaterialUI.DialogContentText (dialogContentText_)
 import MaterialUI.DialogTitle (dialogTitle_)
 import MaterialUI.Divider (divider_)
 import MaterialUI.Drawer (drawer)
-import MaterialUI.Enums (css, default, headline, inherit, left, permanent, primary, secondary, subheading, temporary)
+import MaterialUI.Enums (css, headline, inherit, left, permanent, primary, secondary, subheading, temporary)
 import MaterialUI.Enums as String
 import MaterialUI.Hidden (hidden)
 import MaterialUI.Icon (icon, icon_)
@@ -64,7 +61,7 @@ import OEQ.Utils.Interop (nullAny)
 import Partial.Unsafe (unsafePartial)
 import React (Children, ReactClass, ReactElement, ReactThis, childrenToArray, createElement)
 import React as R
-import React.DOM (div', footer, img, span', text)
+import React.DOM (footer, img, text)
 import React.DOM as D
 import React.DOM.Props (src)
 import React.DOM.Props as DP
@@ -542,7 +539,7 @@ coreStrings :: { prefix :: String
 }
 coreStrings = {prefix: "com.equella.core",
   strings: {
-    windowtitlepostfix: " | EQUELLA",
+    windowtitlepostfix: " | openEQUELLA",
     topbar: { 
       link: {
         notifications: "Notifications",

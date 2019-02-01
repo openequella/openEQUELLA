@@ -28,7 +28,7 @@ import Web.HTML (window)
 import Web.HTML.Location (pathname)
 import Web.HTML.Window (location)
 import Bridge (tsBridge)
-import Effect.Console (log)
+
 data RouterCommand = Init | ChangeRoute Route
 type State = {route::Maybe Route}
 
