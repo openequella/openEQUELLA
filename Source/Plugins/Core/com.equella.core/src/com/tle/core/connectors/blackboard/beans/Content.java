@@ -109,6 +109,8 @@ public class Content
 	@XmlRootElement
 	public static class ContentHandler
 	{
+		public static final String RESOURCE_FOLDER = "resource/x-bb-folder";
+		public static final String RESOURCE_LTI_LINK = "resource/x-bb-blti-link";
 		private String id; // resource/x-bb-folder
 		private String url;
 

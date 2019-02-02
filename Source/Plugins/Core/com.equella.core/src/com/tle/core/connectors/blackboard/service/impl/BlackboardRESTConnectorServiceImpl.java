@@ -237,7 +237,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 				final ConnectorCourse cc = new ConnectorCourse(course.getId());
 				cc.setCourseCode(course.getCourseId());
 				cc.setName(course.getName());
-				cc.setAvailable("Yes".equals(course.getAvailability().getAvailable()));
+				cc.setAvailable(Availability.YES.equals(course.getAvailability().getAvailable()));
 				list.add(cc);
 //				final MyOrgUnitInfo.Access access = item.getAccess();
 //				// It probably shouldn't be null, but hey, best be sure
@@ -262,10 +262,23 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 	@Override
 	public List<ConnectorFolder> getFoldersForCourse(Connector connector, String username, String courseId, boolean management) throws LmsUserNotFoundException
 	{
-		final List<ConnectorFolder> list = new ArrayList<>();
-
 		// FIXME: courses for current user...?
 		final String url = bbApi + "/courses/" + courseId + "/contents";
+
+		return retrieveFolders(connector, url, username, courseId, management);
+	}
+
+	@Override
+	public List<ConnectorFolder> getFoldersForFolder(Connector connector, String username, String courseId, String folderId, boolean management) throws LmsUserNotFoundException
+	{
+		// FIXME: courses for current user...?
+		final String url = bbApi + "/courses/" + courseId + "/contents/" + folderId + "/children/";
+
+		return retrieveFolders(connector, url, username, courseId, management);
+	}
+
+	private List<ConnectorFolder> retrieveFolders(Connector connector, String url, String username, String courseId, boolean management) {
+		final List<ConnectorFolder> list = new ArrayList<>();
 
 		final Contents contents = sendBlackboardData(connector, url,
 			Contents.class, null, Request.Method.GET);
@@ -274,26 +287,24 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 		for( Content content : results )
 		{
 			final Content.ContentHandler handler = content.getContentHandler();
-			if (handler != null && "resource/x-bb-folder".equals(handler.getId()))
+			if (handler != null && Content.ContentHandler.RESOURCE_FOLDER.equals(handler.getId()))
 			{
 				// FIXME: filter only user visible folders?
 				final ConnectorFolder cc = new ConnectorFolder(content.getId(), course);
-				// TODO: null safe it
-				cc.setAvailable("Yes".equals(content.getAvailability().getAvailable()));
+				if(content.getAvailability() != null) {
+					cc.setAvailable(Availability.YES.equals(content.getAvailability().getAvailable()));
+				} else {
+					//FIXME:  Is this an appropriate default?
+					cc.setAvailable(false);
+				}
 				cc.setName(content.getTitle());
 				cc.setLeaf(content.getHasChildren() != null && !content.getHasChildren());
+				// FIXME is this needed?
 				//cc.setModifiedDate(content.getCreated());
 				list.add(cc);
 			}
 		}
 
-		return list;
-	}
-
-	@Override
-	public List<ConnectorFolder> getFoldersForFolder(Connector connector, String username, String courseId, String folderId, boolean management) throws LmsUserNotFoundException
-	{
-		final List<ConnectorFolder> list = new ArrayList<>();
 		return list;
 	}
 
@@ -306,57 +317,28 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 		final Integration.LmsLink lmsLink = linkInfo.getLmsLink();
 
 		final Content content = new Content();
+		//FIXME Only set parentId for non-top level content
 		//content.setParentId(folderId);
 		content.setTitle(lmsLink.getName());
-		content.setDescription(lmsLink.getDescription());
+		//FIXME is there a nicer way to handle this?  Bb needs the description to be 250 chars or less
+		final String lmsLinkDesc = lmsLink.getDescription();
+		content.setDescription(lmsLinkDesc.substring(0,(lmsLinkDesc.length() > 250) ? 250 : lmsLinkDesc.length()));
 		final Content.ContentHandler contentHandler = new Content.ContentHandler();
-		contentHandler.setId("resource/x-bb-blti-link");
+		contentHandler.setId(Content.ContentHandler.RESOURCE_LTI_LINK);
 		contentHandler.setUrl(lmsLink.getUrl());
 		content.setContentHandler(contentHandler);
 		final Availability availability = new Availability();
-		availability.setAvailable("Yes");
+		availability.setAvailable(Availability.YES);
 		availability.setAllowGuests(true);
 		content.setAvailability(availability);
 
-		//JSONObject jsonData = new JSONObject();
-		//jsonData.put("title", "A TP link from oE! - " + selectedResource.getTitle());
-		//FIXME Only set parentId for non-top level content
-		//jsonData.put("parentId", folderId);
-		//jsonData.put("body", selectedResource.getDescription());
-/*
-		JSONObject jsonAvailabilityData = new JSONObject();
-		jsonAvailabilityData.put("available", "Yes");
-		jsonAvailabilityData.put("allowGuests", false);
-		jsonData.put("availability", jsonAvailabilityData);
-
-		JSONObject jsonContentHandlerData = new JSONObject();
-		jsonContentHandlerData.put("id", "resource/x-bb-blti-link");
-		//FIXME set the real resource URL
-		jsonContentHandlerData.put("url", "http://192.168.1.138:8080/demo/items/" + selectedResource.getUuid() + "/" + selectedResource.getVersion());
-		jsonData.put("contentHandler", jsonContentHandlerData);
-		LOGGER.info("Attempting to add ["+jsonData.toString()+"] to ["+url+"]");
-*/
 		sendBlackboardData(connector, url,
 			null, content, Request.Method.POST);
-
-		return new ConnectorFolder(folderId, new ConnectorCourse(courseId));
-//		final ConnectorCourse course = new ConnectorCourse(courseId);
-//		final List<Content> results = contents.getResults();
-//		for( Content content : results )
-//		{
-//			final Content.ContentHandler handler = content.getContentHandler();
-//			if (handler != null && "resource/x-bb-folder".equals(handler.getId()))
-//			{
-//				// FIXME: filter only user visible folders?
-//				final ConnectorFolder cc = new ConnectorFolder(content.getId(), course);
-//				// TODO: null safe it
-//				cc.setAvailable("Yes".equals(content.getAvailability().getAvailable()));
-//				cc.setName(content.getTitle());
-//				cc.setLeaf(content.getHasChildren() != null && !content.getHasChildren());
-//				//cc.setModifiedDate(content.getCreated());
-//				list.add(cc);
-//			}
-//		}
+		LOGGER.trace("Returning a courseId = [" + courseId + "],  and folderId = [" + folderId + "]");
+		ConnectorFolder cf = new ConnectorFolder(folderId, new ConnectorCourse(courseId));
+		cf.setName(folderId);
+		cf.getCourse().setCourseCode(courseId);
+		return cf;
 	}
 
 	@Override

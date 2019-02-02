@@ -5,6 +5,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Availability
 {
+	public static final String YES = "Yes";
+	public static final String NO = "No";
 	private String available; //Yes
 	private Boolean allowGuests;
 	//private Object adaptiveRelease;
