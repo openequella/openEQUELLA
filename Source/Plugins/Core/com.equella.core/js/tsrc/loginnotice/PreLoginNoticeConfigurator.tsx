@@ -1,11 +1,10 @@
 import * as React from "react";
 import {strings} from "./LoginNoticeConfigPage";
-import SettingsMenuContainer from "../components/SettingsMenuContainer";
-import {Button, Grid, TextField} from "@material-ui/core";
+import {Button, Grid, TextField, Typography} from "@material-ui/core";
 import {commonString} from "../util/commonstrings";
 import {deletePreLoginNotice, getPreLoginNotice, submitPreLoginNotice} from "./LoginNoticeModule";
 import {AxiosError, AxiosResponse} from "axios";
-import Typography from "@material-ui/core/Typography";
+import SettingsMenuContainer from "../components/SettingsMenuContainer";
 
 interface PreLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
@@ -66,26 +65,27 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
         <Grid id="preLoginConfig" container spacing={8} direction="column">
           <Grid item>
             <TextField id="preNoticeField"
-                       rows="10"
+                       rows="35"
                        variant="outlined"
                        multiline
+                       fullWidth
                        placeholder={strings.prelogin.description}
                        onChange={e => this.handlePreTextFieldChange(e.target)}
                        value={this.state.preNotice}/>
           </Grid>
-          <Grid item container spacing={8} direction="row">
+          <Grid item container spacing={8} direction="row-reverse">
             <Grid item>
               <Button id="preApplyButton"
                       onClick={this.handleSubmitPreNotice}
                       variant="contained">
-                {commonString.action.apply}
+                {commonString.action.save}
               </Button>
             </Grid>
             <Grid item>
               <Button id="preDeleteButton"
                       disabled={this.state.preNotice == ""}
                       onClick={this.handleDeletePreNotice}
-                      variant="contained">
+                      variant="text">
                 {commonString.action.delete}
               </Button>
             </Grid>

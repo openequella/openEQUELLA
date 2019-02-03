@@ -64,24 +64,31 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
     }
   };
 
-  handleChange = (event: React.ChangeEvent<{}>, value:number) => {
-    this.setState({selectedTab:value})
+  handleChange = (event: React.ChangeEvent<{}>, value: number) => {
+    this.setState({selectedTab: value})
   };
 
   render() {
     const {Template} = this.props.bridge;
     return (
-      <Template title={strings.title} errorResponse={this.state.error || undefined}>
-        <Tabs centered value = {this.state.selectedTab} onChange={this.handleChange}>
-          <Tab label={strings.prelogin.label}/>
-          <Tab label={strings.postlogin.label}/>
-        </Tabs>
-        {this.state.selectedTab==0 && <PreLoginNoticeConfigurator handleError={this.handleError} onSaved={() =>this.setState({saved:true})} onDeleted={() =>this.setState({deleted:true})}/>}
-        {this.state.selectedTab==1 && <PostLoginNoticeConfigurator handleError={this.handleError} onSaved={() =>this.setState({saved:true})} onDeleted={() =>this.setState({deleted:true})}/>}
-          <MessageInfo title={strings.notifications.saveddescription} open={this.state.saved}
-                       onClose={() => this.setState({saved: false})} variant="success"/>
-          <MessageInfo title={strings.notifications.deletedescription} open={this.state.deleted}
-                       onClose={() => this.setState({deleted: false})} variant="success"/>
+      <Template title={strings.title}
+                tabs={
+                  <Tabs value={this.state.selectedTab} onChange={this.handleChange} fullWidth>
+                    <Tab label={strings.prelogin.label}/>
+                    <Tab label={strings.postlogin.label}/>
+                  </Tabs>}
+                errorResponse={this.state.error || undefined}
+      >
+        {this.state.selectedTab == 0 &&
+        <PreLoginNoticeConfigurator handleError={this.handleError} onSaved={() => this.setState({saved: true})}
+                                    onDeleted={() => this.setState({deleted: true})}/>}
+        {this.state.selectedTab == 1 &&
+        <PostLoginNoticeConfigurator handleError={this.handleError} onSaved={() => this.setState({saved: true})}
+                                     onDeleted={() => this.setState({deleted: true})}/>}
+        <MessageInfo title={strings.notifications.saveddescription} open={this.state.saved}
+                     onClose={() => this.setState({saved: false})} variant="success"/>
+        <MessageInfo title={strings.notifications.deletedescription} open={this.state.deleted}
+                     onClose={() => this.setState({deleted: false})} variant="success"/>
       </Template>
     );
   }

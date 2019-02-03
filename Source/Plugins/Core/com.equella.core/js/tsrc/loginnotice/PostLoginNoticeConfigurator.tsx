@@ -66,26 +66,27 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
         <Grid id="postLoginConfig" container spacing={8} direction="column">
           <Grid item>
             <TextField id="postNoticeField"
-                       rows="10"
+                       rows="35"
+                       fullWidth
                        variant="outlined"
                        multiline
                        placeholder={strings.postlogin.description}
                        onChange={e => this.handlePostTextFieldChange(e.target)}
                        value={this.state.postNotice}/>
           </Grid>
-          <Grid item container spacing={8} direction="row">
+          <Grid item container spacing={8} direction="row-reverse">
             <Grid item>
               <Button id="postApplyButton"
                       onClick={this.handleSubmitPostNotice}
                       variant="contained">
-                {commonString.action.apply}
+                {commonString.action.save}
               </Button>
             </Grid>
             <Grid item>
               <Button id="postDeleteButton"
                       disabled={this.state.postNotice == ""}
                       onClick={this.handleDeletePostNotice}
-                      variant="contained">
+                      variant="text">
                 {commonString.action.delete}
               </Button>
             </Grid>
