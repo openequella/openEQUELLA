@@ -6,6 +6,8 @@ import MessageInfo from "../components/MessageInfo";
 import {ErrorResponse, generateFromAxiosError} from "../api/errors";
 import PreLoginNoticeConfigurator from "./PreLoginNoticeConfigurator";
 import PostLoginNoticeConfigurator from "./PostLoginNoticeConfigurator";
+import {Tabs} from "@material-ui/core";
+import Tab from "@material-ui/core/Tab";
 
 interface LoginNoticeConfigPageProps {
   bridge: Bridge;
@@ -14,7 +16,8 @@ interface LoginNoticeConfigPageProps {
 interface LoginNoticeConfigPageState {
   saved: boolean,
   deleted: boolean,
-  error?: ErrorResponse
+  error?: ErrorResponse,
+  selectedTab: number
 }
 
 export const strings = prepLangStrings("loginnoticepage",
@@ -44,7 +47,8 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
   state: LoginNoticeConfigPageState = {
     saved: false,
     deleted: false,
-    error: undefined
+    error: undefined,
+    selectedTab: 0
   };
 
   handleError = (axiosError: AxiosError) => {
@@ -60,12 +64,20 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
     }
   };
 
+  handleChange = (event: React.ChangeEvent<{}>, value:number) => {
+    this.setState({selectedTab:value})
+  };
+
   render() {
     const {Template} = this.props.bridge;
     return (
       <Template title={strings.title} errorResponse={this.state.error || undefined}>
-        <PreLoginNoticeConfigurator handleError={this.handleError} onSaved={() =>this.setState({saved:true})} onDeleted={() =>this.setState({deleted:true})}/>
-        <PostLoginNoticeConfigurator handleError={this.handleError} onSaved={() =>this.setState({saved:true})} onDeleted={() =>this.setState({deleted:true})}/>
+        <Tabs centered value = {this.state.selectedTab} onChange={this.handleChange}>
+          <Tab label={strings.prelogin.label}/>
+          <Tab label={strings.postlogin.label}/>
+        </Tabs>
+        {this.state.selectedTab==0 && <PreLoginNoticeConfigurator handleError={this.handleError} onSaved={() =>this.setState({saved:true})} onDeleted={() =>this.setState({deleted:true})}/>}
+        {this.state.selectedTab==1 && <PostLoginNoticeConfigurator handleError={this.handleError} onSaved={() =>this.setState({saved:true})} onDeleted={() =>this.setState({deleted:true})}/>}
           <MessageInfo title={strings.notifications.saveddescription} open={this.state.saved}
                        onClose={() => this.setState({saved: false})} variant="success"/>
           <MessageInfo title={strings.notifications.deletedescription} open={this.state.deleted}
