@@ -1,10 +1,13 @@
 import * as React from "react";
 import {strings} from "./LoginNoticeConfigPage";
-import {Button, Grid, TextField, Typography} from "@material-ui/core";
+import {Button, DialogContent, DialogContentText, Grid, TextField, Typography} from "@material-ui/core";
 import {commonString} from "../util/commonstrings";
 import {deletePostLoginNotice, getPostLoginNotice, submitPostLoginNotice} from "./LoginNoticeModule";
 import {AxiosError, AxiosResponse} from "axios";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogActions from "@material-ui/core/DialogActions";
 
 interface PostLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
@@ -16,6 +19,7 @@ interface PostLoginNoticeConfiguratorProps {
 interface PostLoginNoticeConfiguratorState {
   postNotice?: string,               //what is currently in the textfield
   dbpostNotice?: string              //what is currently in the database
+  deleteStaged: boolean
 }
 
 class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfiguratorProps, PostLoginNoticeConfiguratorState> {
@@ -24,6 +28,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
     this.state = ({
       postNotice: "",
       dbpostNotice: "",
+      deleteStaged: false
     });
   };
 
@@ -44,7 +49,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
     this.setState({postNotice: ""});
     deletePostLoginNotice()
       .then(() => {
-        this.setState({dbpostNotice: ""});
+        this.setState({dbpostNotice: "", deleteStaged:false});
         this.props.onDeleted();
       })
       .catch((error:AxiosError) => {
@@ -71,8 +76,32 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
       });
   };
 
+  stageDelete = () => {
+    this.setState({deleteStaged:true});
+  };
+
+  Dialogs = () => {
+    return(
+      <div>
+        <Dialog open={this.state.deleteStaged} onClose={()=>this.setState({deleteStaged:false})}>
+          <DialogTitle>{strings.delete.title}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {strings.delete.confirm}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleDeletePostNotice}>{commonString.action.ok}</Button>
+            <Button onClick={() =>this.setState({deleteStaged:false})}>{commonString.action.cancel}</Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  };
+
   render() {
     const {postNotice, dbpostNotice} = this.state;
+    const Dialogs = this.Dialogs;
     return (
       <SettingsMenuContainer>
         <Typography color="textSecondary" variant="subheading">{strings.postlogin.label}</Typography>
@@ -99,7 +128,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
             <Grid item>
               <Button id="postDeleteButton"
                       disabled={dbpostNotice == ""}
-                      onClick={this.handleDeletePostNotice}
+                      onClick={this.stageDelete}
                       variant="text">
                 {commonString.action.delete}
               </Button>
@@ -114,6 +143,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
             </Grid>
           </Grid>
         </Grid>
+        <Dialogs/>
       </SettingsMenuContainer>
     )
   }

@@ -25,6 +25,10 @@ export const strings = prepLangStrings("loginnoticepage",
   {
     title: "Login Notice Editor",
     currentnotice: "Current Notice: ",
+    delete:{
+      title:"Warning",
+      confirm: "Are you sure you want to delete this login notice?",
+    },
     prelogin: {
       label: "Before Login Notice",
       description: "Write a plaintext message to be displayed on the login screen..."

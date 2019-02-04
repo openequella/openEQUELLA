@@ -1,10 +1,13 @@
 import * as React from "react";
 import {strings} from "./LoginNoticeConfigPage";
-import {Button, Grid, TextField, Typography} from "@material-ui/core";
+import {Button, DialogContent, DialogContentText, Grid, TextField, Typography} from "@material-ui/core";
 import {commonString} from "../util/commonstrings";
 import {deletePreLoginNotice, getPreLoginNotice, submitPreLoginNotice} from "./LoginNoticeModule";
 import {AxiosError, AxiosResponse} from "axios";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogActions from "@material-ui/core/DialogActions";
 
 interface PreLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
@@ -16,6 +19,7 @@ interface PreLoginNoticeConfiguratorProps {
 interface PreLoginNoticeConfiguratorState {
   preNotice?: string,               //what is currently in the textfield
   dbpreNotice?: string              //what is currently in the database
+  deleteStaged: boolean
 }
 
 class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfiguratorProps, PreLoginNoticeConfiguratorState> {
@@ -24,6 +28,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
     this.state = ({
       preNotice: "",
       dbpreNotice: "",
+      deleteStaged: false
     });
   };
 
@@ -44,7 +49,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
     this.setState({preNotice: ""});
     deletePreLoginNotice()
       .then(() => {
-        this.setState({dbpreNotice: ""});
+        this.setState({dbpreNotice: "", deleteStaged:false});
         this.props.onDeleted();
       })
       .catch((error:AxiosError) => {
@@ -71,8 +76,32 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
       });
   };
 
+  stageDelete = () => {
+    this.setState({deleteStaged:true});
+  };
+
+  Dialogs = () => {
+    return(
+      <div>
+        <Dialog open={this.state.deleteStaged} onClose={()=>this.setState({deleteStaged:false})}>
+          <DialogTitle>{strings.delete.title}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {strings.delete.confirm}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleDeletePreNotice}>{commonString.action.ok}</Button>
+            <Button onClick={() =>this.setState({deleteStaged:false})}>{commonString.action.cancel}</Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  };
+
   render() {
     const {preNotice, dbpreNotice} = this.state;
+    const Dialogs = this.Dialogs;
     return (
       <SettingsMenuContainer>
         <Typography color="textSecondary" variant="subheading">{strings.prelogin.label}</Typography>
@@ -99,7 +128,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
             <Grid item>
               <Button id="preDeleteButton"
                       disabled={dbpreNotice == ""}
-                      onClick={this.handleDeletePreNotice}
+                      onClick={this.stageDelete}
                       variant="text">
                 {commonString.action.delete}
               </Button>
@@ -114,6 +143,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
             </Grid>
           </Grid>
         </Grid>
+        <Dialogs/>
       </SettingsMenuContainer>
     )
   }
