@@ -24,7 +24,7 @@ interface LoginNoticeConfigPageState {
 export const strings = prepLangStrings("loginnoticepage",
   {
     title: "Login Notice Editor",
-    currentnotice:"Current Notice: ",
+    currentnotice: "Current Notice: ",
     prelogin: {
       label: "Before Login Notice",
       description: "Write a plaintext message to be displayed on the login screen..."
@@ -72,8 +72,22 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
     this.setState({selectedTab: value})
   };
 
+  Notifications = () => {
+    return (
+      <div>
+        <MessageInfo title={strings.notifications.saveddescription} open={this.state.saved}
+                     onClose={() => this.setState({saved: false})} variant="success"/>
+        <MessageInfo title={strings.notifications.deletedescription} open={this.state.deleted}
+                     onClose={() => this.setState({deleted: false})} variant="success"/>
+        <MessageInfo title={strings.notifications.undodescription} open={this.state.undone}
+                     onClose={() => this.setState({undone: false})} variant="info"/>
+      </div>
+    );
+  };
+
   render() {
     const {Template} = this.props.bridge;
+    const Notifications = this.Notifications;
     return (
       <Template title={strings.title}
                 tabs={
@@ -85,16 +99,13 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
       >
         {this.state.selectedTab == 0 &&
         <PreLoginNoticeConfigurator handleError={this.handleError} onSaved={() => this.setState({saved: true})}
-                                    onDeleted={() => this.setState({deleted: true})} onUndone={() => this.setState({undone: true})}/>}
+                                    onDeleted={() => this.setState({deleted: true})}
+                                    onUndone={() => this.setState({undone: true})}/>}
         {this.state.selectedTab == 1 &&
         <PostLoginNoticeConfigurator handleError={this.handleError} onSaved={() => this.setState({saved: true})}
-                                     onDeleted={() => this.setState({deleted: true})} onUndone={() => this.setState({undone: true})}/>}
-        <MessageInfo title={strings.notifications.saveddescription} open={this.state.saved}
-                     onClose={() => this.setState({saved: false})} variant="success"/>
-        <MessageInfo title={strings.notifications.deletedescription} open={this.state.deleted}
-                     onClose={() => this.setState({deleted: false})} variant="success"/>
-        <MessageInfo title={strings.notifications.undodescription} open={this.state.undone}
-                     onClose={() => this.setState({undone:false})} variant="info"/>
+                                     onDeleted={() => this.setState({deleted: true})}
+                                     onUndone={() => this.setState({undone: true})}/>}
+        <Notifications/>
       </Template>
     );
   }
