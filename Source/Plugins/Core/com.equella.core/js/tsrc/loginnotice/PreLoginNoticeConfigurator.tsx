@@ -37,7 +37,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
           this.props.notify(NotificationType.Save);
           this.setState({dbPreNotice: this.state.preNotice});
         })
-        .catch((error:AxiosError) => {
+        .catch((error: AxiosError) => {
           this.props.handleError(error);
         });
     }
@@ -50,7 +50,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
         this.setState({dbPreNotice: "", clearStaged:false});
         this.props.notify(NotificationType.Clear);
       })
-      .catch((error:AxiosError) => {
+      .catch((error: AxiosError) => {
         this.props.handleError(error);
       });
   };
@@ -69,7 +69,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
       .then((response: AxiosResponse) => {
         this.setState({dbPreNotice: response.data, preNotice: response.data});
       })
-      .catch((error:AxiosError) => {
+      .catch((error: AxiosError) => {
         this.props.handleError(error);
       });
   };

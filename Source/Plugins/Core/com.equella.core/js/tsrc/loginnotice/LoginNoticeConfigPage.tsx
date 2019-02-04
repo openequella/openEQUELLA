@@ -73,7 +73,7 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
     this.setState({selectedTab: value})
   };
 
-  clearNotifications = () =>{
+  clearNotifications = () => {
     this.setState({notifications: NotificationType.None});
   };
 
@@ -95,12 +95,12 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
       case 0:
         return (
           <PreLoginNoticeConfigurator handleError={this.handleError}
-                                      notify={(notificationType:NotificationType) => this.setState({notifications: notificationType})}/>
+                                      notify={(notificationType: NotificationType) => this.setState({notifications: notificationType})}/>
         );
       default:
         return (
           <PostLoginNoticeConfigurator handleError={this.handleError}
-                                       notify={(notificationType:NotificationType) => this.setState({notifications: notificationType})}/>
+                                       notify={(notificationType: NotificationType) => this.setState({notifications: notificationType})}/>
         );
     }
   };

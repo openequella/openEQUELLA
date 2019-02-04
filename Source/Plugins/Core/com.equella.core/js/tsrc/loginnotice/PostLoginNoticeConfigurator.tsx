@@ -37,7 +37,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
           this.props.notify(NotificationType.Save);
           this.setState({dbPostNotice: this.state.postNotice});
         })
-        .catch((error:AxiosError) => {
+        .catch((error: AxiosError) => {
           this.props.handleError(error);
         });
     }
@@ -50,7 +50,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
         this.setState({dbPostNotice: "", clearStaged:false});
         this.props.notify(NotificationType.Clear);
       })
-      .catch((error:AxiosError) => {
+      .catch((error: AxiosError) => {
         this.props.handleError(error);
       });
   };
@@ -69,7 +69,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
       .then((response: AxiosResponse) => {
         this.setState({dbPostNotice: response.data, postNotice: response.data});
       })
-      .catch((error:AxiosError) => {
+      .catch((error: AxiosError) => {
         this.props.handleError(error);
       });
   };
