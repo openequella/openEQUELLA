@@ -8,15 +8,14 @@ import PreLoginNoticeConfigurator from "./PreLoginNoticeConfigurator";
 import PostLoginNoticeConfigurator from "./PostLoginNoticeConfigurator";
 import {Tabs} from "@material-ui/core";
 import Tab from "@material-ui/core/Tab";
+import {NotificationType} from "./LoginNoticeModule";
 
 interface LoginNoticeConfigPageProps {
   bridge: Bridge;
 }
 
 interface LoginNoticeConfigPageState {
-  saved: boolean,
-  cleared: boolean,
-  undone: boolean,
+  notifications?: NotificationType,
   error?: ErrorResponse,
   selectedTab: number
 }
@@ -52,9 +51,7 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
   };
 
   state: LoginNoticeConfigPageState = {
-    saved: false,
-    cleared: false,
-    undone: false,
+    notifications: NotificationType.None,
     error: undefined,
     selectedTab: 0
   };
@@ -76,15 +73,19 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
     this.setState({selectedTab: value})
   };
 
+  clearNotifications = () =>{
+    this.setState({notifications: NotificationType.None});
+  };
+
   Notifications = () => {
     return (
       <div>
-        <MessageInfo title={strings.notifications.saveddescription} open={this.state.saved}
-                     onClose={() => this.setState({saved: false})} variant="success"/>
-        <MessageInfo title={strings.notifications.cleardescription} open={this.state.cleared}
-                     onClose={() => this.setState({cleared: false})} variant="success"/>
-        <MessageInfo title={strings.notifications.undodescription} open={this.state.undone}
-                     onClose={() => this.setState({undone: false})} variant="info"/>
+        <MessageInfo title={strings.notifications.saveddescription} open={this.state.notifications == NotificationType.Save}
+                     onClose={this.clearNotifications} variant="success"/>
+        <MessageInfo title={strings.notifications.cleardescription} open={this.state.notifications == NotificationType.Clear}
+                     onClose={this.clearNotifications} variant="success"/>
+        <MessageInfo title={strings.notifications.undodescription} open={this.state.notifications == NotificationType.Revert}
+                     onClose={this.clearNotifications} variant="info"/>
       </div>
     );
   };
@@ -94,16 +95,12 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
       case 0:
         return (
           <PreLoginNoticeConfigurator handleError={this.handleError}
-                                      onSaved={() => this.setState({saved: true})}
-                                      onCleared={() => this.setState({cleared: true})}
-                                      onUndone={() => this.setState({undone: true})}/>
+                                      notify={(notificationType:NotificationType) => this.setState({notifications: notificationType})}/>
         );
       default:
         return (
           <PostLoginNoticeConfigurator handleError={this.handleError}
-                                       onSaved={() => this.setState({saved: true})}
-                                       onCleared={() => this.setState({cleared: true})}
-                                       onUndone={() => this.setState({undone: true})}/>
+                                       notify={(notificationType:NotificationType) => this.setState({notifications: notificationType})}/>
         );
     }
   };

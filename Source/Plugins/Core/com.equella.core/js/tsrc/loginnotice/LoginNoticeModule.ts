@@ -3,6 +3,7 @@ import {Config} from "../config";
 
 export const PRE_LOGIN_NOTICE_API_URL = `${Config.baseUrl}api/preloginnotice`;
 export const POST_LOGIN_NOTICE_API_URL = `${Config.baseUrl}api/postloginnotice`;
+export enum NotificationType{Save, Clear, Revert, None}
 
 export function submitPreLoginNotice(notice:string):AxiosPromise{
   return axios.put(PRE_LOGIN_NOTICE_API_URL, notice);

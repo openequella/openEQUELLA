@@ -2,7 +2,7 @@ import * as React from "react";
 import {strings} from "./LoginNoticeConfigPage";
 import {Button, DialogContent, DialogContentText, Grid, TextField, Typography} from "@material-ui/core";
 import {commonString} from "../util/commonstrings";
-import {clearPreLoginNotice, getPreLoginNotice, submitPreLoginNotice} from "./LoginNoticeModule";
+import {clearPreLoginNotice, getPreLoginNotice, NotificationType, submitPreLoginNotice} from "./LoginNoticeModule";
 import {AxiosError, AxiosResponse} from "axios";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
 import Dialog from "@material-ui/core/Dialog";
@@ -11,9 +11,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 
 interface PreLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
-  onSaved: () => void;
-  onCleared: () => void;
-  onUndone: () => void;
+  notify: (notificationType: NotificationType) => void;
 }
 
 interface PreLoginNoticeConfiguratorState {
@@ -36,7 +34,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
     if (this.state.preNotice != undefined) {
       submitPreLoginNotice(this.state.preNotice)
         .then(() => {
-          this.props.onSaved();
+          this.props.notify(NotificationType.Save);
           this.setState({dbPreNotice: this.state.preNotice});
         })
         .catch((error:AxiosError) => {
@@ -50,7 +48,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
     clearPreLoginNotice()
       .then(() => {
         this.setState({dbPreNotice: "", clearStaged:false});
-        this.props.onCleared();
+        this.props.notify(NotificationType.Clear);
       })
       .catch((error:AxiosError) => {
         this.props.handleError(error);
@@ -59,7 +57,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
 
   handleUndoPreNotice = () => {
     this.setState({preNotice: this.state.dbPreNotice});
-    this.props.onUndone();
+    this.props.notify(NotificationType.Revert);
   };
 
   handlePreTextFieldChange = (e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement) => {

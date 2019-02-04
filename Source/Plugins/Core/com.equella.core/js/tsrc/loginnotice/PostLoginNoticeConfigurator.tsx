@@ -2,7 +2,7 @@ import * as React from "react";
 import {strings} from "./LoginNoticeConfigPage";
 import {Button, DialogContent, DialogContentText, Grid, TextField, Typography} from "@material-ui/core";
 import {commonString} from "../util/commonstrings";
-import {clearPostLoginNotice, getPostLoginNotice, submitPostLoginNotice} from "./LoginNoticeModule";
+import {clearPostLoginNotice, getPostLoginNotice, NotificationType, submitPostLoginNotice} from "./LoginNoticeModule";
 import {AxiosError, AxiosResponse} from "axios";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
 import Dialog from "@material-ui/core/Dialog";
@@ -11,9 +11,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 
 interface PostLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
-  onSaved: () => void;
-  onCleared: () => void;
-  onUndone: () => void;
+  notify: (notificationType: NotificationType) => void;
 }
 
 interface PostLoginNoticeConfiguratorState {
@@ -36,7 +34,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
     if (this.state.postNotice != undefined) {
       submitPostLoginNotice(this.state.postNotice)
         .then(() => {
-          this.props.onSaved();
+          this.props.notify(NotificationType.Save);
           this.setState({dbPostNotice: this.state.postNotice});
         })
         .catch((error:AxiosError) => {
@@ -50,7 +48,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
     clearPostLoginNotice()
       .then(() => {
         this.setState({dbPostNotice: "", clearStaged:false});
-        this.props.onCleared();
+        this.props.notify(NotificationType.Clear);
       })
       .catch((error:AxiosError) => {
         this.props.handleError(error);
@@ -59,7 +57,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
 
   handleUndoPostNotice = () => {
     this.setState({postNotice: this.state.dbPostNotice});
-    this.props.onUndone();
+    this.props.notify(NotificationType.Revert);
   };
 
   handlePostTextFieldChange = (e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement) => {
