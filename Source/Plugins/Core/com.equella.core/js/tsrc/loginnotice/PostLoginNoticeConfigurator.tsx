@@ -1,36 +1,40 @@
 import * as React from "react";
 import {strings} from "./LoginNoticeConfigPage";
-import SettingsMenuContainer from "../components/SettingsMenuContainer";
-import {Button, Grid, TextField} from "@material-ui/core";
+import {Button, Grid, TextField, Typography} from "@material-ui/core";
 import {commonString} from "../util/commonstrings";
 import {deletePostLoginNotice, getPostLoginNotice, submitPostLoginNotice} from "./LoginNoticeModule";
 import {AxiosError, AxiosResponse} from "axios";
-import Typography from "@material-ui/core/Typography";
+import SettingsMenuContainer from "../components/SettingsMenuContainer";
 
 interface PostLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
   onSaved: () => void;
   onDeleted: () => void;
+  onUndone: () => void;
 }
 
 interface PostLoginNoticeConfiguratorState {
-  postNotice?: string
+  postNotice?: string,               //what is currently in the textfield
+  dbpostNotice?: string              //what is currently in the database
 }
 
 class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfiguratorProps, PostLoginNoticeConfiguratorState> {
   constructor(props: PostLoginNoticeConfiguratorProps) {
     super(props);
-  };
-
-  state: PostLoginNoticeConfiguratorState = {
-    postNotice: ""
+    this.state = ({
+      postNotice: "",
+      dbpostNotice: "",
+    });
   };
 
   handleSubmitPostNotice = () => {
     if (this.state.postNotice != undefined) {
       submitPostLoginNotice(this.state.postNotice)
-        .then(this.props.onSaved)
-        .catch((error) => {
+        .then(() => {
+          this.props.onSaved();
+          this.setState({dbpostNotice: this.state.postNotice});
+        })
+        .catch((error:AxiosError) => {
           this.props.handleError(error);
         });
     }
@@ -39,10 +43,18 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
   handleDeletePostNotice = () => {
     this.setState({postNotice: ""});
     deletePostLoginNotice()
-      .then(this.props.onDeleted)
-      .catch((error) => {
+      .then(() => {
+        this.setState({dbpostNotice: ""});
+        this.props.onDeleted();
+      })
+      .catch((error:AxiosError) => {
         this.props.handleError(error);
       });
+  };
+
+  handleUndoPostNotice = () => {
+    this.setState({postNotice: this.state.dbpostNotice});
+    this.props.onUndone();
   };
 
   handlePostTextFieldChange = (e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement) => {
@@ -52,14 +64,15 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
   componentDidMount = () => {
     getPostLoginNotice()
       .then((response: AxiosResponse) => {
-        this.setState({postNotice: response.data});
+        this.setState({dbpostNotice: response.data, postNotice: response.data});
       })
-      .catch((error) => {
+      .catch((error:AxiosError) => {
         this.props.handleError(error);
       });
   };
 
   render() {
+    const {postNotice, dbpostNotice} = this.state;
     return (
       <SettingsMenuContainer>
         <Typography color="textSecondary" variant="subheading">{strings.postlogin.label}</Typography>
@@ -67,16 +80,17 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
           <Grid item>
             <TextField id="postNoticeField"
                        rows="35"
-                       fullWidth
                        variant="outlined"
                        multiline
+                       fullWidth
                        placeholder={strings.postlogin.description}
                        onChange={e => this.handlePostTextFieldChange(e.target)}
-                       value={this.state.postNotice}/>
+                       value={postNotice}/>
           </Grid>
           <Grid item container spacing={8} direction="row-reverse">
             <Grid item>
               <Button id="postApplyButton"
+                      disabled={postNotice == dbpostNotice}
                       onClick={this.handleSubmitPostNotice}
                       variant="contained">
                 {commonString.action.save}
@@ -84,10 +98,18 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
             </Grid>
             <Grid item>
               <Button id="postDeleteButton"
-                      disabled={this.state.postNotice == ""}
+                      disabled={dbpostNotice == ""}
                       onClick={this.handleDeletePostNotice}
                       variant="text">
                 {commonString.action.delete}
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button id="postUndoButton"
+                      disabled={dbpostNotice == postNotice}
+                      onClick={this.handleUndoPostNotice}
+                      variant="text">
+                {commonString.action.revertchanges}
               </Button>
             </Grid>
           </Grid>

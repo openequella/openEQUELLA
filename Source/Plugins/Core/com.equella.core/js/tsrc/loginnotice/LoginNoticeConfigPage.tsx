@@ -16,6 +16,7 @@ interface LoginNoticeConfigPageProps {
 interface LoginNoticeConfigPageState {
   saved: boolean,
   deleted: boolean,
+  undone: boolean,
   error?: ErrorResponse,
   selectedTab: number
 }
@@ -23,6 +24,7 @@ interface LoginNoticeConfigPageState {
 export const strings = prepLangStrings("loginnoticepage",
   {
     title: "Login Notice Editor",
+    currentnotice:"Current Notice: ",
     prelogin: {
       label: "Before Login Notice",
       description: "Write a plaintext message to be displayed on the login screen..."
@@ -33,7 +35,8 @@ export const strings = prepLangStrings("loginnoticepage",
     },
     notifications: {
       saveddescription: "Login notice saved successfully.",
-      deletedescription: "Login notice deleted successfully."
+      deletedescription: "Login notice deleted successfully.",
+      undodescription: "Reverted changes to login notice."
     }
   }
 );
@@ -47,6 +50,7 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
   state: LoginNoticeConfigPageState = {
     saved: false,
     deleted: false,
+    undone: false,
     error: undefined,
     selectedTab: 0
   };
@@ -81,14 +85,16 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
       >
         {this.state.selectedTab == 0 &&
         <PreLoginNoticeConfigurator handleError={this.handleError} onSaved={() => this.setState({saved: true})}
-                                    onDeleted={() => this.setState({deleted: true})}/>}
+                                    onDeleted={() => this.setState({deleted: true})} onUndone={() => this.setState({undone: true})}/>}
         {this.state.selectedTab == 1 &&
         <PostLoginNoticeConfigurator handleError={this.handleError} onSaved={() => this.setState({saved: true})}
-                                     onDeleted={() => this.setState({deleted: true})}/>}
+                                     onDeleted={() => this.setState({deleted: true})} onUndone={() => this.setState({undone: true})}/>}
         <MessageInfo title={strings.notifications.saveddescription} open={this.state.saved}
                      onClose={() => this.setState({saved: false})} variant="success"/>
         <MessageInfo title={strings.notifications.deletedescription} open={this.state.deleted}
                      onClose={() => this.setState({deleted: false})} variant="success"/>
+        <MessageInfo title={strings.notifications.undodescription} open={this.state.undone}
+                     onClose={() => this.setState({undone:false})} variant="info"/>
       </Template>
     );
   }

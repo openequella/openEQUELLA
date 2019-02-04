@@ -10,26 +10,31 @@ interface PreLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
   onSaved: () => void;
   onDeleted: () => void;
+  onUndone: () => void;
 }
 
 interface PreLoginNoticeConfiguratorState {
-  preNotice?: string
+  preNotice?: string,               //what is currently in the textfield
+  dbpreNotice?: string              //what is currently in the database
 }
 
 class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfiguratorProps, PreLoginNoticeConfiguratorState> {
   constructor(props: PreLoginNoticeConfiguratorProps) {
     super(props);
-  };
-
-  state: PreLoginNoticeConfiguratorState = {
-    preNotice: ""
+    this.state = ({
+      preNotice: "",
+      dbpreNotice: "",
+    });
   };
 
   handleSubmitPreNotice = () => {
     if (this.state.preNotice != undefined) {
       submitPreLoginNotice(this.state.preNotice)
-        .then(this.props.onSaved)
-        .catch((error) => {
+        .then(() => {
+          this.props.onSaved();
+          this.setState({dbpreNotice: this.state.preNotice});
+        })
+        .catch((error:AxiosError) => {
           this.props.handleError(error);
         });
     }
@@ -38,10 +43,18 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
   handleDeletePreNotice = () => {
     this.setState({preNotice: ""});
     deletePreLoginNotice()
-      .then(this.props.onDeleted)
-      .catch((error) => {
+      .then(() => {
+        this.setState({dbpreNotice: ""});
+        this.props.onDeleted();
+      })
+      .catch((error:AxiosError) => {
         this.props.handleError(error);
       });
+  };
+
+  handleUndoPreNotice = () => {
+    this.setState({preNotice: this.state.dbpreNotice});
+    this.props.onUndone();
   };
 
   handlePreTextFieldChange = (e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement) => {
@@ -51,14 +64,15 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
   componentDidMount = () => {
     getPreLoginNotice()
       .then((response: AxiosResponse) => {
-        this.setState({preNotice: response.data});
+        this.setState({dbpreNotice: response.data, preNotice: response.data});
       })
-      .catch((error) => {
+      .catch((error:AxiosError) => {
         this.props.handleError(error);
       });
   };
 
   render() {
+    const {preNotice, dbpreNotice} = this.state;
     return (
       <SettingsMenuContainer>
         <Typography color="textSecondary" variant="subheading">{strings.prelogin.label}</Typography>
@@ -71,11 +85,12 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
                        fullWidth
                        placeholder={strings.prelogin.description}
                        onChange={e => this.handlePreTextFieldChange(e.target)}
-                       value={this.state.preNotice}/>
+                       value={preNotice}/>
           </Grid>
           <Grid item container spacing={8} direction="row-reverse">
             <Grid item>
               <Button id="preApplyButton"
+                      disabled={preNotice == dbpreNotice}
                       onClick={this.handleSubmitPreNotice}
                       variant="contained">
                 {commonString.action.save}
@@ -83,10 +98,18 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
             </Grid>
             <Grid item>
               <Button id="preDeleteButton"
-                      disabled={this.state.preNotice == ""}
+                      disabled={dbpreNotice == ""}
                       onClick={this.handleDeletePreNotice}
                       variant="text">
                 {commonString.action.delete}
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button id="preUndoButton"
+                      disabled={dbpreNotice == preNotice}
+                      onClick={this.handleUndoPreNotice}
+                      variant="text">
+                {commonString.action.revertchanges}
               </Button>
             </Grid>
           </Grid>
