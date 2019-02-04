@@ -15,7 +15,7 @@ interface LoginNoticeConfigPageProps {
 
 interface LoginNoticeConfigPageState {
   saved: boolean,
-  deleted: boolean,
+  cleared: boolean,
   undone: boolean,
   error?: ErrorResponse,
   selectedTab: number
@@ -25,9 +25,9 @@ export const strings = prepLangStrings("loginnoticepage",
   {
     title: "Login Notice Editor",
     currentnotice: "Current Notice: ",
-    delete: {
+    clear: {
       title: "Warning",
-      confirm: "Are you sure you want to delete this login notice?",
+      confirm: "Are you sure you want to clear this login notice?",
     },
     prelogin: {
       label: "Before Login Notice",
@@ -39,7 +39,7 @@ export const strings = prepLangStrings("loginnoticepage",
     },
     notifications: {
       saveddescription: "Login notice saved successfully.",
-      deletedescription: "Login notice deleted successfully.",
+      cleardescription: "Login notice cleared successfully.",
       undodescription: "Reverted changes to login notice."
     }
   }
@@ -53,7 +53,7 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
 
   state: LoginNoticeConfigPageState = {
     saved: false,
-    deleted: false,
+    cleared: false,
     undone: false,
     error: undefined,
     selectedTab: 0
@@ -81,8 +81,8 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
       <div>
         <MessageInfo title={strings.notifications.saveddescription} open={this.state.saved}
                      onClose={() => this.setState({saved: false})} variant="success"/>
-        <MessageInfo title={strings.notifications.deletedescription} open={this.state.deleted}
-                     onClose={() => this.setState({deleted: false})} variant="success"/>
+        <MessageInfo title={strings.notifications.cleardescription} open={this.state.cleared}
+                     onClose={() => this.setState({cleared: false})} variant="success"/>
         <MessageInfo title={strings.notifications.undodescription} open={this.state.undone}
                      onClose={() => this.setState({undone: false})} variant="info"/>
       </div>
@@ -95,14 +95,14 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
         return (
           <PreLoginNoticeConfigurator handleError={this.handleError}
                                       onSaved={() => this.setState({saved: true})}
-                                      onDeleted={() => this.setState({deleted: true})}
+                                      onCleared={() => this.setState({cleared: true})}
                                       onUndone={() => this.setState({undone: true})}/>
         );
       default:
         return (
           <PostLoginNoticeConfigurator handleError={this.handleError}
                                        onSaved={() => this.setState({saved: true})}
-                                       onDeleted={() => this.setState({deleted: true})}
+                                       onCleared={() => this.setState({cleared: true})}
                                        onUndone={() => this.setState({undone: true})}/>
         );
     }

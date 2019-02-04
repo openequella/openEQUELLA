@@ -2,7 +2,7 @@ import * as React from "react";
 import {strings} from "./LoginNoticeConfigPage";
 import {Button, DialogContent, DialogContentText, Grid, TextField, Typography} from "@material-ui/core";
 import {commonString} from "../util/commonstrings";
-import {deletePostLoginNotice, getPostLoginNotice, submitPostLoginNotice} from "./LoginNoticeModule";
+import {clearPostLoginNotice, getPostLoginNotice, submitPostLoginNotice} from "./LoginNoticeModule";
 import {AxiosError, AxiosResponse} from "axios";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
 import Dialog from "@material-ui/core/Dialog";
@@ -12,14 +12,14 @@ import DialogActions from "@material-ui/core/DialogActions";
 interface PostLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
   onSaved: () => void;
-  onDeleted: () => void;
+  onCleared: () => void;
   onUndone: () => void;
 }
 
 interface PostLoginNoticeConfiguratorState {
   postNotice?: string,               //what is currently in the textfield
   dbPostNotice?: string              //what is currently in the database
-  deleteStaged: boolean
+  clearStaged: boolean
 }
 
 class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfiguratorProps, PostLoginNoticeConfiguratorState> {
@@ -28,7 +28,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
     this.state = ({
       postNotice: "",
       dbPostNotice: "",
-      deleteStaged: false
+      clearStaged: false
     });
   };
 
@@ -45,12 +45,12 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
     }
   };
 
-  handleDeletePostNotice = () => {
+  handleClearPostNotice = () => {
     this.setState({postNotice: ""});
-    deletePostLoginNotice()
+    clearPostLoginNotice()
       .then(() => {
-        this.setState({dbPostNotice: "", deleteStaged:false});
-        this.props.onDeleted();
+        this.setState({dbPostNotice: "", clearStaged:false});
+        this.props.onCleared();
       })
       .catch((error:AxiosError) => {
         this.props.handleError(error);
@@ -76,23 +76,23 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
       });
   };
 
-  stageDelete = () => {
-    this.setState({deleteStaged:true});
+  stageClear = () => {
+    this.setState({clearStaged:true});
   };
 
   Dialogs = () => {
     return(
       <div>
-        <Dialog open={this.state.deleteStaged} onClose={()=>this.setState({deleteStaged:false})}>
-          <DialogTitle>{strings.delete.title}</DialogTitle>
+        <Dialog open={this.state.clearStaged} onClose={()=>this.setState({clearStaged:false})}>
+          <DialogTitle>{strings.clear.title}</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              {strings.delete.confirm}
+              {strings.clear.confirm}
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleDeletePostNotice}>{commonString.action.ok}</Button>
-            <Button onClick={() =>this.setState({deleteStaged:false})}>{commonString.action.cancel}</Button>
+            <Button onClick={this.handleClearPostNotice}>{commonString.action.ok}</Button>
+            <Button onClick={() =>this.setState({clearStaged:false})}>{commonString.action.cancel}</Button>
           </DialogActions>
         </Dialog>
       </div>
@@ -108,10 +108,11 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
         <Grid id="postLoginConfig" container spacing={8} direction="column">
           <Grid item>
             <TextField id="postNoticeField"
-                       rows="35"
                        variant="outlined"
+                       rows="35"
                        multiline
                        fullWidth
+                       inputProps={{ length: 12 }}
                        placeholder={strings.postlogin.description}
                        onChange={e => this.handlePostTextFieldChange(e.target)}
                        value={postNotice}/>
@@ -126,11 +127,11 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
               </Button>
             </Grid>
             <Grid item>
-              <Button id="postDeleteButton"
+              <Button id="postClearButton"
                       disabled={dbPostNotice == ""}
-                      onClick={this.stageDelete}
+                      onClick={this.stageClear}
                       variant="text">
-                {commonString.action.delete}
+                {commonString.action.clear}
               </Button>
             </Grid>
             <Grid item>

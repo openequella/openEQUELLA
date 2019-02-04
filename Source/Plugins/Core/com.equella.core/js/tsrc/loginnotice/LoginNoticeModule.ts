@@ -12,7 +12,7 @@ export function getPreLoginNotice():AxiosPromise{
   return axios.get(PRE_LOGIN_NOTICE_API_URL);
 }
 
-export function deletePreLoginNotice():AxiosPromise{
+export function clearPreLoginNotice():AxiosPromise{
   return axios.delete(PRE_LOGIN_NOTICE_API_URL);
 }
 
@@ -24,6 +24,6 @@ export function getPostLoginNotice():AxiosPromise{
   return axios.get(POST_LOGIN_NOTICE_API_URL);
 }
 
-export function deletePostLoginNotice():AxiosPromise{
+export function clearPostLoginNotice():AxiosPromise{
   return axios.delete(POST_LOGIN_NOTICE_API_URL);
 }
