@@ -72,7 +72,7 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
     }
   };
 
-  handleChange = (event: React.ChangeEvent<{}>, value: number) => {
+  handleChangeTab = (event: React.ChangeEvent<{}>, value: number) => {
     this.setState({selectedTab: value})
   };
 
@@ -115,7 +115,7 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
     return (
       <Template title={strings.title}
                 tabs={
-                  <Tabs  value={this.state.selectedTab} onChange={this.handleChange} fullWidth>
+                  <Tabs  value={this.state.selectedTab} onChange={this.handleChangeTab} fullWidth>
                     <Tab label={strings.prelogin.label}/>
                     <Tab label={strings.postlogin.label}/>
                   </Tabs>}
