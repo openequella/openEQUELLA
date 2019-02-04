@@ -18,7 +18,7 @@ interface PreLoginNoticeConfiguratorProps {
 
 interface PreLoginNoticeConfiguratorState {
   preNotice?: string,               //what is currently in the textfield
-  dbpreNotice?: string              //what is currently in the database
+  dbPreNotice?: string              //what is currently in the database
   deleteStaged: boolean
 }
 
@@ -27,7 +27,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
     super(props);
     this.state = ({
       preNotice: "",
-      dbpreNotice: "",
+      dbPreNotice: "",
       deleteStaged: false
     });
   };
@@ -37,7 +37,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
       submitPreLoginNotice(this.state.preNotice)
         .then(() => {
           this.props.onSaved();
-          this.setState({dbpreNotice: this.state.preNotice});
+          this.setState({dbPreNotice: this.state.preNotice});
         })
         .catch((error:AxiosError) => {
           this.props.handleError(error);
@@ -49,7 +49,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
     this.setState({preNotice: ""});
     deletePreLoginNotice()
       .then(() => {
-        this.setState({dbpreNotice: "", deleteStaged:false});
+        this.setState({dbPreNotice: "", deleteStaged:false});
         this.props.onDeleted();
       })
       .catch((error:AxiosError) => {
@@ -58,7 +58,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
   };
 
   handleUndoPreNotice = () => {
-    this.setState({preNotice: this.state.dbpreNotice});
+    this.setState({preNotice: this.state.dbPreNotice});
     this.props.onUndone();
   };
 
@@ -69,7 +69,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
   componentDidMount = () => {
     getPreLoginNotice()
       .then((response: AxiosResponse) => {
-        this.setState({dbpreNotice: response.data, preNotice: response.data});
+        this.setState({dbPreNotice: response.data, preNotice: response.data});
       })
       .catch((error:AxiosError) => {
         this.props.handleError(error);
@@ -100,7 +100,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
   };
 
   render() {
-    const {preNotice, dbpreNotice} = this.state;
+    const {preNotice, dbPreNotice} = this.state;
     const Dialogs = this.Dialogs;
     return (
       <SettingsMenuContainer>
@@ -108,10 +108,11 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
         <Grid id="preLoginConfig" container spacing={8} direction="column">
           <Grid item>
             <TextField id="preNoticeField"
-                       rows="35"
                        variant="outlined"
+                       rows="35"
                        multiline
                        fullWidth
+                       inputProps={{ length: 12 }}
                        placeholder={strings.prelogin.description}
                        onChange={e => this.handlePreTextFieldChange(e.target)}
                        value={preNotice}/>
@@ -119,7 +120,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
           <Grid item container spacing={8} direction="row-reverse">
             <Grid item>
               <Button id="preApplyButton"
-                      disabled={preNotice == dbpreNotice}
+                      disabled={preNotice == dbPreNotice}
                       onClick={this.handleSubmitPreNotice}
                       variant="contained">
                 {commonString.action.save}
@@ -127,7 +128,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
             </Grid>
             <Grid item>
               <Button id="preDeleteButton"
-                      disabled={dbpreNotice == ""}
+                      disabled={dbPreNotice == ""}
                       onClick={this.stageDelete}
                       variant="text">
                 {commonString.action.delete}
@@ -135,7 +136,7 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
             </Grid>
             <Grid item>
               <Button id="preUndoButton"
-                      disabled={dbpreNotice == preNotice}
+                      disabled={dbPreNotice == preNotice}
                       onClick={this.handleUndoPreNotice}
                       variant="text">
                 {commonString.action.revertchanges}

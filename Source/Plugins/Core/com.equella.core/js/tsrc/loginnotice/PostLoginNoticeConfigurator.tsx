@@ -18,7 +18,7 @@ interface PostLoginNoticeConfiguratorProps {
 
 interface PostLoginNoticeConfiguratorState {
   postNotice?: string,               //what is currently in the textfield
-  dbpostNotice?: string              //what is currently in the database
+  dbPostNotice?: string              //what is currently in the database
   deleteStaged: boolean
 }
 
@@ -27,7 +27,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
     super(props);
     this.state = ({
       postNotice: "",
-      dbpostNotice: "",
+      dbPostNotice: "",
       deleteStaged: false
     });
   };
@@ -37,7 +37,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
       submitPostLoginNotice(this.state.postNotice)
         .then(() => {
           this.props.onSaved();
-          this.setState({dbpostNotice: this.state.postNotice});
+          this.setState({dbPostNotice: this.state.postNotice});
         })
         .catch((error:AxiosError) => {
           this.props.handleError(error);
@@ -49,7 +49,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
     this.setState({postNotice: ""});
     deletePostLoginNotice()
       .then(() => {
-        this.setState({dbpostNotice: "", deleteStaged:false});
+        this.setState({dbPostNotice: "", deleteStaged:false});
         this.props.onDeleted();
       })
       .catch((error:AxiosError) => {
@@ -58,7 +58,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
   };
 
   handleUndoPostNotice = () => {
-    this.setState({postNotice: this.state.dbpostNotice});
+    this.setState({postNotice: this.state.dbPostNotice});
     this.props.onUndone();
   };
 
@@ -69,7 +69,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
   componentDidMount = () => {
     getPostLoginNotice()
       .then((response: AxiosResponse) => {
-        this.setState({dbpostNotice: response.data, postNotice: response.data});
+        this.setState({dbPostNotice: response.data, postNotice: response.data});
       })
       .catch((error:AxiosError) => {
         this.props.handleError(error);
@@ -100,7 +100,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
   };
 
   render() {
-    const {postNotice, dbpostNotice} = this.state;
+    const {postNotice, dbPostNotice} = this.state;
     const Dialogs = this.Dialogs;
     return (
       <SettingsMenuContainer>
@@ -119,7 +119,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
           <Grid item container spacing={8} direction="row-reverse">
             <Grid item>
               <Button id="postApplyButton"
-                      disabled={postNotice == dbpostNotice}
+                      disabled={postNotice == dbPostNotice}
                       onClick={this.handleSubmitPostNotice}
                       variant="contained">
                 {commonString.action.save}
@@ -127,7 +127,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
             </Grid>
             <Grid item>
               <Button id="postDeleteButton"
-                      disabled={dbpostNotice == ""}
+                      disabled={dbPostNotice == ""}
                       onClick={this.stageDelete}
                       variant="text">
                 {commonString.action.delete}
@@ -135,7 +135,7 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
             </Grid>
             <Grid item>
               <Button id="postUndoButton"
-                      disabled={dbpostNotice == postNotice}
+                      disabled={dbPostNotice == postNotice}
                       onClick={this.handleUndoPostNotice}
                       variant="text">
                 {commonString.action.revertchanges}

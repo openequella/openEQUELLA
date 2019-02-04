@@ -25,8 +25,8 @@ export const strings = prepLangStrings("loginnoticepage",
   {
     title: "Login Notice Editor",
     currentnotice: "Current Notice: ",
-    delete:{
-      title:"Warning",
+    delete: {
+      title: "Warning",
       confirm: "Are you sure you want to delete this login notice?",
     },
     prelogin: {
@@ -89,26 +89,39 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
     );
   };
 
+  Configurators = () => {
+    switch (this.state.selectedTab) {
+      case 0:
+        return (
+          <PreLoginNoticeConfigurator handleError={this.handleError}
+                                      onSaved={() => this.setState({saved: true})}
+                                      onDeleted={() => this.setState({deleted: true})}
+                                      onUndone={() => this.setState({undone: true})}/>
+        );
+      default:
+        return (
+          <PostLoginNoticeConfigurator handleError={this.handleError}
+                                       onSaved={() => this.setState({saved: true})}
+                                       onDeleted={() => this.setState({deleted: true})}
+                                       onUndone={() => this.setState({undone: true})}/>
+        );
+    }
+  };
+
   render() {
     const {Template} = this.props.bridge;
     const Notifications = this.Notifications;
+    const Configurators = this.Configurators;
     return (
       <Template title={strings.title}
                 tabs={
-                  <Tabs value={this.state.selectedTab} onChange={this.handleChange} fullWidth>
+                  <Tabs  value={this.state.selectedTab} onChange={this.handleChange} fullWidth>
                     <Tab label={strings.prelogin.label}/>
                     <Tab label={strings.postlogin.label}/>
                   </Tabs>}
                 errorResponse={this.state.error || undefined}
       >
-        {this.state.selectedTab == 0 &&
-        <PreLoginNoticeConfigurator handleError={this.handleError} onSaved={() => this.setState({saved: true})}
-                                    onDeleted={() => this.setState({deleted: true})}
-                                    onUndone={() => this.setState({undone: true})}/>}
-        {this.state.selectedTab == 1 &&
-        <PostLoginNoticeConfigurator handleError={this.handleError} onSaved={() => this.setState({saved: true})}
-                                     onDeleted={() => this.setState({deleted: true})}
-                                     onUndone={() => this.setState({undone: true})}/>}
+        <Configurators/>
         <Notifications/>
       </Template>
     );
