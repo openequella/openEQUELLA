@@ -2,9 +2,10 @@ import { Bridge } from "../api/bridge";
 import { WithStyles } from "@material-ui/core";
 import * as React from 'react';
 import EntityList from "../components/EntityList";
-import { SearchResult } from "../components";
+import { SearchResult, handleUnexpectedApiError } from "../components";
 import { prepLangStrings, formatSize } from "../util/langstrings";
 import { SearchConfig, listAllConfigs } from ".";
+import { ErrorResponse } from "../api/errors";
 
 interface SearchConfigsProps extends WithStyles {
     bridge: Bridge;
@@ -12,6 +13,7 @@ interface SearchConfigsProps extends WithStyles {
 
 interface SearchConfigsState {
   searchConfigs: SearchConfig[] | null; 
+  errorResponse?: ErrorResponse;
 }
 
 export const strings = prepLangStrings("searchconfigs", {
@@ -35,15 +37,15 @@ class ListSearchConfigs extends React.Component<SearchConfigsProps, SearchConfig
   componentDidMount() {
     listAllConfigs().then(searchConfigs => 
       this.setState({searchConfigs})
-    )
+    ).catch(handleUnexpectedApiError(this))
   }
 
   add = () => { return; }
   
   render() {
     const { Template } = this.props.bridge;
-    const { searchConfigs} = this.state;
-    return <Template title={strings.title}>
+    const { searchConfigs, errorResponse} = this.state;
+    return <Template title={strings.title} errorResponse={errorResponse}>
       <EntityList 
         progress={!searchConfigs} 
         resultsText={formatSize(searchConfigs ? searchConfigs.length : 0, strings.configsAvailable)}
