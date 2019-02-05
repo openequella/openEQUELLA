@@ -1,6 +1,6 @@
 import * as React from "react";
 import {strings} from "./LoginNoticeConfigPage";
-import {Button, DialogContent, DialogContentText, Grid, TextField, Typography,createStyles,withStyles,WithStyles} from "@material-ui/core";
+import {Button, DialogContent, DialogContentText, Grid, TextField, Typography} from "@material-ui/core";
 import {commonString} from "../util/commonstrings";
 import {clearPostLoginNotice, getPostLoginNotice, NotificationType, submitPostLoginNotice} from "./LoginNoticeModule";
 import {AxiosError, AxiosResponse} from "axios";
