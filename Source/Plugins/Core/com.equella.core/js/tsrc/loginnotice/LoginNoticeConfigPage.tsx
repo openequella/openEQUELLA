@@ -14,7 +14,8 @@ interface LoginNoticeConfigPageProps {
 }
 
 interface LoginNoticeConfigPageState {
-  notifications?: NotificationType,
+  notifications: NotificationType,
+  notificationOpen: boolean,
   error?: ErrorResponse,
   selectedTab: number
 }
@@ -27,7 +28,8 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
   };
 
   state: LoginNoticeConfigPageState = {
-    notifications: NotificationType.None,
+    notifications: NotificationType.Save,
+    notificationOpen: false,
     error: undefined,
     selectedTab: 0
   };
@@ -50,33 +52,43 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
   };
 
   clearNotifications = () => {
-    this.setState({notifications: NotificationType.None});
+    this.setState({notificationOpen: false});
+  };
+
+  notificationString = (notificationType:NotificationType): string => {
+      switch(notificationType){
+        case NotificationType.Revert: return strings.notifications.reverted;
+        case NotificationType.Clear: return strings.notifications.cleared;
+        case NotificationType.Save: return strings.notifications.saved;
+      }
   };
 
   Notifications = () => {
     return (
-      <div>
-        <MessageInfo title={strings.notifications.saved} open={this.state.notifications == NotificationType.Save}
-                     onClose={this.clearNotifications} variant="success"/>
-        <MessageInfo title={strings.notifications.cleared} open={this.state.notifications == NotificationType.Clear}
-                     onClose={this.clearNotifications} variant="success"/>
-        <MessageInfo title={strings.notifications.reverted} open={this.state.notifications == NotificationType.Revert}
-                     onClose={this.clearNotifications} variant="info"/>
-      </div>
+      <MessageInfo title={this.notificationString(this.state.notifications)}
+                   open={this.state.notificationOpen}
+                   onClose={this.clearNotifications}
+                   variant="success"
+      />
     );
   };
+
+  notify = (notificationType: NotificationType) => {
+    this.setState({notificationOpen:true, notifications: notificationType});
+  };
+
 
   Configurators = () => {
     switch (this.state.selectedTab) {
       case 0:
         return (
           <PreLoginNoticeConfigurator handleError={this.handleError}
-                                      notify={(notificationType: NotificationType) => this.setState({notifications: notificationType})}/>
+                                      notify={this.notify}/>
         );
       default:
         return (
           <PostLoginNoticeConfigurator handleError={this.handleError}
-                                       notify={(notificationType: NotificationType) => this.setState({notifications: notificationType})}/>
+                                       notify={this.notify}/>
         );
     }
   };

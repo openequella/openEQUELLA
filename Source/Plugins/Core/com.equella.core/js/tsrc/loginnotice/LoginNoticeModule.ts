@@ -4,7 +4,7 @@ import {prepLangStrings} from "../util/langstrings";
 
 export const PRE_LOGIN_NOTICE_API_URL = `${Config.baseUrl}api/preloginnotice`;
 export const POST_LOGIN_NOTICE_API_URL = `${Config.baseUrl}api/postloginnotice`;
-export enum NotificationType{Save, Clear, Revert, None}
+export enum NotificationType{Save, Clear, Revert}
 
 export const strings = prepLangStrings("loginnoticepage",
   {
