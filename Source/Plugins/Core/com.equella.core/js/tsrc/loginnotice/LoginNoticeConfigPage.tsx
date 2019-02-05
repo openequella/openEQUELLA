@@ -116,7 +116,7 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
                     <Tab label={strings.prelogin.label}/>
                     <Tab label={strings.postlogin.label}/>
                   </Tabs>}
-                errorResponse={this.state.error || undefined}
+                errorResponse={this.state.error}
       >
         <Configurators/>
         <Notifications/>
