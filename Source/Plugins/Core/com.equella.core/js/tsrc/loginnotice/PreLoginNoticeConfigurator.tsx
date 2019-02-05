@@ -107,7 +107,8 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
           <Grid item>
             <TextField id="preNoticeField"
                        variant="outlined"
-                       rows="35"
+                       rows="12"
+                       rowsMax="35"
                        multiline
                        fullWidth
                        inputProps={{ length: 12 }}

@@ -110,7 +110,7 @@ class LoginNoticeConfigPage extends React.Component<LoginNoticeConfigPageProps, 
     const Notifications = this.Notifications;
     const Configurators = this.Configurators;
     return (
-      <Template title={strings.title}
+      <Template title={strings.title} fixedViewPort
                 tabs={
                   <Tabs  value={this.state.selectedTab} onChange={this.handleChangeTab} fullWidth>
                     <Tab label={strings.prelogin.label}/>
