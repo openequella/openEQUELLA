@@ -14,8 +14,6 @@ const styles = (theme: Theme) => ({
     padding: theme.spacing.unit * 2, 
     position: "relative"
   }, 
-  resultList: {
-  },
   resultHeader: {
     display: "flex",
     justifyContent: "flex-end"
@@ -29,7 +27,7 @@ const styles = (theme: Theme) => ({
   },
   fab: {
     zIndex: 1000,
-    position: 'fixed',
+    position: "fixed",
     bottom: theme.spacing.unit * 2,
     right: theme.spacing.unit * 5,
   }
@@ -56,7 +54,7 @@ class EntityList extends React.Component<EntityListProps, {}>
           <Typography className={classes.resultText} variant="subheading">{resultsText}</Typography>
           {resultsRight}
         </div>
-        <List className={classes.resultList}>
+        <List>
           {children}
         </List>
         {progress && <div className={classes.progress}><CircularProgress/></div>}
