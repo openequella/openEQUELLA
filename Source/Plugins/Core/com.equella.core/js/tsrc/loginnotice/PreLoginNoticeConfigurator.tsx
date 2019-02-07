@@ -88,8 +88,8 @@ class PreLoginNoticeConfigurator extends React.Component<PreLoginNoticeConfigura
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleClearPreNotice}>{commonString.action.ok}</Button>
-            <Button onClick={() =>this.setState({clearStaged:false})}>{commonString.action.cancel}</Button>
+            <Button id="okToClear"  onClick={this.handleClearPreNotice}>{commonString.action.ok}</Button>
+            <Button id="cancelClear" onClick={() =>this.setState({clearStaged:false})}>{commonString.action.cancel}</Button>
           </DialogActions>
         </Dialog>
       </div>

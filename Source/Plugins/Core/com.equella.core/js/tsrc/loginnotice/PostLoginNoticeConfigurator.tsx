@@ -88,8 +88,8 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleClearPostNotice}>{commonString.action.ok}</Button>
-            <Button onClick={() =>this.setState({clearStaged:false})}>{commonString.action.cancel}</Button>
+            <Button id="okToClear"   onClick={this.handleClearPostNotice}>{commonString.action.ok}</Button>
+            <Button id="cancelClear" onClick={() =>this.setState({clearStaged:false})}>{commonString.action.cancel}</Button>
           </DialogActions>
         </Dialog>
       </div>
