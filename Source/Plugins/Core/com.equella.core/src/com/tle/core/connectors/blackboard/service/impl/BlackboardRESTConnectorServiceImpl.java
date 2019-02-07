@@ -36,6 +36,7 @@ import com.tle.core.services.HttpService;
 import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Response;
 import com.tle.core.settings.service.ConfigurationService;
+import com.tle.web.api.item.interfaces.beans.FolderBean;
 import com.tle.web.integration.Integration;
 import com.tle.web.selection.SelectedResource;
 import org.apache.log4j.Level;
@@ -137,13 +138,12 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 									@Override
 									public String load(String fixedKey)
 									{
-										// fixedKey is ignored. It's alwasy TOKEN
+										// fixedKey is ignored. It's always TOKEN
 										final Connector connector = connectorService.getByUuid(connectorUuid);
 										final String b64 = new Base64().encode((BB_API_KEY + ":" + BB_API_SECRET).getBytes())
 											.replace("\n", "").replace("\r", "");
 
-										//FIXME: check for ending slash
-										final Request req = new Request(connector.getServerUrl() + "/learn/api/public/v1/oauth2/token");
+										final Request req = new Request(ensureNoTrailingSlash(connector.getServerUrl()) + "/learn/api/public/v1/oauth2/token");
 										req.setMethod(Request.Method.POST);
 										req.setMimeType("application/x-www-form-urlencoded");
 										req.addHeader("Authorization", "Basic " + b64);
@@ -207,6 +207,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 		final List<ConnectorCourse> list = new ArrayList<>();
 
 		// FIXME: courses for current user...?
+		// TODO - since v3400.8.0, this endpoint should use v2
 		String url = bbApi + "/courses";
 		/*
 		if( !archived )
@@ -223,22 +224,27 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 //			{
 //				pagedUrl += "&bookmark=" + bookmark;
 //			}
-			final Courses courses = sendBlackboardData(connector, url,
-				Courses.class, null, Request.Method.GET);
-			//final AbstractPagedResults.PagingInfo pagingInfo = results.getPagingInfo();
-			//hasMore = pagingInfo.isHasMoreItems();
-			//bookmark = pagingInfo.getBookmark();
-			//giveUp++;
 
-			final List<Course> results = courses.getResults();
-			for( Course course : results )
-			{
-				// FIXME: filter only available courses depending on archived parameter
+		final Courses courses = sendBlackboardData(connector, url,
+			Courses.class, null, Request.Method.GET);
+		// TODO implement paging -  if paging.nextPage exists, it'll be a URL segment from /learn/
+		//final AbstractPagedResults.PagingInfo pagingInfo = results.getPagingInfo();
+		//hasMore = pagingInfo.isHasMoreItems();
+		//bookmark = pagingInfo.getBookmark();
+		//giveUp++;
+
+		final List<Course> results = courses.getResults();
+		for( Course course : results )
+		{
+			// Only display courses that are available
+			if(Availability.YES.equals(course.getAvailability().getAvailable())) {
 				final ConnectorCourse cc = new ConnectorCourse(course.getId());
 				cc.setCourseCode(course.getCourseId());
 				cc.setName(course.getName());
-				cc.setAvailable(Availability.YES.equals(course.getAvailability().getAvailable()));
+				cc.setAvailable(true);
 				list.add(cc);
+			}
+			// TODO is this logic needed?
 //				final MyOrgUnitInfo.Access access = item.getAccess();
 //				// It probably shouldn't be null, but hey, best be sure
 //				if( access != null )
@@ -253,10 +259,32 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 //						list.add(cc);
 //					}
 //				}
-			}
+		}
 //		}
 
 		return list;
+	}
+
+	private Course getCourseBean(Connector connector, String courseID)
+	{
+		// FIXME: courses for current user...?
+		// TODO - since v3400.8.0, this endpoint should use v2
+		String url = bbApi + "/courses/" + courseID;
+
+		final Course course = sendBlackboardData(connector, url,
+			Course.class, null, Request.Method.GET);
+		return course;
+	}
+
+	private Content getContentBean(Connector connector, String courseID, String folderID)
+	{
+		// FIXME: courses for current user...?
+		// TODO - since v3400.8.0, this endpoint should use v2
+		String url = bbApi + "/courses/" + courseID + "/contents/" + folderID;
+
+		final Content folder = sendBlackboardData(connector, url,
+			Content.class, null, Request.Method.GET);
+		return folder;
 	}
 
 	@Override
@@ -289,7 +317,8 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 			final Content.ContentHandler handler = content.getContentHandler();
 			if (handler != null && Content.ContentHandler.RESOURCE_FOLDER.equals(handler.getId()))
 			{
-				// FIXME: filter only user visible folders?
+				// Unavailable folders are inaccessible to students,
+				// but should be available for instructors to push content to.
 				final ConnectorFolder cc = new ConnectorFolder(content.getId(), course);
 				if(content.getAvailability() != null) {
 					cc.setAvailable(Availability.YES.equals(content.getAvailability().getAvailable()));
@@ -299,8 +328,6 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 				}
 				cc.setName(content.getTitle());
 				cc.setLeaf(content.getHasChildren() != null && !content.getHasChildren());
-				// FIXME is this needed?
-				//cc.setModifiedDate(content.getCreated());
 				list.add(cc);
 			}
 		}
@@ -317,10 +344,8 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 		final Integration.LmsLink lmsLink = linkInfo.getLmsLink();
 
 		final Content content = new Content();
-		//FIXME Only set parentId for non-top level content
-		//content.setParentId(folderId);
 		content.setTitle(lmsLink.getName());
-		//FIXME is there a nicer way to handle this?  Bb needs the description to be 250 chars or less
+		//TODO consider a nicer way to handle this.  Bb needs the description to be 250 chars or less
 		final String lmsLinkDesc = lmsLink.getDescription();
 		content.setDescription(lmsLinkDesc.substring(0,(lmsLinkDesc.length() > 250) ? 250 : lmsLinkDesc.length()));
 		final Content.ContentHandler contentHandler = new Content.ContentHandler();
@@ -336,8 +361,11 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 			null, content, Request.Method.POST);
 		LOGGER.trace("Returning a courseId = [" + courseId + "],  and folderId = [" + folderId + "]");
 		ConnectorFolder cf = new ConnectorFolder(folderId, new ConnectorCourse(courseId));
-		cf.setName(folderId);
-		cf.getCourse().setCourseCode(courseId);
+		// TODO - Is there a better way to get the name of the folder and the course?
+		Content folder = getContentBean(connector, courseId, folderId);
+		cf.setName(folder.getTitle());
+		Course course = getCourseBean(connector, courseId);
+		cf.getCourse().setName(course.getName());
 		return cf;
 	}
 
@@ -435,15 +463,19 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 	{
 		return null;
 	}
+	@Nullable
+	private <T> T sendBlackboardData(Connector connector, String path, @Nullable Class<T> returnType,
+									 @Nullable Object data, Request.Method method) {
+		return sendBlackboardData(connector, path, returnType, data, method, true);
+	}
 
 	@Nullable
 	private <T> T sendBlackboardData(Connector connector, String path, @Nullable Class<T> returnType,
-									  @Nullable Object data, Request.Method method)
+									  @Nullable Object data, Request.Method method, boolean firstTime)
 	{
 		try
 		{
-			// FIXME; slash check
-			final URI uri = URI.create(connector.getServerUrl() + path);
+			final URI uri = URI.create(ensureNoTrailingSlash(connector.getServerUrl()) + path);
 
 			final Request request = new Request(uri.toString());
 			request.setMethod(method);
@@ -474,8 +506,6 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 			// attach cached token. (Cache knows how to get a new one)
 			request.addHeader("Authorization", "Bearer " + getToken(connector.getUuid()));
 
-			//FIXME: Watch for an expired token response.
-			//FIXME: If invalid: clear the token cache and then make the request again with the token from the cache
 			try( Response response = httpService.getWebContent(request, configService.getProxyDetails()) )
 			{
 				final String responseBody = response.getBody();
@@ -484,6 +514,14 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 				{
 					LOGGER.trace("Received from Blackboard (" + code + "):");
 					LOGGER.trace(prettyJson(responseBody));
+				}
+				if( code == 401 && firstTime)
+				{
+					// Unauthorized request.  Retry once to obtain a new token (assumes the current token is expired)
+					LOGGER.trace("Received a 401 from Blackboard.  Token for connector [" + connector.getUuid() + "] is likely expired.  Retrying...");
+					// TODO is there a better way to clear the cache for this connector / token?
+					tokenCache.clear();
+					return sendBlackboardData(connector, path, returnType, data, method, false);
 				}
 				if( code >= 300 )
 				{
@@ -539,5 +577,9 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 	private String getKey(String partKey)
 	{
 		return KEY_PFX + "blackboardrest." + partKey;
+	}
+
+	private String ensureNoTrailingSlash(String url) {
+		return url.endsWith("/") ? url.substring(0, url.length()-1) : url;
 	}
 }

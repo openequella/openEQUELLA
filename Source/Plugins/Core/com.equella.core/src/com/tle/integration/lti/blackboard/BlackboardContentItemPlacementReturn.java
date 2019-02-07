@@ -59,7 +59,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-//TODO: we should be able to make this a generic LTI return
+//TODO: defer - we should be able to make this a generic LTI return
 @Bind
 public class BlackboardContentItemPlacementReturn extends AbstractPrototypeSection<Object> implements HtmlRenderer
 {
@@ -209,7 +209,7 @@ public class BlackboardContentItemPlacementReturn extends AbstractPrototypeSecti
 		return item;
 	}
 
-	//TODO: move to generic LTI area
+	//TODO: defer - move to generic LTI area
 	public static class ContentItemSelection
 	{
 		@JsonProperty("@context")

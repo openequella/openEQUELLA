@@ -34,12 +34,14 @@ import javax.servlet.http.HttpServletRequest;
 @Singleton
 public class BlackboardLtiWrapperExtension implements LtiWrapperExtension
 {
+	// TODO - 'lis_sourcedid' looks to provide this detail.  Anything we could gain by allowing it to be custom?
 	@Override
 	public String getUserId(HttpServletRequest request)
 	{
 		return request.getParameter("custom_bb_user_id");
 	}
 
+	// TODO - 'lis_sourcedid' looks to provide this detail.  Anything we could gain by allowing it to be custom?
 	@Override
 	public String getUsername(HttpServletRequest request)
 	{

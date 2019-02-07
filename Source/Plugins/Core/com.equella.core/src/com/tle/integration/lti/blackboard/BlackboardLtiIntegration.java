@@ -78,6 +78,7 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
 {
 	private static final Logger LOGGER = Logger.getLogger(BlackboardLtiIntegration.class);
 
+	// TODO - I think all this can be removed.
 	// Omitted logic for now...
 	//
 	//private static final String CUSTOM_CANVAS_COURSE_ID = "custom_bb_course_id";
@@ -85,6 +86,7 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
 	//private static final String LIS_COURSE_OFFERING_SOURCEDID = "lis_course_offering_sourcedid";
 	private static final String CONTENT_ITEM_SELECTION_REQUEST = "ContentItemSelectionRequest";
 
+	// TODO - I think all this can be removed.
 	// Omitted logic for now...
 	//
 	// These two are only supplied to us if configured in the Canvas LTI tool setup.  E.g.:
@@ -129,6 +131,7 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
 	private ReplicatedCacheService.ReplicatedCache<String> courseStructureCache;
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
+	// TODO - I think all this can be removed.
 //	private static final Multimap<String, String> CONTENT_TYPES_TO_MIME = HashMultimap.create(6, 6);
 //
 //	static
@@ -139,8 +142,7 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
 //		CONTENT_TYPES_TO_MIME.put("image_url", "image/gif");
 //		CONTENT_TYPES_TO_MIME.put("image_url", "image/png");
 //	}
-
-	// Omitted logic for now...
+// Omitted logic for now...
 //
 //	@PostConstruct
 //	public void setupCache()
@@ -171,6 +173,7 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
 		final BlackboardLtiSessionData data = new BlackboardLtiSessionData(info.getRequest());
 		String courseId = null;
 		final UserState userState = CurrentUser.getUserState();
+		// TODO:  I think this can be removed as well
 		//final List<String> courseCodes = new ArrayList<String>();
 		String courseCode = form.getCourseCode();
 		if( userState instanceof LtiUserState )
@@ -179,7 +182,7 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
 			final LtiData ltiData = ltiUserState.getData();
 			if( ltiData != null )
 			{
-				//FIXME: does BB pass anything about this?
+				//TODO: does BB pass anything about this?  Want a second opinion, but I don't think so.
 				data.setApiDomain(null); //ltiData.getCustom(CUSTOM_CANVAS_API_DOMAIN));
 				courseId = form.getCourseId();
 				if( Strings.isNullOrEmpty(courseId) )
@@ -462,7 +465,7 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
 				return true;
 
 			}
-			else
+			else // TODO - I don't think there is a way to select multiple resources with the current Bb UI.
 			{
 				final Connector connector = findConnector(data);
 
