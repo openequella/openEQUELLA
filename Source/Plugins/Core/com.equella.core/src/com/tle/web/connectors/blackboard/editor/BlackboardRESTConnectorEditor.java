@@ -2,8 +2,10 @@ package com.tle.web.connectors.blackboard.editor;
 
 import com.tle.common.connectors.entity.Connector;
 import com.tle.core.connectors.blackboard.BlackboardConnectorConstants;
+import com.tle.core.connectors.blackboard.BlackboardRESTConnectorConstants;
 import com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService;
 import com.tle.core.connectors.service.ConnectorEditingBean;
+import com.tle.core.encryption.EncryptionService;
 import com.tle.core.entity.EntityEditingSession;
 import com.tle.core.guice.Bind;
 import com.tle.web.connectors.editor.AbstractConnectorEditorSection;
@@ -20,6 +22,7 @@ import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.Button;
+import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 
 import javax.inject.Inject;
@@ -37,10 +40,16 @@ public class BlackboardRESTConnectorEditor
 
 	@Inject
 	private BlackboardRESTConnectorService blackboardService;
+	@Inject
+	private EncryptionService encryptionService;
 
 	@PlugKey("editor.button.testwebservice")
 	@Component
 	private Button testWebServiceButton;
+	@Component(name = "ak", stateful = false)
+	private TextField apiKey;
+	@Component(name = "as", stateful = false)
+	private TextField apiSecret;
 
 	@ViewFactory
 	private FreemarkerFactory view;
@@ -100,13 +109,13 @@ public class BlackboardRESTConnectorEditor
 	@Override
 	protected Connector createNewConnector()
 	{
-		//return new Connector(CONNECTOR_TYPE);
-		return new Connector("blackboardrest");
+		return new Connector(BlackboardRESTConnectorConstants.CONNECTOR_TYPE);
 	}
 
 	@Override
 	protected void customValidate(SectionInfo info, ConnectorEditingBean connector, Map<String, Object> errors)
 	{
+		// FIXME: actual validation of key and secret
 //	if( !connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_TESTED_WEBSERVICE, false) )
 //	{
 //	errors.put("blackboardwebservice", LABEL_TEST_WEBSERVICE_MANDATORY.getText());
@@ -116,7 +125,9 @@ public class BlackboardRESTConnectorEditor
 	@Override
 	protected void customLoad(SectionInfo info, ConnectorEditingBean connector)
 	{
-		final boolean testedWebservice = connector.getAttribute(BlackboardConnectorConstants.FIELD_TESTED_WEBSERVICE,
+		apiKey.setValue(info, connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_API_KEY));
+		apiSecret.setValue(info, encryptionService.decrypt(connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_API_SECRET)));
+		final boolean testedWebservice = connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_TESTED_WEBSERVICE,
 			false);
 		if (testedWebservice)
 		{
@@ -128,6 +139,8 @@ public class BlackboardRESTConnectorEditor
 	@Override
 	protected void customSave(SectionInfo info, ConnectorEditingBean connector)
 	{
+		connector.setAttribute(BlackboardRESTConnectorConstants.FIELD_API_KEY, apiKey.getValue(info));
+		connector.setAttribute(BlackboardRESTConnectorConstants.FIELD_API_SECRET, encryptionService.encrypt(apiSecret.getValue(info)));
 	}
 
 	@Override
@@ -139,6 +152,16 @@ public class BlackboardRESTConnectorEditor
 	public Button getTestWebServiceButton()
 	{
 		return testWebServiceButton;
+	}
+
+	public TextField getApiKey()
+	{
+		return apiKey;
+	}
+
+	public TextField getApiSecret()
+	{
+		return apiSecret;
 	}
 
 	public class BlackboardRESTConnectorEditorModel

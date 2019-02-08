@@ -84,7 +84,7 @@ public final class TextUtils
 	private String returnMatchingFraction(String text, Collection<String> terms, int maxLength)
 	{
 		ArrayList<Integer> positions = new ArrayList<Integer>();
-		
+
 		String wordsOR = queryWords(terms);
 		if( wordsOR.length() == 0 )
 		{

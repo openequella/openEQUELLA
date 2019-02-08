@@ -46,6 +46,7 @@ import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.SimpleElementId;
 import com.tle.web.sections.render.HiddenInput;
 import com.tle.web.sections.render.HtmlRenderer;
+import com.tle.web.sections.render.TextUtils;
 import com.tle.web.selection.SelectedResource;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
@@ -87,12 +88,16 @@ public class BlackboardContentItemPlacementReturn extends AbstractPrototypeSecti
 		final SelectionSession session = selectionService.getCurrentSession(context);
 		Decorations.getDecorations(context).clearAllDecorations();
 
-		final SelectedResource resource = session.getSelectedResources().iterator().next();
-		final IItem<?> item = getItemForResource(resource);
+		final List<LmsLink> links = new ArrayList<>();
+		for (final SelectedResource resource : session.getSelectedResources())
+		{
+			final IItem<?> item = getItemForResource(resource);
 
-		final LmsLink link = blackboardLtiIntegration.getLinkForResource(context,
-			blackboardLtiIntegration.createViewableItem(item, resource), resource, false, session.isAttachmentUuidUrls())
-			.getLmsLink();
+			final LmsLink link = blackboardLtiIntegration.getLinkForResource(context,
+				blackboardLtiIntegration.createViewableItem(item, resource), resource, false, session.isAttachmentUuidUrls())
+				.getLmsLink();
+			links.add(link);
+		}
 
 		final IntegrationInterface integ = integrationService.getIntegrationInterface(context);
 		final LtiSessionData data = (LtiSessionData) integ.getData();
@@ -103,7 +108,7 @@ public class BlackboardContentItemPlacementReturn extends AbstractPrototypeSecti
 		addParameter(formParams,"lti_message_type", "ContentItemSelection");
 		addParameter(formParams,"lti_version", "LTI-1p0");
 		addParameter(formParams,"data", data.getData());
-		addParameter(formParams,"content_items", buildSelectionJson(link));
+		addParameter(formParams,"content_items", buildSelectionJson(links));
 
 		final FormTag formTag = context.getForm();
 		formTag.setName("ltiLaunchForm");
@@ -132,23 +137,29 @@ public class BlackboardContentItemPlacementReturn extends AbstractPrototypeSecti
 		params.put(key, new String[]{ value });
 	}
 
-	private String buildSelectionJson(LmsLink link)
+	private String buildSelectionJson(List<LmsLink> links)
 	{
 		final ContentItemSelection selection = new ContentItemSelection();
 		selection.context = "http://purl.imsglobal.org/ctx/lti/v1/ContentItem";
-		final ContentItemSelection.ContentItemGraph graph = new ContentItemSelection.ContentItemGraph();
-		graph.type = "LtiLinkItem";
-		graph.id = link.getUrl();
-		graph.url = link.getUrl();
-		graph.title = link.getName();
-		graph.text = link.getName();
-		graph.mediaType = "application/vnd.ims.lti.v1.ltilink";
-		graph.windowTarget = "_blank";
-		final ContentItemSelection.ContentItemGraph.ContentItemPlacementAdvice placementAdvice = new ContentItemSelection.ContentItemGraph.ContentItemPlacementAdvice();
-		placementAdvice.presentationDocumentTarget = "window";
-		graph.placementAdvice = placementAdvice;
+
 		final List<ContentItemSelection.ContentItemGraph> graphList = new ArrayList<>();
-		graphList.add(graph);
+		for (final LmsLink link : links)
+		{
+			final ContentItemSelection.ContentItemGraph graph = new ContentItemSelection.ContentItemGraph();
+			graph.type = "LtiLinkItem";
+			graph.id = link.getUrl();
+			graph.url = link.getUrl();
+			graph.title = link.getName();
+			graph.text = link.getName();
+			// FIXME: Is there a custom BB property for the description?  Base LTI spec doesn't specify one
+			//graph.description = TextUtils.INSTANCE.ensureWrap(link.getDescription(),250, 250, true);
+			graph.mediaType = "application/vnd.ims.lti.v1.ltilink";
+			graph.windowTarget = "_blank";
+			final ContentItemSelection.ContentItemGraph.ContentItemPlacementAdvice placementAdvice = new ContentItemSelection.ContentItemGraph.ContentItemPlacementAdvice();
+			placementAdvice.presentationDocumentTarget = "window";
+			graph.placementAdvice = placementAdvice;
+			graphList.add(graph);
+		}
 		selection.graph = graphList;
 
 		try

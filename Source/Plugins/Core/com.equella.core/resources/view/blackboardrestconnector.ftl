@@ -32,6 +32,22 @@
 				</@setting>
 			</@ajax.div>
 
+			<@setting	label=b.key('blackboardrest.editor.label.apikey')
+      				error=m.errors["apikey"]
+      				help=b.key('blackboardrest.editor.help.apikey')
+      				labelFor = s.apiKey
+      				>
+      				<@textfield section=s.apiKey />
+      </@setting>
+
+      <@setting	label=b.key('blackboardrest.editor.label.apisecret')
+      				error=m.errors["apisecret"]
+      				help=b.key('blackboardrest.editor.help.apisecret')
+      				labelFor = s.apiSecret
+      				>
+      				<@textfield section=s.apiSecret password=true />
+      </@setting>
+
 	</#if>
 
 </@ajax.div>

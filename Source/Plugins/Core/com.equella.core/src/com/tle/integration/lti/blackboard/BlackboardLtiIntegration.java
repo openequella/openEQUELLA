@@ -58,6 +58,7 @@ import com.tle.web.sections.result.util.PluralKeyLabel;
 import com.tle.web.selection.SelectedResource;
 import com.tle.web.selection.SelectedResourceKey;
 import com.tle.web.selection.SelectionSession;
+import com.tle.web.selection.section.RootSelectionSection;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.ViewableItemResolver;
 import com.tle.web.viewurl.ViewableResource;
@@ -250,8 +251,7 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
 	{
 		final boolean structured = "structured".equals(data.getAction());
 
-		// No multiple selections for anything but structured.
-		session.setSelectMultiple(structured);
+		session.setSelectMultiple(true); // all integration points support multiple
 		session.setAttachmentUuidUrls(true); // Always
 		session.setInitialItemXml(form.getItemXml());
 		session.setInitialPowerXml(form.getPowerXml());
@@ -264,34 +264,7 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
 			form.setStructure(initStructure(data, session, form));
 		}
 
-		final SelectionSession s = super.setupSelectionSession(info, data, session, form);
-//		if( s != null )
-//		{
-//			// expected return types
-//			final Set<String> cts = data.getExtContentReturnTypes();
-//			Set<String> mimeTypes = null;
-//			boolean unrestricted = false;
-//			for( String contentType : cts )
-//			{
-//				if( !CONTENT_TYPES_TO_MIME.containsKey(contentType) )
-//				{
-//					mimeTypes = null;
-//					unrestricted = true;
-//				}
-//				else if( !unrestricted )
-//				{
-//					if( mimeTypes == null )
-//					{
-//						mimeTypes = Sets.newHashSet();
-//					}
-//					final Collection<String> mimes = CONTENT_TYPES_TO_MIME.get(contentType);
-//					mimeTypes.addAll(mimes);
-//				}
-//			}
-//			s.setMimeTypes(mimeTypes);
-//		}
-
-		return s;
+		return super.setupSelectionSession(info, data, session, form);
 	}
 
 	@Nullable
@@ -390,7 +363,8 @@ public class BlackboardLtiIntegration extends AbstractIntegrationService<Blackbo
 	{
 		try
 		{
-			if( !session.isSelectMultiple() )
+			// TODO: a find a better way to determine if in structured session or not
+			if( !session.getLayout().equals(RootSelectionSection.Layout.COURSE) )
 			{
 				String lti_message_type = data.getLtiMessageType();
 				if( lti_message_type != null && lti_message_type.equalsIgnoreCase(CONTENT_ITEM_SELECTION_REQUEST) )
