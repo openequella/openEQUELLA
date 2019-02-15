@@ -273,7 +273,7 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object> impl
 	@Nullable
 	protected List<CourseInfo> listCourses(SectionInfo info)
 	{
-		List<CourseInfo> courseList = courseInfoService.query(new EnumerateOptions().setIncludeDisabled(true));
+		List<CourseInfo> courseList = courseInfoService.query(new EnumerateOptions().setIncludeDisabled(false));
 		if( courseList.isEmpty() )
 		{
 			return null; // fatalError(context, null,
