@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "install": "./coursier bootstrap com.geirsson:scalafmt-cli_2.12:1.5.1 -f -o node_modules/.bin/scalafmt && ./coursier bootstrap com.google.googlejavaformat:google-java-format:1.6 -f -o node_modules/.bin/google-java-format",
+    "format:scala": "git-format-staged -f 'scalafmt --stdin' '*.scala'",
+    "format:java": "git-format-staged -f 'google-java-format --assume-filename \"{}\" -' '*.java'",
+    "check:scala": "find . -name '*.scala' | xargs scalafmt --test",
+    "check:java": "find . -name '*.java' | xargs google-java-format -n --set-exit-if-changed",
+    "check:ts": "prettier -c 'Source/Plugins/Core/**/*.{ts,tsx}'",
+    "check": "yarn run check:ts && yarn run check:scala && yarn run check:java"
+  },
+  "devDependencies": {
+    "git-format-staged": "^2.1.0",
+    "husky": "^1.3.1",
+    "prettier": "^1.16.4",
+    "pretty-quick": "^1.10.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged && yarn run format:scala && yarn run format:java"
+    }
+  }
+}

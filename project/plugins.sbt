@@ -2,6 +2,10 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-license-report" % "1.2.0")
 
 addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.0.0")
 
+addSbtPlugin("com.geirsson" % "sbt-scalafmt" % "1.5.1")
+
+addSbtPlugin("com.lightbend.sbt" % "sbt-java-formatter" % "0.4.3")
+
 // Old version used because something else depends on an old JAWN
 val circeVersion = "0.7.1"
 
