@@ -18,9 +18,17 @@ package com.tle.core
 
 import cats.data.Kleisli
 import io.doolse.simpledba.jdbc._
+import fs2.Stream
+import cats.~>
 
 package object db {
   type DB[A] = Kleisli[JDBCIO, UserContext, A]
 
+  val translate = new (JDBCIO ~> DB) {
+    override def apply[A](fa: JDBCIO[A]): DB[A] = Kleisli.liftF(fa)
+  }
 
+  def dbStream[A](f: UserContext => Stream[JDBCIO, A]): Stream[DB, A] = Stream.eval[DB, UserContext](Kleisli.ask[JDBCIO, UserContext]).flatMap {
+    uc => f(uc).translate[DB](translate)
+  }
 }

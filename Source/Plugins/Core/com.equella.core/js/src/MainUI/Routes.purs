@@ -26,6 +26,7 @@ data Route =
     CoursesPage | 
     CourseEdit String |
     ViewItemPage ItemRef |
+    SearchConfigsPage |
     ThemePage |
     NewCourse |
     LoginNoticeConfigPage
@@ -57,7 +58,8 @@ routeMatch =
         CourseEdit <$> (lit "course" *> str <* lit "edit") <|>
         CoursesPage <$ (lit "course") <|>
         ThemePage <$ (lit "themeconfiguration") <|>
-        LoginNoticeConfigPage <$ (lit "loginconfiguration"))
+        LoginNoticeConfigPage <$ (lit "loginconfiguration") <|>
+        SearchConfigsPage <$ (lit "searchconfigs"))
         <|> (LegacyPage <$> legacyRoute) 
 
 
@@ -103,6 +105,7 @@ routeURI r = (case r of
     LoginNoticeConfigPage -> "page/loginconfiguration"
     CourseEdit cid -> "page/course/" <> cid <> "/edit"
     ViewItemPage (ItemRef uuid version) -> "integ/gen/" <> uuid <> "/" <> show version
+    SearchConfigsPage -> "page/searchconfigs"
     LegacyPage leg -> legacyURIToString leg
   )
 

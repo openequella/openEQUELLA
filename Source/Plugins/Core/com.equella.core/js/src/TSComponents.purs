@@ -21,6 +21,7 @@ foreign import appBarQueryClass ::  ReactClass {query :: String, onChange :: Eff
 foreign import courseSelectClass :: forall a. ReactClass a
 
 foreign import themePageClass :: forall a. ReactClass a
+foreign import searchConfigsClass :: forall a. ReactClass a
 
 foreign import loginNoticeConfigPageClass :: forall a. ReactClass a
 

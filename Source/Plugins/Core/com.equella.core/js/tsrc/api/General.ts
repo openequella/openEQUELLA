@@ -6,3 +6,8 @@ export interface PagingResults<T> {
 	resumptionToken?: string;
 	results: T[];
 }
+
+export interface ClickableLink {
+	href: string;
+	onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+}

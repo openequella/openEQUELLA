@@ -7,13 +7,15 @@ export interface Sizes {
     one: string;
     more: string;
 }
-export function sizedString(size: number, strings: Sizes): string {
+export function formatSize(size: number, strings: Sizes): string {
+    var format;
     switch (size)
     {
-        case 0: return strings.zero;
-        case 1: return strings.one;
+        case 0: format = strings.zero; break;
+        case 1: format = strings.one; break;
+        default: format = strings.more; break;
     }
-    return strings.more;
+    return sprintf(format, size);
 }
 
 export function prepLangStrings<A>(prefix:string, strings: A) : A {

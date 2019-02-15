@@ -21,15 +21,21 @@ import java.util.UUID
 import cats.data.OptionT
 import com.tle.core.db.DB
 import com.tle.core.settings.SettingsDB
+import fs2.Stream
 
 object SearchConfigDB {
 
 
-  def configName(id: UUID): String = s"searchconfig.$id"
+  private def SearchConfigPrefix = "searchconfig."
+  def configName(id: UUID): String = s"$SearchConfigPrefix$id"
   def pageConfigName(name: String): String = s"searchpage.$name"
 
   def writeConfig(id: UUID, config: SearchConfig): DB[Unit] =
     SettingsDB.setJsonProperty(configName(id), config)
+
+  def readAllConfigs : Stream[DB, SearchConfig] =
+    SettingsDB.jsonProperties[SearchConfig](SearchConfigPrefix,
+      uuid => sc => sc.copy(id = Some(UUID.fromString(uuid))))
 
   def readConfig(id: UUID) : OptionT[DB, SearchConfig] =
     SettingsDB.jsonProperty(configName(id))

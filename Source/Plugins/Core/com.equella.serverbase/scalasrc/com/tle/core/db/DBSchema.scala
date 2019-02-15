@@ -114,7 +114,8 @@ trait DBSchema extends StdColumns {
 
   val settingsRel = TableMapper[Setting].table("configuration_property").keys(Cols('institution_id, 'property))
 
-  val settingsQueries = SettingsQueries(settingsRel.writes, settingsRel.byPK)
+  val settingsQueries = SettingsQueries(settingsRel.writes, settingsRel.byPK,
+    settingsRel.query.where(Cols('institution_id), BinOp.EQ).where(Cols('property), BinOp.LIKE).build)
 
 
 }
