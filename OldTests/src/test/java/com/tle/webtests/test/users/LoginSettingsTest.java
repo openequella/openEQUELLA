@@ -41,7 +41,6 @@ public class LoginSettingsTest extends AbstractSessionTest
 		lsp.setDisableAutoLogin(true);
 		lsp.setDoNotStoreDrm(true);
 		lsp.setDisallowUserEdit(true);
-		lsp.setNotice(LOGIN_NOTICE);
 
 		// Save
 		lsp.saveFailure();

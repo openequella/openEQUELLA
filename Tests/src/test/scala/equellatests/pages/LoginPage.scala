@@ -2,7 +2,7 @@ package equellatests.pages
 
 import com.tle.webtests.framework.PageContext
 import equellatests.browserpage.LoadablePage
-import org.openqa.selenium.By
+import org.openqa.selenium.{By, WebElement}
 import org.openqa.selenium.support.ui.ExpectedCondition
 
 case class LoginPage(ctx: PageContext) extends LoadablePage {
@@ -27,4 +27,10 @@ case class LoginPage(ctx: PageContext) extends LoadablePage {
   }
 
   def pageBy = By.id("_logonButton")
+
+  private def loginNotice:WebElement = findElementById("loginNotice")
+
+  def loginNoticeExists:Boolean = {
+    loginNotice.isDisplayed
+  }
 }

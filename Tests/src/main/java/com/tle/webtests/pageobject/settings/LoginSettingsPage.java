@@ -40,9 +40,6 @@ public class LoginSettingsPage extends AbstractPage<LoginSettingsPage>
 	@FindBy(id = "_selectUserDialog_opener")
 	private WebElement selectUser;
 
-	@FindBy(id = "_lnf")
-	private WebElement loginNotice;
-
 	@FindBy(id = "_saveButton")
 	private WebElement save;
 	@FindBy(id = "selecteduser")
@@ -124,13 +121,6 @@ public class LoginSettingsPage extends AbstractPage<LoginSettingsPage>
 		{
 			drmCheck.click();
 		}
-		return get();
-	}
-
-	public LoginSettingsPage setNotice(String notice)
-	{
-		loginNotice.clear();
-		loginNotice.sendKeys(notice);
 		return get();
 	}
 
