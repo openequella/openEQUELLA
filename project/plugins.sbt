@@ -2,9 +2,9 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-license-report" % "1.2.0")
 
 addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.0.0")
 
-addSbtPlugin("com.geirsson" % "sbt-scalafmt" % "1.5.1")
+addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.6")
 
-addSbtPlugin("com.lightbend.sbt" % "sbt-java-formatter" % "0.4.3")
+addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "1.0.0")
 
 // Old version used because something else depends on an old JAWN
 val circeVersion = "0.7.1"
@@ -34,6 +34,3 @@ libraryDependencies ++= Seq(
   "com.yahoo.platform.yui" % "yuicompressor" % "2.4.8"
 )
 
-addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.6")
-
-addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "1.0.0")
