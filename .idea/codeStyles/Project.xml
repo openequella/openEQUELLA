@@ -1,5 +1,8 @@
 <component name="ProjectCodeStyleConfiguration">
   <code_scheme name="Project" version="173">
+    <ScalaCodeStyleSettings>
+      <option name="FORMATTER" value="1" />
+    </ScalaCodeStyleSettings>
     <codeStyleSettings language="JAVA">
       <option name="BRACE_STYLE" value="2" />
       <option name="CLASS_BRACE_STYLE" value="2" />
