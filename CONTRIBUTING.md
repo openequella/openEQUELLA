@@ -130,7 +130,7 @@ All code should be formatted using the following formatting tools:
 
 - Scala - [scalafmt](https://scalameta.org/scalafmt/)
 - Java - [Google Java Format](https://github.com/google/google-java-format)
-- Typescript/JS - [Prettier](https://prettier.io/)
+- Typescript/JS/Markdown/YAML + more... - [Prettier](https://prettier.io/)
 
 Each formatter has various IDE plugins, in particular IntelliJ is well supported:
 
