@@ -16,8 +16,6 @@
 
 package com.tle.web.itemadmin.section;
 
-import javax.inject.Inject;
-
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.itemadmin.ItemAdminPrivilegeTreeProvider;
@@ -30,45 +28,38 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.Label;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 public class RootItemAdminSection extends ContextableSearchSection<ContextableSearchSection.Model>
-	implements
-		BlueBarEventListener
-{
-	public static final String ITEMADMINURL = "/access/itemadmin.do";
+    implements BlueBarEventListener {
+  public static final String ITEMADMINURL = "/access/itemadmin.do";
 
-	@Inject
-	private ItemAdminPrivilegeTreeProvider securityProvider;
+  @Inject private ItemAdminPrivilegeTreeProvider securityProvider;
 
-	@PlugKey("itemadmin.title")
-	private static Label title;
+  @PlugKey("itemadmin.title")
+  private static Label title;
 
-	@ViewFactory
-	private FreemarkerFactory view;
+  @ViewFactory private FreemarkerFactory view;
 
-	@Override
-	protected String getSessionKey()
-	{
-		return "itemadminContext";
-	}
+  @Override
+  protected String getSessionKey() {
+    return "itemadminContext";
+  }
 
-	@Override
-	public Label getTitle(SectionInfo info)
-	{
-		return title;
-	}
+  @Override
+  public Label getTitle(SectionInfo info) {
+    return title;
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		securityProvider.checkAuthorised();
-		return super.renderHtml(context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    securityProvider.checkAuthorised();
+    return super.renderHtml(context);
+  }
 
-	@Override
-	public void addBlueBarResults(RenderContext context, BlueBarEvent event)
-	{
-		event.addHelp(view.createResult("itemadmin-help.ftl", this));
-	}
+  @Override
+  public void addBlueBarResults(RenderContext context, BlueBarEvent event) {
+    event.addHelp(view.createResult("itemadmin-help.ftl", this));
+  }
 }

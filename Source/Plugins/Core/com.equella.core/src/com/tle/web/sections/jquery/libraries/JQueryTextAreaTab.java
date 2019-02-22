@@ -23,29 +23,27 @@ import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.render.PreRenderable;
 
-public class JQueryTextAreaTab implements JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
+public class JQueryTextAreaTab implements JavascriptModule {
+  private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.textarea.js"); //$NON-NLS-1$
+  public static final PreRenderable PRERENDER =
+      new JQueryLibraryInclude("jquery.textarea.js"); // $NON-NLS-1$
 
-	public static final JSCallable FUNC_TEXTAREATAB = new ExternallyDefinedFunction("tabby", PRERENDER);
+  public static final JSCallable FUNC_TEXTAREATAB =
+      new ExternallyDefinedFunction("tabby", PRERENDER);
 
-	@Override
-	public String getDisplayName()
-	{
-		return CurrentLocale.get("com.tle.web.sections.jquery.modules.textarea.name"); //$NON-NLS-1$
-	}
+  @Override
+  public String getDisplayName() {
+    return CurrentLocale.get("com.tle.web.sections.jquery.modules.textarea.name"); // $NON-NLS-1$
+  }
 
-	@Override
-	public String getId()
-	{
-		return "textarea"; //$NON-NLS-1$
-	}
+  @Override
+  public String getId() {
+    return "textarea"; //$NON-NLS-1$
+  }
 
-	@Override
-	public PreRenderable getPreRenderer()
-	{
-		return PRERENDER;
-	}
+  @Override
+  public PreRenderable getPreRenderer() {
+    return PRERENDER;
+  }
 }

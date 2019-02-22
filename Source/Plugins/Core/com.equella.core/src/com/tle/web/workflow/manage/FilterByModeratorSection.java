@@ -24,44 +24,38 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
 
-public class FilterByModeratorSection extends AbstractFilterByUserSection<FreetextSearchEvent>
-{
-	@PlugKey("filter.mod.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("filter.mod.dialog")
-	private static Label LABEL_DIALOG_TITLE;
+public class FilterByModeratorSection extends AbstractFilterByUserSection<FreetextSearchEvent> {
+  @PlugKey("filter.mod.title")
+  private static Label LABEL_TITLE;
 
-	@Override
-	public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception
-	{
-		String userId = getSelectedUserId(info);
-		if( !Check.isEmpty(userId) )
-		{
-			event.filterByTerm(false, TasksIndexer.FIELD_MODUSER, userId);
-		}
-	}
+  @PlugKey("filter.mod.dialog")
+  private static Label LABEL_DIALOG_TITLE;
 
-	@Override
-	protected String getPublicParam()
-	{
-		return "mod";
-	}
+  @Override
+  public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception {
+    String userId = getSelectedUserId(info);
+    if (!Check.isEmpty(userId)) {
+      event.filterByTerm(false, TasksIndexer.FIELD_MODUSER, userId);
+    }
+  }
 
-	@Override
-	public Label getTitle()
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  protected String getPublicParam() {
+    return "mod";
+  }
 
-	@Override
-	public Label getDialogTitle()
-	{
-		return LABEL_DIALOG_TITLE;
-	}
+  @Override
+  public Label getTitle() {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	public String getAjaxDiv()
-	{
-		return "moderator";
-	}
+  @Override
+  public Label getDialogTitle() {
+    return LABEL_DIALOG_TITLE;
+  }
+
+  @Override
+  public String getAjaxDiv() {
+    return "moderator";
+  }
 }

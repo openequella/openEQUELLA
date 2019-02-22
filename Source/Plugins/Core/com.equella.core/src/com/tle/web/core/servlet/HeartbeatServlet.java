@@ -16,8 +16,11 @@
 
 package com.tle.web.core.servlet;
 
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.guice.Bind;
+import com.tle.core.services.user.UserService;
 import java.io.IOException;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletException;
@@ -25,33 +28,24 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tle.core.guice.Bind;
-import com.tle.core.services.user.UserService;
-import com.tle.common.institution.CurrentInstitution;
-import com.tle.common.usermanagement.user.CurrentUser;
-
 @Bind
 @Singleton
-public class HeartbeatServlet extends HttpServlet
-{
-	private static final long serialVersionUID = 1L;
-	@Inject
-	private UserService userService;
+public class HeartbeatServlet extends HttpServlet {
+  private static final long serialVersionUID = 1L;
+  @Inject private UserService userService;
 
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-		IOException
-	{
-		if( !CurrentUser.isGuest() && CurrentInstitution.get() != null )
-		{
-			userService.keepAlive();
-		}
+  @Override
+  protected void service(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    if (!CurrentUser.isGuest() && CurrentInstitution.get() != null) {
+      userService.keepAlive();
+    }
 
-		// IE will cache this otherwise
-		response.setHeader("Cache-Control", "no-cache"); //$NON-NLS-1$//$NON-NLS-2$
-		response.setStatus(HttpServletResponse.SC_OK);
-		// FF3 will try to parse as XML if no content type sent
-		response.setContentType("text/plain"); //$NON-NLS-1$
-		response.getOutputStream().close();
-	}
+    // IE will cache this otherwise
+    response.setHeader("Cache-Control", "no-cache"); // $NON-NLS-1$//$NON-NLS-2$
+    response.setStatus(HttpServletResponse.SC_OK);
+    // FF3 will try to parse as XML if no content type sent
+    response.setContentType("text/plain"); // $NON-NLS-1$
+    response.getOutputStream().close();
+  }
 }

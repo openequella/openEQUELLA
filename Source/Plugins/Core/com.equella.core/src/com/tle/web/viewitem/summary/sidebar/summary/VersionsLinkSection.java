@@ -26,37 +26,30 @@ import com.tle.web.viewitem.summary.section.ItemSummaryContentSection;
 import com.tle.web.viewitem.summary.sidebar.actions.GenericMinorActionSection;
 import com.tle.web.viewurl.ItemSectionInfo;
 
-public class VersionsLinkSection extends GenericMinorActionSection
-{
-	@PlugKey("summary.sidebar.summary.versions.title")
-	private static Label LINK_LABEL;
+public class VersionsLinkSection extends GenericMinorActionSection {
+  @PlugKey("summary.sidebar.summary.versions.title")
+  private static Label LINK_LABEL;
 
-	@TreeLookup
-	private ItemSummaryContentSection contentSection;
-	@TreeLookup
-	private VersionsContentSection versionsContentSection;
+  @TreeLookup private ItemSummaryContentSection contentSection;
+  @TreeLookup private VersionsContentSection versionsContentSection;
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return LINK_LABEL;
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return LINK_LABEL;
+  }
 
-	@Override
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		return true;
-	}
+  @Override
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    return true;
+  }
 
-	@Override
-	protected void execute(SectionInfo info)
-	{
-		contentSection.setSummaryId(info, versionsContentSection);
-	}
+  @Override
+  protected void execute(SectionInfo info) {
+    contentSection.setSummaryId(info, versionsContentSection);
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return LINK_LABEL.getText();
-	}
+  @Override
+  public String getLinkText() {
+    return LINK_LABEL.getText();
+  }
 }

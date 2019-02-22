@@ -25,9 +25,9 @@ Below you'll find further information for developers wishing to work with the so
 
 # Building openEQUELLA from source
 
-* [Download required software](#download-required-software)
-* [Get the code](#get-the-code)
-* [Build installer](#building-the-installer)
+- [Download required software](#download-required-software)
+- [Get the code](#get-the-code)
+- [Build installer](#building-the-installer)
 
 ## Download required software
 
@@ -68,7 +68,7 @@ In ubuntu (17.10):
 ~$ curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 ~$ echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 ~$ sudo apt-get update && sudo apt-get install yarn
-``` 
+```
 
 As of the time of writing the build was tested with yarn 1.3.2 and Node v6.11.4.
 
@@ -128,7 +128,7 @@ Once SBT and Java are installed, you may need to set a JAVA_HOME environment var
 
 **Database**
 
-* Either [PostgreSQL](https://www.postgresql.org/), SQLServer, or Oracle database.
+- Either [PostgreSQL](https://www.postgresql.org/), SQLServer, or Oracle database.
 
 ## Get the code
 
@@ -144,8 +144,8 @@ Once SBT and Java are installed, you may need to set a JAVA_HOME environment var
 
 There is functionality that could not be included into the core openEquella code repository, but based on your business needs, may be appropriate to include.
 
-* Oracle DB Driver
-* [Kaltura](https://github.com/equella/Equella-Kaltura)
+- Oracle DB Driver
+- [Kaltura](https://github.com/equella/Equella-Kaltura)
 
 ## Build configuration
 
@@ -171,7 +171,7 @@ signer {
 **IMPORTANT**: A self registered certificate implies that the jars won't be secured and a security exception will appear when trying to launch the jars.
 To avoid this it is needed to add the domain you want to trust as a security exception in your java configuration.
 It can be done with the Java Control Panel or directly adding the domain in a new line in this file:
-${user.home}/.java/deployment/security/exception.sites
+\${user.home}/.java/deployment/security/exception.sites
 
 ## Building the installer
 

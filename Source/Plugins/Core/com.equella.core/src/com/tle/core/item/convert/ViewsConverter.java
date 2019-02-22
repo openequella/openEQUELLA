@@ -16,13 +16,6 @@
 
 package com.tle.core.item.convert;
 
-import java.io.IOException;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Singleton;
-
 import com.tle.beans.Institution;
 import com.tle.beans.item.ItemId;
 import com.tle.common.NameValue;
@@ -37,99 +30,97 @@ import com.tle.core.institution.convert.service.AbstractJsonConverter;
 import com.tle.core.institution.convert.service.InstitutionImportService.ConvertType;
 import com.tle.core.institution.convert.service.impl.InstitutionImportServiceImpl.ConverterTasks;
 import com.tle.core.item.ViewCountJavaDao;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class ViewsConverter extends AbstractJsonConverter<Object>
-{
-	private static final String VIEWS_FOLDER = "item_views";
+public class ViewsConverter extends AbstractJsonConverter<Object> {
+  private static final String VIEWS_FOLDER = "item_views";
 
-	@Override
-	public void doDelete(Institution institution, ConverterParams callback)
-	{
-		// Handled by the itemDao
-	}
+  @Override
+  public void doDelete(Institution institution, ConverterParams callback) {
+    // Handled by the itemDao
+  }
 
-	@Override
-	public void doExport(TemporaryFileHandle staging, Institution institution, ConverterParams callback)
-			throws IOException
-	{
-		final SubTemporaryFile viewsExportFolder = new SubTemporaryFile(staging, VIEWS_FOLDER);
-		xmlHelper.writeExportFormatXmlFile(viewsExportFolder, true);
+  @Override
+  public void doExport(
+      TemporaryFileHandle staging, Institution institution, ConverterParams callback)
+      throws IOException {
+    final SubTemporaryFile viewsExportFolder = new SubTemporaryFile(staging, VIEWS_FOLDER);
+    xmlHelper.writeExportFormatXmlFile(viewsExportFolder, true);
 
-		for( ItemViewCount itemViewCount : ViewCountJavaDao.getAllSummaryViewCount(institution) )
-		{
-			final String uuid = itemViewCount.item_uuid().toString();
-			final int version = itemViewCount.item_version();
+    for (ItemViewCount itemViewCount : ViewCountJavaDao.getAllSummaryViewCount(institution)) {
+      final String uuid = itemViewCount.item_uuid().toString();
+      final int version = itemViewCount.item_version();
 
-			final ItemViewsExport ive = new ItemViewsExport();
-			ive.itemUuid = uuid;
-			ive.itemVersion = version;
-			ive.count = itemViewCount.count();
-			ive.lastViewed = itemViewCount.last_viewed().toEpochMilli();
+      final ItemViewsExport ive = new ItemViewsExport();
+      ive.itemUuid = uuid;
+      ive.itemVersion = version;
+      ive.count = itemViewCount.count();
+      ive.lastViewed = itemViewCount.last_viewed().toEpochMilli();
 
-			for ( AttachmentViewCount attachmentViewCount : ViewCountJavaDao.getAllAttachmentViewCount(institution, new ItemId(uuid, version)))
-			{
-				final AttachmentViewsExport ave = new AttachmentViewsExport();
-				ave.attachmentUuid = attachmentViewCount.attachment().toString();
-				ave.count = attachmentViewCount.count();
-				ave.lastViewed = attachmentViewCount.last_viewed().toEpochMilli();
+      for (AttachmentViewCount attachmentViewCount :
+          ViewCountJavaDao.getAllAttachmentViewCount(institution, new ItemId(uuid, version))) {
+        final AttachmentViewsExport ave = new AttachmentViewsExport();
+        ave.attachmentUuid = attachmentViewCount.attachment().toString();
+        ave.count = attachmentViewCount.count();
+        ave.lastViewed = attachmentViewCount.last_viewed().toEpochMilli();
 
-				ive.attachments.add(ave);
-			}
+        ive.attachments.add(ave);
+      }
 
-			final BucketFile bucketFolder = new BucketFile(viewsExportFolder, uuid);
-			json.write(bucketFolder, uuid + ".json", ive);
-		}
-	}
+      final BucketFile bucketFolder = new BucketFile(viewsExportFolder, uuid);
+      json.write(bucketFolder, uuid + ".json", ive);
+    }
+  }
 
-	@Override
-	public void doImport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
-			throws IOException
-	{
-		final SubTemporaryFile viewsImportFolder = new SubTemporaryFile(staging, VIEWS_FOLDER);
-		final List<String> entries = json.getFileList(viewsImportFolder);
-		for( String entry : entries )
-		{
-			final ItemViewsExport views = json.read(viewsImportFolder, entry, ItemViewsExport.class);
-			if (views != null)
-			{
-				final ItemId itemId = new ItemId(views.itemUuid, views.itemVersion);
+  @Override
+  public void doImport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
+      throws IOException {
+    final SubTemporaryFile viewsImportFolder = new SubTemporaryFile(staging, VIEWS_FOLDER);
+    final List<String> entries = json.getFileList(viewsImportFolder);
+    for (String entry : entries) {
+      final ItemViewsExport views = json.read(viewsImportFolder, entry, ItemViewsExport.class);
+      if (views != null) {
+        final ItemId itemId = new ItemId(views.itemUuid, views.itemVersion);
 
-				ViewCountJavaDao.setSummaryViews(itemId, views.count, Instant.ofEpochMilli(views.lastViewed));
-				for (AttachmentViewsExport attachment : views.attachments)
-				{
-					ViewCountJavaDao.setAttachmentViews(itemId, attachment.attachmentUuid, attachment.count, Instant.ofEpochMilli(attachment.lastViewed));
-				}
-			}
-		}
-	}
+        ViewCountJavaDao.setSummaryViews(
+            itemId, views.count, Instant.ofEpochMilli(views.lastViewed));
+        for (AttachmentViewsExport attachment : views.attachments) {
+          ViewCountJavaDao.setAttachmentViews(
+              itemId,
+              attachment.attachmentUuid,
+              attachment.count,
+              Instant.ofEpochMilli(attachment.lastViewed));
+        }
+      }
+    }
+  }
 
-	@Override
-	public void addTasks(ConvertType type, ConverterTasks tasks, ConverterParams params)
-	{
-		if( !params.hasFlag(ConverterParams.NO_ITEMS) )
-		{
-			if( !(type == ConvertType.DELETE) )
-			{
-				tasks.add(new NameValue("Item Views", "item_views"));
-			}
-		}
-	}
+  @Override
+  public void addTasks(ConvertType type, ConverterTasks tasks, ConverterParams params) {
+    if (!params.hasFlag(ConverterParams.NO_ITEMS)) {
+      if (!(type == ConvertType.DELETE)) {
+        tasks.add(new NameValue("Item Views", "item_views"));
+      }
+    }
+  }
 
-	public static class ItemViewsExport
-	{
-		public String itemUuid;
-		public int itemVersion;
-		public int count;
-		public long lastViewed;
-		public List<AttachmentViewsExport> attachments = new ArrayList<>();
-	}
+  public static class ItemViewsExport {
+    public String itemUuid;
+    public int itemVersion;
+    public int count;
+    public long lastViewed;
+    public List<AttachmentViewsExport> attachments = new ArrayList<>();
+  }
 
-	public static class AttachmentViewsExport
-	{
-		public String attachmentUuid;
-		public int count;
-		public long lastViewed;
-	}
+  public static class AttachmentViewsExport {
+    public String attachmentUuid;
+    public int count;
+    public long lastViewed;
+  }
 }

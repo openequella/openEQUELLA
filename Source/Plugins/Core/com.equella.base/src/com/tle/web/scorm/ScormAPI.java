@@ -16,23 +16,22 @@
 
 package com.tle.web.scorm;
 
-public interface ScormAPI
-{
-	String initialize(String param);
+public interface ScormAPI {
+  String initialize(String param);
 
-	String terminate(String param);
+  String terminate(String param);
 
-	String getValue(String name);
+  String getValue(String name);
 
-	String setValue(String name, String value);
+  String setValue(String name, String value);
 
-	String commit(String param);
+  String commit(String param);
 
-	String getLastError();
+  String getLastError();
 
-	String getErrorString(String errCode);
+  String getErrorString(String errCode);
 
-	String getDiagnostic(String error);
+  String getDiagnostic(String error);
 
-	void setCurrentIdentifier(String ident);
+  void setCurrentIdentifier(String ident);
 }

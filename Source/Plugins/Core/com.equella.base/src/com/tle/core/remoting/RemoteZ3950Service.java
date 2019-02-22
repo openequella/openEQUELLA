@@ -16,12 +16,10 @@
 
 package com.tle.core.remoting;
 
-import java.util.List;
-
 import com.tle.beans.search.Z3950Settings.AttributeProfile;
 import com.tle.common.NameValue;
+import java.util.List;
 
-public interface RemoteZ3950Service
-{
-	List<NameValue> listDefaultFields(AttributeProfile profile);
+public interface RemoteZ3950Service {
+  List<NameValue> listDefaultFields(AttributeProfile profile);
 }

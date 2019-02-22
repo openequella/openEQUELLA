@@ -16,12 +16,6 @@
 
 package com.tle.web.itemadmin.operation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.tle.beans.item.ItemPack;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.standard.operations.DeleteOperation;
@@ -51,143 +45,129 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.model.Option;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Bind
-public class StandardOperations extends AbstractPrototypeSection<Object> implements BulkOperationExtension
-{
-	static
-	{
-		PluginResourceHandler.init(StandardOperations.class);
-	}
+public class StandardOperations extends AbstractPrototypeSection<Object>
+    implements BulkOperationExtension {
+  static {
+    PluginResourceHandler.init(StandardOperations.class);
+  }
 
-	@PlugKey("operation.")
-	private static String KEY_NAME;
-	@PlugKey("itemadmin.opresults.status")
-	private static String KEY_STATUS;
+  @PlugKey("operation.")
+  private static String KEY_NAME;
 
-	public static String getNameKey()
-	{
-		return KEY_NAME;
-	}
+  @PlugKey("itemadmin.opresults.status")
+  private static String KEY_STATUS;
 
-	public static String getStatusKey()
-	{
-		return KEY_STATUS;
-	}
+  public static String getNameKey() {
+    return KEY_NAME;
+  }
 
-	private final List<StandardOperation> opList = new ArrayList<StandardOperation>();
-	private final Map<String, StandardOperation> opMap = new HashMap<String, StandardOperation>();
+  public static String getStatusKey() {
+    return KEY_STATUS;
+  }
 
-	@Override
-	public BeanLocator<SimpleOperationExecutor> getExecutor(SectionInfo info, String operationId)
-	{
-		return new SerializedBeanLocator<SimpleOperationExecutor>(opMap.get(operationId).getExecutor());
-	}
+  private final List<StandardOperation> opList = new ArrayList<StandardOperation>();
+  private final Map<String, StandardOperation> opMap = new HashMap<String, StandardOperation>();
 
-	@Override
-	public void addOptions(SectionInfo info, List<Option<OperationInfo>> opsList)
-	{
-		for( StandardOperation op : opList )
-		{
-			final String operationId = op.getOperationId();
-			opsList.add(new KeyOption<OperationInfo>(KEY_NAME + operationId, operationId,
-				new OperationInfo(this, operationId)));
-		}
-	}
+  @Override
+  public BeanLocator<SimpleOperationExecutor> getExecutor(SectionInfo info, String operationId) {
+    return new SerializedBeanLocator<SimpleOperationExecutor>(opMap.get(operationId).getExecutor());
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		opList.add(new StandardOperation("redraft", RedraftOperation.class, "redraft"));
-		opList.add(new StandardOperation("submit", SubmitOperation.class, "submit"));
-		opList.add(new StandardOperation("delete", DeleteOperation.class, "delete"));
-		opList.add(new StandardOperation("purge", PurgeOperation.class, "purge", false, true));
-		opList.add(new StandardOperation("makelive", ReactivateOperation.class, "reactivate"));
-		opList.add(new StandardOperation("reset", ResetOperation.class, "reset"));
-		opList.add(new StandardOperation("restore", RestoreDeletedOperation.class, "restore"));
-		opList.add(new StandardOperation("archive", ArchiveOperation.class, "archive"));
-		opList.add(new StandardOperation("suspend", SuspendOperation.class, "suspend"));
-		opList.add(new StandardOperation("resume", ResumeOperation.class, "resume"));
-		opList.add(new StandardOperation("review", ReviewOperation.class, "review"));
-		for( StandardOperation op : opList )
-		{
-			opMap.put(op.getOperationId(), op);
-		}
-	}
+  @Override
+  public void addOptions(SectionInfo info, List<Option<OperationInfo>> opsList) {
+    for (StandardOperation op : opList) {
+      final String operationId = op.getOperationId();
+      opsList.add(
+          new KeyOption<OperationInfo>(
+              KEY_NAME + operationId, operationId, new OperationInfo(this, operationId)));
+    }
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public Label getStatusTitleLabel(SectionInfo info, String operationId)
-	{
-		return new KeyLabel(KEY_STATUS, new KeyLabel(KEY_NAME + operationId + ".title"));
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    opList.add(new StandardOperation("redraft", RedraftOperation.class, "redraft"));
+    opList.add(new StandardOperation("submit", SubmitOperation.class, "submit"));
+    opList.add(new StandardOperation("delete", DeleteOperation.class, "delete"));
+    opList.add(new StandardOperation("purge", PurgeOperation.class, "purge", false, true));
+    opList.add(new StandardOperation("makelive", ReactivateOperation.class, "reactivate"));
+    opList.add(new StandardOperation("reset", ResetOperation.class, "reset"));
+    opList.add(new StandardOperation("restore", RestoreDeletedOperation.class, "restore"));
+    opList.add(new StandardOperation("archive", ArchiveOperation.class, "archive"));
+    opList.add(new StandardOperation("suspend", SuspendOperation.class, "suspend"));
+    opList.add(new StandardOperation("resume", ResumeOperation.class, "resume"));
+    opList.add(new StandardOperation("review", ReviewOperation.class, "review"));
+    for (StandardOperation op : opList) {
+      opMap.put(op.getOperationId(), op);
+    }
+  }
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public Label getStatusTitleLabel(SectionInfo info, String operationId) {
+    return new KeyLabel(KEY_STATUS, new KeyLabel(KEY_NAME + operationId + ".title"));
+  }
 
-	@Override
-	public boolean validateOptions(SectionInfo info, String operationId)
-	{
-		return true;
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+  }
 
-	@Override
-	public boolean areOptionsFinished(SectionInfo info, String operationId)
-	{
-		return true;
-	}
+  @Override
+  public boolean validateOptions(SectionInfo info, String operationId) {
+    return true;
+  }
 
-	@Override
-	public boolean hasExtraOptions(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+  @Override
+  public boolean areOptionsFinished(SectionInfo info, String operationId) {
+    return true;
+  }
 
-	@Override
-	public SectionRenderable renderOptions(RenderContext context, String operationId)
-	{
-		return null;
-	}
+  @Override
+  public boolean hasExtraOptions(SectionInfo info, String operationId) {
+    return false;
+  }
 
-	@Override
-	public void prepareDefaultOptions(SectionInfo info, String operationId)
-	{
-		// nothing
-	}
+  @Override
+  public SectionRenderable renderOptions(RenderContext context, String operationId) {
+    return null;
+  }
 
-	@Override
-	public boolean hasExtraNavigation(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+  @Override
+  public void prepareDefaultOptions(SectionInfo info, String operationId) {
+    // nothing
+  }
 
-	@Override
-	public Collection<Button> getExtraNavigation(SectionInfo info, String operationId)
-	{
-		return null;
-	}
+  @Override
+  public boolean hasExtraNavigation(SectionInfo info, String operationId) {
+    return false;
+  }
 
-	@Override
-	public boolean hasPreview(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+  @Override
+  public Collection<Button> getExtraNavigation(SectionInfo info, String operationId) {
+    return null;
+  }
 
-	@Override
-	public ItemPack runPreview(SectionInfo info, String operationId, long itemUuid)
-	{
-		return null;
-	}
+  @Override
+  public boolean hasPreview(SectionInfo info, String operationId) {
+    return false;
+  }
 
-	@Override
-	public boolean showPreviousButton(SectionInfo info, String opererationId)
-	{
-		return true;
-	}
+  @Override
+  public ItemPack runPreview(SectionInfo info, String operationId, long itemUuid) {
+    return null;
+  }
 
+  @Override
+  public boolean showPreviousButton(SectionInfo info, String opererationId) {
+    return true;
+  }
 }

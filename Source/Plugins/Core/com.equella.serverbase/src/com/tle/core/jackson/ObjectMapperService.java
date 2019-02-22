@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tle.annotation.NonNullByDefault;
 
 @NonNullByDefault
-public interface ObjectMapperService
-{
-	ObjectMapper createObjectMapper(String... named);
+public interface ObjectMapperService {
+  ObjectMapper createObjectMapper(String... named);
 }

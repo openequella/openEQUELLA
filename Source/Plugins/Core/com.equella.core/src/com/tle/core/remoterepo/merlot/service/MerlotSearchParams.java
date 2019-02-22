@@ -16,47 +16,46 @@
 
 package com.tle.core.remoterepo.merlot.service;
 
-import java.util.Set;
-
 import com.tle.beans.entity.FederatedSearch;
 import com.tle.common.util.TleDate;
+import java.util.Set;
 
-public interface MerlotSearchParams
-{
-	public enum KeywordUse
-	{
-		ALL, ANY, EXACT_PHRASE
-	}
+public interface MerlotSearchParams {
+  public enum KeywordUse {
+    ALL,
+    ANY,
+    EXACT_PHRASE
+  }
 
-	KeywordUse getKeywordUse();
+  KeywordUse getKeywordUse();
 
-	String getQuery();
+  String getQuery();
 
-	FederatedSearch getMerlotSearch();
+  FederatedSearch getMerlotSearch();
 
-	String getCategory();
+  String getCategory();
 
-	String getCommunity();
+  String getCommunity();
 
-	String getLanguage();
+  String getLanguage();
 
-	String getMaterialType();
+  String getMaterialType();
 
-	String getTechnicalFormat();
+  String getTechnicalFormat();
 
-	String getMaterialAudience();
+  String getMaterialAudience();
 
-	String getSort();
+  String getSort();
 
-	boolean isCost();
+  boolean isCost();
 
-	boolean isCreativeCommons();
+  boolean isCreativeCommons();
 
-	Set<String> getMobileOS();
+  Set<String> getMobileOS();
 
-	Set<String> getMobileType();
+  Set<String> getMobileType();
 
-	TleDate getCreatedBefore();
+  TleDate getCreatedBefore();
 
-	TleDate getCreatedAfter();
+  TleDate getCreatedAfter();
 }

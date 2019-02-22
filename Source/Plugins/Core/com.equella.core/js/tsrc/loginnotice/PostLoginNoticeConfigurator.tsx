@@ -1,8 +1,21 @@
 import * as React from "react";
-import {Button, DialogContent, DialogContentText, Grid, TextField, Typography} from "@material-ui/core";
-import {commonString} from "../util/commonstrings";
-import {clearPostLoginNotice, getPostLoginNotice, NotificationType, submitPostLoginNotice, strings} from "./LoginNoticeModule";
-import {AxiosError, AxiosResponse} from "axios";
+import {
+  Button,
+  DialogContent,
+  DialogContentText,
+  Grid,
+  TextField,
+  Typography
+} from "@material-ui/core";
+import { commonString } from "../util/commonstrings";
+import {
+  clearPostLoginNotice,
+  getPostLoginNotice,
+  NotificationType,
+  submitPostLoginNotice,
+  strings
+} from "./LoginNoticeModule";
+import { AxiosError, AxiosResponse } from "axios";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -14,27 +27,30 @@ interface PostLoginNoticeConfiguratorProps {
 }
 
 interface PostLoginNoticeConfiguratorState {
-  postNotice?: string,               //what is currently in the textfield
-  dbPostNotice?: string              //what is currently in the database
-  clearStaged: boolean
+  postNotice?: string; //what is currently in the textfield
+  dbPostNotice?: string; //what is currently in the database
+  clearStaged: boolean;
 }
 
-class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfiguratorProps, PostLoginNoticeConfiguratorState> {
+class PostLoginNoticeConfigurator extends React.Component<
+  PostLoginNoticeConfiguratorProps,
+  PostLoginNoticeConfiguratorState
+> {
   constructor(props: PostLoginNoticeConfiguratorProps) {
     super(props);
-    this.state = ({
+    this.state = {
       postNotice: "",
       dbPostNotice: "",
       clearStaged: false
-    });
-  };
+    };
+  }
 
   handleSubmitPostNotice = () => {
     if (this.state.postNotice != undefined) {
       submitPostLoginNotice(this.state.postNotice)
         .then(() => {
           this.props.notify(NotificationType.Save);
-          this.setState({dbPostNotice: this.state.postNotice});
+          this.setState({ dbPostNotice: this.state.postNotice });
         })
         .catch((error: AxiosError) => {
           this.props.handleError(error);
@@ -43,10 +59,10 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
   };
 
   handleClearPostNotice = () => {
-    this.setState({postNotice: ""});
+    this.setState({ postNotice: "" });
     clearPostLoginNotice()
       .then(() => {
-        this.setState({dbPostNotice: "", clearStaged:false});
+        this.setState({ dbPostNotice: "", clearStaged: false });
         this.props.notify(NotificationType.Clear);
       })
       .catch((error: AxiosError) => {
@@ -55,18 +71,23 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
   };
 
   handleUndoPostNotice = () => {
-    this.setState({postNotice: this.state.dbPostNotice});
+    this.setState({ postNotice: this.state.dbPostNotice });
     this.props.notify(NotificationType.Revert);
   };
 
-  handlePostTextFieldChange = (e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement) => {
-    this.setState({postNotice: e.value});
+  handlePostTextFieldChange = (
+    e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  ) => {
+    this.setState({ postNotice: e.value });
   };
 
   componentDidMount = () => {
     getPostLoginNotice()
       .then((response: AxiosResponse) => {
-        this.setState({dbPostNotice: response.data, postNotice: response.data});
+        this.setState({
+          dbPostNotice: response.data,
+          postNotice: response.data
+        });
       })
       .catch((error: AxiosError) => {
         this.props.handleError(error);
@@ -74,22 +95,30 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
   };
 
   stageClear = () => {
-    this.setState({clearStaged:true});
+    this.setState({ clearStaged: true });
   };
 
   Dialogs = () => {
-    return(
+    return (
       <div>
-        <Dialog open={this.state.clearStaged} onClose={()=>this.setState({clearStaged:false})}>
+        <Dialog
+          open={this.state.clearStaged}
+          onClose={() => this.setState({ clearStaged: false })}
+        >
           <DialogTitle>{strings.clear.title}</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              {strings.clear.confirm}
-            </DialogContentText>
+            <DialogContentText>{strings.clear.confirm}</DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button id="okToClear"   onClick={this.handleClearPostNotice}>{commonString.action.ok}</Button>
-            <Button id="cancelClear" onClick={() =>this.setState({clearStaged:false})}>{commonString.action.cancel}</Button>
+            <Button id="okToClear" onClick={this.handleClearPostNotice}>
+              {commonString.action.ok}
+            </Button>
+            <Button
+              id="cancelClear"
+              onClick={() => this.setState({ clearStaged: false })}
+            >
+              {commonString.action.cancel}
+            </Button>
           </DialogActions>
         </Dialog>
       </div>
@@ -97,54 +126,64 @@ class PostLoginNoticeConfigurator extends React.Component<PostLoginNoticeConfigu
   };
 
   render() {
-    const {postNotice, dbPostNotice} = this.state;
+    const { postNotice, dbPostNotice } = this.state;
     const Dialogs = this.Dialogs;
     return (
       <SettingsMenuContainer>
-        <Typography color="textSecondary" variant="subheading">{strings.postlogin.label}</Typography>
+        <Typography color="textSecondary" variant="subheading">
+          {strings.postlogin.label}
+        </Typography>
         <Grid id="postLoginConfig" container spacing={8} direction="column">
           <Grid item>
-            <TextField id="postNoticeField"
-                       variant="outlined"
-                       rows="12"
-                       rowsMax="35"
-                       multiline
-                       fullWidth
-                       inputProps={{ length: 12 }}
-                       placeholder={strings.postlogin.description}
-                       onChange={e => this.handlePostTextFieldChange(e.target)}
-                       value={postNotice}/>
+            <TextField
+              id="postNoticeField"
+              variant="outlined"
+              rows="12"
+              rowsMax="35"
+              multiline
+              fullWidth
+              inputProps={{ length: 12 }}
+              placeholder={strings.postlogin.description}
+              onChange={e => this.handlePostTextFieldChange(e.target)}
+              value={postNotice}
+            />
           </Grid>
           <Grid item container spacing={8} direction="row-reverse">
             <Grid item>
-              <Button id="postApplyButton"
-                      disabled={postNotice == dbPostNotice}
-                      onClick={this.handleSubmitPostNotice}
-                      variant="contained">
+              <Button
+                id="postApplyButton"
+                disabled={postNotice == dbPostNotice}
+                onClick={this.handleSubmitPostNotice}
+                variant="contained"
+              >
                 {commonString.action.save}
               </Button>
             </Grid>
             <Grid item>
-              <Button id="postClearButton"
-                      disabled={dbPostNotice == ""}
-                      onClick={this.stageClear}
-                      variant="text">
+              <Button
+                id="postClearButton"
+                disabled={dbPostNotice == ""}
+                onClick={this.stageClear}
+                variant="text"
+              >
                 {commonString.action.clear}
               </Button>
             </Grid>
             <Grid item>
-              <Button id="postUndoButton"
-                      disabled={dbPostNotice == postNotice}
-                      onClick={this.handleUndoPostNotice}
-                      variant="text">
+              <Button
+                id="postUndoButton"
+                disabled={dbPostNotice == postNotice}
+                onClick={this.handleUndoPostNotice}
+                variant="text"
+              >
                 {commonString.action.revertchanges}
               </Button>
             </Grid>
           </Grid>
         </Grid>
-        <Dialogs/>
+        <Dialogs />
       </SettingsMenuContainer>
-    )
+    );
   }
 }
 

@@ -20,15 +20,11 @@ import com.tle.common.scripting.types.GroupScriptType;
 import com.tle.common.usermanagement.user.valuebean.DefaultGroupBean;
 import com.tle.common.usermanagement.user.valuebean.GroupBean;
 
-/**
- * @author aholland
- */
-public class GroupScriptTypeImpl extends DefaultGroupBean implements GroupScriptType
-{
-	private static final long serialVersionUID = 1L;
+/** @author aholland */
+public class GroupScriptTypeImpl extends DefaultGroupBean implements GroupScriptType {
+  private static final long serialVersionUID = 1L;
 
-	public GroupScriptTypeImpl(GroupBean group)
-	{
-		super(group.getUniqueID(), group.getName());
-	}
+  public GroupScriptTypeImpl(GroupBean group) {
+    super(group.getUniqueID(), group.getName());
+  }
 }

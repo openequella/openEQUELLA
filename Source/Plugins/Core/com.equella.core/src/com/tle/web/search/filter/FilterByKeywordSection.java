@@ -30,47 +30,38 @@ import com.tle.web.sections.events.RenderEventContext;
 @SuppressWarnings("nls")
 @TreeIndexed
 public class FilterByKeywordSection extends AbstractQuerySection<Object, FreetextSearchEvent>
-	implements
-		ResetFiltersListener
-{
-	@TreeLookup
-	private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
+    implements ResetFiltersListener {
+  @TreeLookup private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		searchButton.setClickHandler(searchResults.getRestartSearchHandler(tree));
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    searchButton.setClickHandler(searchResults.getRestartSearchHandler(tree));
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		return viewFactory.createResult("filter/filterbykeyword.ftl", context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    return viewFactory.createResult("filter/filterbykeyword.ftl", context);
+  }
 
-	@Override
-	protected boolean isIncludeUnfiltered()
-	{
-		return false;
-	}
+  @Override
+  protected boolean isIncludeUnfiltered() {
+    return false;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "fbkw";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "fbkw";
+  }
 
-	@Override
-	public void reset(SectionInfo info)
-	{
-		queryField.setValue(info, null);
-	}
+  @Override
+  public void reset(SectionInfo info) {
+    queryField.setValue(info, null);
+  }
 }

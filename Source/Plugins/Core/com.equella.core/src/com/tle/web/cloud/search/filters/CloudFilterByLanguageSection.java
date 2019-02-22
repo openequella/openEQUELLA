@@ -28,51 +28,43 @@ import com.tle.web.sections.standard.model.HtmlListModel;
 import com.tle.web.sections.standard.model.Option;
 
 @SuppressWarnings("nls")
-public class CloudFilterByLanguageSection extends AbstractCloudFilter
-{
-	@PlugKey("filter.bylanguage.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("filter.bylanguage.top")
-	private static String DEFAULT_OPTION;
+public class CloudFilterByLanguageSection extends AbstractCloudFilter {
+  @PlugKey("filter.bylanguage.title")
+  private static Label LABEL_TITLE;
 
-	@Override
-	public Label getTitle()
-	{
-		return LABEL_TITLE;
-	}
+  @PlugKey("filter.bylanguage.top")
+  private static String DEFAULT_OPTION;
 
-	@Override
-	public void prepareSearch(SectionInfo info, CloudSearchEvent event) throws Exception
-	{
-		String val = list.getSelectedValueAsString(info);
-		if( !Check.isEmpty(val) )
-		{
-			event.getCloudSearch().setLanguage(val);
-		}
-	}
+  @Override
+  public Label getTitle() {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	public HtmlListModel<NameValue> buildListModel()
-	{
-		return new DynamicHtmlListModel<NameValue>()
-		{
-			@Override
-			protected Option<NameValue> getTopOption()
-			{
-				return new KeyOption<NameValue>(DEFAULT_OPTION, "", null);
-			}
+  @Override
+  public void prepareSearch(SectionInfo info, CloudSearchEvent event) throws Exception {
+    String val = list.getSelectedValueAsString(info);
+    if (!Check.isEmpty(val)) {
+      event.getCloudSearch().setLanguage(val);
+    }
+  }
 
-			@Override
-			protected Iterable<NameValue> populateModel(SectionInfo info)
-			{
-				return cloudService.getCloudFilterInfo().getLanguages();
-			}
-		};
-	}
+  @Override
+  public HtmlListModel<NameValue> buildListModel() {
+    return new DynamicHtmlListModel<NameValue>() {
+      @Override
+      protected Option<NameValue> getTopOption() {
+        return new KeyOption<NameValue>(DEFAULT_OPTION, "", null);
+      }
 
-	@Override
-	protected String getPublicParam()
-	{
-		return "lang";
-	}
+      @Override
+      protected Iterable<NameValue> populateModel(SectionInfo info) {
+        return cloudService.getCloudFilterInfo().getLanguages();
+      }
+    };
+  }
+
+  @Override
+  protected String getPublicParam() {
+    return "lang";
+  }
 }

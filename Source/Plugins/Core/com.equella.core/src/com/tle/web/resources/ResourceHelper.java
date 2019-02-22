@@ -23,7 +23,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ResourceHelper
-{
-	boolean fixed() default true;
+public @interface ResourceHelper {
+  boolean fixed() default true;
 }

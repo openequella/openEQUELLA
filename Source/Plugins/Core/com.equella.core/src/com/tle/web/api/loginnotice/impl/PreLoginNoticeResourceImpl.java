@@ -19,39 +19,33 @@ package com.tle.web.api.loginnotice.impl;
 import com.tle.core.guice.Bind;
 import com.tle.core.settings.loginnotice.LoginNoticeService;
 import com.tle.web.api.loginnotice.PreLoginNoticeResource;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Response;
 
 @Bind(PreLoginNoticeResource.class)
 @Singleton
-public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource
-{
-	@Inject
-	LoginNoticeService noticeService;
+public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
+  @Inject LoginNoticeService noticeService;
 
-	@Override
-	public Response retrievePreLoginNotice()
-	{
-		String loginNotice = noticeService.getPreLoginNotice();
-		if (loginNotice != null){
-			return Response.ok(loginNotice, "text/plain").build();
-		}
-		return Response.status(Response.Status.NOT_FOUND).entity(null).build();
-	}
+  @Override
+  public Response retrievePreLoginNotice() {
+    String loginNotice = noticeService.getPreLoginNotice();
+    if (loginNotice != null) {
+      return Response.ok(loginNotice, "text/plain").build();
+    }
+    return Response.status(Response.Status.NOT_FOUND).entity(null).build();
+  }
 
-	@Override
-	public Response setPreLoginNotice(String loginNotice)
-	{
-		noticeService.setPreLoginNotice(loginNotice);
-		return Response.ok().build();
-	}
+  @Override
+  public Response setPreLoginNotice(String loginNotice) {
+    noticeService.setPreLoginNotice(loginNotice);
+    return Response.ok().build();
+  }
 
-	@Override
-	public Response deletePreLoginNotice()
-	{
-		noticeService.deletePreLoginNotice();
-		return Response.ok().build();
-	}
+  @Override
+  public Response deletePreLoginNotice() {
+    noticeService.deletePreLoginNotice();
+    return Response.ok().build();
+  }
 }

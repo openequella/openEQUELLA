@@ -16,27 +16,17 @@
 
 package com.tle.admin.itemdefinition.mapping;
 
+import com.tle.beans.entity.itemdef.MetadataMapping;
 import javax.swing.JComponent;
 
-import com.tle.beans.entity.itemdef.MetadataMapping;
+/** @author Charles O'Farrell */
+public interface Mapping {
+  /** Gets the viewable component for this mapping. */
+  JComponent getComponent();
 
-/**
- * @author Charles O'Farrell
- */
-public interface Mapping
-{
-	/**
-	 * Gets the viewable component for this mapping.
-	 */
-	JComponent getComponent();
+  /** Retrieve the XML for the current mapping. */
+  void save(MetadataMapping mapping);
 
-	/**
-	 * Retrieve the XML for the current mapping.
-	 */
-	void save(MetadataMapping mapping);
-
-	/**
-	 * Load the mapping editor from the given XML.
-	 */
-	void loadItem(MetadataMapping mapping);
+  /** Load the mapping editor from the given XML. */
+  void loadItem(MetadataMapping mapping);
 }

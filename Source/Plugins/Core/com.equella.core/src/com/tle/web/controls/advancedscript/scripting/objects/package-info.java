@@ -15,4 +15,3 @@
  */
 
 package com.tle.web.controls.advancedscript.scripting.objects;
-

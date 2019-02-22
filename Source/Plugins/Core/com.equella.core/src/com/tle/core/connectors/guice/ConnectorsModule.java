@@ -18,11 +18,9 @@ package com.tle.core.connectors.guice;
 
 import com.tle.core.config.guice.OptionalConfigModule;
 
-public class ConnectorsModule extends OptionalConfigModule
-{
-    @Override
-    protected void configure()
-    {
-	    bindBoolean("moodle.disablemimeparam", Boolean.FALSE);
-    }
+public class ConnectorsModule extends OptionalConfigModule {
+  @Override
+  protected void configure() {
+    bindBoolean("moodle.disablemimeparam", Boolean.FALSE);
+  }
 }

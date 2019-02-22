@@ -16,28 +16,23 @@
 
 package com.tle.core.notification.standard.task;
 
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.core.guice.Bind;
 import com.tle.core.notification.NotificationService;
 import com.tle.core.scheduler.ScheduledTask;
 import com.tle.core.services.TaskService;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class CheckEmailsTask implements ScheduledTask
-{
-	@Inject
-	private TaskService taskService;
-	@Inject
-	private NotificationService notificationService;
+public class CheckEmailsTask implements ScheduledTask {
+  @Inject private TaskService taskService;
+  @Inject private NotificationService notificationService;
 
-	@Override
-	public void execute()
-	{
-		taskService.getGlobalTask(notificationService.getClusteredTask(true), TimeUnit.MINUTES.toMillis(1));
-	}
+  @Override
+  public void execute() {
+    taskService.getGlobalTask(
+        notificationService.getClusteredTask(true), TimeUnit.MINUTES.toMillis(1));
+  }
 }

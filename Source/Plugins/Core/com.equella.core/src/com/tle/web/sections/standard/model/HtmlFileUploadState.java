@@ -19,43 +19,33 @@ package com.tle.web.sections.standard.model;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.js.JSAssignable;
 
-/**
- * @author Aaron, Doolse
- */
-public class HtmlFileUploadState extends HtmlComponentState
-{
-	private Bookmark ajaxUploadUrl;
-	private JSAssignable validateFile;
-	private boolean dontInitialise;
+/** @author Aaron, Doolse */
+public class HtmlFileUploadState extends HtmlComponentState {
+  private Bookmark ajaxUploadUrl;
+  private JSAssignable validateFile;
+  private boolean dontInitialise;
 
-	public Bookmark getAjaxUploadUrl()
-	{
-		return ajaxUploadUrl;
-	}
+  public Bookmark getAjaxUploadUrl() {
+    return ajaxUploadUrl;
+  }
 
-	public void setAjaxUploadUrl(Bookmark ajaxUploadUrl)
-	{
-		this.ajaxUploadUrl = ajaxUploadUrl;
-	}
+  public void setAjaxUploadUrl(Bookmark ajaxUploadUrl) {
+    this.ajaxUploadUrl = ajaxUploadUrl;
+  }
 
-	public JSAssignable getValidateFile()
-	{
-		return validateFile;
-	}
+  public JSAssignable getValidateFile() {
+    return validateFile;
+  }
 
-	public void setValidateFile(JSAssignable validateFile)
-	{
-		this.validateFile = validateFile;
-	}
+  public void setValidateFile(JSAssignable validateFile) {
+    this.validateFile = validateFile;
+  }
 
+  public void setDontInitialise(boolean dontInitialise) {
+    this.dontInitialise = dontInitialise;
+  }
 
-	public void setDontInitialise(boolean dontInitialise)
-	{
-		this.dontInitialise = dontInitialise;
-	}
-
-	public boolean isDontInitialise()
-	{
-		return dontInitialise;
-	}
+  public boolean isDontInitialise() {
+    return dontInitialise;
+  }
 }

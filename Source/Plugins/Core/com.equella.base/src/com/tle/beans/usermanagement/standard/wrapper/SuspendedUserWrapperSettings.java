@@ -16,42 +16,36 @@
 
 package com.tle.beans.usermanagement.standard.wrapper;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.tle.beans.ump.UserManagementSettings;
 import com.tle.common.settings.annotation.Property;
 import com.tle.common.settings.annotation.PropertyList;
+import java.util.HashSet;
+import java.util.Set;
 
-public class SuspendedUserWrapperSettings extends UserManagementSettings
-{
-	private static final long serialVersionUID = 1L;
+public class SuspendedUserWrapperSettings extends UserManagementSettings {
+  private static final long serialVersionUID = 1L;
 
-	@Property(key = "wrapper.suspended.enabled")
-	private boolean enabled;
+  @Property(key = "wrapper.suspended.enabled")
+  private boolean enabled;
 
-	@PropertyList(key = "wrapper.suspended.suspensions")
-	private Set<String> suspendedUsers = new HashSet<String>();
+  @PropertyList(key = "wrapper.suspended.suspensions")
+  private Set<String> suspendedUsers = new HashSet<String>();
 
-	@Override
-	public boolean isEnabled()
-	{
-		return enabled;
-	}
+  @Override
+  public boolean isEnabled() {
+    return enabled;
+  }
 
-	@Override
-	public void setEnabled(boolean enabled)
-	{
-		this.enabled = enabled;
-	}
+  @Override
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
 
-	public Set<String> getSuspendedUsers()
-	{
-		return suspendedUsers;
-	}
+  public Set<String> getSuspendedUsers() {
+    return suspendedUsers;
+  }
 
-	public void setSuspendedUsers(Set<String> suspendedUsers)
-	{
-		this.suspendedUsers = suspendedUsers;
-	}
+  public void setSuspendedUsers(Set<String> suspendedUsers) {
+    this.suspendedUsers = suspendedUsers;
+  }
 }

@@ -16,34 +16,30 @@
 
 package com.tle.core.copyright;
 
+import com.tle.beans.item.Item;
 import java.util.List;
 
-import com.tle.beans.item.Item;
+/** @author Aaron */
+public interface Portion {
+  long getId();
 
-/**
- * @author Aaron
- */
-public interface Portion
-{
-	long getId();
+  Item getItem();
 
-	Item getItem();
+  Holding getHolding();
 
-	Holding getHolding();
+  List<String> getAuthors();
 
-	List<String> getAuthors();
+  List<? extends Section> getSections();
 
-	List<? extends Section> getSections();
+  String getTitle();
 
-	String getTitle();
+  List<String> getTopics();
 
-	List<String> getTopics();
+  String getAuthorList();
 
-	String getAuthorList();
+  String getChapter();
 
-	String getChapter();
+  void setItem(Item item);
 
-	void setItem(Item item);
-
-	void setHolding(Holding holding);
+  void setHolding(Holding holding);
 }

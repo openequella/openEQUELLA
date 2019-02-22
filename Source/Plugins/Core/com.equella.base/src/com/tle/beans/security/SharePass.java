@@ -16,186 +16,158 @@
 
 package com.tle.beans.security;
 
+import com.tle.beans.Institution;
+import com.tle.beans.item.ForeignItemKey;
+import com.tle.beans.item.Item;
+import com.tle.common.security.SecurityConstants;
 import java.io.Serializable;
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 
-import com.tle.beans.Institution;
-import com.tle.beans.item.ForeignItemKey;
-import com.tle.beans.item.Item;
-import com.tle.common.security.SecurityConstants;
-
 @Entity
 @AccessType("field")
-public class SharePass implements Serializable, ForeignItemKey
-{
-	private static final long serialVersionUID = 1L;
+public class SharePass implements Serializable, ForeignItemKey {
+  private static final long serialVersionUID = 1L;
 
-	public enum SharePassPrivilege
-	{
-		VIEW(SecurityConstants.VIEW_ITEM);
+  public enum SharePassPrivilege {
+    VIEW(SecurityConstants.VIEW_ITEM);
 
-		private final String priv;
+    private final String priv;
 
-		private SharePassPrivilege(String priv)
-		{
-			this.priv = priv;
-		}
+    private SharePassPrivilege(String priv) {
+      this.priv = priv;
+    }
 
-		public String getPriv()
-		{
-			return priv;
-		}
-	}
+    public String getPriv() {
+      return priv;
+    }
+  }
 
-	@Id
-	@Column(length = 40)
-	private String id;
+  @Id
+  @Column(length = 40)
+  private String id;
 
-	@JoinColumn(nullable = false)
-	@ManyToOne(fetch = FetchType.LAZY)
-	@Index(name = "sharePassInstitution")
-	private Institution institution;
+  @JoinColumn(nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @Index(name = "sharePassInstitution")
+  private Institution institution;
 
-	@JoinColumn(nullable = false)
-	@ManyToOne(fetch = FetchType.LAZY)
-	@Index(name = "sharePassItem")
-	private Item item;
+  @JoinColumn(nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @Index(name = "sharePassItem")
+  private Item item;
 
-	@Column(length = 150, nullable = false)
-	private String emailAddress;
+  @Column(length = 150, nullable = false)
+  private String emailAddress;
 
-	private boolean activated;
-	private Date started;
-	private Date expiry;
+  private boolean activated;
+  private Date started;
+  private Date expiry;
 
-	@Column(length = 20, nullable = false)
-	private String privilege;
-	private transient SharePassPrivilege privilegeEnum;
+  @Column(length = 20, nullable = false)
+  private String privilege;
 
-	@Column(length = 30)
-	private String password;
+  private transient SharePassPrivilege privilegeEnum;
 
-	@Column(nullable = false)
-	private String creator;
+  @Column(length = 30)
+  private String password;
 
-	public SharePass()
-	{
-		super();
-	}
+  @Column(nullable = false)
+  private String creator;
 
-	public String getId()
-	{
-		return id;
-	}
+  public SharePass() {
+    super();
+  }
 
-	public void setId(String id)
-	{
-		this.id = id;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public String getCreator()
-	{
-		return creator;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public void setCreator(String creator)
-	{
-		this.creator = creator;
-	}
+  public String getCreator() {
+    return creator;
+  }
 
-	public String getEmailAddress()
-	{
-		return emailAddress;
-	}
+  public void setCreator(String creator) {
+    this.creator = creator;
+  }
 
-	public void setEmailAddress(String emailAddress)
-	{
-		this.emailAddress = emailAddress;
-	}
+  public String getEmailAddress() {
+    return emailAddress;
+  }
 
-	public Date getExpiry()
-	{
-		return expiry;
-	}
+  public void setEmailAddress(String emailAddress) {
+    this.emailAddress = emailAddress;
+  }
 
-	public void setExpiry(Date expiry)
-	{
-		this.expiry = expiry;
-	}
+  public Date getExpiry() {
+    return expiry;
+  }
 
-	public Institution getInstitution()
-	{
-		return institution;
-	}
+  public void setExpiry(Date expiry) {
+    this.expiry = expiry;
+  }
 
-	public void setInstitution(Institution institution)
-	{
-		this.institution = institution;
-	}
+  public Institution getInstitution() {
+    return institution;
+  }
 
-	public Item getItem()
-	{
-		return item;
-	}
+  public void setInstitution(Institution institution) {
+    this.institution = institution;
+  }
 
-	@Override
-	public void setItem(Item item)
-	{
-		this.item = item;
-	}
+  public Item getItem() {
+    return item;
+  }
 
-	public SharePassPrivilege getPrivilege()
-	{
-		if( privilegeEnum == null && privilege != null )
-		{
-			privilegeEnum = SharePassPrivilege.valueOf(privilege);
-		}
-		return privilegeEnum;
-	}
+  @Override
+  public void setItem(Item item) {
+    this.item = item;
+  }
 
-	public void setPrivilege(SharePassPrivilege privilege)
-	{
-		this.privilegeEnum = privilege;
-		this.privilege = privilege != null ? privilege.name() : null;
-	}
+  public SharePassPrivilege getPrivilege() {
+    if (privilegeEnum == null && privilege != null) {
+      privilegeEnum = SharePassPrivilege.valueOf(privilege);
+    }
+    return privilegeEnum;
+  }
 
-	public boolean isActivated()
-	{
-		return activated;
-	}
+  public void setPrivilege(SharePassPrivilege privilege) {
+    this.privilegeEnum = privilege;
+    this.privilege = privilege != null ? privilege.name() : null;
+  }
 
-	public void setActivated(boolean activated)
-	{
-		this.activated = activated;
-	}
+  public boolean isActivated() {
+    return activated;
+  }
 
-	public Date getStarted()
-	{
-		return started;
-	}
+  public void setActivated(boolean activated) {
+    this.activated = activated;
+  }
 
-	public void setStarted(Date started)
-	{
-		this.started = started;
-	}
+  public Date getStarted() {
+    return started;
+  }
 
-	public String getPassword()
-	{
-		return password;
-	}
+  public void setStarted(Date started) {
+    this.started = started;
+  }
 
-	public void setPassword(String password)
-	{
-		this.password = password;
-	}
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
 }

@@ -17,25 +17,20 @@
 package com.tle.web.api.loginnotice;
 
 import io.swagger.annotations.Api;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
-/**
- * @author Samantha Fisher
- */
-
+/** @author Samantha Fisher */
 @Path("postloginnotice/")
 @Api("Post Login Notice")
-public interface PostLoginNoticeResource
-{
-	@GET
-	@Produces("text/plain")
-	Response retrievePostLoginNotice();
+public interface PostLoginNoticeResource {
+  @GET
+  @Produces("text/plain")
+  Response retrievePostLoginNotice();
 
-	@PUT
-	Response setPostLoginNotice(String loginNotice);
+  @PUT
+  Response setPostLoginNotice(String loginNotice);
 
-	@DELETE
-	Response deletePostLoginNotice();
+  @DELETE
+  Response deletePostLoginNotice();
 }

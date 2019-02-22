@@ -16,15 +16,6 @@
 
 package com.tle.web.controls.advancedscript;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.PropBagWrapper;
 import com.dytech.edge.common.ScriptContext;
@@ -78,271 +69,248 @@ import com.tle.web.wizard.WizardState;
 import com.tle.web.wizard.controls.AbstractSimpleWebControl;
 import com.tle.web.wizard.controls.CCustomControl;
 import com.tle.web.wizard.impl.WebRepository;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
-public class AdvancedScriptWebControl extends AbstractSimpleWebControl
-{
-	private static final PluginResourceHelper resources = ResourcesService
-		.getResourceHelper(AdvancedScriptWebControl.class);
-	private static final JSCallable HANDLE_SUBMIT_FUNCTION = new ExternallyDefinedFunction("handleSubmit",
-		new IncludeFile(resources.url("scripts/asc.js")));
+public class AdvancedScriptWebControl extends AbstractSimpleWebControl {
+  private static final PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(AdvancedScriptWebControl.class);
+  private static final JSCallable HANDLE_SUBMIT_FUNCTION =
+      new ExternallyDefinedFunction(
+          "handleSubmit", new IncludeFile(resources.url("scripts/asc.js")));
 
-	private static final String SUBMITTER_NAME_KEY = "AdvancedScriptWebControl.SUBMITTER_NAME";
-	private static final String SUBMITTER_VALUE_KEY = "AdvancedScriptWebControl.SUBMITTER_VALUE";
+  private static final String SUBMITTER_NAME_KEY = "AdvancedScriptWebControl.SUBMITTER_NAME";
+  private static final String SUBMITTER_VALUE_KEY = "AdvancedScriptWebControl.SUBMITTER_VALUE";
 
-	private AdvancedScriptControl definitionControl;
-	private CCustomControl storageControl;
+  private AdvancedScriptControl definitionControl;
+  private CCustomControl storageControl;
 
-	@Inject
-	private JavascriptService javascriptService;
-	@Inject
-	private WizardService wizardService;
-	@Inject
-	private UserSessionService sessionService;
-	private Logger logger;
+  @Inject private JavascriptService javascriptService;
+  @Inject private WizardService wizardService;
+  @Inject private UserSessionService sessionService;
+  private Logger logger;
 
-	@EventFactory
-	private EventGenerator events;
-	private JSFunction submitFunction;
+  @EventFactory private EventGenerator events;
+  private JSFunction submitFunction;
 
-	@Inject
-	private BasicFreemarkerFactory custFactory;
+  @Inject private BasicFreemarkerFactory custFactory;
 
-	@Override
-	public SectionResult renderHtml(final RenderEventContext context) throws Exception
-	{
-		final ScriptContext scriptContext = getScriptContext(context, false, false);
+  @Override
+  public SectionResult renderHtml(final RenderEventContext context) throws Exception {
+    final ScriptContext scriptContext = getScriptContext(context, false, false);
 
-		// Server side On-Load script execution. Cannot be called in doReads
-		// since there is no guarantee on how many times it will execute
-		final String r = definitionControl.getReadJs();
-		execServerSideScript(r, resources.getString("script.load", getTitle()), scriptContext);
+    // Server side On-Load script execution. Cannot be called in doReads
+    // since there is no guarantee on how many times it will execute
+    final String r = definitionControl.getReadJs();
+    execServerSideScript(r, resources.getString("script.load", getTitle()), scriptContext);
 
-		final ScriptContext markupScriptContext = getScriptContext(context, false, true);
+    final ScriptContext markupScriptContext = getScriptContext(context, false, true);
 
-		TagState divState = new TagState();
+    TagState divState = new TagState();
 
-		// On-load JS
-		final String onLoadJs = evaluateMarkUp(context.getRootRenderContext(), definitionControl.getOnLoadJs(),
-			markupScriptContext);
-		divState.addReadyStatements(new ScriptStatement(onLoadJs));
-		if( !Check.isEmpty(onLoadJs) )
-		{
-			// stops pressing up against the next script statement. it works
-			// anyway, but looks ugly :)
-			divState.addReadyStatements(new ScriptStatement("\n"));
-		}
+    // On-load JS
+    final String onLoadJs =
+        evaluateMarkUp(
+            context.getRootRenderContext(), definitionControl.getOnLoadJs(), markupScriptContext);
+    divState.addReadyStatements(new ScriptStatement(onLoadJs));
+    if (!Check.isEmpty(onLoadJs)) {
+      // stops pressing up against the next script statement. it works
+      // anyway, but looks ugly :)
+      divState.addReadyStatements(new ScriptStatement("\n"));
+    }
 
-		// On-submit JS
-		final String onSubmitJs = evaluateMarkUp(context.getRootRenderContext(), definitionControl.getOnSubmitJs(),
-			markupScriptContext);
-		if( !Check.isEmpty(onSubmitJs) )
-		{
-			final JSCallable preSubmit = new SimpleFunction("onsub" + getFormName(), new ScriptStatement(onSubmitJs));
-			divState.addEventStatements(JSHandler.EVENT_PRESUBMIT,
-				Js.iff(Js.not(Js.call(preSubmit)), new ReturnStatement(false)));
-		}
-		else
-		{
-			// if there is no onsubmit markup, just return true (Redmine #7037)
-			divState.addEventStatements(JSHandler.EVENT_PRESUBMIT, new ReturnStatement(true));
-		}
+    // On-submit JS
+    final String onSubmitJs =
+        evaluateMarkUp(
+            context.getRootRenderContext(), definitionControl.getOnSubmitJs(), markupScriptContext);
+    if (!Check.isEmpty(onSubmitJs)) {
+      final JSCallable preSubmit =
+          new SimpleFunction("onsub" + getFormName(), new ScriptStatement(onSubmitJs));
+      divState.addEventStatements(
+          JSHandler.EVENT_PRESUBMIT,
+          Js.iff(Js.not(Js.call(preSubmit)), new ReturnStatement(false)));
+    } else {
+      // if there is no onsubmit markup, just return true (Redmine #7037)
+      divState.addEventStatements(JSHandler.EVENT_PRESUBMIT, new ReturnStatement(true));
+    }
 
-		// JS Libraries
-		final List<String> jsLibs = definitionControl.getJsLibs();
-		for( String setting : jsLibs )
-		{
-			if( setting.contains(".") ) // as it must
-			{
-				String[] libAndModule = setting.split("\\.");
-				if( libAndModule.length == 2 ) // as it must
-				{
-					JavascriptModule module = javascriptService.getJavascriptModule(libAndModule[0], libAndModule[1]);
-					if( module != null )
-					{
-						Object preRenderer = module.getPreRenderer();
-						if( preRenderer instanceof PreRenderable )
-						{
-							divState.addPreRenderable((PreRenderable) preRenderer);
-						}
-					}
-					else
-					{
-						logger.warn("Javascript module " + setting + " not found");
-					}
-				}
-			}
-		}
+    // JS Libraries
+    final List<String> jsLibs = definitionControl.getJsLibs();
+    for (String setting : jsLibs) {
+      if (setting.contains(".")) // as it must
+      {
+        String[] libAndModule = setting.split("\\.");
+        if (libAndModule.length == 2) // as it must
+        {
+          JavascriptModule module =
+              javascriptService.getJavascriptModule(libAndModule[0], libAndModule[1]);
+          if (module != null) {
+            Object preRenderer = module.getPreRenderer();
+            if (preRenderer instanceof PreRenderable) {
+              divState.addPreRenderable((PreRenderable) preRenderer);
+            }
+          } else {
+            logger.warn("Javascript module " + setting + " not found");
+          }
+        }
+      }
+    }
 
-		return new DivRenderer(divState, new SimpleSectionResult(
-			evaluateMarkUp(context.getRootRenderContext(), definitionControl.getMarkUp(), markupScriptContext)));
-	}
+    return new DivRenderer(
+        divState,
+        new SimpleSectionResult(
+            evaluateMarkUp(
+                context.getRootRenderContext(),
+                definitionControl.getMarkUp(),
+                markupScriptContext)));
+  }
 
-	private String evaluateMarkUp(RenderContext context, String markUp, ScriptContext scriptContext) throws Exception
-	{
-		try
-		{
-			final FreemarkerSectionResult inner = custFactory.createResult("advanced", new StringReader(markUp),
-				context);
+  private String evaluateMarkUp(RenderContext context, String markUp, ScriptContext scriptContext)
+      throws Exception {
+    try {
+      final FreemarkerSectionResult inner =
+          custFactory.createResult("advanced", new StringReader(markUp), context);
 
-			// all the script context objects are available in the freemarker
-			// templates
-			for( Map.Entry<String, Object> entry : scriptContext.getScriptObjects().entrySet() )
-			{
-				inner.addExtraObject(entry.getKey(), entry.getValue());
-			}
+      // all the script context objects are available in the freemarker
+      // templates
+      for (Map.Entry<String, Object> entry : scriptContext.getScriptObjects().entrySet()) {
+        inner.addExtraObject(entry.getKey(), entry.getValue());
+      }
 
-			StringWriter outbuf = new StringWriter();
-			inner.realRender(new SectionWriter(outbuf, context));
-			return outbuf.toString();
-		}
-		catch( SectionsRuntimeException runtime )
-		{
-			Throwable cause = runtime.getCause();
-			if( cause instanceof Exception )
-			{
-				throw (Exception) cause;
-			}
-			throw runtime;
-		}
-	}
+      StringWriter outbuf = new StringWriter();
+      inner.realRender(new SectionWriter(outbuf, context));
+      return outbuf.toString();
+    } catch (SectionsRuntimeException runtime) {
+      Throwable cause = runtime.getCause();
+      if (cause instanceof Exception) {
+        throw (Exception) cause;
+      }
+      throw runtime;
+    }
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		submitFunction = new SubmitValuesFunction(events.getEventHandler("handleSubmit"));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    submitFunction = new SubmitValuesFunction(events.getEventHandler("handleSubmit"));
+  }
 
-	@EventHandlerMethod
-	public void handleSubmit(SectionInfo info, String submitterName, String submitterValue)
-	{
-		if( !Check.isEmpty(submitterName) )
-		{
-			info.setAttribute(SUBMITTER_NAME_KEY, submitterName);
-			info.setAttribute(SUBMITTER_VALUE_KEY, new String[]{submitterValue});
-		}
-	}
+  @EventHandlerMethod
+  public void handleSubmit(SectionInfo info, String submitterName, String submitterValue) {
+    if (!Check.isEmpty(submitterName)) {
+      info.setAttribute(SUBMITTER_NAME_KEY, submitterName);
+      info.setAttribute(SUBMITTER_VALUE_KEY, new String[] {submitterValue});
+    }
+  }
 
-	@Override
-	public void setWrappedControl(final HTMLControl control)
-	{
-		definitionControl = new AdvancedScriptControl((CustomControl) control.getControlBean());
-		storageControl = (CCustomControl) control;
-		super.setWrappedControl(control);
-	}
+  @Override
+  public void setWrappedControl(final HTMLControl control) {
+    definitionControl = new AdvancedScriptControl((CustomControl) control.getControlBean());
+    storageControl = (CCustomControl) control;
+    super.setWrappedControl(control);
+  }
 
-	@Override
-	public boolean isEmpty()
-	{
-		return storageControl.getValues().size() == 0;
-	}
+  @Override
+  public boolean isEmpty() {
+    return storageControl.getValues().size() == 0;
+  }
 
-	/**
-	 * Server side On-Submit script execution
-	 */
-	@Override
-	public void doEdits(final SectionInfo info)
-	{
-		// evaluate the on submit script
-		execServerSideScript(definitionControl.getStoreJs(), resources.getString("script.save", getTitle()),
-			getScriptContext(info, true, false));
-	}
+  /** Server side On-Submit script execution */
+  @Override
+  public void doEdits(final SectionInfo info) {
+    // evaluate the on submit script
+    execServerSideScript(
+        definitionControl.getStoreJs(),
+        resources.getString("script.save", getTitle()),
+        getScriptContext(info, true, false));
+  }
 
-	private void execServerSideScript(String script, String scriptName, ScriptContext context)
-	{
-		if( !Check.isEmpty(script) )
-		{
-			try
-			{
-				if( context != null )
-				{
-					wizardService.executeScript(script, scriptName, context, false);
-				}
-			}
-			catch( ScriptException e )
-			{
-				throwScriptError(scriptName, e);
-			}
-		}
-	}
+  private void execServerSideScript(String script, String scriptName, ScriptContext context) {
+    if (!Check.isEmpty(script)) {
+      try {
+        if (context != null) {
+          wizardService.executeScript(script, scriptName, context, false);
+        }
+      } catch (ScriptException e) {
+        throwScriptError(scriptName, e);
+      }
+    }
+  }
 
-	private void throwScriptError(String scriptName, Exception e)
-	{
-		throw new RuntimeException(resources.getString("error.script") + scriptName + "\n" + e.getMessage());
-	}
+  private void throwScriptError(String scriptName, Exception e) {
+    throw new RuntimeException(
+        resources.getString("error.script") + scriptName + "\n" + e.getMessage());
+  }
 
-	/**
-	 * @return null if there is no staging folder
-	 */
-	private ScriptContext getScriptContext(SectionInfo info, boolean request, boolean clientSide)
-	{
-		final Map<String, Object> extra = new HashMap<String, Object>();
-		extra.put(AdvancedScriptWebControlConstants.PREFIX, getFormName());
-		if( clientSide )
-		{
-			final RenderContext context = (RenderContext) info;
-			final ScriptVariable thisVar = new ScriptVariable("this");
-			final OverrideHandler submitHandler = new OverrideHandler(HANDLE_SUBMIT_FUNCTION, thisVar, submitFunction);
-			extra.put(AdvancedScriptWebControlConstants.SUBMIT_JS,
-				submitHandler.getStatements(context) + " return false;");
-			// required!
-			context.preRender(submitHandler);
-		}
-		if( request )
-		{
-			Map<Object, Object> paramMap = new HashMap<>();
-			paramMap.putAll(info.getParameterMap());
-			String submitter = info.getAttribute(SUBMITTER_NAME_KEY);
-			if( !Check.isEmpty(submitter) )
-			{
-				paramMap.put(submitter, info.getAttribute(SUBMITTER_VALUE_KEY));
-			}
-			extra.put(AdvancedScriptWebControlConstants.REQUEST_MAP, paramMap);
-		}
-		final WebRepository repo = (WebRepository) getRepository();
-		extra.put(AdvancedScriptWebControlConstants.WIZARD_ID, repo.getWizid());
+  /** @return null if there is no staging folder */
+  private ScriptContext getScriptContext(SectionInfo info, boolean request, boolean clientSide) {
+    final Map<String, Object> extra = new HashMap<String, Object>();
+    extra.put(AdvancedScriptWebControlConstants.PREFIX, getFormName());
+    if (clientSide) {
+      final RenderContext context = (RenderContext) info;
+      final ScriptVariable thisVar = new ScriptVariable("this");
+      final OverrideHandler submitHandler =
+          new OverrideHandler(HANDLE_SUBMIT_FUNCTION, thisVar, submitFunction);
+      extra.put(
+          AdvancedScriptWebControlConstants.SUBMIT_JS,
+          submitHandler.getStatements(context) + " return false;");
+      // required!
+      context.preRender(submitHandler);
+    }
+    if (request) {
+      Map<Object, Object> paramMap = new HashMap<>();
+      paramMap.putAll(info.getParameterMap());
+      String submitter = info.getAttribute(SUBMITTER_NAME_KEY);
+      if (!Check.isEmpty(submitter)) {
+        paramMap.put(submitter, info.getAttribute(SUBMITTER_VALUE_KEY));
+      }
+      extra.put(AdvancedScriptWebControlConstants.REQUEST_MAP, paramMap);
+    }
+    final WebRepository repo = (WebRepository) getRepository();
+    extra.put(AdvancedScriptWebControlConstants.WIZARD_ID, repo.getWizid());
 
-		// add the magic 'attributes' bag (this passes data between
-		// scripts/templates)
-		final String attributesKey = repo.getWizid() + "_" + getFormName() + "_attributes";
-		XmlScriptType att = sessionService.getAttribute(attributesKey);
-		if( att == null )
-		{
-			att = new PropBagWrapper(new PropBagEx());
+    // add the magic 'attributes' bag (this passes data between
+    // scripts/templates)
+    final String attributesKey = repo.getWizid() + "_" + getFormName() + "_attributes";
+    XmlScriptType att = sessionService.getAttribute(attributesKey);
+    if (att == null) {
+      att = new PropBagWrapper(new PropBagEx());
+    }
+    sessionService.setAttribute(attributesKey, att);
+    extra.put(AdvancedScriptWebControlConstants.ATTRIBUTES, att);
 
-		}
-		sessionService.setAttribute(attributesKey, att);
-		extra.put(AdvancedScriptWebControlConstants.ATTRIBUTES, att);
+    final WizardState wizState = repo.getState();
+    final ScriptContext scriptContext =
+        wizardService.createScriptContext(
+            wizState, storageControl.getWizardPage(), storageControl, extra);
 
-		final WizardState wizState = repo.getState();
-		final ScriptContext scriptContext = wizardService.createScriptContext(wizState, storageControl.getWizardPage(),
-			storageControl, extra);
+    scriptContext.setLogger(logger);
 
-		scriptContext.setLogger(logger);
+    PropBagWrapper xml = scriptContext.getXml();
+    xml.clearOverrides();
+    Deque<Pair<String, Integer>> pathOverrides = wizState.getPathOverrides();
+    while (!pathOverrides.isEmpty()) {
+      Pair<String, Integer> override = pathOverrides.removeLast();
+      xml.pushOverride(override.getFirst(), override.getSecond());
+    }
 
-		PropBagWrapper xml = scriptContext.getXml();
-		xml.clearOverrides();
-		Deque<Pair<String, Integer>> pathOverrides = wizState.getPathOverrides();
-		while( !pathOverrides.isEmpty() )
-		{
-			Pair<String, Integer> override = pathOverrides.removeLast();
-			xml.pushOverride(override.getFirst(), override.getSecond());
-		}
+    return scriptContext;
+  }
 
-		return scriptContext;
-	}
+  @Inject
+  public void setLoggingService(LoggingService loggingService) {
+    logger = loggingService.getLogger(AdvancedScriptWebControl.class);
+  }
 
-	@Inject
-	public void setLoggingService(LoggingService loggingService)
-	{
-		logger = loggingService.getLogger(AdvancedScriptWebControl.class);
-	}
-
-	@Override
-	protected ElementId getIdForLabel()
-	{
-		return null;
-	}
+  @Override
+  protected ElementId getIdForLabel() {
+    return null;
+  }
 }

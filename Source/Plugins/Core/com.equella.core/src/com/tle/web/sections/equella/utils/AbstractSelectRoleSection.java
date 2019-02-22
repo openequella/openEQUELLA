@@ -16,11 +16,6 @@
 
 package com.tle.web.sections.equella.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.google.common.base.Strings;
 import com.tle.common.Check;
 import com.tle.common.Format;
@@ -59,374 +54,323 @@ import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.HtmlListState;
 import com.tle.web.sections.standard.model.Option;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 public abstract class AbstractSelectRoleSection<M extends AbstractSelectRoleSection.Model>
-	extends
-		AbstractPrototypeSection<M> implements HtmlRenderer
-{
-	static
-	{
-		PluginResourceHandler.init(AbstractSelectRoleSection.class);
-	}
+    extends AbstractPrototypeSection<M> implements HtmlRenderer {
+  static {
+    PluginResourceHandler.init(AbstractSelectRoleSection.class);
+  }
 
-	public static final String RESULTS_DIVID = "results";
+  public static final String RESULTS_DIVID = "results";
 
-	protected static final int SEARCH_LIMIT = 50;
+  protected static final int SEARCH_LIMIT = 50;
 
-	@PlugKey("utils.selectroledialog.validation.enterquery")
-	private static Label ENTER_QUERY_LABEL;
-	@PlugKey("utils.selectroledialog.default.prompt")
-	private static Label LABEL_DEFAULT_PROMPT;
-	@PlugKey("utils.selectroledialog.validation.invalid")
-	private static String KEY_INVALID_QUERY;
-	@PlugKey("utils.selectroledialog.textfieldhint")
-	private static Label TEXTFIELD_HINT;
+  @PlugKey("utils.selectroledialog.validation.enterquery")
+  private static Label ENTER_QUERY_LABEL;
 
-	// The following are not static as they can be changed by setters
-	private Label prompt = LABEL_DEFAULT_PROMPT;
-	private Label title = SelectRoleDialog.getTitleLabel();
+  @PlugKey("utils.selectroledialog.default.prompt")
+  private static Label LABEL_DEFAULT_PROMPT;
 
-	@ViewFactory
-	protected FreemarkerFactory viewFactory;
-	@EventFactory
-	protected EventGenerator events;
-	@AjaxFactory
-	protected AjaxGenerator ajax;
+  @PlugKey("utils.selectroledialog.validation.invalid")
+  private static String KEY_INVALID_QUERY;
 
-	@Component(name = "q")
-	protected TextField query;
-	@Component(name = "s")
-	@PlugKey("utils.selectroledialog.searchbutton")
-	private Button search;
-	@Component(name = "t")
-	private Link roleFilterTooltip;
-	// Dynamic @Component
-	private MultiSelectionList<RoleBean> roleList;
+  @PlugKey("utils.selectroledialog.textfieldhint")
+  private static Label TEXTFIELD_HINT;
 
-	@Inject
-	protected ComponentFactory componentFactory;
-	@Inject
-	protected UserService userService;
+  // The following are not static as they can be changed by setters
+  private Label prompt = LABEL_DEFAULT_PROMPT;
+  private Label title = SelectRoleDialog.getTitleLabel();
 
-	protected boolean multipleRoles;
+  @ViewFactory protected FreemarkerFactory viewFactory;
+  @EventFactory protected EventGenerator events;
+  @AjaxFactory protected AjaxGenerator ajax;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		doValidationMessages(context);
+  @Component(name = "q")
+  protected TextField query;
 
-		return viewFactory.createResult("utils/selectrole.ftl", this);
-	}
+  @Component(name = "s")
+  @PlugKey("utils.selectroledialog.searchbutton")
+  private Button search;
 
-	protected void doValidationMessages(SectionInfo info)
-	{
-		final M model = getModel(info);
-		final String theQuery = query.getValue(info);
-		if( !Check.isEmpty(theQuery) && !validQuery(theQuery) )
-		{
-			model.setInvalidMessageKey(KEY_INVALID_QUERY);
-		}
-		else
-		{
-			model.setInvalidMessageKey(null);
-		}
-		model.setHasNoResults(isNoResults(info));
-	}
+  @Component(name = "t")
+  private Link roleFilterTooltip;
+  // Dynamic @Component
+  private MultiSelectionList<RoleBean> roleList;
 
-	protected boolean isNoResults(SectionInfo info)
-	{
-		return (!Check.isEmpty(query.getValue(info)) && roleList.getListModel().getOptions(info).size() == 0);
-	}
+  @Inject protected ComponentFactory componentFactory;
+  @Inject protected UserService userService;
 
-	protected boolean validQuery(String query)
-	{
-		String q = Strings.nullToEmpty(query);
-		for( int i = 0; i < q.length(); i++ )
-		{
-			if( Character.isLetterOrDigit(q.codePointAt(i)) )
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+  protected boolean multipleRoles;
 
-	@SuppressWarnings({"unchecked"})
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    doValidationMessages(context);
 
-		if( multipleRoles )
-		{
-			roleList = (MultiSelectionList<RoleBean>) componentFactory.createMultiSelectionList(id, "ul", tree);
-		}
-		else
-		{
-			roleList = (MultiSelectionList<RoleBean>) componentFactory.createSingleSelectionList(id, "ul", tree);
-		}
+    return viewFactory.createResult("utils/selectrole.ftl", this);
+  }
 
-		final RoleSearchModel listModel = new RoleSearchModel(query, userService, SEARCH_LIMIT)
-		{
-			@Override
-			protected Option<RoleBean> convertToOption(SectionInfo info, RoleBean role)
-			{
-				return new SelectRoleResultOption(role);
-			}
-		};
+  protected void doValidationMessages(SectionInfo info) {
+    final M model = getModel(info);
+    final String theQuery = query.getValue(info);
+    if (!Check.isEmpty(theQuery) && !validQuery(theQuery)) {
+      model.setInvalidMessageKey(KEY_INVALID_QUERY);
+    } else {
+      model.setInvalidMessageKey(null);
+    }
+    model.setHasNoResults(isNoResults(info));
+  }
 
-		roleList.setListModel(listModel);
+  protected boolean isNoResults(SectionInfo info) {
+    return (!Check.isEmpty(query.getValue(info))
+        && roleList.getListModel().getOptions(info).size() == 0);
+  }
 
-		query.addTagProcessor(new JQueryTextFieldHint(TEXTFIELD_HINT, query));
-	}
+  protected boolean validQuery(String query) {
+    String q = Strings.nullToEmpty(query);
+    for (int i = 0; i < q.length(); i++) {
+      if (Character.isLetterOrDigit(q.codePointAt(i))) {
+        return true;
+      }
+    }
+    return false;
+  }
 
-	protected abstract JSCallable getResultUpdater(SectionTree tree, ParameterizedEvent eventHandler);
+  @SuppressWarnings({"unchecked"})
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
+    if (multipleRoles) {
+      roleList =
+          (MultiSelectionList<RoleBean>) componentFactory.createMultiSelectionList(id, "ul", tree);
+    } else {
+      roleList =
+          (MultiSelectionList<RoleBean>) componentFactory.createSingleSelectionList(id, "ul", tree);
+    }
 
-		OverrideHandler handler = new OverrideHandler(getResultUpdater(tree, null));
-		handler.addValidator(Js.validator(Js.notEquals(query.createGetExpression(), Js.str(""))).setFailureStatements(
-			Js.alert_s(ENTER_QUERY_LABEL)));
-		search.setClickHandler(handler);
-	}
+    final RoleSearchModel listModel =
+        new RoleSearchModel(query, userService, SEARCH_LIMIT) {
+          @Override
+          protected Option<RoleBean> convertToOption(SectionInfo info, RoleBean role) {
+            return new SelectRoleResultOption(role);
+          }
+        };
 
-	@EventHandlerMethod
-	public void addRoles(SectionInfo info)
-	{
-		final List<RoleBean> roles = roleList.getSelectedValues(info);
-		if( !multipleRoles && roles.size() > 0 )
-		{
-			setSelections(info, null);
-		}
+    roleList.setListModel(listModel);
 
-		for( RoleBean role : roles )
-		{
-			addSelectedRole(info, role.getUniqueID(), Format.format(role));
-		}
-	}
+    query.addTagProcessor(new JQueryTextFieldHint(TEXTFIELD_HINT, query));
+  }
 
-	public void addSelectedRole(SectionInfo info, String uuid, String displayName)
-	{
-		final SelectedRole role = createSelectedRole(info, uuid, displayName);
-		if( role != null )
-		{
-			List<SelectedRole> selections = getSelections(info);
-			if( selections == null )
-			{
-				selections = new ArrayList<SelectedRole>();
-			}
-			selections.remove(role);
-			selections.add(role);
-			setSelections(info, selections);
-		}
-	}
+  protected abstract JSCallable getResultUpdater(SectionTree tree, ParameterizedEvent eventHandler);
 
-	protected abstract SelectedRole createSelectedRole(SectionInfo info, String uuid, String displayName);
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
 
-	void setSelections(SectionInfo info, List<SelectedRole> selections)
-	{
-		getModel(info).setSelections(selections);
-	}
+    OverrideHandler handler = new OverrideHandler(getResultUpdater(tree, null));
+    handler.addValidator(
+        Js.validator(Js.notEquals(query.createGetExpression(), Js.str("")))
+            .setFailureStatements(Js.alert_s(ENTER_QUERY_LABEL)));
+    search.setClickHandler(handler);
+  }
 
-	public List<SelectedRole> getSelections(SectionInfo info)
-	{
-		return getModel(info).getSelections();
-	}
+  @EventHandlerMethod
+  public void addRoles(SectionInfo info) {
+    final List<RoleBean> roles = roleList.getSelectedValues(info);
+    if (!multipleRoles && roles.size() > 0) {
+      setSelections(info, null);
+    }
 
-	public TextField getQuery()
-	{
-		return query;
-	}
+    for (RoleBean role : roles) {
+      addSelectedRole(info, role.getUniqueID(), Format.format(role));
+    }
+  }
 
-	public MultiSelectionList<RoleBean> getRoleList()
-	{
-		return roleList;
-	}
+  public void addSelectedRole(SectionInfo info, String uuid, String displayName) {
+    final SelectedRole role = createSelectedRole(info, uuid, displayName);
+    if (role != null) {
+      List<SelectedRole> selections = getSelections(info);
+      if (selections == null) {
+        selections = new ArrayList<SelectedRole>();
+      }
+      selections.remove(role);
+      selections.add(role);
+      setSelections(info, selections);
+    }
+  }
 
-	public Button getSearch()
-	{
-		return search;
-	}
+  protected abstract SelectedRole createSelectedRole(
+      SectionInfo info, String uuid, String displayName);
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model();
-	}
+  void setSelections(SectionInfo info, List<SelectedRole> selections) {
+    getModel(info).setSelections(selections);
+  }
 
-	public boolean isMultipleRoles()
-	{
-		return multipleRoles;
-	}
+  public List<SelectedRole> getSelections(SectionInfo info) {
+    return getModel(info).getSelections();
+  }
 
-	public void setMultipleRoles(boolean multipleRoles)
-	{
-		this.multipleRoles = multipleRoles;
-	}
+  public TextField getQuery() {
+    return query;
+  }
 
-	public Link getRoleFilterTooltip()
-	{
-		return roleFilterTooltip;
-	}
+  public MultiSelectionList<RoleBean> getRoleList() {
+    return roleList;
+  }
 
-	public static class SelectRoleResultOption implements Option<RoleBean>
-	{
-		private final RoleBean role;
-		private boolean disabled;
+  public Button getSearch() {
+    return search;
+  }
 
-		protected SelectRoleResultOption(RoleBean role)
-		{
-			this(role, false);
-		}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model();
+  }
 
-		protected SelectRoleResultOption(RoleBean role, boolean disabled)
-		{
-			this.role = role;
-			this.disabled = disabled;
-		}
+  public boolean isMultipleRoles() {
+    return multipleRoles;
+  }
 
-		@Override
-		public RoleBean getObject()
-		{
-			return role;
-		}
+  public void setMultipleRoles(boolean multipleRoles) {
+    this.multipleRoles = multipleRoles;
+  }
 
-		public Label getRolename()
-		{
-			return new TextLabel(role.getName());
-		}
+  public Link getRoleFilterTooltip() {
+    return roleFilterTooltip;
+  }
 
-		@Override
-		public String getName()
-		{
-			return null;
-		}
+  public static class SelectRoleResultOption implements Option<RoleBean> {
+    private final RoleBean role;
+    private boolean disabled;
 
-		@Override
-		public String getValue()
-		{
-			return role.getUniqueID();
-		}
+    protected SelectRoleResultOption(RoleBean role) {
+      this(role, false);
+    }
 
-		@Override
-		public String getAltTitleAttr()
-		{
-			return null;
-		}
+    protected SelectRoleResultOption(RoleBean role, boolean disabled) {
+      this.role = role;
+      this.disabled = disabled;
+    }
 
-		@Override
-		public String getGroupName()
-		{
-			return null;
-		}
+    @Override
+    public RoleBean getObject() {
+      return role;
+    }
 
-		@Override
-		public boolean isDisabled()
-		{
-			return false;
-		}
+    public Label getRolename() {
+      return new TextLabel(role.getName());
+    }
 
-		@Override
-		public boolean isNameHtml()
-		{
-			return false;
-		}
+    @Override
+    public String getName() {
+      return null;
+    }
 
-		@Override
-		public boolean hasAltTitleAttr()
-		{
-			return false;
-		}
+    @Override
+    public String getValue() {
+      return role.getUniqueID();
+    }
 
-		@Override
-		public void setDisabled(boolean disabled)
-		{
-			this.disabled = disabled;
-		}
-	}
+    @Override
+    public String getAltTitleAttr() {
+      return null;
+    }
 
-	public static class Model
-	{
-		@Bookmarked(name = "s")
-		private List<SelectedRole> selections;
-		@Bookmarked(name = "ex", ignoreForContext = BookmarkEvent.CONTEXT_BROWSERURL)
-		private SectionRenderable topRenderable;
-		private HtmlListState resultList;
-		private boolean hasNoResults;
-		private String invalidMessageKey;
+    @Override
+    public String getGroupName() {
+      return null;
+    }
 
-		public SectionRenderable getTopRenderable()
-		{
-			return topRenderable;
-		}
+    @Override
+    public boolean isDisabled() {
+      return false;
+    }
 
-		public void setTopRenderable(SectionRenderable topRenderable)
-		{
-			this.topRenderable = topRenderable;
-		}
+    @Override
+    public boolean isNameHtml() {
+      return false;
+    }
 
-		public HtmlListState getResultList()
-		{
-			return resultList;
-		}
+    @Override
+    public boolean hasAltTitleAttr() {
+      return false;
+    }
 
-		public void setResultList(HtmlListState resultList)
-		{
-			this.resultList = resultList;
-		}
+    @Override
+    public void setDisabled(boolean disabled) {
+      this.disabled = disabled;
+    }
+  }
 
-		public List<SelectedRole> getSelections()
-		{
-			return selections;
-		}
+  public static class Model {
+    @Bookmarked(name = "s")
+    private List<SelectedRole> selections;
 
-		public void setSelections(List<SelectedRole> selections)
-		{
-			this.selections = selections;
-		}
+    @Bookmarked(name = "ex", ignoreForContext = BookmarkEvent.CONTEXT_BROWSERURL)
+    private SectionRenderable topRenderable;
 
-		public boolean isHasNoResults()
-		{
-			return hasNoResults;
-		}
+    private HtmlListState resultList;
+    private boolean hasNoResults;
+    private String invalidMessageKey;
 
-		public void setHasNoResults(boolean hasNoResults)
-		{
-			this.hasNoResults = hasNoResults;
-		}
+    public SectionRenderable getTopRenderable() {
+      return topRenderable;
+    }
 
-		public String getInvalidMessageKey()
-		{
-			return invalidMessageKey;
-		}
+    public void setTopRenderable(SectionRenderable topRenderable) {
+      this.topRenderable = topRenderable;
+    }
 
-		public void setInvalidMessageKey(String invalidMessageKey)
-		{
-			this.invalidMessageKey = invalidMessageKey;
-		}
-	}
+    public HtmlListState getResultList() {
+      return resultList;
+    }
 
-	public Label getPrompt()
-	{
-		return prompt;
-	}
+    public void setResultList(HtmlListState resultList) {
+      this.resultList = resultList;
+    }
 
-	public void setPrompt(Label prompt)
-	{
-		this.prompt = prompt;
-	}
+    public List<SelectedRole> getSelections() {
+      return selections;
+    }
 
-	public Label getTitle()
-	{
-		return title;
-	}
+    public void setSelections(List<SelectedRole> selections) {
+      this.selections = selections;
+    }
 
-	public void setTitle(Label title)
-	{
-		this.title = title;
-	}
+    public boolean isHasNoResults() {
+      return hasNoResults;
+    }
+
+    public void setHasNoResults(boolean hasNoResults) {
+      this.hasNoResults = hasNoResults;
+    }
+
+    public String getInvalidMessageKey() {
+      return invalidMessageKey;
+    }
+
+    public void setInvalidMessageKey(String invalidMessageKey) {
+      this.invalidMessageKey = invalidMessageKey;
+    }
+  }
+
+  public Label getPrompt() {
+    return prompt;
+  }
+
+  public void setPrompt(Label prompt) {
+    this.prompt = prompt;
+  }
+
+  public Label getTitle() {
+    return title;
+  }
+
+  public void setTitle(Label title) {
+    this.title = title;
+  }
 }

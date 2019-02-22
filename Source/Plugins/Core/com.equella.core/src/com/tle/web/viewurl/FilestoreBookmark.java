@@ -21,38 +21,36 @@ import com.tle.common.URLUtils;
 import com.tle.core.institution.InstitutionService;
 import com.tle.web.sections.Bookmark;
 
-public class FilestoreBookmark implements Bookmark
-{
-	private final String middle;
-	private final String path;
-	private final InstitutionService institutionService;
-	private final String stagingUuid;
+public class FilestoreBookmark implements Bookmark {
+  private final String middle;
+  private final String path;
+  private final InstitutionService institutionService;
+  private final String stagingUuid;
 
-	public FilestoreBookmark(InstitutionService institutionService, ItemKey itemId, String path)
-	{
-		this.middle = itemId.toString();
-		this.institutionService = institutionService;
-		this.path = path;
-		this.stagingUuid = null;
-	}
+  public FilestoreBookmark(InstitutionService institutionService, ItemKey itemId, String path) {
+    this.middle = itemId.toString();
+    this.institutionService = institutionService;
+    this.path = path;
+    this.stagingUuid = null;
+  }
 
-	public FilestoreBookmark(InstitutionService institutionService, String stagingId, String path)
-	{
-		this.middle = URLUtils.urlEncode(stagingId) + "/$"; //$NON-NLS-1$
-		this.institutionService = institutionService;
-		this.path = path;
-		this.stagingUuid = stagingId;
-	}
+  public FilestoreBookmark(InstitutionService institutionService, String stagingId, String path) {
+    this.middle = URLUtils.urlEncode(stagingId) + "/$"; // $NON-NLS-1$
+    this.institutionService = institutionService;
+    this.path = path;
+    this.stagingUuid = stagingId;
+  }
 
-	@Override
-	public String getHref()
-	{
-		return institutionService.institutionalise("file/" + middle + '/' //$NON-NLS-1$
-			+ URLUtils.urlEncode(path, false));
-	}
+  @Override
+  public String getHref() {
+    return institutionService.institutionalise(
+        "file/"
+            + middle
+            + '/' //$NON-NLS-1$
+            + URLUtils.urlEncode(path, false));
+  }
 
-	public String getStagingUuid()
-	{
-		return stagingUuid;
-	}
+  public String getStagingUuid() {
+    return stagingUuid;
+  }
 }

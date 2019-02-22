@@ -16,13 +16,6 @@
 
 package com.tle.web.searching.section;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
-
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.settings.standard.SearchSettings;
 import com.tle.core.settings.service.ConfigurationService;
@@ -51,153 +44,137 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.DynamicHtmlListModel;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
 
 public final class SearchResultsSection
-	extends
-		AbstractFreetextResultsSection<StandardItemListEntry, SearchResultsModel>
-{
-	@PlugKey("searching.search.results")
-	private static Label LABEL_SEARCHRESULTS;
+    extends AbstractFreetextResultsSection<StandardItemListEntry, SearchResultsModel> {
+  @PlugKey("searching.search.results")
+  private static Label LABEL_SEARCHRESULTS;
 
-	@TreeLookup
-	private SearchQuerySection querySection;
+  @TreeLookup private SearchQuerySection querySection;
 
-	@EventFactory
-	private EventGenerator events;
+  @EventFactory private EventGenerator events;
 
-	@Inject
-	private GallerySearchResults galleryResults;
-	@Inject
-	private StandardSearchResults standardResults;
-	@Inject
-	private ConfigurationService configService;
-	@Inject
-	private VideoSearchResults videoResults;
-	@Component(parameter = "type", supported = true, contexts = ContextableSearchSection.HISTORYURL_CONTEXT)
-	private SingleSelectionList<StandardSearchResultType> resultType;
+  @Inject private GallerySearchResults galleryResults;
+  @Inject private StandardSearchResults standardResults;
+  @Inject private ConfigurationService configService;
+  @Inject private VideoSearchResults videoResults;
 
-	@Override
-	public AbstractItemList<StandardItemListEntry, ?> getItemList(SectionInfo info)
-	{
-		return resultType.getSelectedValue(info).getCustomItemList();
-	}
+  @Component(
+      parameter = "type",
+      supported = true,
+      contexts = ContextableSearchSection.HISTORYURL_CONTEXT)
+  private SingleSelectionList<StandardSearchResultType> resultType;
 
-	@Override
-	protected Label getDefaultResultsTitle(SectionInfo info, FreetextSearchEvent searchEvent,
-		FreetextSearchResultEvent resultsEvent)
-	{
-		return LABEL_SEARCHRESULTS;
-	}
+  @Override
+  public AbstractItemList<StandardItemListEntry, ?> getItemList(SectionInfo info) {
+    return resultType.getSelectedValue(info).getCustomItemList();
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		StandardSearchResultType resType = resultType.getSelectedValue(context);
-		Set<String> matchingValues = resultType.getListModel().getMatchingValues(context,
-			Collections.singleton(resType.getValue()));
-		if( matchingValues.size() == 0 )
-		{
-			String defaultValue = resultType.getListModel().getDefaultValue(context);
-			resultType.setSelectedStringValue(context, defaultValue);
-		}
+  @Override
+  protected Label getDefaultResultsTitle(
+      SectionInfo info, FreetextSearchEvent searchEvent, FreetextSearchResultEvent resultsEvent) {
+    return LABEL_SEARCHRESULTS;
+  }
 
-		boolean gallery = resType.equals(galleryResults) && !resType.isDisabled();
-		getPaging().setIsGalleryOptions(context, gallery);
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    StandardSearchResultType resType = resultType.getSelectedValue(context);
+    Set<String> matchingValues =
+        resultType
+            .getListModel()
+            .getMatchingValues(context, Collections.singleton(resType.getValue()));
+    if (matchingValues.size() == 0) {
+      String defaultValue = resultType.getListModel().getDefaultValue(context);
+      resultType.setSelectedStringValue(context, defaultValue);
+    }
 
-		boolean videoGallery = resType.equals(videoResults) && !resType.isDisabled();
-		getPaging().setIsVideoGallery(context, videoGallery);
-		return super.renderHtml(context);
-	}
+    boolean gallery = resType.equals(galleryResults) && !resType.isDisabled();
+    getPaging().setIsGalleryOptions(context, gallery);
 
-	@Override
-	protected DefaultSearch[] createSearches(SectionInfo info)
-	{
-		StandardSearchResultType selectedResults = resultType.getSelectedValue(info);
-		DefaultSearch search = querySection.createDefaultSearch(info, true);
-		DefaultSearch unfiltered = querySection.createDefaultSearch(info, true);
-		if( resultType.getSelectedValue(info).isDisabled() )
-		{
-			resultType.setSelectedValue(info, standardResults);
-		}
-		else
-		{
-			selectedResults.addResultTypeDefaultRestrictions(search);
-		}
+    boolean videoGallery = resType.equals(videoResults) && !resType.isDisabled();
+    getPaging().setIsVideoGallery(context, videoGallery);
+    return super.renderHtml(context);
+  }
 
-		selectedResults.addResultTypeDefaultRestrictions(unfiltered);
+  @Override
+  protected DefaultSearch[] createSearches(SectionInfo info) {
+    StandardSearchResultType selectedResults = resultType.getSelectedValue(info);
+    DefaultSearch search = querySection.createDefaultSearch(info, true);
+    DefaultSearch unfiltered = querySection.createDefaultSearch(info, true);
+    if (resultType.getSelectedValue(info).isDisabled()) {
+      resultType.setSelectedValue(info, standardResults);
+    } else {
+      selectedResults.addResultTypeDefaultRestrictions(search);
+    }
 
-		return new DefaultSearch[]{search, unfiltered};
-	}
+    selectedResults.addResultTypeDefaultRestrictions(unfiltered);
 
-	@Override
-	protected SingleSelectionList<StandardSearchResultType> getResultTypeSelector(SectionInfo info)
-	{
-		return resultType;
-	}
+    return new DefaultSearch[] {search, unfiltered};
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		standardResults.register(tree, id);
-		galleryResults.register(tree, id);
-		videoResults.register(tree, id);
+  @Override
+  protected SingleSelectionList<StandardSearchResultType> getResultTypeSelector(SectionInfo info) {
+    return resultType;
+  }
 
-		SearchTypeListModel typeListModel = new SearchTypeListModel();
-		resultType.setListModel(typeListModel);
-		resultType.setAlwaysSelect(true);
-		resultType.addChangeEventHandler(events.getNamedHandler("resultTypeChanged"));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    standardResults.register(tree, id);
+    galleryResults.register(tree, id);
+    videoResults.register(tree, id);
 
-	@EventHandlerMethod
-	public void resultTypeChanged(SectionInfo info)
-	{
-		startSearch(info);
-	}
+    SearchTypeListModel typeListModel = new SearchTypeListModel();
+    resultType.setListModel(typeListModel);
+    resultType.setAlwaysSelect(true);
+    resultType.addChangeEventHandler(events.getNamedHandler("resultTypeChanged"));
+  }
 
-	public class SearchTypeListModel extends DynamicHtmlListModel<StandardSearchResultType>
-	{
-		@Override
-		protected KeyOption<StandardSearchResultType> convertToOption(SectionInfo info,
-			StandardSearchResultType resultType)
-		{
-			return new KeyOption<StandardSearchResultType>(resultType.getKey(), resultType.getValue(), resultType);
-		}
+  @EventHandlerMethod
+  public void resultTypeChanged(SectionInfo info) {
+    startSearch(info);
+  }
 
-		@Override
-		public StandardSearchResultType getValue(SectionInfo info, String value)
-		{
-			StandardSearchResultType val = super.getValue(info, value);
-			return val == null ? getValue(info, getDefaultValue(info)) : val;
-		}
+  public class SearchTypeListModel extends DynamicHtmlListModel<StandardSearchResultType> {
+    @Override
+    protected KeyOption<StandardSearchResultType> convertToOption(
+        SectionInfo info, StandardSearchResultType resultType) {
+      return new KeyOption<StandardSearchResultType>(
+          resultType.getKey(), resultType.getValue(), resultType);
+    }
 
-		@Override
-		protected Iterable<StandardSearchResultType> populateModel(SectionInfo info)
-		{
-			final SearchSettings settings = getSearchSettings();
-			List<StandardSearchResultType> resultTypes = new ArrayList<StandardSearchResultType>();
-			resultTypes.add(standardResults);
-			if( !settings.isSearchingDisableGallery() )
-			{
-				resultTypes.add(galleryResults);
-			}
-			if( !settings.isSearchingDisableVideos() )
-			{
-				resultTypes.add(videoResults);
-			}
-			return resultTypes;
-		}
-	}
+    @Override
+    public StandardSearchResultType getValue(SectionInfo info, String value) {
+      StandardSearchResultType val = super.getValue(info, value);
+      return val == null ? getValue(info, getDefaultValue(info)) : val;
+    }
 
-	@Override
-	protected void registerItemList(SectionTree tree, String id)
-	{
-		// registered elsewhere
-	}
+    @Override
+    protected Iterable<StandardSearchResultType> populateModel(SectionInfo info) {
+      final SearchSettings settings = getSearchSettings();
+      List<StandardSearchResultType> resultTypes = new ArrayList<StandardSearchResultType>();
+      resultTypes.add(standardResults);
+      if (!settings.isSearchingDisableGallery()) {
+        resultTypes.add(galleryResults);
+      }
+      if (!settings.isSearchingDisableVideos()) {
+        resultTypes.add(videoResults);
+      }
+      return resultTypes;
+    }
+  }
 
-	private SearchSettings getSearchSettings()
-	{
-		return configService.getProperties(new SearchSettings());
-	}
+  @Override
+  protected void registerItemList(SectionTree tree, String id) {
+    // registered elsewhere
+  }
 
+  private SearchSettings getSearchSettings() {
+    return configService.getProperties(new SearchSettings());
+  }
 }

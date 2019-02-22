@@ -31,51 +31,47 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.model.DialogControl;
 
 @SuppressWarnings("nls")
-public class HtmlFiveViewerConfigDialog extends AbstractNewWindowConfigDialog
-{
-	@PlugKey("name")
-	private static Label LABEL_TITLE;
-	@PlugKey("width")
-	private static Label WIDTH_LABEL;
-	@PlugKey("height")
-	private static Label HEIGHT_LABEL;
+public class HtmlFiveViewerConfigDialog extends AbstractNewWindowConfigDialog {
+  @PlugKey("name")
+  private static Label LABEL_TITLE;
 
-	@Component
-	private TextField width;
-	@Component
-	private TextField height;
+  @PlugKey("width")
+  private static Label WIDTH_LABEL;
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return LABEL_TITLE;
-	}
+  @PlugKey("height")
+  private static Label HEIGHT_LABEL;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		controls.add(new DialogControl(WIDTH_LABEL, width));
-		controls.add(new DialogControl(HEIGHT_LABEL, height));
-		mappings.addMapMapping("attr", "html5Width", width);
-		mappings.addMapMapping("attr", "html5Height", height);
+  @Component private TextField width;
+  @Component private TextField height;
 
-	}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		StatementBlock statementBlock = new StatementBlock();
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    controls.add(new DialogControl(WIDTH_LABEL, width));
+    controls.add(new DialogControl(HEIGHT_LABEL, height));
+    mappings.addMapMapping("attr", "html5Width", width);
+    mappings.addMapMapping("attr", "html5Height", height);
+  }
 
-		statementBlock.addStatements(new IfStatement(
-			new NotExpression(new ScriptVariable("obj['attr']['html5Width']")), new FunctionCallStatement(width
-				.createSetFunction(), "640")));
-		statementBlock.addStatements(new IfStatement(
-			new NotExpression(new ScriptVariable("obj['attr']['html5Height']")), new FunctionCallStatement(height
-				.createSetFunction(), "264")));
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    StatementBlock statementBlock = new StatementBlock();
 
-		populateFunction.addExtraStatements(statementBlock);
-	}
+    statementBlock.addStatements(
+        new IfStatement(
+            new NotExpression(new ScriptVariable("obj['attr']['html5Width']")),
+            new FunctionCallStatement(width.createSetFunction(), "640")));
+    statementBlock.addStatements(
+        new IfStatement(
+            new NotExpression(new ScriptVariable("obj['attr']['html5Height']")),
+            new FunctionCallStatement(height.createSetFunction(), "264")));
 
+    populateFunction.addExtraStatements(statementBlock);
+  }
 }

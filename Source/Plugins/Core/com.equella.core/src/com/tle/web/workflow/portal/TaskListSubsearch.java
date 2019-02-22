@@ -20,17 +20,16 @@ import com.tle.common.search.DefaultSearch;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.render.Label;
 
-public interface TaskListSubsearch
-{
-	String getIdentifier();
+public interface TaskListSubsearch {
+  String getIdentifier();
 
-	DefaultSearch getSearch();
+  DefaultSearch getSearch();
 
-	boolean isSecondLevel();
+  boolean isSecondLevel();
 
-	SectionInfo setupForward(SectionInfo from);
+  SectionInfo setupForward(SectionInfo from);
 
-	Label getName();
+  Label getName();
 
-	String getParentIdentifier();
+  String getParentIdentifier();
 }

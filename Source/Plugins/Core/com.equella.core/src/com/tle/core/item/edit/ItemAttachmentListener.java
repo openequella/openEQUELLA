@@ -16,10 +16,9 @@
 
 package com.tle.core.item.edit;
 
-import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
+import com.tle.common.filesystem.handle.FileHandle;
 
-public interface ItemAttachmentListener
-{
-	void attachmentsChanged(ItemEditor editor, Item item, FileHandle fileHandle);
+public interface ItemAttachmentListener {
+  void attachmentsChanged(ItemEditor editor, Item item, FileHandle fileHandle);
 }

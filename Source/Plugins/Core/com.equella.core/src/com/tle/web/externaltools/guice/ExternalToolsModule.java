@@ -24,31 +24,27 @@ import com.tle.web.externaltools.section.ShowExternalToolsSection;
 import com.tle.web.sections.equella.guice.SectionsModule;
 
 @SuppressWarnings("nls")
-public class ExternalToolsModule extends SectionsModule
-{
+public class ExternalToolsModule extends SectionsModule {
 
-	@Override
-	protected void configure()
-	{
-		bind(Object.class).annotatedWith(Names.named("externalToolsTree")).toProvider(externalToolsTree());
-		install(new ExternalToolsProps());
-	}
+  @Override
+  protected void configure() {
+    bind(Object.class)
+        .annotatedWith(Names.named("externalToolsTree"))
+        .toProvider(externalToolsTree());
+    install(new ExternalToolsProps());
+  }
 
-	private NodeProvider externalToolsTree()
-	{
-		NodeProvider node = node(RootExternalToolsSection.class);
-		node.innerChild(ExternalToolContributeSection.class);
-		node.child(ShowExternalToolsSection.class);
-		return node;
-	}
+  private NodeProvider externalToolsTree() {
+    NodeProvider node = node(RootExternalToolsSection.class);
+    node.innerChild(ExternalToolContributeSection.class);
+    node.child(ShowExternalToolsSection.class);
+    return node;
+  }
 
-	public static class ExternalToolsProps extends OptionalConfigModule
-	{
-		@Override
-		protected void configure()
-		{
-			bindProp("external.tool.contact.email", "EXTERNAL_TOOL_CONTACT_EMAIL_NOT_CONFIGURED");
-		}
-	}
+  public static class ExternalToolsProps extends OptionalConfigModule {
+    @Override
+    protected void configure() {
+      bindProp("external.tool.contact.email", "EXTERNAL_TOOL_CONTACT_EMAIL_NOT_CONFIGURED");
+    }
+  }
 }
-

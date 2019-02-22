@@ -16,13 +16,6 @@
 
 package com.tle.core.legacy.migration.v50;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.util.Objects;
-
-import javax.inject.Singleton;
-
 import com.dytech.common.io.UnicodeReader;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.devlib.PropBagEx.PropBagIterator;
@@ -34,71 +27,66 @@ import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.InstitutionInfo;
 import com.tle.core.institution.convert.XmlMigrator;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.util.Objects;
+import javax.inject.Singleton;
 
-/**
- * @author Andrew Gibb
- */
+/** @author Andrew Gibb */
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class ConvertXsltTemplateFileToStringXml extends XmlMigrator
-{
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
-		throws IOException
-	{
-		TemporaryFileHandle idefFolder = new SubTemporaryFile(staging, "itemdefinition");
+public class ConvertXsltTemplateFileToStringXml extends XmlMigrator {
+  @Override
+  public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
+      throws IOException {
+    TemporaryFileHandle idefFolder = new SubTemporaryFile(staging, "itemdefinition");
 
-		for( String entry : xmlHelper.getXmlFileList(idefFolder) )
-		{
-			final PropBagEx xml = xmlHelper.readToPropBagEx(idefFolder, entry);
+    for (String entry : xmlHelper.getXmlFileList(idefFolder)) {
+      final PropBagEx xml = xmlHelper.readToPropBagEx(idefFolder, entry);
 
-			// Chop off the .xml from entry
-			String path = entry.substring(0, entry.length() - 4);
+      // Chop off the .xml from entry
+      String path = entry.substring(0, entry.length() - 4);
 
-			// Load XSLT file. Read to string. Save string. Delete file.
-			xsltConversion(xml.getSubtree("slow/itemSummarySections"), idefFolder, path);
+      // Load XSLT file. Read to string. Save string. Delete file.
+      xsltConversion(xml.getSubtree("slow/itemSummarySections"), idefFolder, path);
 
-			xmlHelper.writeFromPropBagEx(idefFolder, entry, xml);
-		}
-	}
+      xmlHelper.writeFromPropBagEx(idefFolder, entry, xml);
+    }
+  }
 
-	private void xsltConversion(PropBagEx xml, TemporaryFileHandle idefFolder, String path) throws IOException
-	{
-		PropBagIterator iter = xml.iterator("configList/com.tle.beans.entity.itemdef.SummarySectionsConfig");
+  private void xsltConversion(PropBagEx xml, TemporaryFileHandle idefFolder, String path)
+      throws IOException {
+    PropBagIterator iter =
+        xml.iterator("configList/com.tle.beans.entity.itemdef.SummarySectionsConfig");
 
-		for( PropBagEx config : iter )
-		{
-			if( config.getNode("value").equals("xsltSection") )
-			{
-				// Get XSLT template path
-				String filePath = String.format("%s/%s", path, config.getNode("configuration"));
+    for (PropBagEx config : iter) {
+      if (config.getNode("value").equals("xsltSection")) {
+        // Get XSLT template path
+        String filePath = String.format("%s/%s", path, config.getNode("configuration"));
 
-				if( !Objects.equals(filePath, "") )
-				{
-					// If the file exists read contents to string and close
-					// writer otherwise just remove
-					if( fileExists(idefFolder, filePath) )
-					{
-						try( Reader reader = new UnicodeReader(fileSystemService.read(idefFolder, filePath), "UTF-8") )
-						{
-							StringWriter writer = new StringWriter();
-							CharStreams.copy(reader, writer);
-							String xsltContent = writer.getBuffer().toString();
+        if (!Objects.equals(filePath, "")) {
+          // If the file exists read contents to string and close
+          // writer otherwise just remove
+          if (fileExists(idefFolder, filePath)) {
+            try (Reader reader =
+                new UnicodeReader(fileSystemService.read(idefFolder, filePath), "UTF-8")) {
+              StringWriter writer = new StringWriter();
+              CharStreams.copy(reader, writer);
+              String xsltContent = writer.getBuffer().toString();
 
-							// Remove XSLT Template
-							fileSystemService.removeFile(idefFolder, filePath);
+              // Remove XSLT Template
+              fileSystemService.removeFile(idefFolder, filePath);
 
-							// Update XML
-							config.setNode("configuration", xsltContent);
-						}
-					}
-					else
-					{
-						config.setNode("configuration", Constants.BLANK);
-					}
-				}
-			}
-		}
-	}
+              // Update XML
+              config.setNode("configuration", xsltContent);
+            }
+          } else {
+            config.setNode("configuration", Constants.BLANK);
+          }
+        }
+      }
+    }
+  }
 }

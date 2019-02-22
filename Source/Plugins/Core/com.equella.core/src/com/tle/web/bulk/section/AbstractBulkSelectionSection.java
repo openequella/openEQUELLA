@@ -16,13 +16,6 @@
 
 package com.tle.web.bulk.section;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.item.ItemIdKey;
 import com.tle.beans.item.ItemKey;
@@ -79,443 +72,362 @@ import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.RendererConstants;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.OkayableDialog;
-
 import it.uniroma3.mat.extendedset.intset.ConciseSet;
 import it.uniroma3.mat.extendedset.wrappers.LongSet;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
 
 @NonNullByDefault
 @TreeIndexed
 @SuppressWarnings("nls")
 public abstract class AbstractBulkSelectionSection<T extends ItemKey>
-	extends
-		AbstractPrototypeSection<AbstractBulkSelectionSection.Model<T>>
-	implements
-		HtmlRenderer,
-		BeforeEventsListener,
-		ReadyToRespondListener
-{
-	public static final String DIVID_SELECTBOX = "bulk-selection";
+    extends AbstractPrototypeSection<AbstractBulkSelectionSection.Model<T>>
+    implements HtmlRenderer, BeforeEventsListener, ReadyToRespondListener {
+  public static final String DIVID_SELECTBOX = "bulk-selection";
 
-	public static final IncludeFile BULKINCLUDE = new IncludeFile(
-		ResourcesService.getResourceHelper(AbstractBulkSelectionSection.class).url("scripts/bulkoperation.js"),
-		JQueryTimer.PRERENDER, AjaxGenerator.AJAX_LIBRARY);
+  public static final IncludeFile BULKINCLUDE =
+      new IncludeFile(
+          ResourcesService.getResourceHelper(AbstractBulkSelectionSection.class)
+              .url("scripts/bulkoperation.js"),
+          JQueryTimer.PRERENDER,
+          AjaxGenerator.AJAX_LIBRARY);
 
-	static
-	{
-		PluginResourceHandler.init(AbstractBulkSelectionSection.class);
-	}
+  static {
+    PluginResourceHandler.init(AbstractBulkSelectionSection.class);
+  }
 
-	@PlugKey("selectionsbox.title")
-	private static String titleKey;
-	@PlugKey("selectionsbox.execute")
-	private static Label LABEL_EXECUTE;
+  @PlugKey("selectionsbox.title")
+  private static String titleKey;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @PlugKey("selectionsbox.execute")
+  private static Label LABEL_EXECUTE;
 
-	@Inject
-	private TaskService taskService;
-	@Inject
-	private BulkOperationService bulkService;
-	@Inject
-	private UserSessionService userSessionService;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
+  @AjaxFactory private AjaxGenerator ajax;
 
-	@Component
-	private Box box;
-	@Component
-	private Div div;
-	@Component
-	private Button selectAllButton;
-	@Component
-	private Link viewSelectedLink;
-	@Component
-	private Link unselectAllLink;
-	@Component
-	private Button executeButton;
+  @Inject private TaskService taskService;
+  @Inject private BulkOperationService bulkService;
+  @Inject private UserSessionService userSessionService;
 
-	@TreeLookup
-	private AbstractSearchResultsSection<?, ?, ?, ?> resultsSection;
+  @Component private Box box;
+  @Component private Div div;
+  @Component private Button selectAllButton;
+  @Component private Link viewSelectedLink;
+  @Component private Link unselectAllLink;
+  @Component private Button executeButton;
 
-	private SimpleAjaxCallback resultShowCallback;
+  @TreeLookup private AbstractSearchResultsSection<?, ?, ?, ?> resultsSection;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		box.setNoMinMaxOnHeader(true);
-		unselectAllLink.setLabel(getLabelUnselectAll());
-		viewSelectedLink.setLabel(getLabelViewSelected());
-		OkayableDialog bulkDialog = getBulkDialog();
-		viewSelectedLink.setClickHandler(new OverrideHandler(bulkDialog.getOpenFunction(), false));
-		unselectAllLink.setClickHandler(events.getNamedHandler("unselectAll"));
-		selectAllButton.setClickHandler(events.getNamedHandler("selectAll"));
-		selectAllButton.setDefaultRenderer(RendererConstants.LINK);
-		selectAllButton.setLabel(getLabelSelectAll());
+  private SimpleAjaxCallback resultShowCallback;
 
-		executeButton.setLabel(LABEL_EXECUTE);
-		executeButton.setStyleClass("execute-action");
-		executeButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
-		executeButton.setClickHandler(new OverrideHandler(bulkDialog.getOpenFunction(), true));
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    box.setNoMinMaxOnHeader(true);
+    unselectAllLink.setLabel(getLabelUnselectAll());
+    viewSelectedLink.setLabel(getLabelViewSelected());
+    OkayableDialog bulkDialog = getBulkDialog();
+    viewSelectedLink.setClickHandler(new OverrideHandler(bulkDialog.getOpenFunction(), false));
+    unselectAllLink.setClickHandler(events.getNamedHandler("unselectAll"));
+    selectAllButton.setClickHandler(events.getNamedHandler("selectAll"));
+    selectAllButton.setDefaultRenderer(RendererConstants.LINK);
+    selectAllButton.setLabel(getLabelSelectAll());
 
-		bulkDialog.setCancelCallback(new SimpleFunction("cancel_" + id,
-			StatementBlock.get(new FunctionCallStatement(bulkDialog.getCloseFunction()), new ReloadStatement())));
-		tree.setLayout(id, AbstractSearchActionsSection.AREA_SELECT);
-	}
+    executeButton.setLabel(LABEL_EXECUTE);
+    executeButton.setStyleClass("execute-action");
+    executeButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
+    executeButton.setClickHandler(new OverrideHandler(bulkDialog.getOpenFunction(), true));
 
-	public JSCallable getUpdateSelection(SectionTree tree, ParameterizedEvent event)
-	{
-		return ajax.getAjaxUpdateDomFunction(tree, null, event, ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
-			DIVID_SELECTBOX);
-	}
+    bulkDialog.setCancelCallback(
+        new SimpleFunction(
+            "cancel_" + id,
+            StatementBlock.get(
+                new FunctionCallStatement(bulkDialog.getCloseFunction()), new ReloadStatement())));
+    tree.setLayout(id, AbstractSearchActionsSection.AREA_SELECT);
+  }
 
-	protected abstract Label getLabelSelectAll();
+  public JSCallable getUpdateSelection(SectionTree tree, ParameterizedEvent event) {
+    return ajax.getAjaxUpdateDomFunction(
+        tree, null, event, ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), DIVID_SELECTBOX);
+  }
 
-	protected abstract Label getLabelUnselectAll();
+  protected abstract Label getLabelSelectAll();
 
-	protected abstract Label getLabelViewSelected();
+  protected abstract Label getLabelUnselectAll();
 
-	protected abstract OkayableDialog getBulkDialog();
+  protected abstract Label getLabelViewSelected();
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		Model<T> model = getModel(context);
-		int selectionCount;
-		if( useBitSet() )
-		{
-			long size = model.getBitSet().size();
-			if( size > Integer.MAX_VALUE )
-			{
-				throw new RuntimeException("Too many selections");
-			}
-			else
-			{
-				selectionCount = (int) size;
-			}
-		}
-		else
-		{
-			selectionCount = model.getSelections().size();
-		}
-		box.setLabel(context, new KeyLabel(titleKey, selectionCount));
-		selectAllButton.setDisplayed(context, resultsSection.getPaging().isResultsAvailable(context));
-		model.setSelectionBoxCountLabel(getSelectionBoxCountLabel(selectionCount));
-		setupButton(context, selectionCount);
+  protected abstract OkayableDialog getBulkDialog();
 
-		if( !showSelections(context) )
-		{
-			div.setDisplayed(context, false);
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    Model<T> model = getModel(context);
+    int selectionCount;
+    if (useBitSet()) {
+      long size = model.getBitSet().size();
+      if (size > Integer.MAX_VALUE) {
+        throw new RuntimeException("Too many selections");
+      } else {
+        selectionCount = (int) size;
+      }
+    } else {
+      selectionCount = model.getSelections().size();
+    }
+    box.setLabel(context, new KeyLabel(titleKey, selectionCount));
+    selectAllButton.setDisplayed(context, resultsSection.getPaging().isResultsAvailable(context));
+    model.setSelectionBoxCountLabel(getSelectionBoxCountLabel(selectionCount));
+    setupButton(context, selectionCount);
 
-		return viewFactory.createResult("bulkselect.ftl", this);
-	}
+    if (!showSelections(context)) {
+      div.setDisplayed(context, false);
+    }
 
-	protected void setupButton(SectionInfo context, int selectionCount)
-	{
-		if( showExecuteButton(context) )
-		{
-			executeButton.setDisplayed(context, true);
-			if( selectionCount > 0 )
-			{
-				executeButton.setClickHandler(context, new OverrideHandler(getBulkDialog().getOpenFunction(), true));
-			}
-			else
-			{
-				executeButton.setClickHandler(context, new OverrideHandler(Js.alert_s(getPleaseSelectLabel())));
-			}
-		}
-		else
-		{
-			executeButton.setDisplayed(context, false);
-		}
+    return viewFactory.createResult("bulkselect.ftl", this);
+  }
 
-	}
+  protected void setupButton(SectionInfo context, int selectionCount) {
+    if (showExecuteButton(context)) {
+      executeButton.setDisplayed(context, true);
+      if (selectionCount > 0) {
+        executeButton.setClickHandler(
+            context, new OverrideHandler(getBulkDialog().getOpenFunction(), true));
+      } else {
+        executeButton.setClickHandler(
+            context, new OverrideHandler(Js.alert_s(getPleaseSelectLabel())));
+      }
+    } else {
+      executeButton.setDisplayed(context, false);
+    }
+  }
 
-	protected boolean showSelections(SectionInfo info)
-	{
-		return true;
-	}
+  protected boolean showSelections(SectionInfo info) {
+    return true;
+  }
 
-	protected boolean showExecuteButton(SectionInfo info)
-	{
-		return true;
-	}
+  protected boolean showExecuteButton(SectionInfo info) {
+    return true;
+  }
 
-	protected abstract Label getPleaseSelectLabel();
+  protected abstract Label getPleaseSelectLabel();
 
-	protected abstract Label getSelectionBoxCountLabel(int selectionCount);
+  protected abstract Label getSelectionBoxCountLabel(int selectionCount);
 
-	public String executeWithExecutor(SectionInfo info, BeanLocator<? extends BulkOperationExecutor> executor)
-	{
-		Model<T> model = getModel(info);
-		ClusteredTask task = null;
-		if( useBitSet() )
-		{
-			LongSet bitSet = model.getBitSet();
-			LongSet items = bitSet.clone();
-			bitSet.clear();
-			model.setModifiedSelection(true);
-			task = bulkService.createTask(items, executor);
-		}
-		else
-		{
-			Set<T> selections = model.getSelections();
-			List<T> items = new ArrayList<T>(selections);
-			selections.clear();
-			model.setModifiedSelection(true);
-			task = bulkService.createTask(items, executor);
-		}
-		return taskService.startTask(task);
-	}
+  public String executeWithExecutor(
+      SectionInfo info, BeanLocator<? extends BulkOperationExecutor> executor) {
+    Model<T> model = getModel(info);
+    ClusteredTask task = null;
+    if (useBitSet()) {
+      LongSet bitSet = model.getBitSet();
+      LongSet items = bitSet.clone();
+      bitSet.clear();
+      model.setModifiedSelection(true);
+      task = bulkService.createTask(items, executor);
+    } else {
+      Set<T> selections = model.getSelections();
+      List<T> items = new ArrayList<T>(selections);
+      selections.clear();
+      model.setModifiedSelection(true);
+      task = bulkService.createTask(items, executor);
+    }
+    return taskService.startTask(task);
+  }
 
-	@EventHandlerMethod
-	public abstract void selectAll(SectionInfo info);
+  @EventHandlerMethod
+  public abstract void selectAll(SectionInfo info);
 
-	@EventHandlerMethod
-	public void unselectAll(SectionInfo info)
-	{
-		Model<T> model = getModel(info);
-		if( useBitSet() )
-		{
-			model.getBitSet().clear();
-		}
-		else
-		{
-			model.getSelections().clear();
-		}
-		model.setModifiedSelection(true);
-	}
+  @EventHandlerMethod
+  public void unselectAll(SectionInfo info) {
+    Model<T> model = getModel(info);
+    if (useBitSet()) {
+      model.getBitSet().clear();
+    } else {
+      model.getSelections().clear();
+    }
+    model.setModifiedSelection(true);
+  }
 
-	public Box getBox()
-	{
-		return box;
-	}
+  public Box getBox() {
+    return box;
+  }
 
-	public Link getViewSelectedLink()
-	{
-		return viewSelectedLink;
-	}
+  public Link getViewSelectedLink() {
+    return viewSelectedLink;
+  }
 
-	public Link getUnselectAllLink()
-	{
-		return unselectAllLink;
-	}
+  public Link getUnselectAllLink() {
+    return unselectAllLink;
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model<T>();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model<T>();
+  }
 
-	public void addSelection(SectionInfo info, T itemId)
-	{
-		Model<T> model = getModel(info);
-		if( useBitSet() && itemId instanceof ItemIdKey )
-		{
-			long key = ((ItemIdKey) itemId).getKey();
-			LongSet bitSet = model.getBitSet();
-			bitSet.add(key);
-		}
-		else
-		{
-			Set<T> selections = model.getSelections();
-			selections.add(itemId);
-		}
-		model.setModifiedSelection(true);
-	}
+  public void addSelection(SectionInfo info, T itemId) {
+    Model<T> model = getModel(info);
+    if (useBitSet() && itemId instanceof ItemIdKey) {
+      long key = ((ItemIdKey) itemId).getKey();
+      LongSet bitSet = model.getBitSet();
+      bitSet.add(key);
+    } else {
+      Set<T> selections = model.getSelections();
+      selections.add(itemId);
+    }
+    model.setModifiedSelection(true);
+  }
 
-	public static class Model<T extends ItemKey>
-	{
-		@Bookmarked(contexts = BookmarkEvent.CONTEXT_SESSION, name = "r")
-		private boolean restoreSelection;
-		private boolean modifiedSelection;
-		private Set<T> selections = new LinkedHashSet<T>();
-		private LongSet bitSet = new LongSet(new ConciseSet());
+  public static class Model<T extends ItemKey> {
+    @Bookmarked(contexts = BookmarkEvent.CONTEXT_SESSION, name = "r")
+    private boolean restoreSelection;
 
-		private ObjectExpression dialogs = new ObjectExpression();
-		private Label selectionBoxCountLabel;
+    private boolean modifiedSelection;
+    private Set<T> selections = new LinkedHashSet<T>();
+    private LongSet bitSet = new LongSet(new ConciseSet());
 
-		public Set<T> getSelections()
-		{
-			return selections;
-		}
+    private ObjectExpression dialogs = new ObjectExpression();
+    private Label selectionBoxCountLabel;
 
-		public void setSelections(Set<T> selections)
-		{
-			this.selections = selections;
-		}
+    public Set<T> getSelections() {
+      return selections;
+    }
 
-		public ObjectExpression getDialogs()
-		{
-			return dialogs;
-		}
+    public void setSelections(Set<T> selections) {
+      this.selections = selections;
+    }
 
-		public void setDialogs(ObjectExpression dialogs)
-		{
-			this.dialogs = dialogs;
-		}
+    public ObjectExpression getDialogs() {
+      return dialogs;
+    }
 
-		public boolean isRestoreSelection()
-		{
-			return restoreSelection;
-		}
+    public void setDialogs(ObjectExpression dialogs) {
+      this.dialogs = dialogs;
+    }
 
-		public void setRestoreSelection(boolean restoreSelection)
-		{
-			this.restoreSelection = restoreSelection;
-		}
+    public boolean isRestoreSelection() {
+      return restoreSelection;
+    }
 
-		public boolean isModifiedSelection()
-		{
-			return modifiedSelection;
-		}
+    public void setRestoreSelection(boolean restoreSelection) {
+      this.restoreSelection = restoreSelection;
+    }
 
-		public void setModifiedSelection(boolean modifiedSelection)
-		{
-			this.modifiedSelection = modifiedSelection;
-		}
+    public boolean isModifiedSelection() {
+      return modifiedSelection;
+    }
 
-		public void setSelectionBoxCountLabel(Label selectionBoxCountLabel)
-		{
-			this.selectionBoxCountLabel = selectionBoxCountLabel;
-		}
+    public void setModifiedSelection(boolean modifiedSelection) {
+      this.modifiedSelection = modifiedSelection;
+    }
 
-		public Label getSelectionBoxCountLabel()
-		{
-			return selectionBoxCountLabel;
-		}
+    public void setSelectionBoxCountLabel(Label selectionBoxCountLabel) {
+      this.selectionBoxCountLabel = selectionBoxCountLabel;
+    }
 
-		public LongSet getBitSet()
-		{
-			return bitSet;
-		}
+    public Label getSelectionBoxCountLabel() {
+      return selectionBoxCountLabel;
+    }
 
-		public void setBitSet(LongSet bitSet)
-		{
-			this.bitSet = bitSet;
-		}
-	}
+    public LongSet getBitSet() {
+      return bitSet;
+    }
 
-	public Button getExecuteButton()
-	{
-		return executeButton;
-	}
+    public void setBitSet(LongSet bitSet) {
+      this.bitSet = bitSet;
+    }
+  }
 
-	public SimpleAjaxCallback getResultShowCallback()
-	{
-		return resultShowCallback;
-	}
+  public Button getExecuteButton() {
+    return executeButton;
+  }
 
-	public Button getSelectAllButton()
-	{
-		return selectAllButton;
-	}
+  public SimpleAjaxCallback getResultShowCallback() {
+    return resultShowCallback;
+  }
 
-	@Override
-	public void beforeEvents(SectionInfo info)
-	{
-		Model<T> model = getModel(info);
-		if( model.isRestoreSelection() )
-		{
-			if( useBitSet() )
-			{
-				LongSet selections = userSessionService.getAttribute(getKeySelections());
-				if( selections != null )
-				{
-					model.setBitSet(selections);
-				}
-			}
-			else
-			{
-				Set<T> selections = userSessionService.getAttribute(getKeySelections());
-				if( selections != null )
-				{
-					model.setSelections(selections);
-				}
-			}
-		}
-		else
-		{
-			model.setModifiedSelection(true);
-			model.setRestoreSelection(true);
-		}
-	}
+  public Button getSelectAllButton() {
+    return selectAllButton;
+  }
 
-	protected abstract String getKeySelections();
+  @Override
+  public void beforeEvents(SectionInfo info) {
+    Model<T> model = getModel(info);
+    if (model.isRestoreSelection()) {
+      if (useBitSet()) {
+        LongSet selections = userSessionService.getAttribute(getKeySelections());
+        if (selections != null) {
+          model.setBitSet(selections);
+        }
+      } else {
+        Set<T> selections = userSessionService.getAttribute(getKeySelections());
+        if (selections != null) {
+          model.setSelections(selections);
+        }
+      }
+    } else {
+      model.setModifiedSelection(true);
+      model.setRestoreSelection(true);
+    }
+  }
 
-	protected abstract boolean useBitSet();
+  protected abstract String getKeySelections();
 
-	@Override
-	public void readyToRespond(SectionInfo info, boolean redirect)
-	{
-		Model<T> model = getModel(info);
-		if( model.isModifiedSelection() )
-		{
-			if( useBitSet() )
-			{
-				userSessionService.setAttribute(getKeySelections(), model.getBitSet());
-			}
-			else
-			{
-				userSessionService.setAttribute(getKeySelections(), model.getSelections());
-			}
-		}
-	}
+  protected abstract boolean useBitSet();
 
-	public boolean isSelected(SectionInfo info, T itemId)
-	{
-		if( useBitSet() && itemId instanceof ItemIdKey )
-		{
-			long key = ((ItemIdKey) itemId).getKey();
-			return getModel(info).getBitSet().contains(key);
-		}
-		return getModel(info).getSelections().contains(itemId);
-	}
+  @Override
+  public void readyToRespond(SectionInfo info, boolean redirect) {
+    Model<T> model = getModel(info);
+    if (model.isModifiedSelection()) {
+      if (useBitSet()) {
+        userSessionService.setAttribute(getKeySelections(), model.getBitSet());
+      } else {
+        userSessionService.setAttribute(getKeySelections(), model.getSelections());
+      }
+    }
+  }
 
-	public void removeSelection(SectionInfo info, T itemId)
-	{
-		Model<T> model = getModel(info);
-		if( useBitSet() && itemId instanceof ItemIdKey )
-		{
-			long key = ((ItemIdKey) itemId).getKey();
-			LongSet bitSet = model.getBitSet();
-			model.setModifiedSelection(bitSet.remove(key));
-		}
-		else
-		{
-			Set<T> selections = model.getSelections();
-			model.setModifiedSelection(selections.remove(itemId));
-		}
-	}
+  public boolean isSelected(SectionInfo info, T itemId) {
+    if (useBitSet() && itemId instanceof ItemIdKey) {
+      long key = ((ItemIdKey) itemId).getKey();
+      return getModel(info).getBitSet().contains(key);
+    }
+    return getModel(info).getSelections().contains(itemId);
+  }
 
-	public Set<T> getSelections(SectionInfo info)
-	{
-		return getModel(info).getSelections();
-	}
+  public void removeSelection(SectionInfo info, T itemId) {
+    Model<T> model = getModel(info);
+    if (useBitSet() && itemId instanceof ItemIdKey) {
+      long key = ((ItemIdKey) itemId).getKey();
+      LongSet bitSet = model.getBitSet();
+      model.setModifiedSelection(bitSet.remove(key));
+    } else {
+      Set<T> selections = model.getSelections();
+      model.setModifiedSelection(selections.remove(itemId));
+    }
+  }
 
-	public LongSet getBitSet(SectionInfo info)
-	{
-		return getModel(info).getBitSet();
-	}
+  public Set<T> getSelections(SectionInfo info) {
+    return getModel(info).getSelections();
+  }
 
-	public void hideSelection(SectionInfo info)
-	{
-		box.getState(info).setDisplayed(false);
-		executeButton.getState(info).setDisplayed(false);
-	}
+  public LongSet getBitSet(SectionInfo info) {
+    return getModel(info).getBitSet();
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "bss";
-	}
+  public void hideSelection(SectionInfo info) {
+    box.getState(info).setDisplayed(false);
+    executeButton.getState(info).setDisplayed(false);
+  }
 
-	public Div getDiv()
-	{
-		return div;
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "bss";
+  }
+
+  public Div getDiv() {
+    return div;
+  }
 }

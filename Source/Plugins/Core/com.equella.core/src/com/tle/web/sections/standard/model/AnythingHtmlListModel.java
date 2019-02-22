@@ -19,11 +19,10 @@ package com.tle.web.sections.standard.model;
 import com.tle.web.sections.SectionInfo;
 
 /**
- * Always returns whatever was posted as a selected value.  There is no server-side list of allowed values.
- * This is useful in the case of a control that uses client-side AJAX to select values from.
+ * Always returns whatever was posted as a selected value. There is no server-side list of allowed
+ * values. This is useful in the case of a control that uses client-side AJAX to select values from.
  */
-public abstract class AnythingHtmlListModel<T> extends SimpleHtmlListModel<T>
-{
-	@Override
-	public abstract T getValue(SectionInfo info, String value);
+public abstract class AnythingHtmlListModel<T> extends SimpleHtmlListModel<T> {
+  @Override
+  public abstract T getValue(SectionInfo info, String value);
 }

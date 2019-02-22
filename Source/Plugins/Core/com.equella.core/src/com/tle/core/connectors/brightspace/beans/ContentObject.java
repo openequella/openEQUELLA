@@ -16,250 +16,222 @@
 
 package com.tle.core.connectors.brightspace.beans;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Encapsulates both the Module and Topic types.  The type prop will determine which type it is.
- * 
- * @author Aaron
+ * Encapsulates both the Module and Topic types. The type prop will determine which type it is.
  *
+ * @author Aaron
  */
 @XmlRootElement
-public class ContentObject
-{
-	public static final int TYPE_MODULE = 0;
-	public static final int TYPE_TOPIC = 1;
+public class ContentObject {
+  public static final int TYPE_MODULE = 0;
+  public static final int TYPE_TOPIC = 1;
 
-	//Common
-	@JsonProperty("Id")
-	private Long id;
-	@JsonProperty("Title")
-	private String title;
-	@JsonProperty("ShortTitle")
-	private String shortTitle;
-	@JsonProperty("Type")
-	private int type; //module == 0, topic == 1
-	@JsonProperty("Description")
-	private RichText description;
-	@JsonProperty("ParentModuleId")
-	private Long parentModuleId;
-	@JsonProperty("IsHidden")
-	private Boolean hidden;
-	@JsonProperty("IsLocked")
-	private Boolean locked;
+  // Common
+  @JsonProperty("Id")
+  private Long id;
 
-	//Module
-	@JsonProperty("Structure")
-	private ContentObject[] structure;
-	@JsonProperty("ModuleStartDate")
-	private String moduleStartDate;
-	@JsonProperty("ModuleEndDate")
-	private String moduleEndDate;
-	@JsonProperty("ModuleDueDate")
-	private String moduleDueDate;
+  @JsonProperty("Title")
+  private String title;
 
-	//Topic
-	@JsonProperty("TopicType")
-	private Integer topicType;
-	@JsonProperty("Url")
-	private String url;
-	//Possibly always needed...
-	@JsonInclude(Include.ALWAYS)
-	@JsonProperty("StartDate")
-	private String startDate;
-	//Possibly always needed...
-	@JsonInclude(Include.ALWAYS)
-	@JsonProperty("EndDate")
-	private String endDate;
-	//Possibly always needed...
-	@JsonInclude(Include.ALWAYS)
-	@JsonProperty("DueDate")
-	private String dueDate;
-	@JsonProperty("OpenAsExternalResource")
-	private Boolean openAsExternalResource;
+  @JsonProperty("ShortTitle")
+  private String shortTitle;
 
-	public Long getId()
-	{
-		return id;
-	}
+  @JsonProperty("Type")
+  private int type; // module == 0, topic == 1
 
-	public void setId(Long id)
-	{
-		this.id = id;
-	}
+  @JsonProperty("Description")
+  private RichText description;
 
-	public String getTitle()
-	{
-		return title;
-	}
+  @JsonProperty("ParentModuleId")
+  private Long parentModuleId;
 
-	public void setTitle(String title)
-	{
-		this.title = title;
-	}
+  @JsonProperty("IsHidden")
+  private Boolean hidden;
 
-	public String getShortTitle()
-	{
-		return shortTitle;
-	}
+  @JsonProperty("IsLocked")
+  private Boolean locked;
 
-	public void setShortTitle(String shortTitle)
-	{
-		this.shortTitle = shortTitle;
-	}
+  // Module
+  @JsonProperty("Structure")
+  private ContentObject[] structure;
 
-	public int getType()
-	{
-		return type;
-	}
+  @JsonProperty("ModuleStartDate")
+  private String moduleStartDate;
 
-	public void setType(int type)
-	{
-		this.type = type;
-	}
+  @JsonProperty("ModuleEndDate")
+  private String moduleEndDate;
 
-	public RichText getDescription()
-	{
-		return description;
-	}
+  @JsonProperty("ModuleDueDate")
+  private String moduleDueDate;
 
-	public void setDescription(RichText description)
-	{
-		this.description = description;
-	}
+  // Topic
+  @JsonProperty("TopicType")
+  private Integer topicType;
 
-	public Long getParentModuleId()
-	{
-		return parentModuleId;
-	}
+  @JsonProperty("Url")
+  private String url;
+  // Possibly always needed...
+  @JsonInclude(Include.ALWAYS)
+  @JsonProperty("StartDate")
+  private String startDate;
+  // Possibly always needed...
+  @JsonInclude(Include.ALWAYS)
+  @JsonProperty("EndDate")
+  private String endDate;
+  // Possibly always needed...
+  @JsonInclude(Include.ALWAYS)
+  @JsonProperty("DueDate")
+  private String dueDate;
 
-	public void setParentModuleId(Long parentModuleId)
-	{
-		this.parentModuleId = parentModuleId;
-	}
+  @JsonProperty("OpenAsExternalResource")
+  private Boolean openAsExternalResource;
 
-	public Boolean getHidden()
-	{
-		return hidden;
-	}
+  public Long getId() {
+    return id;
+  }
 
-	public void setHidden(Boolean hidden)
-	{
-		this.hidden = hidden;
-	}
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-	public Boolean getLocked()
-	{
-		return locked;
-	}
+  public String getTitle() {
+    return title;
+  }
 
-	public void setLocked(Boolean locked)
-	{
-		this.locked = locked;
-	}
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-	public ContentObject[] getStructure()
-	{
-		return structure;
-	}
+  public String getShortTitle() {
+    return shortTitle;
+  }
 
-	public void setStructure(ContentObject[] structure)
-	{
-		this.structure = structure;
-	}
+  public void setShortTitle(String shortTitle) {
+    this.shortTitle = shortTitle;
+  }
 
-	public String getModuleStartDate()
-	{
-		return moduleStartDate;
-	}
+  public int getType() {
+    return type;
+  }
 
-	public void setModuleStartDate(String moduleStartDate)
-	{
-		this.moduleStartDate = moduleStartDate;
-	}
+  public void setType(int type) {
+    this.type = type;
+  }
 
-	public String getModuleEndDate()
-	{
-		return moduleEndDate;
-	}
+  public RichText getDescription() {
+    return description;
+  }
 
-	public void setModuleEndDate(String moduleEndDate)
-	{
-		this.moduleEndDate = moduleEndDate;
-	}
+  public void setDescription(RichText description) {
+    this.description = description;
+  }
 
-	public String getModuleDueDate()
-	{
-		return moduleDueDate;
-	}
+  public Long getParentModuleId() {
+    return parentModuleId;
+  }
 
-	public void setModuleDueDate(String moduleDueDate)
-	{
-		this.moduleDueDate = moduleDueDate;
-	}
+  public void setParentModuleId(Long parentModuleId) {
+    this.parentModuleId = parentModuleId;
+  }
 
-	public Integer getTopicType()
-	{
-		return topicType;
-	}
+  public Boolean getHidden() {
+    return hidden;
+  }
 
-	public void setTopicType(Integer topicType)
-	{
-		this.topicType = topicType;
-	}
+  public void setHidden(Boolean hidden) {
+    this.hidden = hidden;
+  }
 
-	public String getUrl()
-	{
-		return url;
-	}
+  public Boolean getLocked() {
+    return locked;
+  }
 
-	public void setUrl(String url)
-	{
-		this.url = url;
-	}
+  public void setLocked(Boolean locked) {
+    this.locked = locked;
+  }
 
-	public String getStartDate()
-	{
-		return startDate;
-	}
+  public ContentObject[] getStructure() {
+    return structure;
+  }
 
-	public void setStartDate(String startDate)
-	{
-		this.startDate = startDate;
-	}
+  public void setStructure(ContentObject[] structure) {
+    this.structure = structure;
+  }
 
-	public String getEndDate()
-	{
-		return endDate;
-	}
+  public String getModuleStartDate() {
+    return moduleStartDate;
+  }
 
-	public void setEndDate(String endDate)
-	{
-		this.endDate = endDate;
-	}
+  public void setModuleStartDate(String moduleStartDate) {
+    this.moduleStartDate = moduleStartDate;
+  }
 
-	public String getDueDate()
-	{
-		return dueDate;
-	}
+  public String getModuleEndDate() {
+    return moduleEndDate;
+  }
 
-	public void setDueDate(String dueDate)
-	{
-		this.dueDate = dueDate;
-	}
+  public void setModuleEndDate(String moduleEndDate) {
+    this.moduleEndDate = moduleEndDate;
+  }
 
-	public Boolean getOpenAsExternalResource()
-	{
-		return openAsExternalResource;
-	}
+  public String getModuleDueDate() {
+    return moduleDueDate;
+  }
 
-	public void setOpenAsExternalResource(Boolean openAsExternalResource)
-	{
-		this.openAsExternalResource = openAsExternalResource;
-	}
+  public void setModuleDueDate(String moduleDueDate) {
+    this.moduleDueDate = moduleDueDate;
+  }
 
+  public Integer getTopicType() {
+    return topicType;
+  }
+
+  public void setTopicType(Integer topicType) {
+    this.topicType = topicType;
+  }
+
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  public String getStartDate() {
+    return startDate;
+  }
+
+  public void setStartDate(String startDate) {
+    this.startDate = startDate;
+  }
+
+  public String getEndDate() {
+    return endDate;
+  }
+
+  public void setEndDate(String endDate) {
+    this.endDate = endDate;
+  }
+
+  public String getDueDate() {
+    return dueDate;
+  }
+
+  public void setDueDate(String dueDate) {
+    this.dueDate = dueDate;
+  }
+
+  public Boolean getOpenAsExternalResource() {
+    return openAsExternalResource;
+  }
+
+  public void setOpenAsExternalResource(Boolean openAsExternalResource) {
+    this.openAsExternalResource = openAsExternalResource;
+  }
 }

@@ -26,10 +26,10 @@ import javax.ws.rs.core.{CacheControl, Response}
 import javax.ws.rs.{GET, Path, PathParam, Produces}
 
 import scala.io.Source
-object LanguageResource
-{
+object LanguageResource {
   val bundle =
-    decode[Map[String, String]](Source.fromResource("lang/jsbundle.json").mkString).fold(throw _, identity)
+    decode[Map[String, String]](Source.fromResource("lang/jsbundle.json").mkString)
+      .fold(throw _, identity)
   val keys = bundle.keySet
 }
 
@@ -46,13 +46,13 @@ class LanguageResource {
 
   @GET
   @Path("bundle/{locale}/bundle.js")
-  @Produces(value=Array("application/javascript"))
+  @Produces(value = Array("application/javascript"))
   def getBundleOverrides(@PathParam("locale") localeTag: String): Response = {
     val locale = Locale.forLanguageTag(localeTag)
     val bundle = LegacyGuice.languageService.getResourceBundle(locale, "newui")
-    val o = new ObjectExpression()
-    LanguageResource.keys.foreach {
-      k => if (bundle.containsKey(k)) o.put(k, bundle.getString(k))
+    val o      = new ObjectExpression()
+    LanguageResource.keys.foreach { k =>
+      if (bundle.containsKey(k)) o.put(k, bundle.getString(k))
     }
     Response.ok(s"var bundle = ${o.getExpression(null)};").cacheControl(cacheHeader).build()
   }

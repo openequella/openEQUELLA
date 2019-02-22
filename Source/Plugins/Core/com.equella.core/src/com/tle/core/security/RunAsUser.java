@@ -16,22 +16,18 @@
 
 package com.tle.core.security;
 
-import java.util.concurrent.Callable;
-
 import com.tle.beans.Institution;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.WebAuthenticationDetails;
+import java.util.concurrent.Callable;
 
-/**
- * @author Nicholas Read
- */
-public interface RunAsUser
-{
-	<V> V execute(Institution institution, String userID, Callable<V> callable);
+/** @author Nicholas Read */
+public interface RunAsUser {
+  <V> V execute(Institution institution, String userID, Callable<V> callable);
 
-	void execute(Institution institution, String userID, Runnable runnable);
+  void execute(Institution institution, String userID, Runnable runnable);
 
-	void execute(Institution institution, UserState userState, Runnable runnable);
+  void execute(Institution institution, UserState userState, Runnable runnable);
 
-	void executeAsGuest(Institution institution, Runnable runnable, WebAuthenticationDetails details);
+  void executeAsGuest(Institution institution, Runnable runnable, WebAuthenticationDetails details);
 }

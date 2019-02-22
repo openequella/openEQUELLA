@@ -16,144 +16,120 @@
 
 package com.tle.common.settings.standard;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.tle.common.settings.ConfigurationProperties;
 import com.tle.common.settings.annotation.Property;
 import com.tle.common.settings.annotation.PropertyList;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * @author Nicholas Read
- */
-public class AutoLogin implements ConfigurationProperties
-{
-	private static final long serialVersionUID = 1;
+/** @author Nicholas Read */
+public class AutoLogin implements ConfigurationProperties {
+  private static final long serialVersionUID = 1;
 
-	private transient HostMatcher hostMatcher;
+  private transient HostMatcher hostMatcher;
 
-	@Property(key = "login.auto.userid")
-	private String userid;
+  @Property(key = "login.auto.userid")
+  private String userid;
 
-	@Property(key = "login.auto.username")
-	private String username;
+  @Property(key = "login.auto.username")
+  private String username;
 
-	/**
-	 * The member previously known only as 'enabled', which is to say; enabled
-	 * login via ip address.
-	 */
-	@Property(key = "login.auto.enabled")
-	private boolean enabledViaIp;
+  /**
+   * The member previously known only as 'enabled', which is to say; enabled login via ip address.
+   */
+  @Property(key = "login.auto.enabled")
+  private boolean enabledViaIp;
 
-	@Property(key = "login.via.ssl")
-	private boolean loginViaSSL;
+  @Property(key = "login.via.ssl")
+  private boolean loginViaSSL;
 
-	@Property(key = "login.auto.notautomatic")
-	private boolean notAutomatic;
+  @Property(key = "login.auto.notautomatic")
+  private boolean notAutomatic;
 
-	@Property(key = "login.auto.edit.details.disabled")
-	private boolean editDetailsDisallowed;
+  @Property(key = "login.auto.edit.details.disabled")
+  private boolean editDetailsDisallowed;
 
-	@Property(key = "login.auto.transient.drm.acceptances")
-	private boolean transientDrmAcceptances;
+  @Property(key = "login.auto.transient.drm.acceptances")
+  private boolean transientDrmAcceptances;
 
-	@PropertyList(key = "login.auto.addresses")
-	private final List<String> addresses = new ArrayList<String>();
+  @PropertyList(key = "login.auto.addresses")
+  private final List<String> addresses = new ArrayList<String>();
 
-	@Property(key = "login.anon.ip.httpref.acl")
-	private boolean enableIpReferAcl;
+  @Property(key = "login.anon.ip.httpref.acl")
+  private boolean enableIpReferAcl;
 
-	public List<String> getAddresses()
-	{
-		return addresses;
-	}
+  public List<String> getAddresses() {
+    return addresses;
+  }
 
-	public boolean isEnabledViaIp()
-	{
-		return enabledViaIp;
-	}
+  public boolean isEnabledViaIp() {
+    return enabledViaIp;
+  }
 
-	public void setEnabledViaIp(boolean enabledViaIp)
-	{
-		this.enabledViaIp = enabledViaIp;
-	}
+  public void setEnabledViaIp(boolean enabledViaIp) {
+    this.enabledViaIp = enabledViaIp;
+  }
 
-	public boolean isLoginViaSSL()
-	{
-		return loginViaSSL;
-	}
+  public boolean isLoginViaSSL() {
+    return loginViaSSL;
+  }
 
-	public void setLoginViaSSL(boolean loginViaSSL)
-	{
-		this.loginViaSSL = loginViaSSL;
-	}
+  public void setLoginViaSSL(boolean loginViaSSL) {
+    this.loginViaSSL = loginViaSSL;
+  }
 
-	public String getUserid()
-	{
-		return userid;
-	}
+  public String getUserid() {
+    return userid;
+  }
 
-	public void setUserid(String userid)
-	{
-		this.userid = userid;
-	}
+  public void setUserid(String userid) {
+    this.userid = userid;
+  }
 
-	public String getUsername()
-	{
-		return username;
-	}
+  public String getUsername() {
+    return username;
+  }
 
-	public void setUsername(String username)
-	{
-		this.username = username;
-	}
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-	public boolean isEditDetailsDisallowed()
-	{
-		return editDetailsDisallowed;
-	}
+  public boolean isEditDetailsDisallowed() {
+    return editDetailsDisallowed;
+  }
 
-	public void setEditDetailsDisallowed(boolean editDetailsDisallowed)
-	{
-		this.editDetailsDisallowed = editDetailsDisallowed;
-	}
+  public void setEditDetailsDisallowed(boolean editDetailsDisallowed) {
+    this.editDetailsDisallowed = editDetailsDisallowed;
+  }
 
-	public boolean isNotAutomatic()
-	{
-		return notAutomatic;
-	}
+  public boolean isNotAutomatic() {
+    return notAutomatic;
+  }
 
-	public void setNotAutomatic(boolean notAutomatic)
-	{
-		this.notAutomatic = notAutomatic;
-	}
+  public void setNotAutomatic(boolean notAutomatic) {
+    this.notAutomatic = notAutomatic;
+  }
 
-	public HostMatcher getHostMatcher()
-	{
-		if( hostMatcher == null )
-		{
-			hostMatcher = new HostMatcher(addresses);
-		}
-		return hostMatcher;
-	}
+  public HostMatcher getHostMatcher() {
+    if (hostMatcher == null) {
+      hostMatcher = new HostMatcher(addresses);
+    }
+    return hostMatcher;
+  }
 
-	public boolean isTransientDrmAcceptances()
-	{
-		return transientDrmAcceptances;
-	}
+  public boolean isTransientDrmAcceptances() {
+    return transientDrmAcceptances;
+  }
 
-	public void setTransientDrmAcceptances(boolean transientDrmAcceptances)
-	{
-		this.transientDrmAcceptances = transientDrmAcceptances;
-	}
+  public void setTransientDrmAcceptances(boolean transientDrmAcceptances) {
+    this.transientDrmAcceptances = transientDrmAcceptances;
+  }
 
-	public boolean isEnableIpReferAcl()
-	{
-		return enableIpReferAcl;
-	}
+  public boolean isEnableIpReferAcl() {
+    return enableIpReferAcl;
+  }
 
-	public void setEnableIpReferAcl(boolean enableIpReferAcl)
-	{
-		this.enableIpReferAcl = enableIpReferAcl;
-	}
+  public void setEnableIpReferAcl(boolean enableIpReferAcl) {
+    this.enableIpReferAcl = enableIpReferAcl;
+  }
 }

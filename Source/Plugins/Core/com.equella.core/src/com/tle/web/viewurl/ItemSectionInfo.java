@@ -16,8 +16,6 @@
 
 package com.tle.web.viewurl;
 
-import java.util.Set;
-
 import com.dytech.devlib.PropBagEx;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -31,41 +29,40 @@ import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.TreeIndexed;
 import com.tle.web.viewable.ViewableItem;
+import java.util.Set;
 
 @NonNullByDefault
-public interface ItemSectionInfo
-{
-	ItemKey getItemId();
+public interface ItemSectionInfo {
+  ItemKey getItemId();
 
-	String getItemdir();
+  String getItemdir();
 
-	Item getItem();
+  Item getItem();
 
-	PropBagEx getItemxml();
+  PropBagEx getItemxml();
 
-	ItemDefinition getItemdef();
+  ItemDefinition getItemdef();
 
-	@Nullable
-	WorkflowStatus getWorkflowStatus();
+  @Nullable
+  WorkflowStatus getWorkflowStatus();
 
-	Set<String> getPrivileges();
+  Set<String> getPrivileges();
 
-	boolean hasPrivilege(String privilege);
+  boolean hasPrivilege(String privilege);
 
-	Attachments getAttachments();
+  Attachments getAttachments();
 
-	void modify(WorkflowOperation... ops);
+  void modify(WorkflowOperation... ops);
 
-	void refreshItem(boolean modified);
+  void refreshItem(boolean modified);
 
-	@Nullable
-	ViewableItem<Item> getViewableItem();
+  @Nullable
+  ViewableItem<Item> getViewableItem();
 
-	@TreeIndexed
-	interface ItemSectionInfoFactory extends SectionId
-	{
-		ItemSectionInfo getItemSectionInfo(SectionInfo info);
-	}
+  @TreeIndexed
+  interface ItemSectionInfoFactory extends SectionId {
+    ItemSectionInfo getItemSectionInfo(SectionInfo info);
+  }
 
-	boolean isEditing();
+  boolean isEditing();
 }

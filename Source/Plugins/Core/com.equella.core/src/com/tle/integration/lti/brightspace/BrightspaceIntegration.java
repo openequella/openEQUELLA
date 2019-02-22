@@ -16,14 +16,6 @@
 
 package com.tle.integration.lti.brightspace;
 
-import java.net.URI;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
@@ -65,414 +57,400 @@ import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.section.RootSelectionSection;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.ViewableItemResolver;
+import java.net.URI;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
 @NonNullByDefault
 @SuppressWarnings("nls")
-public class BrightspaceIntegration extends AbstractIntegrationService<BrightspaceSessionData>
-{
-	static
-	{
-		PluginResourceHandler.init(BrightspaceIntegration.class);
-	}
+public class BrightspaceIntegration extends AbstractIntegrationService<BrightspaceSessionData> {
+  static {
+    PluginResourceHandler.init(BrightspaceIntegration.class);
+  }
 
-	@PlugKey("integration.receipt.addedtobrightspace")
-	private static String KEY_RECEIPT_ADDED;
-	@PlugKey("integration.error.requireoneconnector")
-	private static String KEY_ERROR_NO_SINGLE_CONNECTOR;
+  @PlugKey("integration.receipt.addedtobrightspace")
+  private static String KEY_RECEIPT_ADDED;
 
-	@PlugKey("integration.error.nocourse")
-	private static Label LABEL_ERROR_NO_COURSE;
-	@PlugKey("integration.error.noapidomain")
-	private static Label LABEL_ERROR_NO_API_DOMAIN;
+  @PlugKey("integration.error.requireoneconnector")
+  private static String KEY_ERROR_NO_SINGLE_CONNECTOR;
 
-	@Inject
-	private IntegrationService integrationService;
-	@Inject
-	private ViewableItemResolver viewableItemResolver;
-	@Inject
-	private ReceiptService receiptService;
-	@Inject
-	private ConnectorService connectorService;
-	@Inject
-	private BrightspaceConnectorService brightspaceService;
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private MimeTypeService mimeTypeService;
+  @PlugKey("integration.error.nocourse")
+  private static Label LABEL_ERROR_NO_COURSE;
 
-	@Override
-	protected String getIntegrationType()
-	{
-		return "brightspace";
-	}
+  @PlugKey("integration.error.noapidomain")
+  private static Label LABEL_ERROR_NO_API_DOMAIN;
 
-	public boolean isItemOnly(BrightspaceSessionData data)
-	{
-		return false;
-	}
+  @Inject private IntegrationService integrationService;
+  @Inject private ViewableItemResolver viewableItemResolver;
+  @Inject private ReceiptService receiptService;
+  @Inject private ConnectorService connectorService;
+  @Inject private BrightspaceConnectorService brightspaceService;
+  @Inject private InstitutionService institutionService;
+  @Inject private MimeTypeService mimeTypeService;
 
-	@Override
-	public BrightspaceSessionData createDataForViewing(SectionInfo info)
-	{
-		return new BrightspaceSessionData();
-	}
+  @Override
+  protected String getIntegrationType() {
+    return "brightspace";
+  }
 
-	@Override
-	public void setupSingleSignOn(SectionInfo info, SingleSignonForm form)
-	{
-		final BrightspaceSessionData data = new BrightspaceSessionData(info.getRequest(), form.getAction());
+  public boolean isItemOnly(BrightspaceSessionData data) {
+    return false;
+  }
 
-		String courseId = null;
-		final UserState userState = CurrentUser.getUserState();
-		String courseCode = form.getCourseCode();
-		if( userState instanceof LtiUserState )
-		{
-			final LtiUserState ltiUserState = (LtiUserState) userState;
-			final LtiData ltiData = ltiUserState.getData();
-			if( ltiData != null )
-			{
-				courseId = form.getCourseId();
-				if( Strings.isNullOrEmpty(courseId) )
-				{
-					courseId = ltiData.getContextId();
-				}
-				data.setCourseId(courseId);
-				data.setContextTitle(ltiData.getContextTitle());
-				if( Strings.isNullOrEmpty(courseCode) )
-				{
-					courseCode = ltiData.getContextLabel();
-				}
-			}
-		}
+  @Override
+  public BrightspaceSessionData createDataForViewing(SectionInfo info) {
+    return new BrightspaceSessionData();
+  }
 
-		data.setCourseInfoCode(integrationService.getCourseInfoCode(courseId, courseCode));
+  @Override
+  public void setupSingleSignOn(SectionInfo info, SingleSignonForm form) {
+    final BrightspaceSessionData data =
+        new BrightspaceSessionData(info.getRequest(), form.getAction());
 
-		String formDataAction = form.getAction();
-		if( formDataAction == null )
-		{
-			formDataAction = "searchThin";
-		}
+    String courseId = null;
+    final UserState userState = CurrentUser.getUserState();
+    String courseCode = form.getCourseCode();
+    if (userState instanceof LtiUserState) {
+      final LtiUserState ltiUserState = (LtiUserState) userState;
+      final LtiData ltiData = ltiUserState.getData();
+      if (ltiData != null) {
+        courseId = form.getCourseId();
+        if (Strings.isNullOrEmpty(courseId)) {
+          courseId = ltiData.getContextId();
+        }
+        data.setCourseId(courseId);
+        data.setContextTitle(ltiData.getContextTitle());
+        if (Strings.isNullOrEmpty(courseCode)) {
+          courseCode = ltiData.getContextLabel();
+        }
+      }
+    }
 
-		IntegrationActionInfo actionInfo = integrationService.getActionInfo(formDataAction, form.getOptions());
-		if( actionInfo.getName().equals("unknown") )
-		{
-			actionInfo = integrationService.getActionInfoForUrl('/' + data.getAction());
-		}
-		if( actionInfo == null )
-		{
-			actionInfo = new IntegrationActionInfo();
-		}
-		form.setCancelDisabled(true);
+    data.setCourseInfoCode(integrationService.getCourseInfoCode(courseId, courseCode));
 
-		integrationService.standardForward(info, convertToForward(actionInfo, form), data, actionInfo, form);
-	}
+    String formDataAction = form.getAction();
+    if (formDataAction == null) {
+      formDataAction = "searchThin";
+    }
 
-	private String convertToForward(IntegrationActionInfo action, SingleSignonForm model)
-	{
-		String forward = action.getPath();
-		if( forward == null )
-		{
-			forward = action.getName();
-		}
+    IntegrationActionInfo actionInfo =
+        integrationService.getActionInfo(formDataAction, form.getOptions());
+    if (actionInfo.getName().equals("unknown")) {
+      actionInfo = integrationService.getActionInfoForUrl('/' + data.getAction());
+    }
+    if (actionInfo == null) {
+      actionInfo = new IntegrationActionInfo();
+    }
+    form.setCancelDisabled(true);
 
-		if( action.getName().equals("standard") )
-		{
-			forward = forward + model.getQuery();
-		}
+    integrationService.standardForward(
+        info, convertToForward(actionInfo, form), data, actionInfo, form);
+  }
 
-		return forward.substring(1);
-	}
+  private String convertToForward(IntegrationActionInfo action, SingleSignonForm model) {
+    String forward = action.getPath();
+    if (forward == null) {
+      forward = action.getName();
+    }
 
-	@Nullable
-	@Override
-	public SelectionSession setupSelectionSession(SectionInfo info, BrightspaceSessionData data,
-		SelectionSession session, SingleSignonForm form)
-	{
-		final boolean structured = "structured".equals(data.getAction());
+    if (action.getName().equals("standard")) {
+      forward = forward + model.getQuery();
+    }
 
-		// No multiple selections for anything but structured.
-		session.setSelectMultiple(structured);
-		session.setAttachmentUuidUrls(true);
-		session.setInitialItemXml(form.getItemXml());
-		session.setInitialPowerXml(form.getPowerXml());
-		session.setCancelDisabled(form.isCancelDisabled());
+    return forward.substring(1);
+  }
 
-		final SelectionSession s = super.setupSelectionSession(info, data, session, form);
-		if( s != null )
-		{
-			s.setAttribute(BrightspaceSignon.KEY_SESSION_TYPE, info.getAttribute(BrightspaceSignon.KEY_SESSION_TYPE));
-		}
+  @Nullable
+  @Override
+  public SelectionSession setupSelectionSession(
+      SectionInfo info,
+      BrightspaceSessionData data,
+      SelectionSession session,
+      SingleSignonForm form) {
+    final boolean structured = "structured".equals(data.getAction());
 
-		return s;
-	}
+    // No multiple selections for anything but structured.
+    session.setSelectMultiple(structured);
+    session.setAttachmentUuidUrls(true);
+    session.setInitialItemXml(form.getItemXml());
+    session.setInitialPowerXml(form.getPowerXml());
+    session.setCancelDisabled(form.isCancelDisabled());
 
-	@Override
-	public void forward(SectionInfo info, BrightspaceSessionData data, SectionInfo forward)
-	{
-		final Connector connector = findConnector(data);
-		if( brightspaceService.isRequiresAuthentication(connector) )
-		{
-			String fwdUrl = new InfoBookmark(forward).getHref();
+    final SelectionSession s = super.setupSelectionSession(info, data, session, form);
+    if (s != null) {
+      s.setAttribute(
+          BrightspaceSignon.KEY_SESSION_TYPE,
+          info.getAttribute(BrightspaceSignon.KEY_SESSION_TYPE));
+    }
 
-			if( "structured".equals(data.getAction()) )
-			{
-				String sessionId = null;
-				final RootSelectionSection root = info.lookupSection(RootSelectionSection.class);
-				if( root != null )
-				{
-					sessionId = root.getSessionId(forward);
-				}
+    return s;
+  }
 
-				final StringBuilder qs = new StringBuilder();
-				qs.append("?courseId=").append(URLUtils.urlEncode(data.getCourseId()));
-				qs.append("&connectorUuid=").append(URLUtils.urlEncode(findConnector(data).getUuid()));
-				if( sessionId != null )
-				{
-					qs.append("&sessionId=").append(sessionId);
-				}
-				qs.append("&fwd=").append(URLUtils.urlEncode(fwdUrl));
+  @Override
+  public void forward(SectionInfo info, BrightspaceSessionData data, SectionInfo forward) {
+    final Connector connector = findConnector(data);
+    if (brightspaceService.isRequiresAuthentication(connector)) {
+      String fwdUrl = new InfoBookmark(forward).getHref();
 
-				final String launchPresentationReturnUrl = data.getLaunchPresentationReturnUrl();
-				if( launchPresentationReturnUrl != null && launchPresentationReturnUrl.contains("parentNode") )
-				{
-					final URI uri = URI.create(launchPresentationReturnUrl);
-					final Map<String, String> lpQueryString = URLUtils.parseQueryString(uri.getQuery(), true);
-					final String parentNode = lpQueryString.get("parentNode");
-					if( parentNode != null )
-					{
-						qs.append("&selected=").append(parentNode);
-					}
-				}
+      if ("structured".equals(data.getAction())) {
+        String sessionId = null;
+        final RootSelectionSection root = info.lookupSection(RootSelectionSection.class);
+        if (root != null) {
+          sessionId = root.getSessionId(forward);
+        }
 
-				fwdUrl = institutionService.institutionalise("brightspacestructureinit") + qs.toString();
-			}
+        final StringBuilder qs = new StringBuilder();
+        qs.append("?courseId=").append(URLUtils.urlEncode(data.getCourseId()));
+        qs.append("&connectorUuid=").append(URLUtils.urlEncode(findConnector(data).getUuid()));
+        if (sessionId != null) {
+          qs.append("&sessionId=").append(sessionId);
+        }
+        qs.append("&fwd=").append(URLUtils.urlEncode(fwdUrl));
 
-			//forward to d2l auth screen
-			String authUrl = brightspaceService.getAuthorisationUrl(connector, fwdUrl, null);
-			info.forwardToUrl(authUrl);
-		}
-		else
-		{
-			info.forward(forward);
-		}
-	}
+        final String launchPresentationReturnUrl = data.getLaunchPresentationReturnUrl();
+        if (launchPresentationReturnUrl != null
+            && launchPresentationReturnUrl.contains("parentNode")) {
+          final URI uri = URI.create(launchPresentationReturnUrl);
+          final Map<String, String> lpQueryString = URLUtils.parseQueryString(uri.getQuery(), true);
+          final String parentNode = lpQueryString.get("parentNode");
+          if (parentNode != null) {
+            qs.append("&selected=").append(parentNode);
+          }
+        }
 
-	private Connector findConnector(BrightspaceSessionData data)
-	{
-		Connector connector = null;
-		final String connectorUuid = data.getConnectorUuid();
-		if( connectorUuid != null )
-		{
-			connector = connectorService.getByUuid(connectorUuid);
-		}
-		if( connector == null )
-		{
-			// There can only be one connector per institution, there is no other way of determining which to use.
-			final List<Connector> connectors = connectorService.enumerateEnabled();
-			for( Connector c : connectors )
-			{
-				if( c.getLmsType().equals(BrightspaceConnectorConstants.CONNECTOR_TYPE) )
-				{
-					connector = c;
-					break;
-				}
-			}
-		}
-		if( connector == null )
-		{
-			throw new RuntimeException();
-		}
-		return connector;
-	}
+        fwdUrl = institutionService.institutionalise("brightspacestructureinit") + qs.toString();
+      }
 
-	@Override
-	public boolean select(SectionInfo info, BrightspaceSessionData data, SelectionSession session)
-	{
-		try
-		{
-			final Connector connector = findConnector(data);
-			final String sessionType = session.getAttribute(BrightspaceSignon.KEY_SESSION_TYPE);
+      // forward to d2l auth screen
+      String authUrl = brightspaceService.getAuthorisationUrl(connector, fwdUrl, null);
+      info.forwardToUrl(authUrl);
+    } else {
+      info.forward(forward);
+    }
+  }
 
-			if( !session.isSelectMultiple() )
-			{
-				final SelectedResource resource = getFirstSelectedResource(session);
-				final IItem<?> item = getItemForResource(resource);
+  private Connector findConnector(BrightspaceSessionData data) {
+    Connector connector = null;
+    final String connectorUuid = data.getConnectorUuid();
+    if (connectorUuid != null) {
+      connector = connectorService.getByUuid(connectorUuid);
+    }
+    if (connector == null) {
+      // There can only be one connector per institution, there is no other way of determining which
+      // to use.
+      final List<Connector> connectors = connectorService.enumerateEnabled();
+      for (Connector c : connectors) {
+        if (c.getLmsType().equals(BrightspaceConnectorConstants.CONNECTOR_TYPE)) {
+          connector = c;
+          break;
+        }
+      }
+    }
+    if (connector == null) {
+      throw new RuntimeException();
+    }
+    return connector;
+  }
 
-				final String courseId = data.getCourseId();
+  @Override
+  public boolean select(SectionInfo info, BrightspaceSessionData data, SelectionSession session) {
+    try {
+      final Connector connector = findConnector(data);
+      final String sessionType = session.getAttribute(BrightspaceSignon.KEY_SESSION_TYPE);
 
-				final LmsLinkInfo linkInfo = getLinkForResource(info, createViewableItem(item, resource), resource,
-					false, session.isAttachmentUuidUrls());
-				final LmsLink link = linkInfo.getLmsLink();
+      if (!session.isSelectMultiple()) {
+        final SelectedResource resource = getFirstSelectedResource(session);
+        final IItem<?> item = getItemForResource(resource);
 
-				final boolean insertStuff = BrightspaceSignon.SESSION_TYPE_INSERTSTUFF.equals(sessionType);
+        final String courseId = data.getCourseId();
 
-				final String launchPresentationReturnUrl = data.getLaunchPresentationReturnUrl();
-				final String nakedUrl = URLUtils.decompose(launchPresentationReturnUrl)[0];
+        final LmsLinkInfo linkInfo =
+            getLinkForResource(
+                info,
+                createViewableItem(item, resource),
+                resource,
+                false,
+                session.isAttachmentUuidUrls());
+        final LmsLink link = linkInfo.getLmsLink();
 
-				final String finalUrl;
-				if( insertStuff )
-				{
-					// INSERT STUFF PLUGIN
+        final boolean insertStuff = BrightspaceSignon.SESSION_TYPE_INSERTSTUFF.equals(sessionType);
 
-					// TODO: Could possibly adapt the MIME type templates.
+        final String launchPresentationReturnUrl = data.getLaunchPresentationReturnUrl();
+        final String nakedUrl = URLUtils.decompose(launchPresentationReturnUrl)[0];
 
-					// If the selected attachment is an image, we'll assume it's public and the user wants to embed it, otherwise we need an iframe
-					// to enable the LTI launch.
-					String markup = null;
+        final String finalUrl;
+        if (insertStuff) {
+          // INSERT STUFF PLUGIN
 
-					// Might be a cloud attachment..
-					final IAttachment attachment = linkInfo.getResourceAttachment();
-					if( attachment != null && attachment.getAttachmentType() == AttachmentType.FILE )
-					{
-						final String mimeType = mimeTypeService.getMimeEntryForAttachment((Attachment) attachment);
-						if( mimeType != null )
-						{
-							if( mimeType.startsWith("image/") )
-							{
-								markup = "<img src=\"" + link.getUrl() + "\" alt=\"" + link.getName() + "\">";
-							}
-						}
-					}
+          // TODO: Could possibly adapt the MIME type templates.
 
-					if( markup == null )
-					{
-						markup = linkMarkup(connector, courseId, link);
-					}
+          // If the selected attachment is an image, we'll assume it's public and the user wants to
+          // embed it, otherwise we need an iframe
+          // to enable the LTI launch.
+          String markup = null;
 
-					finalUrl = nakedUrl + "?content=" + URLUtils.urlEncode(markup);
-				}
-				else
-				{
-					// QUICKLINK PLUGIN 
+          // Might be a cloud attachment..
+          final IAttachment attachment = linkInfo.getResourceAttachment();
+          if (attachment != null && attachment.getAttachmentType() == AttachmentType.FILE) {
+            final String mimeType =
+                mimeTypeService.getMimeEntryForAttachment((Attachment) attachment);
+            if (mimeType != null) {
+              if (mimeType.startsWith("image/")) {
+                markup = "<img src=\"" + link.getUrl() + "\" alt=\"" + link.getName() + "\">";
+              }
+            }
+          }
 
-					// Null module ID here is OK, since we aren't creating a topic and the redirection in the Brightspace UI handles that.
-					final BrightspaceQuicklink ql = brightspaceService.addQuicklink(connector, courseId, null, link,
-						TopicCreationOption.NONE);
-					finalUrl = nakedUrl + "?quicklink=" + URLUtils.urlEncode(ql.getPublicUrl()) + "&title="
-						+ URLUtils.urlEncode(resource.getTitle()) + "&target=NewWindow";
-				}
+          if (markup == null) {
+            markup = linkMarkup(connector, courseId, link);
+          }
 
-				session.clearResources();
-				info.forwardToUrl(finalUrl);
-			}
-			else
-			{
-				final String courseId = session.getStructure().getId();
+          finalUrl = nakedUrl + "?content=" + URLUtils.urlEncode(markup);
+        } else {
+          // QUICKLINK PLUGIN
 
-				// add resources via REST
-				final Collection<SelectedResource> selectedResources = session.getSelectedResources();
-				for( SelectedResource resource : selectedResources )
-				{
-					final IItem<?> item = getItemForResource(resource);
-					final String moduleId = resource.getKey().getFolderId();
+          // Null module ID here is OK, since we aren't creating a topic and the redirection in the
+          // Brightspace UI handles that.
+          final BrightspaceQuicklink ql =
+              brightspaceService.addQuicklink(
+                  connector, courseId, null, link, TopicCreationOption.NONE);
+          finalUrl =
+              nakedUrl
+                  + "?quicklink="
+                  + URLUtils.urlEncode(ql.getPublicUrl())
+                  + "&title="
+                  + URLUtils.urlEncode(resource.getTitle())
+                  + "&target=NewWindow";
+        }
 
-					final LmsLink link = getLinkForResource(info, createViewableItem(item, resource), resource, false,
-						session.isAttachmentUuidUrls()).getLmsLink();
-					brightspaceService.addQuicklink(connector, courseId, moduleId, link, TopicCreationOption.CREATE);
+        session.clearResources();
+        info.forwardToUrl(finalUrl);
+      } else {
+        final String courseId = session.getStructure().getId();
 
-				}
-				final int count = selectedResources.size();
+        // add resources via REST
+        final Collection<SelectedResource> selectedResources = session.getSelectedResources();
+        for (SelectedResource resource : selectedResources) {
+          final IItem<?> item = getItemForResource(resource);
+          final String moduleId = resource.getKey().getFolderId();
 
-				session.clearResources();
-				if( BrightspaceSignon.SESSION_TYPE_COURSEBUILDER.equals(sessionType) )
-				{
-					final String launchPresentationReturnUrl = data.getLaunchPresentationReturnUrl();
-					info.forwardToUrl(launchPresentationReturnUrl);
-				}
-				else
-				{
-					// provide receipt and stay where we are
-					receiptService.setReceipt(new PluralKeyLabel(KEY_RECEIPT_ADDED, count));
-				}
-			}
+          final LmsLink link =
+              getLinkForResource(
+                      info,
+                      createViewableItem(item, resource),
+                      resource,
+                      false,
+                      session.isAttachmentUuidUrls())
+                  .getLmsLink();
+          brightspaceService.addQuicklink(
+              connector, courseId, moduleId, link, TopicCreationOption.CREATE);
+        }
+        final int count = selectedResources.size();
 
-			return false;
-		}
-		catch( Exception e )
-		{
-			throw Throwables.propagate(e);
-		}
-	}
+        session.clearResources();
+        if (BrightspaceSignon.SESSION_TYPE_COURSEBUILDER.equals(sessionType)) {
+          final String launchPresentationReturnUrl = data.getLaunchPresentationReturnUrl();
+          info.forwardToUrl(launchPresentationReturnUrl);
+        } else {
+          // provide receipt and stay where we are
+          receiptService.setReceipt(new PluralKeyLabel(KEY_RECEIPT_ADDED, count));
+        }
+      }
 
-	//	private String iframeMarkup(Connector connector, String courseId, LmsLink link)
-	//	{
-	//		return "<iframe src=\"" + mangledQuicklink(connector, courseId, link, true)
-	//			+ "\" width=\"1024\" height=\"800\"></iframe>";
-	//	}
+      return false;
+    } catch (Exception e) {
+      throw Throwables.propagate(e);
+    }
+  }
 
-	private String linkMarkup(Connector connector, String courseId, LmsLink link)
-	{
-		return "<a href=\"" + mangledQuicklink(connector, courseId, link, true) + "\" target=\"_blank\">"
-			+ link.getName() + "</a>";
-	}
+  //	private String iframeMarkup(Connector connector, String courseId, LmsLink link)
+  //	{
+  //		return "<iframe src=\"" + mangledQuicklink(connector, courseId, link, true)
+  //			+ "\" width=\"1024\" height=\"800\"></iframe>";
+  //	}
 
-	/**
-	 * Used for Insert Stuff plugin
-	 * 
-	 * @param connector
-	 * @param courseId
-	 * @param link
-	 * @return
-	 */
-	private String mangledQuicklink(Connector connector, String courseId, LmsLink link, boolean sameFrame)
-	{
-		// Null module ID here is OK, since we aren't creating a topic (we're embedding in HTML editor)
-		final BrightspaceQuicklink ql = brightspaceService.addQuicklink(connector, courseId, null, link,
-			TopicCreationOption.NONE);
-		// Mangle the public URL as per Brightspace docs https://community.brightspace.com/devcop/blog/insert_stuff_with_lti_content
-		final String[] decomposedPublicUrl = URLUtils.decompose(ql.getPublicUrl());
-		final Map<String, String> publicUrlQs = URLUtils.parseQueryString(decomposedPublicUrl[1], true);
-		publicUrlQs.put("srcou", "1");
-		String publicUrl = URLUtils.appendQueryString(decomposedPublicUrl[0], URLUtils.getParameterString(publicUrlQs));
+  private String linkMarkup(Connector connector, String courseId, LmsLink link) {
+    return "<a href=\""
+        + mangledQuicklink(connector, courseId, link, true)
+        + "\" target=\"_blank\">"
+        + link.getName()
+        + "</a>";
+  }
 
-		// A bit dirty.  Brightspace expects { and } to be unencoded since it's only really a placeholder, not a real value.
-		publicUrl = publicUrl.replace("%7B", "{");
-		publicUrl = publicUrl.replace("%7D", "}");
-		return publicUrl; /* + "&target=" + (sameFrame ? "SameFrame" : "NewWindow");*/
-	}
+  /**
+   * Used for Insert Stuff plugin
+   *
+   * @param connector
+   * @param courseId
+   * @param link
+   * @return
+   */
+  private String mangledQuicklink(
+      Connector connector, String courseId, LmsLink link, boolean sameFrame) {
+    // Null module ID here is OK, since we aren't creating a topic (we're embedding in HTML editor)
+    final BrightspaceQuicklink ql =
+        brightspaceService.addQuicklink(connector, courseId, null, link, TopicCreationOption.NONE);
+    // Mangle the public URL as per Brightspace docs
+    // https://community.brightspace.com/devcop/blog/insert_stuff_with_lti_content
+    final String[] decomposedPublicUrl = URLUtils.decompose(ql.getPublicUrl());
+    final Map<String, String> publicUrlQs = URLUtils.parseQueryString(decomposedPublicUrl[1], true);
+    publicUrlQs.put("srcou", "1");
+    String publicUrl =
+        URLUtils.appendQueryString(
+            decomposedPublicUrl[0], URLUtils.getParameterString(publicUrlQs));
 
-	@Override
-	public String getClose(BrightspaceSessionData data)
-	{
-		return data.getLaunchPresentationReturnUrl();
-	}
+    // A bit dirty.  Brightspace expects { and } to be unencoded since it's only really a
+    // placeholder, not a real value.
+    publicUrl = publicUrl.replace("%7B", "{");
+    publicUrl = publicUrl.replace("%7D", "}");
+    return publicUrl; /* + "&target=" + (sameFrame ? "SameFrame" : "NewWindow");*/
+  }
 
-	@Nullable
-	@Override
-	public String getCourseInfoCode(BrightspaceSessionData data)
-	{
-		return data.getCourseInfoCode();
-	}
+  @Override
+  public String getClose(BrightspaceSessionData data) {
+    return data.getLaunchPresentationReturnUrl();
+  }
 
-	@Nullable
-	@Override
-	public NameValue getLocation(BrightspaceSessionData data)
-	{
-		return null;
-	}
+  @Nullable
+  @Override
+  public String getCourseInfoCode(BrightspaceSessionData data) {
+    return data.getCourseInfoCode();
+  }
 
-	@Override
-	protected boolean canSelect(BrightspaceSessionData data)
-	{
-		return true;
-	}
+  @Nullable
+  @Override
+  public NameValue getLocation(BrightspaceSessionData data) {
+    return null;
+  }
 
-	@Override
-	protected <I extends IItem<?>> ViewableItem<I> createViewableItem(I item, SelectedResource resource)
-	{
-		final ViewableItem<I> vitem = viewableItemResolver.createIntegrationViewableItem(item, resource.isLatest(),
-			ViewableItemType.GENERIC, resource.getKey().getExtensionType());
-		return vitem;
-	}
+  @Override
+  protected boolean canSelect(BrightspaceSessionData data) {
+    return true;
+  }
 
-	@Override
-	public <I extends IItem<?>> ViewableItem<I> createViewableItem(ItemId itemId, boolean latest,
-		@Nullable String itemExtensionType)
-	{
-		final ViewableItem<I> vitem = viewableItemResolver.createIntegrationViewableItem(itemId, latest,
-			ViewableItemType.GENERIC, itemExtensionType);
-		return vitem;
-	}
+  @Override
+  protected <I extends IItem<?>> ViewableItem<I> createViewableItem(
+      I item, SelectedResource resource) {
+    final ViewableItem<I> vitem =
+        viewableItemResolver.createIntegrationViewableItem(
+            item,
+            resource.isLatest(),
+            ViewableItemType.GENERIC,
+            resource.getKey().getExtensionType());
+    return vitem;
+  }
+
+  @Override
+  public <I extends IItem<?>> ViewableItem<I> createViewableItem(
+      ItemId itemId, boolean latest, @Nullable String itemExtensionType) {
+    final ViewableItem<I> vitem =
+        viewableItemResolver.createIntegrationViewableItem(
+            itemId, latest, ViewableItemType.GENERIC, itemExtensionType);
+    return vitem;
+  }
 }

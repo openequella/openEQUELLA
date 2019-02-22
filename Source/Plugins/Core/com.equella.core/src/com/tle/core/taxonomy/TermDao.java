@@ -16,49 +16,46 @@
 
 package com.tle.core.taxonomy;
 
-import java.util.List;
-
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.common.taxonomy.terms.Term;
 import com.tle.core.hibernate.dao.GenericDao;
+import java.util.List;
 
-public interface TermDao extends GenericDao<Term, Long>
-{
-	Term getTerm(Taxonomy taxonomy, String termFullPath);
+public interface TermDao extends GenericDao<Term, Long> {
+  Term getTerm(Taxonomy taxonomy, String termFullPath);
 
-	Term getTermByUuid(Taxonomy taxonomy, String termUuid);
+  Term getTermByUuid(Taxonomy taxonomy, String termUuid);
 
-	List<Term> getRootTerms(Taxonomy taxonomy);
+  List<Term> getRootTerms(Taxonomy taxonomy);
 
-	List<TermResult> getRootTermResults(Taxonomy taxonomy);
+  List<TermResult> getRootTermResults(Taxonomy taxonomy);
 
-	List<String> getRootTermValues(Taxonomy taxonomy);
+  List<String> getRootTermValues(Taxonomy taxonomy);
 
-	List<Term> getChildTerms(Term parentTerm);
+  List<Term> getChildTerms(Term parentTerm);
 
-	List<TermResult> getChildTermResults(Term parentTerm);
+  List<TermResult> getChildTermResults(Term parentTerm);
 
-	List<String> getChildTermValues(Term parentTerm);
+  List<String> getChildTermValues(Term parentTerm);
 
-	String getDataForTerm(Term term, String key);
+  String getDataForTerm(Term term, String key);
 
-	List<Term> getAllTermsInOrder(Taxonomy taxonomy);
+  List<Term> getAllTermsInOrder(Taxonomy taxonomy);
 
-	/**
-	 * @param taxonomy
-	 * @param parent
-	 * @param termValue
-	 * @param index
-	 * @return The new term, so you don't have to load it up again if you want
-	 *         to use it
-	 */
-	Term insertNewTerm(Taxonomy taxonomy, Term parent, String termValue, int index);
+  /**
+   * @param taxonomy
+   * @param parent
+   * @param termValue
+   * @param index
+   * @return The new term, so you don't have to load it up again if you want to use it
+   */
+  Term insertNewTerm(Taxonomy taxonomy, Term parent, String termValue, int index);
 
-	void move(Term moveThisTerm, Term parent, int index);
+  void move(Term moveThisTerm, Term parent, int index);
 
-	void renameTermValue(Term term, String newValue);
+  void renameTermValue(Term term, String newValue);
 
-	void deleteForTaxonomy(Taxonomy taxonomy);
+  void deleteForTaxonomy(Taxonomy taxonomy);
 
-	void validateTerm(Taxonomy taxonomy, Term parent, String termValue);
+  void validateTerm(Taxonomy taxonomy, Term parent, String termValue);
 }

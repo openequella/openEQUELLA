@@ -16,15 +16,12 @@
 
 package com.tle.web.itemadmin.section;
 
-import java.util.List;
-import java.util.Set;
-
 import com.google.common.collect.ImmutableSet;
 import com.tle.beans.item.ItemIdKey;
 import com.tle.core.guice.Bind;
+import com.tle.web.itemlist.item.ItemlikeListEntryExtension;
 import com.tle.web.itemlist.item.StandardItemList;
 import com.tle.web.itemlist.item.StandardItemListEntry;
-import com.tle.web.itemlist.item.ItemlikeListEntryExtension;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxRenderContext;
@@ -42,87 +39,78 @@ import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.js.generic.SimpleElementId;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.model.HtmlLinkState;
+import java.util.List;
+import java.util.Set;
 
 @SuppressWarnings("nls")
 @Bind
-public class ItemAdminItemList extends StandardItemList
-{
-	private static final String DIV_PFX = "it_";
+public class ItemAdminItemList extends StandardItemList {
+  private static final String DIV_PFX = "it_";
 
-	@PlugKey("selectitem")
-	private static Label LABEL_SELECT;
-	@PlugKey("unselectitem")
-	private static Label LABEL_UNSELECT;
+  @PlugKey("selectitem")
+  private static Label LABEL_SELECT;
 
-	@PlugURL("js/wait.js")
-	private static String JS_WAIT_URL;
+  @PlugKey("unselectitem")
+  private static Label LABEL_UNSELECT;
 
-	@EventFactory
-	private EventGenerator events;
-	@TreeLookup
-	private ItemAdminSelectionSection selectionSection;
+  @PlugURL("js/wait.js")
+  private static String JS_WAIT_URL;
 
-	private JSCallable selectCall;
-	private JSCallable removeCall;
+  @EventFactory private EventGenerator events;
+  @TreeLookup private ItemAdminSelectionSection selectionSection;
 
-	@Override
-	protected Set<String> getExtensionTypes()
-	{
-		return ImmutableSet.of(ItemlikeListEntryExtension.TYPE_STANDARD, "itemadmin");
-	}
+  private JSCallable selectCall;
+  private JSCallable removeCall;
 
-	@Override
-	protected void customiseListEntries(RenderContext context, List<StandardItemListEntry> entries)
-	{
-		super.customiseListEntries(context, entries);
-		for( StandardItemListEntry itemListEntry : entries )
-		{
-			ItemIdKey itemId = new ItemIdKey(itemListEntry.getItem());
-			itemListEntry.getTag().setElementId(new SimpleElementId(DIV_PFX + itemId.toString()));
+  @Override
+  protected Set<String> getExtensionTypes() {
+    return ImmutableSet.of(ItemlikeListEntryExtension.TYPE_STANDARD, "itemadmin");
+  }
 
-			if( !selectionSection.isSelected(context, itemId) )
-			{
-				HtmlLinkState link = new HtmlLinkState(LABEL_SELECT, new OverrideHandler(selectCall, itemId));
-				itemListEntry.addRatingAction(new ButtonRenderer(link).showAs(ButtonType.SELECT));
-			}
-			else
-			{
-				HtmlLinkState link = new HtmlLinkState(LABEL_UNSELECT, new OverrideHandler(removeCall, itemId));
-				itemListEntry.addRatingAction(new ButtonRenderer(link).showAs(ButtonType.UNSELECT));
-				itemListEntry.setSelected(true);
-			}
-		}
-		context.getPreRenderContext().addJs(JS_WAIT_URL);
-	}
+  @Override
+  protected void customiseListEntries(RenderContext context, List<StandardItemListEntry> entries) {
+    super.customiseListEntries(context, entries);
+    for (StandardItemListEntry itemListEntry : entries) {
+      ItemIdKey itemId = new ItemIdKey(itemListEntry.getItem());
+      itemListEntry.getTag().setElementId(new SimpleElementId(DIV_PFX + itemId.toString()));
 
-	@EventHandlerMethod
-	public void selectItem(SectionInfo info, ItemIdKey itemId)
-	{
-		selectionSection.addSelection(info, itemId);
-		addAjaxDiv(info, itemId);
-	}
+      if (!selectionSection.isSelected(context, itemId)) {
+        HtmlLinkState link =
+            new HtmlLinkState(LABEL_SELECT, new OverrideHandler(selectCall, itemId));
+        itemListEntry.addRatingAction(new ButtonRenderer(link).showAs(ButtonType.SELECT));
+      } else {
+        HtmlLinkState link =
+            new HtmlLinkState(LABEL_UNSELECT, new OverrideHandler(removeCall, itemId));
+        itemListEntry.addRatingAction(new ButtonRenderer(link).showAs(ButtonType.UNSELECT));
+        itemListEntry.setSelected(true);
+      }
+    }
+    context.getPreRenderContext().addJs(JS_WAIT_URL);
+  }
 
-	private void addAjaxDiv(SectionInfo info, ItemIdKey itemId)
-	{
-		AjaxRenderContext renderContext = info.getAttributeForClass(AjaxRenderContext.class);
-		if( renderContext != null )
-		{
-			renderContext.addAjaxDivs(DIV_PFX + itemId.toString());
-		}
-	}
+  @EventHandlerMethod
+  public void selectItem(SectionInfo info, ItemIdKey itemId) {
+    selectionSection.addSelection(info, itemId);
+    addAjaxDiv(info, itemId);
+  }
 
-	@EventHandlerMethod
-	public void removeItem(SectionInfo info, ItemIdKey itemId)
-	{
-		selectionSection.removeSelection(info, itemId);
-		addAjaxDiv(info, itemId);
-	}
+  private void addAjaxDiv(SectionInfo info, ItemIdKey itemId) {
+    AjaxRenderContext renderContext = info.getAttributeForClass(AjaxRenderContext.class);
+    if (renderContext != null) {
+      renderContext.addAjaxDivs(DIV_PFX + itemId.toString());
+    }
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		selectCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("selectItem"));
-		removeCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("removeItem"));
-	}
+  @EventHandlerMethod
+  public void removeItem(SectionInfo info, ItemIdKey itemId) {
+    selectionSection.removeSelection(info, itemId);
+    addAjaxDiv(info, itemId);
+  }
+
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    selectCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("selectItem"));
+    removeCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("removeItem"));
+  }
 }

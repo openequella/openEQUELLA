@@ -29,61 +29,54 @@ import com.tle.web.workflow.tasks.CurrentTaskSection;
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class CommentDialog extends AbstractTaskActionDialog
-{
-	@PlugKey("command.taskaction.comment")
-	private static Label LABEL_COMMENT_BUTTON;
-	@PlugKey("command.comment.title")
-	private static Label LABEL_COMMENTING_TITLE;
-	@PlugKey("comments.entermsg")
-	private static Label LABEL_ENTERMSG;
+public class CommentDialog extends AbstractTaskActionDialog {
+  @PlugKey("command.taskaction.comment")
+  private static Label LABEL_COMMENT_BUTTON;
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "commentDialog";
-	}
+  @PlugKey("command.comment.title")
+  private static Label LABEL_COMMENTING_TITLE;
 
-	@Override
-	public ButtonRenderer.ButtonType getButtonType()
-	{
-		return ButtonRenderer.ButtonType.SAVE;
-	}
+  @PlugKey("comments.entermsg")
+  private static Label LABEL_ENTERMSG;
 
-	@Override
-	public Label getButtonLabel()
-	{
-		return LABEL_COMMENT_BUTTON;
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "commentDialog";
+  }
 
-	@Override
-	public CurrentTaskSection.CommentType getActionType()
-	{
-		return CurrentTaskSection.CommentType.COMMENT;
-	}
+  @Override
+  public ButtonRenderer.ButtonType getButtonType() {
+    return ButtonRenderer.ButtonType.SAVE;
+  }
 
-	@Nullable
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return LABEL_COMMENTING_TITLE;
-	}
+  @Override
+  public Label getButtonLabel() {
+    return LABEL_COMMENT_BUTTON;
+  }
 
-	@Override
-	public Label getPostCommentHeading()
-	{
-		return LABEL_ENTERMSG;
-	}
+  @Override
+  public CurrentTaskSection.CommentType getActionType() {
+    return CurrentTaskSection.CommentType.COMMENT;
+  }
 
-	@Override
-	public Label validate(SectionInfo info)
-	{
-		return validateHasMessage(info);
-	}
+  @Nullable
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return LABEL_COMMENTING_TITLE;
+  }
 
-	@Override
-	public boolean isMandatoryMessage()
-	{
-		return true;
-	}
+  @Override
+  public Label getPostCommentHeading() {
+    return LABEL_ENTERMSG;
+  }
+
+  @Override
+  public Label validate(SectionInfo info) {
+    return validateHasMessage(info);
+  }
+
+  @Override
+  public boolean isMandatoryMessage() {
+    return true;
+  }
 }

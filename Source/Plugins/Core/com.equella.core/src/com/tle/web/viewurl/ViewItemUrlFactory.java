@@ -24,43 +24,52 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewable.ViewableItem;
 
 @NonNullByDefault
-public interface ViewItemUrlFactory
-{
-	/**
-	 * Uses flags: FLAG_NO_BACK|FLAG_FULL_URL
-	 * 
-	 * @param itemId
-	 * @return
-	 */
-	ViewItemUrl createFullItemUrl(ItemKey itemId);
+public interface ViewItemUrlFactory {
+  /**
+   * Uses flags: FLAG_NO_BACK|FLAG_FULL_URL
+   *
+   * @param itemId
+   * @return
+   */
+  ViewItemUrl createFullItemUrl(ItemKey itemId);
 
-	ViewItemUrl createItemUrl(SectionInfo info, ItemKey itemId);
+  ViewItemUrl createItemUrl(SectionInfo info, ItemKey itemId);
 
-	ViewItemUrl createItemUrl(SectionInfo info, ItemKey itemId, int flags);
+  ViewItemUrl createItemUrl(SectionInfo info, ItemKey itemId, int flags);
 
-	ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> viewableItem);
+  ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> viewableItem);
 
-	ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> vieableItem, int flag);
+  ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> vieableItem, int flag);
 
-	ViewItemUrl createItemUrl(SectionInfo info, ItemKey item, UrlEncodedString filePath);
+  ViewItemUrl createItemUrl(SectionInfo info, ItemKey item, UrlEncodedString filePath);
 
-	ViewItemUrl createItemUrl(SectionInfo info, String itemServletContext, ItemKey item, UrlEncodedString filePath,
-		int flags);
+  ViewItemUrl createItemUrl(
+      SectionInfo info,
+      String itemServletContext,
+      ItemKey item,
+      UrlEncodedString filePath,
+      int flags);
 
-	ViewItemUrl createItemUrl(SectionInfo info, ItemKey item, UrlEncodedString filePath, String queryString, int flags);
+  ViewItemUrl createItemUrl(
+      SectionInfo info, ItemKey item, UrlEncodedString filePath, String queryString, int flags);
 
-	ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> viewableItem, UrlEncodedString filePath, int flags);
+  ViewItemUrl createItemUrl(
+      SectionInfo info, ViewableItem<Item> viewableItem, UrlEncodedString filePath, int flags);
 
-	/**
-	 * SCORM and IMS resources may contain a query string component
-	 * 
-	 * @param info
-	 * @param viewableItem
-	 * @param filePath
-	 * @param queryString
-	 * @param flags
-	 * @return
-	 */
-	ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> viewableItem, UrlEncodedString filePath,
-		String queryString, int flags);
+  /**
+   * SCORM and IMS resources may contain a query string component
+   *
+   * @param info
+   * @param viewableItem
+   * @param filePath
+   * @param queryString
+   * @param flags
+   * @return
+   */
+  ViewItemUrl createItemUrl(
+      SectionInfo info,
+      ViewableItem<Item> viewableItem,
+      UrlEncodedString filePath,
+      String queryString,
+      int flags);
 }

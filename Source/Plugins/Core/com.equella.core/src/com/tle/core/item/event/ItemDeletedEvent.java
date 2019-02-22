@@ -20,39 +20,31 @@ import com.tle.beans.item.ItemIdKey;
 import com.tle.core.events.ApplicationEvent;
 import com.tle.core.item.event.listener.ItemDeletedListener;
 
-/**
- * @author Nicholas Read
- */
-public class ItemDeletedEvent extends ApplicationEvent<ItemDeletedListener>
-{
-	private static final long serialVersionUID = 1L;
-	private final ItemIdKey itemKey;
+/** @author Nicholas Read */
+public class ItemDeletedEvent extends ApplicationEvent<ItemDeletedListener> {
+  private static final long serialVersionUID = 1L;
+  private final ItemIdKey itemKey;
 
-	public ItemDeletedEvent(ItemIdKey key)
-	{
-		super(PostTo.POST_TO_SELF_SYNCHRONOUSLY);
-		this.itemKey = key;
-	}
+  public ItemDeletedEvent(ItemIdKey key) {
+    super(PostTo.POST_TO_SELF_SYNCHRONOUSLY);
+    this.itemKey = key;
+  }
 
-	public long getKey()
-	{
-		return itemKey.getKey();
-	}
+  public long getKey() {
+    return itemKey.getKey();
+  }
 
-	public ItemIdKey getItemId()
-	{
-		return itemKey;
-	}
+  public ItemIdKey getItemId() {
+    return itemKey;
+  }
 
-	@Override
-	public Class<ItemDeletedListener> getListener()
-	{
-		return ItemDeletedListener.class;
-	}
+  @Override
+  public Class<ItemDeletedListener> getListener() {
+    return ItemDeletedListener.class;
+  }
 
-	@Override
-	public void postEvent(ItemDeletedListener listener)
-	{
-		listener.itemDeletedEvent(this);
-	}
+  @Override
+  public void postEvent(ItemDeletedListener listener) {
+    listener.itemDeletedEvent(this);
+  }
 }

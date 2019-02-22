@@ -16,11 +16,6 @@
 
 package com.tle.web.myresource;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Provider;
-import javax.inject.Singleton;
-
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.ItemId;
 import com.tle.core.guice.Bind;
@@ -32,64 +27,62 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class MyResourceHandler extends SimpleContentHandler<MyResourceContributeSection>
-{
-	public static final String HANDLER_ID = "myresource";
+public class MyResourceHandler extends SimpleContentHandler<MyResourceContributeSection> {
+  public static final String HANDLER_ID = "myresource";
 
-	private static final Label TITLE = new KeyLabel(ResourcesService.getResourceHelper(MyResourceHandler.class).key(
-		"handlerName"));
+  private static final Label TITLE =
+      new KeyLabel(ResourcesService.getResourceHelper(MyResourceHandler.class).key("handlerName"));
 
-	@Inject
-	@Named("myresources")
-	private Provider<SectionTree> handlerTree;
+  @Inject
+  @Named("myresources")
+  private Provider<SectionTree> handlerTree;
 
-	@Override
-	protected SectionTree createTree()
-	{
-		return handlerTree.get();
-	}
+  @Override
+  protected SectionTree createTree() {
+    return handlerTree.get();
+  }
 
-	@Override
-	public Label getTitle(SectionInfo info)
-	{
-		return TITLE;
-	}
+  @Override
+  public Label getTitle(SectionInfo info) {
+    return TITLE;
+  }
 
-	@Override
-	protected void doContribute(MyResourceContributeSection contribute, SectionInfo info, ItemDefinition collection)
-	{
-		// Nothing
-	}
+  @Override
+  protected void doContribute(
+      MyResourceContributeSection contribute, SectionInfo info, ItemDefinition collection) {
+    // Nothing
+  }
 
-	@Override
-	protected void doEdit(MyResourceContributeSection contribute, SectionInfo info, ItemId id)
-	{
-		contribute.edit(info, id);
-	}
+  @Override
+  protected void doEdit(MyResourceContributeSection contribute, SectionInfo info, ItemId id) {
+    contribute.edit(info, id);
+  }
 
-	@Override
-	public Class<MyResourceContributeSection> getContributeSectionClass()
-	{
-		return MyResourceContributeSection.class;
-	}
+  @Override
+  public Class<MyResourceContributeSection> getContributeSectionClass() {
+    return MyResourceContributeSection.class;
+  }
 
-	@Override
-	public boolean isRawFiles()
-	{
-		return true;
-	}
+  @Override
+  public boolean isRawFiles() {
+    return true;
+  }
 
-	@Override
-	public void doAddCrumbs(MyResourceContributeSection contribute, SectionInfo info, Decorations decorations,
-		Breadcrumbs crumbs)
-	{
-		contribute.addCrumbs(info, decorations, crumbs);
-	}
+  @Override
+  public void doAddCrumbs(
+      MyResourceContributeSection contribute,
+      SectionInfo info,
+      Decorations decorations,
+      Breadcrumbs crumbs) {
+    contribute.addCrumbs(info, decorations, crumbs);
+  }
 }

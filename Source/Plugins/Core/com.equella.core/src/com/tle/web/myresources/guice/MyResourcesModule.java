@@ -30,47 +30,40 @@ import com.tle.web.search.filter.FilterByMimeTypeSection;
 import com.tle.web.search.guice.AbstractSearchModule;
 
 @SuppressWarnings("nls")
-public class MyResourcesModule extends AbstractSearchModule
-{
-	@Override
-	protected void addSearchResultsActions(NodeProvider node)
-	{
-		node.child(StandardShareSearchQuerySection.class);
-		node.child(MyResourcesSortSection.class);
-		node.child(FilterByAutoCompleteKeywordSection.class);
-		node.child(FilterByCollectionSection.class);
-		node.child(FilterByItemStatusSection.class);
-		node.child(FilterByDateRangeSection.class);
-		node.child(FilterByMimeTypeSection.class);
-	}
+public class MyResourcesModule extends AbstractSearchModule {
+  @Override
+  protected void addSearchResultsActions(NodeProvider node) {
+    node.child(StandardShareSearchQuerySection.class);
+    node.child(MyResourcesSortSection.class);
+    node.child(FilterByAutoCompleteKeywordSection.class);
+    node.child(FilterByCollectionSection.class);
+    node.child(FilterByItemStatusSection.class);
+    node.child(FilterByDateRangeSection.class);
+    node.child(FilterByMimeTypeSection.class);
+  }
 
-	@Override
-	protected NodeProvider getRootNode()
-	{
-		return node(RootMyResourcesSection.class);
-	}
+  @Override
+  protected NodeProvider getRootNode() {
+    return node(RootMyResourcesSection.class);
+  }
 
-	@Override
-	protected NodeProvider getQueryNode()
-	{
-		return node(MyResourcesSearchTypeSection.class);
-	}
+  @Override
+  protected NodeProvider getQueryNode() {
+    return node(MyResourcesSearchTypeSection.class);
+  }
 
-	@Override
-	protected void addQueryActions(NodeProvider node)
-	{
-		node.child(MyResourcesFavouriteSearchAction.class);
-	}
+  @Override
+  protected void addQueryActions(NodeProvider node) {
+    node.child(MyResourcesFavouriteSearchAction.class);
+  }
 
-	@Override
-	protected NodeProvider getResultsNode()
-	{
-		return node(MyResourcesSearchResults.class);
-	}
+  @Override
+  protected NodeProvider getResultsNode() {
+    return node(MyResourcesSearchResults.class);
+  }
 
-	@Override
-	protected String getTreeName()
-	{
-		return "/access/myresources";
-	}
+  @Override
+  protected String getTreeName() {
+    return "/access/myresources";
+  }
 }

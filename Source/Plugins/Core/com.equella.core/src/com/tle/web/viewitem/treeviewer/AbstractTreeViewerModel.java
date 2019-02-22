@@ -16,112 +16,94 @@
 
 package com.tle.web.viewitem.treeviewer;
 
-import java.util.List;
-
 import com.tle.beans.item.attachments.ItemNavigationTree;
 import com.tle.common.NameValue;
 import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.generic.CachedData;
 import com.tle.web.viewurl.ViewItemResource;
+import java.util.List;
 
-public class AbstractTreeViewerModel
-{
-	private String definition;
-	private List<NameValue> tabs;
-	private final CachedData<ItemNavigationTree> navigationTree = new CachedData<ItemNavigationTree>();
-	private ViewItemResource resource;
-	private String method;
+public class AbstractTreeViewerModel {
+  private String definition;
+  private List<NameValue> tabs;
+  private final CachedData<ItemNavigationTree> navigationTree =
+      new CachedData<ItemNavigationTree>();
+  private ViewItemResource resource;
+  private String method;
 
-	@Bookmarked(parameter = "hideNavBar")
-	private boolean hideNavBar;
-	private boolean hideNavControls;
-	private boolean hideTree;
+  @Bookmarked(parameter = "hideNavBar")
+  private boolean hideNavBar;
 
-	@Bookmarked
-	private String node;
+  private boolean hideNavControls;
+  private boolean hideTree;
 
-	public String getNode()
-	{
-		return node;
-	}
+  @Bookmarked private String node;
 
-	public void setNode(String node)
-	{
-		this.node = node;
-	}
+  public String getNode() {
+    return node;
+  }
 
-	public List<NameValue> getTabs()
-	{
-		return tabs;
-	}
+  public void setNode(String node) {
+    this.node = node;
+  }
 
-	public void setTabs(List<NameValue> tabs)
-	{
-		this.tabs = tabs;
-	}
+  public List<NameValue> getTabs() {
+    return tabs;
+  }
 
-	public CachedData<ItemNavigationTree> getNavigationTree()
-	{
-		return navigationTree;
-	}
+  public void setTabs(List<NameValue> tabs) {
+    this.tabs = tabs;
+  }
 
-	public String getDefinition()
-	{
-		return definition;
-	}
+  public CachedData<ItemNavigationTree> getNavigationTree() {
+    return navigationTree;
+  }
 
-	public void setDefinition(String definition)
-	{
-		this.definition = definition;
-	}
+  public String getDefinition() {
+    return definition;
+  }
 
-	public boolean isHideNavBar()
-	{
-		return hideNavBar;
-	}
+  public void setDefinition(String definition) {
+    this.definition = definition;
+  }
 
-	public void setHideNavBar(boolean hideNavBar)
-	{
-		this.hideNavBar = hideNavBar;
-	}
+  public boolean isHideNavBar() {
+    return hideNavBar;
+  }
 
-	public boolean isHideNavControls()
-	{
-		return hideNavControls;
-	}
+  public void setHideNavBar(boolean hideNavBar) {
+    this.hideNavBar = hideNavBar;
+  }
 
-	public void setHideNavControls(boolean hideNavControls)
-	{
-		this.hideNavControls = hideNavControls;
-	}
+  public boolean isHideNavControls() {
+    return hideNavControls;
+  }
 
-	public boolean isHideTree()
-	{
-		return hideTree;
-	}
+  public void setHideNavControls(boolean hideNavControls) {
+    this.hideNavControls = hideNavControls;
+  }
 
-	public void setHideTree(boolean hideTree)
-	{
-		this.hideTree = hideTree;
-	}
+  public boolean isHideTree() {
+    return hideTree;
+  }
 
-	public String getMethod()
-	{
-		return method;
-	}
+  public void setHideTree(boolean hideTree) {
+    this.hideTree = hideTree;
+  }
 
-	public void setMethod(String method)
-	{
-		this.method = method;
-	}
+  public String getMethod() {
+    return method;
+  }
 
-	public ViewItemResource getResource()
-	{
-		return resource;
-	}
+  public void setMethod(String method) {
+    this.method = method;
+  }
 
-	public void setResource(ViewItemResource resource)
-	{
-		this.resource = resource;
-	}
+  public ViewItemResource getResource() {
+    return resource;
+  }
+
+  public void setResource(ViewItemResource resource) {
+    this.resource = resource;
+  }
 }

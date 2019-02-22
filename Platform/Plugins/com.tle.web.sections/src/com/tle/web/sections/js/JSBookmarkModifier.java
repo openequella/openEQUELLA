@@ -16,17 +16,15 @@
 
 package com.tle.web.sections.js;
 
+import com.tle.web.sections.BookmarkModifier;
 import java.util.Map;
 
-import com.tle.web.sections.BookmarkModifier;
+public interface JSBookmarkModifier extends BookmarkModifier {
+  boolean hasClientModifications();
 
-public interface JSBookmarkModifier extends BookmarkModifier
-{
-	boolean hasClientModifications();
+  Map<String, JSExpression> getClientExpressions();
 
-	Map<String, JSExpression> getClientExpressions();
+  String getEventId();
 
-	String getEventId();
-
-	JSExpression[] getParameters();
+  JSExpression[] getParameters();
 }

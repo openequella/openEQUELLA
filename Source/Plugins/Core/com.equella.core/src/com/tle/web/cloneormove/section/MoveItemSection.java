@@ -29,49 +29,42 @@ import com.tle.web.viewitem.summary.sidebar.actions.GenericMinorActionWithPageSe
 import com.tle.web.viewurl.ItemSectionInfo;
 
 @Bind
-public class MoveItemSection extends GenericMinorActionWithPageSection
-{
-	@PlugKey("moveonly.title")
-	private static Label MOVE_TITLE_LABEL;
+public class MoveItemSection extends GenericMinorActionWithPageSection {
+  @PlugKey("moveonly.title")
+  private static Label MOVE_TITLE_LABEL;
 
-	@TreeLookup
-	private RootCloneOrMoveSection rootCloneOrMoveSection;
+  @TreeLookup private RootCloneOrMoveSection rootCloneOrMoveSection;
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return MOVE_TITLE_LABEL;
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return MOVE_TITLE_LABEL;
+  }
 
-	@Override
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		return itemInfo.hasPrivilege(CloneOrMoveSection.MOVE_ITEM) && !status.isLocked();
-	}
+  @Override
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    return itemInfo.hasPrivilege(CloneOrMoveSection.MOVE_ITEM) && !status.isLocked();
+  }
 
-	@Override
-	public void execute(SectionInfo info)
-	{
-		final Item item = getItemInfo(info).getItem();
+  @Override
+  public void execute(SectionInfo info) {
+    final Item item = getItemInfo(info).getItem();
 
-		rootCloneOrMoveSection.setCurrentItemdef(info, item.getItemDefinition().getUuid());
+    rootCloneOrMoveSection.setCurrentItemdef(info, item.getItemDefinition().getUuid());
 
-		RootCloneOrMoveModel model = rootCloneOrMoveSection.getModel(info);
-		model.setUuid(item.getUuid());
-		model.setVersion(item.getVersion());
-		model.setIsMove(true);
-		super.execute(info);
-	}
+    RootCloneOrMoveModel model = rootCloneOrMoveSection.getModel(info);
+    model.setUuid(item.getUuid());
+    model.setVersion(item.getVersion());
+    model.setIsMove(true);
+    super.execute(info);
+  }
 
-	@Override
-	protected SectionId getPageSection()
-	{
-		return rootCloneOrMoveSection;
-	}
+  @Override
+  protected SectionId getPageSection() {
+    return rootCloneOrMoveSection;
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return MOVE_TITLE_LABEL.getText();
-	}
+  @Override
+  public String getLinkText() {
+    return MOVE_TITLE_LABEL.getText();
+  }
 }

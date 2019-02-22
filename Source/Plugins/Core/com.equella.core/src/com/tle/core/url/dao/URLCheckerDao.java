@@ -16,16 +16,14 @@
 
 package com.tle.core.url.dao;
 
-import java.util.Collection;
-
 import com.tle.beans.ReferencedURL;
 import com.tle.core.hibernate.dao.GenericDao;
+import java.util.Collection;
 
-public interface URLCheckerDao extends GenericDao<ReferencedURL, Long>
-{
-	ReferencedURL retrieveOrCreate(String url, boolean httpUrl, boolean forImport, boolean persist);
+public interface URLCheckerDao extends GenericDao<ReferencedURL, Long> {
+  ReferencedURL retrieveOrCreate(String url, boolean httpUrl, boolean forImport, boolean persist);
 
-	Collection<ReferencedURL> getRecheckingBatch(long startId, int batchSize);
+  Collection<ReferencedURL> getRecheckingBatch(long startId, int batchSize);
 
-	void updateWithTransaction(ReferencedURL rurl);
+  void updateWithTransaction(ReferencedURL rurl);
 }

@@ -23,21 +23,20 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Component
-{
-	boolean stateful() default true;
+public @interface Component {
+  boolean stateful() default true;
 
-	String name() default "";
+  String name() default "";
 
-	boolean register() default true;
+  boolean register() default true;
 
-	String[] onlyForContext() default {};
+  String[] onlyForContext() default {};
 
-	String[] ignoreForContext() default {};
+  String[] ignoreForContext() default {};
 
-	String[] contexts() default {};
+  String[] contexts() default {};
 
-	String parameter() default "";
+  String parameter() default "";
 
-	boolean supported() default false;
+  boolean supported() default false;
 }

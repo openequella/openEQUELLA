@@ -20,11 +20,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ViewFactory
-{
-	String name() default "";
+public @interface ViewFactory {
+  String name() default "";
 
-	boolean fixed() default true;
+  boolean fixed() default true;
 
-	boolean optional() default false;
+  boolean optional() default false;
 }

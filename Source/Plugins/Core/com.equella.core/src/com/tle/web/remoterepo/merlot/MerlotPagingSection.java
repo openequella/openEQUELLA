@@ -22,13 +22,11 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.equella.search.PagingSection;
 
 public class MerlotPagingSection
-	extends
-		PagingSection<MerlotRemoteRepoSearchEvent, RemoteRepoSearchResultEvent<RemoteRepoSearchResult>>
-{
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		this.setRenderScreenOptions(false);
-	}
+    extends PagingSection<
+        MerlotRemoteRepoSearchEvent, RemoteRepoSearchResultEvent<RemoteRepoSearchResult>> {
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    this.setRenderScreenOptions(false);
+  }
 }

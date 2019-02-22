@@ -16,198 +16,164 @@
 
 package com.tle.web.remoterepo.merlot;
 
-import java.util.Set;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.entity.FederatedSearch;
 import com.tle.common.util.TleDate;
 import com.tle.core.remoterepo.merlot.service.MerlotSearchParams;
 import com.tle.web.remoterepo.event.RemoteRepoSearchEvent;
 import com.tle.web.sections.SectionId;
+import java.util.Set;
 
 @NonNullByDefault(false)
 public class MerlotRemoteRepoSearchEvent extends RemoteRepoSearchEvent<MerlotRemoteRepoSearchEvent>
-	implements
-		MerlotSearchParams
-{
-	private KeywordUse keywordUse;
-	private String category;
-	private String community;
-	private String language;
-	private String materialType;
-	private String technicalFormat;
-	private String materialAudience;
-	private String sort;
-	private boolean cost;
-	private boolean creativeCommons;
-	private TleDate createdBefore;
-	private TleDate createdAfter;
-	private Set<String> mobileOS;
-	private Set<String> mobileType;
+    implements MerlotSearchParams {
+  private KeywordUse keywordUse;
+  private String category;
+  private String community;
+  private String language;
+  private String materialType;
+  private String technicalFormat;
+  private String materialAudience;
+  private String sort;
+  private boolean cost;
+  private boolean creativeCommons;
+  private TleDate createdBefore;
+  private TleDate createdAfter;
+  private Set<String> mobileOS;
+  private Set<String> mobileType;
 
-	public MerlotRemoteRepoSearchEvent(SectionId sectionId, FederatedSearch search)
-	{
-		super(sectionId, search);
-	}
+  public MerlotRemoteRepoSearchEvent(SectionId sectionId, FederatedSearch search) {
+    super(sectionId, search);
+  }
 
-	@Override
-	public FederatedSearch getMerlotSearch()
-	{
-		return getSearch();
-	}
+  @Override
+  public FederatedSearch getMerlotSearch() {
+    return getSearch();
+  }
 
-	@Override
-	public KeywordUse getKeywordUse()
-	{
-		return keywordUse;
-	}
+  @Override
+  public KeywordUse getKeywordUse() {
+    return keywordUse;
+  }
 
-	public void setKeywordUse(KeywordUse keywordUse)
-	{
-		this.keywordUse = keywordUse;
-	}
+  public void setKeywordUse(KeywordUse keywordUse) {
+    this.keywordUse = keywordUse;
+  }
 
-	@Override
-	public String getCategory()
-	{
-		return category;
-	}
+  @Override
+  public String getCategory() {
+    return category;
+  }
 
-	public void setCategory(String category)
-	{
-		this.category = category;
-	}
+  public void setCategory(String category) {
+    this.category = category;
+  }
 
-	@Override
-	public String getCommunity()
-	{
-		return community;
-	}
+  @Override
+  public String getCommunity() {
+    return community;
+  }
 
-	public void setCommunity(String community)
-	{
-		this.community = community;
-	}
+  public void setCommunity(String community) {
+    this.community = community;
+  }
 
-	@Override
-	public String getLanguage()
-	{
-		return language;
-	}
+  @Override
+  public String getLanguage() {
+    return language;
+  }
 
-	public void setLanguage(String language)
-	{
-		this.language = language;
-	}
+  public void setLanguage(String language) {
+    this.language = language;
+  }
 
-	@Override
-	public String getMaterialType()
-	{
-		return materialType;
-	}
+  @Override
+  public String getMaterialType() {
+    return materialType;
+  }
 
-	public void setMaterialType(String materialType)
-	{
-		this.materialType = materialType;
-	}
+  public void setMaterialType(String materialType) {
+    this.materialType = materialType;
+  }
 
-	@Override
-	public String getTechnicalFormat()
-	{
-		return technicalFormat;
-	}
+  @Override
+  public String getTechnicalFormat() {
+    return technicalFormat;
+  }
 
-	public void setTechnicalFormat(String technicalFormat)
-	{
-		this.technicalFormat = technicalFormat;
-	}
+  public void setTechnicalFormat(String technicalFormat) {
+    this.technicalFormat = technicalFormat;
+  }
 
-	@Override
-	public String getMaterialAudience()
-	{
-		return materialAudience;
-	}
+  @Override
+  public String getMaterialAudience() {
+    return materialAudience;
+  }
 
-	public void setMaterialAudience(String materialAudience)
-	{
-		this.materialAudience = materialAudience;
-	}
+  public void setMaterialAudience(String materialAudience) {
+    this.materialAudience = materialAudience;
+  }
 
-	@Override
-	public String getSort()
-	{
-		return sort;
-	}
+  @Override
+  public String getSort() {
+    return sort;
+  }
 
-	public void setSort(String sort)
-	{
-		this.sort = sort;
-	}
+  public void setSort(String sort) {
+    this.sort = sort;
+  }
 
-	@Override
-	public boolean isCost()
-	{
-		return cost;
-	}
+  @Override
+  public boolean isCost() {
+    return cost;
+  }
 
-	public void setCost(boolean cost)
-	{
-		this.cost = cost;
-	}
+  public void setCost(boolean cost) {
+    this.cost = cost;
+  }
 
-	@Override
-	public boolean isCreativeCommons()
-	{
-		return creativeCommons;
-	}
+  @Override
+  public boolean isCreativeCommons() {
+    return creativeCommons;
+  }
 
-	public void setCreativeCommons(boolean creativeCommons)
-	{
-		this.creativeCommons = creativeCommons;
-	}
+  public void setCreativeCommons(boolean creativeCommons) {
+    this.creativeCommons = creativeCommons;
+  }
 
-	@Override
-	public TleDate getCreatedBefore()
-	{
-		return createdBefore;
-	}
+  @Override
+  public TleDate getCreatedBefore() {
+    return createdBefore;
+  }
 
-	public void setCreatedBefore(TleDate createdBefore)
-	{
-		this.createdBefore = createdBefore;
-	}
+  public void setCreatedBefore(TleDate createdBefore) {
+    this.createdBefore = createdBefore;
+  }
 
-	@Override
-	public TleDate getCreatedAfter()
-	{
-		return createdAfter;
-	}
+  @Override
+  public TleDate getCreatedAfter() {
+    return createdAfter;
+  }
 
-	public void setCreatedAfter(TleDate createdAfter)
-	{
-		this.createdAfter = createdAfter;
-	}
+  public void setCreatedAfter(TleDate createdAfter) {
+    this.createdAfter = createdAfter;
+  }
 
-	@Override
-	public Set<String> getMobileOS()
-	{
-		return mobileOS;
-	}
+  @Override
+  public Set<String> getMobileOS() {
+    return mobileOS;
+  }
 
-	public void setMobileOS(Set<String> mobileOS)
-	{
-		this.mobileOS = mobileOS;
-	}
+  public void setMobileOS(Set<String> mobileOS) {
+    this.mobileOS = mobileOS;
+  }
 
-	@Override
-	public Set<String> getMobileType()
-	{
-		return mobileType;
-	}
+  @Override
+  public Set<String> getMobileType() {
+    return mobileType;
+  }
 
-	public void setMobileType(Set<String> mobileType)
-	{
-		this.mobileType = mobileType;
-	}
-
+  public void setMobileType(Set<String> mobileType) {
+    this.mobileType = mobileType;
+  }
 }

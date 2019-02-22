@@ -16,15 +16,6 @@
 
 package com.tle.web.errors;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.dytech.edge.common.LockedException;
 import com.dytech.edge.exceptions.BadRequestException;
 import com.dytech.edge.exceptions.DRMException;
@@ -32,12 +23,12 @@ import com.dytech.edge.exceptions.WebException;
 import com.tle.common.Check;
 import com.tle.common.Pair;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.services.user.UserService;
-import com.tle.common.usermanagement.user.CurrentUser;
-import com.tle.common.usermanagement.user.UserState;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -54,300 +45,251 @@ import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.template.Decorations;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 @SuppressWarnings("nls")
-public class DefaultErrorSection extends AbstractErrorSection<DefaultErrorSection.DefaultErrorModel>
-{
-	private static Log LOGGER = LogFactory.getLog(DefaultErrorSection.class);
+public class DefaultErrorSection
+    extends AbstractErrorSection<DefaultErrorSection.DefaultErrorModel> {
+  private static Log LOGGER = LogFactory.getLog(DefaultErrorSection.class);
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@Inject
-	private UserService userService;
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private MimeTypeService mimeTypeService;
-	@PlugKey("errors.part.actions.goback")
-	@Component
-	private Button action;
-	@PlugKey("errors.")
-	private static String ERROR_PFX;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @Inject private UserService userService;
+  @Inject private InstitutionService institutionService;
+  @Inject private MimeTypeService mimeTypeService;
 
-	@ResourceHelper
-	private static PluginResourceHelper urlHelper;
+  @PlugKey("errors.part.actions.goback")
+  @Component
+  private Button action;
 
-	@Override
-	public SectionResult renderErrorHtml(DefaultErrorModel model, RenderEventContext context) throws Exception
-	{
-		context.preRender(JQueryCore.PRERENDER);
+  @PlugKey("errors.")
+  private static String ERROR_PFX;
 
-		Pair<Integer, String> result = handleException(context, model, model.getException());
-		context.getResponse().setStatus(result.getFirst());
+  @ResourceHelper private static PluginResourceHelper urlHelper;
 
-		String titleKey = urlHelper.key("errors.title." + result.getSecond());
-		model.setTitleKey(titleKey);
-		Decorations.getDecorations(context).setTitle(new KeyLabel(titleKey));
+  @Override
+  public SectionResult renderErrorHtml(DefaultErrorModel model, RenderEventContext context)
+      throws Exception {
+    context.preRender(JQueryCore.PRERENDER);
 
-		action.setClickHandler(context, new OverrideHandler(new ScriptStatement("history.back();")));
+    Pair<Integer, String> result = handleException(context, model, model.getException());
+    context.getResponse().setStatus(result.getFirst());
 
-		return viewFactory.createTemplateResult("errors/defaulterror.ftl", context);
-	}
+    String titleKey = urlHelper.key("errors.title." + result.getSecond());
+    model.setTitleKey(titleKey);
+    Decorations.getDecorations(context).setTitle(new KeyLabel(titleKey));
 
-	protected Pair<Integer, String> handleException(SectionInfo info, DefaultErrorModel model, Throwable ex)
-	{
-		HttpServletRequest request = info.getRequest();
-		String requestURI = (String) request.getAttribute("javax.servlet.error.request_uri");
-		if( requestURI == null )
-		{
-			StringBuffer requestURL = request.getRequestURL();
-			String queryString = request.getQueryString();
-			if( queryString == null )
-			{
-				requestURI = requestURL.toString();
-			}
-			else
-			{
-				requestURI = requestURL.append('?').append(queryString).toString();
-			}
-		}
-		int status = 500;
-		String message = null;
-		String titleKey = "defaulterror";
+    action.setClickHandler(context, new OverrideHandler(new ScriptStatement("history.back();")));
 
-		final ErrorPart urlPart = createUrlPart(requestURI);
-		final String url = urlPart.getText();
-		if( ex instanceof WebException )
-		{
-			WebException webex = (WebException) ex;
-			model.addPart(createUserPart());
-			model.addPart(urlPart);
-			model.addPart(createExceptionDescriptionPart(ex, null));
-			return new Pair<Integer, String>(webex.getCode(), mapErrorCode(webex.getCode()));
-		}
+    return viewFactory.createTemplateResult("errors/defaulterror.ftl", context);
+  }
 
-		if( ex instanceof com.tle.common.beans.exception.NotFoundException )
-		{
-			if( ((com.tle.common.beans.exception.NotFoundException) ex).isFromRequest() )
-			{
-				// cool, standard 404
-				return generic404(model, ex, requestURI);
-			}
-		}
-		else if( ex instanceof LockedException )
-		{
-			LockedException ile = (LockedException) ex;
-			model.addPart(createLockedPart(ile));
-			model.addPart(urlPart);
-			return new Pair<Integer, String>(200, "itemlocked");
-		}
-		else if( ex instanceof AccessDeniedException || ex instanceof DRMException )
-		{
-			if( LOGGER.isDebugEnabled() )
-			{
-				LOGGER.debug(
-					"Access denied to user: " + userService.convertUserStateToString(CurrentUser.getUserState()));
-			}
+  protected Pair<Integer, String> handleException(
+      SectionInfo info, DefaultErrorModel model, Throwable ex) {
+    HttpServletRequest request = info.getRequest();
+    String requestURI = (String) request.getAttribute("javax.servlet.error.request_uri");
+    if (requestURI == null) {
+      StringBuffer requestURL = request.getRequestURL();
+      String queryString = request.getQueryString();
+      if (queryString == null) {
+        requestURI = requestURL.toString();
+      } else {
+        requestURI = requestURL.append('?').append(queryString).toString();
+      }
+    }
+    int status = 500;
+    String message = null;
+    String titleKey = "defaulterror";
 
-			// TODO: do we need this any more???
-			String filename = request.getParameter("filename");
-			if( !Check.isEmpty(filename) )
-			{
-				// if mimetype is image, forward to 'denied' image
-				String mime = mimeTypeService.getMimeTypeForFilename(filename);
-				if( mime.startsWith("image") )
-				{
-					info.forwardToUrl(institutionService.institutionalise("images/denied.png"));
-					return null;
-				}
-			}
+    final ErrorPart urlPart = createUrlPart(requestURI);
+    final String url = urlPart.getText();
+    if (ex instanceof WebException) {
+      WebException webex = (WebException) ex;
+      model.addPart(createUserPart());
+      model.addPart(urlPart);
+      model.addPart(createExceptionDescriptionPart(ex, null));
+      return new Pair<Integer, String>(webex.getCode(), mapErrorCode(webex.getCode()));
+    }
 
-			model.addPart(createAccessDeniedPart(ex));
-			model.addPart(urlPart);
-			model.addPart(createUserPart());
-			return new Pair<Integer, String>(403, "accessdenied");
-		}
-		else if( ex instanceof BadRequestException )
-		{
-			BadRequestException bad = (BadRequestException) ex;
-			status = bad.getCode();
-			message = resolve("part.badrequest.message", bad.getParameter());
-			titleKey = "badrequest";
-		}
+    if (ex instanceof com.tle.common.beans.exception.NotFoundException) {
+      if (((com.tle.common.beans.exception.NotFoundException) ex).isFromRequest()) {
+        // cool, standard 404
+        return generic404(model, ex, requestURI);
+      }
+    } else if (ex instanceof LockedException) {
+      LockedException ile = (LockedException) ex;
+      model.addPart(createLockedPart(ile));
+      model.addPart(urlPart);
+      return new Pair<Integer, String>(200, "itemlocked");
+    } else if (ex instanceof AccessDeniedException || ex instanceof DRMException) {
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug(
+            "Access denied to user: "
+                + userService.convertUserStateToString(CurrentUser.getUserState()));
+      }
 
-		if( model.isNoLog() )
-		{
-			//Nothing
-		}
-		else if( model.isNoStack() )
-		{
-			if( model.isWarnOnly() )
-			{
-				LOGGER.warn("Warning at " + url + " :" + ex.getMessage());
-			}
-			else
-			{
-				LOGGER.error("Error at " + url + " :" + ex.getMessage());
-			}
-		}
-		else
-		{
-			if( model.isWarnOnly() )
-			{
-				LOGGER.warn("Warning at " + url + " :", ex);
-			}
-			else
-			{
-				LOGGER.error("Error at " + url + " :", ex);
-			}
-		}
+      // TODO: do we need this any more???
+      String filename = request.getParameter("filename");
+      if (!Check.isEmpty(filename)) {
+        // if mimetype is image, forward to 'denied' image
+        String mime = mimeTypeService.getMimeTypeForFilename(filename);
+        if (mime.startsWith("image")) {
+          info.forwardToUrl(institutionService.institutionalise("images/denied.png"));
+          return null;
+        }
+      }
 
-		model.addPart(createUserPart());
-		model.addPart(urlPart);
-		model.addPart(createExceptionDescriptionPart(ex, message));
-		return new Pair<Integer, String>(status, titleKey);
-	}
+      model.addPart(createAccessDeniedPart(ex));
+      model.addPart(urlPart);
+      model.addPart(createUserPart());
+      return new Pair<Integer, String>(403, "accessdenied");
+    } else if (ex instanceof BadRequestException) {
+      BadRequestException bad = (BadRequestException) ex;
+      status = bad.getCode();
+      message = resolve("part.badrequest.message", bad.getParameter());
+      titleKey = "badrequest";
+    }
 
-	private String mapErrorCode(int code)
-	{
-		switch( code )
-		{
-			case 403:
-				return "accessdenied";
-			default:
-				return "defaulterror";
-		}
-	}
+    if (model.isNoLog()) {
+      // Nothing
+    } else if (model.isNoStack()) {
+      if (model.isWarnOnly()) {
+        LOGGER.warn("Warning at " + url + " :" + ex.getMessage());
+      } else {
+        LOGGER.error("Error at " + url + " :" + ex.getMessage());
+      }
+    } else {
+      if (model.isWarnOnly()) {
+        LOGGER.warn("Warning at " + url + " :", ex);
+      } else {
+        LOGGER.error("Error at " + url + " :", ex);
+      }
+    }
 
-	private Pair<Integer, String> generic404(DefaultErrorModel model, Throwable t, String requestUri)
-	{
-		model.addPart(createNotFoundPart(t));
-		model.addPart(createUrlPart(requestUri));
-		return new Pair<Integer, String>(404, "notfound");
-	}
+    model.addPart(createUserPart());
+    model.addPart(urlPart);
+    model.addPart(createExceptionDescriptionPart(ex, message));
+    return new Pair<Integer, String>(status, titleKey);
+  }
 
-	private ErrorPart createUserPart()
-	{
-		try
-		{
-			String value = null;
-			final UserState userState = CurrentUser.getUserState();
-			if( userState.isGuest() )
-			{
-				value = resolve("part.user.notloggedin");
-			}
-			else
-			{
-				value = resolve("part.user.loggedinas", userState.getUserBean(), userState.getIpAddress());
-			}
+  private String mapErrorCode(int code) {
+    switch (code) {
+      case 403:
+        return "accessdenied";
+      default:
+        return "defaulterror";
+    }
+  }
 
-			return new ErrorPart("user", resolve("part.user.title"), value);
-		}
-		catch( Exception e )
-		{
-			return new ErrorPart("user", resolve("part.user.title"), resolve("part.user.unknown"));
-		}
-	}
+  private Pair<Integer, String> generic404(
+      DefaultErrorModel model, Throwable t, String requestUri) {
+    model.addPart(createNotFoundPart(t));
+    model.addPart(createUrlPart(requestUri));
+    return new Pair<Integer, String>(404, "notfound");
+  }
 
-	private ErrorPart createExceptionDescriptionPart(Throwable ex, String messageOverride)
-	{
-		String message = (messageOverride == null ? ex == null ? "" : ex.getMessage() : messageOverride);
-		if( Check.isEmpty(message) && ex != null )
-		{
-			message = ex.getClass().toString();
-		}
-		return new ErrorPart("description", resolve("part.exceptiondescription.title"), message);
-	}
+  private ErrorPart createUserPart() {
+    try {
+      String value = null;
+      final UserState userState = CurrentUser.getUserState();
+      if (userState.isGuest()) {
+        value = resolve("part.user.notloggedin");
+      } else {
+        value = resolve("part.user.loggedinas", userState.getUserBean(), userState.getIpAddress());
+      }
 
-	private ErrorPart createNotFoundPart(Throwable ex)
-	{
-		return new ErrorPart("notfound", resolve("part.notfound.title"), ex.getMessage());
-	}
+      return new ErrorPart("user", resolve("part.user.title"), value);
+    } catch (Exception e) {
+      return new ErrorPart("user", resolve("part.user.title"), resolve("part.user.unknown"));
+    }
+  }
 
-	private ErrorPart createAccessDeniedPart(Throwable ex)
-	{
-		return new ErrorPart("denied", resolve("part.accessdenied.title"), ex.getMessage());
-	}
+  private ErrorPart createExceptionDescriptionPart(Throwable ex, String messageOverride) {
+    String message =
+        (messageOverride == null ? ex == null ? "" : ex.getMessage() : messageOverride);
+    if (Check.isEmpty(message) && ex != null) {
+      message = ex.getClass().toString();
+    }
+    return new ErrorPart("description", resolve("part.exceptiondescription.title"), message);
+  }
 
-	private ErrorPart createUrlPart(String requestUri)
-	{
-		return new ErrorPart("url", resolve("part.url.title"), requestUri);
-	}
+  private ErrorPart createNotFoundPart(Throwable ex) {
+    return new ErrorPart("notfound", resolve("part.notfound.title"), ex.getMessage());
+  }
 
-	private ErrorPart createLockedPart(LockedException ex)
-	{
-		UserBean locker = userService.getInformationForUser(ex.getUserID());
-		return new ErrorPart("locked", resolve("part.itemlocked.title", locker), resolve("part.itemlocked.message"));
-	}
+  private ErrorPart createAccessDeniedPart(Throwable ex) {
+    return new ErrorPart("denied", resolve("part.accessdenied.title"), ex.getMessage());
+  }
 
-	private String resolve(String text, Object... values)
-	{
-		return CurrentLocale.get(ERROR_PFX + text, values);
-	}
+  private ErrorPart createUrlPart(String requestUri) {
+    return new ErrorPart("url", resolve("part.url.title"), requestUri);
+  }
 
-	@Override
-	public Class<DefaultErrorModel> getModelClass()
-	{
-		return DefaultErrorModel.class;
-	}
+  private ErrorPart createLockedPart(LockedException ex) {
+    UserBean locker = userService.getInformationForUser(ex.getUserID());
+    return new ErrorPart(
+        "locked", resolve("part.itemlocked.title", locker), resolve("part.itemlocked.message"));
+  }
 
-	public static class DefaultErrorModel extends AbstractErrorSection.ErrorModel
-	{
-		private String titleKey;
-		private final List<ErrorPart> parts = new ArrayList<ErrorPart>();
+  private String resolve(String text, Object... values) {
+    return CurrentLocale.get(ERROR_PFX + text, values);
+  }
 
-		public String getTitleKey()
-		{
-			return titleKey;
-		}
+  @Override
+  public Class<DefaultErrorModel> getModelClass() {
+    return DefaultErrorModel.class;
+  }
 
-		public void setTitleKey(String titleKey)
-		{
-			this.titleKey = titleKey;
-		}
+  public static class DefaultErrorModel extends AbstractErrorSection.ErrorModel {
+    private String titleKey;
+    private final List<ErrorPart> parts = new ArrayList<ErrorPart>();
 
-		public List<ErrorPart> getParts()
-		{
-			return parts;
-		}
+    public String getTitleKey() {
+      return titleKey;
+    }
 
-		public void addPart(ErrorPart part)
-		{
-			parts.add(part);
-		}
-	}
+    public void setTitleKey(String titleKey) {
+      this.titleKey = titleKey;
+    }
 
-	public static class ErrorPart
-	{
-		private final String id;
-		private final String title;
-		private final String text;
+    public List<ErrorPart> getParts() {
+      return parts;
+    }
 
-		protected ErrorPart(String id, String title, String text)
-		{
-			this.id = id;
-			this.title = title;
-			this.text = text;
-		}
+    public void addPart(ErrorPart part) {
+      parts.add(part);
+    }
+  }
 
-		public String getId()
-		{
-			return id;
-		}
+  public static class ErrorPart {
+    private final String id;
+    private final String title;
+    private final String text;
 
-		public String getTitle()
-		{
-			return title;
-		}
+    protected ErrorPart(String id, String title, String text) {
+      this.id = id;
+      this.title = title;
+      this.text = text;
+    }
 
-		public String getText()
-		{
-			return text;
-		}
-	}
+    public String getId() {
+      return id;
+    }
 
-	public Button getAction()
-	{
-		return action;
-	}
+    public String getTitle() {
+      return title;
+    }
+
+    public String getText() {
+      return text;
+    }
+  }
+
+  public Button getAction() {
+    return action;
+  }
 }

@@ -16,15 +16,13 @@
 
 package com.tle.core.settings.dao;
 
-import java.util.Collection;
-
 import com.tle.beans.ConfigurationProperty;
 import com.tle.beans.ConfigurationProperty.PropertyKey;
 import com.tle.core.hibernate.dao.GenericDao;
+import java.util.Collection;
 
-public interface ConfigurationDao extends GenericDao<ConfigurationProperty, PropertyKey>
-{
-	void deleteAll();
+public interface ConfigurationDao extends GenericDao<ConfigurationProperty, PropertyKey> {
+  void deleteAll();
 
-	void deletePropertiesLike(Collection<String> select);
+  void deletePropertiesLike(Collection<String> select);
 }

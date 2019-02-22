@@ -29,55 +29,84 @@ import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.render.PreRenderable;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
-public class TooltipModule implements JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
+public class TooltipModule implements JavascriptModule {
+  private static final long serialVersionUID = 1L;
 
-	private static final PreRenderable INCLUDE = new IncludeFile(ResourcesService
-		.getResourceHelper(TooltipModule.class).url("js/tooltip.js"), JQueryCore.PRERENDER);
+  private static final PreRenderable INCLUDE =
+      new IncludeFile(
+          ResourcesService.getResourceHelper(TooltipModule.class).url("js/tooltip.js"),
+          JQueryCore.PRERENDER);
 
-	public static final JSCallable TOOL_TIP = new ExternallyDefinedFunction("tooltip", 1, INCLUDE);
+  public static final JSCallable TOOL_TIP = new ExternallyDefinedFunction("tooltip", 1, INCLUDE);
 
-	public static JSStatements getTooltipStatements(JQuerySelector hoverSelector, JQuerySelector tipSelector,
-		int delay, boolean useMousePosition)
-	{
-		return new JQueryStatement(hoverSelector, new FunctionCallExpression(TOOL_TIP, new ObjectExpression(
-			"tipelement", tipSelector, "delay", delay, "mousePosition", useMousePosition)));
-	}
+  public static JSStatements getTooltipStatements(
+      JQuerySelector hoverSelector,
+      JQuerySelector tipSelector,
+      int delay,
+      boolean useMousePosition) {
+    return new JQueryStatement(
+        hoverSelector,
+        new FunctionCallExpression(
+            TOOL_TIP,
+            new ObjectExpression(
+                "tipelement", tipSelector, "delay", delay, "mousePosition", useMousePosition)));
+  }
 
-	public static JSStatements getTooltipStatements(JQuerySelector hoverSelector, JQuerySelector tipSelector,
-		int delay, int xOffset, int yOffset, boolean useMousePosition)
-	{
-		return new JQueryStatement(hoverSelector, new FunctionCallExpression(TOOL_TIP, new ObjectExpression("xOffset",
-			xOffset, "yOffset", yOffset, "tipelement", tipSelector, "delay", delay, "mousePosition", useMousePosition)));
-	}
+  public static JSStatements getTooltipStatements(
+      JQuerySelector hoverSelector,
+      JQuerySelector tipSelector,
+      int delay,
+      int xOffset,
+      int yOffset,
+      boolean useMousePosition) {
+    return new JQueryStatement(
+        hoverSelector,
+        new FunctionCallExpression(
+            TOOL_TIP,
+            new ObjectExpression(
+                "xOffset",
+                xOffset,
+                "yOffset",
+                yOffset,
+                "tipelement",
+                tipSelector,
+                "delay",
+                delay,
+                "mousePosition",
+                useMousePosition)));
+  }
 
-	public static JSStatements getTooltipStatements(JQuerySelector hoverSelector, String hoverHtml, int delay,
-		boolean useMousePosition)
-	{
-		return new JQueryStatement(hoverSelector, new FunctionCallExpression(TOOL_TIP, new ObjectExpression(
-			"tipelement", null, "delay", delay, "tiphtml", hoverHtml, "mousePosition", useMousePosition)));
-	}
+  public static JSStatements getTooltipStatements(
+      JQuerySelector hoverSelector, String hoverHtml, int delay, boolean useMousePosition) {
+    return new JQueryStatement(
+        hoverSelector,
+        new FunctionCallExpression(
+            TOOL_TIP,
+            new ObjectExpression(
+                "tipelement",
+                null,
+                "delay",
+                delay,
+                "tiphtml",
+                hoverHtml,
+                "mousePosition",
+                useMousePosition)));
+  }
 
-	@Override
-	public String getDisplayName()
-	{
-		return "Tooltip";
-	}
+  @Override
+  public String getDisplayName() {
+    return "Tooltip";
+  }
 
-	@Override
-	public String getId()
-	{
-		return "tooltip";
-	}
+  @Override
+  public String getId() {
+    return "tooltip";
+  }
 
-	@Override
-	public Object getPreRenderer()
-	{
-		return INCLUDE;
-	}
+  @Override
+  public Object getPreRenderer() {
+    return INCLUDE;
+  }
 }

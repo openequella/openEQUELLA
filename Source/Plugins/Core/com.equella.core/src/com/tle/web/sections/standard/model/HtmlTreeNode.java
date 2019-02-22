@@ -19,13 +19,12 @@ package com.tle.web.sections.standard.model;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 
-public interface HtmlTreeNode
-{
-	String getId();
+public interface HtmlTreeNode {
+  String getId();
 
-	SectionRenderable getRenderer();
+  SectionRenderable getRenderer();
 
-	Label getLabel();
+  Label getLabel();
 
-	boolean isLeaf();
+  boolean isLeaf();
 }

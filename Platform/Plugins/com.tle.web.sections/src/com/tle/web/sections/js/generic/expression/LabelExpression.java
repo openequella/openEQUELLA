@@ -25,37 +25,31 @@ import com.tle.web.sections.js.JSUtils;
 import com.tle.web.sections.render.Label;
 
 @NonNullByDefault
-public class LabelExpression extends AbstractExpression
-{
-	protected final Label label;
-	protected final boolean undefinedIfEmpty;
+public class LabelExpression extends AbstractExpression {
+  protected final Label label;
+  protected final boolean undefinedIfEmpty;
 
-	public LabelExpression(Label label)
-	{
-		this(label, false);
-	}
+  public LabelExpression(Label label) {
+    this(label, false);
+  }
 
-	public LabelExpression(Label label, boolean undefinedIfEmpty)
-	{
-		this.label = label;
-		this.undefinedIfEmpty = undefinedIfEmpty;
-	}
+  public LabelExpression(Label label, boolean undefinedIfEmpty) {
+    this.label = label;
+    this.undefinedIfEmpty = undefinedIfEmpty;
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		// nothing
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    // nothing
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public String getExpression(@Nullable RenderContext info)
-	{
-		String text = label.getText();
-		if( undefinedIfEmpty && Check.isEmpty(text) )
-		{
-			return "undefined";
-		}
-		return JSUtils.toJSString(text);
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public String getExpression(@Nullable RenderContext info) {
+    String text = label.getText();
+    if (undefinedIfEmpty && Check.isEmpty(text)) {
+      return "undefined";
+    }
+    return JSUtils.toJSString(text);
+  }
 }

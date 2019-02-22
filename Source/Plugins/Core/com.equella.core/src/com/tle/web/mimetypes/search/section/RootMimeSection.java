@@ -16,10 +16,6 @@
 
 package com.tle.web.mimetypes.search.section;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.mimetypes.MimeSearchPrivilegeTreeProvider;
@@ -36,65 +32,58 @@ import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
+import java.util.List;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 public class RootMimeSection extends ContextableSearchSection<ContextableSearchSection.Model>
-	implements
-		BlueBarEventListener
-{
-	@PlugURL("css/mime.css")
-	private static String CSS_URL;
-	@PlugKey("mimetypes.title")
-	private static Label TITLE_LABEL;
+    implements BlueBarEventListener {
+  @PlugURL("css/mime.css")
+  private static String CSS_URL;
 
-	@Inject
-	private MimeSearchPrivilegeTreeProvider securityProvider;
+  @PlugKey("mimetypes.title")
+  private static Label TITLE_LABEL;
 
-	@ViewFactory
-	private FreemarkerFactory view;
+  @Inject private MimeSearchPrivilegeTreeProvider securityProvider;
 
-	@Override
-	protected String getSessionKey()
-	{
-		return "mimeContext";
-	}
+  @ViewFactory private FreemarkerFactory view;
 
-	@DirectEvent
-	public void ensurePrivs(SectionInfo info)
-	{
-		securityProvider.checkAuthorised();
-	}
+  @Override
+  protected String getSessionKey() {
+    return "mimeContext";
+  }
 
-	@Override
-	protected void createCssIncludes(List<CssInclude> includes)
-	{
-		includes.add(CssInclude.include(CSS_URL).hasRtl().make());
-		super.createCssIncludes(includes);
-	}
+  @DirectEvent
+  public void ensurePrivs(SectionInfo info) {
+    securityProvider.checkAuthorised();
+  }
 
-	@Override
-	public Label getTitle(SectionInfo info)
-	{
-		return TITLE_LABEL;
-	}
+  @Override
+  protected void createCssIncludes(List<CssInclude> includes) {
+    includes.add(CssInclude.include(CSS_URL).hasRtl().make());
+    super.createCssIncludes(includes);
+  }
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		super.addBreadcrumbsAndTitle(info, decorations, crumbs);
+  @Override
+  public Label getTitle(SectionInfo info) {
+    return TITLE_LABEL;
+  }
 
-		Breadcrumbs.get(info).add(SettingsUtils.getBreadcrumb(info));
-	}
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    super.addBreadcrumbsAndTitle(info, decorations, crumbs);
 
-	@Override
-	protected String getContentBodyClasses()
-	{
-		return super.getContentBodyClasses() + " mimetypes";
-	}
+    Breadcrumbs.get(info).add(SettingsUtils.getBreadcrumb(info));
+  }
 
-	@Override
-	public void addBlueBarResults(RenderContext context, BlueBarEvent event)
-	{
-		event.addHelp(view.createResult("mime-help.ftl", this));
-	}
+  @Override
+  protected String getContentBodyClasses() {
+    return super.getContentBodyClasses() + " mimetypes";
+  }
+
+  @Override
+  public void addBlueBarResults(RenderContext context, BlueBarEvent event) {
+    event.addHelp(view.createResult("mime-help.ftl", this));
+  }
 }

@@ -16,14 +16,6 @@
 
 package com.tle.web.core.filter;
 
-import java.io.IOException;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.guice.Bind;
@@ -34,44 +26,44 @@ import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.dispatcher.FilterResult;
+import java.io.IOException;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Bind
 @Singleton
-public class ThreadLocalFilter extends OncePerRequestFilter
-{
-	@Inject
-	private BundleCache bundleCache;
-	@Inject
-	private UserSessionService userSessionService;
-	@Inject
-	private ServerSideLocaleImplementation serverSideLocaleImplementation;
-	@Inject
-	private ServerSideTimeZoneImplementation serverSideTimeZoneImplementation;
+public class ThreadLocalFilter extends OncePerRequestFilter {
+  @Inject private BundleCache bundleCache;
+  @Inject private UserSessionService userSessionService;
+  @Inject private ServerSideLocaleImplementation serverSideLocaleImplementation;
+  @Inject private ServerSideTimeZoneImplementation serverSideTimeZoneImplementation;
 
-	private PluginTracker<ThreadLocalExtension> tracker;
+  private PluginTracker<ThreadLocalExtension> tracker;
 
-	@Override
-	protected FilterResult doFilterInternal(HttpServletRequest request, HttpServletResponse response)
-		throws ServletException, IOException
-	{
-		CurrentUser.setUserState(null);
-		CurrentInstitution.remove();
-		bundleCache.reset();
-		userSessionService.unbind();
-		serverSideLocaleImplementation.clearThreadLocals();
-		serverSideTimeZoneImplementation.clearThreadLocals();
-		for( ThreadLocalExtension tle : tracker.getBeanList() )
-		{
-			tle.doFilter(request, response);
-		}
-		return FilterResult.FILTER_CONTINUE;
-	}
+  @Override
+  protected FilterResult doFilterInternal(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    CurrentUser.setUserState(null);
+    CurrentInstitution.remove();
+    bundleCache.reset();
+    userSessionService.unbind();
+    serverSideLocaleImplementation.clearThreadLocals();
+    serverSideTimeZoneImplementation.clearThreadLocals();
+    for (ThreadLocalExtension tle : tracker.getBeanList()) {
+      tle.doFilter(request, response);
+    }
+    return FilterResult.FILTER_CONTINUE;
+  }
 
-	@SuppressWarnings("nls")
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		tracker = new PluginTracker<ThreadLocalExtension>(pluginService, "com.tle.web.core", "threadLocal", "id");
-		tracker.setBeanKey("bean");
-	}
+  @SuppressWarnings("nls")
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    tracker =
+        new PluginTracker<ThreadLocalExtension>(
+            pluginService, "com.tle.web.core", "threadLocal", "id");
+    tracker.setBeanKey("bean");
+  }
 }

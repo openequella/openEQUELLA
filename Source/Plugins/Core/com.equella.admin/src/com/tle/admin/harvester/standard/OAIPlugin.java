@@ -16,21 +16,6 @@
 
 package com.tle.admin.harvester.standard;
 
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
 import com.dytech.devlib.PropBagEx;
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
@@ -44,247 +29,222 @@ import com.tle.common.applet.client.ClientService;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.harvester.OAIHarvesterSettings;
 import com.tle.common.harvester.RemoteOAIHarvesterService;
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.remoting.RemoteSchemaService;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 @SuppressWarnings("nls")
-public class OAIPlugin extends HarvesterPlugin<OAIHarvesterSettings> implements ActionListener
-{
-	private JTextField serverField;
+public class OAIPlugin extends HarvesterPlugin<OAIHarvesterSettings> implements ActionListener {
+  private JTextField serverField;
 
-	private JComboBox<NameValue> aSetField;
-	private JButton getSetsButton;
+  private JComboBox<NameValue> aSetField;
+  private JButton getSetsButton;
 
-	private JComboBox<String> metaField;
-	private JButton getMetaButton;
+  private JComboBox<String> metaField;
+  private JButton getMetaButton;
 
-	private OAIHarvesterSettings settings;
+  private OAIHarvesterSettings settings;
 
-	public OAIPlugin()
-	{
-		super(OAIHarvesterSettings.class);
-	}
+  public OAIPlugin() {
+    super(OAIHarvesterSettings.class);
+  }
 
-	@Override
-	public void initGUI()
-	{
-		serverField = new JTextField();
+  @Override
+  public void initGUI() {
+    serverField = new JTextField();
 
-		JPanel setsPanel = new JPanel();
-		aSetField = new JComboBox<>();
-		aSetField.setEditable(true);
-		getSetsButton = new JButton(getString("oaiplugin.getsets"));
-		getSetsButton.addActionListener(this);
+    JPanel setsPanel = new JPanel();
+    aSetField = new JComboBox<>();
+    aSetField.setEditable(true);
+    getSetsButton = new JButton(getString("oaiplugin.getsets"));
+    getSetsButton.addActionListener(this);
 
-		setupPanel(setsPanel, aSetField, getSetsButton);
+    setupPanel(setsPanel, aSetField, getSetsButton);
 
-		JPanel metaPanel = new JPanel();
-		metaField = new JComboBox<>();
-		metaField.setEditable(true);
-		getMetaButton = new JButton(getString("oaiplugin.getmetas"));
-		getMetaButton.addActionListener(this);
+    JPanel metaPanel = new JPanel();
+    metaField = new JComboBox<>();
+    metaField.setEditable(true);
+    getMetaButton = new JButton(getString("oaiplugin.getmetas"));
+    getMetaButton.addActionListener(this);
 
-		setupPanel(metaPanel, metaField, getMetaButton);
+    setupPanel(metaPanel, metaField, getMetaButton);
 
-		panel.addComponent(new JLabel(getString("oaiplugin.settings")));
-		panel.addNameAndComponent(getString("oaiplugin.server"), serverField);
-		panel.addNameAndComponent(getString("oaiplugin.format"), metaPanel);
-		panel.addNameAndComponent(getString("oaiplugin.aset"), setsPanel);
+    panel.addComponent(new JLabel(getString("oaiplugin.settings")));
+    panel.addNameAndComponent(getString("oaiplugin.server"), serverField);
+    panel.addNameAndComponent(getString("oaiplugin.format"), metaPanel);
+    panel.addNameAndComponent(getString("oaiplugin.aset"), setsPanel);
+  }
 
-	}
+  private void setupPanel(JPanel aPanel, JComboBox<?> aField, JButton aButton) {
+    final int width = aButton.getPreferredSize().width;
+    final int height = aButton.getPreferredSize().height;
 
-	private void setupPanel(JPanel aPanel, JComboBox<?> aField, JButton aButton)
-	{
-		final int width = aButton.getPreferredSize().width;
-		final int height = aButton.getPreferredSize().height;
+    final int[] rows = {height};
+    int[] cols = new int[] {TableLayout.FILL, width};
 
-		final int[] rows = {height};
-		int[] cols = new int[]{TableLayout.FILL, width};
+    aPanel.setLayout(new TableLayout(rows, cols, 5, 5));
 
-		aPanel.setLayout(new TableLayout(rows, cols, 5, 5));
+    aPanel.add(aField, new Rectangle(0, 0, 1, 1));
+    aPanel.add(aButton, new Rectangle(1, 0, 1, 1));
+  }
 
-		aPanel.add(aField, new Rectangle(0, 0, 1, 1));
-		aPanel.add(aButton, new Rectangle(1, 0, 1, 1));
-	}
+  @Override
+  public void load(OAIHarvesterSettings settings) {
+    this.settings = settings;
+    serverField.setText(settings.getServer());
 
-	@Override
-	public void load(OAIHarvesterSettings settings)
-	{
-		this.settings = settings;
-		serverField.setText(settings.getServer());
+    metaField.setSelectedItem(settings.getFormat());
 
-		metaField.setSelectedItem(settings.getFormat());
+    aSetField.setSelectedItem(settings.getaSet());
+  }
 
-		aSetField.setSelectedItem(settings.getaSet());
-	}
+  @Override
+  public void save(OAIHarvesterSettings settings) {
+    String url = fixUrl(serverField.getText());
+    serverField.setText(url);
+    settings.setServer(url);
+    settings.setFormat((String) metaField.getSelectedItem());
 
-	@Override
-	public void save(OAIHarvesterSettings settings)
-	{
-		String url = fixUrl(serverField.getText());
-		serverField.setText(url);
-		settings.setServer(url);
-		settings.setFormat((String) metaField.getSelectedItem());
+    Object selectedItem = aSetField.getSelectedItem();
+    if (selectedItem instanceof NameValue) {
+      settings.setaSet(((NameValue) selectedItem).getValue());
+    } else {
+      settings.setaSet((String) selectedItem);
+    }
+  }
 
-		Object selectedItem = aSetField.getSelectedItem();
-		if( selectedItem instanceof NameValue )
-		{
-			settings.setaSet(((NameValue) selectedItem).getValue());
-		}
-		else
-		{
-			settings.setaSet((String) selectedItem);
-		}
-	}
+  @Override
+  @SuppressWarnings("unused")
+  public void validation() throws EditorException {
+    if (serverField.getText().isEmpty()) {
+      throw new EditorException(getString("oaiplugin.serverfield"));
 
-	@Override
-	@SuppressWarnings("unused")
-	public void validation() throws EditorException
-	{
-		if( serverField.getText().isEmpty() )
-		{
-			throw new EditorException(getString("oaiplugin.serverfield"));
+    } else {
+      try {
+        String url = fixUrl(serverField.getText());
+        serverField.setText(url);
+        new URL(url);
+      } catch (MalformedURLException e) {
+        throw new EditorException(getString("oaiplugin.serverfieldinvalid"));
+      }
+    }
+  }
 
-		}
-		else
-		{
-			try
-			{
-				String url = fixUrl(serverField.getText());
-				serverField.setText(url);
-				new URL(url);
-			}
-			catch( MalformedURLException e )
-			{
-				throw new EditorException(
-					getString("oaiplugin.serverfieldinvalid"));
-			}
-		}
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    Object src = e.getSource();
+    if (src == getSetsButton) {
+      GlassSwingWorker<?> worker =
+          new GlassSwingWorker<List<NameValue>>() {
+            @Override
+            public List<NameValue> construct() throws Exception {
+              ClientService clientService = driver.getClientService();
+              RemoteOAIHarvesterService oaiHarvesterService =
+                  clientService.getService(RemoteOAIHarvesterService.class);
+              aSetField.removeAllItems();
+              try {
+                String url = fixUrl(serverField.getText());
+                serverField.setText(url);
+                return oaiHarvesterService.listSets(new URL(url));
+              } catch (Exception ex) {
+                Driver.displayError(null, null, ex);
+                throw ex;
+              }
+            }
 
-	}
+            @Override
+            public void finished() {
+              AppletGuiUtils.addItemsToJCombo(aSetField, get());
+              String set = settings.getaSet();
+              if (!Check.isEmpty(set)) {
+                AppletGuiUtils.selectInJCombo(aSetField, new NameValue(null, set), 0);
+                panel.clearChanges();
+              }
+            }
+          };
 
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		Object src = e.getSource();
-		if( src == getSetsButton )
-		{
-			GlassSwingWorker<?> worker = new GlassSwingWorker<List<NameValue>>()
-			{
-				@Override
-				public List<NameValue> construct() throws Exception
-				{
-					ClientService clientService = driver.getClientService();
-					RemoteOAIHarvesterService oaiHarvesterService = clientService
-						.getService(RemoteOAIHarvesterService.class);
-					aSetField.removeAllItems();
-					try
-					{
-						String url = fixUrl(serverField.getText());
-						serverField.setText(url);
-						return oaiHarvesterService.listSets(new URL(url));
-					}
-					catch( Exception ex )
-					{
-						Driver.displayError(null, null, ex);
-						throw ex;
-					}
-				}
+      worker.setComponent(aSetField);
+      worker.start();
+    } else if (src == getMetaButton) {
+      GlassSwingWorker<?> worker =
+          new GlassSwingWorker<List<String>>() {
+            @Override
+            public List<String> construct() throws Exception {
+              ClientService clientService = driver.getClientService();
+              RemoteOAIHarvesterService oaiHarvesterService =
+                  clientService.getService(RemoteOAIHarvesterService.class);
+              metaField.removeAllItems();
+              try {
+                String url = fixUrl(serverField.getText());
+                serverField.setText(url);
+                return oaiHarvesterService.listMetadataFormats(new URL(url));
+              } catch (Exception ex) {
+                Driver.displayError(null, null, ex);
+                throw ex;
+              }
+            }
 
-				@Override
-				public void finished()
-				{
-					AppletGuiUtils.addItemsToJCombo(aSetField, get());
-					String set = settings.getaSet();
-					if( !Check.isEmpty(set) )
-					{
-						AppletGuiUtils.selectInJCombo(aSetField, new NameValue(null, set), 0);
-						panel.clearChanges();
-					}
-				}
-			};
+            @Override
+            public void finished() {
+              AppletGuiUtils.addItemsToJCombo(metaField, get());
+              String meta = settings.getFormat();
+              if (!Check.isEmpty(meta)) {
+                AppletGuiUtils.selectInJCombo(metaField, meta, 0);
+                panel.clearChanges();
+              }
+            }
+          };
 
-			worker.setComponent(aSetField);
-			worker.start();
-		}
-		else if( src == getMetaButton )
-		{
-			GlassSwingWorker<?> worker = new GlassSwingWorker<List<String>>()
-			{
-				@Override
-				public List<String> construct() throws Exception
-				{
-					ClientService clientService = driver.getClientService();
-					RemoteOAIHarvesterService oaiHarvesterService = clientService
-						.getService(RemoteOAIHarvesterService.class);
-					metaField.removeAllItems();
-					try
-					{
-						String url = fixUrl(serverField.getText());
-						serverField.setText(url);
-						return oaiHarvesterService.listMetadataFormats(new URL(url));
-					}
-					catch( Exception ex )
-					{
-						Driver.displayError(null, null, ex);
-						throw ex;
-					}
-				}
+      worker.setComponent(metaField);
+      worker.start();
+    }
+  }
 
-				@Override
-				public void finished()
-				{
-					AppletGuiUtils.addItemsToJCombo(metaField, get());
-					String meta = settings.getFormat();
-					if( !Check.isEmpty(meta) )
-					{
-						AppletGuiUtils.selectInJCombo(metaField, meta, 0);
-						panel.clearChanges();
-					}
-				}
-			};
+  protected String fixUrl(String url) {
+    url = url.startsWith("http://") || url.startsWith("https://") ? url : "http://" + url;
+    return url;
+  }
 
-			worker.setComponent(metaField);
-			worker.start();
-		}
-	}
+  @Override
+  public void validateSchema(JComboBox<NameValue> collections) throws EditorException {
+    String collection = ((NameValue) collections.getSelectedItem()).getValue();
+    ItemDefinition itemDef =
+        driver
+            .getClientService()
+            .getService(RemoteItemDefinitionService.class)
+            .getByUuid(collection);
 
-	protected String fixUrl(String url)
-	{
-		url = url.startsWith("http://") || url.startsWith("https://") ? url : "http://" + url;
-		return url;
-	}
+    RemoteSchemaService schemaService =
+        driver.getClientService().getService(RemoteSchemaService.class);
+    Schema schema = schemaService.get(itemDef.getSchema().getId());
+    PropBagEx definition = schema.getDefinitionNonThreadSafe();
 
-	@Override
-	public void validateSchema(JComboBox<NameValue> collections) throws EditorException
-	{
-		String collection = ((NameValue) collections.getSelectedItem()).getValue();
-		ItemDefinition itemDef = driver.getClientService().getService(RemoteItemDefinitionService.class)
-			.getByUuid(collection);
+    boolean nodeExists = false;
+    String nodeLoc = "item/oai/id";
+    if (definition.nodeExists(nodeLoc)) {
+      Map<String, String> attributesForNode = definition.getAttributesForNode(nodeLoc);
 
-		RemoteSchemaService schemaService = driver.getClientService().getService(RemoteSchemaService.class);
-		Schema schema = schemaService.get(itemDef.getSchema().getId());
-		PropBagEx definition = schema.getDefinitionNonThreadSafe();
+      if (attributesForNode != null
+          && "true".equalsIgnoreCase(attributesForNode.get("attribute"))
+          && "true".equalsIgnoreCase(attributesForNode.get("field"))) {
+        nodeExists = true;
+      }
+    }
 
-		boolean nodeExists = false;
-		String nodeLoc = "item/oai/id";
-		if( definition.nodeExists(nodeLoc) )
-		{
-			Map<String, String> attributesForNode = definition.getAttributesForNode(nodeLoc);
-
-			if( attributesForNode != null && "true".equalsIgnoreCase(attributesForNode.get("attribute"))
-				&& "true".equalsIgnoreCase(attributesForNode.get("field")) )
-			{
-				nodeExists = true;
-			}
-		}
-
-		if( !nodeExists )
-		{
-			JOptionPane.showMessageDialog(panel.getComponent(),
-				getString("oaiplugin.schema"));
-		}
-
-	}
+    if (!nodeExists) {
+      JOptionPane.showMessageDialog(panel.getComponent(), getString("oaiplugin.schema"));
+    }
+  }
 }

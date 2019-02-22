@@ -20,52 +20,48 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tle.web.api.newuitheme.impl.NewUITheme;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
-
+import java.io.File;
+import java.io.IOException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.io.File;
-import java.io.IOException;
 
-/**
- * @author Samantha Fisher
- */
-
+/** @author Samantha Fisher */
 @Path("theme/")
 @Api("New UI Theme Resource")
 public interface NewUIThemeResource {
 
-	@GET
-	@Path("theme.js")
-	@ApiParam("Retrieves the current institution's theme and logo settings from the database.")
-	@Produces("application/javascript")
-	Response retrieveThemeInfo(@Context UriInfo info) throws IOException;
+  @GET
+  @Path("theme.js")
+  @ApiParam("Retrieves the current institution's theme and logo settings from the database.")
+  @Produces("application/javascript")
+  Response retrieveThemeInfo(@Context UriInfo info) throws IOException;
 
-	@GET
-	@Path("newLogo.png")
-	@ApiParam("Retrieves the current institution's logo from the filestore.")
-	@Produces("image/png")
-	Response retrieveLogo() throws IOException;
+  @GET
+  @Path("newLogo.png")
+  @ApiParam("Retrieves the current institution's logo from the filestore.")
+  @Produces("image/png")
+  Response retrieveLogo() throws IOException;
 
-	@GET
-	@Path("settings")
-	@ApiParam("Retrieves the current institution's theme settings from the database.")
-	@Produces("application/json")
-	Response retrieveTheme() throws IOException;
+  @GET
+  @Path("settings")
+  @ApiParam("Retrieves the current institution's theme settings from the database.")
+  @Produces("application/json")
+  Response retrieveTheme() throws IOException;
 
-	@PUT
-	@Path("settings")
-	@ApiParam("Changes the theme settings of the current institution.")
-	Response updateTheme(NewUITheme theme) throws JsonProcessingException;
+  @PUT
+  @Path("settings")
+  @ApiParam("Changes the theme settings of the current institution.")
+  Response updateTheme(NewUITheme theme) throws JsonProcessingException;
 
-	@PUT
-	@Path("logo")
-	@ApiParam("Takes an image file, resizes it to become a logo and saves it to the filestore.")
-	Response updateLogo(File logo) throws IOException;
+  @PUT
+  @Path("logo")
+  @ApiParam("Takes an image file, resizes it to become a logo and saves it to the filestore.")
+  Response updateLogo(File logo) throws IOException;
 
-	@DELETE
-	@Path("logo")
-	@ApiParam("Resets the institution's logo to the default openEQUELLA logo.")
-	Response resetLogo();
+  @DELETE
+  @Path("logo")
+  @ApiParam("Resets the institution's logo to the default openEQUELLA logo.")
+  Response resetLogo();
 }

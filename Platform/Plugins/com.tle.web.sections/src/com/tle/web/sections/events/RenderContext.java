@@ -16,8 +16,6 @@
 
 package com.tle.web.sections.events;
 
-import java.util.Collection;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
@@ -26,76 +24,72 @@ import com.tle.web.sections.header.FormTag;
 import com.tle.web.sections.header.HeaderHelper;
 import com.tle.web.sections.render.PreRenderable;
 import com.tle.web.sections.render.SectionRenderable;
+import java.util.Collection;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @NonNullByDefault
-public interface RenderContext extends SectionInfo
-{
-	/**
-	 * The "Modal-id" is the id of a Section which the Root Template section
-	 * will render.
-	 * 
-	 * @return
-	 */
-	String getModalId();
+public interface RenderContext extends SectionInfo {
+  /**
+   * The "Modal-id" is the id of a Section which the Root Template section will render.
+   *
+   * @return
+   */
+  String getModalId();
 
-	void setModalId(String modalId);
+  void setModalId(String modalId);
 
-	/**
-	 * The "Semi-Modal id" is an application specific Section id, which will
-	 * generally be used by the Root Application Section, in order to wrap a
-	 * "Modal" operation with other markup.
-	 * 
-	 * @return The Semi-Modal id
-	 */
-	String getSemiModalId();
+  /**
+   * The "Semi-Modal id" is an application specific Section id, which will generally be used by the
+   * Root Application Section, in order to wrap a "Modal" operation with other markup.
+   *
+   * @return The Semi-Modal id
+   */
+  String getSemiModalId();
 
-	void setSemiModalId(String semiModalId);
+  void setSemiModalId(String semiModalId);
 
-	SectionResult getRenderedBody();
+  SectionResult getRenderedBody();
 
-	void setRenderedBody(SectionResult renderedBody);
+  void setRenderedBody(SectionResult renderedBody);
 
-	RenderResultListener getRootResultListener();
+  RenderResultListener getRootResultListener();
 
-	void setRootResultListener(RenderResultListener rootResultListener);
+  void setRootResultListener(RenderResultListener rootResultListener);
 
-	/**
-	 * Get the html result.
-	 * <p>
-	 * 
-	 * <pre>
-	 * HTTP/1.1 200
-	 * 
-	 * ${result}
-	 * </pre>
-	 * 
-	 * @return
-	 */
-	SectionRenderable getRenderedResponse();
+  /**
+   * Get the html result.
+   *
+   * <p>
+   *
+   * <pre>
+   * HTTP/1.1 200
+   *
+   * ${result}
+   * </pre>
+   *
+   * @return
+   */
+  SectionRenderable getRenderedResponse();
 
-	void setRenderedResponse(SectionRenderable renderedResponse);
+  void setRenderedResponse(SectionRenderable renderedResponse);
 
-	HeaderHelper getHelper();
+  HeaderHelper getHelper();
 
-	boolean isRenderHeader();
+  boolean isRenderHeader();
 
-	FormTag getForm();
+  FormTag getForm();
 
-	BodyTag getBody();
+  BodyTag getBody();
 
-	@Deprecated
-	PreRenderContext getPreRenderContext();
+  @Deprecated
+  PreRenderContext getPreRenderContext();
 
-	@Deprecated
-	void preRender(Collection<? extends PreRenderable> preRenderers);
+  @Deprecated
+  void preRender(Collection<? extends PreRenderable> preRenderers);
 
-	@Deprecated
-	void preRender(PreRenderable preRenderer);
+  @Deprecated
+  void preRender(PreRenderable preRenderer);
 
-	@Deprecated
-	void preRender(PreRenderable... preRenderers);
-
+  @Deprecated
+  void preRender(PreRenderable... preRenderers);
 }

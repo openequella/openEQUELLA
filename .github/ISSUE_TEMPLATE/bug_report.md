@@ -1,7 +1,6 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-
 ---
 
 **Describe the bug**
@@ -9,6 +8,7 @@ A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior:
+
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
@@ -24,9 +24,10 @@ If applicable, add screenshots to help explain your problem.
 If applicable, a stacktrace to help explain your problem.
 
 **Platform:**
- - OpenEquella Version: [e.g. 6.5, 6.6]
- - OS: [e.g. Windows 10, MacOS 10.13]
- - Browser [e.g. Chrome, Firefox]
+
+- OpenEquella Version: [e.g. 6.5, 6.6]
+- OS: [e.g. Windows 10, MacOS 10.13]
+- Browser [e.g. Chrome, Firefox]
 
 **Additional context**
 Add any other context about the problem here.

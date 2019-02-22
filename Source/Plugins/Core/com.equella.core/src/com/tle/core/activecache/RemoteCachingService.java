@@ -18,7 +18,6 @@ package com.tle.core.activecache;
 
 import java.util.List;
 
-public interface RemoteCachingService
-{
-	List<String> getCacheList(String lastUpdate) throws Exception;
+public interface RemoteCachingService {
+  List<String> getCacheList(String lastUpdate) throws Exception;
 }

@@ -1,21 +1,22 @@
 # REST API endpoints
 
 The new architecture emphasizes communicating to the backend server via REST endpoints using JSON
-representations. 
+representations.
 
-RestEasy 3.5.0 configured using [JAX-RS](https://docs.oracle.com/javaee/6/tutorial/doc/giepu.html) annotations and Jackson for JSON de/serialization. 
+RestEasy 3.5.0 configured using [JAX-RS](https://docs.oracle.com/javaee/6/tutorial/doc/giepu.html) annotations and Jackson for JSON de/serialization.
 On top of that Swagger annotations are used for documentation.
 
-* [Add an endpoint](#adding)
-* [Important annotations](#important_annotations)
-* [JSON de/serialization](#json)
-* [Creating URIs](#uri)
+- [Add an endpoint](#adding)
+- [Important annotations](#important_annotations)
+- [JSON de/serialization](#json)
+- [Creating URIs](#uri)
 
 ### <a href="#adding"></a>Adding a new API resource
 
 Create your API resource class:
 
 Java:
+
 ```java
 @Path("testrest/")
 @Api("Test rest")
@@ -33,6 +34,7 @@ public class TestResource {
 ```
 
 Scala:
+
 ```scala
 @Path("testrest/")
 @Api("Test rest")
@@ -60,17 +62,17 @@ Voila! You should now have a new REST API accessible from `<insturl>/api/testres
 
 ## Important annotations
 
-| Annotation | |
-|-------------|-|
-|`@javax.ws.rs.Path` | Your class needs to specify the base URI from which all methods are relative to. This itself is relative to the `<insturl>/api/`. Individual methods are relative to the class-level `@Path`|
-|`@io.swagger.annotations.Api` | This is the name that will show on the swagger api docs page.|
-|`@io.swagger.annotations.ApiOperation` | This is the description that will show for a method on the api docs page.|
+| Annotation                             |                                                                                                                                                                                              |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@javax.ws.rs.Path`                    | Your class needs to specify the base URI from which all methods are relative to. This itself is relative to the `<insturl>/api/`. Individual methods are relative to the class-level `@Path` |
+| `@io.swagger.annotations.Api`          | This is the name that will show on the swagger api docs page.                                                                                                                                |
+| `@io.swagger.annotations.ApiOperation` | This is the description that will show for a method on the api docs page.                                                                                                                    |
 
 ## <a href="#json"></a>JSON de/serialization with Jackson
 
 Consider the following Java/Scala classes:
 
-```java 
+```java
 public class JsonClassJava {
 
     private int field1;
@@ -117,9 +119,9 @@ Both can be translated into JSON such as:
 
 ```json
 {
-	"field1": 123,
-	"field2": "My value",
-	"strings": ["string1", "string2"]
+  "field1": 123,
+  "field2": "My value",
+  "strings": ["string1", "string2"]
 }
 ```
 
@@ -152,7 +154,7 @@ E.G.
 
 ## <a href="#uri"></a>Creating URIs
 
-REST endpoints should provide URI links to relevant resources. The [URIInfo](https://docs.oracle.com/javaee/6/api/javax/ws/rs/core/UriInfo.html) 
+REST endpoints should provide URI links to relevant resources. The [URIInfo](https://docs.oracle.com/javaee/6/api/javax/ws/rs/core/UriInfo.html)
 context object should be used to generate the base URIs to build on top of:
 
 ```java

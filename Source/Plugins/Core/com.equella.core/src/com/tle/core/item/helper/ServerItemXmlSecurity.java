@@ -23,7 +23,6 @@ import com.tle.core.guice.Bind;
 import com.tle.core.item.service.ItemResolver;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.url.URLCheckerService;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -31,33 +30,30 @@ import javax.inject.Singleton;
 @Singleton
 public class ServerItemXmlSecurity implements ItemXmlSecurity {
 
-    private final TLEAclManager aclService;
-    private final URLCheckerService urlCheckerService;
-    private final ItemResolver itemResolver;
+  private final TLEAclManager aclService;
+  private final URLCheckerService urlCheckerService;
+  private final ItemResolver itemResolver;
 
-    @Inject
-    public ServerItemXmlSecurity(TLEAclManager aclService, URLCheckerService urlCheckerService, ItemResolver itemResolver)
-    {
-        this.aclService = aclService;
-        this.urlCheckerService = urlCheckerService;
-        this.itemResolver = itemResolver;
-    }
+  @Inject
+  public ServerItemXmlSecurity(
+      TLEAclManager aclService, URLCheckerService urlCheckerService, ItemResolver itemResolver) {
+    this.aclService = aclService;
+    this.urlCheckerService = urlCheckerService;
+    this.itemResolver = itemResolver;
+  }
 
-    @Override
-    public boolean hasPrivilege(Item bean, Privilege privilege)
-    {
-        return aclService.hasPrivilege(bean, privilege);
-    }
+  @Override
+  public boolean hasPrivilege(Item bean, Privilege privilege) {
+    return aclService.hasPrivilege(bean, privilege);
+  }
 
-    @Override
-    public boolean isUrlDisabled(String url)
-    {
-        return urlCheckerService.isUrlDisabled(url);
-    }
+  @Override
+  public boolean isUrlDisabled(String url) {
+    return urlCheckerService.isUrlDisabled(url);
+  }
 
-    @Override
-    public boolean checkRestrictedAttachment(Item bean, Attachment attachment)
-    {
-        return itemResolver.checkRestrictedAttachment(bean, attachment, null);
-    }
+  @Override
+  public boolean checkRestrictedAttachment(Item bean, Attachment attachment) {
+    return itemResolver.checkRestrictedAttachment(bean, attachment, null);
+  }
 }

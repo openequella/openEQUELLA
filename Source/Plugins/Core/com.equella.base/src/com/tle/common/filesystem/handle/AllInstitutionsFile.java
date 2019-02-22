@@ -20,14 +20,12 @@ import com.tle.annotation.NonNullByDefault;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public class AllInstitutionsFile extends AbstractRootFile
-{
-	private static final long serialVersionUID = 1L;
+public class AllInstitutionsFile extends AbstractRootFile {
+  private static final long serialVersionUID = 1L;
 
-	private static final String INSTITUTIONS_FOLDER = "Institutions";
+  private static final String INSTITUTIONS_FOLDER = "Institutions";
 
-	public AllInstitutionsFile()
-	{
-		super(INSTITUTIONS_FOLDER);
-	}
+  public AllInstitutionsFile() {
+    super(INSTITUTIONS_FOLDER);
+  }
 }

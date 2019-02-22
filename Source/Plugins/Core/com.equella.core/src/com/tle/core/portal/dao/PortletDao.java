@@ -16,20 +16,16 @@
 
 package com.tle.core.portal.dao;
 
-import java.util.List;
-
 import com.tle.common.portal.entity.Portlet;
 import com.tle.core.entity.dao.AbstractEntityDao;
 import com.tle.core.portal.service.PortletSearch;
+import java.util.List;
 
-/**
- * @author aholland
- */
-public interface PortletDao extends AbstractEntityDao<Portlet>
-{
-	List<Portlet> getForUser(final String userId);
+/** @author aholland */
+public interface PortletDao extends AbstractEntityDao<Portlet> {
+  List<Portlet> getForUser(final String userId);
 
-	List<Portlet> search(PortletSearch search, int offset, int perPage);
+  List<Portlet> search(PortletSearch search, int offset, int perPage);
 
-	long count(PortletSearch search);
+  long count(PortletSearch search);
 }

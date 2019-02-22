@@ -16,8 +16,6 @@
 
 package com.tle.web.userscripts.section;
 
-import javax.inject.Inject;
-
 import com.tle.common.userscripts.UserScriptsConstants;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.TLEAclManager;
@@ -28,34 +26,31 @@ import com.tle.web.sections.equella.layout.OneColumnLayout.OneColumnLayoutModel;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.settings.SettingsList;
+import javax.inject.Inject;
 
 @Bind
-public class RootUserScriptsSection extends AbstractRootEntitySection<OneColumnLayoutModel>
-{
+public class RootUserScriptsSection extends AbstractRootEntitySection<OneColumnLayoutModel> {
 
-	@PlugKey("scripts.settings.title")
-	private static Label TITLE_LABEL;
-	
-	@Inject
-	private TLEAclManager aclManager;
+  @PlugKey("scripts.settings.title")
+  private static Label TITLE_LABEL;
 
-	@Override
-	protected boolean canView(SectionInfo info)
-	{
-		return !aclManager.filterNonGrantedPrivileges(UserScriptsConstants.PRIV_CREATE_SCRIPT,
-			UserScriptsConstants.PRIV_EDIT_SCRIPT).isEmpty();
-	}
+  @Inject private TLEAclManager aclManager;
 
-	@Override
-	protected Label getTitleLabel(SectionInfo info)
-	{
-		return TITLE_LABEL;
-	}
+  @Override
+  protected boolean canView(SectionInfo info) {
+    return !aclManager
+        .filterNonGrantedPrivileges(
+            UserScriptsConstants.PRIV_CREATE_SCRIPT, UserScriptsConstants.PRIV_EDIT_SCRIPT)
+        .isEmpty();
+  }
 
-	@Override
-	protected HtmlLinkState getShowEntitiesLink(SectionInfo info)
-	{
-		return SettingsList.asLinkOrNull(SettingsList.userScriptSettings());
-	}
+  @Override
+  protected Label getTitleLabel(SectionInfo info) {
+    return TITLE_LABEL;
+  }
 
+  @Override
+  protected HtmlLinkState getShowEntitiesLink(SectionInfo info) {
+    return SettingsList.asLinkOrNull(SettingsList.userScriptSettings());
+  }
 }

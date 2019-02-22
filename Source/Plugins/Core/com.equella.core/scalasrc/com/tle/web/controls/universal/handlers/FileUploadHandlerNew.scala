@@ -58,7 +58,12 @@ import com.tle.web.sections.events.RenderContext
 import com.tle.web.sections.events.js.BookmarkAndModify
 import com.tle.web.sections.generic.InfoBookmark
 import com.tle.web.sections.js.generic.expression.ObjectExpression
-import com.tle.web.sections.js.generic.function.{AnonymousFunction, ExternallyDefinedFunction, PartiallyApply, PassThroughFunction}
+import com.tle.web.sections.js.generic.function.{
+  AnonymousFunction,
+  ExternallyDefinedFunction,
+  PartiallyApply,
+  PassThroughFunction
+}
 import com.tle.web.sections.render._
 import com.tle.web.sections.result.util.KeyLabel
 import com.tle.web.sections.standard._
@@ -66,7 +71,12 @@ import com.tle.web.sections.standard.annotations.Component
 import com.tle.web.sections.standard.model.{HtmlLinkState, TableState}
 import com.tle.web.sections.standard.renderers.{DivRenderer, FileDropRenderer, LinkRenderer}
 import com.tle.web.selection.filter.SelectionFilter
-import com.tle.web.selection.{ParentFrameSelectionCallback, SelectedResourceDetails, SelectionService, SelectionSession}
+import com.tle.web.selection.{
+  ParentFrameSelectionCallback,
+  SelectedResourceDetails,
+  SelectionService,
+  SelectionSession
+}
 import com.tle.web.viewurl.attachments.AttachmentResourceService
 import com.tle.web.viewurl.{AttachmentDetail, ViewItemService, ViewableResource}
 import io.circe.parser.decode
@@ -76,9 +86,10 @@ import javax.inject.Inject
 import scala.collection.JavaConverters._
 import scala.io.Source
 
-class FileUploadHandlerModel extends AbstractDetailsAttachmentHandler.AbstractAttachmentHandlerModel {
-  @Bookmarked(name = "s") var selecting = false
-  @Bookmarked(name = "r") var resolved = false
+class FileUploadHandlerModel
+    extends AbstractDetailsAttachmentHandler.AbstractAttachmentHandlerModel {
+  @Bookmarked(name = "s") var selecting  = false
+  @Bookmarked(name = "r") var resolved   = false
   var viewableResource: ViewableResource = _
 }
 
@@ -87,16 +98,19 @@ object FileUploadHandlerNew {
 
   def l(s: String) = new KeyLabel(r.key(s))
 
-  val LABEL_NAME = l("handlers.file.name")
-  val LABEL_DESCRIPTION = l("handlers.file.description")
-  val ADD_TITLE_LABEL = l("handlers.file.title")
-  val EDIT_TITLE_LABEL = ADD_TITLE_LABEL
+  val LABEL_NAME          = l("handlers.file.name")
+  val LABEL_DESCRIPTION   = l("handlers.file.description")
+  val ADD_TITLE_LABEL     = l("handlers.file.title")
+  val EDIT_TITLE_LABEL    = ADD_TITLE_LABEL
   val LABEL_REMOVE_UPLOAD = l("handlers.file.link.removeupload")
   val LABEL_CANCEL_UPLOAD = l("handlers.file.link.cancelupload")
-  val VIEW_LINK_LABEL = l("handlers.file.viewlink")
-  val SCRAPBOOK_LABEL = l("handlers.file.link.filesfromscrapbook")
+  val VIEW_LINK_LABEL     = l("handlers.file.viewlink")
+  val SCRAPBOOK_LABEL     = l("handlers.file.link.filesfromscrapbook")
 
-  val universalUploadFunc = new ExternallyDefinedFunction("PS.universalUpload", uploadListSrc, AjaxUpload.CSS_INCLUDE, EquellaFileUploadExtension.CSS)
+  val universalUploadFunc = new ExternallyDefinedFunction("PS.universalUpload",
+                                                          uploadListSrc,
+                                                          AjaxUpload.CSS_INCLUDE,
+                                                          EquellaFileUploadExtension.CSS)
 
 }
 
@@ -105,33 +119,35 @@ import com.tle.web.controls.universal.handlers.FileUploadHandlerNew._
 @Bind
 class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerModel] {
   var state: UniversalControlState = _
-  var ctx: AfterRegister = _
+  var ctx: AfterRegister           = _
 
-  @Inject var fileSystemService: FileSystemService = _
-  @Inject var stagingService: StagingService = _
-  @Inject var itemFileService: ItemFileService = _
-  @Inject var mimeTypeService: MimeTypeService = _
-  @Inject var myContentService: MyContentService = _
-  @Inject var selectionService: SelectionService = _
-  @Inject var myContentSelectable: MyContentSelectable = _
-  @Inject var aclManager: TLEAclManager = _
-  @Inject var itemService: ItemService = _
-  @Inject var viewItemService: ViewItemService = _
+  @Inject var fileSystemService: FileSystemService                 = _
+  @Inject var stagingService: StagingService                       = _
+  @Inject var itemFileService: ItemFileService                     = _
+  @Inject var mimeTypeService: MimeTypeService                     = _
+  @Inject var myContentService: MyContentService                   = _
+  @Inject var selectionService: SelectionService                   = _
+  @Inject var myContentSelectable: MyContentSelectable             = _
+  @Inject var aclManager: TLEAclManager                            = _
+  @Inject var itemService: ItemService                             = _
+  @Inject var viewItemService: ViewItemService                     = _
   @Inject var attachmentResourceService: AttachmentResourceService = _
-  @Inject var thumbnailService: ThumbnailService = _
-  @Inject var videoService: VideoService = _
-  @Inject var inplaceEditorService: InPlaceEditorWebService = _
+  @Inject var thumbnailService: ThumbnailService                   = _
+  @Inject var videoService: VideoService                           = _
+  @Inject var inplaceEditorService: InPlaceEditorWebService        = _
 
   @AjaxFactory var ajax: AjaxGenerator = _
   @Component
   @PlugKey("handlers.file.action.next") var optionsButton: Button = _
-  @Component(name = "d") var detailTable: Table = _
+  @Component(name = "d") var detailTable: Table                   = _
 
   override def getDefaultPropertyName: String = "fuh"
 
   override def instantiateModel(info: SectionInfo) = new FileUploadHandlerModel
 
-  override def onRegister(tree: SectionTree, parentId: String, state: UniversalControlState): Unit = {
+  override def onRegister(tree: SectionTree,
+                          parentId: String,
+                          state: UniversalControlState): Unit = {
     this.state = state
     super.onRegister(tree, parentId, state)
   }
@@ -145,9 +161,9 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
   def getLabel: AttachmentHandlerLabel = new AttachmentHandlerLabel(LABEL_NAME, LABEL_DESCRIPTION)
 
-  def supports(attachment: IAttachment): Boolean = WebFileUploads.isFileOrZipAttachment(attachment) ||
-    WebFileUploads.isPackageAttachment(attachment)
-
+  def supports(attachment: IAttachment): Boolean =
+    WebFileUploads.isFileOrZipAttachment(attachment) ||
+      WebFileUploads.isPackageAttachment(attachment)
 
   def createNew(info: SectionInfo): Unit = {
     ctx.cancelled(info)
@@ -170,7 +186,8 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
   def validate(info: SectionInfo): Boolean = ctx.validate(info)
 
-  def saveEdited(info: SectionInfo, attachment: Attachment): Unit = ctx.editAttachment(info, attachment)
+  def saveEdited(info: SectionInfo, attachment: Attachment): Unit =
+    ctx.editAttachment(info, attachment)
 
   def saveChanges(info: SectionInfo, replacementUuid: String): Unit =
     ctx.createNew(info, Option(replacementUuid).map(UUID.fromString))
@@ -187,10 +204,13 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
     da.deleteFiles(ctx.stagingContext)
   }
 
-  def getTitleLabel(context: RenderContext, editing: Boolean): Label = if (editing) EDIT_TITLE_LABEL else ADD_TITLE_LABEL;
+  def getTitleLabel(context: RenderContext, editing: Boolean): Label =
+    if (editing) EDIT_TITLE_LABEL else ADD_TITLE_LABEL;
 
   override def isHiddenFromSummary(attachment: IAttachment): Boolean =
-    super.isHiddenFromSummary(attachment) || WebFileUploads.zipAttachment(attachment).exists(!_.isAttachZip)
+    super.isHiddenFromSummary(attachment) || WebFileUploads
+      .zipAttachment(attachment)
+      .exists(!_.isAttachZip)
 
   @EventHandlerMethod def nextPage(info: SectionInfo): Unit = {
     getModel(info).setEditDetails(true)
@@ -199,7 +219,9 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
   @EventHandlerMethod def startSelection(info: SectionInfo) = getModel(info).selecting = true
 
-  @EventHandlerMethod def selectionsMade(info: SectionInfo, selectedResources: java.util.List[SelectedResourceDetails]) = {
+  @EventHandlerMethod def selectionsMade(
+      info: SectionInfo,
+      selectedResources: java.util.List[SelectedResourceDetails]) = {
     getModel(info).selecting = false
     ctx.selectionsMade(info, selectedResources.asScala)
   }
@@ -207,36 +229,58 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
   @AjaxMethod def uploadCommand(info: SectionInfo): SectionResult = ctx.processUploadCommand(info)
 
   class AfterRegister(id: String, tree: SectionTree, val controlState: UniversalControlState)
-    extends ControlContext with RenderHelper with ZipHandler with ViewerHandler with EditingHandler {
+      extends ControlContext
+      with RenderHelper
+      with ZipHandler
+      with ViewerHandler
+      with EditingHandler {
 
     val updateFooter = controlState.getDialog.getFooterUpdate(tree, null)
     val scrapBookOnClick = Option(new AnonymousFunction(events.getNamedHandler("startSelection")))
-                            .filter(_ => myContentService.isMyContentContributionAllowed)
+      .filter(_ => myContentService.isMyContentContributionAllowed)
     val state: FileUploadState = new FileUploadState
-    val stagingContext = new FileStagingContext(Option(repo.getStagingid), repo.getItem.getItemId, fileSystemService, thumbnailService,
-      videoService, mimeTypeService, controlState.getRepository)
+    val stagingContext = new FileStagingContext(Option(repo.getStagingid),
+                                                repo.getItem.getItemId,
+                                                fileSystemService,
+                                                thumbnailService,
+                                                videoService,
+                                                mimeTypeService,
+                                                controlState.getRepository)
     val controlSettings = new FileUploadSettings(controlState.getControlConfiguration)
 
-    val _resultsCallback = new PassThroughFunction("r" + id, events.getSubmitValuesFunction("selectionsMade"))
+    val _resultsCallback =
+      new PassThroughFunction("r" + id, events.getSubmitValuesFunction("selectionsMade"))
 
-    val showRestrict = hasInstitutionPrivilege(AttachmentConfigConstants.RESTRICT_ATTACHMENTS)
+    val showRestrict                                    = hasInstitutionPrivilege(AttachmentConfigConstants.RESTRICT_ATTACHMENTS)
     private def getEditingAttachment(info: SectionInfo) = getEditState.a
-    val fileEditDetails = new FileEditDetails(id, tree, this, this, this, this, showRestrict,
-      getEditingAttachment, inplaceEditorService)
-    val packageEditDetails = new PackageEditDetails(id, tree, this, this, showRestrict, getEditingAttachment)
-    val fileOptions = new FileOptions(id, tree, controlSettings, this, _ => singleUpload, resolvedType)
+    val fileEditDetails = new FileEditDetails(id,
+                                              tree,
+                                              this,
+                                              this,
+                                              this,
+                                              this,
+                                              showRestrict,
+                                              getEditingAttachment,
+                                              inplaceEditorService)
+    val packageEditDetails =
+      new PackageEditDetails(id, tree, this, this, showRestrict, getEditingAttachment)
+    val fileOptions =
+      new FileOptions(id, tree, controlSettings, this, _ => singleUpload, resolvedType)
 
     def detailsEditorForAttachment(a: Attachment): DetailsPage =
       if (WebFileUploads.isPackageAttachment(a)) packageEditDetails else fileEditDetails
 
-    case class DetailsEditState(a: Attachment, page: DetailsPage,
+    case class DetailsEditState(a: Attachment,
+                                page: DetailsPage,
                                 commitFiles: (Attachment, StagingContext) => Attachment,
                                 cleanupFiles: (Attachment, StagingContext) => Unit,
-                                zipAttachment: Boolean, editingArea: Option[StagingFile] = None,
-                                commitUnzipPaths: Option[(String, String)] = None, zipProgress: Option[ZipProgress] = None) {
+                                zipAttachment: Boolean,
+                                editingArea: Option[StagingFile] = None,
+                                commitUnzipPaths: Option[(String, String)] = None,
+                                zipProgress: Option[ZipProgress] = None) {
 
-
-      def removeEditingArea() : Unit = editingArea.foreach(sf => stagingService.removeStagingArea(sf, true))
+      def removeEditingArea(): Unit =
+        editingArea.foreach(sf => stagingService.removeStagingArea(sf, true))
       def commit(): Unit = (a, zipAttachment) match {
         case (fa: FileAttachment, true) =>
           stagingContext.moveFile(fa.getFilename, WebFileUploads.zipPath(fa.getFilename))
@@ -249,10 +293,9 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
           commitUnzipPaths.foreach(p => stagingContext.delete(p._1))
       }
 
-
       def afterCommit(): Unit = removeEditingArea()
 
-      def cancel() : Unit = {
+      def cancel(): Unit = {
         cleanupFiles(a, stagingContext)
         commitUnzipPaths.foreach(f => stagingContext.delete(f._1))
         removeEditingArea()
@@ -267,21 +310,31 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
     def allValidatedUploads = CurrentUpload.validatedUploads(state.allCurrentUploads)
 
-
     case class FileAddModel(info: SectionInfo) {
       def getReactTag = {
         val ts = new TagState()
-        ts.setId(id+"_react")
-        val uploadArgs = new ObjectExpression("elem", ts,
-          "ctrlId", id,
-          "commandUrl", ajax.getAjaxUrl(info, "uploadCommand").getHref,
-          "scrapBookOnClick", scrapBookOnClick.orNull,
-          "updateFooter", PartiallyApply.partial(updateFooter, 0),
-          "strings", new ObjectExpression(
-            "scrapbook", SCRAPBOOK_LABEL.getText,
-            "delete", LABEL_REMOVE_UPLOAD.getText,
-            "cancel", LABEL_CANCEL_UPLOAD.getText,
-            "drop", CurrentLocale.get(FileDropRenderer.KEY_DND)
+        ts.setId(id + "_react")
+        val uploadArgs = new ObjectExpression(
+          "elem",
+          ts,
+          "ctrlId",
+          id,
+          "commandUrl",
+          ajax.getAjaxUrl(info, "uploadCommand").getHref,
+          "scrapBookOnClick",
+          scrapBookOnClick.orNull,
+          "updateFooter",
+          PartiallyApply.partial(updateFooter, 0),
+          "strings",
+          new ObjectExpression(
+            "scrapbook",
+            SCRAPBOOK_LABEL.getText,
+            "delete",
+            LABEL_REMOVE_UPLOAD.getText,
+            "cancel",
+            LABEL_CANCEL_UPLOAD.getText,
+            "drop",
+            CurrentLocale.get(FileDropRenderer.KEY_DND)
           )
         )
         ts.addReadyStatements(universalUploadFunc, uploadArgs)
@@ -290,23 +343,26 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
     }
 
     class DetailsModel(info: SectionInfo) {
-      val resource = viewableResource(info)
+      val resource   = viewableResource(info)
       val tableState = detailTable.getState(info)
-      for (detail <- Option(resource.getCommonAttachmentDetails).getOrElse(Collections.emptyList[AttachmentDetail]).asScala) {
+      for (detail <- Option(resource.getCommonAttachmentDetails)
+             .getOrElse(Collections.emptyList[AttachmentDetail])
+             .asScala) {
         val labelCell = new TableState.TableCell(detail.getName)
         labelCell.addClass("label")
         tableState.addRow(labelCell, detail.getDescription)
       }
 
       def getCommonIncludePath = AbstractDetailsAttachmentHandler.COMMON_INCLUDE_PATH
-      def getDetailTable = detailTable
+      def getDetailTable       = detailTable
 
-      val getThumbnail = resource.createStandardThumbnailRenderer(new TextLabel(resource.getDescription))
+      val getThumbnail =
+        resource.createStandardThumbnailRenderer(new TextLabel(resource.getDescription))
 
       val getViewlink = {
         if (getEditState.page.previewable) {
           val resourceBookmark: Bookmark = resource.createCanonicalUrl
-          val linkState = new HtmlLinkState(VIEW_LINK_LABEL, resourceBookmark)
+          val linkState                  = new HtmlLinkState(VIEW_LINK_LABEL, resourceBookmark)
           linkState.setTarget(HtmlLinkState.TARGET_BLANK)
           new LinkRenderer(linkState)
         } else null
@@ -316,34 +372,40 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
     def render(context: RenderContext, renderOptions: DialogRenderOptions) = {
       val m = getModel(context)
-      val (r, f) = if (m.selecting) renderSelection(context)
-      else if (m.isEditDetails) {
-        if (m.resolved) {
-          val (_r, _f) = renderEditing(context)
-          (CombinedRenderer.combineResults(renderModel("file/file-editheader.ftl", new DetailsModel(context)), _r), _f)
-        }
-        else fileOptions.render(context, singleUpload)
-      } else renderFileUpload(context)
+      val (r, f) =
+        if (m.selecting) renderSelection(context)
+        else if (m.isEditDetails) {
+          if (m.resolved) {
+            val (_r, _f) = renderEditing(context)
+            (CombinedRenderer.combineResults(
+               renderModel("file/file-editheader.ftl", new DetailsModel(context)),
+               _r),
+             _f)
+          } else fileOptions.render(context, singleUpload)
+        } else renderFileUpload(context)
       f(renderOptions)
       r
     }
 
-    def renderFileUpload(context: RenderContext): (SectionRenderable, DialogRenderOptions => Unit) = {
+    def renderFileUpload(
+        context: RenderContext): (SectionRenderable, DialogRenderOptions => Unit) = {
       val allUploads = state.allCurrentUploads
-      val m = FileAddModel(context)
+      val m          = FileAddModel(context)
       (renderModel("file/file-add.ftl", m), prepareOptions(context, allUploads))
     }
 
     def singleUpload: ValidatedUpload = {
       val allValidated = allValidatedUploads
-      allValidated.headOption.filter(_ => allValidated.size == 1).getOrElse(sys.error("Illegal state - need single upload"))
+      allValidated.headOption
+        .filter(_ => allValidated.size == 1)
+        .getOrElse(sys.error("Illegal state - need single upload"))
     }
 
     def resolvedType(info: SectionInfo, vu: ValidatedUpload): Unit = {
       getModel(info).resolved = true
       val creator = WebFileUploads.attachmentCreatorForUpload(info, this, vu)
-      val a = creator.createStaged(stagingContext)
-      val ed = detailsEditorForAttachment(a)
+      val a       = creator.createStaged(stagingContext)
+      val ed      = detailsEditorForAttachment(a)
       state.remove(vu.id)
       setEditState(DetailsEditState(a, ed, creator.commit, creator.cancel, false))
       ed.prepareUI(info)
@@ -353,26 +415,34 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
       val su = singleUpload
       fileOptions.defaultResolve(singleUpload) match {
         case Some(vu) => resolvedType(info, vu)
-        case None => fileOptions.prepareUI(info, su)
+        case None     => fileOptions.prepareUI(info, su)
       }
     }
 
     def loadForEdit(info: SectionInfo, attachment: Attachment): Unit = {
       val page = detailsEditorForAttachment(attachment)
-      setEditState(DetailsEditState(attachment, page, (a, _) => a, (_, _) => (), WebFileUploads.zipAttachment(attachment).isDefined))
+      setEditState(
+        DetailsEditState(attachment,
+                         page,
+                         (a, _) => a,
+                         (_, _) => (),
+                         WebFileUploads.zipAttachment(attachment).isDefined))
       page.prepareUI(info)
     }
 
     def renderEditing(context: RenderContext): (SectionRenderable, DialogRenderOptions => Unit) = {
-      val s = getEditState
+      val s      = getEditState
       val (r, o) = s.page.renderDetails(context)
-      (r, { (rdo:DialogRenderOptions) => rdo.setShowSave(true); o(rdo) })
+      (r, { (rdo: DialogRenderOptions) =>
+        rdo.setShowSave(true); o(rdo)
+      })
     }
 
     def editAttachment(info: SectionInfo, attachment: Attachment): Unit = {
       val editState = getEditState
       editState.commit()
-      val (newAttach, delattach) = detailsEditorForAttachment(attachment).editAttachment(info, attachment, this)
+      val (newAttach, delattach) =
+        detailsEditorForAttachment(attachment).editAttachment(info, attachment, this)
       if (newAttach ne attachment) {
         val a = controlState.getRepository.getAttachments
         a.removeAttachment(attachment)
@@ -389,46 +459,47 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
     def createNew(info: SectionInfo, uuid: Option[UUID]): Unit = {
       if (getModel(info).isEditDetails) {
         val editState = getEditState
-        val u = uuid.getOrElse(UUID.randomUUID()).toString
-        val _a = editState.a
+        val u         = uuid.getOrElse(UUID.randomUUID()).toString
+        val _a        = editState.a
         _a.setUuid(u)
         editState.commit()
-        val (a,_) = editState.page.editAttachment(info, _a, this)
+        val (a, _) = editState.page.editAttachment(info, _a, this)
         controlState.addAttachment(info, a)
         if (uuid.isEmpty) {
           controlState.addMetadataUuid(info, u)
         }
         editState.afterCommit()
-      }
-      else {
-        allValidatedUploads.zipWithIndex.foreach { case (vu,i) =>
-          val c = WebFileUploads.attachmentCreatorForUpload(info, this, vu)
-          val a = c.createStaged(stagingContext)
-          val repUuid = uuid.filter(_ => i == 0)
-          val u = repUuid.getOrElse(UUID.randomUUID()).toString
-          a.setUuid(u)
-          c.commit(a, stagingContext)
-          controlState.addAttachment(info, a)
-          if (repUuid.isEmpty) {
-            controlState.addMetadataUuid(info, u)
-          }
+      } else {
+        allValidatedUploads.zipWithIndex.foreach {
+          case (vu, i) =>
+            val c       = WebFileUploads.attachmentCreatorForUpload(info, this, vu)
+            val a       = c.createStaged(stagingContext)
+            val repUuid = uuid.filter(_ => i == 0)
+            val u       = repUuid.getOrElse(UUID.randomUUID()).toString
+            a.setUuid(u)
+            c.commit(a, stagingContext)
+            controlState.addAttachment(info, a)
+            if (repUuid.isEmpty) {
+              controlState.addMetadataUuid(info, u)
+            }
         }
       }
     }
 
-    def validate(info: SectionInfo): Boolean = if (getModel(info).isEditDetails) {
-      getEditState.page.validate(info)
-    } else true
+    def validate(info: SectionInfo): Boolean =
+      if (getModel(info).isEditDetails) {
+        getEditState.page.validate(info)
+      } else true
 
-    def prepareOptions(context: RenderContext, uploads: Iterable[CurrentUpload])(renderOptions: DialogRenderOptions): Unit = {
+    def prepareOptions(context: RenderContext, uploads: Iterable[CurrentUpload])(
+        renderOptions: DialogRenderOptions): Unit = {
       // Can move on if there are no uploading files and at least one successful upload
       if (uploads.forall(_.finished)) {
         val allValidated = allValidatedUploads
         if (allValidated.size == 1 && fileOptions.defaultResolve(singleUpload).isEmpty) {
           optionsButton.setClickHandler(context, events.getNamedHandler("nextPage"))
           renderOptions.addAction(optionsButton)
-        }
-        else if (allValidated.size > 0) {
+        } else if (allValidated.size > 0) {
           renderOptions.setShowSave(true)
           renderOptions.setShowAddReplace(true)
         }
@@ -461,16 +532,21 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
       def getResultsCallback = _resultsCallback
     }
 
-    def renderSelection(context: RenderContext): (SectionRenderable, DialogRenderOptions => Unit) = {
-      val forward: SectionInfo = selectionService.getSelectionSessionForward(context, initSession, myContentSelectable)
-      (renderModel("file/file-selection.ftl", SelectionModel(new InfoBookmark(forward).getHref)), _.setFullscreen(true))
+    def renderSelection(
+        context: RenderContext): (SectionRenderable, DialogRenderOptions => Unit) = {
+      val forward: SectionInfo =
+        selectionService.getSelectionSessionForward(context, initSession, myContentSelectable)
+      (renderModel("file/file-selection.ftl", SelectionModel(new InfoBookmark(forward).getHref)),
+       _.setFullscreen(true))
     }
 
     private def initSession: SelectionSession = {
-      val session: SelectionSession = new SelectionSession(new ParentFrameSelectionCallback(_resultsCallback, false))
-      val mimeFilter: SelectionFilter = new SelectionFilter
+      val session: SelectionSession = new SelectionSession(
+        new ParentFrameSelectionCallback(_resultsCallback, false))
+      val mimeFilter: SelectionFilter          = new SelectionFilter
       val settings: MyContentSelectionSettings = new MyContentSelectionSettings
-      settings.setRestrictToHandlerTypes(util.Arrays.asList(MyResourceConstants.MYRESOURCE_CONTENT_TYPE))
+      settings.setRestrictToHandlerTypes(
+        util.Arrays.asList(MyResourceConstants.MYRESOURCE_CONTENT_TYPE))
       session.setAttribute(classOf[MyContentSelectionSettings], settings)
       session.setSelectScrapbook(true)
       session.setSelectItem(true)
@@ -489,13 +565,20 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
     def selectionsMade(info: SectionInfo, selectedResources: Iterable[SelectedResourceDetails]) = {
       selectedResources.foreach { resource =>
         val itemId = new ItemId(resource.getUuid, resource.getVersion)
-        val item = itemService.get(itemId)
-        val files: java.util.List[FileAttachment] = new UnmodifiableAttachments(item).getList(AttachmentType.FILE)
+        val item   = itemService.get(itemId)
+        val files: java.util.List[FileAttachment] =
+          new UnmodifiableAttachments(item).getList(AttachmentType.FILE)
         files.asScala.foreach { fa =>
-          val u = UUID.randomUUID()
+          val u  = UUID.randomUUID()
           val fn = WebFileUploads.uniqueName(fa.getFilename, None, u, this)
-          WebFileUploads.uploadStream(u, fn, resource.getTitle, fa.getSize, mimeTypeForFilename(fn), () =>
-            fileSystemService.read(itemFileService.getItemFile(item), fa.getFilename), this)
+          WebFileUploads.uploadStream(
+            u,
+            fn,
+            resource.getTitle,
+            fa.getSize,
+            mimeTypeForFilename(fn),
+            () => fileSystemService.read(itemFileService.getItemFile(item), fa.getFilename),
+            this)
         }
       }
       WebFileUploads.validateAllFinished(info, ctx)
@@ -508,7 +591,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
       val eds = getEditState
       val zipFolder = eds.a match {
         case fa: FileAttachment => eds.commitUnzipPaths.get._1
-        case za: ZipAttachment => WebFileUploads.removeZipPath(za.getUrl)
+        case za: ZipAttachment  => WebFileUploads.removeZipPath(za.getUrl)
       }
       fileSystemService.enumerateTree(stagingContext.stgFile, zipFolder, null).getFiles.asScala
     }
@@ -533,20 +616,25 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
             } else (eds.commitUnzipPaths, eds.zipProgress.getOrElse(EmptyZipProgress))
           case _ => (None, EmptyZipProgress)
         }
-        setEditState(eds.copy(zipAttachment = true, commitUnzipPaths = commitUnzipPaths, zipProgress = Some(zp)))
+        setEditState(
+          eds.copy(zipAttachment = true,
+                   commitUnzipPaths = commitUnzipPaths,
+                   zipProgress = Some(zp)))
         zp
       } else EmptyZipProgress
     }
 
     def unzipped: Boolean = getEditState.zipAttachment
 
-
     def selectedAttachments: Map[String, Attachment] = getEditState.a match {
       case za: ZipAttachment =>
         val fnPrefixLen = WebFileUploads.removeZipPath(za.getUrl).length + 1
-        WebFileUploads.findAttachments(repo, WebFileUploads.isSelectedInZip(za)).map {
-          a => (a.getUrl.substring(fnPrefixLen), a)
-        }.toMap
+        WebFileUploads
+          .findAttachments(repo, WebFileUploads.isSelectedInZip(za))
+          .map { a =>
+            (a.getUrl.substring(fnPrefixLen), a)
+          }
+          .toMap
       case _ => Map.empty
     }
 
@@ -555,12 +643,16 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
     def viewableResource(info: SectionInfo): ViewableResource = {
       val m = getModel(info)
       if (m.viewableResource == null) {
-        m.viewableResource = attachmentResourceService.getViewableResource(info, controlState.getViewableItem(info), getEditState.a)
+        m.viewableResource = attachmentResourceService.getViewableResource(
+          info,
+          controlState.getViewableItem(info),
+          getEditState.a)
       }
       m.viewableResource
     }
 
-    lazy val viewerListModel: ViewersListModel = new ViewersListModel(viewItemService, viewableResource)
+    lazy val viewerListModel: ViewersListModel =
+      new ViewersListModel(viewItemService, viewableResource)
 
     def zipProgress: Option[ZipProgress] = getEditState.zipProgress
 
@@ -574,40 +666,51 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
     }
 
     def syncEdits(filename: String): Unit = {
-      getEditState.editingArea.foreach {
-        sf => if (fileSystemService.fileExists(sf, filename)) {
+      getEditState.editingArea.foreach { sf =>
+        if (fileSystemService.fileExists(sf, filename)) {
           fileSystemService.move(sf, filename, stagingContext.stgFile, filename)
         }
       }
     }
 
-
-    def processUploadCommand(info: SectionInfo) : SectionResult = {
+    def processUploadCommand(info: SectionInfo): SectionResult = {
       val request = info.getRequest
 
-      def uploadStream(uploadId: UUID) : AjaxUploadResponse = {
+      def uploadStream(uploadId: UUID): AjaxUploadResponse = {
         state.uploadForId(uploadId) match {
           case Some(uf: UploadingFile) =>
-            def illegal(reason: IllegalFileReason) : (CurrentUpload, AjaxUploadResponse) = {
+            def illegal(reason: IllegalFileReason): (CurrentUpload, AjaxUploadResponse) = {
               val u = uf.failed(IllegalFile(reason))
-              (u, UploadFailed(WebFileUploads.labelForIllegalReason(reason, uf.originalFilename).getText))
+              (u,
+               UploadFailed(
+                 WebFileUploads.labelForIllegalReason(reason, uf.originalFilename).getText))
             }
             val mimeType = mimeTypeForFilename(uf.originalFilename)
-            val (fu,r) = WebFileUploads.validateBeforeUpload(mimeType, request.getContentLengthLong, controlSettings).map(illegal).getOrElse {
-              WebFileUploads.writeStream(uf, this, request.getInputStream) match {
-                case Successful(fileInfo) =>
-                  validateContent(info, this, uf.uploadPath) match {
-                    case Left(ifr) =>
-                      illegal(ifr)
-                    case Right(detected) =>
-                      val v = ValidatedUpload(uf.success(fileInfo), detected)
-                      (v, UpdateEntry(AjaxFileEntry(uploadId.toString, uf.originalFilename, "", true, false,
-                        Iterable.empty)))
-                  }
-                case IllegalFile(reason) => illegal(reason)
-                case e@Errored(t) => (uf.failed(e), UploadFailed(Option(t.getMessage).getOrElse("Unknown error")))
+            val (fu, r) = WebFileUploads
+              .validateBeforeUpload(mimeType, request.getContentLengthLong, controlSettings)
+              .map(illegal)
+              .getOrElse {
+                WebFileUploads.writeStream(uf, this, request.getInputStream) match {
+                  case Successful(fileInfo) =>
+                    validateContent(info, this, uf.uploadPath) match {
+                      case Left(ifr) =>
+                        illegal(ifr)
+                      case Right(detected) =>
+                        val v = ValidatedUpload(uf.success(fileInfo), detected)
+                        (v,
+                         UpdateEntry(
+                           AjaxFileEntry(uploadId.toString,
+                                         uf.originalFilename,
+                                         "",
+                                         true,
+                                         false,
+                                         Iterable.empty)))
+                    }
+                  case IllegalFile(reason) => illegal(reason)
+                  case e @ Errored(t) =>
+                    (uf.failed(e), UploadFailed(Option(t.getMessage).getOrElse("Unknown error")))
+                }
               }
-            }
             state.finishedUpload(fu)
             r
           case _ => UploadFailed("NO SUCH UPLOAD")
@@ -618,25 +721,33 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
         case fa: FileAttachment => fa.getFilename
       }
 
-      val response = Option(request.getParameter("uploadId")).map(UUID.fromString).map(uploadStream).getOrElse {
-        val maxStream = ByteStreams.limit(request.getInputStream, 32 * 1024)
-        val jsonSource = Source.fromInputStream(maxStream, "UTF-8").mkString
-        decode[AjaxUploadCommand](jsonSource).fold(throw _, identity) match {
-          case Delete(uploadId) =>
-            stopOrCancel(info, UUID.fromString(uploadId))
-            RemoveEntries(Iterable(uploadId))
-          case NewUpload(filename, size) =>
-            val uploadId = UUID.randomUUID()
-            val uniqueName = WebFileUploads.uniqueName(filename, replaceFilename, uploadId, this)
-            WebFileUploads.validateBeforeUpload(mimeTypeForFilename(filename), size, controlSettings).map { reason =>
-              UploadFailed( WebFileUploads.labelForIllegalReason(reason, filename).getText )
-            }.getOrElse {
-              state.initialiseUpload(uploadId, uniqueName, uniqueName)
-              val uploadUrl = ajax.getModifiedAjaxUrl(info, new SimpleBookmarkModifier("uploadId", uploadId.toString),"uploadCommand").getHref
-              NewUploadResponse(uploadUrl, uploadId.toString, uniqueName)
-            }
+      val response =
+        Option(request.getParameter("uploadId")).map(UUID.fromString).map(uploadStream).getOrElse {
+          val maxStream  = ByteStreams.limit(request.getInputStream, 32 * 1024)
+          val jsonSource = Source.fromInputStream(maxStream, "UTF-8").mkString
+          decode[AjaxUploadCommand](jsonSource).fold(throw _, identity) match {
+            case Delete(uploadId) =>
+              stopOrCancel(info, UUID.fromString(uploadId))
+              RemoveEntries(Iterable(uploadId))
+            case NewUpload(filename, size) =>
+              val uploadId   = UUID.randomUUID()
+              val uniqueName = WebFileUploads.uniqueName(filename, replaceFilename, uploadId, this)
+              WebFileUploads
+                .validateBeforeUpload(mimeTypeForFilename(filename), size, controlSettings)
+                .map { reason =>
+                  UploadFailed(WebFileUploads.labelForIllegalReason(reason, filename).getText)
+                }
+                .getOrElse {
+                  state.initialiseUpload(uploadId, uniqueName, uniqueName)
+                  val uploadUrl = ajax
+                    .getModifiedAjaxUrl(info,
+                                        new SimpleBookmarkModifier("uploadId", uploadId.toString),
+                                        "uploadCommand")
+                    .getHref
+                  NewUploadResponse(uploadUrl, uploadId.toString, uniqueName)
+                }
+          }
         }
-      }
       new SimpleSectionResult(response.asJson.noSpaces, "application/json")
     }
   }

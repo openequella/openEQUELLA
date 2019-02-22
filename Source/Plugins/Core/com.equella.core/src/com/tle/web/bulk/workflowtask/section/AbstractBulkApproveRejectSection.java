@@ -16,17 +16,8 @@
 
 package com.tle.web.bulk.workflowtask.section;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Collections;
-
 import com.google.inject.Inject;
 import com.tle.beans.item.ItemPack;
-import com.tle.common.Check;
-import com.tle.common.PathUtils;
-import com.tle.common.filesystem.handle.StagingFile;
-import com.tle.common.quota.settings.QuotaSettings;
 import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.security.TLEAclManager;
@@ -41,12 +32,9 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.ajax.AjaxGenerator;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
-import com.tle.web.sections.ajax.handler.AjaxMethod;
-import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.annotations.TreeLookup;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.events.RenderEventContext;
-import com.tle.web.sections.events.js.BookmarkAndModify;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.jquery.Jq;
 import com.tle.web.sections.js.JSCallAndReference;
@@ -56,212 +44,179 @@ import com.tle.web.sections.js.validators.FunctionCallValidator;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.Button;
-import com.tle.web.sections.standard.FileDrop;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.workflow.manage.TaskResultsDialog;
+import java.util.Collection;
+import java.util.Collections;
 
 public abstract class AbstractBulkApproveRejectSection
-	extends
-		AbstractPrototypeSection<AbstractBulkApproveRejectSection.BulkApproveRejectModel>
-	implements
-		HtmlRenderer,
-		BulkOperationExtension
-{
-	@Inject
-	private TLEAclManager aclService;
+    extends AbstractPrototypeSection<AbstractBulkApproveRejectSection.BulkApproveRejectModel>
+    implements HtmlRenderer, BulkOperationExtension {
+  @Inject private TLEAclManager aclService;
 
-	@AjaxFactory
-	private AjaxGenerator ajax;
-	@Inject
-	private ConfigurationService configService;
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private InstitutionService instituionService;
-	@Inject
-	private StagingService stagingService;
+  @AjaxFactory private AjaxGenerator ajax;
+  @Inject private ConfigurationService configService;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @Inject private FileSystemService fileSystemService;
+  @Inject private InstitutionService instituionService;
+  @Inject private StagingService stagingService;
 
-	@PlugKey("validation.mandatorymessage")
-	private static Label LABEL_MANDATORY_MESSAGE;
+  @PlugKey("validation.mandatorymessage")
+  private static Label LABEL_MANDATORY_MESSAGE;
 
-	@Component
-	private TextField commentField;
+  @Component private TextField commentField;
 
-	@TreeLookup
-	private TaskResultsDialog taskResultsDialog;
+  @TreeLookup private TaskResultsDialog taskResultsDialog;
 
-	private static final PluginResourceHelper URL_HELPER = ResourcesService
-		.getResourceHelper(AbstractBulkApproveRejectSection.class);
-	private static final IncludeFile INCLUDE = new IncludeFile(URL_HELPER.url("scripts/bulkop.dnd.js"));
-	private static final JSCallAndReference JS_CLASS = new ExternallyDefinedFunction("WorkflowBulkOpDnd", INCLUDE);
-	private static final ExternallyDefinedFunction DONE_UPLOAD = new ExternallyDefinedFunction(JS_CLASS,
-		"dndUploadFinishedCallback", 0);
+  private static final PluginResourceHelper URL_HELPER =
+      ResourcesService.getResourceHelper(AbstractBulkApproveRejectSection.class);
+  private static final IncludeFile INCLUDE =
+      new IncludeFile(URL_HELPER.url("scripts/bulkop.dnd.js"));
+  private static final JSCallAndReference JS_CLASS =
+      new ExternallyDefinedFunction("WorkflowBulkOpDnd", INCLUDE);
+  private static final ExternallyDefinedFunction DONE_UPLOAD =
+      new ExternallyDefinedFunction(JS_CLASS, "dndUploadFinishedCallback", 0);
 
-	private static final ExternallyDefinedFunction VALIDATOR = new ExternallyDefinedFunction(JS_CLASS,
-		"validateMessage", 2);
+  private static final ExternallyDefinedFunction VALIDATOR =
+      new ExternallyDefinedFunction(JS_CLASS, "validateMessage", 2);
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		BulkApproveRejectModel model = getModel(context);
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    BulkApproveRejectModel model = getModel(context);
 
-		getDialog().getOkButton().getState(context).getHandler("click")
-			.addValidator(new FunctionCallValidator(VALIDATOR, Jq.$(commentField), LABEL_MANDATORY_MESSAGE.getText()));
+    getDialog()
+        .getOkButton()
+        .getState(context)
+        .getHandler("click")
+        .addValidator(
+            new FunctionCallValidator(
+                VALIDATOR, Jq.$(commentField), LABEL_MANDATORY_MESSAGE.getText()));
 
-		return viewFactory.createResult("comments.ftl", context);
-	}
+    return viewFactory.createResult("comments.ftl", context);
+  }
 
-	@Override
-	public void prepareDefaultOptions(SectionInfo info, String operationId)
-	{
-		// none
-	}
+  @Override
+  public void prepareDefaultOptions(SectionInfo info, String operationId) {
+    // none
+  }
 
-	@Override
-	public boolean validateOptions(SectionInfo info, String operationId)
-	{
-		//TODO: remove all the current nasty Javascript and do server side validation, 
-		// as well as rendering of currently uploaded files 
-		return true;
-	}
+  @Override
+  public boolean validateOptions(SectionInfo info, String operationId) {
+    // TODO: remove all the current nasty Javascript and do server side validation,
+    // as well as rendering of currently uploaded files
+    return true;
+  }
 
-	@Override
-	public boolean areOptionsFinished(SectionInfo info, String operationId)
-	{
-		return getDialog().getModel(info).isShowOptions();
-	}
+  @Override
+  public boolean areOptionsFinished(SectionInfo info, String operationId) {
+    return getDialog().getModel(info).isShowOptions();
+  }
 
-	@Override
-	public boolean hasExtraOptions(SectionInfo info, String operationId)
-	{
-		return true;
-	}
+  @Override
+  public boolean hasExtraOptions(SectionInfo info, String operationId) {
+    return true;
+  }
 
-	@Override
-	public boolean hasExtraNavigation(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+  @Override
+  public boolean hasExtraNavigation(SectionInfo info, String operationId) {
+    return false;
+  }
 
-	@Override
-	public Collection<Button> getExtraNavigation(SectionInfo info, String operationId)
-	{
-		return null;
-	}
+  @Override
+  public Collection<Button> getExtraNavigation(SectionInfo info, String operationId) {
+    return null;
+  }
 
-	@Override
-	public boolean hasPreview(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+  @Override
+  public boolean hasPreview(SectionInfo info, String operationId) {
+    return false;
+  }
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public ItemPack runPreview(SectionInfo info, String operationId, long itemId) throws Exception
-	{
-		return null;
-	}
+  @SuppressWarnings("rawtypes")
+  @Override
+  public ItemPack runPreview(SectionInfo info, String operationId, long itemId) throws Exception {
+    return null;
+  }
 
-	@Override
-	public boolean showPreviousButton(SectionInfo info, String opererationId)
-	{
-		return true;
-	}
+  @Override
+  public boolean showPreviousButton(SectionInfo info, String opererationId) {
+    return true;
+  }
 
-	@Override
-	public Class<BulkApproveRejectModel> getModelClass()
-	{
-		return BulkApproveRejectModel.class;
-	}
+  @Override
+  public Class<BulkApproveRejectModel> getModelClass() {
+    return BulkApproveRejectModel.class;
+  }
 
-	public TextField getCommentField()
-	{
-		return commentField;
-	}
+  public TextField getCommentField() {
+    return commentField;
+  }
 
-	public String getComment(SectionInfo info)
-	{
-		return commentField.getValue(info);
-	}
+  public String getComment(SectionInfo info) {
+    return commentField.getValue(info);
+  }
 
-	public void setTitle(SectionInfo info, String title)
-	{
-		getModel(info).setTitle(title);
-	}
+  public void setTitle(SectionInfo info, String title) {
+    getModel(info).setTitle(title);
+  }
 
-	public void setSubTitle(SectionInfo info, String subTitle)
-	{
-		getModel(info).setSubTitle(subTitle);
-	}
+  public void setSubTitle(SectionInfo info, String subTitle) {
+    getModel(info).setSubTitle(subTitle);
+  }
 
-	protected boolean hasPrivilege(String privilege)
-	{
-		return !aclService.filterNonGrantedPrivileges(Collections.singleton(privilege), true).isEmpty();
-	}
+  protected boolean hasPrivilege(String privilege) {
+    return !aclService.filterNonGrantedPrivileges(Collections.singleton(privilege), true).isEmpty();
+  }
 
-	protected boolean isOnMyTaskPage(SectionInfo info)
-	{
-		String page = taskResultsDialog.getModel(info).getPage();
-		if( page != null )
-		{
-			return page.equals("my-task");
-		}
-		return false;
-	}
+  protected boolean isOnMyTaskPage(SectionInfo info) {
+    String page = taskResultsDialog.getModel(info).getPage();
+    if (page != null) {
+      return page.equals("my-task");
+    }
+    return false;
+  }
 
-	protected TaskResultsDialog getDialog()
-	{
-		return taskResultsDialog;
-	}
+  protected TaskResultsDialog getDialog() {
+    return taskResultsDialog;
+  }
 
-	public static class BulkApproveRejectModel
-	{
-		private String title;
-		private String subTitle;
-		private boolean mandatoryMessage;
-		private boolean mustHaveMessage;
+  public static class BulkApproveRejectModel {
+    private String title;
+    private String subTitle;
+    private boolean mandatoryMessage;
+    private boolean mustHaveMessage;
 
-		public boolean isMandatoryMessage()
-		{
-			return mandatoryMessage;
-		}
+    public boolean isMandatoryMessage() {
+      return mandatoryMessage;
+    }
 
-		public void setMandatoryMessage(boolean mandatoryMessage)
-		{
-			this.mandatoryMessage = mandatoryMessage;
-		}
+    public void setMandatoryMessage(boolean mandatoryMessage) {
+      this.mandatoryMessage = mandatoryMessage;
+    }
 
-		public String getTitle()
-		{
-			return title;
-		}
+    public String getTitle() {
+      return title;
+    }
 
-		public void setTitle(String title)
-		{
-			this.title = title;
-		}
+    public void setTitle(String title) {
+      this.title = title;
+    }
 
-		public String getSubTitle()
-		{
-			return subTitle;
-		}
+    public String getSubTitle() {
+      return subTitle;
+    }
 
-		public void setSubTitle(String subTitle)
-		{
-			this.subTitle = subTitle;
-		}
+    public void setSubTitle(String subTitle) {
+      this.subTitle = subTitle;
+    }
 
-		public boolean isMustHaveMessage()
-		{
-			return mustHaveMessage;
-		}
+    public boolean isMustHaveMessage() {
+      return mustHaveMessage;
+    }
 
-		public void setMustHaveMessage(boolean mustHaveMessage)
-		{
-			this.mustHaveMessage = mustHaveMessage;
-		}
-	}
+    public void setMustHaveMessage(boolean mustHaveMessage) {
+      this.mustHaveMessage = mustHaveMessage;
+    }
+  }
 }

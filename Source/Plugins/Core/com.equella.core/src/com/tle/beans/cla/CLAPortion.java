@@ -16,8 +16,11 @@
 
 package com.tle.beans.cla;
 
+import com.tle.beans.item.Item;
+import com.tle.core.copyright.Holding;
+import com.tle.core.copyright.Portion;
+import com.tle.core.copyright.Section;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -32,212 +35,178 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
-
-import com.tle.beans.item.Item;
-import com.tle.core.copyright.Holding;
-import com.tle.core.copyright.Portion;
-import com.tle.core.copyright.Section;
 
 @Entity
 @AccessType("field")
 @Table(name = "cla_portion")
-public class CLAPortion implements Portion
-{
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-	@JoinColumn(nullable = false)
-	@Index(name = "claportionItemIndex")
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Item item;
-	@Index(name = "claholdingIndex")
-	@ManyToOne(fetch = FetchType.LAZY)
-	private CLAHolding holding;
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "portion")
-	private List<CLASection> sections;
-	@ElementCollection
-	@Column(name = "element")
-	@CollectionTable(name = "cla_portion_authors", joinColumns = @JoinColumn(name = "cla_portion_id"))
-	private List<String> authors;
-	@ElementCollection
-	@Column(name = "element")
-	@CollectionTable(name = "cla_portion_topics", joinColumns = @JoinColumn(name = "cla_portion_id"))
-	private List<String> topics;
+public class CLAPortion implements Portion {
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	@Lob
-	private String authorList;
+  @JoinColumn(nullable = false)
+  @Index(name = "claportionItemIndex")
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Item item;
 
-	@Column(length = 200)
-	private String chapter;
-	@Lob
-	private String title;
+  @Index(name = "claholdingIndex")
+  @ManyToOne(fetch = FetchType.LAZY)
+  private CLAHolding holding;
 
-	private Character source;
-	private String sourceInstitution;
-	private Character reason;
-	private Character artisticWorks;
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "portion")
+  private List<CLASection> sections;
 
-	@Override
-	public long getId()
-	{
-		return id;
-	}
+  @ElementCollection
+  @Column(name = "element")
+  @CollectionTable(name = "cla_portion_authors", joinColumns = @JoinColumn(name = "cla_portion_id"))
+  private List<String> authors;
 
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  @ElementCollection
+  @Column(name = "element")
+  @CollectionTable(name = "cla_portion_topics", joinColumns = @JoinColumn(name = "cla_portion_id"))
+  private List<String> topics;
 
-	@Override
-	public Item getItem()
-	{
-		return item;
-	}
+  @Lob private String authorList;
 
-	@Override
-	public void setItem(Item item)
-	{
-		this.item = item;
-	}
+  @Column(length = 200)
+  private String chapter;
 
-	@Override
-	public CLAHolding getHolding()
-	{
-		return holding;
-	}
+  @Lob private String title;
 
-	public void setHolding(CLAHolding holding)
-	{
-		this.holding = holding;
-	}
+  private Character source;
+  private String sourceInstitution;
+  private Character reason;
+  private Character artisticWorks;
 
-	@Override
-	public List<String> getAuthors()
-	{
-		return authors;
-	}
+  @Override
+  public long getId() {
+    return id;
+  }
 
-	public void setAuthors(List<String> authors)
-	{
-		this.authors = authors;
-	}
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	@Override
-	public List<? extends Section> getSections()
-	{
-		return sections;
-	}
+  @Override
+  public Item getItem() {
+    return item;
+  }
 
-	public void setSections(List<CLASection> sections)
-	{
-		this.sections = sections;
-	}
+  @Override
+  public void setItem(Item item) {
+    this.item = item;
+  }
 
-	@Override
-	public String getTitle()
-	{
-		return title;
-	}
+  @Override
+  public CLAHolding getHolding() {
+    return holding;
+  }
 
-	public void setTitle(String title)
-	{
-		this.title = title;
-	}
+  public void setHolding(CLAHolding holding) {
+    this.holding = holding;
+  }
 
-	@Override
-	public List<String> getTopics()
-	{
-		return topics;
-	}
+  @Override
+  public List<String> getAuthors() {
+    return authors;
+  }
 
-	public void setTopics(List<String> topics)
-	{
-		this.topics = topics;
-	}
+  public void setAuthors(List<String> authors) {
+    this.authors = authors;
+  }
 
-	@Override
-	public String getAuthorList()
-	{
-		return authorList;
-	}
+  @Override
+  public List<? extends Section> getSections() {
+    return sections;
+  }
 
-	public void setAuthorList(String authorList)
-	{
-		this.authorList = authorList;
-	}
+  public void setSections(List<CLASection> sections) {
+    this.sections = sections;
+  }
 
-	@Override
-	public String getChapter()
-	{
-		return chapter;
-	}
+  @Override
+  public String getTitle() {
+    return title;
+  }
 
-	public void setChapter(String chapter)
-	{
-		if( chapter.length() > 200 )
-		{
-			chapter = chapter.substring(0, 200);
-		}
-		chapter = chapter.trim().toLowerCase();
-		if( chapter.length() == 0 )
-		{
-			chapter = null;
-		}
-		this.chapter = chapter;
-	}
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-	public Character getSource()
-	{
-		return source;
-	}
+  @Override
+  public List<String> getTopics() {
+    return topics;
+  }
 
-	public void setSource(Character source)
-	{
-		this.source = source;
-	}
+  public void setTopics(List<String> topics) {
+    this.topics = topics;
+  }
 
-	public String getSourceInstitution()
-	{
-		return sourceInstitution;
-	}
+  @Override
+  public String getAuthorList() {
+    return authorList;
+  }
 
-	public void setSourceInstitution(String sourceInstitution)
-	{
-		this.sourceInstitution = sourceInstitution;
-	}
+  public void setAuthorList(String authorList) {
+    this.authorList = authorList;
+  }
 
-	public Character getReason()
-	{
-		return reason;
-	}
+  @Override
+  public String getChapter() {
+    return chapter;
+  }
 
-	public void setReason(Character reason)
-	{
-		this.reason = reason;
-	}
+  public void setChapter(String chapter) {
+    if (chapter.length() > 200) {
+      chapter = chapter.substring(0, 200);
+    }
+    chapter = chapter.trim().toLowerCase();
+    if (chapter.length() == 0) {
+      chapter = null;
+    }
+    this.chapter = chapter;
+  }
 
-	public Character getArtisticWorks()
-	{
-		return artisticWorks;
-	}
+  public Character getSource() {
+    return source;
+  }
 
-	public void setArtisticWorks(Character artisticWorks)
-	{
-		this.artisticWorks = artisticWorks;
-	}
+  public void setSource(Character source) {
+    this.source = source;
+  }
 
-	public List<CLASection> getCLASections()
-	{
-		return sections;
-	}
+  public String getSourceInstitution() {
+    return sourceInstitution;
+  }
 
-	@Override
-	public void setHolding(Holding holding)
-	{
-		this.holding = (CLAHolding) holding;
-	}
+  public void setSourceInstitution(String sourceInstitution) {
+    this.sourceInstitution = sourceInstitution;
+  }
 
+  public Character getReason() {
+    return reason;
+  }
+
+  public void setReason(Character reason) {
+    this.reason = reason;
+  }
+
+  public Character getArtisticWorks() {
+    return artisticWorks;
+  }
+
+  public void setArtisticWorks(Character artisticWorks) {
+    this.artisticWorks = artisticWorks;
+  }
+
+  public List<CLASection> getCLASections() {
+    return sections;
+  }
+
+  @Override
+  public void setHolding(Holding holding) {
+    this.holding = (CLAHolding) holding;
+  }
 }

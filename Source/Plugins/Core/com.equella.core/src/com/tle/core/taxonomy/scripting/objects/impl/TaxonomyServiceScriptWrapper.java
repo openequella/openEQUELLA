@@ -23,67 +23,55 @@ import com.tle.core.taxonomy.scripting.objects.TaxonomyServiceScriptObject;
 import com.tle.core.taxonomy.scripting.types.TaxonomyScriptType;
 import com.tle.core.taxonomy.scripting.types.impl.TaxonomyScriptTypeImpl;
 
-/**
- * @author aholland
- */
-public class TaxonomyServiceScriptWrapper implements TaxonomyServiceScriptObject
-{
-	private static final long serialVersionUID = 1L;
+/** @author aholland */
+public class TaxonomyServiceScriptWrapper implements TaxonomyServiceScriptObject {
+  private static final long serialVersionUID = 1L;
 
-	private final TaxonomyService taxonomyService;
+  private final TaxonomyService taxonomyService;
 
-	public TaxonomyServiceScriptWrapper(TaxonomyService taxonomyService)
-	{
-		this.taxonomyService = taxonomyService;
-	}
+  public TaxonomyServiceScriptWrapper(TaxonomyService taxonomyService) {
+    this.taxonomyService = taxonomyService;
+  }
 
-	@Override
-	public TaxonomyScriptType getTaxonomyByUuid(String uuid)
-	{
-		// check to see if the taxo exists first, no point providing a wrapper
-		// to a non existent taxonomy
-		Taxonomy taxo = taxonomyService.getByUuid(uuid);
-		if( taxo != null )
-		{
-			return new TaxonomyScriptTypeImpl(taxonomyService, uuid);
-		}
-		return null;
-	}
+  @Override
+  public TaxonomyScriptType getTaxonomyByUuid(String uuid) {
+    // check to see if the taxo exists first, no point providing a wrapper
+    // to a non existent taxonomy
+    Taxonomy taxo = taxonomyService.getByUuid(uuid);
+    if (taxo != null) {
+      return new TaxonomyScriptTypeImpl(taxonomyService, uuid);
+    }
+    return null;
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	public TaxonomyScriptType getTaxonomyByName(String name)
-	{
-		TaxonomyScriptType taxScriptObj = null;
+  @Override
+  @SuppressWarnings("nls")
+  public TaxonomyScriptType getTaxonomyByName(String name) {
+    TaxonomyScriptType taxScriptObj = null;
 
-		for( Taxonomy tax : taxonomyService.enumerate() )
-		{
-			if( CurrentLocale.get(tax.getName()).equalsIgnoreCase(name) )
-			{
-				if( taxScriptObj == null )
-				{
-					taxScriptObj = getTaxonomyByUuid(tax.getUuid());
-				}
-				else
-				{
-					throw new RuntimeException("Multiple taxonomies found for name."
-						+ " Identification by UUID is highly recommended and guaranteed" + " to be unique");
-				}
-			}
-		}
+    for (Taxonomy tax : taxonomyService.enumerate()) {
+      if (CurrentLocale.get(tax.getName()).equalsIgnoreCase(name)) {
+        if (taxScriptObj == null) {
+          taxScriptObj = getTaxonomyByUuid(tax.getUuid());
+        } else {
+          throw new RuntimeException(
+              "Multiple taxonomies found for name."
+                  + " Identification by UUID is highly recommended and guaranteed"
+                  + " to be unique");
+        }
+      }
+    }
 
-		return taxScriptObj;
-	}
+    return taxScriptObj;
+  }
 
-	@Override
-	public void scriptEnter()
-	{
-		// Nothing to do here
-	}
+  @Override
+  public void scriptEnter() {
+    // Nothing to do here
+  }
 
-	@Override
-	public void scriptExit()
-	{
-		// Nothing to do here
-	}
+  @Override
+  public void scriptExit() {
+    // Nothing to do here
+  }
 }

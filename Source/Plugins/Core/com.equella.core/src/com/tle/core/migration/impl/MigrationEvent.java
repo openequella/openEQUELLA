@@ -16,7 +16,6 @@
 
 package com.tle.core.migration.impl;
 
-public class MigrationEvent
-{
-	// Nothing to declare
+public class MigrationEvent {
+  // Nothing to declare
 }

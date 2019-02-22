@@ -16,36 +16,34 @@
 
 package com.tle.core.services;
 
+import com.tle.common.Pair;
 import java.io.Serializable;
 import java.util.List;
 
-import com.tle.common.Pair;
+public interface TaskStatus {
+  int getDoneWork();
 
-public interface TaskStatus
-{
-	int getDoneWork();
+  int getMaxWork();
 
-	int getMaxWork();
+  String getErrorMessage();
 
-	String getErrorMessage();
+  boolean isFinished();
 
-	boolean isFinished();
+  <T extends Serializable> List<T> getTaskLog();
 
-	<T extends Serializable> List<T> getTaskLog();
+  <T extends Serializable> Pair<Integer, List<T>> getTaskLog(int offset, int maxSize);
 
-	<T extends Serializable> Pair<Integer, List<T>> getTaskLog(int offset, int maxSize);
+  String getInternalId();
 
-	String getInternalId();
+  String getTitleKey();
 
-	String getTitleKey();
+  String getStatusKey();
 
-	String getStatusKey();
+  int getPercentage();
 
-	int getPercentage();
+  <T> T consumeTransient(String key);
 
-	<T> T consumeTransient(String key);
+  <T> T getTaskSubStatus(String key);
 
-	<T> T getTaskSubStatus(String key);
-
-	String getNodeIdRunning();
+  String getNodeIdRunning();
 }

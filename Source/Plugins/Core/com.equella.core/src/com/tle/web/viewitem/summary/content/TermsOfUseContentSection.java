@@ -16,10 +16,6 @@
 
 package com.tle.web.viewitem.summary.content;
 
-import java.util.Date;
-
-import javax.inject.Inject;
-
 import com.tle.beans.item.DrmAcceptance;
 import com.tle.beans.item.DrmSettings;
 import com.tle.beans.item.Item;
@@ -43,147 +39,133 @@ import com.tle.web.sections.standard.model.TableState.TableRow;
 import com.tle.web.viewitem.I18nDRM;
 import com.tle.web.viewitem.section.ParentViewItemSectionUtils;
 import com.tle.web.viewurl.ItemSectionInfo;
+import java.util.Date;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
-public class TermsOfUseContentSection extends AbstractContentSection<TermsOfUseContentSection.TermsOfUseSummaryModel>
-{
-	private static final String DIGITAL_RIGHTS_ITEM = "DIGITAL_RIGHTS_ITEM";
+public class TermsOfUseContentSection
+    extends AbstractContentSection<TermsOfUseContentSection.TermsOfUseSummaryModel> {
+  private static final String DIGITAL_RIGHTS_ITEM = "DIGITAL_RIGHTS_ITEM";
 
-	@PlugKey("summary.content.termsofuse.pagetitle")
-	private static Label TITLE_LABEL;
-	@PlugKey("summary.content.termsofuse.agreements.user")
-	private static Label LABEL_USER;
-	@PlugKey("summary.content.termsofuse.agreements.date")
-	private static Label LABEL_DATE;
-	@PlugKey("summary.content.termsofuse.agreements.title")
-	private static String KEY_AGREEMENTS;
+  @PlugKey("summary.content.termsofuse.pagetitle")
+  private static Label TITLE_LABEL;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @PlugKey("summary.content.termsofuse.agreements.user")
+  private static Label LABEL_USER;
 
-	@Inject
-	private DrmService drmService;
-	@Inject
-	private UserLinkService userLinkService;
-	@Inject
-	private DateRendererFactory dateRendererFactory;
+  @PlugKey("summary.content.termsofuse.agreements.date")
+  private static Label LABEL_DATE;
 
-	private UserLinkSection userLinkSection;
+  @PlugKey("summary.content.termsofuse.agreements.title")
+  private static String KEY_AGREEMENTS;
 
-	@Component
-	private Table agreementsTable;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Inject private DrmService drmService;
+  @Inject private UserLinkService userLinkService;
+  @Inject private DateRendererFactory dateRendererFactory;
 
-		userLinkSection = userLinkService.register(tree, id);
-		agreementsTable.setColumnHeadings(LABEL_USER, LABEL_DATE);
-		agreementsTable.setColumnSorts(Sort.SORTABLE_ASC, Sort.PRIMARY_ASC);
-	}
+  private UserLinkSection userLinkSection;
 
-	@Override
-	public SectionResult renderHtml(final RenderEventContext info) throws Exception
-	{
-		final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(info);
-		final Item item = itemInfo.getItem();
-		final DrmSettings settings = item.getDrmSettings();
+  @Component private Table agreementsTable;
 
-		if( settings == null )
-		{
-			throw new Error("No DRM settings on item");
-		}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		final TermsOfUseSummaryModel model = getModel(info);
+    userLinkSection = userLinkService.register(tree, id);
+    agreementsTable.setColumnHeadings(LABEL_USER, LABEL_DATE);
+    agreementsTable.setColumnSorts(Sort.SORTABLE_ASC, Sort.PRIMARY_ASC);
+  }
 
-		model.setDrm(new I18nDRM(settings));
+  @Override
+  public SectionResult renderHtml(final RenderEventContext info) throws Exception {
+    final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(info);
+    final Item item = itemInfo.getItem();
+    final DrmSettings settings = item.getDrmSettings();
 
-		if( itemInfo.hasPrivilege(DIGITAL_RIGHTS_ITEM) )
-		{
-			int agreementsCount = 0;
-			model.setShowAgreements(true);
+    if (settings == null) {
+      throw new Error("No DRM settings on item");
+    }
 
-			final TableState agreementsTableState = agreementsTable.getState(info);
+    final TermsOfUseSummaryModel model = getModel(info);
 
-			// Pronounced 'assept'...
-			for( DrmAcceptance accept : drmService.enumerateAgreements(item) )
-			{
-				final Date date = accept.getDate();
-				TableRow row = agreementsTableState.addRow(userLinkSection.createLink(info, accept.getUser()),
-					dateRendererFactory.createDateRenderer(date));
-				row.setSortData(null, date); // first column = use the actual
-												// link.
-				agreementsCount++;
-			}
+    model.setDrm(new I18nDRM(settings));
 
-			model.setAgreementsLabel(new PluralKeyLabel(KEY_AGREEMENTS, agreementsCount));
-			model.setAgreementsCount(agreementsCount);
-		}
+    if (itemInfo.hasPrivilege(DIGITAL_RIGHTS_ITEM)) {
+      int agreementsCount = 0;
+      model.setShowAgreements(true);
 
-		displayBackButton(info);
+      final TableState agreementsTableState = agreementsTable.getState(info);
 
-		addDefaultBreadcrumbs(info, itemInfo, TITLE_LABEL);
+      // Pronounced 'assept'...
+      for (DrmAcceptance accept : drmService.enumerateAgreements(item)) {
+        final Date date = accept.getDate();
+        TableRow row =
+            agreementsTableState.addRow(
+                userLinkSection.createLink(info, accept.getUser()),
+                dateRendererFactory.createDateRenderer(date));
+        row.setSortData(null, date); // first column = use the actual
+        // link.
+        agreementsCount++;
+      }
 
-		return viewFactory.createResult("viewitem/summary/content/termsofuse.ftl", info);
-	}
+      model.setAgreementsLabel(new PluralKeyLabel(KEY_AGREEMENTS, agreementsCount));
+      model.setAgreementsCount(agreementsCount);
+    }
 
-	@Override
-	public Class<TermsOfUseSummaryModel> getModelClass()
-	{
-		return TermsOfUseSummaryModel.class;
-	}
+    displayBackButton(info);
 
-	public Table getAgreementsTable()
-	{
-		return agreementsTable;
-	}
+    addDefaultBreadcrumbs(info, itemInfo, TITLE_LABEL);
 
-	public static class TermsOfUseSummaryModel
-	{
-		private I18nDRM drm;
-		private boolean showAgreements;
-		private Label agreementsLabel;
-		private int agreementsCount;
+    return viewFactory.createResult("viewitem/summary/content/termsofuse.ftl", info);
+  }
 
-		public I18nDRM getDrm()
-		{
-			return drm;
-		}
+  @Override
+  public Class<TermsOfUseSummaryModel> getModelClass() {
+    return TermsOfUseSummaryModel.class;
+  }
 
-		public void setDrm(I18nDRM drm)
-		{
-			this.drm = drm;
-		}
+  public Table getAgreementsTable() {
+    return agreementsTable;
+  }
 
-		public boolean isShowAgreements()
-		{
-			return showAgreements;
-		}
+  public static class TermsOfUseSummaryModel {
+    private I18nDRM drm;
+    private boolean showAgreements;
+    private Label agreementsLabel;
+    private int agreementsCount;
 
-		public void setShowAgreements(boolean showAgreements)
-		{
-			this.showAgreements = showAgreements;
-		}
+    public I18nDRM getDrm() {
+      return drm;
+    }
 
-		public Label getAgreementsLabel()
-		{
-			return agreementsLabel;
-		}
+    public void setDrm(I18nDRM drm) {
+      this.drm = drm;
+    }
 
-		public void setAgreementsLabel(Label agreementsLabel)
-		{
-			this.agreementsLabel = agreementsLabel;
-		}
+    public boolean isShowAgreements() {
+      return showAgreements;
+    }
 
-		public int getAgreementsCount()
-		{
-			return agreementsCount;
-		}
+    public void setShowAgreements(boolean showAgreements) {
+      this.showAgreements = showAgreements;
+    }
 
-		public void setAgreementsCount(int agreementsCount)
-		{
-			this.agreementsCount = agreementsCount;
-		}
-	}
+    public Label getAgreementsLabel() {
+      return agreementsLabel;
+    }
+
+    public void setAgreementsLabel(Label agreementsLabel) {
+      this.agreementsLabel = agreementsLabel;
+    }
+
+    public int getAgreementsCount() {
+      return agreementsCount;
+    }
+
+    public void setAgreementsCount(int agreementsCount) {
+      this.agreementsCount = agreementsCount;
+    }
+  }
 }

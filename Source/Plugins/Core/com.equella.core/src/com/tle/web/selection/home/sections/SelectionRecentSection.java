@@ -16,11 +16,6 @@
 
 package com.tle.web.selection.home.sections;
 
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
-
 import com.tle.common.Check;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -50,145 +45,122 @@ import com.tle.web.sections.standard.model.SimpleOption;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.home.RecentSelectionsSegment;
+import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
 
 public class SelectionRecentSection
-	extends
-		AbstractPrototypeSection<SelectionRecentSection.SelectionRecentSectionModel>
-	implements
-		HtmlRenderer,
-		ViewableChildInterface,
-		ValueSetListener<Set<String>>
-{
-	@PlugKey("recent.title")
-	private static Label TITLE_LABEL;
+    extends AbstractPrototypeSection<SelectionRecentSection.SelectionRecentSectionModel>
+    implements HtmlRenderer, ViewableChildInterface, ValueSetListener<Set<String>> {
+  @PlugKey("recent.title")
+  private static Label TITLE_LABEL;
 
-	@ResourceHelper
-	private PluginResourceHelper helper;
+  @ResourceHelper private PluginResourceHelper helper;
 
-	@Inject
-	private SelectionService selectionService;
+  @Inject private SelectionService selectionService;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Component(register = false)
-	private Box box;
-	@Component
-	private SingleSelectionList<String> recentType;
+  @Component(register = false)
+  private Box box;
 
-	private String layout;
+  @Component private SingleSelectionList<String> recentType;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !canView(context) )
-		{
-			return null;
-		}
+  private String layout;
 
-		SelectionSession session = selectionService.getCurrentSession(context);
-		SimpleHtmlListModel<String> listModel = new SimpleHtmlListModel<String>();
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (!canView(context)) {
+      return null;
+    }
 
-		List<SectionId> children = context.getChildIds(context);
-		for( SectionId string : children )
-		{
-			SectionId sectionForId = context.getSectionForId(string);
-			if( sectionForId instanceof RecentSelectionsSegment )
-			{
-				String title = ((RecentSelectionsSegment) sectionForId).getTitle(context, session);
-				listModel.add(new SimpleOption<String>(title, helper.key(title), string.getSectionId()));
-			}
-		}
-		recentType.setListModel(listModel);
-		NestedRenderable result = (NestedRenderable) SectionUtils.renderSectionResult(context, box);
+    SelectionSession session = selectionService.getCurrentSession(context);
+    SimpleHtmlListModel<String> listModel = new SimpleHtmlListModel<String>();
 
-		SectionRenderable menu = viewFactory.createResult("selectionrecent.ftl", this); //$NON-NLS-1$
-		String recentId = getModel(context).getRecentId();
-		if( Check.isEmpty(recentId) )
-		{
-			recentId = children.get(0).getSectionId();
-		}
-		SectionRenderable list = SectionUtils.renderSection(context, recentId);
+    List<SectionId> children = context.getChildIds(context);
+    for (SectionId string : children) {
+      SectionId sectionForId = context.getSectionForId(string);
+      if (sectionForId instanceof RecentSelectionsSegment) {
+        String title = ((RecentSelectionsSegment) sectionForId).getTitle(context, session);
+        listModel.add(new SimpleOption<String>(title, helper.key(title), string.getSectionId()));
+      }
+    }
+    recentType.setListModel(listModel);
+    NestedRenderable result = (NestedRenderable) SectionUtils.renderSectionResult(context, box);
 
-		result.setNestedRenderable(new CombinedRenderer(menu, list));
+    SectionRenderable menu = viewFactory.createResult("selectionrecent.ftl", this); // $NON-NLS-1$
+    String recentId = getModel(context).getRecentId();
+    if (Check.isEmpty(recentId)) {
+      recentId = children.get(0).getSectionId();
+    }
+    SectionRenderable list = SectionUtils.renderSection(context, recentId);
 
-		return result;
-	}
+    result.setNestedRenderable(new CombinedRenderer(menu, list));
 
-	public Box getBox()
-	{
-		return box;
-	}
+    return result;
+  }
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		final SelectionSession session = selectionService.getCurrentSession(info);
-		return session != null && (session.isAllCollections() || !Check.isEmpty(session.getCollectionUuids()));
-	}
+  public Box getBox() {
+    return box;
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.registerInnerSection(box, id);
-		recentType.addChangeEventHandler(new ReloadHandler());
-		recentType.setAlwaysSelect(true);
-		recentType.setValueSetListener(this);
+  @Override
+  public boolean canView(SectionInfo info) {
+    final SelectionSession session = selectionService.getCurrentSession(info);
+    return session != null
+        && (session.isAllCollections() || !Check.isEmpty(session.getCollectionUuids()));
+  }
 
-		box.setNoMinMaxOnHeader(true);
-		box.setStyleClass("recent-portal");
-		box.setLabel(TITLE_LABEL);
+  @Override
+  @SuppressWarnings("nls")
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.registerInnerSection(box, id);
+    recentType.addChangeEventHandler(new ReloadHandler());
+    recentType.setAlwaysSelect(true);
+    recentType.setValueSetListener(this);
 
-		if( !Check.isEmpty(layout) )
-		{
-			tree.setLayout(id, layout);
-		}
-	}
+    box.setNoMinMaxOnHeader(true);
+    box.setStyleClass("recent-portal");
+    box.setLabel(TITLE_LABEL);
 
-	@Override
-	public void valueSet(SectionInfo info, Set<String> value)
-	{
-		String sectionId = recentType.getSelectedValue(info);
-		getModel(info).setRecentId(sectionId);
-	}
+    if (!Check.isEmpty(layout)) {
+      tree.setLayout(id, layout);
+    }
+  }
 
-	public SingleSelectionList<String> getRecentType()
-	{
-		return recentType;
-	}
+  @Override
+  public void valueSet(SectionInfo info, Set<String> value) {
+    String sectionId = recentType.getSelectedValue(info);
+    getModel(info).setRecentId(sectionId);
+  }
 
-	@Override
-	public Class<SelectionRecentSectionModel> getModelClass()
-	{
-		return SelectionRecentSectionModel.class;
-	}
+  public SingleSelectionList<String> getRecentType() {
+    return recentType;
+  }
 
-	public void setLayout(String layout)
-	{
-		this.layout = layout;
-	}
+  @Override
+  public Class<SelectionRecentSectionModel> getModelClass() {
+    return SelectionRecentSectionModel.class;
+  }
 
-	public String getLayout()
-	{
-		return layout;
-	}
+  public void setLayout(String layout) {
+    this.layout = layout;
+  }
 
-	public static class SelectionRecentSectionModel
-	{
-		private String recentId;
+  public String getLayout() {
+    return layout;
+  }
 
-		public void setRecentId(String recentId)
-		{
-			this.recentId = recentId;
-		}
+  public static class SelectionRecentSectionModel {
+    private String recentId;
 
-		public String getRecentId()
-		{
-			return recentId;
-		}
+    public void setRecentId(String recentId) {
+      this.recentId = recentId;
+    }
 
-	}
-
+    public String getRecentId() {
+      return recentId;
+    }
+  }
 }

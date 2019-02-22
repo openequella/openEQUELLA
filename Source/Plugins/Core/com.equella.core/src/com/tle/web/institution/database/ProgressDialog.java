@@ -16,13 +16,6 @@
 
 package com.tle.web.institution.database;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -58,287 +51,267 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.TemplateResult;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
 import com.tle.web.template.DialogTemplate;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 
 @NonNullByDefault
 @Bind
 @SuppressWarnings("nls")
-public class ProgressDialog extends AbstractOkayableDialog<ProgressDialogModel>
-{
-	@PlugKey("databases.progress.title")
-	private static Label TITLE;
-	@PlugKey("databases.progress.finished.general")
-	private static String FINISHED_GENERAL_KEY;
-	@PlugKey("databases.progress.finished.success")
-	private static String FINISHED_SUCCESS_KEY;
-	@PlugKey("databases.progress.finished.error")
-	private static String FINISHED_ERROR_KEY;
-	@PlugKey("databases.progress.runningmigration")
-	private static String MIGRATION_KEY;
+public class ProgressDialog extends AbstractOkayableDialog<ProgressDialogModel> {
+  @PlugKey("databases.progress.title")
+  private static Label TITLE;
 
-	@Inject
-	private TaskService taskService;
+  @PlugKey("databases.progress.finished.general")
+  private static String FINISHED_GENERAL_KEY;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @PlugKey("databases.progress.finished.success")
+  private static String FINISHED_SUCCESS_KEY;
 
-	private JSCallable updateResultsCall;
+  @PlugKey("databases.progress.finished.error")
+  private static String FINISHED_ERROR_KEY;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		setAjax(true);
-		setOkHandler(new OverrideHandler(getCloseFunction()));
+  @PlugKey("databases.progress.runningmigration")
+  private static String MIGRATION_KEY;
 
-		updateResultsCall = ajaxEvents.getAjaxFunction("updateResults");
-	}
+  @Inject private TaskService taskService;
 
-	@Override
-	protected ParameterizedEvent getAjaxShowEvent()
-	{
-		return events.getEventHandler("open");
-	}
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@EventHandlerMethod
-	public void open(SectionInfo info, String taskId)
-	{
-		ProgressDialogModel model = getModel(info);
-		model.setTaskId(taskId);
-		super.showDialog(info);
-	}
+  private JSCallable updateResultsCall;
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return TITLE;
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    setAjax(true);
+    setOkHandler(new OverrideHandler(getCloseFunction()));
 
-	@Override
-	protected TemplateResult getDialogTemplate(RenderContext context)
-	{
-		getOk().addReadyStatements(
-			context,
-			new FunctionCallStatement(MigrationJs.SETUP_PROGRESS_DIALOG, updateResultsCall, getModel(context)
-				.getTaskId()));
+    updateResultsCall = ajaxEvents.getAjaxFunction("updateResults");
+  }
 
-		final SectionRenderable body = viewFactory.createResult("database/progressdialog.ftl", this);
-		final SectionRenderable footer = SectionUtils.renderSection(context, getOk());
+  @Override
+  protected ParameterizedEvent getAjaxShowEvent() {
+    return events.getEventHandler("open");
+  }
 
-		return new GenericTemplateResult().addNamedResult(DialogTemplate.BODY, body).addNamedResult(
-			DialogTemplate.FOOTER, footer);
-	}
+  @EventHandlerMethod
+  public void open(SectionInfo info, String taskId) {
+    ProgressDialogModel model = getModel(info);
+    model.setTaskId(taskId);
+    super.showDialog(info);
+  }
 
-	@AjaxMethod
-	public ProgressUpdate updateResults(SectionInfo info, String taskId, int logOffset)
-	{
-		TaskStatus taskStatus = taskService.waitForTaskStatus(taskId, TimeUnit.SECONDS.toMillis(20));
-		taskService.askTaskChanges(Collections.singleton(taskId));
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return TITLE;
+  }
 
-		Collection<String> warnings = Lists.newArrayList();
-		Collection<String> messages = Lists.newArrayList();
+  @Override
+  protected TemplateResult getDialogTemplate(RenderContext context) {
+    getOk()
+        .addReadyStatements(
+            context,
+            new FunctionCallStatement(
+                MigrationJs.SETUP_PROGRESS_DIALOG,
+                updateResultsCall,
+                getModel(context).getTaskId()));
 
-		Pair<Integer, List<MigrationStatusLog>> taskLogs = taskStatus.getTaskLog(logOffset, Integer.MAX_VALUE);
-		logOffset = taskLogs.getFirst();
-		List<MigrationStatusLog> logs = taskLogs.getSecond();
-		for( MigrationStatusLog log : logs )
-		{
-			switch( log.getType() )
-			{
-				case WARNING:
-					warnings.add(CurrentLocale.get(log.getKey(), log.getValues()));
-					break;
-				case MESSAGE:
-					messages.add(CurrentLocale.get(log.getKey(), log.getValues()));
-					break;
-				case SQL:
-					messages.add((String) log.getValues()[0]);
-					break;
-			}
-		}
+    final SectionRenderable body = viewFactory.createResult("database/progressdialog.ftl", this);
+    final SectionRenderable footer = SectionUtils.renderSection(context, getOk());
 
-		final String message;
-		final String submessage;
-		if( taskStatus.isFinished() )
-		{
-			message = CurrentLocale.get(FINISHED_GENERAL_KEY);
-			submessage = CurrentLocale.get(Check.isEmpty(taskStatus.getErrorMessage()) ? FINISHED_SUCCESS_KEY
-				: FINISHED_ERROR_KEY);
-		}
-		else
-		{
-			MigrationInfo currentMigration = getCurrentMigration(taskStatus);
-			String migrationName = "";
-			if( currentMigration != null )
-			{
-				migrationName = currentMigration.getName().toString();
-			}
-			message = CurrentLocale
-				.get(MIGRATION_KEY, taskStatus.getDoneWork(), taskStatus.getMaxWork(), migrationName);
+    return new GenericTemplateResult()
+        .addNamedResult(DialogTemplate.BODY, body)
+        .addNamedResult(DialogTemplate.FOOTER, footer);
+  }
 
-			final MigrationSubTaskStatus msts = taskStatus.getTaskSubStatus(MigrationStatus.KEY_EXECUTION_STATUS);
-			if( msts != null )
-			{
-				submessage = CurrentLocale.get(msts.getStatusKey(), msts.getCurrentDone(), msts.getCurrentMax());
-			}
-			else
-			{
-				submessage = "";
-			}
-		}
-		return new ProgressUpdate(logOffset, message, submessage, warnings, messages, taskStatus.isFinished());
-	}
+  @AjaxMethod
+  public ProgressUpdate updateResults(SectionInfo info, String taskId, int logOffset) {
+    TaskStatus taskStatus = taskService.waitForTaskStatus(taskId, TimeUnit.SECONDS.toMillis(20));
+    taskService.askTaskChanges(Collections.singleton(taskId));
 
-	@Nullable
-	private MigrationInfo getCurrentMigration(TaskStatus ts)
-	{
-		List<MigrationInfo> migInfos = ts.getTaskSubStatus(MigrationStatus.KEY_MIGRATION_INFOS);
-		for( MigrationInfo migrationInfo : migInfos )
-		{
-			if( migrationInfo.isExecuting() )
-			{
-				return migrationInfo;
-			}
-		}
-		return null;
-	}
+    Collection<String> warnings = Lists.newArrayList();
+    Collection<String> messages = Lists.newArrayList();
 
-	@Override
-	protected String getContentBodyClass(RenderContext context)
-	{
-		return "databaseprogressdialog";
-	}
+    Pair<Integer, List<MigrationStatusLog>> taskLogs =
+        taskStatus.getTaskLog(logOffset, Integer.MAX_VALUE);
+    logOffset = taskLogs.getFirst();
+    List<MigrationStatusLog> logs = taskLogs.getSecond();
+    for (MigrationStatusLog log : logs) {
+      switch (log.getType()) {
+        case WARNING:
+          warnings.add(CurrentLocale.get(log.getKey(), log.getValues()));
+          break;
+        case MESSAGE:
+          messages.add(CurrentLocale.get(log.getKey(), log.getValues()));
+          break;
+        case SQL:
+          messages.add((String) log.getValues()[0]);
+          break;
+      }
+    }
 
-	@Override
-	public String getWidth()
-	{
-		return "600px";
-	}
+    final String message;
+    final String submessage;
+    if (taskStatus.isFinished()) {
+      message = CurrentLocale.get(FINISHED_GENERAL_KEY);
+      submessage =
+          CurrentLocale.get(
+              Check.isEmpty(taskStatus.getErrorMessage())
+                  ? FINISHED_SUCCESS_KEY
+                  : FINISHED_ERROR_KEY);
+    } else {
+      MigrationInfo currentMigration = getCurrentMigration(taskStatus);
+      String migrationName = "";
+      if (currentMigration != null) {
+        migrationName = currentMigration.getName().toString();
+      }
+      message =
+          CurrentLocale.get(
+              MIGRATION_KEY, taskStatus.getDoneWork(), taskStatus.getMaxWork(), migrationName);
 
-	@Override
-	public ProgressDialogModel instantiateDialogModel(SectionInfo info)
-	{
-		return new ProgressDialogModel();
-	}
+      final MigrationSubTaskStatus msts =
+          taskStatus.getTaskSubStatus(MigrationStatus.KEY_EXECUTION_STATUS);
+      if (msts != null) {
+        submessage =
+            CurrentLocale.get(msts.getStatusKey(), msts.getCurrentDone(), msts.getCurrentMax());
+      } else {
+        submessage = "";
+      }
+    }
+    return new ProgressUpdate(
+        logOffset, message, submessage, warnings, messages, taskStatus.isFinished());
+  }
 
-	public static class ProgressDialogModel extends DialogModel
-	{
-		private String taskId;
-		private int runningMigration;
-		private int totalMigrations;
-		private String runningMigrationName;
-		private int runningStep;
-		private int totalSteps;
+  @Nullable
+  private MigrationInfo getCurrentMigration(TaskStatus ts) {
+    List<MigrationInfo> migInfos = ts.getTaskSubStatus(MigrationStatus.KEY_MIGRATION_INFOS);
+    for (MigrationInfo migrationInfo : migInfos) {
+      if (migrationInfo.isExecuting()) {
+        return migrationInfo;
+      }
+    }
+    return null;
+  }
 
-		public String getRunningMigrationName()
-		{
-			return runningMigrationName;
-		}
+  @Override
+  protected String getContentBodyClass(RenderContext context) {
+    return "databaseprogressdialog";
+  }
 
-		public void setRunningMigrationName(String runningMigrationName)
-		{
-			this.runningMigrationName = runningMigrationName;
-		}
+  @Override
+  public String getWidth() {
+    return "600px";
+  }
 
-		public int getRunningStep()
-		{
-			return runningStep;
-		}
+  @Override
+  public ProgressDialogModel instantiateDialogModel(SectionInfo info) {
+    return new ProgressDialogModel();
+  }
 
-		public void setRunningStep(int runningStep)
-		{
-			this.runningStep = runningStep;
-		}
+  public static class ProgressDialogModel extends DialogModel {
+    private String taskId;
+    private int runningMigration;
+    private int totalMigrations;
+    private String runningMigrationName;
+    private int runningStep;
+    private int totalSteps;
 
-		public int getTotalSteps()
-		{
-			return totalSteps;
-		}
+    public String getRunningMigrationName() {
+      return runningMigrationName;
+    }
 
-		public void setTotalSteps(int totalSteps)
-		{
-			this.totalSteps = totalSteps;
-		}
+    public void setRunningMigrationName(String runningMigrationName) {
+      this.runningMigrationName = runningMigrationName;
+    }
 
-		public String getTaskId()
-		{
-			return taskId;
-		}
+    public int getRunningStep() {
+      return runningStep;
+    }
 
-		public void setTaskId(String taskId)
-		{
-			this.taskId = taskId;
-		}
+    public void setRunningStep(int runningStep) {
+      this.runningStep = runningStep;
+    }
 
-		public int getRunningMigration()
-		{
-			return runningMigration;
-		}
+    public int getTotalSteps() {
+      return totalSteps;
+    }
 
-		public void setRunningMigration(int runningMigration)
-		{
-			this.runningMigration = runningMigration;
-		}
+    public void setTotalSteps(int totalSteps) {
+      this.totalSteps = totalSteps;
+    }
 
-		public int getTotalMigrations()
-		{
-			return totalMigrations;
-		}
+    public String getTaskId() {
+      return taskId;
+    }
 
-		public void setTotalMigrations(int totalMigrations)
-		{
-			this.totalMigrations = totalMigrations;
-		}
-	}
+    public void setTaskId(String taskId) {
+      this.taskId = taskId;
+    }
 
-	public static class ProgressUpdate
-	{
-		private final String migration;
-		private final String step;
-		private final Collection<String> warnings;
-		private final Collection<String> messages;
-		private final boolean finished;
-		private final int offset;
+    public int getRunningMigration() {
+      return runningMigration;
+    }
 
-		public ProgressUpdate(int offset, String migration, String step, Collection<String> warnings,
-			Collection<String> messages,
-			boolean finished)
-		{
-			this.offset = offset;
-			this.migration = migration;
-			this.step = step;
-			this.warnings = warnings;
-			this.messages = messages;
-			this.finished = finished;
-		}
+    public void setRunningMigration(int runningMigration) {
+      this.runningMigration = runningMigration;
+    }
 
-		public int getOffset()
-		{
-			return offset;
-		}
+    public int getTotalMigrations() {
+      return totalMigrations;
+    }
 
-		public String getMigration()
-		{
-			return migration;
-		}
+    public void setTotalMigrations(int totalMigrations) {
+      this.totalMigrations = totalMigrations;
+    }
+  }
 
-		public String getStep()
-		{
-			return step;
-		}
+  public static class ProgressUpdate {
+    private final String migration;
+    private final String step;
+    private final Collection<String> warnings;
+    private final Collection<String> messages;
+    private final boolean finished;
+    private final int offset;
 
-		public Collection<String> getWarnings()
-		{
-			return warnings;
-		}
+    public ProgressUpdate(
+        int offset,
+        String migration,
+        String step,
+        Collection<String> warnings,
+        Collection<String> messages,
+        boolean finished) {
+      this.offset = offset;
+      this.migration = migration;
+      this.step = step;
+      this.warnings = warnings;
+      this.messages = messages;
+      this.finished = finished;
+    }
 
-		public Collection<String> getMessages()
-		{
-			return messages;
-		}
+    public int getOffset() {
+      return offset;
+    }
 
-		public boolean isFinished()
-		{
-			return finished;
-		}
-	}
+    public String getMigration() {
+      return migration;
+    }
+
+    public String getStep() {
+      return step;
+    }
+
+    public Collection<String> getWarnings() {
+      return warnings;
+    }
+
+    public Collection<String> getMessages() {
+      return messages;
+    }
+
+    public boolean isFinished() {
+      return finished;
+    }
+  }
 }

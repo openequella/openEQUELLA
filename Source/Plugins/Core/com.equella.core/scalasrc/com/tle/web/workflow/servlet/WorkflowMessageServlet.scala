@@ -29,5 +29,6 @@ object WorkflowMessageServlet {
     institutionService.institutionalise(PathUtils.urlEncodedPath(basePath, msgUuid, filename))
 
   def stagingUrl(stagingUuid: String, filename: String): String =
-    institutionService.institutionalise(PathUtils.urlEncodedPath(basePath, "$", stagingUuid, filename))
+    institutionService.institutionalise(
+      PathUtils.urlEncodedPath(basePath, "$", stagingUuid, filename))
 }

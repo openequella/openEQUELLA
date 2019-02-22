@@ -25,12 +25,14 @@ import scala.collection.JavaConverters._
 
 @Bind
 @Singleton
-class BadURLNotifications extends FilterableNotification with TemplatedNotification with NotificationLookup {
+class BadURLNotifications
+    extends FilterableNotification
+    with TemplatedNotification
+    with NotificationLookup {
   type N = BadURLModel
-  case class BadURLModel(note: Notification, item: Item) extends ItemNotification
-  {
+  case class BadURLModel(note: Notification, item: Item) extends ItemNotification {
     lazy val getUrls = item.getReferencedUrls.asScala.filterNot(_.isSuccess).asJava
-    def group = StdNotificationGroup("notification-badurl.ftl", note.getReason)
+    def group        = StdNotificationGroup("notification-badurl.ftl", note.getReason)
   }
 
   def toFreemarkerModel(notes: Iterable[Notification]) = createDataIgnore(notes, BadURLModel)

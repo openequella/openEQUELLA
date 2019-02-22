@@ -19,18 +19,15 @@ package com.tle.core.metadata.guice;
 import com.tle.core.guice.PluginTrackerModule;
 import com.tle.core.metadata.MetadataHandler;
 
-public class MetadataHandlerTrackerModule extends PluginTrackerModule
-{
-	@Override
-	protected String getPluginId()
-	{
-		return "com.tle.core.metadata";
-	}
+public class MetadataHandlerTrackerModule extends PluginTrackerModule {
+  @Override
+  protected String getPluginId() {
+    return "com.tle.core.metadata";
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	protected void configure()
-	{
-		bindTracker(MetadataHandler.class, "metadataHandlers", "bean").orderByParameter("order");
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected void configure() {
+    bindTracker(MetadataHandler.class, "metadataHandlers", "bean").orderByParameter("order");
+  }
 }

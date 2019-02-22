@@ -24,29 +24,24 @@ import com.tle.core.item.event.IndexItemBackgroundEvent;
 import com.tle.core.item.event.IndexItemNowEvent;
 import com.tle.core.item.event.WaitForItemIndexEvent;
 
-public class ReindexOnlyOperation extends AbstractStandardWorkflowOperation
-{
-	private final boolean wait;
+public class ReindexOnlyOperation extends AbstractStandardWorkflowOperation {
+  private final boolean wait;
 
-	@AssistedInject
-	protected ReindexOnlyOperation(@Assisted("wait") boolean wait)
-	{
-		this.wait = wait;
-	}
+  @AssistedInject
+  protected ReindexOnlyOperation(@Assisted("wait") boolean wait) {
+    this.wait = wait;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		Item item = getItem();
-		item.setDateForIndex(params.getDateNow());
-		ItemIdKey idKey = params.getItemIdKey();
-		addAfterCommitEvent(new IndexItemNowEvent(idKey));
-		addAfterCommitEvent(new IndexItemBackgroundEvent(idKey, false));
-		if( wait )
-		{
-			addAfterCommitEvent(new WaitForItemIndexEvent(idKey));
-		}
-		return false;
-	}
-
+  @Override
+  public boolean execute() {
+    Item item = getItem();
+    item.setDateForIndex(params.getDateNow());
+    ItemIdKey idKey = params.getItemIdKey();
+    addAfterCommitEvent(new IndexItemNowEvent(idKey));
+    addAfterCommitEvent(new IndexItemBackgroundEvent(idKey, false));
+    if (wait) {
+      addAfterCommitEvent(new WaitForItemIndexEvent(idKey));
+    }
+    return false;
+  }
 }

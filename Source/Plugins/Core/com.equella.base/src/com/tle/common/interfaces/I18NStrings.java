@@ -17,18 +17,16 @@
 package com.tle.common.interfaces;
 
 import java.util.Map;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public interface I18NStrings
-{
-	Map<String, String> getStrings();
+public interface I18NStrings {
+  Map<String, String> getStrings();
 
-	I18NString asI18NString(String defaultText);
+  I18NString asI18NString(String defaultText);
 
-	I18NStrings maybeNull();
+  I18NStrings maybeNull();
 
-	@Override
-	String toString();
+  @Override
+  String toString();
 }

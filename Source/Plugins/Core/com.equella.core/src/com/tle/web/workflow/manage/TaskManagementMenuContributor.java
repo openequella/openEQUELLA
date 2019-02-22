@@ -16,9 +16,6 @@
 
 package com.tle.web.workflow.manage;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.core.guice.Bind;
 import com.tle.core.workflow.service.WorkflowService;
 import com.tle.web.sections.SectionInfo;
@@ -28,43 +25,43 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.template.section.AbstractCachedMenuContributor;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class TaskManagementMenuContributor extends AbstractCachedMenuContributor<Boolean>
-{
-	@PlugKey("manage.menu")
-	private static Label LABEL_MENU;
-	@PlugURL("images/icons/manage-tasks.png")
-	private static String URL_ICON;
+public class TaskManagementMenuContributor extends AbstractCachedMenuContributor<Boolean> {
+  @PlugKey("manage.menu")
+  private static Label LABEL_MENU;
 
-	private static final String KEY = TaskManagementMenuContributor.class.getName();
+  @PlugURL("images/icons/manage-tasks.png")
+  private static String URL_ICON;
 
-	@Inject
-	private WorkflowService workflowService;
+  private static final String KEY = TaskManagementMenuContributor.class.getName();
 
-	@SuppressWarnings("nls")
-	@Override
-	protected MenuContribution getContribution(SectionInfo info, Boolean hasManageTasks)
-	{
-		if( hasManageTasks )
-		{
-			return new MenuContribution(new HtmlLinkState(LABEL_MENU, new SimpleBookmark("access/managetasks.do")),
-				URL_ICON, 30, 5, "assignment");
-		}
-		return null;
-	}
+  @Inject private WorkflowService workflowService;
 
-	@Override
-	protected Boolean getCachedObject(SectionInfo info)
-	{
-		return !workflowService.listManagable().isEmpty();
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected MenuContribution getContribution(SectionInfo info, Boolean hasManageTasks) {
+    if (hasManageTasks) {
+      return new MenuContribution(
+          new HtmlLinkState(LABEL_MENU, new SimpleBookmark("access/managetasks.do")),
+          URL_ICON,
+          30,
+          5,
+          "assignment");
+    }
+    return null;
+  }
 
-	@Override
-	protected String getSessionKey()
-	{
-		return KEY;
-	}
+  @Override
+  protected Boolean getCachedObject(SectionInfo info) {
+    return !workflowService.listManagable().isEmpty();
+  }
 
+  @Override
+  protected String getSessionKey() {
+    return KEY;
+  }
 }

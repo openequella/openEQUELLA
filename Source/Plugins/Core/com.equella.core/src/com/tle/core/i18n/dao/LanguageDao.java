@@ -16,15 +16,13 @@
 
 package com.tle.core.i18n.dao;
 
+import com.tle.beans.Language;
+import com.tle.core.hibernate.dao.GenericInstitutionalDao;
 import java.util.Collection;
 import java.util.Map;
 
-import com.tle.beans.Language;
-import com.tle.core.hibernate.dao.GenericInstitutionalDao;
+public interface LanguageDao extends GenericInstitutionalDao<Language, Long> {
+  Map<Long, String> getNames(Collection<Long> bundleRef);
 
-public interface LanguageDao extends GenericInstitutionalDao<Language, Long>
-{
-	Map<Long, String> getNames(Collection<Long> bundleRef);
-
-	void deleteBundles(Collection<Long> bundles);
+  void deleteBundles(Collection<Long> bundles);
 }

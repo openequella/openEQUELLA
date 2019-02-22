@@ -21,21 +21,19 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
 
-public class MyContentSelectSection extends ContextableSearchSection<ContextableSearchSection.Model>
-{
-	@PlugKey("select.title")
-	private static Label LABEL_TITLE;
+public class MyContentSelectSection
+    extends ContextableSearchSection<ContextableSearchSection.Model> {
+  @PlugKey("select.title")
+  private static Label LABEL_TITLE;
 
-	@SuppressWarnings("nls")
-	@Override
-	protected String getSessionKey()
-	{
-		return "myContentSelect";
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected String getSessionKey() {
+    return "myContentSelect";
+  }
 
-	@Override
-	public Label getTitle(SectionInfo info)
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  public Label getTitle(SectionInfo info) {
+    return LABEL_TITLE;
+  }
 }

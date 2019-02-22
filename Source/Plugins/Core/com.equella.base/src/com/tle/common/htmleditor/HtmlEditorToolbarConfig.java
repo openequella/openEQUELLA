@@ -16,21 +16,18 @@
 
 package com.tle.common.htmleditor;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
 import com.tle.common.settings.ConfigurationProperties;
 import com.tle.common.settings.annotation.PropertyList;
+import java.util.List;
 
-public class HtmlEditorToolbarConfig implements ConfigurationProperties
-{
-	private static final long serialVersionUID = 1L;
+public class HtmlEditorToolbarConfig implements ConfigurationProperties {
+  private static final long serialVersionUID = 1L;
 
-	@PropertyList(key = "buttons")
-	private final List<String> buttons = Lists.newArrayList();
+  @PropertyList(key = "buttons")
+  private final List<String> buttons = Lists.newArrayList();
 
-	public List<String> getButtons()
-	{
-		return buttons;
-	}
+  public List<String> getButtons() {
+    return buttons;
+  }
 }

@@ -24,44 +24,37 @@ import com.tle.core.item.edit.attachment.AbstractAttachmentEditor;
 import com.tle.core.item.edit.attachment.ZipAttachmentEditor;
 
 @Bind
-public class ZipAttachmentEditorImpl extends AbstractAttachmentEditor implements ZipAttachmentEditor
-{
-	private ZipAttachment zipAttachment;
+public class ZipAttachmentEditorImpl extends AbstractAttachmentEditor
+    implements ZipAttachmentEditor {
+  private ZipAttachment zipAttachment;
 
-	@Override
-	public void setAttachment(Attachment attachment)
-	{
-		super.setAttachment(attachment);
-		zipAttachment = (ZipAttachment) attachment;
-	}
+  @Override
+  public void setAttachment(Attachment attachment) {
+    super.setAttachment(attachment);
+    zipAttachment = (ZipAttachment) attachment;
+  }
 
-	@Override
-	public void editFolder(String folderPath)
-	{
-		if( hasBeenEdited(zipAttachment.getUrl(), folderPath) )
-		{
-			zipAttachment.setUrl(folderPath);
-		}
-	}
+  @Override
+  public void editFolder(String folderPath) {
+    if (hasBeenEdited(zipAttachment.getUrl(), folderPath)) {
+      zipAttachment.setUrl(folderPath);
+    }
+  }
 
-	@Override
-	public void editMapped(boolean mapped)
-	{
-		if( hasBeenEdited(zipAttachment.isMapped(), mapped) )
-		{
-			zipAttachment.setMapped(mapped);
-		}
-	}
+  @Override
+  public void editMapped(boolean mapped) {
+    if (hasBeenEdited(zipAttachment.isMapped(), mapped)) {
+      zipAttachment.setMapped(mapped);
+    }
+  }
 
-	@Override
-	public boolean canEdit(Attachment attachment)
-	{
-		return attachment.getAttachmentType() == AttachmentType.ZIP;
-	}
+  @Override
+  public boolean canEdit(Attachment attachment) {
+    return attachment.getAttachmentType() == AttachmentType.ZIP;
+  }
 
-	@Override
-	public Attachment newAttachment()
-	{
-		return new ZipAttachment();
-	}
+  @Override
+  public Attachment newAttachment() {
+    return new ZipAttachment();
+  }
 }

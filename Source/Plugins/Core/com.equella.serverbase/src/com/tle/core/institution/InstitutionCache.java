@@ -18,13 +18,12 @@ package com.tle.core.institution;
 
 import com.tle.beans.Institution;
 
-public interface InstitutionCache<T>
-{
-	T getCache();
+public interface InstitutionCache<T> {
+  T getCache();
 
-	T getCache(Institution inst);
+  T getCache(Institution inst);
 
-	void clear();
+  void clear();
 
-	void clear(Institution institution);
+  void clear(Institution institution);
 }

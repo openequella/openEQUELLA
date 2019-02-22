@@ -19,23 +19,19 @@ package com.tle.core.item;
 import com.tle.common.workflow.WorkflowNodeStatus;
 import com.tle.common.workflow.node.WorkflowNode;
 
-/**
- * @author Aaron
- *
- */
-public interface NodeStatus
-{
-	boolean update();
+/** @author Aaron */
+public interface NodeStatus {
+  boolean update();
 
-	void enter();
+  void enter();
 
-	void clear();
+  void clear();
 
-	int getStatus();
+  int getStatus();
 
-	WorkflowNodeStatus getBean();
+  WorkflowNodeStatus getBean();
 
-	WorkflowNode getWorkflowNode();
+  WorkflowNode getWorkflowNode();
 
-	void setWorkflowNode(WorkflowNode node);
+  void setWorkflowNode(WorkflowNode node);
 }

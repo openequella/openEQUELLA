@@ -16,13 +16,10 @@
 
 package com.tle.web.viewurl;
 
-import java.net.URL;
-import java.util.List;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
-import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.attachments.IAttachment;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.render.Label;
@@ -31,146 +28,138 @@ import com.tle.web.sections.standard.renderers.ImageRenderer;
 import com.tle.web.stream.ContentStream;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.servlet.ThumbServlet.GalleryParameter;
+import java.net.URL;
+import java.util.List;
 
 /**
- * This is interface which drives viewing of item resources. It's primary
- * responsibilities include:
+ * This is interface which drives viewing of item resources. It's primary responsibilities include:
+ *
  * <ul>
- * <li>Generating ViewItemUrl's for displaying the resource
- * <li>Accessing the content stream / external link to stream
+ *   <li>Generating ViewItemUrl's for displaying the resource
+ *   <li>Accessing the content stream / external link to stream
  * </ul>
- * 
+ *
  * @author jolz
  */
 @SuppressWarnings("nls")
 @NonNullByDefault
-public interface ViewableResource
-{
-	String KEY_HIDDEN = "$HIDDEN$";
-	String KEY_TARGETS_FRAME = "$TARGETSFRAME$";
-	String PREFERRED_LINK_TARGET = "$PREFERREDLINKTARGET";
-	String KEY_NO_FILE_PATHS = "$NOFILEPATHS";
+public interface ViewableResource {
+  String KEY_HIDDEN = "$HIDDEN$";
+  String KEY_TARGETS_FRAME = "$TARGETSFRAME$";
+  String PREFERRED_LINK_TARGET = "$PREFERREDLINKTARGET";
+  String KEY_NO_FILE_PATHS = "$NOFILEPATHS";
 
-	SectionInfo getInfo();
+  SectionInfo getInfo();
 
-	ViewableItem getViewableItem();
+  ViewableItem getViewableItem();
 
-	boolean isCustomThumb();
+  boolean isCustomThumb();
 
-	ThumbRef getThumbnailReference(SectionInfo info, GalleryParameter gallery);
+  ThumbRef getThumbnailReference(SectionInfo info, GalleryParameter gallery);
 
-	@Nullable
-	ImageRenderer createStandardThumbnailRenderer(Label label);
+  @Nullable
+  ImageRenderer createStandardThumbnailRenderer(Label label);
 
-	ImageRenderer createGalleryThumbnailRenderer(Label label);
+  ImageRenderer createGalleryThumbnailRenderer(Label label);
 
-	String getGalleryUrl(boolean preview, boolean original);
+  String getGalleryUrl(boolean preview, boolean original);
 
-	ImageRenderer createVideoThumbnailRenderer(Label label, TagState tag);
+  ImageRenderer createVideoThumbnailRenderer(Label label, TagState tag);
 
-	boolean isExternalResource();
+  boolean isExternalResource();
 
-	Bookmark createCanonicalUrl();
+  Bookmark createCanonicalUrl();
 
-	ViewItemUrl createDefaultViewerUrl();
+  ViewItemUrl createDefaultViewerUrl();
 
-	@Nullable
-	<T> T getAttribute(Object key);
+  @Nullable
+  <T> T getAttribute(Object key);
 
-	boolean getBooleanAttribute(Object key);
+  boolean getBooleanAttribute(Object key);
 
-	void setAttribute(Object key, @Nullable Object value);
+  void setAttribute(Object key, @Nullable Object value);
 
-	@Nullable
-	IAttachment getAttachment();
+  @Nullable
+  IAttachment getAttachment();
 
-	String getDescription();
+  String getDescription();
 
-	@Nullable
-	ViewAuditEntry getViewAuditEntry();
+  @Nullable
+  ViewAuditEntry getViewAuditEntry();
 
-	boolean hasContentStream();
+  boolean hasContentStream();
 
-	ContentStream getContentStream();
+  ContentStream getContentStream();
 
-	/**
-	 * Generally not null, but it's possible
-	 * 
-	 * @return
-	 */
-	@Nullable
-	String getMimeType();
+  /**
+   * Generally not null, but it's possible
+   *
+   * @return
+   */
+  @Nullable
+  String getMimeType();
 
-	String getFilepath();
+  String getFilepath();
 
-	void wrappedBy(ViewableResource resource);
+  void wrappedBy(ViewableResource resource);
 
-	@Nullable
-	String getDefaultViewer();
+  @Nullable
+  String getDefaultViewer();
 
-	boolean isDisabled();
+  boolean isDisabled();
 
-	@Nullable
-	List<AttachmentDetail> getCommonAttachmentDetails();
+  @Nullable
+  List<AttachmentDetail> getCommonAttachmentDetails();
 
-	@Nullable
-	List<AttachmentDetail> getExtraAttachmentDetails();
+  @Nullable
+  List<AttachmentDetail> getExtraAttachmentDetails();
 
-	@NonNullByDefault(false)
-	class ThumbRef
-	{
-		private final URL url;
-		private final FileHandle handle;
-		private final String localFile;
-		private final boolean usePlaceholder;
+  @NonNullByDefault(false)
+  class ThumbRef {
+    private final URL url;
+    private final FileHandle handle;
+    private final String localFile;
+    private final boolean usePlaceholder;
 
-		public ThumbRef(boolean usePlaceholder)
-		{
-			this.url = null;
-			this.handle = null;
-			this.localFile = null;
-			this.usePlaceholder = usePlaceholder;
-		}
+    public ThumbRef(boolean usePlaceholder) {
+      this.url = null;
+      this.handle = null;
+      this.localFile = null;
+      this.usePlaceholder = usePlaceholder;
+    }
 
-		public ThumbRef(URL url)
-		{
-			this.url = url;
-			this.handle = null;
-			this.localFile = null;
-			this.usePlaceholder = false;
-		}
+    public ThumbRef(URL url) {
+      this.url = url;
+      this.handle = null;
+      this.localFile = null;
+      this.usePlaceholder = false;
+    }
 
-		public ThumbRef(FileHandle handle, String filepath)
-		{
-			this.url = null;
-			this.handle = handle;
-			this.localFile = filepath;
-			this.usePlaceholder = false;
-		}
+    public ThumbRef(FileHandle handle, String filepath) {
+      this.url = null;
+      this.handle = handle;
+      this.localFile = filepath;
+      this.usePlaceholder = false;
+    }
 
-		public boolean isUrl()
-		{
-			return url != null;
-		}
+    public boolean isUrl() {
+      return url != null;
+    }
 
-		public URL getUrl()
-		{
-			return url;
-		}
+    public URL getUrl() {
+      return url;
+    }
 
-		public FileHandle getHandle()
-		{
-			return handle;
-		}
+    public FileHandle getHandle() {
+      return handle;
+    }
 
-		public String getLocalFile()
-		{
-			return localFile;
-		}
+    public String getLocalFile() {
+      return localFile;
+    }
 
-		public boolean isUsePlaceholder()
-		{
-			return usePlaceholder;
-		}
-	}
+    public boolean isUsePlaceholder() {
+      return usePlaceholder;
+    }
+  }
 }

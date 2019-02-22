@@ -16,10 +16,6 @@
 
 package com.tle.web.wizard.command;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.tle.beans.entity.FederatedSearch;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.Check;
@@ -38,143 +34,111 @@ import com.tle.web.wizard.impl.WizardCommand;
 import com.tle.web.wizard.section.RootWizardSection;
 import com.tle.web.wizard.section.WizardSectionInfo;
 import com.tle.web.workflow.tasks.ModerationService;
+import java.util.List;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
-public class Cancel extends WizardCommand
-{
-	static
-	{
-		PluginResourceHandler.init(Cancel.class);
-	}
+public class Cancel extends WizardCommand {
+  static {
+    PluginResourceHandler.init(Cancel.class);
+  }
 
-	@PlugKey("command.cancel.cancel")
-	private static String KEY_CANCEL;
-	@PlugKey("command.cancel.confirm")
-	private static String KEY_CONFIRM;
+  @PlugKey("command.cancel.cancel")
+  private static String KEY_CANCEL;
 
-	@Inject
-	private ModerationService moderationService;
-	@Inject
-	private ViewItemUrlFactory viewItemUrl;
-	@Inject
-	private WizardService wizardService;
-	@Inject
-	private ItemDefinitionService itemDefinitionService;
-	@Inject
-	private FederatedSearchService federatedSearchService;
-	@Inject
-	private SelectionService selectionService;
+  @PlugKey("command.cancel.confirm")
+  private static String KEY_CONFIRM;
 
-	public Cancel()
-	{
-		super(KEY_CANCEL, "cancel");
-	}
+  @Inject private ModerationService moderationService;
+  @Inject private ViewItemUrlFactory viewItemUrl;
+  @Inject private WizardService wizardService;
+  @Inject private ItemDefinitionService itemDefinitionService;
+  @Inject private FederatedSearchService federatedSearchService;
+  @Inject private SelectionService selectionService;
 
-	@Override
-	public String getWarning(SectionInfo info, WizardSectionInfo winfo)
-	{
-		WizardState state = winfo.getWizardState();
-		return ((state.isLockedForEditing() || state.isNewItem()) ? KEY_CONFIRM : null);
-	}
+  public Cancel() {
+    super(KEY_CANCEL, "cancel");
+  }
 
-	@Override
-	public boolean isEnabled(SectionInfo info, WizardSectionInfo winfo)
-	{
-		return !winfo.getWizardState().isNoCancel()
-			&& (!moderationService.isModerating(info) || winfo.isLockedForEditing());
-	}
+  @Override
+  public String getWarning(SectionInfo info, WizardSectionInfo winfo) {
+    WizardState state = winfo.getWizardState();
+    return ((state.isLockedForEditing() || state.isNewItem()) ? KEY_CONFIRM : null);
+  }
 
-	@Override
-	public void execute(SectionInfo info, WizardSectionInfo winfo, String data) throws Exception
-	{
-		final WizardState state = winfo.getWizardState();
-		final boolean locked = state.isLockedForEditing();
+  @Override
+  public boolean isEnabled(SectionInfo info, WizardSectionInfo winfo) {
+    return !winfo.getWizardState().isNoCancel()
+        && (!moderationService.isModerating(info) || winfo.isLockedForEditing());
+  }
 
-		winfo.cancelEdit();
+  @Override
+  public void execute(SectionInfo info, WizardSectionInfo winfo, String data) throws Exception {
+    final WizardState state = winfo.getWizardState();
+    final boolean locked = state.isLockedForEditing();
 
-		if( moderationService.isModerating(info) )
-		{
-			if( locked )
-			{
-				moderationService.setEditing(info, false);
-			}
-			wizardService.reload(state, false);
-		}
-		else
-		{
-			final RootWizardSection rootSection = info.lookupSection(RootWizardSection.class);
-			rootSection.removeState(info, state);
+    winfo.cancelEdit();
 
-			if( state.isEntryThroughEdit() )
-			{
-				// forward to viewing the item we are editing
-				final ViewItemUrl vurl = viewItemUrl.createItemUrl(info, state.getItemId());
-				vurl.forward(info);
-			}
-			else
-			{
-				if( forwardToContribute(info) )
-				{
-					// forward to contribute
-					info.forwardAsBookmark(info.createForward("/access/contribute.do"));
-				}
-				else
-				{
-					if( selectionService.getCurrentSession(info) != null )
-					{
-						selectionService.forwardToSelectable(info, null);
-					}
-					else
-					{
-						info.forwardAsBookmark(info.createForward("/home.do"));
-					}
-				}
-			}
+    if (moderationService.isModerating(info)) {
+      if (locked) {
+        moderationService.setEditing(info, false);
+      }
+      wizardService.reload(state, false);
+    } else {
+      final RootWizardSection rootSection = info.lookupSection(RootWizardSection.class);
+      rootSection.removeState(info, state);
 
-		}
-	}
+      if (state.isEntryThroughEdit()) {
+        // forward to viewing the item we are editing
+        final ViewItemUrl vurl = viewItemUrl.createItemUrl(info, state.getItemId());
+        vurl.forward(info);
+      } else {
+        if (forwardToContribute(info)) {
+          // forward to contribute
+          info.forwardAsBookmark(info.createForward("/access/contribute.do"));
+        } else {
+          if (selectionService.getCurrentSession(info) != null) {
+            selectionService.forwardToSelectable(info, null);
+          } else {
+            info.forwardAsBookmark(info.createForward("/home.do"));
+          }
+        }
+      }
+    }
+  }
 
-	private List<ItemDefinition> enumerateCreatable(SectionInfo info)
-	{
-		List<ItemDefinition> results = itemDefinitionService.enumerateCreateable();
+  private List<ItemDefinition> enumerateCreatable(SectionInfo info) {
+    List<ItemDefinition> results = itemDefinitionService.enumerateCreateable();
 
-		SelectionSession css = selectionService.getCurrentSession(info);
-		if( css != null && !css.isAllContributionCollections() )
-		{
-			selectionService.filterFullEntities(results, css.getContributionCollectionIds());
-		}
+    SelectionSession css = selectionService.getCurrentSession(info);
+    if (css != null && !css.isAllContributionCollections()) {
+      selectionService.filterFullEntities(results, css.getContributionCollectionIds());
+    }
 
-		return results;
-	}
+    return results;
+  }
 
-	private boolean forwardToContribute(SectionInfo info)
-	{
+  private boolean forwardToContribute(SectionInfo info) {
 
-		List<ItemDefinition> contributableCollections = enumerateCreatable(info);
-		boolean singleCol = contributableCollections.size() == 1;
+    List<ItemDefinition> contributableCollections = enumerateCreatable(info);
+    boolean singleCol = contributableCollections.size() == 1;
 
-		if( singleCol )
-		{
-			List<FederatedSearch> fedSearches = federatedSearchService
-				.getForCollectionUuid(contributableCollections.get(0).getUuid());
-			boolean isFedSearch = false;
-			if( !Check.isEmpty(fedSearches) )
-			{
-				for( FederatedSearch federatedSearch : fedSearches )
-				{
-					if( !federatedSearch.isDisabled() )
-					{
-						isFedSearch = true;
-						break;
-					}
-				}
-			}
-			if( !isFedSearch )
-			{
-				return false;
-			}
-
-		}
-		return true;
-	}
+    if (singleCol) {
+      List<FederatedSearch> fedSearches =
+          federatedSearchService.getForCollectionUuid(contributableCollections.get(0).getUuid());
+      boolean isFedSearch = false;
+      if (!Check.isEmpty(fedSearches)) {
+        for (FederatedSearch federatedSearch : fedSearches) {
+          if (!federatedSearch.isDisabled()) {
+            isFedSearch = true;
+            break;
+          }
+        }
+      }
+      if (!isFedSearch) {
+        return false;
+      }
+    }
+    return true;
+  }
 }

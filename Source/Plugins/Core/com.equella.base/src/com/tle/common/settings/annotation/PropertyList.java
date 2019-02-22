@@ -20,9 +20,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PropertyList
-{
-	String key();
+public @interface PropertyList {
+  String key();
 
-	Class<?> type() default String.class;
+  Class<?> type() default String.class;
 }

@@ -16,118 +16,101 @@
 
 package com.tle.core.connectors.brightspace.beans;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @XmlRootElement
-public class MyOrgUnitInfo
-{
-	@JsonProperty("OrgUnit")
-	private OrgUnitInfo orgUnit;
-	@JsonProperty("Access")
-	private Access access;
+public class MyOrgUnitInfo {
+  @JsonProperty("OrgUnit")
+  private OrgUnitInfo orgUnit;
 
-	public OrgUnitInfo getOrgUnit()
-	{
-		return orgUnit;
-	}
+  @JsonProperty("Access")
+  private Access access;
 
-	public void setOrgUnit(OrgUnitInfo orgUnit)
-	{
-		this.orgUnit = orgUnit;
-	}
+  public OrgUnitInfo getOrgUnit() {
+    return orgUnit;
+  }
 
-	public Access getAccess()
-	{
-		return access;
-	}
+  public void setOrgUnit(OrgUnitInfo orgUnit) {
+    this.orgUnit = orgUnit;
+  }
 
-	public void setAccess(Access access)
-	{
-		this.access = access;
-	}
+  public Access getAccess() {
+    return access;
+  }
 
-	@XmlRootElement
-	public static class Access
-	{
-		@JsonProperty("IsActive")
-		private boolean isActive;
-		@JsonProperty("StartDate")
-		private String startDate;
-		@JsonProperty("EndDate")
-		private String endDate;
-		@JsonProperty("CanAccess")
-		private boolean canAccess;
-		@JsonProperty("ClasslistRoleName")
-		private String classlistRoleName;
-		@JsonProperty("LISRoles")
-		private List<String> lisRoles;
+  public void setAccess(Access access) {
+    this.access = access;
+  }
 
-		public boolean isActive()
-		{
-			return isActive;
-		}
+  @XmlRootElement
+  public static class Access {
+    @JsonProperty("IsActive")
+    private boolean isActive;
 
-		public void setActive(boolean isActive)
-		{
-			this.isActive = isActive;
-		}
+    @JsonProperty("StartDate")
+    private String startDate;
 
-		public String getStartDate()
-		{
-			return startDate;
-		}
+    @JsonProperty("EndDate")
+    private String endDate;
 
-		public void setStartDate(String startDate)
-		{
-			this.startDate = startDate;
-		}
+    @JsonProperty("CanAccess")
+    private boolean canAccess;
 
-		public String getEndDate()
-		{
-			return endDate;
-		}
+    @JsonProperty("ClasslistRoleName")
+    private String classlistRoleName;
 
-		public void setEndDate(String endDate)
-		{
-			this.endDate = endDate;
-		}
+    @JsonProperty("LISRoles")
+    private List<String> lisRoles;
 
-		public boolean isCanAccess()
-		{
-			return canAccess;
-		}
+    public boolean isActive() {
+      return isActive;
+    }
 
-		public void setCanAccess(boolean canAccess)
-		{
-			this.canAccess = canAccess;
-		}
+    public void setActive(boolean isActive) {
+      this.isActive = isActive;
+    }
 
-		public String getClasslistRoleName()
-		{
-			return classlistRoleName;
-		}
+    public String getStartDate() {
+      return startDate;
+    }
 
-		public void setClasslistRoleName(String classlistRoleName)
-		{
-			this.classlistRoleName = classlistRoleName;
-		}
+    public void setStartDate(String startDate) {
+      this.startDate = startDate;
+    }
 
-		public List<String> getLisRoles()
-		{
-			return lisRoles;
-		}
+    public String getEndDate() {
+      return endDate;
+    }
 
-		public void setLisRoles(List<String> lisRoles)
-		{
-			this.lisRoles = lisRoles;
-		}
-	}
+    public void setEndDate(String endDate) {
+      this.endDate = endDate;
+    }
+
+    public boolean isCanAccess() {
+      return canAccess;
+    }
+
+    public void setCanAccess(boolean canAccess) {
+      this.canAccess = canAccess;
+    }
+
+    public String getClasslistRoleName() {
+      return classlistRoleName;
+    }
+
+    public void setClasslistRoleName(String classlistRoleName) {
+      this.classlistRoleName = classlistRoleName;
+    }
+
+    public List<String> getLisRoles() {
+      return lisRoles;
+    }
+
+    public void setLisRoles(List<String> lisRoles) {
+      this.lisRoles = lisRoles;
+    }
+  }
 }

@@ -16,25 +16,20 @@
 
 package com.tle.core.notification.standard.institution;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.beans.item.Item;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.dao.ItemDaoExtension;
 import com.tle.core.notification.dao.NotificationDao;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class NotificationItemDao implements ItemDaoExtension
-{
-	@Inject
-	private NotificationDao dao;
+public class NotificationItemDao implements ItemDaoExtension {
+  @Inject private NotificationDao dao;
 
-	@Override
-	public void delete(Item item)
-	{
-		dao.deleteAllForItem(item.getItemId());
-	}
-
+  @Override
+  public void delete(Item item) {
+    dao.deleteAllForItem(item.getItemId());
+  }
 }

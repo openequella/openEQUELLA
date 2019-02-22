@@ -18,20 +18,13 @@ package com.tle.common.scripting.types;
 
 import com.tle.common.usermanagement.user.valuebean.RoleBean;
 
-/**
- * Role object for usage in scripts
- */
-public interface RoleScriptType extends RoleBean
-{
-	/**
-	 * @return A unique, unchanging ID for the role
-	 */
-	@Override
-	String getUniqueID();
+/** Role object for usage in scripts */
+public interface RoleScriptType extends RoleBean {
+  /** @return A unique, unchanging ID for the role */
+  @Override
+  String getUniqueID();
 
-	/**
-	 * @return The name of the role
-	 */
-	@Override
-	String getName();
+  /** @return The name of the role */
+  @Override
+  String getName();
 }

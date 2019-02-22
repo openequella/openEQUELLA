@@ -21,20 +21,17 @@ import com.tle.common.PathUtils;
 import com.tle.common.institution.CurrentInstitution;
 
 @NonNullByDefault
-public class LanguagesFile extends InstitutionFile
-{
-	private static final long serialVersionUID = 1L;
+public class LanguagesFile extends InstitutionFile {
+  private static final long serialVersionUID = 1L;
 
-	private static final String LANGUAGES_FOLDER = "Languages";
+  private static final String LANGUAGES_FOLDER = "Languages";
 
-	public LanguagesFile()
-	{
-		super(CurrentInstitution.get());
-	}
+  public LanguagesFile() {
+    super(CurrentInstitution.get());
+  }
 
-	@Override
-	protected String createAbsolutePath()
-	{
-		return PathUtils.filePath(super.createAbsolutePath(), LANGUAGES_FOLDER);
-	}
+  @Override
+  protected String createAbsolutePath() {
+    return PathUtils.filePath(super.createAbsolutePath(), LANGUAGES_FOLDER);
+  }
 }

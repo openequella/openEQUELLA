@@ -16,18 +16,16 @@
 
 package com.tle.client.harness;
 
+import com.tle.admin.PluginServiceImpl;
 import java.net.URL;
 import java.util.Locale;
 
-import com.tle.admin.PluginServiceImpl;
+public interface HarnessInterface {
+  void start();
 
-public interface HarnessInterface
-{
-	void start();
+  void setLocale(Locale locale);
 
-	void setLocale(Locale locale);
+  void setEndpointURL(URL url);
 
-	void setEndpointURL(URL url);
-
-	void setPluginService(PluginServiceImpl pluginService);
+  void setPluginService(PluginServiceImpl pluginService);
 }

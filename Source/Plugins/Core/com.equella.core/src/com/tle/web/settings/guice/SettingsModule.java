@@ -21,11 +21,11 @@ import com.tle.web.sections.equella.guice.SectionsModule;
 import com.tle.web.settings.section.SettingsSection;
 
 @SuppressWarnings("nls")
-public class SettingsModule extends SectionsModule
-{
-	@Override
-	protected void configure()
-	{
-		bind(Object.class).annotatedWith(Names.named("settingsTree")).toProvider(node(SettingsSection.class));
-	}
+public class SettingsModule extends SectionsModule {
+  @Override
+  protected void configure() {
+    bind(Object.class)
+        .annotatedWith(Names.named("settingsTree"))
+        .toProvider(node(SettingsSection.class));
+  }
 }

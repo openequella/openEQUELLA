@@ -16,11 +16,6 @@
 
 package com.tle.web.connectors.migration;
 
-import java.io.IOException;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.beans.security.AccessEntry;
 import com.tle.beans.security.AccessExpression;
 import com.tle.common.connectors.ConnectorConstants;
@@ -30,28 +25,28 @@ import com.tle.core.dao.AccessExpressionDao;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.PostReadMigrator;
 import com.tle.core.security.convert.AclConverter.AclPostReadMigratorParams;
+import java.io.IOException;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class AddPushToLMSACLPostMigrator implements PostReadMigrator<AclPostReadMigratorParams>
-{
-	@Inject
-	private AccessExpressionDao accessExpressionDao;
+public class AddPushToLMSACLPostMigrator implements PostReadMigrator<AclPostReadMigratorParams> {
+  @Inject private AccessExpressionDao accessExpressionDao;
 
-	@Override
-	public void migrate(AclPostReadMigratorParams list) throws IOException
-	{
-		final AccessExpression everyone = accessExpressionDao
-			.retrieveOrCreate(SecurityConstants.getRecipient(Recipient.EVERYONE));
-		AccessEntry newEntry = new AccessEntry();
-		newEntry.setGrantRevoke(SecurityConstants.GRANT);
-		newEntry.setPrivilege(ConnectorConstants.PRIV_EXPORT_TO_LMS_ITEM);
-		newEntry.setTargetObject(SecurityConstants.TARGET_EVERYTHING);
-		newEntry.setAclPriority(-SecurityConstants.PRIORITY_ALL_COLLECTIONS);
-		newEntry.setAclOrder(0);
-		newEntry.setExpression(everyone);
-		newEntry.generateAggregateOrdering();
+  @Override
+  public void migrate(AclPostReadMigratorParams list) throws IOException {
+    final AccessExpression everyone =
+        accessExpressionDao.retrieveOrCreate(SecurityConstants.getRecipient(Recipient.EVERYONE));
+    AccessEntry newEntry = new AccessEntry();
+    newEntry.setGrantRevoke(SecurityConstants.GRANT);
+    newEntry.setPrivilege(ConnectorConstants.PRIV_EXPORT_TO_LMS_ITEM);
+    newEntry.setTargetObject(SecurityConstants.TARGET_EVERYTHING);
+    newEntry.setAclPriority(-SecurityConstants.PRIORITY_ALL_COLLECTIONS);
+    newEntry.setAclOrder(0);
+    newEntry.setExpression(everyone);
+    newEntry.generateAggregateOrdering();
 
-		list.addAdditionalEntry(newEntry);
-	}
+    list.addAdditionalEntry(newEntry);
+  }
 }

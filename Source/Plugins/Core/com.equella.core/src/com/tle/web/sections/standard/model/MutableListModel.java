@@ -16,91 +16,76 @@
 
 package com.tle.web.sections.standard.model;
 
+import com.tle.annotation.NonNullByDefault;
+import com.tle.web.sections.SectionInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tle.annotation.NonNullByDefault;
-import com.tle.web.sections.SectionInfo;
-
 @NonNullByDefault
-public abstract class MutableListModel<T> implements HtmlMutableListModel<T>
-{
-	@Override
-	public List<Option<T>> getOptions(SectionInfo info)
-	{
-		List<Option<T>> opts = new ArrayList<Option<T>>();
-		for( String value : getListState(info).values )
-		{
-			T obj = convertStringToObject(info, value);
-			opts.add(convertToOption(info, obj, value));
-		}
-		return opts;
-	}
+public abstract class MutableListModel<T> implements HtmlMutableListModel<T> {
+  @Override
+  public List<Option<T>> getOptions(SectionInfo info) {
+    List<Option<T>> opts = new ArrayList<Option<T>>();
+    for (String value : getListState(info).values) {
+      T obj = convertStringToObject(info, value);
+      opts.add(convertToOption(info, obj, value));
+    }
+    return opts;
+  }
 
-	@Override
-	public List<String> getValues(SectionInfo info)
-	{
-		return getListState(info).values;
-	}
+  @Override
+  public List<String> getValues(SectionInfo info) {
+    return getListState(info).values;
+  }
 
-	public void add(SectionInfo info, String value)
-	{
-		ListState<T> listState = getListState(info);
-		listState.values.add(value);
-	}
+  public void add(SectionInfo info, String value) {
+    ListState<T> listState = getListState(info);
+    listState.values.add(value);
+  }
 
-	public void remove(SectionInfo info, String value)
-	{
-		ListState<T> listState = getListState(info);
-		listState.values.remove(value);
-	}
+  public void remove(SectionInfo info, String value) {
+    ListState<T> listState = getListState(info);
+    listState.values.remove(value);
+  }
 
-	public boolean contains(SectionInfo info, String value)
-	{
-		ListState<T> listState = getListState(info);
-		return listState.values.contains(value);
-	}
+  public boolean contains(SectionInfo info, String value) {
+    ListState<T> listState = getListState(info);
+    return listState.values.contains(value);
+  }
 
-	public void clear(SectionInfo info)
-	{
-		ListState<T> listState = getListState(info);
-		listState.values.clear();
-	}
+  public void clear(SectionInfo info) {
+    ListState<T> listState = getListState(info);
+    listState.values.clear();
+  }
 
-	public boolean isEmpty(SectionInfo info)
-	{
-		ListState<T> listState = getListState(info);
-		return listState.values.isEmpty();
-	}
+  public boolean isEmpty(SectionInfo info) {
+    ListState<T> listState = getListState(info);
+    return listState.values.isEmpty();
+  }
 
-	protected Option<T> convertToOption(SectionInfo info, T obj, String value)
-	{
-		return SimpleHtmlListModel.defaultConvertToOption(obj);
-	}
+  protected Option<T> convertToOption(SectionInfo info, T obj, String value) {
+    return SimpleHtmlListModel.defaultConvertToOption(obj);
+  }
 
-	protected ListState<T> getListState(SectionInfo info)
-	{
-		ListState<T> listState = info.getAttribute(this);
-		if( listState == null )
-		{
-			listState = new ListState<T>();
-			info.setAttribute(this, listState);
-		}
-		return listState;
-	}
+  protected ListState<T> getListState(SectionInfo info) {
+    ListState<T> listState = info.getAttribute(this);
+    if (listState == null) {
+      listState = new ListState<T>();
+      info.setAttribute(this, listState);
+    }
+    return listState;
+  }
 
-	@Override
-	public void setValues(SectionInfo info, List<String> strings)
-	{
-		ListState<T> listState = getListState(info);
-		listState.values.clear();
-		listState.values.addAll(strings);
-	}
+  @Override
+  public void setValues(SectionInfo info, List<String> strings) {
+    ListState<T> listState = getListState(info);
+    listState.values.clear();
+    listState.values.addAll(strings);
+  }
 
-	protected abstract T convertStringToObject(SectionInfo info, String str);
+  protected abstract T convertStringToObject(SectionInfo info, String str);
 
-	protected static class ListState<T>
-	{
-		List<String> values = new ArrayList<String>();
-	}
+  protected static class ListState<T> {
+    List<String> values = new ArrayList<String>();
+  }
 }

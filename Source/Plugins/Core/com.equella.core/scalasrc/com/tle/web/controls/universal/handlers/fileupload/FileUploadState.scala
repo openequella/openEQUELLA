@@ -22,8 +22,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 import scala.collection.JavaConverters._
 
-object FileUploadState
-{
+object FileUploadState {
   val UPLOADS_FOLDER = "_uploads"
 }
 
@@ -33,7 +32,12 @@ class FileUploadState {
   private val currentUploads = new ConcurrentHashMap[UUID, CurrentUpload]().asScala
 
   def initialiseUpload(id: UUID, filename: String, description: String): CurrentUpload = {
-    val newUpload = UploadingFile(id, Instant.now(), filename, s"$UPLOADS_FOLDER/$id/$filename", description, new AtomicReference[Boolean](false))
+    val newUpload = UploadingFile(id,
+                                  Instant.now(),
+                                  filename,
+                                  s"$UPLOADS_FOLDER/$id/$filename",
+                                  description,
+                                  new AtomicReference[Boolean](false))
     currentUploads.put(id, newUpload)
     newUpload
   }
@@ -44,11 +48,12 @@ class FileUploadState {
     }
   }
 
-  def allCurrentUploads : Iterable[CurrentUpload] = currentUploads.values.toBuffer.sortBy((_:CurrentUpload).started)
+  def allCurrentUploads: Iterable[CurrentUpload] =
+    currentUploads.values.toBuffer.sortBy((_: CurrentUpload).started)
 
-  def removeAll(uuids: Iterable[UUID]) : Unit = currentUploads --= uuids
+  def removeAll(uuids: Iterable[UUID]): Unit = currentUploads --= uuids
 
-  def remove(uuid: UUID) : Unit = currentUploads -= uuid
+  def remove(uuid: UUID): Unit = currentUploads -= uuid
 
   def uploadForId(id: UUID): Option[CurrentUpload] = currentUploads.get(id)
 

@@ -30,38 +30,31 @@ import com.tle.web.viewitem.summary.sidebar.actions.GenericMinorActionWithPageSe
 import com.tle.web.viewurl.ItemSectionInfo;
 
 @Bind
-public class FindUsesLinkSection extends GenericMinorActionWithPageSection
-{
-	@PlugKey("link.title")
-	private static Label LINK_LABEL;
+public class FindUsesLinkSection extends GenericMinorActionWithPageSection {
+  @PlugKey("link.title")
+  private static Label LINK_LABEL;
 
-	@TreeLookup
-	private FindUsesContentSection findUsesContentSection;
-	@Inject
-	private ConnectorService connectorService;
+  @TreeLookup private FindUsesContentSection findUsesContentSection;
+  @Inject private ConnectorService connectorService;
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return LINK_LABEL;
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return LINK_LABEL;
+  }
 
-	@Override
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		return !connectorService.listForViewing().isEmpty()
-			&& itemInfo.hasPrivilege(ConnectorConstants.PRIV_FIND_USES_ITEM);
-	}
+  @Override
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    return !connectorService.listForViewing().isEmpty()
+        && itemInfo.hasPrivilege(ConnectorConstants.PRIV_FIND_USES_ITEM);
+  }
 
-	@Override
-	protected SectionId getPageSection()
-	{
-		return findUsesContentSection;
-	}
+  @Override
+  protected SectionId getPageSection() {
+    return findUsesContentSection;
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return LINK_LABEL.getText();
-	}
+  @Override
+  public String getLinkText() {
+    return LINK_LABEL.getText();
+  }
 }

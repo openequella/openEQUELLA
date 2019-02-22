@@ -15,4 +15,3 @@
  */
 
 package com.tle.core.taxonomy.scripting.types;
-

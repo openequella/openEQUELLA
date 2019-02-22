@@ -16,102 +16,84 @@
 
 package com.tle.core.oauth.service;
 
-import java.util.Set;
-
 import com.tle.beans.security.AccessExpression;
 import com.tle.core.entity.EntityEditingBean;
 import com.tle.core.oauth.OAuthFlowDefinition;
+import java.util.Set;
 
-public class OAuthClientEditingBean extends EntityEditingBean
-{
-	private static final long serialVersionUID = 1L;
+public class OAuthClientEditingBean extends EntityEditingBean {
+  private static final long serialVersionUID = 1L;
 
-	private String clientId;
-	private String clientSecret;
-	private String redirectUrl;
-	private Set<String> permissions;
-	private String userId;
-	private boolean requiresApproval;
-	private AccessExpression usersExpression;
-	private OAuthFlowDefinition flowDef;
+  private String clientId;
+  private String clientSecret;
+  private String redirectUrl;
+  private Set<String> permissions;
+  private String userId;
+  private boolean requiresApproval;
+  private AccessExpression usersExpression;
+  private OAuthFlowDefinition flowDef;
 
-	public String getClientId()
-	{
-		return clientId;
-	}
+  public String getClientId() {
+    return clientId;
+  }
 
-	public void setClientId(String clientId)
-	{
-		this.clientId = clientId;
-	}
+  public void setClientId(String clientId) {
+    this.clientId = clientId;
+  }
 
-	public String getClientSecret()
-	{
-		return clientSecret;
-	}
+  public String getClientSecret() {
+    return clientSecret;
+  }
 
-	public void setClientSecret(String clientSecret)
-	{
-		this.clientSecret = clientSecret;
-	}
+  public void setClientSecret(String clientSecret) {
+    this.clientSecret = clientSecret;
+  }
 
-	public String getRedirectUrl()
-	{
-		return redirectUrl;
-	}
+  public String getRedirectUrl() {
+    return redirectUrl;
+  }
 
-	public void setRedirectUrl(String redirectUrl)
-	{
-		this.redirectUrl = redirectUrl;
-	}
+  public void setRedirectUrl(String redirectUrl) {
+    this.redirectUrl = redirectUrl;
+  }
 
-	public Set<String> getPermissions()
-	{
-		return permissions;
-	}
+  public Set<String> getPermissions() {
+    return permissions;
+  }
 
-	public void setPermissions(Set<String> permissions)
-	{
-		this.permissions = permissions;
-	}
+  public void setPermissions(Set<String> permissions) {
+    this.permissions = permissions;
+  }
 
-	public String getUserId()
-	{
-		return userId;
-	}
+  public String getUserId() {
+    return userId;
+  }
 
-	public void setUserId(String userId)
-	{
-		this.userId = userId;
-	}
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
 
-	public boolean isRequiresApproval()
-	{
-		return requiresApproval;
-	}
+  public boolean isRequiresApproval() {
+    return requiresApproval;
+  }
 
-	public void setRequiresApproval(boolean requiresApproval)
-	{
-		this.requiresApproval = requiresApproval;
-	}
+  public void setRequiresApproval(boolean requiresApproval) {
+    this.requiresApproval = requiresApproval;
+  }
 
-	public AccessExpression getUsersExpression()
-	{
-		return usersExpression;
-	}
+  public AccessExpression getUsersExpression() {
+    return usersExpression;
+  }
 
-	public void setUsersExpression(AccessExpression usersExpression)
-	{
-		this.usersExpression = usersExpression;
-	}
+  public void setUsersExpression(AccessExpression usersExpression) {
+    this.usersExpression = usersExpression;
+  }
 
-	public OAuthFlowDefinition getFlowDef()
-	{
-		return flowDef;
-	}
+  public OAuthFlowDefinition getFlowDef() {
+    return flowDef;
+  }
 
-	public void setFlowDef(OAuthFlowDefinition flowDef)
-	{
-		this.flowDef = flowDef;
-	}
+  public void setFlowDef(OAuthFlowDefinition flowDef) {
+    this.flowDef = flowDef;
+  }
 }

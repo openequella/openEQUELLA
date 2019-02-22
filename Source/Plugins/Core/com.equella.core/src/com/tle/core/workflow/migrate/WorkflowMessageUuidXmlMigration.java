@@ -16,37 +16,31 @@
 
 package com.tle.core.workflow.migrate;
 
-import java.util.Iterator;
-import java.util.UUID;
-
-import javax.inject.Singleton;
-
 import com.dytech.devlib.PropBagEx;
-import com.tle.common.Check;
 import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.AbstractItemXmlMigrator;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.xml.XmlDocument;
+import java.util.UUID;
+import javax.inject.Singleton;
 import org.w3c.dom.Node;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class WorkflowMessageUuidXmlMigration extends AbstractItemXmlMigrator
-{
-	@Override
-	public boolean migrate(ConverterParams params, PropBagEx xml, SubTemporaryFile file, String filename)
-		throws Exception
-	{
-		XmlDocument xpathDoc = new XmlDocument(xml.getRootElement().getOwnerDocument());
-		XmlDocument.NodeListIterable messages =
-				xpathDoc.nodeList("//com.tle.common.workflow.WorkflowMessage[count(uuid) = 0]");
+public class WorkflowMessageUuidXmlMigration extends AbstractItemXmlMigrator {
+  @Override
+  public boolean migrate(
+      ConverterParams params, PropBagEx xml, SubTemporaryFile file, String filename)
+      throws Exception {
+    XmlDocument xpathDoc = new XmlDocument(xml.getRootElement().getOwnerDocument());
+    XmlDocument.NodeListIterable messages =
+        xpathDoc.nodeList("//com.tle.common.workflow.WorkflowMessage[count(uuid) = 0]");
 
-		for (Node msg : messages)
-		{
-		    xpathDoc.createNode(msg, "uuid").setTextContent(UUID.randomUUID().toString());
-    	}
-		return messages.size() > 0;
-	}
+    for (Node msg : messages) {
+      xpathDoc.createNode(msg, "uuid").setTextContent(UUID.randomUUID().toString());
+    }
+    return messages.size() > 0;
+  }
 }

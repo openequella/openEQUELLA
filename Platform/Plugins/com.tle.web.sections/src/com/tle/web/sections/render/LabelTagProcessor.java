@@ -16,43 +16,35 @@
 
 package com.tle.web.sections.render;
 
-import java.util.Map;
-
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.events.PreRenderContext;
+import java.util.Map;
 
-public class LabelTagProcessor implements TagProcessor
-{
-	private final String attribute;
-	private final Label label;
+public class LabelTagProcessor implements TagProcessor {
+  private final String attribute;
+  private final Label label;
 
-	public LabelTagProcessor(String attribute, Label label)
-	{
-		this.attribute = attribute;
-		this.label = label;
-	}
+  public LabelTagProcessor(String attribute, Label label) {
+    this.attribute = attribute;
+    this.label = label;
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		// nothing
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    // nothing
+  }
 
-	@Override
-	public void processAttributes(SectionWriter writer, Map<String, String> attrs)
-	{
-		Label l = getLabel();
-		attrs.put(getAttribute(), l.getText());
-	}
+  @Override
+  public void processAttributes(SectionWriter writer, Map<String, String> attrs) {
+    Label l = getLabel();
+    attrs.put(getAttribute(), l.getText());
+  }
 
-	public String getAttribute()
-	{
-		return attribute;
-	}
+  public String getAttribute() {
+    return attribute;
+  }
 
-	public Label getLabel()
-	{
-		return label;
-	}
-
+  public Label getLabel() {
+    return label;
+  }
 }

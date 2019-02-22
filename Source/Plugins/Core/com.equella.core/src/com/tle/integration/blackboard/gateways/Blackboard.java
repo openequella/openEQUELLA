@@ -16,6 +16,13 @@
 
 package com.tle.integration.blackboard.gateways;
 
+import com.dytech.devlib.Md5;
+import com.dytech.devlib.PropBagEx;
+import com.dytech.edge.common.Constants;
+import com.tle.common.Check;
+import com.tle.common.NameValue;
+import com.tle.common.util.BlindSSLSocketFactory;
+import com.tle.integration.blackboard.BlackBoardSessionData;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,200 +34,168 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.dytech.devlib.Md5;
-import com.dytech.devlib.PropBagEx;
-import com.dytech.edge.common.Constants;
-import com.tle.common.Check;
-import com.tle.common.NameValue;
-import com.tle.common.util.BlindSSLSocketFactory;
-import com.tle.integration.blackboard.BlackBoardSessionData;
+/** @author cofarrel */
+public class Blackboard {
+  private static final int TIMEOUT = 60 * 1000;
+  private static final Log LOGGER = LogFactory.getLog(Blackboard.class);
+  protected static final int PASS_LENGTH = 32;
 
-/**
- * @author cofarrel
- */
-public class Blackboard
-{
-	private static final int TIMEOUT = 60 * 1000;
-	private static final Log LOGGER = LogFactory.getLog(Blackboard.class);
-	protected static final int PASS_LENGTH = 32;
+  protected URL url = null;
 
-	protected URL url = null;
+  public boolean isConfigured() {
+    return url != null;
+  }
 
-	public boolean isConfigured()
-	{
-		return url != null;
-	}
+  public void setURL(URL url) {
+    LOGGER.info("Blackboard URL is " + url);
+    this.url = url;
+  }
 
-	public void setURL(URL url)
-	{
-		LOGGER.info("Blackboard URL is " + url);
-		this.url = url;
-	}
+  protected Collection<NameValue> convertParameters(NameValue[] parameters) {
+    return Arrays.asList(parameters);
+  }
 
-	protected Collection<NameValue> convertParameters(NameValue[] parameters)
-	{
-		return Arrays.asList(parameters);
-	}
+  protected String getEncodedPassword(String pass) {
+    Md5 digest = new Md5(pass);
+    return digest.getStringDigest().toUpperCase();
+  }
 
-	protected String getEncodedPassword(String pass)
-	{
-		Md5 digest = new Md5(pass);
-		return digest.getStringDigest().toUpperCase();
-	}
+  protected String encode(String unenc) {
+    try {
+      unenc = URLEncoder.encode(unenc, Constants.UTF8);
+    } catch (Exception e) {
+      // Never happen
+    }
+    return unenc;
+  }
 
-	protected String encode(String unenc)
-	{
-		try
-		{
-			unenc = URLEncoder.encode(unenc, Constants.UTF8);
-		}
-		catch( Exception e )
-		{
-			// Never happen
-		}
-		return unenc;
-	}
+  public PropBagEx invoke(BlackBoardSessionData data, String name, Collection<NameValue> parameters)
+      throws IOException {
+    return invoke(data, "Facade", name, parameters); // $NON-NLS-1$
+  }
 
-	public PropBagEx invoke(BlackBoardSessionData data, String name, Collection<NameValue> parameters)
-		throws IOException
-	{
-		return invoke(data, "Facade", name, parameters); //$NON-NLS-1$
-	}
+  public PropBagEx invoke(
+      BlackBoardSessionData data, String servlet, String name, Collection<NameValue> parameters)
+      throws IOException {
+    long startTime = System.currentTimeMillis();
 
-	public PropBagEx invoke(BlackBoardSessionData data, String servlet, String name, Collection<NameValue> parameters)
-		throws IOException
-	{
-		long startTime = System.currentTimeMillis();
+    BlindSSLSocketFactory.register();
 
-		BlindSSLSocketFactory.register();
+    // Setup URLConnection to appropriate servlet/jsp
+    URLConnection con = new URL(this.url, servlet).openConnection();
 
-		// Setup URLConnection to appropriate servlet/jsp
-		URLConnection con = new URL(this.url, servlet).openConnection();
+    con.setConnectTimeout(TIMEOUT);
+    con.setReadTimeout(TIMEOUT);
 
-		con.setConnectTimeout(TIMEOUT);
-		con.setReadTimeout(TIMEOUT);
+    con.setDoInput(true);
+    con.setDoOutput(true);
 
-		con.setDoInput(true);
-		con.setDoOutput(true);
+    String token = data.getBlackBoardSession();
+    // BB7 contains '@@'
+    final int expectedTokenLength = PASS_LENGTH + (token.startsWith("@@") ? 2 : 0);
+    if (token.length() == expectedTokenLength) {
+      con.setRequestProperty("Cookie", "session_id=" /* @@" */ + token + ";");
+    }
 
-		String token = data.getBlackBoardSession();
-		// BB7 contains '@@'
-		final int expectedTokenLength = PASS_LENGTH + (token.startsWith("@@") ? 2 : 0);
-		if( token.length() == expectedTokenLength )
-		{
-			con.setRequestProperty("Cookie", "session_id=" /* @@" */+ token + ";");
-		}
+    // Open output stream and send username and password
+    PrintWriter conout = new PrintWriter(con.getOutputStream());
+    StringBuilder out = new StringBuilder();
+    out.append("method=" + name + "&");
 
-		// Open output stream and send username and password
-		PrintWriter conout = new PrintWriter(con.getOutputStream());
-		StringBuilder out = new StringBuilder();
-		out.append("method=" + name + "&");
+    if (parameters != null) {
+      for (NameValue pair : parameters) {
+        out.append(pair.getValue() + "=" + encode(pair.getName()) + "&");
+      }
+    }
 
-		if( parameters != null )
-		{
-			for( NameValue pair : parameters )
-			{
-				out.append(pair.getValue() + "=" + encode(pair.getName()) + "&");
-			}
-		}
+    conout.print(out.toString());
+    conout.close();
 
-		conout.print(out.toString());
-		conout.close();
+    InputStream in = con.getInputStream();
 
-		InputStream in = con.getInputStream();
+    PropBagEx xml = parseInputStream(in);
+    String cookie = con.getHeaderField("Set-Cookie");
+    if (cookie == null) {
+      Map<String, List<String>> headerFields = con.getHeaderFields();
+      if (headerFields != null && !Check.isEmpty(headerFields.get("Set-Cookie"))) {
+        cookie = headerFields.get("Set-Cookie").get(0);
+      }
+    }
 
-		PropBagEx xml = parseInputStream(in);
-		String cookie = con.getHeaderField("Set-Cookie");
-		if( cookie == null )
-		{
-			Map<String, List<String>> headerFields = con.getHeaderFields();
-			if( headerFields != null && !Check.isEmpty(headerFields.get("Set-Cookie")) )
-			{
-				cookie = headerFields.get("Set-Cookie").get(0);
-			}
-		}
+    xml.setNode("cookie", cookie);
 
-		xml.setNode("cookie", cookie);
+    in.close();
 
-		in.close();
+    int buildingBlockDuration = xml.getIntNode("@invocationDuration", -1);
+    int thisMethodDuration = (int) ((System.currentTimeMillis() - startTime) / 1000);
 
-		int buildingBlockDuration = xml.getIntNode("@invocationDuration", -1);
-		int thisMethodDuration = (int) ((System.currentTimeMillis() - startTime) / 1000);
+    StringBuilder sb = new StringBuilder("URL request from EQUELLA to Blackboard took ");
+    sb.append(thisMethodDuration);
+    sb.append(" second(s), where ");
+    sb.append(buildingBlockDuration);
+    sb.append(" second(s) where spent in the Building Block");
 
-		StringBuilder sb = new StringBuilder("URL request from EQUELLA to Blackboard took ");
-		sb.append(thisMethodDuration);
-		sb.append(" second(s), where ");
-		sb.append(buildingBlockDuration);
-		sb.append(" second(s) where spent in the Building Block");
+    LOGGER.info(sb.toString());
 
-		LOGGER.info(sb.toString());
+    return xml;
+  }
 
-		return xml;
-	}
+  /**
+   * Parses inputstream into a PropBagEx and catches any standard errors that may be contained in
+   * the response from the server.
+   */
+  protected PropBagEx parseInputStream(InputStream in) throws IOException {
+    PropBagEx propBag;
+    try {
+      // Open input stream and receive list of course information
+      propBag = new PropBagEx(in);
+    } catch (Exception e) {
+      throw new IOException("Server could not be reached");
+    }
 
-	/**
-	 * Parses inputstream into a PropBagEx and catches any standard errors that
-	 * may be contained in the response from the server.
-	 */
-	protected PropBagEx parseInputStream(InputStream in) throws IOException
-	{
-		PropBagEx propBag;
-		try
-		{
-			// Open input stream and receive list of course information
-			propBag = new PropBagEx(in);
-		}
-		catch( Exception e )
-		{
-			throw new IOException("Server could not be reached");
-		}
+    String error = propBag.getNode("error/@type");
+    if (!error.equals("")) {
+      // Error message generated by server can also be retrieved
+      switch (Integer.parseInt(error)) {
+        case 0:
+          throw new SecurityException("Username/password incorrect");
+        case 1:
+          throw new IOException(
+              "An error occurred on the Blackboard server: "
+                  + propBag.getNode("error/@message")
+                  + "\nStack trace: "
+                  + propBag.getNode("error"));
+        case 2:
+          throw new FileNotFoundException("File already exists");
+      }
+    }
+    return propBag;
+  }
 
-		String error = propBag.getNode("error/@type");
-		if( !error.equals("") )
-		{
-			// Error message generated by server can also be retrieved
-			switch( Integer.parseInt(error) )
-			{
-				case 0:
-					throw new SecurityException("Username/password incorrect");
-				case 1:
-					throw new IOException("An error occurred on the Blackboard server: "
-						+ propBag.getNode("error/@message") + "\nStack trace: " + propBag.getNode("error"));
-				case 2:
-					throw new FileNotFoundException("File already exists");
-			}
-		}
-		return propBag;
-	}
-
-	protected String ent(String string)
-	{
-		StringBuilder szOut = new StringBuilder();
-		for( int i = 0; i < string.length(); i++ )
-		{
-			char ch = string.charAt(i);
-			switch( ch )
-			{
-				case '<':
-					szOut.append("&lt;");
-					break;
-				case '>':
-					szOut.append("&gt;");
-					break;
-				case '&':
-					szOut.append("&amp;");
-					break;
-				case '"':
-					szOut.append("&quot;");
-					break;
-				default:
-					szOut.append(ch);
-			}
-		}
-		return szOut.toString();
-	}
+  protected String ent(String string) {
+    StringBuilder szOut = new StringBuilder();
+    for (int i = 0; i < string.length(); i++) {
+      char ch = string.charAt(i);
+      switch (ch) {
+        case '<':
+          szOut.append("&lt;");
+          break;
+        case '>':
+          szOut.append("&gt;");
+          break;
+        case '&':
+          szOut.append("&amp;");
+          break;
+        case '"':
+          szOut.append("&quot;");
+          break;
+        default:
+          szOut.append(ch);
+      }
+    }
+    return szOut.toString();
+  }
 }

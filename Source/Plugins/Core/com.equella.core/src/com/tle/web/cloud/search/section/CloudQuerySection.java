@@ -22,12 +22,10 @@ import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.events.RenderEventContext;
 
 @SuppressWarnings("nls")
-public class CloudQuerySection extends SimpleResetFiltersQuerySection<CloudSearchEvent>
-{
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		renderQueryActions(context, getModel(context));
-		return viewFactory.createResult("cloudquery.ftl", this);
-	}
+public class CloudQuerySection extends SimpleResetFiltersQuerySection<CloudSearchEvent> {
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    renderQueryActions(context, getModel(context));
+    return viewFactory.createResult("cloudquery.ftl", this);
+  }
 }

@@ -20,25 +20,20 @@ import com.tle.common.htmleditor.beans.HtmlEditorPlugin;
 import com.tle.core.entity.event.BaseEntityReferencesEvent;
 
 public class HtmlEditorPluginReferencesEvent
-	extends
-		BaseEntityReferencesEvent<HtmlEditorPlugin, HtmlEditorPluginReferencesListener>
-{
-	private static final long serialVersionUID = 1L;
+    extends BaseEntityReferencesEvent<HtmlEditorPlugin, HtmlEditorPluginReferencesListener> {
+  private static final long serialVersionUID = 1L;
 
-	public HtmlEditorPluginReferencesEvent(HtmlEditorPlugin client)
-	{
-		super(client);
-	}
+  public HtmlEditorPluginReferencesEvent(HtmlEditorPlugin client) {
+    super(client);
+  }
 
-	@Override
-	public Class<HtmlEditorPluginReferencesListener> getListener()
-	{
-		return HtmlEditorPluginReferencesListener.class;
-	}
+  @Override
+  public Class<HtmlEditorPluginReferencesListener> getListener() {
+    return HtmlEditorPluginReferencesListener.class;
+  }
 
-	@Override
-	public void postEvent(HtmlEditorPluginReferencesListener listener)
-	{
-		listener.addHtmlEditorPluginReferencingClasses(entity, referencingClasses);
-	}
+  @Override
+  public void postEvent(HtmlEditorPluginReferencesListener listener) {
+    listener.addHtmlEditorPluginReferencingClasses(entity, referencingClasses);
+  }
 }

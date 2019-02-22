@@ -24,8 +24,8 @@ import io.doolse.simpledba.syntax._
 trait DBSchemaMigration {
 
   type C[A] <: JDBCColumn
-  def config : JDBCSQLConfig[C]
-  def schemaSQL : JDBCSchemaSQL
+  def config: JDBCSQLConfig[C]
+  def schemaSQL: JDBCSchemaSQL
 
   def withSQLLog(progress: MigrationResult): JDBCConfig = {
     config.withPrepareLogger(sql => progress.addLogEntry(new MigrationStatusLog(sql, false)))

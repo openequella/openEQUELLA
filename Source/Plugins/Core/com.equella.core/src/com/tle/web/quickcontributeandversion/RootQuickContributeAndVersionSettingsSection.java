@@ -16,12 +16,6 @@
 
 package com.tle.web.quickcontributeandversion;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.VersionSelection;
 import com.tle.common.Check;
@@ -53,198 +47,187 @@ import com.tle.web.sections.standard.model.SimpleHtmlListModel;
 import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.inject.Inject;
 
-/**
- * @author larry
- */
+/** @author larry */
 @SuppressWarnings("nls")
 public class RootQuickContributeAndVersionSettingsSection
-	extends
-		OneColumnLayout<RootQuickContributeAndVersionSettingsSection.QuickContributeAndVersionSettingsModel>
-{
-	@PlugKey("quickcontributeandversionsettings.title")
-	private static Label TITLE_LABEL;
-	@PlugKey("quickcontribute.settings.save.receipt")
-	private static Label SAVE_RECEIPT_LABEL;
-	@PlugKey("quickcontributeandversionsettings.none")
-	private static String NO_COLLECTION_KEY;
-	@PlugKey("quickcontributeandversionsettings.forcecurrent")
-	private static String FORCE_CURRENT_KEY;
-	@PlugKey("quickcontributeandversionsettings.forcelatest")
-	private static String FORCE_LATEST_KEY;
-	@PlugKey("quickcontributeandversionsettings.defaultcurrent")
-	private static String DEFAULT_CURRENT_KEY;
-	@PlugKey("quickcontributeandversionsettings.defaultlatest")
-	private static String DEFAULT_LATEST_KEY;
+    extends OneColumnLayout<
+        RootQuickContributeAndVersionSettingsSection.QuickContributeAndVersionSettingsModel> {
+  @PlugKey("quickcontributeandversionsettings.title")
+  private static Label TITLE_LABEL;
 
-	@Component(name = "fins")
-	private SingleSelectionList<NameValue> collectionSelector;
-	@Component
-	private SingleSelectionList<NameValue> versionViewOptions;
+  @PlugKey("quickcontribute.settings.save.receipt")
+  private static Label SAVE_RECEIPT_LABEL;
 
-	@Component(name = "e", stateful = false)
-	@PlugKey("selectionsettings.disablebutton.label")
-	private Checkbox disable;
-	@Component
-	@PlugKey("settings.save.button")
-	private Button saveButton;
+  @PlugKey("quickcontributeandversionsettings.none")
+  private static String NO_COLLECTION_KEY;
 
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("quickcontributeandversionsettings.forcecurrent")
+  private static String FORCE_CURRENT_KEY;
 
-	@Inject
-	private QuickContributeAndVersionSettingsPrivilegeTreeProvider securityProvider;
-	@Inject
-	private ConfigurationService configService;
-	@Inject
-	private ItemDefinitionService itemDefinitionService;
-	@Inject
-	private BundleCache bundleCache;
-	@Inject
-	private ReceiptService receiptService;
+  @PlugKey("quickcontributeandversionsettings.forcelatest")
+  private static String FORCE_LATEST_KEY;
 
-	@Override
-	protected TemplateResult setupTemplate(RenderEventContext info)
-	{
-		securityProvider.checkAuthorised();
-		// Get the currently store one click collection, if any
-		QuickContributeAndVersionSettings settings = configService
-			.getProperties(new QuickContributeAndVersionSettings());
-		String existingSelectedUuid = settings.getOneClickCollection();
-		collectionSelector.setSelectedStringValue(info, existingSelectedUuid);
+  @PlugKey("quickcontributeandversionsettings.defaultcurrent")
+  private static String DEFAULT_CURRENT_KEY;
 
-		VersionSelection currentVersionSelection = settings.getVersionSelection();
-		if( currentVersionSelection != null )
-		{
-			versionViewOptions.setSelectedStringValue(info, currentVersionSelection.toString());
-		}
+  @PlugKey("quickcontributeandversionsettings.defaultlatest")
+  private static String DEFAULT_LATEST_KEY;
 
-		disable.setChecked(info, settings.isButtonDisable());
+  @Component(name = "fins")
+  private SingleSelectionList<NameValue> collectionSelector;
 
-		return new GenericTemplateResult(
-			viewFactory.createNamedResult(BODY, "quickcontributeandversionsettings.ftl", this));
-	}
+  @Component private SingleSelectionList<NameValue> versionViewOptions;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Component(name = "e", stateful = false)
+  @PlugKey("selectionsettings.disablebutton.label")
+  private Checkbox disable;
 
-		collectionSelector.setListModel(new DynamicHtmlListModel<NameValue>()
-		{
-			@Override
-			protected Iterable<NameValue> populateModel(SectionInfo info)
-			{
-				final List<NameValue> populateMe = new ArrayList<NameValue>();
-				List<ItemDefinition> allCollections = itemDefinitionService.enumerate();
-				for( ItemDefinition itemDef : allCollections )
-				{
-					populateMe.add(new BundleNameValue(itemDef.getName(), itemDef.getUuid(), bundleCache));
-				}
-				Collections.sort(populateMe, Format.NAME_VALUE_COMPARATOR);
-				populateMe.add(0, new BundleNameValue(NO_COLLECTION_KEY, null));
-				collectionSelector.getState(info).setDisallowMultiple(true);
-				return populateMe;
-			}
-		});
+  @Component
+  @PlugKey("settings.save.button")
+  private Button saveButton;
 
-		SimpleHtmlListModel<NameValue> versionOptions = new SimpleHtmlListModel<NameValue>(
-			new BundleNameValue(FORCE_CURRENT_KEY, VersionSelection.FORCE_CURRENT.toString()),
-			new BundleNameValue(FORCE_LATEST_KEY, VersionSelection.FORCE_LATEST.toString()),
-			new BundleNameValue(DEFAULT_CURRENT_KEY, VersionSelection.DEFAULT_TO_CURRENT.toString()),
-			new BundleNameValue(DEFAULT_LATEST_KEY, VersionSelection.DEFAULT_TO_LATEST.toString()));
-		versionViewOptions.setListModel(versionOptions);
-		versionViewOptions.setAlwaysSelect(true);
+  @EventFactory private EventGenerator events;
 
-		saveButton.setClickHandler(events.getNamedHandler("save"));
-	}
+  @Inject private QuickContributeAndVersionSettingsPrivilegeTreeProvider securityProvider;
+  @Inject private ConfigurationService configService;
+  @Inject private ItemDefinitionService itemDefinitionService;
+  @Inject private BundleCache bundleCache;
+  @Inject private ReceiptService receiptService;
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		decorations.setTitle(TITLE_LABEL);
-		crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
-	}
+  @Override
+  protected TemplateResult setupTemplate(RenderEventContext info) {
+    securityProvider.checkAuthorised();
+    // Get the currently store one click collection, if any
+    QuickContributeAndVersionSettings settings =
+        configService.getProperties(new QuickContributeAndVersionSettings());
+    String existingSelectedUuid = settings.getOneClickCollection();
+    collectionSelector.setSelectedStringValue(info, existingSelectedUuid);
 
-	public SingleSelectionList<NameValue> getCollectionSelector()
-	{
-		return collectionSelector;
-	}
+    VersionSelection currentVersionSelection = settings.getVersionSelection();
+    if (currentVersionSelection != null) {
+      versionViewOptions.setSelectedStringValue(info, currentVersionSelection.toString());
+    }
 
-	@EventHandlerMethod
-	public void save(SectionInfo info)
-	{
-		boolean altered = false;
-		QuickContributeAndVersionSettings settings = configService
-			.getProperties(new QuickContributeAndVersionSettings());
-		String existingSelectedUuid = settings.getOneClickCollection();
-		NameValue selectedNV = collectionSelector.getSelectedValue(info);
-		String selectedNVUuid = selectedNV != null ? selectedNV.getValue() : null;
-		if( !(Check.isEmpty(existingSelectedUuid) && Check.isEmpty(selectedNVUuid)) )
-		{
-			if( existingSelectedUuid == null )
-			{
-				existingSelectedUuid = "";
-			}
-			if( !existingSelectedUuid.equals(selectedNVUuid) )
-			{
-				altered |= true;
-				settings.setOneClickCollection(selectedNVUuid);
-			}
-		}
+    disable.setChecked(info, settings.isButtonDisable());
 
-		NameValue selectedVersionSelectionNV = versionViewOptions.getSelectedValue(info);
-		VersionSelection oldVersionSelection = settings.getVersionSelection();
-		String oldVersionSelectAsString = oldVersionSelection != null ? oldVersionSelection.toString() : "";
-		String newVersionSelectAsString = selectedVersionSelectionNV != null
-			&& !Check.isEmpty(selectedVersionSelectionNV.getValue()) ? selectedVersionSelectionNV.getValue() : "";
+    return new GenericTemplateResult(
+        viewFactory.createNamedResult(BODY, "quickcontributeandversionsettings.ftl", this));
+  }
 
-		if( !oldVersionSelectAsString.equals(newVersionSelectAsString) )
-		{
-			altered |= true;
-			settings.setVersionSelection(VersionSelection.valueOf(newVersionSelectAsString));
-		}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		boolean buttonDisable = settings.isButtonDisable();
-		if( !disable.isChecked(info) == buttonDisable )
-		{
-			altered |= true;
-			settings.setButtonDisable(disable.isChecked(info));
-		}
+    collectionSelector.setListModel(
+        new DynamicHtmlListModel<NameValue>() {
+          @Override
+          protected Iterable<NameValue> populateModel(SectionInfo info) {
+            final List<NameValue> populateMe = new ArrayList<NameValue>();
+            List<ItemDefinition> allCollections = itemDefinitionService.enumerate();
+            for (ItemDefinition itemDef : allCollections) {
+              populateMe.add(
+                  new BundleNameValue(itemDef.getName(), itemDef.getUuid(), bundleCache));
+            }
+            Collections.sort(populateMe, Format.NAME_VALUE_COMPARATOR);
+            populateMe.add(0, new BundleNameValue(NO_COLLECTION_KEY, null));
+            collectionSelector.getState(info).setDisallowMultiple(true);
+            return populateMe;
+          }
+        });
 
-		if( altered )
-		{
-			configService.setProperties(settings);
-			receiptService.setReceipt(SAVE_RECEIPT_LABEL);
-		}
-	}
+    SimpleHtmlListModel<NameValue> versionOptions =
+        new SimpleHtmlListModel<NameValue>(
+            new BundleNameValue(FORCE_CURRENT_KEY, VersionSelection.FORCE_CURRENT.toString()),
+            new BundleNameValue(FORCE_LATEST_KEY, VersionSelection.FORCE_LATEST.toString()),
+            new BundleNameValue(
+                DEFAULT_CURRENT_KEY, VersionSelection.DEFAULT_TO_CURRENT.toString()),
+            new BundleNameValue(DEFAULT_LATEST_KEY, VersionSelection.DEFAULT_TO_LATEST.toString()));
+    versionViewOptions.setListModel(versionOptions);
+    versionViewOptions.setAlwaysSelect(true);
 
-	public SingleSelectionList<NameValue> getVersionViewOptions()
-	{
-		return versionViewOptions;
-	}
+    saveButton.setClickHandler(events.getNamedHandler("save"));
+  }
 
-	/**
-	 * @return the saveButton
-	 */
-	public Button getSaveButton()
-	{
-		return saveButton;
-	}
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    decorations.setTitle(TITLE_LABEL);
+    crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
+  }
 
-	@Override
-	public Class<QuickContributeAndVersionSettingsModel> getModelClass()
-	{
-		return QuickContributeAndVersionSettingsModel.class;
-	}
+  public SingleSelectionList<NameValue> getCollectionSelector() {
+    return collectionSelector;
+  }
 
-	public Checkbox getDisable()
-	{
-		return disable;
-	}
+  @EventHandlerMethod
+  public void save(SectionInfo info) {
+    boolean altered = false;
+    QuickContributeAndVersionSettings settings =
+        configService.getProperties(new QuickContributeAndVersionSettings());
+    String existingSelectedUuid = settings.getOneClickCollection();
+    NameValue selectedNV = collectionSelector.getSelectedValue(info);
+    String selectedNVUuid = selectedNV != null ? selectedNV.getValue() : null;
+    if (!(Check.isEmpty(existingSelectedUuid) && Check.isEmpty(selectedNVUuid))) {
+      if (existingSelectedUuid == null) {
+        existingSelectedUuid = "";
+      }
+      if (!existingSelectedUuid.equals(selectedNVUuid)) {
+        altered |= true;
+        settings.setOneClickCollection(selectedNVUuid);
+      }
+    }
 
-	public static class QuickContributeAndVersionSettingsModel extends OneColumnLayout.OneColumnLayoutModel
-	{
-		// Token implementation
-	}
+    NameValue selectedVersionSelectionNV = versionViewOptions.getSelectedValue(info);
+    VersionSelection oldVersionSelection = settings.getVersionSelection();
+    String oldVersionSelectAsString =
+        oldVersionSelection != null ? oldVersionSelection.toString() : "";
+    String newVersionSelectAsString =
+        selectedVersionSelectionNV != null && !Check.isEmpty(selectedVersionSelectionNV.getValue())
+            ? selectedVersionSelectionNV.getValue()
+            : "";
+
+    if (!oldVersionSelectAsString.equals(newVersionSelectAsString)) {
+      altered |= true;
+      settings.setVersionSelection(VersionSelection.valueOf(newVersionSelectAsString));
+    }
+
+    boolean buttonDisable = settings.isButtonDisable();
+    if (!disable.isChecked(info) == buttonDisable) {
+      altered |= true;
+      settings.setButtonDisable(disable.isChecked(info));
+    }
+
+    if (altered) {
+      configService.setProperties(settings);
+      receiptService.setReceipt(SAVE_RECEIPT_LABEL);
+    }
+  }
+
+  public SingleSelectionList<NameValue> getVersionViewOptions() {
+    return versionViewOptions;
+  }
+
+  /** @return the saveButton */
+  public Button getSaveButton() {
+    return saveButton;
+  }
+
+  @Override
+  public Class<QuickContributeAndVersionSettingsModel> getModelClass() {
+    return QuickContributeAndVersionSettingsModel.class;
+  }
+
+  public Checkbox getDisable() {
+    return disable;
+  }
+
+  public static class QuickContributeAndVersionSettingsModel
+      extends OneColumnLayout.OneColumnLayoutModel {
+    // Token implementation
+  }
 }

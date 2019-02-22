@@ -16,17 +16,13 @@
 
 package com.tle.web.htmleditor.tinymce;
 
-import javax.inject.Singleton;
-
 import com.tle.core.guice.Bind;
 import com.tle.web.freemarker.BasicFreemarkerFactory;
+import javax.inject.Singleton;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
 @Singleton
-public class TinyMceAddOnFreemarkerFactory extends BasicFreemarkerFactory
-{
-	// nothing
+public class TinyMceAddOnFreemarkerFactory extends BasicFreemarkerFactory {
+  // nothing
 }

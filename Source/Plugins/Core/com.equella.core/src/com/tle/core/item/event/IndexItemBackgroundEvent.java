@@ -20,34 +20,27 @@ import com.tle.beans.item.ItemIdKey;
 import com.tle.core.events.ApplicationEvent;
 import com.tle.core.item.event.listener.IndexItemBackgroundListener;
 
-/**
- * @author Nicholas Read
- */
-public class IndexItemBackgroundEvent extends ApplicationEvent<IndexItemBackgroundListener>
-{
-	private static final long serialVersionUID = 1L;
-	private final ItemIdKey itemIdKey;
+/** @author Nicholas Read */
+public class IndexItemBackgroundEvent extends ApplicationEvent<IndexItemBackgroundListener> {
+  private static final long serialVersionUID = 1L;
+  private final ItemIdKey itemIdKey;
 
-	public IndexItemBackgroundEvent(ItemIdKey itemId, boolean self)
-	{
-		super(self ? PostTo.POST_TO_ALL_CLUSTER_NODES : PostTo.POST_TO_OTHER_CLUSTER_NODES);
-		this.itemIdKey = itemId;
-	}
+  public IndexItemBackgroundEvent(ItemIdKey itemId, boolean self) {
+    super(self ? PostTo.POST_TO_ALL_CLUSTER_NODES : PostTo.POST_TO_OTHER_CLUSTER_NODES);
+    this.itemIdKey = itemId;
+  }
 
-	public ItemIdKey getItemIdKey()
-	{
-		return itemIdKey;
-	}
+  public ItemIdKey getItemIdKey() {
+    return itemIdKey;
+  }
 
-	@Override
-	public Class<IndexItemBackgroundListener> getListener()
-	{
-		return IndexItemBackgroundListener.class;
-	}
+  @Override
+  public Class<IndexItemBackgroundListener> getListener() {
+    return IndexItemBackgroundListener.class;
+  }
 
-	@Override
-	public void postEvent(IndexItemBackgroundListener listener)
-	{
-		listener.indexItemBackgroundEvent(this);
-	}
+  @Override
+  public void postEvent(IndexItemBackgroundListener listener) {
+    listener.indexItemBackgroundEvent(this);
+  }
 }

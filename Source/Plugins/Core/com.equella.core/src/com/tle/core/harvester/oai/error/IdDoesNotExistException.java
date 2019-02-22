@@ -18,19 +18,15 @@ package com.tle.core.harvester.oai.error;
 
 import com.tle.core.harvester.oai.data.OAIError;
 
-/**
- * 
- */
-public class IdDoesNotExistException extends OAIException
-{
-	public IdDoesNotExistException(OAIError message)
-	{
-		super(message);
-	}
+/** */
+public class IdDoesNotExistException extends OAIException {
+  public IdDoesNotExistException(OAIError message) {
+    super(message);
+  }
 
-	public IdDoesNotExistException(String id)
-	{
-		super("idDoesNotExist", "The identifier '" + id + "' does not correspond to an item in this repository.");
-	}
-
+  public IdDoesNotExistException(String id) {
+    super(
+        "idDoesNotExist",
+        "The identifier '" + id + "' does not correspond to an item in this repository.");
+  }
 }

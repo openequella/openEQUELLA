@@ -16,8 +16,6 @@
 
 package com.tle.web.favourites.searches;
 
-import javax.inject.Inject;
-
 import com.google.inject.Provider;
 import com.tle.common.Check;
 import com.tle.core.favourites.bean.FavouriteSearch;
@@ -39,94 +37,91 @@ import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.js.validators.Confirm;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.model.HtmlLinkState;
+import javax.inject.Inject;
 
 @TreeIndexed
 @Bind
 public class SearchFavouritesList
-	extends
-		StandardListSection<FavouriteSearchEntry, StandardListSection.Model<FavouriteSearchEntry>>
-{
-	@PlugKey("favsearch.query")
-	private static Label QUERY_LABEL;
-	@PlugKey("favsearch.within")
-	private static Label WITHIN_LABEL;
-	@PlugKey("favsearch.criteria")
-	private static Label CRITERIA_LABEL;
-	@PlugKey("favsearch.delete")
-	private static Label DELETE_LABEL;
-	@PlugKey("favsearch.deleteconfirm")
-	private static Confirm DELETE_CONFIRM;
-	@PlugKey("favsearch.deletereceipt")
-	private static Label DELETE_RECEIPT_LABEL;
+    extends StandardListSection<
+        FavouriteSearchEntry, StandardListSection.Model<FavouriteSearchEntry>> {
+  @PlugKey("favsearch.query")
+  private static Label QUERY_LABEL;
 
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("favsearch.within")
+  private static Label WITHIN_LABEL;
 
-	@Inject
-	private FavouriteSearchService favouriteSearchService;
-	@Inject
-	private ReceiptService receiptService;
-	@Inject
-	private Provider<FavouriteSearchEntry> entryProvider;
+  @PlugKey("favsearch.criteria")
+  private static Label CRITERIA_LABEL;
 
-	private JSCallable runSearchFunc;
-	private JSCallable deleteSearchFunc;
+  @PlugKey("favsearch.delete")
+  private static Label DELETE_LABEL;
 
-	@Override
-	@SuppressWarnings("nls")
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @PlugKey("favsearch.deleteconfirm")
+  private static Confirm DELETE_CONFIRM;
 
-		runSearchFunc = events.getSubmitValuesFunction("runSearch");
-		deleteSearchFunc = events.getSubmitValuesFunction("deleteSearch");
-	}
+  @PlugKey("favsearch.deletereceipt")
+  private static Label DELETE_RECEIPT_LABEL;
 
-	public void addSearch(SectionInfo info, FavouriteSearch search)
-	{
-		FavouriteSearchEntry entry = createFavouriteSearchEntry();
-		entry.setSearchFavouritesList(this);
-		entry.setSearch(search);
+  @EventFactory private EventGenerator events;
 
-		addData(entry, search.getQuery(), QUERY_LABEL);
-		addData(entry, search.getWithin(), WITHIN_LABEL);
-		addData(entry, search.getCriteria(), CRITERIA_LABEL);
+  @Inject private FavouriteSearchService favouriteSearchService;
+  @Inject private ReceiptService receiptService;
+  @Inject private Provider<FavouriteSearchEntry> entryProvider;
 
-		final long searchId = search.getId();
-		entry.addRatingAction(new ButtonRenderer(new HtmlLinkState(DELETE_LABEL, new OverrideHandler(deleteSearchFunc,
-			searchId).addValidator(DELETE_CONFIRM))).showAs(ButtonType.DELETE));
+  private JSCallable runSearchFunc;
+  private JSCallable deleteSearchFunc;
 
-		addListItem(info, entry);
-	}
+  @Override
+  @SuppressWarnings("nls")
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	private FavouriteSearchEntry createFavouriteSearchEntry()
-	{
-		return entryProvider.get();
-	}
+    runSearchFunc = events.getSubmitValuesFunction("runSearch");
+    deleteSearchFunc = events.getSubmitValuesFunction("deleteSearch");
+  }
 
-	@EventHandlerMethod
-	public void runSearch(SectionInfo info, long id)
-	{
-		favouriteSearchService.executeSearch(info, id);
-	}
+  public void addSearch(SectionInfo info, FavouriteSearch search) {
+    FavouriteSearchEntry entry = createFavouriteSearchEntry();
+    entry.setSearchFavouritesList(this);
+    entry.setSearch(search);
 
-	@EventHandlerMethod
-	public void deleteSearch(SectionInfo info, long id)
-	{
-		favouriteSearchService.deleteById(id);
-		receiptService.setReceipt(DELETE_RECEIPT_LABEL);
-	}
+    addData(entry, search.getQuery(), QUERY_LABEL);
+    addData(entry, search.getWithin(), WITHIN_LABEL);
+    addData(entry, search.getCriteria(), CRITERIA_LABEL);
 
-	private void addData(FavouriteSearchEntry entry, String val, Label name)
-	{
-		if( !Check.isEmpty(val) )
-		{
-			entry.addDelimitedMetadata(name, val);
-		}
-	}
+    final long searchId = search.getId();
+    entry.addRatingAction(
+        new ButtonRenderer(
+                new HtmlLinkState(
+                    DELETE_LABEL,
+                    new OverrideHandler(deleteSearchFunc, searchId).addValidator(DELETE_CONFIRM)))
+            .showAs(ButtonType.DELETE));
 
-	public JSCallable getRunSearchFunc()
-	{
-		return runSearchFunc;
-	}
+    addListItem(info, entry);
+  }
+
+  private FavouriteSearchEntry createFavouriteSearchEntry() {
+    return entryProvider.get();
+  }
+
+  @EventHandlerMethod
+  public void runSearch(SectionInfo info, long id) {
+    favouriteSearchService.executeSearch(info, id);
+  }
+
+  @EventHandlerMethod
+  public void deleteSearch(SectionInfo info, long id) {
+    favouriteSearchService.deleteById(id);
+    receiptService.setReceipt(DELETE_RECEIPT_LABEL);
+  }
+
+  private void addData(FavouriteSearchEntry entry, String val, Label name) {
+    if (!Check.isEmpty(val)) {
+      entry.addDelimitedMetadata(name, val);
+    }
+  }
+
+  public JSCallable getRunSearchFunc() {
+    return runSearchFunc;
+  }
 }

@@ -18,52 +18,43 @@ package com.tle.core.customlinks.service;
 
 import com.tle.core.entity.EntityEditingBean;
 
-public class CustomLinkEditingBean extends EntityEditingBean
-{
-	private static final long serialVersionUID = 1L;
+public class CustomLinkEditingBean extends EntityEditingBean {
+  private static final long serialVersionUID = 1L;
 
-	private String url;
-	private int order;
-	private String targetExpression;
-	private String fileName;
+  private String url;
+  private int order;
+  private String targetExpression;
+  private String fileName;
 
-	public String getUrl()
-	{
-		return url;
-	}
+  public String getUrl() {
+    return url;
+  }
 
-	public void setUrl(String url)
-	{
-		this.url = url;
-	}
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-	public int getOrder()
-	{
-		return order;
-	}
+  public int getOrder() {
+    return order;
+  }
 
-	public void setOrder(int order)
-	{
-		this.order = order;
-	}
+  public void setOrder(int order) {
+    this.order = order;
+  }
 
-	public String getTargetExpression()
-	{
-		return targetExpression;
-	}
+  public String getTargetExpression() {
+    return targetExpression;
+  }
 
-	public void setTargetExpression(String targetExpression)
-	{
-		this.targetExpression = targetExpression;
-	}
+  public void setTargetExpression(String targetExpression) {
+    this.targetExpression = targetExpression;
+  }
 
-	public String getFileName()
-	{
-		return fileName;
-	}
+  public String getFileName() {
+    return fileName;
+  }
 
-	public void setFileName(String fileName)
-	{
-		this.fileName = fileName;
-	}
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
+  }
 }

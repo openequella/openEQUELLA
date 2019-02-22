@@ -16,11 +16,6 @@
 
 package com.tle.mypages.web.section;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.dytech.edge.wizard.WizardException;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.ItemId;
@@ -63,289 +58,249 @@ import com.tle.web.selection.SelectionSession;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 import com.tle.web.wizard.WizardStateInterface;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 public class MyPagesContributeSection extends AbstractMyPagesSection<MyPagesContributeModel>
-	implements
-		HtmlRenderer,
-		ContentHandlerSection,
-		ReadyToRespondListener
-{
-	private static final CssInclude CSS = CssInclude
-		.include(ResourcesService.getResourceHelper(MyPagesContributeSection.class).url("css/mypageseditor.css"))
-		.hasRtl().make();
+    implements HtmlRenderer, ContentHandlerSection, ReadyToRespondListener {
+  private static final CssInclude CSS =
+      CssInclude.include(
+              ResourcesService.getResourceHelper(MyPagesContributeSection.class)
+                  .url("css/mypageseditor.css"))
+          .hasRtl()
+          .make();
 
-	@PlugKey("navigateaway.message")
-	private static Label PROMPT_NAVIGATE_AWAY;
-	@PlugKey("close.confirm")
-	private static Label PROMPT_CLOSE_CONFIRM;
-	@PlugKey("button.save")
-	private static Label LABEL_SAVE;
-	@PlugKey("mypages.button.cancel")
-	private static Label LABEL_CANCEL;
-	@PlugKey("breadcrumb.link.scrapbook")
-	private static Label LABEL_SCRAPBOOK;
+  @PlugKey("navigateaway.message")
+  private static Label PROMPT_NAVIGATE_AWAY;
 
-	@Inject
-	private MyPagesService myPagesService;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private SelectionService selectionService;
-	@Inject
-	private MyContentService myContentService;
+  @PlugKey("close.confirm")
+  private static Label PROMPT_CLOSE_CONFIRM;
 
-	private SectionTree mytree;
+  @PlugKey("button.save")
+  private static Label LABEL_SAVE;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final MyPagesContributeModel model = getModel(context);
-		final List<SectionRenderable> renderables = renderChildren(context, new ResultListCollector()).getResultList();
-		if( model.isModal() )
-		{
-			Decorations.getDecorations(context).clearAllDecorations();
-		}
-		// http://dev.equella.com/issues/5612
-		// we can probably remove this if Chrome sorts out the problem
-		context.getResponse().addHeader("X-XSS-Protection", "0");
+  @PlugKey("mypages.button.cancel")
+  private static Label LABEL_CANCEL;
 
-		return new CombinedRenderer(renderables);
-	}
+  @PlugKey("breadcrumb.link.scrapbook")
+  private static Label LABEL_SCRAPBOOK;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		this.mytree = tree;
-	}
+  @Inject private MyPagesService myPagesService;
+  @Inject private ItemService itemService;
+  @Inject private SelectionService selectionService;
+  @Inject private MyContentService myContentService;
 
-	public void addCrumbs(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		crumbs.add(getCancelState(LABEL_SCRAPBOOK));
-	}
+  private SectionTree mytree;
 
-	@Override
-	public List<HtmlComponentState> getMajorActions(RenderContext context)
-	{
-		final List<HtmlComponentState> actions = new ArrayList<HtmlComponentState>();
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    final MyPagesContributeModel model = getModel(context);
+    final List<SectionRenderable> renderables =
+        renderChildren(context, new ResultListCollector()).getResultList();
+    if (model.isModal()) {
+      Decorations.getDecorations(context).clearAllDecorations();
+    }
+    // http://dev.equella.com/issues/5612
+    // we can probably remove this if Chrome sorts out the problem
+    context.getResponse().addHeader("X-XSS-Protection", "0");
 
-		final HtmlComponentState save = new HtmlComponentState();
-		if( !DebugSettings.isAutoTestMode() )
-		{
-			save.addEventStatements(JSHandler.EVENT_BEFOREUNLOAD, getUnloadStatements());
-		}
-		save.setClickHandler(events.getNamedHandler("saveItem"));
-		save.addClass("save-scrapbook-page");
-		save.addPreRenderable(CSS);
-		save.setLabel(LABEL_SAVE);
+    return new CombinedRenderer(renderables);
+  }
 
-		actions.add(save);
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    this.mytree = tree;
+  }
 
-		return actions;
-	}
+  public void addCrumbs(SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    crumbs.add(getCancelState(LABEL_SCRAPBOOK));
+  }
 
-	@Override
-	public List<HtmlComponentState> getMinorActions(RenderContext context)
-	{
-		final List<HtmlComponentState> actions = new ArrayList<HtmlComponentState>();
-		actions.add(getCancelState(LABEL_CANCEL));
-		return actions;
-	}
+  @Override
+  public List<HtmlComponentState> getMajorActions(RenderContext context) {
+    final List<HtmlComponentState> actions = new ArrayList<HtmlComponentState>();
 
-	private HtmlComponentState getCancelState(Label label)
-	{
-		final HtmlComponentState cancel = new HtmlComponentState();
-		final JSHandler closeHandler = events.getNamedHandler("close");
-		closeHandler.addValidator(getCloseConfirm());
-		cancel.setClickHandler(closeHandler);
-		cancel.setLabel(label);
-		return cancel;
-	}
+    final HtmlComponentState save = new HtmlComponentState();
+    if (!DebugSettings.isAutoTestMode()) {
+      save.addEventStatements(JSHandler.EVENT_BEFOREUNLOAD, getUnloadStatements());
+    }
+    save.setClickHandler(events.getNamedHandler("saveItem"));
+    save.addClass("save-scrapbook-page");
+    save.addPreRenderable(CSS);
+    save.setLabel(LABEL_SAVE);
 
-	public String getPageUuid(SectionInfo info)
-	{
-		return getModel(info).getPageUuid();
-	}
+    actions.add(save);
 
-	public JSStatements getUnloadStatements()
-	{
-		return new ReturnStatement(PROMPT_NAVIGATE_AWAY);
-	}
+    return actions;
+  }
 
-	public JSValidator getCloseConfirm()
-	{
-		return new Confirm(PROMPT_CLOSE_CONFIRM);
-	}
+  @Override
+  public List<HtmlComponentState> getMinorActions(RenderContext context) {
+    final List<HtmlComponentState> actions = new ArrayList<HtmlComponentState>();
+    actions.add(getCancelState(LABEL_CANCEL));
+    return actions;
+  }
 
-	@EventHandlerMethod
-	public void saveItem(SectionInfo info)
-	{
-		saveItem(info, false);
-	}
+  private HtmlComponentState getCancelState(Label label) {
+    final HtmlComponentState cancel = new HtmlComponentState();
+    final JSHandler closeHandler = events.getNamedHandler("close");
+    closeHandler.addValidator(getCloseConfirm());
+    cancel.setClickHandler(closeHandler);
+    cancel.setLabel(label);
+    return cancel;
+  }
 
-	@EventHandlerMethod
-	public void savePages(SectionInfo info)
-	{
-		saveItem(info, true);
-	}
+  public String getPageUuid(SectionInfo info) {
+    return getModel(info).getPageUuid();
+  }
 
-	private void saveItem(SectionInfo info, boolean inWizard)
-	{
-		final MyPagesContributeModel model = getModel(info);
+  public JSStatements getUnloadStatements() {
+    return new ReturnStatement(PROMPT_NAVIGATE_AWAY);
+  }
 
-		// save the page we are on first
-		final String pageUuid = model.getPageUuid();
-		if( !Check.isEmpty(pageUuid) )
-		{
-			myPagesService.savePage(info, mytree, model.getSession(), pageUuid);
-		}
+  public JSValidator getCloseConfirm() {
+    return new Confirm(PROMPT_CLOSE_CONFIRM);
+  }
 
-		// never save the item if modal as this means we are in a contribution
-		// wizard!
-		if( !inWizard )
-		{
-			if( !myPagesService.saveItem(info, mytree, model.getSession()) )
-			{
-				// validation errors
-				return;
-			}
-		}
-		else
-		{
-			myPagesService.commitDraft(info, model.getSession());
-		}
-		close(info, inWizard);
-	}
+  @EventHandlerMethod
+  public void saveItem(SectionInfo info) {
+    saveItem(info, false);
+  }
 
-	@EventHandlerMethod
-	public void close(SectionInfo info)
-	{
-		close(info, false);
-	}
+  @EventHandlerMethod
+  public void savePages(SectionInfo info) {
+    saveItem(info, true);
+  }
 
-	public void close(SectionInfo info, boolean inWizard)
-	{
-		String session = getModel(info).getSession();
-		myPagesService.clearDraft(info, session);
-		myPagesService.removeFromSession(info, session);
+  private void saveItem(SectionInfo info, boolean inWizard) {
+    final MyPagesContributeModel model = getModel(info);
 
-		if( !inWizard )
-		{
-			myContentService.returnFromContribute(info);
-		}
-	}
+    // save the page we are on first
+    final String pageUuid = model.getPageUuid();
+    if (!Check.isEmpty(pageUuid)) {
+      myPagesService.savePage(info, mytree, model.getSession(), pageUuid);
+    }
 
-	/**
-	 * Called from MyPagesContentHandler.contribute
-	 * 
-	 * @param info
-	 * @param itemDef
-	 */
-	public void contribute(SectionInfo info, ItemDefinition itemDef)
-	{
-		MyPagesState state = myPagesService.newItem(info, itemDef);
+    // never save the item if modal as this means we are in a contribution
+    // wizard!
+    if (!inWizard) {
+      if (!myPagesService.saveItem(info, mytree, model.getSession())) {
+        // validation errors
+        return;
+      }
+    } else {
+      myPagesService.commitDraft(info, model.getSession());
+    }
+    close(info, inWizard);
+  }
 
-		MyPagesContributeModel model = getModel(info);
-		model.setSession(state.getWizid());
-	}
+  @EventHandlerMethod
+  public void close(SectionInfo info) {
+    close(info, false);
+  }
 
-	public void edit(SectionInfo info, ItemId itemId, boolean readOnly)
-	{
-		MyPagesContributeModel model = getModel(info);
+  public void close(SectionInfo info, boolean inWizard) {
+    String session = getModel(info).getSession();
+    myPagesService.clearDraft(info, session);
+    myPagesService.removeFromSession(info, session);
 
-		if( !readOnly )
-		{
-			MyPagesState state = myPagesService.loadItem(info, itemId);
-			model.setSession(state.getWizid());
-		}
+    if (!inWizard) {
+      myContentService.returnFromContribute(info);
+    }
+  }
 
-		// fire load event
-		LoadItemEvent loadEvent = new LoadItemEvent(model.getSession(), itemService.get(itemId), model.getPageUuid());
-		info.processEvent(loadEvent);
-	}
+  /**
+   * Called from MyPagesContentHandler.contribute
+   *
+   * @param info
+   * @param itemDef
+   */
+  public void contribute(SectionInfo info, ItemDefinition itemDef) {
+    MyPagesState state = myPagesService.newItem(info, itemDef);
 
-	@DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
-	public void entryPoint(SectionInfo info)
-	{
-		MyPagesContributeModel model = getModel(info);
-		if( model.isLoad() )
-		{
-			model.setLoad(false);
+    MyPagesContributeModel model = getModel(info);
+    model.setSession(state.getWizid());
+  }
 
-			String session = model.getSession();
-			if( session != null )
-			{
-				// fire load event
-				LoadItemEvent loadEvent = new LoadItemEvent(session, myPagesService.getState(info, session).getItem(),
-					model.getPageUuid());
-				info.processEvent(loadEvent);
-			}
-			else if( model.getItemId() != null )
-			{
-				// call edit, but don't create a session if in selection
-				edit(info, new ItemId(model.getItemId()), isSelection(info));
-			}
-			else
-			{
-				throw new RuntimeException(CurrentLocale.get(RESOURCES.key("error.nosessionoritem")));
-			}
-		}
-	}
+  public void edit(SectionInfo info, ItemId itemId, boolean readOnly) {
+    MyPagesContributeModel model = getModel(info);
 
-	@Override
-	public void readyToRespond(SectionInfo info, boolean redirect)
-	{
-		final String wizid = getModel(info).getSession();
-		try
-		{
-			final WizardStateInterface state = myPagesService.getState(info, wizid);
-			myPagesService.updateSession(info, state);
-		}
-		catch (WizardException we)
-		{
-			// ignore
-		}
-	}
+    if (!readOnly) {
+      MyPagesState state = myPagesService.loadItem(info, itemId);
+      model.setSession(state.getWizid());
+    }
 
-	protected boolean isSelection(SectionInfo info)
-	{
-		SelectionSession currentSession = selectionService.getCurrentSession(info);
-		return currentSession != null;
-	}
+    // fire load event
+    LoadItemEvent loadEvent =
+        new LoadItemEvent(model.getSession(), itemService.get(itemId), model.getPageUuid());
+    info.processEvent(loadEvent);
+  }
 
-	@Override
-	public Class<MyPagesContributeModel> getModelClass()
-	{
-		return MyPagesContributeModel.class;
-	}
+  @DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
+  public void entryPoint(SectionInfo info) {
+    MyPagesContributeModel model = getModel(info);
+    if (model.isLoad()) {
+      model.setLoad(false);
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return MyPagesConstants.SECTION_CONTRIBUTE;
-	}
+      String session = model.getSession();
+      if (session != null) {
+        // fire load event
+        LoadItemEvent loadEvent =
+            new LoadItemEvent(
+                session, myPagesService.getState(info, session).getItem(), model.getPageUuid());
+        info.processEvent(loadEvent);
+      } else if (model.getItemId() != null) {
+        // call edit, but don't create a session if in selection
+        edit(info, new ItemId(model.getItemId()), isSelection(info));
+      } else {
+        throw new RuntimeException(CurrentLocale.get(RESOURCES.key("error.nosessionoritem")));
+      }
+    }
+  }
 
-	public void setSessionId(SectionInfo info, String sessionId)
-	{
-		getModel(info).setSession(sessionId);
-	}
+  @Override
+  public void readyToRespond(SectionInfo info, boolean redirect) {
+    final String wizid = getModel(info).getSession();
+    try {
+      final WizardStateInterface state = myPagesService.getState(info, wizid);
+      myPagesService.updateSession(info, state);
+    } catch (WizardException we) {
+      // ignore
+    }
+  }
 
-	public void setPageUuid(SectionInfo info, String uuid)
-	{
-		getModel(info).setPageUuid(uuid);
-	}
+  protected boolean isSelection(SectionInfo info) {
+    SelectionSession currentSession = selectionService.getCurrentSession(info);
+    return currentSession != null;
+  }
 
-	public void saveCurrentEdits(SectionInfo info)
-	{
-		MyPagesContributeModel model = getModel(info);
-		final String pageUuid = model.getPageUuid();
-		if( !Check.isEmpty(pageUuid) )
-		{
-			myPagesService.savePage(info, mytree, model.getSession(), pageUuid);
-		}
-	}
+  @Override
+  public Class<MyPagesContributeModel> getModelClass() {
+    return MyPagesContributeModel.class;
+  }
+
+  @Override
+  public String getDefaultPropertyName() {
+    return MyPagesConstants.SECTION_CONTRIBUTE;
+  }
+
+  public void setSessionId(SectionInfo info, String sessionId) {
+    getModel(info).setSession(sessionId);
+  }
+
+  public void setPageUuid(SectionInfo info, String uuid) {
+    getModel(info).setPageUuid(uuid);
+  }
+
+  public void saveCurrentEdits(SectionInfo info) {
+    MyPagesContributeModel model = getModel(info);
+    final String pageUuid = model.getPageUuid();
+    if (!Check.isEmpty(pageUuid)) {
+      myPagesService.savePage(info, mytree, model.getSession(), pageUuid);
+    }
+  }
 }

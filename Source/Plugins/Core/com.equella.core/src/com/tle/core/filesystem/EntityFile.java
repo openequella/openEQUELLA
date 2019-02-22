@@ -22,25 +22,21 @@ import com.tle.common.PathUtils;
 import com.tle.common.filesystem.FileHandleUtils;
 
 @NonNullByDefault
-public class EntityFile extends AbstractTemplateFile
-{
-	private static final long serialVersionUID = 1L;
+public class EntityFile extends AbstractTemplateFile {
+  private static final long serialVersionUID = 1L;
 
-	protected final Long id;
+  protected final Long id;
 
-	public EntityFile(BaseEntity entity)
-	{
-		id = entity.getId();
-	}
+  public EntityFile(BaseEntity entity) {
+    id = entity.getId();
+  }
 
-	public EntityFile(long id)
-	{
-		this.id = id;
-	}
+  public EntityFile(long id) {
+    this.id = id;
+  }
 
-	@Override
-	protected String createAbsolutePath()
-	{
-		return PathUtils.filePath(super.createAbsolutePath(), FileHandleUtils.getHashedPath(id));
-	}
+  @Override
+  protected String createAbsolutePath() {
+    return PathUtils.filePath(super.createAbsolutePath(), FileHandleUtils.getHashedPath(id));
+  }
 }

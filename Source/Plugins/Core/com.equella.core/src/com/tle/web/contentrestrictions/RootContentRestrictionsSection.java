@@ -16,11 +16,6 @@
 
 package com.tle.web.contentrestrictions;
 
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.tle.common.FileSizeUtils;
@@ -72,320 +67,326 @@ import com.tle.web.sections.standard.renderers.LinkRenderer;
 import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import java.util.Collections;
+import java.util.List;
+import javax.inject.Inject;
 
-/**
- * @author larry
- */
+/** @author larry */
 @SuppressWarnings("nls")
 @TreeIndexed
-public class RootContentRestrictionsSection extends OneColumnLayout<OneColumnLayoutModel>
-{
-	@PlugKey("contentrestrictions.title")
-	private static Label TITLE_LABEL;
+public class RootContentRestrictionsSection extends OneColumnLayout<OneColumnLayoutModel> {
+  @PlugKey("contentrestrictions.title")
+  private static Label TITLE_LABEL;
 
-	@PlugKey("bannedext.empty")
-	private static Label NO_BANNED_EXTENSIONS;
-	@PlugKey("bannedext.remove")
-	private static Label REMOVE_BANNED_EXTENSION;
-	@PlugKey("bannedext.remove.confirm")
-	private static Confirm CONFIRM_REMOVE_BANNED_EXTENSION;
+  @PlugKey("bannedext.empty")
+  private static Label NO_BANNED_EXTENSIONS;
 
-	@PlugKey("quota.table.size")
-	private static Label QUOTA_COLUMN_SIZE;
-	@PlugKey("quota.table.expression")
-	private static Label QUOTA_COLUMN_USERS;
-	@PlugKey("quota.label.edit")
-	private static Label LABEL_EDIT_QUOTA;
-	@PlugKey("quota.label.delete")
-	private static Label LABEL_DELETE_QUOTA;
-	@PlugKey("quota.label.confirm.delete")
-	private static Confirm LABEL_CONFIRM_DELETE_QUOTA;
-	@PlugKey("quota.table.empty")
-	private static Label LABEL_NO_QUOTAS;
-	@PlugKey("quota.label.moveup")
-	private static Label LABEL_MOVE_UP;
-	@PlugKey("quota.label.movedown")
-	private static Label LABEL_MOVE_DOWN;
-	@PlugKey("quota.label.invalidexpression")
-	private static Label LABEL_INVALID_EXPRESSION;
-	@PlugURL("images/moveup.gif")
-	private static String URL_ICON_UP;
-	@PlugURL("images/movedown.gif")
-	private static String URL_ICON_DOWN;
+  @PlugKey("bannedext.remove")
+  private static Label REMOVE_BANNED_EXTENSION;
 
-	@Inject
-	private ContentRestrictionsPrivilegeTreeProvider securityProvider;
-	@Inject
-	private ConfigurationService configService;
-	@Inject
-	private UserService userService;
+  @PlugKey("bannedext.remove.confirm")
+  private static Confirm CONFIRM_REMOVE_BANNED_EXTENSION;
 
-	@EventFactory
-	private EventGenerator events;
-	@ViewFactory
-	private FreemarkerFactory view;
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @PlugKey("quota.table.size")
+  private static Label QUOTA_COLUMN_SIZE;
 
-	@Component
-	private SelectionsTable bannedExtensions;
-	@Component
-	private SelectionsTable userQuotas;
+  @PlugKey("quota.table.expression")
+  private static Label QUOTA_COLUMN_USERS;
 
-	@Component(name = "ael")
-	@PlugKey("addbannedext.button")
-	private Link addBannedExtLink;
-	@Component(name = "aed")
-	@Inject
-	private AddBannedExtDialog addBannedExtDialog;
-	@Component(name = "aql")
-	@PlugKey("quota.table.link.add")
-	private Link addUserQuotaLink;
+  @PlugKey("quota.label.edit")
+  private static Label LABEL_EDIT_QUOTA;
 
-	@TreeLookup
-	private EditContentRestrictionsSection editContentRestrictionsSection;
+  @PlugKey("quota.label.delete")
+  private static Label LABEL_DELETE_QUOTA;
 
-	@Override
-	public void registered(String id, final SectionTree tree)
-	{
-		super.registered(id, tree);
+  @PlugKey("quota.label.confirm.delete")
+  private static Confirm LABEL_CONFIRM_DELETE_QUOTA;
 
-		// Banned extensions
-		addBannedExtDialog.setOkCallback(getAjaxUpdate(tree, "addBannedExtension", "bannedExtensions"));
-		addBannedExtLink.setClickHandler(addBannedExtDialog.getOpenFunction());
+  @PlugKey("quota.table.empty")
+  private static Label LABEL_NO_QUOTAS;
 
-		bannedExtensions.setAddAction(addBannedExtLink);
-		bannedExtensions.setNothingSelectedText(NO_BANNED_EXTENSIONS);
-		bannedExtensions.setSelectionsModel(new DynamicSelectionsTableModel<String>()
-		{
-			private final UpdateDomFunction deleteFunc = getAjaxUpdate(tree, "removeBannedExtension",
-				"bannedExtensions");
+  @PlugKey("quota.label.moveup")
+  private static Label LABEL_MOVE_UP;
 
-			@Override
-			protected List<String> getSourceList(SectionInfo info)
-			{
-				final List<String> extensions = Lists.newArrayList(getConfig().getBannedExtensions());
-				Collections.sort(extensions);
-				return extensions;
-			}
+  @PlugKey("quota.label.movedown")
+  private static Label LABEL_MOVE_DOWN;
 
-			@Override
-			protected void transform(SectionInfo info, SelectionsTableSelection selection, String ext,
-				List<SectionRenderable> actions, int index)
-			{
-				selection.setName(new TextLabel(ext));
-				actions.add(makeRemoveAction(REMOVE_BANNED_EXTENSION,
-					new OverrideHandler(deleteFunc, ext).addValidator(CONFIRM_REMOVE_BANNED_EXTENSION)));
-			}
-		});
+  @PlugKey("quota.label.invalidexpression")
+  private static Label LABEL_INVALID_EXPRESSION;
 
-		final SubmitValuesFunction editFunc = events.getSubmitValuesFunction("editUserQuota");
+  @PlugURL("images/moveup.gif")
+  private static String URL_ICON_UP;
 
-		userQuotas.setColumnHeadings(QUOTA_COLUMN_SIZE, QUOTA_COLUMN_USERS, "");
-		userQuotas.setNothingSelectedText(LABEL_NO_QUOTAS);
-		userQuotas.setAddAction(addUserQuotaLink);
-		userQuotas.setSelectionsModel(new DynamicSelectionsTableModel<UserQuota>()
-		{
-			private final UpdateDomFunction deleteFunc = getAjaxUpdate(tree, "removeUserQuota", "userQuotas");
-			private final UpdateDomFunction upDownFunc = getAjaxUpdate(tree, "shiftUserQuota", "userQuotas");
+  @PlugURL("images/movedown.gif")
+  private static String URL_ICON_DOWN;
 
-			@Override
-			protected List<UserQuota> getSourceList(SectionInfo info)
-			{
-				return getConfig().getQuotas();
-			}
+  @Inject private ContentRestrictionsPrivilegeTreeProvider securityProvider;
+  @Inject private ConfigurationService configService;
+  @Inject private UserService userService;
 
-			@Override
-			protected void transform(SectionInfo info, SelectionsTableSelection selection, UserQuota quota,
-				List<SectionRenderable> actions, int index)
-			{
-				long quotaSize = quota.getSize();
-				String quotaExpr = quota.getExpression();
+  @EventFactory private EventGenerator events;
+  @ViewFactory private FreemarkerFactory view;
+  @AjaxFactory private AjaxGenerator ajax;
 
-				selection.setName(new TextLabel(FileSizeUtils.humanReadableFileSize(quotaSize)));
+  @Component private SelectionsTable bannedExtensions;
+  @Component private SelectionsTable userQuotas;
 
-				Label expressionLabel;
-				try
-				{
-					expressionLabel = new TextLabel(new ExpressionFormatter(userService).convertToInfix(quotaExpr));
-				}
-				catch( Exception e )
-				{
-					expressionLabel = LABEL_INVALID_EXPRESSION;
-				}
-				selection.addColumn(expressionLabel);
+  @Component(name = "ael")
+  @PlugKey("addbannedext.button")
+  private Link addBannedExtLink;
 
-				actions.add(makeAction(LABEL_EDIT_QUOTA,
-					new OverrideHandler(editFunc, index, quotaSize, Strings.nullToEmpty(quotaExpr))));
+  @Component(name = "aed")
+  @Inject
+  private AddBannedExtDialog addBannedExtDialog;
 
-				actions.add(makeAction(LABEL_DELETE_QUOTA,
-					new OverrideHandler(deleteFunc, index).addValidator(LABEL_CONFIRM_DELETE_QUOTA)));
+  @Component(name = "aql")
+  @PlugKey("quota.table.link.add")
+  private Link addUserQuotaLink;
 
-				final HtmlLinkState upLinkState = new HtmlLinkState(new OverrideHandler(upDownFunc, index, true));
+  @TreeLookup private EditContentRestrictionsSection editContentRestrictionsSection;
 
-				upLinkState.setId("qup");
-				final LinkRenderer upLink = new LinkRenderer(upLinkState);
-				upLink.setNestedRenderable(new ImageRenderer(URL_ICON_UP, LABEL_MOVE_UP)).addClass("position");
+  @Override
+  public void registered(String id, final SectionTree tree) {
+    super.registered(id, tree);
 
-				final HtmlLinkState downLinkState = new HtmlLinkState(new OverrideHandler(upDownFunc, index, false));
-				downLinkState.setId("qdn");
-				final LinkRenderer downLink = new LinkRenderer(downLinkState);
-				downLink.setNestedRenderable(new ImageRenderer(URL_ICON_DOWN, LABEL_MOVE_DOWN)).addClass("position");
+    // Banned extensions
+    addBannedExtDialog.setOkCallback(getAjaxUpdate(tree, "addBannedExtension", "bannedExtensions"));
+    addBannedExtLink.setClickHandler(addBannedExtDialog.getOpenFunction());
 
-				// Up and down in same action column
-				actions.add(CombinedRenderer.combineMultipleResults(upLink, downLink));
-			}
-		});
+    bannedExtensions.setAddAction(addBannedExtLink);
+    bannedExtensions.setNothingSelectedText(NO_BANNED_EXTENSIONS);
+    bannedExtensions.setSelectionsModel(
+        new DynamicSelectionsTableModel<String>() {
+          private final UpdateDomFunction deleteFunc =
+              getAjaxUpdate(tree, "removeBannedExtension", "bannedExtensions");
 
-		addUserQuotaLink.setStyleClass("add");
-		addUserQuotaLink.setClickHandler(new OverrideHandler(editFunc, -1, 0, ""));
-	}
+          @Override
+          protected List<String> getSourceList(SectionInfo info) {
+            final List<String> extensions = Lists.newArrayList(getConfig().getBannedExtensions());
+            Collections.sort(extensions);
+            return extensions;
+          }
 
-	private UpdateDomFunction getAjaxUpdate(SectionTree tree, String eventHandlerName, String... ajaxIds)
-	{
-		return ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler(eventHandlerName),
-			ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), ajaxIds);
-	}
+          @Override
+          protected void transform(
+              SectionInfo info,
+              SelectionsTableSelection selection,
+              String ext,
+              List<SectionRenderable> actions,
+              int index) {
+            selection.setName(new TextLabel(ext));
+            actions.add(
+                makeRemoveAction(
+                    REMOVE_BANNED_EXTENSION,
+                    new OverrideHandler(deleteFunc, ext)
+                        .addValidator(CONFIRM_REMOVE_BANNED_EXTENSION)));
+          }
+        });
 
-	@EventHandlerMethod
-	public void editUserQuota(SectionInfo info, int index, long quotaSize, String expression)
-	{
-		SelectedQuota selected = new SelectedQuota(index, quotaSize, expression);
-		editContentRestrictionsSection.editUserQuota(info, selected);
-	}
+    final SubmitValuesFunction editFunc = events.getSubmitValuesFunction("editUserQuota");
 
-	@Override
-	protected TemplateResult setupTemplate(RenderEventContext info)
-	{
-		securityProvider.checkAuthorised();
+    userQuotas.setColumnHeadings(QUOTA_COLUMN_SIZE, QUOTA_COLUMN_USERS, "");
+    userQuotas.setNothingSelectedText(LABEL_NO_QUOTAS);
+    userQuotas.setAddAction(addUserQuotaLink);
+    userQuotas.setSelectionsModel(
+        new DynamicSelectionsTableModel<UserQuota>() {
+          private final UpdateDomFunction deleteFunc =
+              getAjaxUpdate(tree, "removeUserQuota", "userQuotas");
+          private final UpdateDomFunction upDownFunc =
+              getAjaxUpdate(tree, "shiftUserQuota", "userQuotas");
 
-		final OneColumnLayoutModel model = getModel(info);
+          @Override
+          protected List<UserQuota> getSourceList(SectionInfo info) {
+            return getConfig().getQuotas();
+          }
 
-		final TemplateResultCollector collector = new TemplateResultCollector();
-		final SectionId modalSection = model.getModalSection();
-		if( modalSection != null )
-		{
-			SectionUtils.renderSection(info, modalSection, collector);
-			return collector.getTemplateResult();
-		}
-		// else
-		return new GenericTemplateResult(view.createNamedResult(BODY, "contentrestrictions.ftl", this));
-	}
+          @Override
+          protected void transform(
+              SectionInfo info,
+              SelectionsTableSelection selection,
+              UserQuota quota,
+              List<SectionRenderable> actions,
+              int index) {
+            long quotaSize = quota.getSize();
+            String quotaExpr = quota.getExpression();
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		OneColumnLayoutModel model = getModel(info);
-		SectionId modalSection = model.getModalSection();
-		crumbs.add(SettingsUtils.getBreadcrumb(info));
+            selection.setName(new TextLabel(FileSizeUtils.humanReadableFileSize(quotaSize)));
 
-		if( modalSection != null )
-		{
-			SectionId section = info.getSectionForId(modalSection);
-			if( section instanceof ModalContentRestrictionsSection )
-			{
-				((ModalContentRestrictionsSection) section).addBreadcrumbsAndTitle(info, decorations, crumbs);
-				return;
-			}
-		}
-		decorations.setTitle(TITLE_LABEL);
-	}
+            Label expressionLabel;
+            try {
+              expressionLabel =
+                  new TextLabel(new ExpressionFormatter(userService).convertToInfix(quotaExpr));
+            } catch (Exception e) {
+              expressionLabel = LABEL_INVALID_EXPRESSION;
+            }
+            selection.addColumn(expressionLabel);
 
-	private QuotaSettings getConfig()
-	{
-		return configService.getProperties(new QuotaSettings());
-	}
+            actions.add(
+                makeAction(
+                    LABEL_EDIT_QUOTA,
+                    new OverrideHandler(
+                        editFunc, index, quotaSize, Strings.nullToEmpty(quotaExpr))));
 
-	@EventHandlerMethod
-	public void addBannedExtension(SectionInfo info, String ext)
-	{
-		final QuotaSettings config = getConfig();
-		final List<String> extensions = config.getBannedExtensions();
-		final String upperCase = ext.trim().toUpperCase();
-		if( !extensions.contains(upperCase) )
-		{
-			extensions.add(upperCase);
-			Collections.sort(extensions);
-			configService.setProperties(config);
-		}
-	}
+            actions.add(
+                makeAction(
+                    LABEL_DELETE_QUOTA,
+                    new OverrideHandler(deleteFunc, index)
+                        .addValidator(LABEL_CONFIRM_DELETE_QUOTA)));
 
-	@EventHandlerMethod
-	public void removeBannedExtension(SectionInfo info, String key)
-	{
-		final QuotaSettings config = getConfig();
-		config.getBannedExtensions().remove(key);
-		configService.setProperties(config);
-	}
+            final HtmlLinkState upLinkState =
+                new HtmlLinkState(new OverrideHandler(upDownFunc, index, true));
 
-	public void addUserAndQuota(SectionInfo info, SelectedQuota selected)
-	{
-		final QuotaSettings config = getConfig();
-		final UserQuota uq;
-		int quotaIndex = selected.getQuotaIndex();
-		if( quotaIndex == -1 )
-		{
-			uq = new UserQuota();
-			config.getQuotas().add(uq);
-		}
-		else
-		{
-			uq = config.getQuotas().get(quotaIndex);
-		}
-		uq.setExpression(selected.getExpression());
-		uq.setSize(selected.getQuota());
+            upLinkState.setId("qup");
+            final LinkRenderer upLink = new LinkRenderer(upLinkState);
+            upLink
+                .setNestedRenderable(new ImageRenderer(URL_ICON_UP, LABEL_MOVE_UP))
+                .addClass("position");
 
-		configService.setProperties(config);
-	}
+            final HtmlLinkState downLinkState =
+                new HtmlLinkState(new OverrideHandler(upDownFunc, index, false));
+            downLinkState.setId("qdn");
+            final LinkRenderer downLink = new LinkRenderer(downLinkState);
+            downLink
+                .setNestedRenderable(new ImageRenderer(URL_ICON_DOWN, LABEL_MOVE_DOWN))
+                .addClass("position");
 
-	@EventHandlerMethod
-	public void removeUserQuota(SectionInfo info, int index)
-	{
-		final QuotaSettings config = getConfig();
-		config.getQuotas().remove(index);
-		configService.setProperties(config);
-	}
+            // Up and down in same action column
+            actions.add(CombinedRenderer.combineMultipleResults(upLink, downLink));
+          }
+        });
 
-	@EventHandlerMethod
-	public void shiftUserQuota(SectionInfo info, int index, boolean up)
-	{
-		final QuotaSettings config = getConfig();
-		final List<UserQuota> quotas = config.getQuotas();
-		final UserQuota uq = quotas.get(index);
+    addUserQuotaLink.setStyleClass("add");
+    addUserQuotaLink.setClickHandler(new OverrideHandler(editFunc, -1, 0, ""));
+  }
 
-		int i = index;
-		if( up && index > 0 )
-		{
-			i--;
-		}
-		else if( !up && index < quotas.size() - 1 )
-		{
-			i++;
-		}
-		quotas.remove(index);
-		quotas.add(i, uq);
+  private UpdateDomFunction getAjaxUpdate(
+      SectionTree tree, String eventHandlerName, String... ajaxIds) {
+    return ajax.getAjaxUpdateDomFunction(
+        tree,
+        this,
+        events.getEventHandler(eventHandlerName),
+        ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
+        ajaxIds);
+  }
 
-		configService.setProperties(config);
-	}
+  @EventHandlerMethod
+  public void editUserQuota(SectionInfo info, int index, long quotaSize, String expression) {
+    SelectedQuota selected = new SelectedQuota(index, quotaSize, expression);
+    editContentRestrictionsSection.editUserQuota(info, selected);
+  }
 
-	public SelectionsTable getBannedExtensions()
-	{
-		return bannedExtensions;
-	}
+  @Override
+  protected TemplateResult setupTemplate(RenderEventContext info) {
+    securityProvider.checkAuthorised();
 
-	public SelectionsTable getUserQuotas()
-	{
-		return userQuotas;
-	}
+    final OneColumnLayoutModel model = getModel(info);
 
-	public Link getAddUserQuotaLink()
-	{
-		return addUserQuotaLink;
-	}
+    final TemplateResultCollector collector = new TemplateResultCollector();
+    final SectionId modalSection = model.getModalSection();
+    if (modalSection != null) {
+      SectionUtils.renderSection(info, modalSection, collector);
+      return collector.getTemplateResult();
+    }
+    // else
+    return new GenericTemplateResult(view.createNamedResult(BODY, "contentrestrictions.ftl", this));
+  }
 
-	@Override
-	public Class<OneColumnLayoutModel> getModelClass()
-	{
-		return OneColumnLayoutModel.class;
-	}
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    OneColumnLayoutModel model = getModel(info);
+    SectionId modalSection = model.getModalSection();
+    crumbs.add(SettingsUtils.getBreadcrumb(info));
+
+    if (modalSection != null) {
+      SectionId section = info.getSectionForId(modalSection);
+      if (section instanceof ModalContentRestrictionsSection) {
+        ((ModalContentRestrictionsSection) section)
+            .addBreadcrumbsAndTitle(info, decorations, crumbs);
+        return;
+      }
+    }
+    decorations.setTitle(TITLE_LABEL);
+  }
+
+  private QuotaSettings getConfig() {
+    return configService.getProperties(new QuotaSettings());
+  }
+
+  @EventHandlerMethod
+  public void addBannedExtension(SectionInfo info, String ext) {
+    final QuotaSettings config = getConfig();
+    final List<String> extensions = config.getBannedExtensions();
+    final String upperCase = ext.trim().toUpperCase();
+    if (!extensions.contains(upperCase)) {
+      extensions.add(upperCase);
+      Collections.sort(extensions);
+      configService.setProperties(config);
+    }
+  }
+
+  @EventHandlerMethod
+  public void removeBannedExtension(SectionInfo info, String key) {
+    final QuotaSettings config = getConfig();
+    config.getBannedExtensions().remove(key);
+    configService.setProperties(config);
+  }
+
+  public void addUserAndQuota(SectionInfo info, SelectedQuota selected) {
+    final QuotaSettings config = getConfig();
+    final UserQuota uq;
+    int quotaIndex = selected.getQuotaIndex();
+    if (quotaIndex == -1) {
+      uq = new UserQuota();
+      config.getQuotas().add(uq);
+    } else {
+      uq = config.getQuotas().get(quotaIndex);
+    }
+    uq.setExpression(selected.getExpression());
+    uq.setSize(selected.getQuota());
+
+    configService.setProperties(config);
+  }
+
+  @EventHandlerMethod
+  public void removeUserQuota(SectionInfo info, int index) {
+    final QuotaSettings config = getConfig();
+    config.getQuotas().remove(index);
+    configService.setProperties(config);
+  }
+
+  @EventHandlerMethod
+  public void shiftUserQuota(SectionInfo info, int index, boolean up) {
+    final QuotaSettings config = getConfig();
+    final List<UserQuota> quotas = config.getQuotas();
+    final UserQuota uq = quotas.get(index);
+
+    int i = index;
+    if (up && index > 0) {
+      i--;
+    } else if (!up && index < quotas.size() - 1) {
+      i++;
+    }
+    quotas.remove(index);
+    quotas.add(i, uq);
+
+    configService.setProperties(config);
+  }
+
+  public SelectionsTable getBannedExtensions() {
+    return bannedExtensions;
+  }
+
+  public SelectionsTable getUserQuotas() {
+    return userQuotas;
+  }
+
+  public Link getAddUserQuotaLink() {
+    return addUserQuotaLink;
+  }
+
+  @Override
+  public Class<OneColumnLayoutModel> getModelClass() {
+    return OneColumnLayoutModel.class;
+  }
 }

@@ -23,12 +23,11 @@ import com.tle.web.sections.js.JSExpression;
 import com.tle.web.sections.js.JSStatements;
 
 @NonNullByDefault
-public interface FunctionDefinition
-{
-	String getFunctionName(@Nullable RenderContext context);
+public interface FunctionDefinition {
+  String getFunctionName(@Nullable RenderContext context);
 
-	JSStatements createFunctionBody(@Nullable RenderContext context, JSExpression[] params);
+  JSStatements createFunctionBody(@Nullable RenderContext context, JSExpression[] params);
 
-	@Nullable
-	JSExpression[] getFunctionParams(@Nullable RenderContext context);
+  @Nullable
+  JSExpression[] getFunctionParams(@Nullable RenderContext context);
 }

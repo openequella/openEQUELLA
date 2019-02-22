@@ -16,12 +16,6 @@
 
 package com.tle.web.template;
 
-import java.net.URI;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.services.UrlService;
@@ -31,35 +25,31 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.events.EventAuthoriser;
 import com.tle.web.sections.registry.TreeRegistry;
+import java.net.URI;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.servlet.http.HttpServletRequest;
 
 @Bind
 @Singleton
-public class TemplateFilter implements SectionFilter
-{
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private UrlService urlService;
-	@Inject
-	private TreeRegistry treeRegistry;
-	private static final String TEMPLATE_TREE = "$TEMPLATE$"; //$NON-NLS-1$
+public class TemplateFilter implements SectionFilter {
+  @Inject private InstitutionService institutionService;
+  @Inject private UrlService urlService;
+  @Inject private TreeRegistry treeRegistry;
+  private static final String TEMPLATE_TREE = "$TEMPLATE$"; // $NON-NLS-1$
 
-	@Override
-	public void filter(MutableSectionInfo info)
-	{
-		HttpServletRequest request = info.getRequest();
-		if( request != null )
-		{
-			info.setAttribute(SectionInfo.KEY_BASE_HREF, urlService.getBaseUriFromRequest(request));
-		}
-		else
-		{
-			info.setAttribute(SectionInfo.KEY_BASE_HREF, URI.create(institutionService.getInstitutionUrl().toString()));
-		}
-		SectionTree tree = treeRegistry.getTreeForPath(TEMPLATE_TREE);
-		info.setAttribute(EventAuthoriser.class, new XSRFAuthoriser());
-		info.addTree(tree);
-		info.queueTreeEvents(tree);
-	}
-
+  @Override
+  public void filter(MutableSectionInfo info) {
+    HttpServletRequest request = info.getRequest();
+    if (request != null) {
+      info.setAttribute(SectionInfo.KEY_BASE_HREF, urlService.getBaseUriFromRequest(request));
+    } else {
+      info.setAttribute(
+          SectionInfo.KEY_BASE_HREF, URI.create(institutionService.getInstitutionUrl().toString()));
+    }
+    SectionTree tree = treeRegistry.getTreeForPath(TEMPLATE_TREE);
+    info.setAttribute(EventAuthoriser.class, new XSRFAuthoriser());
+    info.addTree(tree);
+    info.queueTreeEvents(tree);
+  }
 }

@@ -19,33 +19,27 @@ package com.tle.exceptions;
 import com.dytech.edge.exceptions.QuietlyLoggable;
 import com.tle.common.beans.exception.NestedRuntimeException;
 
-public class AccessDeniedException extends NestedRuntimeException implements QuietlyLoggable
-{
-	public AccessDeniedException(String msg)
-	{
-		super(msg);
-	}
+public class AccessDeniedException extends NestedRuntimeException implements QuietlyLoggable {
+  public AccessDeniedException(String msg) {
+    super(msg);
+  }
 
-	public AccessDeniedException(String msg, Throwable t)
-	{
-		super(msg, t);
-	}
+  public AccessDeniedException(String msg, Throwable t) {
+    super(msg, t);
+  }
 
-	@Override
-	public boolean isSilent()
-	{
-		return false;
-	}
+  @Override
+  public boolean isSilent() {
+    return false;
+  }
 
-	@Override
-	public boolean isShowStackTrace()
-	{
-		return false;
-	}
+  @Override
+  public boolean isShowStackTrace() {
+    return false;
+  }
 
-	@Override
-	public boolean isWarnOnly()
-	{
-		return true;
-	}
+  @Override
+  public boolean isWarnOnly() {
+    return true;
+  }
 }

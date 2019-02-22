@@ -16,33 +16,27 @@
 
 package com.tle.web.api.item.interfaces.beans;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 @JsonTypeName("folder")
-public class FolderBean extends GenericFileBean
-{
-	private List<FileBean> files;
-	private List<FolderBean> folders;
+public class FolderBean extends GenericFileBean {
+  private List<FileBean> files;
+  private List<FolderBean> folders;
 
-	public List<FileBean> getFiles()
-	{
-		return files;
-	}
+  public List<FileBean> getFiles() {
+    return files;
+  }
 
-	public void setFiles(List<FileBean> files)
-	{
-		this.files = files;
-	}
+  public void setFiles(List<FileBean> files) {
+    this.files = files;
+  }
 
-	public List<FolderBean> getFolders()
-	{
-		return folders;
-	}
+  public List<FolderBean> getFolders() {
+    return folders;
+  }
 
-	public void setFolders(List<FolderBean> folders)
-	{
-		this.folders = folders;
-	}
+  public void setFolders(List<FolderBean> folders) {
+    this.folders = folders;
+  }
 }

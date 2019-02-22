@@ -24,64 +24,55 @@ import com.tle.core.wizard.controls.WizardPage;
 
 /**
  * Provides a data model for static HTML controls.
- * 
+ *
  * @author Nicholas Read
  */
-public class CStaticHTML extends AbstractHTMLControl
-{
-	private static final long serialVersionUID = 1L;
+public class CStaticHTML extends AbstractHTMLControl {
+  private static final long serialVersionUID = 1L;
 
-	protected String html;
+  protected String html;
 
-	public CStaticHTML(WizardPage page, int controlNumber, int nestingLevel, WizardControl controlBean)
-	{
-		super(page, controlNumber, nestingLevel, controlBean);
-		html = CurrentLocale.get(controlBean.getDescription(), "");
-	}
+  public CStaticHTML(
+      WizardPage page, int controlNumber, int nestingLevel, WizardControl controlBean) {
+    super(page, controlNumber, nestingLevel, controlBean);
+    html = CurrentLocale.get(controlBean.getDescription(), "");
+  }
 
-	public String getResolvedHtml()
-	{
-		return evalString(getDescription());
-	}
+  public String getResolvedHtml() {
+    return evalString(getDescription());
+  }
 
-	@Override
-	public void loadFromDocument(PropBagEx itemxml)
-	{
-		// none
-	}
+  @Override
+  public void loadFromDocument(PropBagEx itemxml) {
+    // none
+  }
 
-	@Override
-	public void saveToDocument(PropBagEx itemxml)
-	{
-		// none
-	}
+  @Override
+  public void saveToDocument(PropBagEx itemxml) {
+    // none
+  }
 
-	@Override
-	public BaseQuery getPowerSearchQuery()
-	{
-		return null;
-	}
+  @Override
+  public BaseQuery getPowerSearchQuery() {
+    return null;
+  }
 
-	@Override
-	public void resetToDefaults()
-	{
-		// none
-	}
+  @Override
+  public void resetToDefaults() {
+    // none
+  }
 
-	@Override
-	public void setValues(String... values)
-	{
-		// Nothing to do
-	}
+  @Override
+  public void setValues(String... values) {
+    // Nothing to do
+  }
 
-	@Override
-	public boolean isEmpty()
-	{
-		return false;
-	}
+  @Override
+  public boolean isEmpty() {
+    return false;
+  }
 
-	public String getHtml()
-	{
-		return html;
-	}
+  public String getHtml() {
+    return html;
+  }
 }

@@ -16,14 +16,12 @@
 
 package com.tle.mypages.web.event;
 
-import java.util.EventListener;
-
 import com.tle.web.sections.SectionInfo;
+import java.util.EventListener;
 
 /*
  * @author aholland
  */
-public interface SaveItemEventListener extends EventListener
-{
-	void doSaveItemEvent(SectionInfo info, SaveItemEvent event);
+public interface SaveItemEventListener extends EventListener {
+  void doSaveItemEvent(SectionInfo info, SaveItemEvent event);
 }

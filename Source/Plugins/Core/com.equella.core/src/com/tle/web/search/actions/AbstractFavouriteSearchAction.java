@@ -29,35 +29,31 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.Link;
 
 @SuppressWarnings("nls")
-public abstract class AbstractFavouriteSearchAction extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	@PlugKey("actions.favourite")
-	private static Label LABEL_BUTTON;
+public abstract class AbstractFavouriteSearchAction extends AbstractPrototypeSection<Object>
+    implements HtmlRenderer {
+  @PlugKey("actions.favourite")
+  private static Label LABEL_BUTTON;
 
-	protected abstract EquellaDialog<?> getDialog();
+  protected abstract EquellaDialog<?> getDialog();
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		final Link link = getDialog().getOpener();
-		link.setStyleClass("add-to-favourites");
-		link.setLabel(LABEL_BUTTON);
-	}
+    final Link link = getDialog().getOpener();
+    link.setStyleClass("add-to-favourites");
+    link.setLabel(LABEL_BUTTON);
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( CurrentUser.wasAutoLoggedIn() || CurrentUser.isGuest() )
-		{
-			return null;
-		}
-		return SectionUtils.renderSectionResult(context, getDialog().getOpener());
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (CurrentUser.wasAutoLoggedIn() || CurrentUser.isGuest()) {
+      return null;
+    }
+    return SectionUtils.renderSectionResult(context, getDialog().getOpener());
+  }
 
-	protected Label getLabel()
-	{
-		return LABEL_BUTTON;
-	}
+  protected Label getLabel() {
+    return LABEL_BUTTON;
+  }
 }

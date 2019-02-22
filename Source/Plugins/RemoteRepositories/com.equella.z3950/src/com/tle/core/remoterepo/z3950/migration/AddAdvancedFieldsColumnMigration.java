@@ -16,81 +16,66 @@
 
 package com.tle.core.remoterepo.z3950.migration;
 
-import java.util.List;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Lob;
-
-import org.hibernate.annotations.AccessType;
-import org.hibernate.classic.Session;
-
 import com.google.inject.Singleton;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.impl.HibernateMigrationHelper;
 import com.tle.core.migration.AbstractHibernateSchemaMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
+import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Lob;
+import org.hibernate.annotations.AccessType;
+import org.hibernate.classic.Session;
 
 @Bind
 @Singleton
-public class AddAdvancedFieldsColumnMigration extends AbstractHibernateSchemaMigration
-{
+public class AddAdvancedFieldsColumnMigration extends AbstractHibernateSchemaMigration {
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo("com.tle.core.remoterepo.z3950.migration.addcolumn");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo("com.tle.core.remoterepo.z3950.migration.addcolumn");
+  }
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-		throws Exception
-	{
-		// no data
-	}
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception {
+    // no data
+  }
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return 0;
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return 0;
+  }
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		return null;
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    return null;
+  }
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		return helper.getAddColumnsSQL("federated_search", "advanced_search_fields");
-	}
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    return helper.getAddColumnsSQL("federated_search", "advanced_search_fields");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{FakeBaseEntity.class, FakeFederatedSearch.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {FakeBaseEntity.class, FakeFederatedSearch.class};
+  }
 
-	@Entity(name = "BaseEntity")
-	@AccessType("field")
-	@Inheritance(strategy = InheritanceType.JOINED)
-	public static class FakeBaseEntity
-	{
-		@Id
-		long id;
-	}
+  @Entity(name = "BaseEntity")
+  @AccessType("field")
+  @Inheritance(strategy = InheritanceType.JOINED)
+  public static class FakeBaseEntity {
+    @Id long id;
+  }
 
-	@Entity(name = "FederatedSearch")
-	@AccessType("field")
-	public static class FakeFederatedSearch extends FakeBaseEntity
-	{
-		@Lob
-		String advancedSearchFields;
-	}
-
+  @Entity(name = "FederatedSearch")
+  @AccessType("field")
+  public static class FakeFederatedSearch extends FakeBaseEntity {
+    @Lob String advancedSearchFields;
+  }
 }

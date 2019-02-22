@@ -28,7 +28,8 @@ package object db {
     override def apply[A](fa: JDBCIO[A]): DB[A] = Kleisli.liftF(fa)
   }
 
-  def dbStream[A](f: UserContext => Stream[JDBCIO, A]): Stream[DB, A] = Stream.eval[DB, UserContext](Kleisli.ask[JDBCIO, UserContext]).flatMap {
-    uc => f(uc).translate[DB](translate)
-  }
+  def dbStream[A](f: UserContext => Stream[JDBCIO, A]): Stream[DB, A] =
+    Stream.eval[DB, UserContext](Kleisli.ask[JDBCIO, UserContext]).flatMap { uc =>
+      f(uc).translate[DB](translate)
+    }
 }

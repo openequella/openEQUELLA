@@ -16,8 +16,8 @@
 
 package com.tle.core.workflow.migrate.beans.node;
 
+import com.tle.beans.entity.LanguageBundle;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -27,223 +27,198 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-
 import org.hibernate.annotations.AccessType;
-
-import com.tle.beans.entity.LanguageBundle;
 
 @Entity(name = "WorkflowItem")
 @AccessType("field")
 @DiscriminatorValue("t")
-public class WorkflowItem extends WorkflowNode
-{
-	private static final long serialVersionUID = 1;
+public class WorkflowItem extends WorkflowNode {
+  private static final long serialVersionUID = 1;
 
-	@ElementCollection
-	@Column(name = "`user`", length = 255)
-	@CollectionTable(name = "workflow_node_users", joinColumns = @JoinColumn(name = "workflow_node_id") )
-	private Set<String> users;
-	@ElementCollection
-	@Column(name = "`group`", length = 255)
-	@CollectionTable(name = "workflow_node_groups", joinColumns = @JoinColumn(name = "workflow_node_id") )
-	private Set<String> groups;
-	@ElementCollection
-	@Column(name = "role", length = 255)
-	@CollectionTable(name = "workflow_node_roles", joinColumns = @JoinColumn(name = "workflow_node_id") )
-	private Set<String> roles;
+  @ElementCollection
+  @Column(name = "`user`", length = 255)
+  @CollectionTable(
+      name = "workflow_node_users",
+      joinColumns = @JoinColumn(name = "workflow_node_id"))
+  private Set<String> users;
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private LanguageBundle description;
-	private boolean unanimousacceptance;
-	private boolean escalate;
-	private int escalationdays;
-	private boolean movelive;
-	private boolean allowEditing;
+  @ElementCollection
+  @Column(name = "`group`", length = 255)
+  @CollectionTable(
+      name = "workflow_node_groups",
+      joinColumns = @JoinColumn(name = "workflow_node_id"))
+  private Set<String> groups;
 
-	// Auto-assign based on steps
-	@ElementCollection
-	@Column(name = "`task`", length = 40)
-	@CollectionTable(name = "workflow_node_auto_assigns", joinColumns = @JoinColumn(name = "workflow_node_id") )
-	private Set<String> autoAssigns;
-	// Auto-assign based on user ID in this metadata path
-	@Column(length = 512)
-	private String autoAssignNode;
-	@Column(length = 40)
-	private String autoAssignSchemaUuid;
+  @ElementCollection
+  @Column(name = "role", length = 255)
+  @CollectionTable(
+      name = "workflow_node_roles",
+      joinColumns = @JoinColumn(name = "workflow_node_id"))
+  private Set<String> roles;
 
-	// TODO: the following are unused - need import and DB migration to remove.
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private LanguageBundle description;
 
-	@Column(length = 512)
-	private String userPath;
+  private boolean unanimousacceptance;
+  private boolean escalate;
+  private int escalationdays;
+  private boolean movelive;
+  private boolean allowEditing;
 
-	@Column(length = 40)
-	private String userSchemaUuid;
+  // Auto-assign based on steps
+  @ElementCollection
+  @Column(name = "`task`", length = 40)
+  @CollectionTable(
+      name = "workflow_node_auto_assigns",
+      joinColumns = @JoinColumn(name = "workflow_node_id"))
+  private Set<String> autoAssigns;
+  // Auto-assign based on user ID in this metadata path
+  @Column(length = 512)
+  private String autoAssignNode;
 
-	public WorkflowItem(final LanguageBundle name)
-	{
-		super(name);
-		escalationdays = 0;
-	}
+  @Column(length = 40)
+  private String autoAssignSchemaUuid;
 
-	public WorkflowItem()
-	{
-		this(null);
-	}
+  // TODO: the following are unused - need import and DB migration to remove.
 
-	@Override
-	public char getType()
-	{
-		return 't';
-	}
+  @Column(length = 512)
+  private String userPath;
 
-	public LanguageBundle getDisplayName()
-	{
-		return name;
-	}
+  @Column(length = 40)
+  private String userSchemaUuid;
 
-	public LanguageBundle getDescription()
-	{
-		return description;
-	}
+  public WorkflowItem(final LanguageBundle name) {
+    super(name);
+    escalationdays = 0;
+  }
 
-	public void setDescription(final LanguageBundle description)
-	{
-		this.description = description;
-	}
+  public WorkflowItem() {
+    this(null);
+  }
 
-	public boolean isEscalate()
-	{
-		return escalate;
-	}
+  @Override
+  public char getType() {
+    return 't';
+  }
 
-	public void setEscalate(final boolean escalate)
-	{
-		this.escalate = escalate;
-	}
+  public LanguageBundle getDisplayName() {
+    return name;
+  }
 
-	public int getEscalationdays()
-	{
-		return escalationdays;
-	}
+  public LanguageBundle getDescription() {
+    return description;
+  }
 
-	public void setEscalationdays(final int escalationdays)
-	{
-		this.escalationdays = escalationdays;
-	}
+  public void setDescription(final LanguageBundle description) {
+    this.description = description;
+  }
 
-	public boolean isMovelive()
-	{
-		return movelive;
-	}
+  public boolean isEscalate() {
+    return escalate;
+  }
 
-	public void setMovelive(final boolean movelive)
-	{
-		this.movelive = movelive;
-	}
+  public void setEscalate(final boolean escalate) {
+    this.escalate = escalate;
+  }
 
-	public boolean isUnanimousacceptance()
-	{
-		return unanimousacceptance;
-	}
+  public int getEscalationdays() {
+    return escalationdays;
+  }
 
-	public void setUnanimousacceptance(final boolean unanimousacceptance)
-	{
-		this.unanimousacceptance = unanimousacceptance;
-	}
+  public void setEscalationdays(final int escalationdays) {
+    this.escalationdays = escalationdays;
+  }
 
-	public Set<String> getGroups()
-	{
-		return groups;
-	}
+  public boolean isMovelive() {
+    return movelive;
+  }
 
-	public void setGroups(final Set<String> group)
-	{
-		this.groups = group;
-	}
+  public void setMovelive(final boolean movelive) {
+    this.movelive = movelive;
+  }
 
-	public Set<String> getUsers()
-	{
-		return users;
-	}
+  public boolean isUnanimousacceptance() {
+    return unanimousacceptance;
+  }
 
-	public void setUsers(final Set<String> user)
-	{
-		this.users = user;
-	}
+  public void setUnanimousacceptance(final boolean unanimousacceptance) {
+    this.unanimousacceptance = unanimousacceptance;
+  }
 
-	public Set<String> getRoles()
-	{
-		return roles;
-	}
+  public Set<String> getGroups() {
+    return groups;
+  }
 
-	public void setRoles(final Set<String> roles)
-	{
-		this.roles = roles;
-	}
+  public void setGroups(final Set<String> group) {
+    this.groups = group;
+  }
 
-	public Set<String> getAutoAssigns()
-	{
-		return autoAssigns;
-	}
+  public Set<String> getUsers() {
+    return users;
+  }
 
-	public void setAutoAssigns(final Set<String> autoAssigns)
-	{
-		this.autoAssigns = autoAssigns;
-	}
+  public void setUsers(final Set<String> user) {
+    this.users = user;
+  }
 
-	public boolean isAllowEditing()
-	{
-		return allowEditing;
-	}
+  public Set<String> getRoles() {
+    return roles;
+  }
 
-	public void setAllowEditing(final boolean allowEditing)
-	{
-		this.allowEditing = allowEditing;
-	}
+  public void setRoles(final Set<String> roles) {
+    this.roles = roles;
+  }
 
-	public String getAutoAssignNode()
-	{
-		return autoAssignNode;
-	}
+  public Set<String> getAutoAssigns() {
+    return autoAssigns;
+  }
 
-	public void setAutoAssignNode(String autoAssignNode)
-	{
-		this.autoAssignNode = autoAssignNode;
-	}
+  public void setAutoAssigns(final Set<String> autoAssigns) {
+    this.autoAssigns = autoAssigns;
+  }
 
-	public String getAutoAssignSchemaUuid()
-	{
-		return autoAssignSchemaUuid;
-	}
+  public boolean isAllowEditing() {
+    return allowEditing;
+  }
 
-	public void setAutoAssignSchemaUuid(String autoAssignSchemaUuid)
-	{
-		this.autoAssignSchemaUuid = autoAssignSchemaUuid;
-	}
+  public void setAllowEditing(final boolean allowEditing) {
+    this.allowEditing = allowEditing;
+  }
 
-	@Override
-	public boolean canHaveSiblingRejectPoints()
-	{
-		return false;
-	}
+  public String getAutoAssignNode() {
+    return autoAssignNode;
+  }
 
-	public String getUserPath()
-	{
-		return userPath;
-	}
+  public void setAutoAssignNode(String autoAssignNode) {
+    this.autoAssignNode = autoAssignNode;
+  }
 
-	public void setUserPath(String userPath)
-	{
-		this.userPath = userPath;
-	}
+  public String getAutoAssignSchemaUuid() {
+    return autoAssignSchemaUuid;
+  }
 
-	public String getUserSchemaUuid()
-	{
-		return userSchemaUuid;
-	}
+  public void setAutoAssignSchemaUuid(String autoAssignSchemaUuid) {
+    this.autoAssignSchemaUuid = autoAssignSchemaUuid;
+  }
 
-	public void setUserSchemaUuid(String userSchemaUuid)
-	{
-		this.userSchemaUuid = userSchemaUuid;
-	}
+  @Override
+  public boolean canHaveSiblingRejectPoints() {
+    return false;
+  }
+
+  public String getUserPath() {
+    return userPath;
+  }
+
+  public void setUserPath(String userPath) {
+    this.userPath = userPath;
+  }
+
+  public String getUserSchemaUuid() {
+    return userSchemaUuid;
+  }
+
+  public void setUserSchemaUuid(String userSchemaUuid) {
+    this.userSchemaUuid = userSchemaUuid;
+  }
 }

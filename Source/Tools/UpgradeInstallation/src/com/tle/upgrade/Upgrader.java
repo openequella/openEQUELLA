@@ -19,15 +19,14 @@ package com.tle.upgrade;
 import java.io.File;
 import java.util.List;
 
-public interface Upgrader
-{
-	String getId();
+public interface Upgrader {
+  String getId();
 
-	boolean isRunOnInstall();
+  boolean isRunOnInstall();
 
-	boolean isBackwardsCompatible();
+  boolean isBackwardsCompatible();
 
-	List<UpgradeDepends> getDepends();
+  List<UpgradeDepends> getDepends();
 
-	void upgrade(UpgradeResult result, File tleInstallDir) throws Exception;
+  void upgrade(UpgradeResult result, File tleInstallDir) throws Exception;
 }

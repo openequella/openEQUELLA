@@ -16,8 +16,6 @@
 
 package com.tle.web.viewitem.summary.content;
 
-import javax.inject.Inject;
-
 import com.tle.beans.item.Item;
 import com.tle.core.i18n.BundleCache;
 import com.tle.web.navigation.BreadcrumbService;
@@ -48,105 +46,93 @@ import com.tle.web.viewitem.section.ParentViewItemSectionUtils;
 import com.tle.web.viewitem.summary.section.ItemDetailsAndActionsSummarySection;
 import com.tle.web.viewitem.summary.section.ItemSummaryContentSection;
 import com.tle.web.viewurl.ItemSectionInfo;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
-public abstract class AbstractContentSection<M> extends AbstractPrototypeSection<M> implements HtmlRenderer
-{
-	@EventFactory
-	protected EventGenerator events;
+public abstract class AbstractContentSection<M> extends AbstractPrototypeSection<M>
+    implements HtmlRenderer {
+  @EventFactory protected EventGenerator events;
 
-	@TreeLookup(mandatory = false)
-	protected ItemSummaryContentSection itemSummaryContentSection;
+  @TreeLookup(mandatory = false)
+  protected ItemSummaryContentSection itemSummaryContentSection;
 
-	@Inject
-	protected BundleCache bundleCache;
-	@Inject
-	protected BreadcrumbService breadcrumbService;
-	@Inject
-	private SelectionService selectionService;
+  @Inject protected BundleCache bundleCache;
+  @Inject protected BreadcrumbService breadcrumbService;
+  @Inject private SelectionService selectionService;
 
-	protected JSHandler mainContentBreadcrumbClickedHandler;
+  protected JSHandler mainContentBreadcrumbClickedHandler;
 
-	@TreeLookup(mandatory = false)
-	private ItemDetailsAndActionsSummarySection itemDetailsAndActionsSummarySection;
+  @TreeLookup(mandatory = false)
+  private ItemDetailsAndActionsSummarySection itemDetailsAndActionsSummarySection;
 
-	@PlugKey("summary.content.back")
-	@Component
-	private Button backButton;
+  @PlugKey("summary.content.back")
+  @Component
+  private Button backButton;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		mainContentBreadcrumbClickedHandler = events.getNamedHandler("mainContentBreadcrumbClicked");
-		backButton.setClickHandler(events.getNamedHandler("backButtonCliecked"));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    mainContentBreadcrumbClickedHandler = events.getNamedHandler("mainContentBreadcrumbClicked");
+    backButton.setClickHandler(events.getNamedHandler("backButtonCliecked"));
+  }
 
-	protected void addDefaultBreadcrumbs(SectionInfo info, ItemSectionInfo itemInfo, Label overrideLastCrumb)
-	{
-		TagState col = breadcrumbService.getSearchCollectionCrumb(info, itemInfo.getItemdef().getUuid());
+  protected void addDefaultBreadcrumbs(
+      SectionInfo info, ItemSectionInfo itemInfo, Label overrideLastCrumb) {
+    TagState col =
+        breadcrumbService.getSearchCollectionCrumb(info, itemInfo.getItemdef().getUuid());
 
-		if( col instanceof HtmlLinkState
-			&& (ParentViewItemSectionUtils.isForPreview(info) || ParentViewItemSectionUtils.isInIntegration(info)) )
-		{
-			((HtmlLinkState) col).setDisabled(true);
-		}
+    if (col instanceof HtmlLinkState
+        && (ParentViewItemSectionUtils.isForPreview(info)
+            || ParentViewItemSectionUtils.isInIntegration(info))) {
+      ((HtmlLinkState) col).setDisabled(true);
+    }
 
-		Breadcrumbs crumbs = Breadcrumbs.get(info);
+    Breadcrumbs crumbs = Breadcrumbs.get(info);
 
-		crumbs.add(col);
+    crumbs.add(col);
 
-		Item item = itemInfo.getItem();
-		WrappedLabel truncLabel = new WrappedLabel(new BundleLabel(item.getName(), item.getUuid(), bundleCache), 35);
+    Item item = itemInfo.getItem();
+    WrappedLabel truncLabel =
+        new WrappedLabel(new BundleLabel(item.getName(), item.getUuid(), bundleCache), 35);
 
-		// Page title is always going to be "Resource", so the last crumb should
-		// either be the item name, or the item name and the sub-page title.
-		if( overrideLastCrumb == null )
-		{
-			crumbs.setForcedLastCrumb(truncLabel.setShowAltText(true));
-		}
-		else
-		{
-			crumbs.add(new HtmlLinkState(truncLabel, mainContentBreadcrumbClickedHandler));
-			crumbs.setForcedLastCrumb(overrideLastCrumb);
-		}
-	}
+    // Page title is always going to be "Resource", so the last crumb should
+    // either be the item name, or the item name and the sub-page title.
+    if (overrideLastCrumb == null) {
+      crumbs.setForcedLastCrumb(truncLabel.setShowAltText(true));
+    } else {
+      crumbs.add(new HtmlLinkState(truncLabel, mainContentBreadcrumbClickedHandler));
+      crumbs.setForcedLastCrumb(overrideLastCrumb);
+    }
+  }
 
-	public SectionRenderable renderHelp(RenderContext context)
-	{
-		return null;
-	}
+  public SectionRenderable renderHelp(RenderContext context) {
+    return null;
+  }
 
-	public boolean isCourseSelectionSession(SectionInfo info)
-	{
-		SelectionSession ss = selectionService.getCurrentSession(info);
-		if( (ss != null && ss.getLayout() == Layout.COURSE) )
-		{
-			return true;
-		}
-		return false;
-	}
+  public boolean isCourseSelectionSession(SectionInfo info) {
+    SelectionSession ss = selectionService.getCurrentSession(info);
+    if ((ss != null && ss.getLayout() == Layout.COURSE)) {
+      return true;
+    }
+    return false;
+  }
 
-	@EventHandlerMethod
-	public void mainContentBreadcrumbClicked(SectionInfo info)
-	{
-		itemSummaryContentSection.setSummaryId(info, null);
-	}
+  @EventHandlerMethod
+  public void mainContentBreadcrumbClicked(SectionInfo info) {
+    itemSummaryContentSection.setSummaryId(info, null);
+  }
 
-	@EventHandlerMethod
-	public void backButtonCliecked(SectionInfo info)
-	{
-		itemSummaryContentSection.setSummaryId(info, itemDetailsAndActionsSummarySection);
-	}
+  @EventHandlerMethod
+  public void backButtonCliecked(SectionInfo info) {
+    itemSummaryContentSection.setSummaryId(info, itemDetailsAndActionsSummarySection);
+  }
 
-	protected void displayBackButton(SectionInfo info)
-	{
-		SelectionSession ss = selectionService.getCurrentSession(info);
-		backButton.setDisplayed(info, (ss != null && ss.getLayout() == Layout.COURSE));
-	}
+  protected void displayBackButton(SectionInfo info) {
+    SelectionSession ss = selectionService.getCurrentSession(info);
+    backButton.setDisplayed(info, (ss != null && ss.getLayout() == Layout.COURSE));
+  }
 
-	public Button getBackButton()
-	{
-		return backButton;
-	}
+  public Button getBackButton() {
+    return backButton;
+  }
 }

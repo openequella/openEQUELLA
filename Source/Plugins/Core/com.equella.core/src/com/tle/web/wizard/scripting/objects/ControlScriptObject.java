@@ -20,105 +20,91 @@ import com.tle.common.scripting.ScriptObject;
 
 /**
  * Referenced by the 'ctrl' variable in script
- * 
+ *
  * @author aholland
  */
-public interface ControlScriptObject extends ScriptObject
-{
-	/**
-	 * Gets the current value of this control.
-	 * 
-	 * @return The stored value of this control
-	 */
-	String getValue();
+public interface ControlScriptObject extends ScriptObject {
+  /**
+   * Gets the current value of this control.
+   *
+   * @return The stored value of this control
+   */
+  String getValue();
 
-	/**
-	 * Sets a new value for this control. Will update any metadata that this
-	 * control is mapped to.
-	 * 
-	 * @param value The new value for this control.
-	 */
-	void setValue(String value);
+  /**
+   * Sets a new value for this control. Will update any metadata that this control is mapped to.
+   *
+   * @param value The new value for this control.
+   */
+  void setValue(String value);
 
-	/**
-	 * @return true if this control is not to be shown on the page.
-	 */
-	boolean isHidden();
+  /** @return true if this control is not to be shown on the page. */
+  boolean isHidden();
 
-	/**
-	 * If set to true, the control is not shown on the page, but will retain
-	 * it's value.
-	 * 
-	 * @param hidden
-	 */
-	void setHidden(boolean hidden);
+  /**
+   * If set to true, the control is not shown on the page, but will retain it's value.
+   *
+   * @param hidden
+   */
+  void setHidden(boolean hidden);
 
-	/**
-	 * @return false if this control is not to be shown on the page and not to
-	 *         store any metadata
-	 */
-	boolean isVisible();
+  /** @return false if this control is not to be shown on the page and not to store any metadata */
+  boolean isVisible();
 
-	/**
-	 * If set to false, the control is not shown on the page AND
-	 * <em>it's value will be cleared</em> Be careful not to confuse with
-	 * setHidden, which does not clear the value.
-	 * 
-	 * @param visible The visibility of this control.
-	 */
-	void setVisible(boolean visible);
+  /**
+   * If set to false, the control is not shown on the page AND <em>it's value will be cleared</em>
+   * Be careful not to confuse with setHidden, which does not clear the value.
+   *
+   * @param visible The visibility of this control.
+   */
+  void setVisible(boolean visible);
 
-	/**
-	 * Determines if this control has a value (for mandatory purposes)
-	 * 
-	 * @return true if the control has no value
-	 */
-	boolean isEmpty();
+  /**
+   * Determines if this control has a value (for mandatory purposes)
+   *
+   * @return true if the control has no value
+   */
+  boolean isEmpty();
 
-	/**
-	 * Clear the invalid state of the control. Same as ctrl.setInvalid(false,
-	 * null);
-	 */
-	void clearInvalid();
+  /** Clear the invalid state of the control. Same as ctrl.setInvalid(false, null); */
+  void clearInvalid();
 
-	/**
-	 * Mark the control as invalid so that the wizard is not considered
-	 * complete. (The item will not be allowed to be published until the control
-	 * is valid)
-	 * 
-	 * @param invalid true if the control is not valid.
-	 * @param message A message to display to the user.
-	 */
-	void setInvalid(boolean invalid, String message);
+  /**
+   * Mark the control as invalid so that the wizard is not considered complete. (The item will not
+   * be allowed to be published until the control is valid)
+   *
+   * @param invalid true if the control is not valid.
+   * @param message A message to display to the user.
+   */
+  void setInvalid(boolean invalid, String message);
 
-	/**
-	 * Returns the ID of this control when displayed in the HTML<br>
-	 * E.g. &lt;input id="theid" type="text"&gt;<br>
-	 * <p>
-	 * Note that not all controls will be rendered as a simple HTML equivalent
-	 * (for example: the load attachments control) in this case the form ID is
-	 * actually an ID prefix for all of the HTML elements rendered by this
-	 * control.
-	 * </p>
-	 * 
-	 * @return The ID or ID-prefix as rendered in the HTML
-	 */
-	String getFormId();
+  /**
+   * Returns the ID of this control when displayed in the HTML<br>
+   * E.g. &lt;input id="theid" type="text"&gt;<br>
+   *
+   * <p>Note that not all controls will be rendered as a simple HTML equivalent (for example: the
+   * load attachments control) in this case the form ID is actually an ID prefix for all of the HTML
+   * elements rendered by this control.
+   *
+   * @return The ID or ID-prefix as rendered in the HTML
+   */
+  String getFormId();
 
-	/**
-	 * Returns the parent of the calling ControlScriptObject.  A parent will exist
-	 * generally in the case when a control is nested in a group / repeater.
-	 * @return The ControlScriptObject parent, null if not available.
-	 */
-	ControlScriptObject getParent();
+  /**
+   * Returns the parent of the calling ControlScriptObject. A parent will exist generally in the
+   * case when a control is nested in a group / repeater.
+   *
+   * @return The ControlScriptObject parent, null if not available.
+   */
+  ControlScriptObject getParent();
 
-	/**
-	 * Returns the index of the ControlScriptObject parameter, assuming there
-	 * is a direct parent-child relationship with the ControlScriptObject making
-	 * the call, and the parent is a list of ControlScriptObjects, such as a repeater.
-	 *
-	 * @return The index of the ControlScriptObject parameter, relative to it's parent.  -1 if not available.
-	 */
-	int getIndex(ControlScriptObject child);
-
+  /**
+   * Returns the index of the ControlScriptObject parameter, assuming there is a direct parent-child
+   * relationship with the ControlScriptObject making the call, and the parent is a list of
+   * ControlScriptObjects, such as a repeater.
+   *
+   * @return The index of the ControlScriptObject parameter, relative to it's parent. -1 if not
+   *     available.
+   */
+  int getIndex(ControlScriptObject child);
 }

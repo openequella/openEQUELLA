@@ -16,154 +16,123 @@
 
 package com.tle.web.sections.events;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import com.dytech.edge.exceptions.BadRequestException;
 import com.tle.common.Check;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
-public class ParametersEvent extends AbstractSectionEvent<ParametersEventListener>
-{
-	private final Map<String, String[]> parameters = new HashMap<String, String[]>();
-	private boolean initial;
+public class ParametersEvent extends AbstractSectionEvent<ParametersEventListener> {
+  private final Map<String, String[]> parameters = new HashMap<String, String[]>();
+  private boolean initial;
 
-	public ParametersEvent(Map<String, String[]> initialParams, boolean initial)
-	{
-		if( initialParams != null )
-		{
-			parameters.putAll(initialParams);
-		}
-		this.initial = initial;
-	}
-
-	@Override
-	public Class<ParametersEventListener> getListenerClass()
-	{
-		return ParametersEventListener.class;
-	}
-
-	public boolean hasParameter(String param)
-	{
-		String[] params = parameters.get(param);
-		if( params != null && params.length > 0 )
-		{
-			return true;
-		}
-		return false;
-	}
-
-    public Map<String, String[]> getParameterMap()
-    {
-	    return parameters;
+  public ParametersEvent(Map<String, String[]> initialParams, boolean initial) {
+    if (initialParams != null) {
+      parameters.putAll(initialParams);
     }
+    this.initial = initial;
+  }
 
-    public String getParameter(String param, boolean mandatory) throws BadRequestException
-	{
-		String[] params = parameters.get(param);
-		if( params != null && params.length > 0 )
-		{
-			return params[0];
-		}
-		if( mandatory )
-		{
-			throw new BadRequestException(param);
-		}
-		return null;
-	}
+  @Override
+  public Class<ParametersEventListener> getListenerClass() {
+    return ParametersEventListener.class;
+  }
 
-	public int getIntParameter(String param, boolean mandatory) throws BadRequestException
-	{
-		String val = getParameter(param, mandatory);
-		if( val == null )
-		{
-			return 0;
-		}
-		try
-		{
-			return Integer.parseInt(val);
-		}
-		catch( NumberFormatException nfe )
-		{
-			throw new BadRequestException(param);
-		}
-	}
+  public boolean hasParameter(String param) {
+    String[] params = parameters.get(param);
+    if (params != null && params.length > 0) {
+      return true;
+    }
+    return false;
+  }
 
-	public Date getDateParameter(String param, boolean mandatory) throws BadRequestException
-	{
-		String val = getParameter(param, mandatory);
-		if( Check.isEmpty(val) )
-		{
-			return null;
-		}
-		try
-		{
-			return new Date(Long.parseLong(val));
-		}
-		catch( NumberFormatException nfe )
-		{
-			throw new BadRequestException(param);
-		}
-	}
+  public Map<String, String[]> getParameterMap() {
+    return parameters;
+  }
 
-	public boolean getBooleanParameter(String param, boolean mandatory) throws BadRequestException
-	{
-		String val = getParameter(param, mandatory);
-		if( val == null )
-		{
-			return false;
-		}
-		return Boolean.parseBoolean(val);
-	}
+  public String getParameter(String param, boolean mandatory) throws BadRequestException {
+    String[] params = parameters.get(param);
+    if (params != null && params.length > 0) {
+      return params[0];
+    }
+    if (mandatory) {
+      throw new BadRequestException(param);
+    }
+    return null;
+  }
 
-	public void parameterHandled(String key)
-	{
-		parameters.remove(key);
-	}
+  public int getIntParameter(String param, boolean mandatory) throws BadRequestException {
+    String val = getParameter(param, mandatory);
+    if (val == null) {
+      return 0;
+    }
+    try {
+      return Integer.parseInt(val);
+    } catch (NumberFormatException nfe) {
+      throw new BadRequestException(param);
+    }
+  }
 
-	public Set<String> getParameterNames()
-	{
-		return parameters.keySet();
-	}
+  public Date getDateParameter(String param, boolean mandatory) throws BadRequestException {
+    String val = getParameter(param, mandatory);
+    if (Check.isEmpty(val)) {
+      return null;
+    }
+    try {
+      return new Date(Long.parseLong(val));
+    } catch (NumberFormatException nfe) {
+      throw new BadRequestException(param);
+    }
+  }
 
-	@Override
-	public void fire(SectionId sectionId, SectionInfo info, ParametersEventListener listener) throws Exception
-	{
-		listener.handleParameters(info, this);
-	}
+  public boolean getBooleanParameter(String param, boolean mandatory) throws BadRequestException {
+    String val = getParameter(param, mandatory);
+    if (val == null) {
+      return false;
+    }
+    return Boolean.parseBoolean(val);
+  }
 
-	@Override
-	public void beforeFiring(SectionInfo info, SectionTree tree)
-	{
-		super.beforeFiring(info, tree);
-		if( parameters.isEmpty() )
-		{
-			stopProcessing();
-		}
-	}
+  public void parameterHandled(String key) {
+    parameters.remove(key);
+  }
 
-	@Override
-	public void finishedFiring(SectionInfo info, SectionTree tree)
-	{
-		info.processEvent(new AfterParametersEvent(this), tree);
-	}
+  public Set<String> getParameterNames() {
+    return parameters.keySet();
+  }
 
-	public String[] getParameterValues(String param)
-	{
-		return parameters.get(param);
-	}
+  @Override
+  public void fire(SectionId sectionId, SectionInfo info, ParametersEventListener listener)
+      throws Exception {
+    listener.handleParameters(info, this);
+  }
 
-	public boolean isInitial()
-	{
-		return initial;
-	}
+  @Override
+  public void beforeFiring(SectionInfo info, SectionTree tree) {
+    super.beforeFiring(info, tree);
+    if (parameters.isEmpty()) {
+      stopProcessing();
+    }
+  }
 
-	public void setInitial(boolean initial)
-	{
-		this.initial = initial;
-	}
+  @Override
+  public void finishedFiring(SectionInfo info, SectionTree tree) {
+    info.processEvent(new AfterParametersEvent(this), tree);
+  }
+
+  public String[] getParameterValues(String param) {
+    return parameters.get(param);
+  }
+
+  public boolean isInitial() {
+    return initial;
+  }
+
+  public void setInitial(boolean initial) {
+    this.initial = initial;
+  }
 }

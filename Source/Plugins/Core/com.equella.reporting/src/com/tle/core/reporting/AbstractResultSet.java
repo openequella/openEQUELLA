@@ -16,187 +16,154 @@
 
 package com.tle.core.reporting;
 
+import com.tle.reporting.IResultSetExt;
+import com.tle.reporting.MetadataBean;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.datatools.connectivity.oda.IBlob;
 import org.eclipse.datatools.connectivity.oda.IClob;
 import org.eclipse.datatools.connectivity.oda.IResultSetMetaData;
 import org.eclipse.datatools.connectivity.oda.OdaException;
 
-import com.tle.reporting.IResultSetExt;
-import com.tle.reporting.MetadataBean;
+public abstract class AbstractResultSet implements IResultSetExt {
+  protected MetadataBean metaData;
+  private Map<String, Integer> columnMappings = new HashMap<String, Integer>();
 
-public abstract class AbstractResultSet implements IResultSetExt
-{
-	protected MetadataBean metaData;
-	private Map<String, Integer> columnMappings = new HashMap<String, Integer>();
+  public AbstractResultSet(MetadataBean metadata) {
+    this.metaData = metadata;
+    try {
+      int colcount = metaData.getColumnCount();
+      for (int i = 1; i <= colcount; i++) {
+        columnMappings.put(metaData.getColumnName(i), i);
+      }
+    } catch (OdaException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-	public AbstractResultSet(MetadataBean metadata)
-	{
-		this.metaData = metadata;
-		try
-		{
-			int colcount = metaData.getColumnCount();
-			for( int i = 1; i <= colcount; i++ )
-			{
-				columnMappings.put(metaData.getColumnName(i), i);
-			}
-		}
-		catch( OdaException e )
-		{
-			throw new RuntimeException(e);
-		}
-	}
+  @Override
+  public void close() throws OdaException {
+    // Don't care
+  }
 
-	@Override
-	public void close() throws OdaException
-	{
-		// Don't care
-	}
+  @Override
+  public int findColumn(String s) throws OdaException {
+    return columnMappings.get(s);
+  }
 
-	@Override
-	public int findColumn(String s) throws OdaException
-	{
-		return columnMappings.get(s);
-	}
+  @Override
+  public BigDecimal getBigDecimal(int i) throws OdaException {
+    return (BigDecimal) getCol(i);
+  }
 
-	@Override
-	public BigDecimal getBigDecimal(int i) throws OdaException
-	{
-		return (BigDecimal) getCol(i);
-	}
+  protected abstract Object getCol(int i);
 
-	protected abstract Object getCol(int i);
+  @Override
+  public IBlob getBlob(int i) throws OdaException {
+    return null;
+  }
 
-	@Override
-	public IBlob getBlob(int i) throws OdaException
-	{
-		return null;
-	}
+  @Override
+  public IClob getClob(int i) throws OdaException {
+    return null;
+  }
 
-	@Override
-	public IClob getClob(int i) throws OdaException
-	{
-		return null;
-	}
+  @Override
+  public Date getDate(int i) throws OdaException {
+    return (Date) getCol(i);
+  }
 
-	@Override
-	public Date getDate(int i) throws OdaException
-	{
-		return (Date) getCol(i);
-	}
+  @Override
+  public double getDouble(int i) throws OdaException {
+    return (Double) getCol(i);
+  }
 
-	@Override
-	public double getDouble(int i) throws OdaException
-	{
-		return (Double) getCol(i);
-	}
+  @Override
+  public int getInt(int i) throws OdaException {
+    return (Integer) getCol(i);
+  }
 
-	@Override
-	public int getInt(int i) throws OdaException
-	{
-		return (Integer) getCol(i);
-	}
+  @Override
+  public IResultSetMetaData getMetaData() throws OdaException {
+    return metaData;
+  }
 
-	@Override
-	public IResultSetMetaData getMetaData() throws OdaException
-	{
-		return metaData;
-	}
+  @Override
+  public String getString(int i) throws OdaException {
+    return (String) getCol(i);
+  }
 
-	@Override
-	public String getString(int i) throws OdaException
-	{
-		return (String) getCol(i);
-	}
+  @Override
+  public Time getTime(int i) throws OdaException {
+    return (Time) getCol(i);
+  }
 
-	@Override
-	public Time getTime(int i) throws OdaException
-	{
-		return (Time) getCol(i);
-	}
+  @Override
+  public Timestamp getTimestamp(int i) throws OdaException {
+    return (Timestamp) getCol(i);
+  }
 
-	@Override
-	public Timestamp getTimestamp(int i) throws OdaException
-	{
-		return (Timestamp) getCol(i);
-	}
+  @Override
+  public BigDecimal getBigDecimal(String column) throws OdaException {
+    return getBigDecimal(findColumn(column));
+  }
 
-	@Override
-	public BigDecimal getBigDecimal(String column) throws OdaException
-	{
-		return getBigDecimal(findColumn(column));
-	}
+  @Override
+  public IBlob getBlob(String column) throws OdaException {
+    return getBlob(findColumn(column));
+  }
 
-	@Override
-	public IBlob getBlob(String column) throws OdaException
-	{
-		return getBlob(findColumn(column));
-	}
+  @Override
+  public boolean getBoolean(int i) throws OdaException {
+    return (Boolean) getCol(i);
+  }
 
-	@Override
-	public boolean getBoolean(int i) throws OdaException
-	{
-		return (Boolean) getCol(i);
-	}
+  @Override
+  public boolean getBoolean(String column) throws OdaException {
+    return getBoolean(findColumn(column));
+  }
 
-	@Override
-	public boolean getBoolean(String column) throws OdaException
-	{
-		return getBoolean(findColumn(column));
-	}
+  @Override
+  public IClob getClob(String column) throws OdaException {
+    return getClob(findColumn(column));
+  }
 
-	@Override
-	public IClob getClob(String column) throws OdaException
-	{
-		return getClob(findColumn(column));
-	}
+  @Override
+  public Date getDate(String column) throws OdaException {
+    return getDate(findColumn(column));
+  }
 
-	@Override
-	public Date getDate(String column) throws OdaException
-	{
-		return getDate(findColumn(column));
-	}
+  @Override
+  public double getDouble(String column) throws OdaException {
+    return getDouble(findColumn(column));
+  }
 
-	@Override
-	public double getDouble(String column) throws OdaException
-	{
-		return getDouble(findColumn(column));
-	}
+  @Override
+  public int getInt(String column) throws OdaException {
+    return getInt(findColumn(column));
+  }
 
-	@Override
-	public int getInt(String column) throws OdaException
-	{
-		return getInt(findColumn(column));
-	}
+  @Override
+  public String getString(String column) throws OdaException {
+    return getString(findColumn(column));
+  }
 
-	@Override
-	public String getString(String column) throws OdaException
-	{
-		return getString(findColumn(column));
-	}
+  @Override
+  public Time getTime(String column) throws OdaException {
+    return getTime(findColumn(column));
+  }
 
-	@Override
-	public Time getTime(String column) throws OdaException
-	{
-		return getTime(findColumn(column));
-	}
+  @Override
+  public Timestamp getTimestamp(String column) throws OdaException {
+    return getTimestamp(findColumn(column));
+  }
 
-	@Override
-	public Timestamp getTimestamp(String column) throws OdaException
-	{
-		return getTimestamp(findColumn(column));
-	}
-
-	@Override
-	public Object getObject(int i)
-	{
-		return getCol(i);
-	}
-
+  @Override
+  public Object getObject(int i) {
+    return getCol(i);
+  }
 }

@@ -26,54 +26,48 @@ import com.tle.common.workflow.node.WorkflowNode;
 import com.tle.core.item.standard.workflow.nodes.TaskStatus;
 import com.tle.core.notification.beans.Notification;
 
-public class TaskRejectOperation extends AbstractBulkTaskOperation
-{
-	private final String message;
+public class TaskRejectOperation extends AbstractBulkTaskOperation {
+  private final String message;
 
-	@AssistedInject
-	public TaskRejectOperation(@Assisted("message") String message)
-	{
-		this.message = message;
-	}
+  @AssistedInject
+  public TaskRejectOperation(@Assisted("message") String message) {
+    this.message = message;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		TaskStatus status = init("REJECT_BULK_TASKS", "MANAGE_WORKFLOW");
-		ItemTaskId taskId = getTaskId();
+  @Override
+  public boolean execute() {
+    TaskStatus status = init("REJECT_BULK_TASKS", "MANAGE_WORKFLOW");
+    ItemTaskId taskId = getTaskId();
 
-		ModerationStatus modstatus = getModerationStatus();
-		modstatus.setLastAction(params.getDateNow());
-		HistoryEvent reject = createHistory(Type.rejected);
-		reject.setComment(message);
-		setStepFromTask(reject, taskId.getTaskId());
-		addMessage(taskId.getTaskId(), WorkflowMessage.TYPE_REJECT, message, null);
+    ModerationStatus modstatus = getModerationStatus();
+    modstatus.setLastAction(params.getDateNow());
+    HistoryEvent reject = createHistory(Type.rejected);
+    reject.setComment(message);
+    setStepFromTask(reject, taskId.getTaskId());
+    addMessage(taskId.getTaskId(), WorkflowMessage.TYPE_REJECT, message, null);
 
-		WorkflowItemStatus bean = (WorkflowItemStatus) status.getBean();
-		params.setCause(bean);
+    WorkflowItemStatus bean = (WorkflowItemStatus) status.getBean();
+    params.setCause(bean);
 
-		// EQ-2546 Once rejected, the item moves to the closest previous
-		// rejection point.
-		WorkflowNode rejectNode = status.getClosestRejectNode();
-		if( rejectNode != null )
-		{
-			setToStepFromTask(reject, rejectNode.getUuid());
-			reenter(rejectNode);
-		}
-		else
-		{
-			setToStepFromTask(reject, null);
-			Item item = getItem();
-			setState(ItemStatus.REJECTED);
-			modstatus.setRejectedMessage(message);
-			modstatus.setRejectedBy(getUserId());
-			modstatus.setRejectedStep(status.getId());
-			exitTasksForItem();
-			item.setModerating(false);
-			removeModerationNotifications();
-			addNotifications(item.getItemId(), getAllOwnerIds(), Notification.REASON_REJECTED, false);
-		}
-		updateModeration();
-		return true;
-	}
+    // EQ-2546 Once rejected, the item moves to the closest previous
+    // rejection point.
+    WorkflowNode rejectNode = status.getClosestRejectNode();
+    if (rejectNode != null) {
+      setToStepFromTask(reject, rejectNode.getUuid());
+      reenter(rejectNode);
+    } else {
+      setToStepFromTask(reject, null);
+      Item item = getItem();
+      setState(ItemStatus.REJECTED);
+      modstatus.setRejectedMessage(message);
+      modstatus.setRejectedBy(getUserId());
+      modstatus.setRejectedStep(status.getId());
+      exitTasksForItem();
+      item.setModerating(false);
+      removeModerationNotifications();
+      addNotifications(item.getItemId(), getAllOwnerIds(), Notification.REASON_REJECTED, false);
+    }
+    updateModeration();
+    return true;
+  }
 }

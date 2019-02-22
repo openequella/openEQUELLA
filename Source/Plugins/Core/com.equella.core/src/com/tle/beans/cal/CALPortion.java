@@ -16,8 +16,11 @@
 
 package com.tle.beans.cal;
 
+import com.tle.beans.item.Item;
+import com.tle.core.copyright.Holding;
+import com.tle.core.copyright.Portion;
+import com.tle.core.copyright.Section;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -32,167 +35,141 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
-
-import com.tle.beans.item.Item;
-import com.tle.core.copyright.Holding;
-import com.tle.core.copyright.Portion;
-import com.tle.core.copyright.Section;
 
 @Entity
 @AccessType("field")
 @Table(name = "cal_portion")
-public class CALPortion implements Portion
-{
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-	@JoinColumn(nullable = false)
-	@Index(name = "portionItemIndex")
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Item item;
-	@Index(name = "holdingIndex")
-	@ManyToOne(fetch = FetchType.LAZY)
-	private CALHolding holding;
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "portion")
-	private List<CALSection> sections;
-	@ElementCollection
-	@Column(name = "element")
-	@CollectionTable(name = "cal_portion_authors", joinColumns = @JoinColumn(name = "cal_portion_id"))
-	private List<String> authors;
-	@ElementCollection
-	@Column(name = "element")
-	@CollectionTable(name = "cal_portion_topics", joinColumns = @JoinColumn(name = "cal_portion_id"))
-	private List<String> topics;
+public class CALPortion implements Portion {
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	@Lob
-	private String authorList;
+  @JoinColumn(nullable = false)
+  @Index(name = "portionItemIndex")
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Item item;
 
-	@Column(length = 200)
-	private String chapter;
-	@Lob
-	private String title;
+  @Index(name = "holdingIndex")
+  @ManyToOne(fetch = FetchType.LAZY)
+  private CALHolding holding;
 
-	@Override
-	public long getId()
-	{
-		return id;
-	}
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "portion")
+  private List<CALSection> sections;
 
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  @ElementCollection
+  @Column(name = "element")
+  @CollectionTable(name = "cal_portion_authors", joinColumns = @JoinColumn(name = "cal_portion_id"))
+  private List<String> authors;
 
-	@Override
-	public Item getItem()
-	{
-		return item;
-	}
+  @ElementCollection
+  @Column(name = "element")
+  @CollectionTable(name = "cal_portion_topics", joinColumns = @JoinColumn(name = "cal_portion_id"))
+  private List<String> topics;
 
-	@Override
-	public void setItem(Item item)
-	{
-		this.item = item;
-	}
+  @Lob private String authorList;
 
-	@Override
-	public CALHolding getHolding()
-	{
-		return holding;
-	}
+  @Column(length = 200)
+  private String chapter;
 
-	public void setHolding(CALHolding holding)
-	{
-		this.holding = holding;
-	}
+  @Lob private String title;
 
-	@Override
-	public List<String> getAuthors()
-	{
-		return authors;
-	}
+  @Override
+  public long getId() {
+    return id;
+  }
 
-	public void setAuthors(List<String> authors)
-	{
-		this.authors = authors;
-	}
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	@Override
-	public List<? extends Section> getSections()
-	{
-		return sections;
-	}
+  @Override
+  public Item getItem() {
+    return item;
+  }
 
-	public void setSections(List<CALSection> sections)
-	{
-		this.sections = sections;
-	}
+  @Override
+  public void setItem(Item item) {
+    this.item = item;
+  }
 
-	@Override
-	public String getTitle()
-	{
-		return title;
-	}
+  @Override
+  public CALHolding getHolding() {
+    return holding;
+  }
 
-	public void setTitle(String title)
-	{
-		this.title = title;
-	}
+  public void setHolding(CALHolding holding) {
+    this.holding = holding;
+  }
 
-	@Override
-	public List<String> getTopics()
-	{
-		return topics;
-	}
+  @Override
+  public List<String> getAuthors() {
+    return authors;
+  }
 
-	public void setTopics(List<String> topics)
-	{
-		this.topics = topics;
-	}
+  public void setAuthors(List<String> authors) {
+    this.authors = authors;
+  }
 
-	@Override
-	public String getAuthorList()
-	{
-		return authorList;
-	}
+  @Override
+  public List<? extends Section> getSections() {
+    return sections;
+  }
 
-	public void setAuthorList(String authorList)
-	{
-		this.authorList = authorList;
-	}
+  public void setSections(List<CALSection> sections) {
+    this.sections = sections;
+  }
 
-	@Override
-	public String getChapter()
-	{
-		return chapter;
-	}
+  @Override
+  public String getTitle() {
+    return title;
+  }
 
-	public void setChapter(String chapter)
-	{
-		if( chapter.length() > 200 )
-		{
-			chapter = chapter.substring(0, 200);
-		}
-		chapter = chapter.trim().toLowerCase();
-		if( chapter.length() == 0 )
-		{
-			chapter = null;
-		}
-		this.chapter = chapter;
-	}
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-	public List<CALSection> getCALSections()
-	{
-		return sections;
-	}
+  @Override
+  public List<String> getTopics() {
+    return topics;
+  }
 
-	@Override
-	public void setHolding(Holding holding)
-	{
-		this.holding = (CALHolding) holding;
-	}
+  public void setTopics(List<String> topics) {
+    this.topics = topics;
+  }
 
+  @Override
+  public String getAuthorList() {
+    return authorList;
+  }
+
+  public void setAuthorList(String authorList) {
+    this.authorList = authorList;
+  }
+
+  @Override
+  public String getChapter() {
+    return chapter;
+  }
+
+  public void setChapter(String chapter) {
+    if (chapter.length() > 200) {
+      chapter = chapter.substring(0, 200);
+    }
+    chapter = chapter.trim().toLowerCase();
+    if (chapter.length() == 0) {
+      chapter = null;
+    }
+    this.chapter = chapter;
+  }
+
+  public List<CALSection> getCALSections() {
+    return sections;
+  }
+
+  @Override
+  public void setHolding(Holding holding) {
+    this.holding = (CALHolding) holding;
+  }
 }

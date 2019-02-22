@@ -18,31 +18,26 @@ package com.tle.web.api.item.equella.interfaces.beans;
 
 import com.tle.common.interfaces.I18NString;
 
-public class DisplayField
-{
-    private final String type;
-    private final I18NString name;
-    private final I18NString html;
+public class DisplayField {
+  private final String type;
+  private final I18NString name;
+  private final I18NString html;
 
-    public DisplayField(String type, I18NString name, I18NString html)
-    {
-        this.type = type;
-        this.name = name;
-        this.html = html;
-    }
+  public DisplayField(String type, I18NString name, I18NString html) {
+    this.type = type;
+    this.name = name;
+    this.html = html;
+  }
 
-    public I18NString getName()
-    {
-        return name;
-    }
+  public I18NString getName() {
+    return name;
+  }
 
-    public I18NString getHtml()
-    {
-        return html;
-    }
+  public I18NString getHtml() {
+    return html;
+  }
 
-    public String getType()
-    {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 }

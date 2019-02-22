@@ -16,43 +16,42 @@
 
 package com.tle.web.ajax.services;
 
-public interface ScormAPIHandler
-{
-	void setCurrentIdentifier(String ident);
+public interface ScormAPIHandler {
+  void setCurrentIdentifier(String ident);
 
-	String initialize(String param);
+  String initialize(String param);
 
-	String terminate(String param);
+  String terminate(String param);
 
-	String getValue(String name);
+  String getValue(String name);
 
-	String setValue(String name, String value);
+  String setValue(String name, String value);
 
-	String commit(String param);
+  String commit(String param);
 
-	String getLastError();
+  String getLastError();
 
-	String getErrorString(String errCode);
+  String getErrorString(String errCode);
 
-	String getDiagnostic(String error);
+  String getDiagnostic(String error);
 
-	String lmsInitialize(String param);
+  String lmsInitialize(String param);
 
-	String lmsTerminate(String param);
+  String lmsTerminate(String param);
 
-	String lmsFinish(String param);
+  String lmsFinish(String param);
 
-	String lmsCommit(String param);
+  String lmsCommit(String param);
 
-	String lmsGetValue(String name);
+  String lmsGetValue(String name);
 
-	String lmsSetValue(String name, String value);
+  String lmsSetValue(String name, String value);
 
-	String finish(String param);
+  String finish(String param);
 
-	String lmsGetLastError();
+  String lmsGetLastError();
 
-	String lmsGetErrorString(String errCode);
+  String lmsGetErrorString(String errCode);
 
-	String lmsGetDiagnostic(String error);
+  String lmsGetDiagnostic(String error);
 }

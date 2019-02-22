@@ -16,43 +16,35 @@
 
 package com.tle.web.api.server;
 
+import bean.ServerInfo;
+import com.google.inject.Singleton;
+import com.tle.core.guice.Bind;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import bean.ServerInfo;
-
-import com.google.inject.Singleton;
-import com.tle.core.guice.Bind;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-
-/**
- * @author Seb
- */
+/** @author Seb */
 @Bind
 @Path("status")
 @Api(value = "Server status", description = "status")
 @Produces({"application/json"})
 @Singleton
-public class ServerResource
-{
-	@GET
-	@Path("")
-	@ApiOperation("Check server health")
-	public Response isAlive()
-	{
-		return Response.ok(new ServerInfo()).build();
-	}
+public class ServerResource {
+  @GET
+  @Path("")
+  @ApiOperation("Check server health")
+  public Response isAlive() {
+    return Response.ok(new ServerInfo()).build();
+  }
 
-	@GET
-	@Path("heartbeat")
-	@Produces({"text/plain"})
-	@ApiOperation("Keep your session alive")
-	public String heartbeat()
-	{
-		return "OK";
-	}
-
+  @GET
+  @Path("heartbeat")
+  @Produces({"text/plain"})
+  @ApiOperation("Keep your session alive")
+  public String heartbeat() {
+    return "OK";
+  }
 }

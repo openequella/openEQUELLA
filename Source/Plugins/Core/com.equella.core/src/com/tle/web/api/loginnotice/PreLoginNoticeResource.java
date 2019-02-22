@@ -17,25 +17,20 @@
 package com.tle.web.api.loginnotice;
 
 import io.swagger.annotations.Api;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
-/**
- * @author Samantha Fisher
- */
-
+/** @author Samantha Fisher */
 @Path("preloginnotice/")
 @Api("Pre Login Notice")
-public interface PreLoginNoticeResource
-{
-	@GET
-	@Produces("text/plain")
-	Response retrievePreLoginNotice();
+public interface PreLoginNoticeResource {
+  @GET
+  @Produces("text/plain")
+  Response retrievePreLoginNotice();
 
-	@PUT
-	Response setPreLoginNotice(String loginNotice);
+  @PUT
+  Response setPreLoginNotice(String loginNotice);
 
-	@DELETE
-	Response deletePreLoginNotice();
+  @DELETE
+  Response deletePreLoginNotice();
 }

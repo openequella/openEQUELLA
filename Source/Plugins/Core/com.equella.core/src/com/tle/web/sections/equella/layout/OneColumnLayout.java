@@ -16,8 +16,6 @@
 
 package com.tle.web.sections.equella.layout;
 
-import javax.inject.Inject;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -31,7 +29,6 @@ import com.tle.web.sections.equella.receipt.ReceiptService;
 import com.tle.web.sections.equella.render.Bootstrap;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
-import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.render.CombinedTemplateResult;
 import com.tle.web.sections.render.FallbackTemplateResult;
 import com.tle.web.sections.render.GenericTemplateResult;
@@ -41,152 +38,128 @@ import com.tle.web.sections.render.TemplateResult;
 import com.tle.web.sections.render.TemplateResultCollector;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
-import com.tle.web.template.ReactPageModel;
-import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.event.BlueBarEvent;
-import sun.font.Decoration;
+import javax.inject.Inject;
 
 @TreeIndexed
 @NonNullByDefault
 @SuppressWarnings("nls")
 public abstract class OneColumnLayout<M extends OneColumnLayout.OneColumnLayoutModel>
-	extends
-		AbstractPrototypeSection<M> implements HtmlRenderer
-{
-	public static final String BODY = "body";
-	public static final String UPPERBODY = "upperbody";
+    extends AbstractPrototypeSection<M> implements HtmlRenderer {
+  public static final String BODY = "body";
+  public static final String UPPERBODY = "upperbody";
 
-	@ViewFactory
-	private FreemarkerFactory layoutFactory;
-	@ViewFactory(fixed = false, optional = true)
-	protected FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory layoutFactory;
 
-	@Inject
-	private ReceiptService receiptService;
+  @ViewFactory(fixed = false, optional = true)
+  protected FreemarkerFactory viewFactory;
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "";
-	}
+  @Inject private ReceiptService receiptService;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final M model = getModel(context);
+  @Override
+  public String getDefaultPropertyName() {
+    return "";
+  }
 
-		TemplateResult template = setupTemplate(context);
-		if( template == null )
-		{
-			return null;
-		}
-		model.setTemplate(template);
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    final M model = getModel(context);
 
-		Label receipt = receiptService.getReceipt();
-		if( receipt != null )
-		{
-			model.setReceipt(receipt.getText());
-		}
+    TemplateResult template = setupTemplate(context);
+    if (template == null) {
+      return null;
+    }
+    model.setTemplate(template);
 
-		context.preRender(Bootstrap.PRERENDER);
+    Label receipt = receiptService.getReceipt();
+    if (receipt != null) {
+      model.setReceipt(receipt.getText());
+    }
 
-		Decorations decs = Decorations.getDecorations(context);
-		addBreadcrumbsAndTitle(context, decs, Breadcrumbs.get(context));
+    context.preRender(Bootstrap.PRERENDER);
 
-		GenericTemplateResult temp = new GenericTemplateResult();
-		temp.addNamedResult(BODY, layoutFactory.createResultWithModel(getLayout(context).getFtl(), model));
-		return new FallbackTemplateResult(temp, model.getTemplate());
-	}
+    Decorations decs = Decorations.getDecorations(context);
+    addBreadcrumbsAndTitle(context, decs, Breadcrumbs.get(context));
 
-	@Override
-	public Class<M> getModelClass()
-	{
-		return (Class<M>) OneColumnLayoutModel.class;
-	}
+    GenericTemplateResult temp = new GenericTemplateResult();
+    temp.addNamedResult(
+        BODY, layoutFactory.createResultWithModel(getLayout(context).getFtl(), model));
+    return new FallbackTemplateResult(temp, model.getTemplate());
+  }
 
-	private ContentLayout getLayout(SectionInfo info)
-	{
-		ContentLayout layout = ContentLayout.getLayout(info);
-		if( layout == null )
-		{
-			return getDefaultLayout(info);
-		}
-		return layout;
-	}
+  @Override
+  public Class<M> getModelClass() {
+    return (Class<M>) OneColumnLayoutModel.class;
+  }
 
-	protected ContentLayout getDefaultLayout(SectionInfo info)
-	{
-		return ContentLayout.ONE_COLUMN;
-	}
+  private ContentLayout getLayout(SectionInfo info) {
+    ContentLayout layout = ContentLayout.getLayout(info);
+    if (layout == null) {
+      return getDefaultLayout(info);
+    }
+    return layout;
+  }
 
-	protected TemplateResult setupTemplate(RenderEventContext context)
-	{
-		return getTemplateResult(context);
-	}
+  protected ContentLayout getDefaultLayout(SectionInfo info) {
+    return ContentLayout.ONE_COLUMN;
+  }
 
-	@Nullable
-	protected TemplateResult getTemplateResult(RenderEventContext context)
-	{
-		final TemplateResultCollector collector = new TemplateResultCollector();
-		final M model = getModel(context);
-		final SectionId modalSection = model.getModalSection();
-		if( modalSection != null )
-		{
-			SectionUtils.renderSection(context, modalSection, collector);
-		}
-		else
-		{
-			renderChildren(context, this, collector);
-		}
+  protected TemplateResult setupTemplate(RenderEventContext context) {
+    return getTemplateResult(context);
+  }
 
-		final CombinedTemplateResult templateResult = collector.getTemplateResult();
-		final BlueBarEvent blueBarEvent = new BlueBarEvent(context);
-		context.processEvent(blueBarEvent);
-		return templateResult;
-	}
+  @Nullable
+  protected TemplateResult getTemplateResult(RenderEventContext context) {
+    final TemplateResultCollector collector = new TemplateResultCollector();
+    final M model = getModel(context);
+    final SectionId modalSection = model.getModalSection();
+    if (modalSection != null) {
+      SectionUtils.renderSection(context, modalSection, collector);
+    } else {
+      renderChildren(context, this, collector);
+    }
 
-	protected abstract void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs);
+    final CombinedTemplateResult templateResult = collector.getTemplateResult();
+    final BlueBarEvent blueBarEvent = new BlueBarEvent(context);
+    context.processEvent(blueBarEvent);
+    return templateResult;
+  }
 
-	public void setModalSection(SectionInfo info, SectionId sectionId)
-	{
-		getModel(info).setModalSection(sectionId);
-	}
+  protected abstract void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs);
 
-	@NonNullByDefault(false)
-	public static class OneColumnLayoutModel
-	{
-		private TemplateResult template;
-		private SectionId modalSection;
-		private String receipt;
+  public void setModalSection(SectionInfo info, SectionId sectionId) {
+    getModel(info).setModalSection(sectionId);
+  }
 
-		public SectionId getModalSection()
-		{
-			return modalSection;
-		}
+  @NonNullByDefault(false)
+  public static class OneColumnLayoutModel {
+    private TemplateResult template;
+    private SectionId modalSection;
+    private String receipt;
 
-		public void setModalSection(SectionId modalSection)
-		{
-			this.modalSection = modalSection;
-		}
+    public SectionId getModalSection() {
+      return modalSection;
+    }
 
-		public TemplateResult getTemplate()
-		{
-			return template;
-		}
+    public void setModalSection(SectionId modalSection) {
+      this.modalSection = modalSection;
+    }
 
-		public void setTemplate(TemplateResult template)
-		{
-			this.template = template;
-		}
+    public TemplateResult getTemplate() {
+      return template;
+    }
 
-		public String getReceipt()
-		{
-			return receipt;
-		}
+    public void setTemplate(TemplateResult template) {
+      this.template = template;
+    }
 
-		public void setReceipt(String receipt)
-		{
-			this.receipt = receipt;
-		}
-	}
+    public String getReceipt() {
+      return receipt;
+    }
+
+    public void setReceipt(String receipt) {
+      this.receipt = receipt;
+    }
+  }
 }

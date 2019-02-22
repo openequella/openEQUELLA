@@ -19,18 +19,15 @@ package com.tle.core.cloud.settings;
 import com.tle.common.settings.ConfigurationProperties;
 import com.tle.common.settings.annotation.Property;
 
-public class CloudSettings implements ConfigurationProperties
-{
-	@Property(key = "cloud.disabled")
-	private boolean disabled;
+public class CloudSettings implements ConfigurationProperties {
+  @Property(key = "cloud.disabled")
+  private boolean disabled;
 
-	public boolean isDisabled()
-	{
-		return disabled;
-	}
+  public boolean isDisabled() {
+    return disabled;
+  }
 
-	public void setDisabled(boolean disabled)
-	{
-		this.disabled = disabled;
-	}
+  public void setDisabled(boolean disabled) {
+    this.disabled = disabled;
+  }
 }

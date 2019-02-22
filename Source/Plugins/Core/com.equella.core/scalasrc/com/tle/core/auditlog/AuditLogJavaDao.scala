@@ -41,8 +41,8 @@ object AuditLogJavaDao {
 
   val queries = DBSchema.queries.auditLogQueries
 
-  def executeAll(db: Stream[JDBCIO, WriteOp]): Unit
-  = RunWithDB.executeWithHibernate(Kleisli.liftF(db.flush.compile.drain))
+  def executeAll(db: Stream[JDBCIO, WriteOp]): Unit =
+    RunWithDB.executeWithHibernate(Kleisli.liftF(db.flush.compile.drain))
 
   def removeEntriesForInstitution(institution: Institution): Unit =
     executeAll(queries.deleteForInst(institution))
@@ -54,18 +54,45 @@ object AuditLogJavaDao {
     Kleisli.liftF(queries.countForInst(institution).compile.last.map(_.getOrElse(0)))
   }
 
-  def log(userId: String, sessionId: String, category: String,
-          `type`: String, d1: String, d2: String, d3: String,
-          d4: String, institution: Institution): Unit =
+  def log(userId: String,
+          sessionId: String,
+          category: String,
+          `type`: String,
+          d1: String,
+          d2: String,
+          d3: String,
+          d4: String,
+          institution: Institution): Unit =
     logWithRequest(userId, sessionId, category, `type`, d1, d2, d3, d4, institution, null)
 
-  def logWithRequest(userId: String, sessionId: String, category: String,
-          `type`: String, d1: String, d2: String, d3: String,
-          d4: String, institution: Institution, request: HttpServletRequest): Unit = {
-    RunWithDB.executeWithHibernate( Kleisli {
-      _ => queries.insertNew(id => AuditLogEntry(id, d1, d2, d3, Option(d4),
-        category, `type`, sessionId, AuditLogMeta(referrer(request)), Instant.now(),
-        UserId(userId), institution)).compile.drain
+  def logWithRequest(userId: String,
+                     sessionId: String,
+                     category: String,
+                     `type`: String,
+                     d1: String,
+                     d2: String,
+                     d3: String,
+                     d4: String,
+                     institution: Institution,
+                     request: HttpServletRequest): Unit = {
+    RunWithDB.executeWithHibernate(Kleisli { _ =>
+      queries
+        .insertNew(
+          id =>
+            AuditLogEntry(id,
+                          d1,
+                          d2,
+                          d3,
+                          Option(d4),
+                          category,
+                          `type`,
+                          sessionId,
+                          AuditLogMeta(referrer(request)),
+                          Instant.now(),
+                          UserId(userId),
+                          institution))
+        .compile
+        .drain
     })
   }
 
@@ -73,22 +100,48 @@ object AuditLogJavaDao {
     Option(req).flatMap(r => Option(r.getHeader("Referer")))
 
   def logHttp(category: String,
-          `type`: String, d1: String, d2: String, d3: String,
-          d4: String, request: HttpServletRequest): Unit = {
-    RunWithDB.executeWithHibernate( Kleisli {
-      uc => queries.insertNew(id => AuditLogEntry(id, d1, d2, d3, Option(d4),
-        category, `type`, uc.user.getSessionID, AuditLogMeta(referrer(request)), Instant.now(),
-        UserId(uc.user.getUserBean.getUniqueID), uc.inst)).compile.drain
+              `type`: String,
+              d1: String,
+              d2: String,
+              d3: String,
+              d4: String,
+              request: HttpServletRequest): Unit = {
+    RunWithDB.executeWithHibernate(Kleisli { uc =>
+      queries
+        .insertNew(
+          id =>
+            AuditLogEntry(
+              id,
+              d1,
+              d2,
+              d3,
+              Option(d4),
+              category,
+              `type`,
+              uc.user.getSessionID,
+              AuditLogMeta(referrer(request)),
+              Instant.now(),
+              UserId(uc.user.getUserBean.getUniqueID),
+              uc.inst
+          ))
+        .compile
+        .drain
     })
   }
 
-  def writeExport(folder: SubTemporaryFile, perFile: Int, inst: Institution,
-                  progress: DefaultMessageCallback, xmlHelper: XmlHelper, xstream: XStream): Unit = RunWithDB.executeWithHibernate {
+  def writeExport(folder: SubTemporaryFile,
+                  perFile: Int,
+                  inst: Institution,
+                  progress: DefaultMessageCallback,
+                  xmlHelper: XmlHelper,
+                  xstream: XStream): Unit = RunWithDB.executeWithHibernate {
     Kleisli.liftF {
-      queries.listForInst(inst).segmentN(perFile).zipWithIndex.map {
-        a =>
-          val xmlList = new util.ArrayList(a._1.force.toVector.map {
-          ale =>
+      queries
+        .listForInst(inst)
+        .segmentN(perFile)
+        .zipWithIndex
+        .map { a =>
+          val xmlList = new util.ArrayList(a._1.force.toVector.map { ale =>
             val xml = new AuditLogEntryXml()
             xml.timestamp = new Date(ale.timestamp.toEpochMilli)
             xml.eventCategory = ale.event_category.value
@@ -100,17 +153,38 @@ object AuditLogJavaDao {
             xml.userId = ale.user_id.id
             xml.sessionId = ale.session_id.value
             xml
-        }.asJava)
+          }.asJava)
 
           xmlHelper.writeXmlFile(folder, s"${a._2}.xml", xmlList, xstream)
           progress.incrementCurrent()
-      }.compile.drain
+        }
+        .compile
+        .drain
     }
   }
 
-  def insertFromXml(inst: Institution, entry: AuditLogEntryXml): Unit = RunWithDB.executeWithHibernate { Kleisli.liftF {
-    queries.insertNew(id => AuditLogEntry(id, entry.data1, entry.data2, entry.data3, Option(entry.data4), entry.eventCategory, entry.eventType,
-      entry.sessionId, AuditLogMeta(), entry.timestamp.toInstant, UserId(entry.userId), inst)).compile.drain
+  def insertFromXml(inst: Institution, entry: AuditLogEntryXml): Unit =
+    RunWithDB.executeWithHibernate {
+      Kleisli.liftF {
+        queries
+          .insertNew(
+            id =>
+              AuditLogEntry(
+                id,
+                entry.data1,
+                entry.data2,
+                entry.data3,
+                Option(entry.data4),
+                entry.eventCategory,
+                entry.eventType,
+                entry.sessionId,
+                AuditLogMeta(),
+                entry.timestamp.toInstant,
+                UserId(entry.userId),
+                inst
+            ))
+          .compile
+          .drain
+      }
     }
-  }
 }

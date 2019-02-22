@@ -16,21 +16,17 @@
 
 package com.tle.web.search.actions;
 
-import javax.inject.Inject;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.core.guice.Bind;
+import javax.inject.Inject;
 
 @NonNullByDefault
 @Bind
-public class StandardFavouriteSearchDialog extends AbstractFavouriteSearchDialog
-{
-	@Inject
-	private StandardFavouriteSearchSection contentSection;
+public class StandardFavouriteSearchDialog extends AbstractFavouriteSearchDialog {
+  @Inject private StandardFavouriteSearchSection contentSection;
 
-	@Override
-	protected AbstractFavouriteSearchSection getContentSection()
-	{
-		return contentSection;
-	}
+  @Override
+  protected AbstractFavouriteSearchSection getContentSection() {
+    return contentSection;
+  }
 }

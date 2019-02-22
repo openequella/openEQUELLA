@@ -20,36 +20,29 @@ import com.tle.admin.controls.universal.UniversalControlSettingPanel;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
 
 @SuppressWarnings("nls")
-public class LTISettingsPanel extends UniversalControlSettingPanel
-{
+public class LTISettingsPanel extends UniversalControlSettingPanel {
 
-	public LTISettingsPanel()
-	{
-		super();
-	}
+  public LTISettingsPanel() {
+    super();
+  }
 
-	@Override
-	protected String getTitleKey()
-	{
-		return getKey("lti.settings.title");
-	}
+  @Override
+  protected String getTitleKey() {
+    return getKey("lti.settings.title");
+  }
 
-	@Override
-	public void load(UniversalSettings state)
-	{
-		// Nothing
-	}
+  @Override
+  public void load(UniversalSettings state) {
+    // Nothing
+  }
 
-	@Override
-	public void removeSavedState(UniversalSettings state)
-	{
-		// Nothing
-	}
+  @Override
+  public void removeSavedState(UniversalSettings state) {
+    // Nothing
+  }
 
-	@Override
-	public void save(UniversalSettings state)
-	{
-		// Nothing
-	}
+  @Override
+  public void save(UniversalSettings state) {
+    // Nothing
+  }
 }
-

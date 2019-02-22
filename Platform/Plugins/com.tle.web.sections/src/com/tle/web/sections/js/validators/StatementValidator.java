@@ -22,43 +22,36 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.JSStatements;
 import com.tle.web.sections.js.JSValidator;
 
-public class StatementValidator implements JSValidator
-{
-	private final JSStatements validatorStatements;
-	private boolean returnFalse;
+public class StatementValidator implements JSValidator {
+  private final JSStatements validatorStatements;
+  private boolean returnFalse;
 
-	public StatementValidator(JSStatements statements)
-	{
-		this.validatorStatements = statements;
-	}
+  public StatementValidator(JSStatements statements) {
+    this.validatorStatements = statements;
+  }
 
-	public boolean isReturnFalse()
-	{
-		return returnFalse;
-	}
+  public boolean isReturnFalse() {
+    return returnFalse;
+  }
 
-	public StatementValidator setReturnFalse(boolean returnFalse)
-	{
-		this.returnFalse = returnFalse;
-		return this;
-	}
+  public StatementValidator setReturnFalse(boolean returnFalse) {
+    this.returnFalse = returnFalse;
+    return this;
+  }
 
-	@Override
-	public JSValidator setFailureStatements(JSStatements statements)
-	{
-		throw new UnsupportedOperationException();
-	}
+  @Override
+  public JSValidator setFailureStatements(JSStatements statements) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public String getStatements(RenderContext info)
-	{
-		return validatorStatements.getStatements(info) + (returnFalse ? "return false;" : ""); //$NON-NLS-1$ //$NON-NLS-2$
-	}
+  @Override
+  public String getStatements(RenderContext info) {
+    return validatorStatements.getStatements(info)
+        + (returnFalse ? "return false;" : ""); // $NON-NLS-1$ //$NON-NLS-2$
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		SectionUtils.preRender(info, validatorStatements);
-	}
-
+  @Override
+  public void preRender(PreRenderContext info) {
+    SectionUtils.preRender(info, validatorStatements);
+  }
 }

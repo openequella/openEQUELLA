@@ -19,22 +19,17 @@ package com.tle.core.harvester.oai.verb;
 import com.tle.core.harvester.oai.data.Repository;
 import com.tle.core.harvester.oai.data.Response;
 
-/**
- * 
- */
-public class Identify extends Verb
-{
-	private static final String VERB = "Identify";
+/** */
+public class Identify extends Verb {
+  private static final String VERB = "Identify";
 
-	@Override
-	public String getVerb()
-	{
-		return VERB;
-	}
+  @Override
+  public String getVerb() {
+    return VERB;
+  }
 
-	public Repository getResult()
-	{
-		Response response = call();
-		return (Repository) response.getMessage();
-	}
+  public Repository getResult() {
+    Response response = call();
+    return (Repository) response.getMessage();
+  }
 }

@@ -22,9 +22,8 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.TreeIndexed;
 
 @TreeIndexed
-public interface WorkflowSelection extends SectionId
-{
-	Workflow getWorkflow(SectionInfo info);
+public interface WorkflowSelection extends SectionId {
+  Workflow getWorkflow(SectionInfo info);
 
-	void setWorkflow(SectionInfo info, Workflow workflow);
+  void setWorkflow(SectionInfo info, Workflow workflow);
 }

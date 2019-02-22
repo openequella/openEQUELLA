@@ -16,16 +16,12 @@
 
 package com.tle.common.javascript;
 
+import com.tle.common.NameValue;
 import java.util.List;
 
-import com.tle.common.NameValue;
+/** @author aholland */
+public interface RemoteJavascriptService {
+  List<NameValue> getAllJavascriptLibraryNames();
 
-/**
- * @author aholland
- */
-public interface RemoteJavascriptService
-{
-	List<NameValue> getAllJavascriptLibraryNames();
-
-	List<NameValue> getAllJavascriptModuleNames(String libraryId);
+  List<NameValue> getAllJavascriptModuleNames(String libraryId);
 }

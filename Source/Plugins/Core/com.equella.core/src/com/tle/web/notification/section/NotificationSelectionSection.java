@@ -16,8 +16,6 @@
 
 package com.tle.web.notification.section;
 
-import java.util.Set;
-
 import com.google.inject.Inject;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.item.ItemId;
@@ -51,165 +49,152 @@ import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.result.util.PluralKeyLabel;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
+import java.util.Set;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public class NotificationSelectionSection extends AbstractBulkSelectionSection<ItemNotificationId>
-{
-	private static final String KEY_SELECTIONS = "notificationSelections"; //$NON-NLS-1$
+public class NotificationSelectionSection extends AbstractBulkSelectionSection<ItemNotificationId> {
+  private static final String KEY_SELECTIONS = "notificationSelections"; // $NON-NLS-1$
 
-	@PlugKey("notifications.selectionsbox.selectall")
-	private static Label LABEL_SELECTALL;
-	@PlugKey("notifications.selectionsbox.unselect")
-	private static Label LABEL_UNSELECTALL;
-	@PlugKey("notifications.selectionsbox.viewselected")
-	private static Label LABEL_VIEWSELECTED;
-	@PlugKey("notifications.selectionsbox.count")
-	private static String LABEL_COUNT;
-	@PlugKey("notifications.selectionsbox.clearselected")
-	private static Label LABEL_CLEAR_SELECTED;
-	@PlugKey("notifications.selectionsbox.pleaseselect")
-	private static Label LABEL_PLEASE_SELECT;
-	@PlugKey("selection.clear.receipt")
-	private static String LABEL_RECEIPT;
-	@PlugKey("notifications.selectionsbox.clearselected.confirm")
-	private static String LABEL_CONFIRM;
+  @PlugKey("notifications.selectionsbox.selectall")
+  private static Label LABEL_SELECTALL;
 
-	@PlugURL("css/notification.css")
-	private static String CSS;
+  @PlugKey("notifications.selectionsbox.unselect")
+  private static Label LABEL_UNSELECTALL;
 
-	@Component
-	@Inject
-	private NotificationResultsDialog bulkDialog;
-	@Component
-	private Button clearSelectedButton;
+  @PlugKey("notifications.selectionsbox.viewselected")
+  private static Label LABEL_VIEWSELECTED;
 
-	@Inject
-	private ItemOperationFactory workflowFactory;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private ReceiptService receiptService;
-	@Inject
-	private FreeTextService freeTextService;
+  @PlugKey("notifications.selectionsbox.count")
+  private static String LABEL_COUNT;
 
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("notifications.selectionsbox.clearselected")
+  private static Label LABEL_CLEAR_SELECTED;
 
-	@TreeLookup
-	private AbstractFreetextResultsSection<?, ?> resultsSection;
+  @PlugKey("notifications.selectionsbox.pleaseselect")
+  private static Label LABEL_PLEASE_SELECT;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		clearSelectedButton.setLabel(LABEL_CLEAR_SELECTED);
-		clearSelectedButton.setStyleClass("clear-selected-button");
-		clearSelectedButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
-		clearSelectedButton.addPrerenderables(CssInclude.include(CSS).make());
-	}
+  @PlugKey("selection.clear.receipt")
+  private static String LABEL_RECEIPT;
 
-	@Override
-	protected void setupButton(SectionInfo context, int selectionCount)
-	{
-		if( selectionCount > 0 )
-		{
-			clearSelectedButton.setClickHandler(context, events.getNamedHandler("clearSelected")
-				.addValidator(new Confirm(new PluralKeyLabel(LABEL_CONFIRM, selectionCount))));
-		}
-		else
-		{
-			clearSelectedButton.setClickHandler(context, new OverrideHandler(Js.alert_s(getPleaseSelectLabel())));
-		}
-	}
+  @PlugKey("notifications.selectionsbox.clearselected.confirm")
+  private static String LABEL_CONFIRM;
 
-	@EventHandlerMethod
-	public void clearSelected(SectionInfo info)
-	{
-		Set<ItemNotificationId> selectedNotifications = getSelections(info);
-		int selectionSize = selectedNotifications.size();
+  @PlugURL("css/notification.css")
+  private static String CSS;
 
-		for( ItemNotificationId note : selectedNotifications )
-		{
-			// FIXME: this is pretty slow
-			itemService.operation(new ItemId(note.getUuid(), note.getVersion()),
-				workflowFactory.clearNotification(note.getNotificationId()), workflowFactory.reindexOnly(true));
-		}
-		unselectAll(info);
-		receiptService.setReceipt(new KeyLabel(LABEL_RECEIPT, selectionSize));
+  @Component @Inject private NotificationResultsDialog bulkDialog;
+  @Component private Button clearSelectedButton;
 
-	}
+  @Inject private ItemOperationFactory workflowFactory;
+  @Inject private ItemService itemService;
+  @Inject private ReceiptService receiptService;
+  @Inject private FreeTextService freeTextService;
 
-	@Override
-	protected Label getLabelSelectAll()
-	{
-		return LABEL_SELECTALL;
-	}
+  @EventFactory private EventGenerator events;
 
-	@Override
-	protected Label getLabelUnselectAll()
-	{
-		return LABEL_UNSELECTALL;
-	}
+  @TreeLookup private AbstractFreetextResultsSection<?, ?> resultsSection;
 
-	@Override
-	protected Label getLabelViewSelected()
-	{
-		return LABEL_VIEWSELECTED;
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    clearSelectedButton.setLabel(LABEL_CLEAR_SELECTED);
+    clearSelectedButton.setStyleClass("clear-selected-button");
+    clearSelectedButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
+    clearSelectedButton.addPrerenderables(CssInclude.include(CSS).make());
+  }
 
-	@Override
-	protected AbstractBulkResultsDialog<ItemNotificationId> getBulkDialog()
-	{
-		return bulkDialog;
-	}
+  @Override
+  protected void setupButton(SectionInfo context, int selectionCount) {
+    if (selectionCount > 0) {
+      clearSelectedButton.setClickHandler(
+          context,
+          events
+              .getNamedHandler("clearSelected")
+              .addValidator(new Confirm(new PluralKeyLabel(LABEL_CONFIRM, selectionCount))));
+    } else {
+      clearSelectedButton.setClickHandler(
+          context, new OverrideHandler(Js.alert_s(getPleaseSelectLabel())));
+    }
+  }
 
-	@Override
-	protected Label getPleaseSelectLabel()
-	{
-		return LABEL_PLEASE_SELECT;
-	}
+  @EventHandlerMethod
+  public void clearSelected(SectionInfo info) {
+    Set<ItemNotificationId> selectedNotifications = getSelections(info);
+    int selectionSize = selectedNotifications.size();
 
-	@Override
-	protected Label getSelectionBoxCountLabel(int selectionCount)
-	{
-		return new PluralKeyLabel(LABEL_COUNT, selectionCount);
-	}
+    for (ItemNotificationId note : selectedNotifications) {
+      // FIXME: this is pretty slow
+      itemService.operation(
+          new ItemId(note.getUuid(), note.getVersion()),
+          workflowFactory.clearNotification(note.getNotificationId()),
+          workflowFactory.reindexOnly(true));
+    }
+    unselectAll(info);
+    receiptService.setReceipt(new KeyLabel(LABEL_RECEIPT, selectionSize));
+  }
 
-	@Override
-	public void selectAll(SectionInfo info)
-	{
-		FreetextSearchEvent searchEvent = resultsSection.createSearchEvent(info);
-		info.processEvent(searchEvent);
-		DefaultSearch search = searchEvent.getFinalSearch();
-		FreetextSearchResults<NotificationResult> results = freeTextService.search(search, 0, Integer.MAX_VALUE);
-		Model<ItemNotificationId> model = getModel(info);
-		Set<ItemNotificationId> selections = model.getSelections();
+  @Override
+  protected Label getLabelSelectAll() {
+    return LABEL_SELECTALL;
+  }
 
-		int count = results.getCount();
-		for( int i = 0; i < count; i++ )
-		{
-			NotificationResult noteResult = results.getResultData(i);
-			selections.add(new ItemNotificationId(noteResult.getItemIdKey(), noteResult.getNotificationId()));
-		}
-		model.setModifiedSelection(true);
-	}
+  @Override
+  protected Label getLabelUnselectAll() {
+    return LABEL_UNSELECTALL;
+  }
 
-	@Override
-	protected String getKeySelections()
-	{
-		return KEY_SELECTIONS;
-	}
+  @Override
+  protected Label getLabelViewSelected() {
+    return LABEL_VIEWSELECTED;
+  }
 
-	@Override
-	protected boolean useBitSet()
-	{
-		return false;
-	}
+  @Override
+  protected AbstractBulkResultsDialog<ItemNotificationId> getBulkDialog() {
+    return bulkDialog;
+  }
 
-	@Override
-	public Button getExecuteButton()
-	{
-		return clearSelectedButton;
-	}
+  @Override
+  protected Label getPleaseSelectLabel() {
+    return LABEL_PLEASE_SELECT;
+  }
+
+  @Override
+  protected Label getSelectionBoxCountLabel(int selectionCount) {
+    return new PluralKeyLabel(LABEL_COUNT, selectionCount);
+  }
+
+  @Override
+  public void selectAll(SectionInfo info) {
+    FreetextSearchEvent searchEvent = resultsSection.createSearchEvent(info);
+    info.processEvent(searchEvent);
+    DefaultSearch search = searchEvent.getFinalSearch();
+    FreetextSearchResults<NotificationResult> results =
+        freeTextService.search(search, 0, Integer.MAX_VALUE);
+    Model<ItemNotificationId> model = getModel(info);
+    Set<ItemNotificationId> selections = model.getSelections();
+
+    int count = results.getCount();
+    for (int i = 0; i < count; i++) {
+      NotificationResult noteResult = results.getResultData(i);
+      selections.add(
+          new ItemNotificationId(noteResult.getItemIdKey(), noteResult.getNotificationId()));
+    }
+    model.setModifiedSelection(true);
+  }
+
+  @Override
+  protected String getKeySelections() {
+    return KEY_SELECTIONS;
+  }
+
+  @Override
+  protected boolean useBitSet() {
+    return false;
+  }
+
+  @Override
+  public Button getExecuteButton() {
+    return clearSelectedButton;
+  }
 }

@@ -16,121 +16,96 @@
 
 package com.tle.web.api.activation;
 
+import com.tle.web.api.interfaces.beans.BaseEntityBean;
 import java.util.Date;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.tle.web.api.interfaces.beans.BaseEntityBean;
-
-/**
- * @author larry
- */
+/** @author larry */
 @XmlRootElement
-public class CourseBean extends BaseEntityBean
-{
-	/**
-	 * Course code, for POST /course, a mandatory field, must be unique
-	 */
-	private String code;
-	private String type;
-	private String citation;
-	private String departmentName;
-	private Date from;
-	private Date until;
-	/**
-	 * no of students in the course, must be integer
-	 */
-	private Integer students;
-	private String versionSelection;
-	private Boolean archived;
+public class CourseBean extends BaseEntityBean {
+  /** Course code, for POST /course, a mandatory field, must be unique */
+  private String code;
 
-	public String getCode()
-	{
-		return code;
-	}
+  private String type;
+  private String citation;
+  private String departmentName;
+  private Date from;
+  private Date until;
+  /** no of students in the course, must be integer */
+  private Integer students;
 
-	public void setCode(String code)
-	{
-		this.code = code;
-	}
+  private String versionSelection;
+  private Boolean archived;
 
-	public String getType()
-	{
-		return type;
-	}
+  public String getCode() {
+    return code;
+  }
 
-	public void setType(String type)
-	{
-		this.type = type;
-	}
+  public void setCode(String code) {
+    this.code = code;
+  }
 
-	public String getCitation()
-	{
-		return citation;
-	}
+  public String getType() {
+    return type;
+  }
 
-	public void setCitation(String citation)
-	{
-		this.citation = citation;
-	}
+  public void setType(String type) {
+    this.type = type;
+  }
 
-	public String getDepartmentName()
-	{
-		return departmentName;
-	}
+  public String getCitation() {
+    return citation;
+  }
 
-	public void setDepartmentName(String departmentName)
-	{
-		this.departmentName = departmentName;
-	}
+  public void setCitation(String citation) {
+    this.citation = citation;
+  }
 
-	public Date getFrom()
-	{
-		return from;
-	}
+  public String getDepartmentName() {
+    return departmentName;
+  }
 
-	public void setFrom(Date from)
-	{
-		this.from = from;
-	}
+  public void setDepartmentName(String departmentName) {
+    this.departmentName = departmentName;
+  }
 
-	public Date getUntil()
-	{
-		return until;
-	}
+  public Date getFrom() {
+    return from;
+  }
 
-	public void setUntil(Date until)
-	{
-		this.until = until;
-	}
+  public void setFrom(Date from) {
+    this.from = from;
+  }
 
-	public Integer getStudents()
-	{
-		return students;
-	}
+  public Date getUntil() {
+    return until;
+  }
 
-	public void setStudents(Integer students)
-	{
-		this.students = students;
-	}
+  public void setUntil(Date until) {
+    this.until = until;
+  }
 
-	public String getVersionSelection()
-	{
-		return versionSelection;
-	}
+  public Integer getStudents() {
+    return students;
+  }
 
-	public void setVersionSelection(String versionSelection)
-	{
-		this.versionSelection = versionSelection;
-	}
+  public void setStudents(Integer students) {
+    this.students = students;
+  }
 
-	public Boolean isArchived()
-	{
-		return archived;
-	}
+  public String getVersionSelection() {
+    return versionSelection;
+  }
 
-	public void setArchived(Boolean archived)
-	{
-		this.archived = archived;
-	}
+  public void setVersionSelection(String versionSelection) {
+    this.versionSelection = versionSelection;
+  }
+
+  public Boolean isArchived() {
+    return archived;
+  }
+
+  public void setArchived(Boolean archived) {
+    this.archived = archived;
+  }
 }

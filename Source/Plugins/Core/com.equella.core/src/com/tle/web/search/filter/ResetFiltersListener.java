@@ -21,7 +21,6 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.BroadcastEventListener;
 
 @NonNullByDefault
-public interface ResetFiltersListener extends BroadcastEventListener
-{
-	void reset(SectionInfo info);
+public interface ResetFiltersListener extends BroadcastEventListener {
+  void reset(SectionInfo info);
 }

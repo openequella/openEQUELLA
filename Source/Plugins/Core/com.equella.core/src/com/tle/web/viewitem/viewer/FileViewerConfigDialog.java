@@ -25,28 +25,25 @@ import com.tle.web.sections.standard.Checkbox;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.model.DialogControl;
 
-public class FileViewerConfigDialog extends AbstractNewWindowConfigDialog
-{
-	@PlugKey("appendtoken")
-	private static Label APPEND_TOKEN_LABEL;
-	@PlugKey("fileviewer")
-	private static Label LABEL_TITLE;
+public class FileViewerConfigDialog extends AbstractNewWindowConfigDialog {
+  @PlugKey("appendtoken")
+  private static Label APPEND_TOKEN_LABEL;
 
-	@Component
-	private Checkbox appendToken;
+  @PlugKey("fileviewer")
+  private static Label LABEL_TITLE;
 
-	@Override
-	@SuppressWarnings("nls")
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		controls.add(new DialogControl(APPEND_TOKEN_LABEL, appendToken));
-		mappings.addMapMapping("attr", "appendToken", appendToken);
-	}
+  @Component private Checkbox appendToken;
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  @SuppressWarnings("nls")
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    controls.add(new DialogControl(APPEND_TOKEN_LABEL, appendToken));
+    mappings.addMapMapping("attr", "appendToken", appendToken);
+  }
+
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return LABEL_TITLE;
+  }
 }

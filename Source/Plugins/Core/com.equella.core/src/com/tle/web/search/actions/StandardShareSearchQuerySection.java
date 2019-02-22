@@ -47,150 +47,133 @@ import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
 @SuppressWarnings("nls")
-public class StandardShareSearchQuerySection extends AbstractShareSearchQuerySection implements HtmlRenderer
-{
-	@ViewFactory
-	protected FreemarkerFactory viewFactory;
+public class StandardShareSearchQuerySection extends AbstractShareSearchQuerySection
+    implements HtmlRenderer {
+  @ViewFactory protected FreemarkerFactory viewFactory;
 
-	@Component(name = "r")
-	private Link rssLink;
-	@Component(name = "a")
-	private Link atomLink;
-	@Component(name = "g")
-	@PlugKey("actions.share.dialog.email.guest")
-	private Checkbox guest;
-	@PlugKey("share.search.email.")
-	private static String PREFIX;
+  @Component(name = "r")
+  private Link rssLink;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		getModel(context).setShowEmail(emailService.hasMailSettings());
-		InfoBookmark bookmark = rootSearch.getPermanentUrl(context);
-		setupFeeds(bookmark, context);
-		setupUrl(bookmark, context);
-		return viewFactory.createResult("actions/dialog/sharesearchquery.ftl", this);
-	}
+  @Component(name = "a")
+  private Link atomLink;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.setLayout(id, SearchResultsActionsSection.AREA_SHARE);
+  @Component(name = "g")
+  @PlugKey("actions.share.dialog.email.guest")
+  private Checkbox guest;
 
-		JSValidator fail = getEmail().createNotBlankValidator().setFailureStatements(Js.alert_s(BLANK_EMAIL_LABEL));
-		getSendEmailButton().setClickHandler(events.getNamedHandler("sendEmail").addValidator(fail));
-	}
+  @PlugKey("share.search.email.")
+  private static String PREFIX;
 
-	private void setupFeeds(InfoBookmark bookmark, RenderContext context)
-	{
-		rssLink.setBookmark(context, new BookmarkAndModify(bookmark, feedServlet.getModifier(context, "rss_2.0", "")));
-		rssLink.getState(context).setTarget(HtmlLinkState.TARGET_BLANK);
-		atomLink.setBookmark(context,
-			new BookmarkAndModify(bookmark, feedServlet.getModifier(context, "atom_1.0", "")));
-		atomLink.getState(context).setTarget(HtmlLinkState.TARGET_BLANK);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    getModel(context).setShowEmail(emailService.hasMailSettings());
+    InfoBookmark bookmark = rootSearch.getPermanentUrl(context);
+    setupFeeds(bookmark, context);
+    setupUrl(bookmark, context);
+    return viewFactory.createResult("actions/dialog/sharesearchquery.ftl", this);
+  }
 
-	protected FreetextSearchResults<?> getResults(SectionInfo info, DefaultSearch searchreq)
-	{
-		FreetextSearchResults<?> results;
-		if( guest.isChecked(info) )
-		{
-			ShareEmailRunAs shareRunAs = new ShareEmailRunAs(searchreq);
-			WebAuthenticationDetails details = userService.getWebAuthenticationDetails(info.getRequest());
-			runAsUser.executeAsGuest(CurrentInstitution.get(), shareRunAs, details);
-			results = shareRunAs.getResults();
-		}
-		else
-		{
-			results = setupResults(searchreq);
-		}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.setLayout(id, SearchResultsActionsSection.AREA_SHARE);
 
-		return results;
-	}
+    JSValidator fail =
+        getEmail().createNotBlankValidator().setFailureStatements(Js.alert_s(BLANK_EMAIL_LABEL));
+    getSendEmailButton().setClickHandler(events.getNamedHandler("sendEmail").addValidator(fail));
+  }
 
-	protected FreetextSearchResults<?> setupResults(Search searchreq)
-	{
-		return freeTextService.search(searchreq, 0, RESULTS_CAP);
-	}
+  private void setupFeeds(InfoBookmark bookmark, RenderContext context) {
+    rssLink.setBookmark(
+        context, new BookmarkAndModify(bookmark, feedServlet.getModifier(context, "rss_2.0", "")));
+    rssLink.getState(context).setTarget(HtmlLinkState.TARGET_BLANK);
+    atomLink.setBookmark(
+        context, new BookmarkAndModify(bookmark, feedServlet.getModifier(context, "atom_1.0", "")));
+    atomLink.getState(context).setTarget(HtmlLinkState.TARGET_BLANK);
+  }
 
-	protected class ShareEmailRunAs implements Runnable
-	{
-		private FreetextSearchResults<?> results;
-		private final DefaultSearch searchreq;
+  protected FreetextSearchResults<?> getResults(SectionInfo info, DefaultSearch searchreq) {
+    FreetextSearchResults<?> results;
+    if (guest.isChecked(info)) {
+      ShareEmailRunAs shareRunAs = new ShareEmailRunAs(searchreq);
+      WebAuthenticationDetails details = userService.getWebAuthenticationDetails(info.getRequest());
+      runAsUser.executeAsGuest(CurrentInstitution.get(), shareRunAs, details);
+      results = shareRunAs.getResults();
+    } else {
+      results = setupResults(searchreq);
+    }
 
-		public ShareEmailRunAs(DefaultSearch searchreq)
-		{
-			this.searchreq = searchreq;
-		}
+    return results;
+  }
 
-		@Override
-		public void run()
-		{
-			results = setupResults(searchreq);
-		}
+  protected FreetextSearchResults<?> setupResults(Search searchreq) {
+    return freeTextService.search(searchreq, 0, RESULTS_CAP);
+  }
 
-		public FreetextSearchResults<?> getResults()
-		{
-			return results;
-		}
-	}
+  protected class ShareEmailRunAs implements Runnable {
+    private FreetextSearchResults<?> results;
+    private final DefaultSearch searchreq;
 
-	public Link getRssLink()
-	{
-		return rssLink;
-	}
+    public ShareEmailRunAs(DefaultSearch searchreq) {
+      this.searchreq = searchreq;
+    }
 
-	public Link getAtomLink()
-	{
-		return atomLink;
-	}
+    @Override
+    public void run() {
+      results = setupResults(searchreq);
+    }
 
-	public Checkbox getGuest()
-	{
-		return guest;
-	}
+    public FreetextSearchResults<?> getResults() {
+      return results;
+    }
+  }
 
-	@Override
-	protected String createEmail(SectionInfo info)
-	{
-		FreetextSearchEvent event = (FreetextSearchEvent) getSearchResultsSection().createSearchEvent(info);
-		info.processEvent(event);
+  public Link getRssLink() {
+    return rssLink;
+  }
 
-		return buildEmail(info, event);
-	}
+  public Link getAtomLink() {
+    return atomLink;
+  }
 
-	private String buildEmail(SectionInfo info, FreetextSearchEvent event)
-	{
-		StringBuilder email = new StringBuilder();
+  public Checkbox getGuest() {
+    return guest;
+  }
 
-		email.append(s("intro", getUser(CurrentUser.getDetails())));
-		email.append(s("query", Strings.nullToEmpty(event.getQuery())));
+  @Override
+  protected String createEmail(SectionInfo info) {
+    FreetextSearchEvent event =
+        (FreetextSearchEvent) getSearchResultsSection().createSearchEvent(info);
+    info.processEvent(event);
 
-		for( Item i : getResults(info, event.getFinalSearch()).getResults() )
-		{
-			email.append(s("item.name", CurrentLocale.get(i.getName())));
-			email.append(s("item.link", urlFactory.createFullItemUrl(i.getItemId()).getHref()));
-			email.append(s("item.version", i.getVersion()));
-			if( !Check.isEmpty(i.getOwner()) )
-			{
-				email.append(s("item.owner", getUser(userService.getInformationForUser(i.getOwner()))));
-			}
-			email.append("\n");
-		}
-		email.append(s("outro"));
+    return buildEmail(info, event);
+  }
 
-		return email.toString();
-	}
+  private String buildEmail(SectionInfo info, FreetextSearchEvent event) {
+    StringBuilder email = new StringBuilder();
 
-	@Override
-	protected String getKeyPrefix()
-	{
-		return PREFIX;
-	}
+    email.append(s("intro", getUser(CurrentUser.getDetails())));
+    email.append(s("query", Strings.nullToEmpty(event.getQuery())));
+
+    for (Item i : getResults(info, event.getFinalSearch()).getResults()) {
+      email.append(s("item.name", CurrentLocale.get(i.getName())));
+      email.append(s("item.link", urlFactory.createFullItemUrl(i.getItemId()).getHref()));
+      email.append(s("item.version", i.getVersion()));
+      if (!Check.isEmpty(i.getOwner())) {
+        email.append(s("item.owner", getUser(userService.getInformationForUser(i.getOwner()))));
+      }
+      email.append("\n");
+    }
+    email.append(s("outro"));
+
+    return email.toString();
+  }
+
+  @Override
+  protected String getKeyPrefix() {
+    return PREFIX;
+  }
 }

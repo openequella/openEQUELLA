@@ -25,7 +25,7 @@ object CoreStrings extends StringLookup {
 
   def key(local: String): String = lookup.key(local)
 
-  def text(key: String) : String = text(key, Seq.empty: _*)
+  def text(key: String): String = text(key, Seq.empty: _*)
 
   override def text(key: String, vals: AnyRef*): String = lookup.getString(key, vals: _*)
 

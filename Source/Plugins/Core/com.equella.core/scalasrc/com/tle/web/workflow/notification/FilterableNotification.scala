@@ -20,16 +20,15 @@ import com.tle.web.notification.WebNotificationExtension
 import com.tle.web.sections.result.util.KeyLabel
 import com.tle.web.workflow.notification.FilterableNotification._
 
-object FilterableNotification
-{
+object FilterableNotification {
   import NotificationLangStrings.r
 
   val KEY_REASON_FILTER = r.key("notereason.")
-  val KEY_REASON_LIST = r.key("notificationlist.reasons.")
+  val KEY_REASON_LIST   = r.key("notificationlist.reasons.")
 }
 
 trait FilterableNotification extends WebNotificationExtension {
-  def getReasonLabel(str: String) = new KeyLabel(KEY_REASON_LIST + str)
+  def getReasonLabel(str: String)       = new KeyLabel(KEY_REASON_LIST + str)
   def getReasonFilterLabel(str: String) = new KeyLabel(KEY_REASON_FILTER + str)
-  def isIndexed(ntype: String) = true
+  def isIndexed(ntype: String)          = true
 }

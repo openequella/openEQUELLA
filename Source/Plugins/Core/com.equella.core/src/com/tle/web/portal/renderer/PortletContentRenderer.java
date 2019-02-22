@@ -22,16 +22,12 @@ import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.render.HtmlRenderer;
 
 public abstract class PortletContentRenderer<M> extends AbstractPrototypeSection<M>
-	implements
-		HtmlRenderer,
-		ViewableChildInterface
-{
-	protected Portlet portlet;
+    implements HtmlRenderer, ViewableChildInterface {
+  protected Portlet portlet;
 
-	public void setPortlet(Portlet portlet)
-	{
-		this.portlet = portlet;
-		// Dodgy call to prevent #5714
-		this.portlet.getAttributes();
-	}
+  public void setPortlet(Portlet portlet) {
+    this.portlet = portlet;
+    // Dodgy call to prevent #5714
+    this.portlet.getAttributes();
+  }
 }

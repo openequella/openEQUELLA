@@ -33,30 +33,33 @@ import scala.collection.JavaConverters._
 
 object ModCommentRender {
 
-  def render(info: SectionInfo, viewFactory: FreemarkerFactory,
-             userLinkSection: UserLinkSection, fileSystemService: FileSystemService,
+  def render(info: SectionInfo,
+             viewFactory: FreemarkerFactory,
+             userLinkSection: UserLinkSection,
+             fileSystemService: FileSystemService,
              comments: java.util.Collection[WorkflowMessage]): SectionRenderable = {
 
-    case class ModRow(wc: WorkflowMessage)
-    {
+    case class ModRow(wc: WorkflowMessage) {
       def getMessage = wc.getMessage
       def getExtraClass = wc.getType match {
         case WorkflowMessage.TYPE_ACCEPT => "approval"
         case WorkflowMessage.TYPE_REJECT => "rejection"
-        case _ => ""
+        case _                           => ""
       }
       def getDateRenderer = JQueryTimeAgo.timeAgoTag(wc.getDate)
-      def getUser = userLinkSection.createLink(info, wc.getUser)
+      def getUser         = userLinkSection.createLink(info, wc.getUser)
       val getAttachments = {
         val wfile = new WorkflowMessageFile(wc.getUuid)
-        fileSystemService.enumerate(wfile, "", null).map {
-          fe => new HtmlLinkState(new TextLabel(fe.getName),
+        fileSystemService.enumerate(wfile, "", null).map { fe =>
+          new HtmlLinkState(
+            new TextLabel(fe.getName),
             new SimpleBookmark(WorkflowMessageServlet.messageUrl(wc.getUuid, fe.getName)))
         }
       }
     }
 
-    viewFactory.createResultWithModel("modcomments.ftl",
+    viewFactory.createResultWithModel(
+      "modcomments.ftl",
       comments.asScala.toSeq.sortBy(_.getDate)(Ordering[Date].reverse).map(ModRow).asJava);
   }
 }

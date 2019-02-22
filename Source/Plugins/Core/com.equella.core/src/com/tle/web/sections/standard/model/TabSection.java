@@ -22,9 +22,8 @@ import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 
 @NonNullByDefault
-public interface TabSection extends SectionId
-{
-	NameValue getTabToAppearOn();
+public interface TabSection extends SectionId {
+  NameValue getTabToAppearOn();
 
-	boolean isVisible(SectionInfo info);
+  boolean isVisible(SectionInfo info);
 }

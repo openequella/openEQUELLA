@@ -22,11 +22,10 @@ import com.tle.beans.item.ItemKey;
 import com.tle.web.sections.Bookmark;
 
 @NonNullByDefault
-public interface ViewItemLinkFactory
-{
-	Bookmark createViewLink(ItemKey itemId);
+public interface ViewItemLinkFactory {
+  Bookmark createViewLink(ItemKey itemId);
 
-	Bookmark createViewAttachmentLink(ItemKey itemId, @Nullable String attachmentUuid);
+  Bookmark createViewAttachmentLink(ItemKey itemId, @Nullable String attachmentUuid);
 
-	Bookmark createThumbnailAttachmentLink(ItemKey itemId, @Nullable String attachmentUuid);
+  Bookmark createThumbnailAttachmentLink(ItemKey itemId, @Nullable String attachmentUuid);
 }

@@ -16,11 +16,6 @@
 
 package com.tle.web.connectors.section;
 
-import java.util.Collection;
-import java.util.Map;
-
-import javax.inject.Inject;
-
 import com.tle.common.Check;
 import com.tle.common.connectors.ConnectorConstants;
 import com.tle.common.connectors.ConnectorTypeDescriptor;
@@ -57,253 +52,221 @@ import com.tle.web.sections.standard.model.DynamicHtmlListModel;
 import com.tle.web.sections.standard.model.NameValueOption;
 import com.tle.web.sections.standard.model.Option;
 import com.tle.web.template.section.HelpAndScreenOptionsSection;
+import java.util.Collection;
+import java.util.Map;
+import javax.inject.Inject;
 
-/**
- * @author Aaron
- */
-
+/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 public class ConnectorContributeSection
-	extends
-		AbstractEntityContributeSection<ConnectorEditingBean, Connector, ConnectorContributeSection.ConnectorContributeModel>
-{
-	private Map<String, EntityEditor<ConnectorEditingBean, Connector>> editorMap;
+    extends AbstractEntityContributeSection<
+        ConnectorEditingBean, Connector, ConnectorContributeSection.ConnectorContributeModel> {
+  private Map<String, EntityEditor<ConnectorEditingBean, Connector>> editorMap;
 
-	@PlugKey("editor.label.pagetitle.new")
-	private static Label LABEL_CREATE_PAGETITLE;
-	@PlugKey("editor.label.pagetitle.edit")
-	private static Label LABEL_EDIT_PAGETITLE;
-	@PlugKey("editor.dropdown.option.choosetype")
-	private static String CHOOSE_TYPE_KEY;
+  @PlugKey("editor.label.pagetitle.new")
+  private static Label LABEL_CREATE_PAGETITLE;
 
-	@Inject
-	private ConnectorService connectorService;
+  @PlugKey("editor.label.pagetitle.edit")
+  private static Label LABEL_EDIT_PAGETITLE;
 
-	private PluginTracker<EntityEditor<ConnectorEditingBean, Connector>> editorTracker;
+  @PlugKey("editor.dropdown.option.choosetype")
+  private static String CHOOSE_TYPE_KEY;
 
-	@Component(name = "ct")
-	private SingleSelectionList<ConnectorTypeDescriptor> connectorTypes;
+  @Inject private ConnectorService connectorService;
 
-	@EventFactory
-	private EventGenerator events;
-	@ViewFactory
-	private FreemarkerFactory view;
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  private PluginTracker<EntityEditor<ConnectorEditingBean, Connector>> editorTracker;
 
-	private UpdateDomFunction updateFunction;
+  @Component(name = "ct")
+  private SingleSelectionList<ConnectorTypeDescriptor> connectorTypes;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final ConnectorContributeModel model = getModel(context);
+  @EventFactory private EventGenerator events;
+  @ViewFactory private FreemarkerFactory view;
+  @AjaxFactory private AjaxGenerator ajax;
 
-		model.setPageTitle(getPageTitle(context));
+  private UpdateDomFunction updateFunction;
 
-		final EntityEditor<ConnectorEditingBean, Connector> ed = getEditor(context);
-		if( ed != null )
-		{
-			// check edit priv
-			final ConnectorEditingBean editedConnector = ed.getEditedEntity(context);
-			if( editedConnector.getId() == 0 )
-			{
-				ensureCreatePriv(context);
-			}
-			else if( !canEdit(context, editedConnector) )
-			{
-				throw accessDenied(getEditPriv());
-			}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    final ConnectorContributeModel model = getModel(context);
 
-			HelpAndScreenOptionsSection.addHelp(context, ed.renderHelp(context));
-			model.setEditorRenderable(ed.renderEditor(context));
-		}
-		else
-		{
-			ensureCreatePriv(context);
-		}
+    model.setPageTitle(getPageTitle(context));
 
-		final GenericTemplateResult templateResult = new GenericTemplateResult();
-		templateResult.addNamedResult("body", view.createResult("editconnector.ftl", context));
-		return templateResult;
-	}
+    final EntityEditor<ConnectorEditingBean, Connector> ed = getEditor(context);
+    if (ed != null) {
+      // check edit priv
+      final ConnectorEditingBean editedConnector = ed.getEditedEntity(context);
+      if (editedConnector.getId() == 0) {
+        ensureCreatePriv(context);
+      } else if (!canEdit(context, editedConnector)) {
+        throw accessDenied(getEditPriv());
+      }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+      HelpAndScreenOptionsSection.addHelp(context, ed.renderHelp(context));
+      model.setEditorRenderable(ed.renderEditor(context));
+    } else {
+      ensureCreatePriv(context);
+    }
 
-		connectorTypes.setListModel(new DynamicHtmlListModel<ConnectorTypeDescriptor>()
-		{
-			@Override
-			protected Iterable<ConnectorTypeDescriptor> populateModel(SectionInfo info)
-			{
-				return connectorService.listAllAvailableTypes();
-			}
+    final GenericTemplateResult templateResult = new GenericTemplateResult();
+    templateResult.addNamedResult("body", view.createResult("editconnector.ftl", context));
+    return templateResult;
+  }
 
-			@Override
-			protected Option<ConnectorTypeDescriptor> getTopOption()
-			{
-				return new KeyOption<ConnectorTypeDescriptor>(CHOOSE_TYPE_KEY, "", null);
-			}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-			@Override
-			protected Option<ConnectorTypeDescriptor> convertToOption(SectionInfo info, ConnectorTypeDescriptor obj)
-			{
-				return new NameValueOption<ConnectorTypeDescriptor>(
-					new BundleNameValue(obj.getNameKey(), obj.getType()), obj);
-			}
-		});
+    connectorTypes.setListModel(
+        new DynamicHtmlListModel<ConnectorTypeDescriptor>() {
+          @Override
+          protected Iterable<ConnectorTypeDescriptor> populateModel(SectionInfo info) {
+            return connectorService.listAllAvailableTypes();
+          }
 
-		updateFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("typeSelected"),
-			"connectorEditor", "actions");
-		connectorTypes.addChangeEventHandler(new OverrideHandler(updateFunction));
-	}
+          @Override
+          protected Option<ConnectorTypeDescriptor> getTopOption() {
+            return new KeyOption<ConnectorTypeDescriptor>(CHOOSE_TYPE_KEY, "", null);
+          }
 
-	@Override
-	protected AbstractEntityService<ConnectorEditingBean, Connector> getEntityService()
-	{
-		return connectorService;
-	}
+          @Override
+          protected Option<ConnectorTypeDescriptor> convertToOption(
+              SectionInfo info, ConnectorTypeDescriptor obj) {
+            return new NameValueOption<ConnectorTypeDescriptor>(
+                new BundleNameValue(obj.getNameKey(), obj.getType()), obj);
+          }
+        });
 
-	@Override
-	protected Collection<EntityEditor<ConnectorEditingBean, Connector>> getAllEditors()
-	{
-		editorMap = editorTracker.getNewBeanMap();
-		return editorMap.values();
-	}
+    updateFunction =
+        ajax.getAjaxUpdateDomFunction(
+            tree, this, events.getEventHandler("typeSelected"), "connectorEditor", "actions");
+    connectorTypes.addChangeEventHandler(new OverrideHandler(updateFunction));
+  }
 
-	@Override
-	protected EntityEditor<ConnectorEditingBean, Connector> getEditor(SectionInfo info)
-	{
-		final String type = connectorTypes.getSelectedValueAsString(info);
-		final ConnectorContributeModel model = getModel(info);
-		if( !Check.isEmpty(type) )
-		{
-			final EntityEditor<ConnectorEditingBean, Connector> ed = editorMap.get(type);
-			model.setEditor(ed);
-			return ed;
-		}
-		return null;
-	}
+  @Override
+  protected AbstractEntityService<ConnectorEditingBean, Connector> getEntityService() {
+    return connectorService;
+  }
 
-	@EventHandlerMethod
-	public void typeSelected(SectionInfo info)
-	{
-		final EntityEditor<ConnectorEditingBean, Connector> ed = getEditor(info);
-		if( ed != null )
-		{
-			// start new session
-			ed.create(info);
-		}
-	}
+  @Override
+  protected Collection<EntityEditor<ConnectorEditingBean, Connector>> getAllEditors() {
+    editorMap = editorTracker.getNewBeanMap();
+    return editorMap.values();
+  }
 
-	/**
-	 * @param info
-	 * @param connectorUuid
-	 * @param type
-	 */
-	@Override
-	public void startEdit(SectionInfo info, String connectorUuid, boolean clone)
-	{
-		final Connector connector = connectorService.getForEdit(connectorUuid);
-		final String type = connector.getLmsType();
-		final ConnectorContributeModel model = getModel(info);
-		final EntityEditor<ConnectorEditingBean, Connector> ed = editorMap.get(type);
-		model.setEditor(ed);
-		model.setEditing(true);
-		ed.edit(info, connectorUuid, clone);
-		connectorTypes.setSelectedStringValue(info, type);
-	}
+  @Override
+  protected EntityEditor<ConnectorEditingBean, Connector> getEditor(SectionInfo info) {
+    final String type = connectorTypes.getSelectedValueAsString(info);
+    final ConnectorContributeModel model = getModel(info);
+    if (!Check.isEmpty(type)) {
+      final EntityEditor<ConnectorEditingBean, Connector> ed = editorMap.get(type);
+      model.setEditor(ed);
+      return ed;
+    }
+    return null;
+  }
 
-	@Override
-	public void returnFromEdit(SectionInfo info, boolean cancelled)
-	{
-		super.returnFromEdit(info, cancelled);
-		connectorTypes.setSelectedStringValue(info, null);
-	}
+  @EventHandlerMethod
+  public void typeSelected(SectionInfo info) {
+    final EntityEditor<ConnectorEditingBean, Connector> ed = getEditor(info);
+    if (ed != null) {
+      // start new session
+      ed.create(info);
+    }
+  }
 
-	@Override
-	protected String getCreatePriv()
-	{
-		return ConnectorConstants.PRIV_CREATE_CONNECTOR;
-	}
+  /**
+   * @param info
+   * @param connectorUuid
+   * @param type
+   */
+  @Override
+  public void startEdit(SectionInfo info, String connectorUuid, boolean clone) {
+    final Connector connector = connectorService.getForEdit(connectorUuid);
+    final String type = connector.getLmsType();
+    final ConnectorContributeModel model = getModel(info);
+    final EntityEditor<ConnectorEditingBean, Connector> ed = editorMap.get(type);
+    model.setEditor(ed);
+    model.setEditing(true);
+    ed.edit(info, connectorUuid, clone);
+    connectorTypes.setSelectedStringValue(info, type);
+  }
 
-	@Override
-	protected String getEditPriv()
-	{
-		return ConnectorConstants.PRIV_EDIT_CONNECTOR;
-	}
+  @Override
+  public void returnFromEdit(SectionInfo info, boolean cancelled) {
+    super.returnFromEdit(info, cancelled);
+    connectorTypes.setSelectedStringValue(info, null);
+  }
 
-	@Override
-	protected Label getCreatingLabel(SectionInfo info)
-	{
-		return LABEL_CREATE_PAGETITLE;
-	}
+  @Override
+  protected String getCreatePriv() {
+    return ConnectorConstants.PRIV_CREATE_CONNECTOR;
+  }
 
-	@Override
-	protected Label getEditingLabel(SectionInfo info)
-	{
-		return LABEL_EDIT_PAGETITLE;
-	}
+  @Override
+  protected String getEditPriv() {
+    return ConnectorConstants.PRIV_EDIT_CONNECTOR;
+  }
 
-	@Override
-	public Class<ConnectorContributeModel> getModelClass()
-	{
-		return ConnectorContributeModel.class;
-	}
+  @Override
+  protected Label getCreatingLabel(SectionInfo info) {
+    return LABEL_CREATE_PAGETITLE;
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "cc";
-	}
+  @Override
+  protected Label getEditingLabel(SectionInfo info) {
+    return LABEL_EDIT_PAGETITLE;
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new ConnectorContributeModel(info);
-	}
+  @Override
+  public Class<ConnectorContributeModel> getModelClass() {
+    return ConnectorContributeModel.class;
+  }
 
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		editorTracker = new PluginTracker<EntityEditor<ConnectorEditingBean, Connector>>(pluginService,
-			"com.tle.web.connectors", "connectorEditor", "id");
-		editorTracker.setBeanKey("class");
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "cc";
+  }
 
-	public SingleSelectionList<ConnectorTypeDescriptor> getConnectorTypes()
-	{
-		return connectorTypes;
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new ConnectorContributeModel(info);
+  }
 
-	public UpdateDomFunction getUpdateFunction()
-	{
-		return updateFunction;
-	}
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    editorTracker =
+        new PluginTracker<EntityEditor<ConnectorEditingBean, Connector>>(
+            pluginService, "com.tle.web.connectors", "connectorEditor", "id");
+    editorTracker.setBeanKey("class");
+  }
 
-	public class ConnectorContributeModel
-		extends
-			AbstractEntityContributeSection<ConnectorEditingBean, Connector, ConnectorContributeModel>.EntityContributeModel
-	{
-		private final SectionInfo info;
-		private EntityEditor<ConnectorEditingBean, Connector> editor;
+  public SingleSelectionList<ConnectorTypeDescriptor> getConnectorTypes() {
+    return connectorTypes;
+  }
 
-		public ConnectorContributeModel(SectionInfo info)
-		{
-			this.info = info;
-		}
+  public UpdateDomFunction getUpdateFunction() {
+    return updateFunction;
+  }
 
-		@Override
-		public EntityEditor<ConnectorEditingBean, Connector> getEditor()
-		{
-			final String type = connectorTypes.getSelectedValueAsString(info);
-			if( editor == null && type != null )
-			{
-				editor = editorMap.get(type);
-			}
-			return editor;
-		}
-	}
+  public class ConnectorContributeModel
+      extends AbstractEntityContributeSection<
+              ConnectorEditingBean, Connector, ConnectorContributeModel>
+          .EntityContributeModel {
+    private final SectionInfo info;
+    private EntityEditor<ConnectorEditingBean, Connector> editor;
+
+    public ConnectorContributeModel(SectionInfo info) {
+      this.info = info;
+    }
+
+    @Override
+    public EntityEditor<ConnectorEditingBean, Connector> getEditor() {
+      final String type = connectorTypes.getSelectedValueAsString(info);
+      if (editor == null && type != null) {
+        editor = editorMap.get(type);
+      }
+      return editor;
+    }
+  }
 }

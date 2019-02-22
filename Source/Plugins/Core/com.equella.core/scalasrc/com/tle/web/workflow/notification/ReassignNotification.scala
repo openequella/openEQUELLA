@@ -24,17 +24,20 @@ import javax.inject.{Inject, Singleton}
 
 @Bind
 @Singleton
-class ReassignNotification extends FilterableNotification with TemplatedNotification with NotificationLookup {
+class ReassignNotification
+    extends FilterableNotification
+    with TemplatedNotification
+    with NotificationLookup {
   type N = ReassignNoteModel
   @Inject
   var userService: UserService = _
 
-  case class ReassignNoteModel(lul: LazyUserLookup)(val note: Notification, val item: Item) extends TaskNotification with OwnerLookup
-  {
+  case class ReassignNoteModel(lul: LazyUserLookup)(val note: Notification, val item: Item)
+      extends TaskNotification
+      with OwnerLookup {
     def group = StdNotificationGroup("notification-reassigned.ftl", note.getReason)
   }
 
-  def toFreemarkerModel(notes: Iterable[Notification]) = createDataIgnore(notes, ReassignNoteModel(new LazyUserLookup(userService)))
+  def toFreemarkerModel(notes: Iterable[Notification]) =
+    createDataIgnore(notes, ReassignNoteModel(new LazyUserLookup(userService)))
 }
-
-

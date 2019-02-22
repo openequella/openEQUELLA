@@ -16,24 +16,18 @@
 
 package com.tle.web.search.actions;
 
-import javax.inject.Inject;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.core.guice.Bind;
+import javax.inject.Inject;
 
-/**
- * @author Andrew Gibb
- */
+/** @author Andrew Gibb */
 @NonNullByDefault
 @Bind
-public class StandardShareSearchQueryDialog extends AbstractShareSearchQueryDialog
-{
-	@Inject
-	private StandardShareSearchQuerySection contentSection;
+public class StandardShareSearchQueryDialog extends AbstractShareSearchQueryDialog {
+  @Inject private StandardShareSearchQuerySection contentSection;
 
-	@Override
-	protected AbstractShareSearchQuerySection getContentSection()
-	{
-		return contentSection;
-	}
+  @Override
+  protected AbstractShareSearchQuerySection getContentSection() {
+    return contentSection;
+  }
 }

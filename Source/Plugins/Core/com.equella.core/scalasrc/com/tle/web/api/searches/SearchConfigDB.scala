@@ -25,19 +25,18 @@ import fs2.Stream
 
 object SearchConfigDB {
 
-
-  private def SearchConfigPrefix = "searchconfig."
-  def configName(id: UUID): String = s"$SearchConfigPrefix$id"
+  private def SearchConfigPrefix           = "searchconfig."
+  def configName(id: UUID): String         = s"$SearchConfigPrefix$id"
   def pageConfigName(name: String): String = s"searchpage.$name"
 
   def writeConfig(id: UUID, config: SearchConfig): DB[Unit] =
     SettingsDB.setJsonProperty(configName(id), config)
 
-  def readAllConfigs : Stream[DB, SearchConfig] =
+  def readAllConfigs: Stream[DB, SearchConfig] =
     SettingsDB.jsonProperties[SearchConfig](SearchConfigPrefix,
-      uuid => sc => sc.copy(id = Some(UUID.fromString(uuid))))
+                                            uuid => sc => sc.copy(id = Some(UUID.fromString(uuid))))
 
-  def readConfig(id: UUID) : OptionT[DB, SearchConfig] =
+  def readConfig(id: UUID): OptionT[DB, SearchConfig] =
     SettingsDB.jsonProperty(configName(id))
 
   def readPageConfig(page: String): OptionT[DB, SearchPageConfig] =

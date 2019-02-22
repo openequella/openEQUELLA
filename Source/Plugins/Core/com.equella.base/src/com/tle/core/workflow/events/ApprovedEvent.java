@@ -18,12 +18,10 @@ package com.tle.core.workflow.events;
 
 import com.tle.beans.item.HistoryEvent;
 
-public class ApprovedEvent extends WorkflowEvent
-{
-	private static final long serialVersionUID = 1L;
+public class ApprovedEvent extends WorkflowEvent {
+  private static final long serialVersionUID = 1L;
 
-	public ApprovedEvent(HistoryEvent event)
-	{
-		super(event);
-	}
+  public ApprovedEvent(HistoryEvent event) {
+    super(event);
+  }
 }

@@ -16,17 +16,13 @@
 
 package com.tle.core.healthcheck;
 
+import com.tle.core.healthcheck.listeners.bean.ServiceStatus;
 import java.util.List;
 
-import com.tle.core.healthcheck.listeners.bean.ServiceStatus;
+public interface HealthCheckService {
+  void startCheckRequest();
 
+  List<ServiceStatus> retrieveForSingleNode(String nodeId);
 
-
-public interface HealthCheckService
-{
-	void startCheckRequest();
-
-	List<ServiceStatus> retrieveForSingleNode(String nodeId);
-
-	List<ServiceStatus> retrieveForNonCluster();
+  List<ServiceStatus> retrieveForNonCluster();
 }

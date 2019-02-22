@@ -19,11 +19,10 @@ package com.tle.common.applet.client;
 import com.tle.common.applet.KeepAliveTask;
 import com.tle.common.applet.TimeoutHandler;
 
-public interface ClientInterface
-{
-	KeepAliveTask getKeepAliveTask();
+public interface ClientInterface {
+  KeepAliveTask getKeepAliveTask();
 
-	TimeoutHandler getTimeoutHandler();
+  TimeoutHandler getTimeoutHandler();
 
-	String getSession();
+  String getSession();
 }

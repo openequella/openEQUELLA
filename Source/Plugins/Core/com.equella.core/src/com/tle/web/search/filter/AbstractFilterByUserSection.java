@@ -16,8 +16,6 @@
 
 package com.tle.web.search.filter;
 
-import javax.inject.Inject;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -46,156 +44,133 @@ import com.tle.web.sections.standard.HiddenState;
 import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.HtmlLinkState;
+import javax.inject.Inject;
 
 @NonNullByDefault
 @SuppressWarnings("nls")
 public abstract class AbstractFilterByUserSection<SE extends AbstractSearchEvent<SE>>
-	extends
-		AbstractPrototypeSection<AbstractFilterByUserSection.Model>
-	implements
-		HtmlRenderer,
-		ResetFiltersListener,
-		SearchEventListener<SE>
-{
-	@PlugKey("filter.byowner.dialog.title")
-	private static Label LABEL_DIALOG_TITLE;
-	@PlugKey("filter.byowner.title")
-	private static Label LABEL_TITLE;
+    extends AbstractPrototypeSection<AbstractFilterByUserSection.Model>
+    implements HtmlRenderer, ResetFiltersListener, SearchEventListener<SE> {
+  @PlugKey("filter.byowner.dialog.title")
+  private static Label LABEL_DIALOG_TITLE;
 
-	@Inject
-	private UserLinkService userLinkService;
-	protected UserLinkSection userLinkSection;
+  @PlugKey("filter.byowner.title")
+  private static Label LABEL_TITLE;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	protected EventGenerator events;
+  @Inject private UserLinkService userLinkService;
+  protected UserLinkSection userLinkSection;
 
-	@TreeLookup
-	protected AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory protected EventGenerator events;
 
-	@Component(name = "so")
-	@Inject
-	protected SelectUserDialog selOwner;
-	@Component(name = "r")
-	@PlugKey("filter.byowner.remove")
-	private Link remove;
+  @TreeLookup protected AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
 
-	@Component(supported = true)
-	protected HiddenState hidden;
+  @Component(name = "so")
+  @Inject
+  protected SelectUserDialog selOwner;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Component(name = "r")
+  @PlugKey("filter.byowner.remove")
+  private Link remove;
 
-		userLinkSection = userLinkService.register(tree, id);
+  @Component(supported = true)
+  protected HiddenState hidden;
 
-		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
-		selOwner.setTitle(getDialogTitle());
-		hidden.setParameterId(getPublicParam());
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	protected abstract String getPublicParam();
+    userLinkSection = userLinkService.register(tree, id);
 
-	public Label getDialogTitle()
-	{
-		return LABEL_DIALOG_TITLE;
-	}
+    tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
+    selOwner.setTitle(getDialogTitle());
+    hidden.setParameterId(getPublicParam());
+  }
 
-	public Label getTitle()
-	{
-		return LABEL_TITLE;
-	}
+  protected abstract String getPublicParam();
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		selOwner.setOkCallback(searchResults.getResultsUpdater(tree, events.getEventHandler("ownerSelected"),
-			getAjaxDiv()));
-		remove.setClickHandler(new OverrideHandler(searchResults.getResultsUpdater(tree,
-			events.getEventHandler("ownerRemoved"), getAjaxDiv())));
-	}
+  public Label getDialogTitle() {
+    return LABEL_DIALOG_TITLE;
+  }
 
-	public abstract String getAjaxDiv();
+  public Label getTitle() {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		String ownerUuid = hidden.getValue(context);
-		if( ownerUuid != null )
-		{
-			getModel(context).setOwner(userLinkSection.createLink(context, ownerUuid));
-		}
-		return viewFactory.createResult("filter/filterbyowner.ftl", context);
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    selOwner.setOkCallback(
+        searchResults.getResultsUpdater(
+            tree, events.getEventHandler("ownerSelected"), getAjaxDiv()));
+    remove.setClickHandler(
+        new OverrideHandler(
+            searchResults.getResultsUpdater(
+                tree, events.getEventHandler("ownerRemoved"), getAjaxDiv())));
+  }
 
-	@EventHandlerMethod
-	public void ownerSelected(SectionInfo info, String user)
-	{
-		SelectedUser selectedUser = SelectUserDialog.userFromJsonString(user);
+  public abstract String getAjaxDiv();
 
-		if( selectedUser != null )
-		{
-			hidden.setValue(info, selectedUser.getUuid());
-		}
-		else
-		{
-			hidden.setValue(info, null);
-		}
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    String ownerUuid = hidden.getValue(context);
+    if (ownerUuid != null) {
+      getModel(context).setOwner(userLinkSection.createLink(context, ownerUuid));
+    }
+    return viewFactory.createResult("filter/filterbyowner.ftl", context);
+  }
 
-	protected String getSelectedUserId(SectionInfo info)
-	{
-		return hidden.getValue(info);
-	}
+  @EventHandlerMethod
+  public void ownerSelected(SectionInfo info, String user) {
+    SelectedUser selectedUser = SelectUserDialog.userFromJsonString(user);
 
-	@Override
-	public void reset(SectionInfo info)
-	{
-		hidden.setValue(info, null);
-	}
+    if (selectedUser != null) {
+      hidden.setValue(info, selectedUser.getUuid());
+    } else {
+      hidden.setValue(info, null);
+    }
+  }
 
-	@EventHandlerMethod
-	public void ownerRemoved(SectionInfo info)
-	{
-		reset(info);
-	}
+  protected String getSelectedUserId(SectionInfo info) {
+    return hidden.getValue(info);
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model();
-	}
+  @Override
+  public void reset(SectionInfo info) {
+    hidden.setValue(info, null);
+  }
 
-	public SelectUserDialog getSelectOwner()
-	{
-		return selOwner;
-	}
+  @EventHandlerMethod
+  public void ownerRemoved(SectionInfo info) {
+    reset(info);
+  }
 
-	public static class Model
-	{
-		private HtmlLinkState owner;
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model();
+  }
 
-		public HtmlLinkState getOwner()
-		{
-			return owner;
-		}
+  public SelectUserDialog getSelectOwner() {
+    return selOwner;
+  }
 
-		public void setOwner(HtmlLinkState owner)
-		{
-			this.owner = owner;
-		}
-	}
+  public static class Model {
+    private HtmlLinkState owner;
 
-	public Link getRemove()
-	{
-		return remove;
-	}
+    public HtmlLinkState getOwner() {
+      return owner;
+    }
 
-	public boolean isShowOrphaned()
-	{
-		return false;
-	}
+    public void setOwner(HtmlLinkState owner) {
+      this.owner = owner;
+    }
+  }
+
+  public Link getRemove() {
+    return remove;
+  }
+
+  public boolean isShowOrphaned() {
+    return false;
+  }
 }

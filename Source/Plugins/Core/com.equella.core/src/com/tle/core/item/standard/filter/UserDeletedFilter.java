@@ -20,22 +20,20 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.core.item.operations.WorkflowOperation;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
 public class UserDeletedFilter extends AbstractUserFilter // NOSONAR
 {
-	@AssistedInject
-	private UserDeletedFilter(@Assisted String userID)
-	{
-		super(userID);
-	}
+  @AssistedInject
+  private UserDeletedFilter(@Assisted String userID) {
+    super(userID);
+  }
 
-	@Override
-	public WorkflowOperation[] createOperations()
-	{
-		return new WorkflowOperation[]{operationFactory.userDeleted(getUserID()), operationFactory.save()};
-	}
+  @Override
+  public WorkflowOperation[] createOperations() {
+    return new WorkflowOperation[] {
+      operationFactory.userDeleted(getUserID()), operationFactory.save()
+    };
+  }
 }

@@ -1,28 +1,37 @@
 import * as React from "react";
-import {Bridge} from "../api/bridge";
+import { Bridge } from "../api/bridge";
 import {
-  Button, CardContent, CardActions,
-  Card, Divider, FormControl, Typography,
-  WithStyles, withStyles, createStyles,
-  Grid, Snackbar, IconButton
+  Button,
+  CardContent,
+  CardActions,
+  Card,
+  Divider,
+  FormControl,
+  Typography,
+  WithStyles,
+  withStyles,
+  createStyles,
+  Grid,
+  Snackbar,
+  IconButton
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import ColorPickerComponent from "./ColorPickerComponent";
-import axios, {AxiosError} from "axios";
-import {Config} from "../config";
-import {prepLangStrings} from "../util/langstrings";
-import {commonString} from '../util/commonstrings';
-import {generateFromAxiosError, generateNewErrorID} from "../api/errors";
+import axios, { AxiosError } from "axios";
+import { Config } from "../config";
+import { prepLangStrings } from "../util/langstrings";
+import { commonString } from "../util/commonstrings";
+import { generateFromAxiosError, generateNewErrorID } from "../api/errors";
 
 interface IThemeSettings {
-  primaryColor: string,
-  secondaryColor: string,
-  backgroundColor: string,
-  menuItemColor: string,
-  menuItemTextColor: string,
-  menuItemIconColor: string,
-  menuTextColor: string,
-  fontSize: number
+  primaryColor: string;
+  secondaryColor: string;
+  backgroundColor: string;
+  menuItemColor: string;
+  menuItemTextColor: string;
+  menuItemIconColor: string;
+  menuTextColor: string;
+  fontSize: number;
 }
 
 declare const themeSettings: IThemeSettings;
@@ -31,34 +40,33 @@ declare const logoURL: string;
 /**
  * @author Samantha Fisher
  */
-export const strings = prepLangStrings("newuisettings",
-  {
-    title: "Theme Settings",
-    colourschemesettings: {
-      title: "Colour Scheme",
-      primarycolour: "Primary Colour",
-      menubackgroundcolour: "Menu Background Colour",
-      backgroundcolour: "Background Colour",
-      secondarycolour: "Secondary Colour",
-      sidebartextcolour: "Sidebar Text Colour",
-      textcolour: "Text Colour",
-      sidebariconcolour: "Icon Colour"
-    },
-    logosettings: {
-      title: "Logo Settings",
-      imagespeclabel: "Use a PNG file of 230x36 pixels for best results.",
-      current: "Current Logo: ",
-      nofileselected: "No file selected."
-    },
-    errors: {
-      invalidimagetitle: "Image Processing Error",
-      invalidimagedescription: "Invalid image file. Please check the integrity of your file and try again.",
-      nofiledescription: "Please select an image file to upload.",
-      permissiontitle: "Permission Error",
-      permissiondescription: "You do not have permission to edit the settings."
-    }
+export const strings = prepLangStrings("newuisettings", {
+  title: "Theme Settings",
+  colourschemesettings: {
+    title: "Colour Scheme",
+    primarycolour: "Primary Colour",
+    menubackgroundcolour: "Menu Background Colour",
+    backgroundcolour: "Background Colour",
+    secondarycolour: "Secondary Colour",
+    sidebartextcolour: "Sidebar Text Colour",
+    textcolour: "Text Colour",
+    sidebariconcolour: "Icon Colour"
+  },
+  logosettings: {
+    title: "Logo Settings",
+    imagespeclabel: "Use a PNG file of 230x36 pixels for best results.",
+    current: "Current Logo: ",
+    nofileselected: "No file selected."
+  },
+  errors: {
+    invalidimagetitle: "Image Processing Error",
+    invalidimagedescription:
+      "Invalid image file. Please check the integrity of your file and try again.",
+    nofiledescription: "Please select an image file to upload.",
+    permissiontitle: "Permission Error",
+    permissiondescription: "You do not have permission to edit the settings."
   }
-);
+});
 
 const styles = createStyles({
   card: {
@@ -85,7 +93,7 @@ const styles = createStyles({
   },
   button: {
     marginTop: "8px",
-    marginBottom: "8px",
+    marginBottom: "8px"
   }
 });
 
@@ -93,8 +101,9 @@ interface ThemePageProps {
   bridge: Bridge;
 }
 
-class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof styles>> {
-
+class ThemePage extends React.Component<
+  ThemePageProps & WithStyles<typeof styles>
+> {
   state = {
     primary: "",
     secondary: "",
@@ -115,15 +124,18 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
   };
 
   handleDefaultButton = () => {
-    this.setState({
-      primary: "#2196f3",
-      secondary: "#ff9800",
-      background: "#fafafa",
-      menu: "#ffffff",
-      menuText: "#000000",
-      menuIcon: "#000000",
-      text: "#000000"
-    },()=>this.submitTheme());
+    this.setState(
+      {
+        primary: "#2196f3",
+        secondary: "#ff9800",
+        background: "#fafafa",
+        menu: "#ffffff",
+        menuText: "#000000",
+        menuIcon: "#000000",
+        text: "#000000"
+      },
+      () => this.submitTheme()
+    );
   };
 
   setColorPickerDefaults = () => {
@@ -142,31 +154,31 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     window.location.reload();
   };
   handlePrimaryChange = (color: string) => {
-    this.setState({primary: color});
+    this.setState({ primary: color });
   };
 
   handleSecondaryChange = (color: string) => {
-    this.setState({secondary: color});
+    this.setState({ secondary: color });
   };
 
   handleBackgroundChange = (color: string) => {
-    this.setState({background: color});
+    this.setState({ background: color });
   };
 
   handleMenuChange = (color: string) => {
-    this.setState({menu: color});
+    this.setState({ menu: color });
   };
 
   handleMenuTextChange = (color: string) => {
-    this.setState({menuText: color});
+    this.setState({ menuText: color });
   };
 
   handleMenuIconChange = (color: string) => {
-    this.setState({menuIcon: color});
+    this.setState({ menuIcon: color });
   };
 
   handleTextChange = (color: string) => {
-    this.setState({text: color});
+    this.setState({ text: color });
   };
 
   handleImageChange = (e: HTMLInputElement) => {
@@ -184,8 +196,8 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
   };
 
   submitTheme = () => {
-    axios.put(`${Config.baseUrl}api/theme/settings/`,
-      {
+    axios
+      .put(`${Config.baseUrl}api/theme/settings/`, {
         primaryColor: this.state.primary,
         secondaryColor: this.state.secondary,
         backgroundColor: this.state.background,
@@ -196,71 +208,89 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
         fontSize: 14
       })
       .then(() => {
-          this.reload();
-        }
-      )
-      .catch((error) => {
+        this.reload();
+      })
+      .catch(error => {
         this.handleError(error);
       });
   };
 
   resetLogo = () => {
-    axios.delete(`${Config.baseUrl}api/theme/logo/`)
+    axios
+      .delete(`${Config.baseUrl}api/theme/logo/`)
       .then(() => {
         this.reload();
       })
-      .catch((error) => {
+      .catch(error => {
         this.handleError(error);
       });
   };
 
   submitLogo = () => {
     if (this.state.logoToUpload != "") {
-      axios.put(`${Config.baseUrl}api/theme/logo/`, this.state.logoToUpload).then(() => {
-        this.reload();
-      }).catch((error) => {
-        this.handleError(error);
-      });
+      axios
+        .put(`${Config.baseUrl}api/theme/logo/`, this.state.logoToUpload)
+        .then(() => {
+          this.reload();
+        })
+        .catch(error => {
+          this.handleError(error);
+        });
     } else {
-      this.setState({noFileNotification: true});
+      this.setState({ noFileNotification: true });
     }
   };
 
-  handleError = (error:AxiosError) => {
-    if(error.response!=undefined){
+  handleError = (error: AxiosError) => {
+    if (error.response != undefined) {
       switch (error.response.status) {
         case 500:
-          this.setState({error: generateNewErrorID(strings.errors.invalidimagetitle,error.response.status,strings.errors.invalidimagedescription)});
+          this.setState({
+            error: generateNewErrorID(
+              strings.errors.invalidimagetitle,
+              error.response.status,
+              strings.errors.invalidimagedescription
+            )
+          });
           break;
         case 403:
-          this.setState({error: generateNewErrorID(strings.errors.permissiontitle,error.response.status,strings.errors.permissiondescription)});
+          this.setState({
+            error: generateNewErrorID(
+              strings.errors.permissiontitle,
+              error.response.status,
+              strings.errors.permissiondescription
+            )
+          });
           break;
         default:
-          this.setState({error: generateFromAxiosError(error)});
+          this.setState({ error: generateFromAxiosError(error) });
           break;
       }
     }
   };
 
   handleNoFileNotificationClose = () => {
-    this.setState({noFileNotification: false});
+    this.setState({ noFileNotification: false });
   };
 
-
-  colorPicker = (label: string, changeColor: (color: string) => void, color: string) => {
-    const {classes} = this.props;
+  colorPicker = (
+    label: string,
+    changeColor: (color: string) => void,
+    color: string
+  ) => {
+    const { classes } = this.props;
     return (
       <div>
         <Typography className={classes.labels} color={"textSecondary"}>
           {label}
         </Typography>
-        <ColorPickerComponent changeColor={changeColor} color={color}/>
+        <ColorPickerComponent changeColor={changeColor} color={color} />
       </div>
-    )
+    );
   };
 
   ColorSchemeSettings = () => {
-    const {classes} = this.props;
+    const { classes } = this.props;
     return (
       <div>
         <CardContent className={classes.cardContent}>
@@ -270,19 +300,47 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
             </Typography>
             <Grid container spacing={16}>
               <Grid item>
-                {this.colorPicker(strings.colourschemesettings.primarycolour, this.handlePrimaryChange, this.state.primary)}
-                {this.colorPicker(strings.colourschemesettings.menubackgroundcolour, this.handleMenuChange, this.state.menu)}
-                {this.colorPicker(strings.colourschemesettings.backgroundcolour, this.handleBackgroundChange, this.state.background)}
+                {this.colorPicker(
+                  strings.colourschemesettings.primarycolour,
+                  this.handlePrimaryChange,
+                  this.state.primary
+                )}
+                {this.colorPicker(
+                  strings.colourschemesettings.menubackgroundcolour,
+                  this.handleMenuChange,
+                  this.state.menu
+                )}
+                {this.colorPicker(
+                  strings.colourschemesettings.backgroundcolour,
+                  this.handleBackgroundChange,
+                  this.state.background
+                )}
               </Grid>
 
               <Grid item>
-                {this.colorPicker(strings.colourschemesettings.secondarycolour, this.handleSecondaryChange, this.state.secondary)}
-                {this.colorPicker(strings.colourschemesettings.sidebartextcolour, this.handleMenuTextChange, this.state.menuText)}
+                {this.colorPicker(
+                  strings.colourschemesettings.secondarycolour,
+                  this.handleSecondaryChange,
+                  this.state.secondary
+                )}
+                {this.colorPicker(
+                  strings.colourschemesettings.sidebartextcolour,
+                  this.handleMenuTextChange,
+                  this.state.menuText
+                )}
               </Grid>
 
               <Grid item>
-                {this.colorPicker(strings.colourschemesettings.textcolour, this.handleTextChange, this.state.text)}
-                {this.colorPicker(strings.colourschemesettings.sidebariconcolour, this.handleMenuIconChange, this.state.menuIcon)}
+                {this.colorPicker(
+                  strings.colourschemesettings.textcolour,
+                  this.handleTextChange,
+                  this.state.text
+                )}
+                {this.colorPicker(
+                  strings.colourschemesettings.sidebariconcolour,
+                  this.handleMenuIconChange,
+                  this.state.menuIcon
+                )}
               </Grid>
             </Grid>
           </FormControl>
@@ -299,16 +357,17 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
             className={classes.button}
             variant="contained"
             type={"submit"}
-            onClick={this.submitTheme}>
+            onClick={this.submitTheme}
+          >
             {commonString.action.apply}
           </Button>
         </CardActions>
       </div>
-    )
+    );
   };
 
   LogoSettings = () => {
-    const {classes} = this.props;
+    const { classes } = this.props;
     return (
       <div>
         <CardContent className={classes.cardContent}>
@@ -334,13 +393,19 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
                   <Button
                     className={classes.button}
                     variant="outlined"
-                    component="span">
+                    component="span"
+                  >
                     {commonString.action.browse}
                   </Button>
                 </Grid>
                 <Grid item>
-                  <Typography className={classes.fileName} color={"textSecondary"}>
-                    {this.state.fileName ? this.state.fileName : strings.logosettings.nofileselected}
+                  <Typography
+                    className={classes.fileName}
+                    color={"textSecondary"}
+                  >
+                    {this.state.fileName
+                      ? this.state.fileName
+                      : strings.logosettings.nofileselected}
                   </Typography>
                 </Grid>
               </Grid>
@@ -349,68 +414,72 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
 
           <Grid container spacing={8} direction={"row"}>
             <Grid item>
-              <Typography className={classes.button}
-                          color={"textSecondary"}>{strings.logosettings.current}</Typography>
+              <Typography className={classes.button} color={"textSecondary"}>
+                {strings.logosettings.current}
+              </Typography>
             </Grid>
             <Grid item>
-              <img
-                src={this.state.logoURL}/>
+              <img src={this.state.logoURL} />
             </Grid>
           </Grid>
         </CardContent>
 
         <CardActions className={classes.cardBottom}>
-          <Button
-            variant="outlined"
-            onClick={this.resetLogo}>
+          <Button variant="outlined" onClick={this.resetLogo}>
             {commonString.action.resettodefault}
           </Button>
           <Button
             className={classes.button}
             variant="contained"
             type={"submit"}
-            onClick={this.submitLogo}>
+            onClick={this.submitLogo}
+          >
             {commonString.action.apply}
           </Button>
         </CardActions>
       </div>
-    )
+    );
   };
 
   Notifications = () => {
     return (
       <div>
-        <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}}
-                  autoHideDuration={5000}
-                  message={<span id="message-id">{strings.errors.nofiledescription}</span>}
-                  open={this.state.noFileNotification}
-                  onClose={this.handleNoFileNotificationClose}
-                  action={[
-                    <IconButton
-                      key="close"
-                      color="inherit"
-                      onClick={this.handleNoFileNotificationClose}
-                    >
-                      <CloseIcon/>
-                    </IconButton>
-                  ]}
+        <Snackbar
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          autoHideDuration={5000}
+          message={
+            <span id="message-id">{strings.errors.nofiledescription}</span>
+          }
+          open={this.state.noFileNotification}
+          onClose={this.handleNoFileNotificationClose}
+          action={[
+            <IconButton
+              key="close"
+              color="inherit"
+              onClick={this.handleNoFileNotificationClose}
+            >
+              <CloseIcon />
+            </IconButton>
+          ]}
         />
-      </div>);
+      </div>
+    );
   };
 
   render() {
-    const {Template} = this.props.bridge;
-    const {classes} = this.props;
+    const { Template } = this.props.bridge;
+    const { classes } = this.props;
     return (
-      <Template title={strings.title} errorResponse={this.state.error||undefined}>
-
+      <Template
+        title={strings.title}
+        errorResponse={this.state.error || undefined}
+      >
         <Card raised className={classes.card}>
-          <this.ColorSchemeSettings/>
-          <Divider light={true}/>
-          <this.LogoSettings/>
+          <this.ColorSchemeSettings />
+          <Divider light={true} />
+          <this.LogoSettings />
         </Card>
-        <this.Notifications/>
-
+        <this.Notifications />
       </Template>
     );
   }

@@ -16,11 +16,9 @@
 
 package com.tle.web.wizard.impl;
 
+import com.tle.core.item.operations.WorkflowOperation;
 import java.io.Serializable;
 
-import com.tle.core.item.operations.WorkflowOperation;
-
-public interface UnsavedEditOperation extends Serializable
-{
-	WorkflowOperation getOperation(boolean forSave);
+public interface UnsavedEditOperation extends Serializable {
+  WorkflowOperation getOperation(boolean forSave);
 }

@@ -20,15 +20,11 @@ import com.tle.common.scripting.types.RoleScriptType;
 import com.tle.common.usermanagement.user.valuebean.DefaultRoleBean;
 import com.tle.common.usermanagement.user.valuebean.RoleBean;
 
-/**
- * @author aholland
- */
-public class RoleScriptTypeImpl extends DefaultRoleBean implements RoleScriptType
-{
-	private static final long serialVersionUID = 1L;
+/** @author aholland */
+public class RoleScriptTypeImpl extends DefaultRoleBean implements RoleScriptType {
+  private static final long serialVersionUID = 1L;
 
-	public RoleScriptTypeImpl(RoleBean role)
-	{
-		super(role.getUniqueID(), role.getName());
-	}
+  public RoleScriptTypeImpl(RoleBean role) {
+    super(role.getUniqueID(), role.getName());
+  }
 }

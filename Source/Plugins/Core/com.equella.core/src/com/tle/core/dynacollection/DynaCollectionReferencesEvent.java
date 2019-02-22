@@ -20,25 +20,20 @@ import com.tle.beans.entity.DynaCollection;
 import com.tle.core.entity.event.BaseEntityReferencesEvent;
 
 public class DynaCollectionReferencesEvent
-	extends
-		BaseEntityReferencesEvent<DynaCollection, DynaCollectionReferencesListener>
-{
-	private static final long serialVersionUID = 1L;
+    extends BaseEntityReferencesEvent<DynaCollection, DynaCollectionReferencesListener> {
+  private static final long serialVersionUID = 1L;
 
-	public DynaCollectionReferencesEvent(DynaCollection dc)
-	{
-		super(dc);
-	}
+  public DynaCollectionReferencesEvent(DynaCollection dc) {
+    super(dc);
+  }
 
-	@Override
-	public Class<DynaCollectionReferencesListener> getListener()
-	{
-		return DynaCollectionReferencesListener.class;
-	}
+  @Override
+  public Class<DynaCollectionReferencesListener> getListener() {
+    return DynaCollectionReferencesListener.class;
+  }
 
-	@Override
-	public void postEvent(DynaCollectionReferencesListener listener)
-	{
-		listener.addDynaCollectionReferencingClasses(entity, referencingClasses);
-	}
+  @Override
+  public void postEvent(DynaCollectionReferencesListener listener) {
+    listener.addDynaCollectionReferencingClasses(entity, referencingClasses);
+  }
 }

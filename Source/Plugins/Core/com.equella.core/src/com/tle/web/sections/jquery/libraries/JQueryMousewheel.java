@@ -22,27 +22,24 @@ import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.render.PreRenderable;
 
 @SuppressWarnings("nls")
-public class JQueryMousewheel implements JavascriptModule
-{
-	private static final long serialVersionUID = 1L;
+public class JQueryMousewheel implements JavascriptModule {
+  private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.mousewheel.pack.js");
+  public static final PreRenderable PRERENDER =
+      new JQueryLibraryInclude("jquery.mousewheel.pack.js");
 
-	@Override
-	public String getDisplayName()
-	{
-		return CurrentLocale.get("com.tle.web.sections.jquery.modules.mousewheel.name");
-	}
+  @Override
+  public String getDisplayName() {
+    return CurrentLocale.get("com.tle.web.sections.jquery.modules.mousewheel.name");
+  }
 
-	@Override
-	public String getId()
-	{
-		return "mousewheel";
-	}
+  @Override
+  public String getId() {
+    return "mousewheel";
+  }
 
-	@Override
-	public Object getPreRenderer()
-	{
-		return PRERENDER;
-	}
+  @Override
+  public Object getPreRenderer() {
+    return PRERENDER;
+  }
 }

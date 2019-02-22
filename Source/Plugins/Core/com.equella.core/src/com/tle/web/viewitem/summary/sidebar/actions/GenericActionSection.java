@@ -16,8 +16,6 @@
 
 package com.tle.web.viewitem.summary.sidebar.actions;
 
-import javax.inject.Inject;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.workflow.WorkflowStatus;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -38,100 +36,88 @@ import com.tle.web.sections.standard.AbstractEventOnlyComponent;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.viewitem.section.AbstractParentViewItemSection;
 import com.tle.web.viewurl.ItemSectionInfo;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public abstract class GenericActionSection<T extends AbstractEventOnlyComponent<? extends HtmlComponentState>>
-	extends
-		AbstractParentViewItemSection<Object>
-{
-	@ResourceHelper(fixed = false)
-	protected PluginResourceHelper RESOURCES;
-	@ViewFactory
-	private FreemarkerFactory viewItemFactory;
+public abstract class GenericActionSection<
+        T extends AbstractEventOnlyComponent<? extends HtmlComponentState>>
+    extends AbstractParentViewItemSection<Object> {
+  @ResourceHelper(fixed = false)
+  protected PluginResourceHelper RESOURCES;
 
-	@EventFactory
-	protected EventGenerator events;
+  @ViewFactory private FreemarkerFactory viewItemFactory;
 
-	@Inject
-	private ReceiptService receiptService;
+  @EventFactory protected EventGenerator events;
 
-	private boolean showForPreview = false;
+  @Inject private ReceiptService receiptService;
 
-	protected abstract boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status);
+  private boolean showForPreview = false;
 
-	protected abstract void execute(SectionInfo info) throws Exception;
+  protected abstract boolean canView(
+      SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status);
 
-	protected abstract void setupComponent(T component);
+  protected abstract void execute(SectionInfo info) throws Exception;
 
-	public abstract T getComponent();
+  protected abstract void setupComponent(T component);
 
-	protected void setupHandler(JSHandler handler)
-	{
-		// Nothing by default
-	}
+  public abstract T getComponent();
 
-	protected void setReceipt(Label receipt)
-	{
-		receiptService.setReceipt(receipt);
-	}
+  protected void setupHandler(JSHandler handler) {
+    // Nothing by default
+  }
 
-	public void setShowForPreview(boolean showForPreview)
-	{
-		this.showForPreview = showForPreview;
-	}
+  protected void setReceipt(Label receipt) {
+    receiptService.setReceipt(receipt);
+  }
 
-	public boolean isShowForPreview()
-	{
-		return showForPreview;
-	}
+  public void setShowForPreview(boolean showForPreview) {
+    this.showForPreview = showForPreview;
+  }
 
-	@EventHandlerMethod
-	public final void clicked(SectionInfo info) throws Exception
-	{
-		execute(info);
-	}
+  public boolean isShowForPreview() {
+    return showForPreview;
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @EventHandlerMethod
+  public final void clicked(SectionInfo info) throws Exception {
+    execute(info);
+  }
 
-		T c = getComponent();
-		setupComponent(c);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		JSHandler handler = events.getNamedHandler("clicked");
-		setupHandler(handler);
-		addClickHandler(c, handler);
-	}
+    T c = getComponent();
+    setupComponent(c);
 
-	protected void addClickHandler(T c, JSHandler handler)
-	{
-		c.setClickHandler(handler);
-	}
+    JSHandler handler = events.getNamedHandler("clicked");
+    setupHandler(handler);
+    addClickHandler(c, handler);
+  }
 
-	@Override
-	public final boolean canView(SectionInfo info)
-	{
-		final ItemSectionInfo itemInfo = getItemInfo(info);
-		final WorkflowStatus status = itemInfo.getWorkflowStatus();
+  protected void addClickHandler(T c, JSHandler handler) {
+    c.setClickHandler(handler);
+  }
 
-		return canView(info, itemInfo, status);
-	}
+  @Override
+  public final boolean canView(SectionInfo info) {
+    final ItemSectionInfo itemInfo = getItemInfo(info);
+    final WorkflowStatus status = itemInfo.getWorkflowStatus();
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !canView(context) || (isForPreview(context) && !isShowForPreview()) )
-		{
-			return null;
-		}
-		return viewItemFactory.createResult("viewitem/summary/sidebar/genericactionlink.ftl", context);
-	}
+    return canView(info, itemInfo, status);
+  }
 
-	@Override
-	public final Class<Object> getModelClass()
-	{
-		return Object.class;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (!canView(context) || (isForPreview(context) && !isShowForPreview())) {
+      return null;
+    }
+    return viewItemFactory.createResult("viewitem/summary/sidebar/genericactionlink.ftl", context);
+  }
+
+  @Override
+  public final Class<Object> getModelClass() {
+    return Object.class;
+  }
 }

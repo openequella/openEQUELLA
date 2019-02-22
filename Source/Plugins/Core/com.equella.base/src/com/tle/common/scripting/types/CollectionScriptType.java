@@ -16,20 +16,17 @@
 
 package com.tle.common.scripting.types;
 
-/**
- * A collection type for use in scripts
- */
-public interface CollectionScriptType extends BaseEntityScriptType
-{
-	/**
-	 * @return The number of item views this collection has had, proided the current user has permissions.
-	 * Otherwise will return null.
-	 */
-	Integer getItemViewCount();
+/** A collection type for use in scripts */
+public interface CollectionScriptType extends BaseEntityScriptType {
+  /**
+   * @return The number of item views this collection has had, proided the current user has
+   *     permissions. Otherwise will return null.
+   */
+  Integer getItemViewCount();
 
-	/**
-	 * @return The number of attachment views this collection has had, proided the current user has permissions.
-	 * Otherwise will return null.
-	 */
-	Integer getAttachmentViewCount();
+  /**
+   * @return The number of attachment views this collection has had, proided the current user has
+   *     permissions. Otherwise will return null.
+   */
+  Integer getAttachmentViewCount();
 }

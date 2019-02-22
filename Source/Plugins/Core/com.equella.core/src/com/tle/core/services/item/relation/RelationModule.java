@@ -20,27 +20,22 @@ import com.google.inject.AbstractModule;
 import com.tle.core.guice.PluginTrackerModule;
 
 @SuppressWarnings("nls")
-public class RelationModule extends AbstractModule
-{
-	@Override
-	protected void configure()
-	{
-		requestStaticInjection(RelationModify.class);
-		install(new RelationTrackerModule());
-	}
+public class RelationModule extends AbstractModule {
+  @Override
+  protected void configure() {
+    requestStaticInjection(RelationModify.class);
+    install(new RelationTrackerModule());
+  }
 
-	public static class RelationTrackerModule extends PluginTrackerModule
-	{
-		@Override
-		protected String getPluginId()
-		{
-			return "com.tle.core.services.item.relation";
-		}
+  public static class RelationTrackerModule extends PluginTrackerModule {
+    @Override
+    protected String getPluginId() {
+      return "com.tle.core.services.item.relation";
+    }
 
-		@Override
-		protected void configure()
-		{
-			bindTracker(RelationListener.class, "relationListener", "bean");
-		}
-	}
+    @Override
+    protected void configure() {
+      bindTracker(RelationListener.class, "relationListener", "bean");
+    }
+  }
 }

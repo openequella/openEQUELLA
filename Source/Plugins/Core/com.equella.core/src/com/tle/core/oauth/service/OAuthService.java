@@ -16,39 +16,35 @@
 
 package com.tle.core.oauth.service;
 
-import java.util.List;
-
 import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.common.oauth.beans.OAuthToken;
 import com.tle.core.entity.service.AbstractEntityService;
+import java.util.List;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
-public interface OAuthService extends AbstractEntityService<OAuthClientEditingBean, OAuthClient>
-{
-	String ENTITY_TYPE = "OAUTH_CLIENT";
+public interface OAuthService extends AbstractEntityService<OAuthClientEditingBean, OAuthClient> {
+  String ENTITY_TYPE = "OAUTH_CLIENT";
 
-	OAuthClient getByClientIdAndRedirectUrl(String clientId, String redirectUrl);
+  OAuthClient getByClientIdAndRedirectUrl(String clientId, String redirectUrl);
 
-	OAuthToken getOrCreateToken(String userId, String username, OAuthClient client, String code);
+  OAuthToken getOrCreateToken(String userId, String username, OAuthClient client, String code);
 
-	OAuthToken getToken(String tokenData);
+  OAuthToken getToken(String tokenData);
 
-	boolean canAdministerTokens();
+  boolean canAdministerTokens();
 
-	boolean deleteToken(long id);
+  boolean deleteToken(long id);
 
-	void deleteTokens(OAuthClient client);
+  void deleteTokens(OAuthClient client);
 
-	List<OAuthToken> listAllTokens();
+  List<OAuthToken> listAllTokens();
 
-	/**
-	 * Do not use except for validation
-	 * 
-	 * @param clientId
-	 * @return
-	 */
-	OAuthClient getByClientIdOnly(String clientId);
+  /**
+   * Do not use except for validation
+   *
+   * @param clientId
+   * @return
+   */
+  OAuthClient getByClientIdOnly(String clientId);
 }

@@ -16,10 +16,6 @@
 
 package com.tle.web.workflow.manage;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.item.ItemTaskId;
 import com.tle.common.workflow.WorkflowMessage;
@@ -39,93 +35,79 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
 import com.tle.web.workflow.tasks.comments.ViewCommentsSection;
+import java.util.List;
+import javax.inject.Inject;
 
 @NonNullByDefault
 @Bind
 @SuppressWarnings("nls")
-public class ViewCommentsDialog extends EquellaDialog<ViewCommentsDialog.Model>
-{
-	@PlugKey("comdialog.title")
-	private static Label LABEL_TITLE;
+public class ViewCommentsDialog extends EquellaDialog<ViewCommentsDialog.Model> {
+  @PlugKey("comdialog.title")
+  private static Label LABEL_TITLE;
 
-	@Inject
-	private WorkflowService workflowService;
+  @Inject private WorkflowService workflowService;
 
-	@Inject
-	private ViewCommentsSection viewCommentsSection;
+  @Inject private ViewCommentsSection viewCommentsSection;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	public ViewCommentsDialog()
-	{
-		setAjax(true);
-	}
+  public ViewCommentsDialog() {
+    setAjax(true);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.registerInnerSection(viewCommentsSection, id);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.registerInnerSection(viewCommentsSection, id);
+  }
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return LABEL_TITLE;
+  }
 
-	@EventHandlerMethod
-	public void openComments(SectionInfo info, ItemTaskId taskId)
-	{
-		getModel(info).setTaskId(taskId);
-		showDialog(info);
-	}
+  @EventHandlerMethod
+  public void openComments(SectionInfo info, ItemTaskId taskId) {
+    getModel(info).setTaskId(taskId);
+    showDialog(info);
+  }
 
-	@Override
-	protected ParameterizedEvent getAjaxShowEvent()
-	{
-		return events.getEventHandler("openComments");
-	}
+  @Override
+  protected ParameterizedEvent getAjaxShowEvent() {
+    return events.getEventHandler("openComments");
+  }
 
-	@Override
-	public Model instantiateDialogModel(SectionInfo info)
-	{
-		return new Model();
-	}
+  @Override
+  public Model instantiateDialogModel(SectionInfo info) {
+    return new Model();
+  }
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		List<WorkflowMessage> allMessages = workflowService.getCommentsForTask(getModel(context).getTaskId());
-		viewCommentsSection.setMessages(context, allMessages);
-		return viewFactory.createResult("comdialog.ftl", this);
-	}
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    List<WorkflowMessage> allMessages =
+        workflowService.getCommentsForTask(getModel(context).getTaskId());
+    viewCommentsSection.setMessages(context, allMessages);
+    return viewFactory.createResult("comdialog.ftl", this);
+  }
 
-	@Override
-	public String getWidth()
-	{
-		return "600px";
-	}
+  @Override
+  public String getWidth() {
+    return "600px";
+  }
 
-	public static class Model extends DialogModel
-	{
-		@Bookmarked
-		private ItemTaskId taskId;
+  public static class Model extends DialogModel {
+    @Bookmarked private ItemTaskId taskId;
 
-		public ItemTaskId getTaskId()
-		{
-			return taskId;
-		}
+    public ItemTaskId getTaskId() {
+      return taskId;
+    }
 
-		public void setTaskId(ItemTaskId taskId)
-		{
-			this.taskId = taskId;
-		}
-	}
+    public void setTaskId(ItemTaskId taskId) {
+      this.taskId = taskId;
+    }
+  }
 
-	public ViewCommentsSection getViewCommentsSection()
-	{
-		return viewCommentsSection;
-	}
+  public ViewCommentsSection getViewCommentsSection() {
+    return viewCommentsSection;
+  }
 }

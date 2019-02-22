@@ -22,8 +22,7 @@ import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.events.RenderEventContext;
 
 @NonNullByDefault
-public interface HtmlRenderer
-{
-	@Nullable
-	SectionResult renderHtml(RenderEventContext context) throws Exception;
+public interface HtmlRenderer {
+  @Nullable
+  SectionResult renderHtml(RenderEventContext context) throws Exception;
 }

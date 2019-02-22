@@ -19,21 +19,15 @@ package com.tle.core.collection.guice;
 import com.tle.core.collection.extension.CollectionSaveExtension;
 import com.tle.core.guice.PluginTrackerModule;
 
-/**
- * @author Aaron
- *
- */
-public class CollectionTrackerModule extends PluginTrackerModule
-{
-	@Override
-	protected String getPluginId()
-	{
-		return "com.tle.core.collection";
-	}
+/** @author Aaron */
+public class CollectionTrackerModule extends PluginTrackerModule {
+  @Override
+  protected String getPluginId() {
+    return "com.tle.core.collection";
+  }
 
-	@Override
-	protected void configure()
-	{
-		bindTracker(CollectionSaveExtension.class, "collectionSave", "bean");
-	}
+  @Override
+  protected void configure() {
+    bindTracker(CollectionSaveExtension.class, "collectionSave", "bean");
+  }
 }

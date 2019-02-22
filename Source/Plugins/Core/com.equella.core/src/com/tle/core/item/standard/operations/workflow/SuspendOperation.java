@@ -22,23 +22,21 @@ import com.tle.beans.item.ModerationStatus;
 import com.tle.core.security.impl.SecureItemStatus;
 import com.tle.core.security.impl.SecureOnCall;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @SecureOnCall(priv = "SUSPEND_ITEM")
-@SecureItemStatus(value = {ItemStatus.SUSPENDED, ItemStatus.PERSONAL}, not = true)
-public class SuspendOperation extends TaskOperation
-{
-	@Override
-	public boolean execute()
-	{
-		ModerationStatus modStatus = getModerationStatus();
-		Item item = getItem();
-		modStatus.setResumeStatus(getItemStatus());
-		modStatus.setResumeModerating(item.isModerating());
-		setState(ItemStatus.SUSPENDED);
-		exitTasksForItem();
-		item.setModerating(false);
-		return true;
-	}
+@SecureItemStatus(
+    value = {ItemStatus.SUSPENDED, ItemStatus.PERSONAL},
+    not = true)
+public class SuspendOperation extends TaskOperation {
+  @Override
+  public boolean execute() {
+    ModerationStatus modStatus = getModerationStatus();
+    Item item = getItem();
+    modStatus.setResumeStatus(getItemStatus());
+    modStatus.setResumeModerating(item.isModerating());
+    setState(ItemStatus.SUSPENDED);
+    exitTasksForItem();
+    item.setModerating(false);
+    return true;
+  }
 }

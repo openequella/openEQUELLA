@@ -37,98 +37,86 @@ import com.tle.web.wizard.controls.AbstractSimpleWebControl;
 import com.tle.web.wizard.controls.CEditBox;
 import com.tle.web.wizard.controls.SimpleValueControl;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @Bind
-public class EditBox extends AbstractSimpleWebControl implements SimpleValueControl
-{
-	@ViewFactory(name="wizardFreemarkerFactory")
-	private FreemarkerFactory viewFactory;
-	@Component(register = false, stateful = false)
-	private TextField field;
-	private CEditBox box;
+public class EditBox extends AbstractSimpleWebControl implements SimpleValueControl {
+  @ViewFactory(name = "wizardFreemarkerFactory")
+  private FreemarkerFactory viewFactory;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		field.setParameterId(getFormName());
-		tree.registerInnerSection(field, id);
-		super.registered(id, tree);
-	}
+  @Component(register = false, stateful = false)
+  private TextField field;
 
-	@Override
-	public void setWrappedControl(HTMLControl control)
-	{
-		super.setWrappedControl(control);
-		this.box = (CEditBox) control;
-		if( control.getSize1() == 0 )
-		{
-			control.setSize1(70);
-		}
-	}
+  private CEditBox box;
 
-	@Override
-	public void doEdits(SectionInfo info)
-	{
-		String value = field.getValue(info);
-		HTMLControl ctrl = getWrappedControl();
-		if( value == null )
-		{
-			ctrl.setValues();
-		}
-		else
-		{
-			ctrl.setValues(value);
-		}
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    field.setParameterId(getFormName());
+    tree.registerInnerSection(field, id);
+    super.registered(id, tree);
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		field.setValue(context, box.getValue());
-		if( getSize2() > 1 )
-		{
-			field.setEventHandler(context, "keyup", new OverrideHandler(new ScriptStatement(
-				"if(this.value.length > 8192) this.value = this.value.slice(0, 8192);")));
-		}
-		addDisabler(context, field);
-		return viewFactory.createResult("editbox.ftl", context);
-	}
+  @Override
+  public void setWrappedControl(HTMLControl control) {
+    super.setWrappedControl(control);
+    this.box = (CEditBox) control;
+    if (control.getSize1() == 0) {
+      control.setSize1(70);
+    }
+  }
 
-	public TextField getField()
-	{
-		return field;
-	}
+  @Override
+  public void doEdits(SectionInfo info) {
+    String value = field.getValue(info);
+    HTMLControl ctrl = getWrappedControl();
+    if (value == null) {
+      ctrl.setValues();
+    } else {
+      ctrl.setValues(value);
+    }
+  }
 
-	@Override
-	public JSAssignable createEditFunction()
-	{
-		return AssignableFunction.get(field.createSetFunction());
-	}
+  @Override
+  @SuppressWarnings("nls")
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    field.setValue(context, box.getValue());
+    if (getSize2() > 1) {
+      field.setEventHandler(
+          context,
+          "keyup",
+          new OverrideHandler(
+              new ScriptStatement(
+                  "if(this.value.length > 8192) this.value = this.value.slice(0, 8192);")));
+    }
+    addDisabler(context, field);
+    return viewFactory.createResult("editbox.ftl", context);
+  }
 
-	@Override
-	public JSAssignable createResetFunction()
-	{
-		return AssignableFunction.get(field.createResetFunction());
-	}
+  public TextField getField() {
+    return field;
+  }
 
-	@Override
-	public JSAssignable createTextFunction()
-	{
-		return new AnonymousFunction(new ReturnStatement(field.createGetExpression()));
-	}
+  @Override
+  public JSAssignable createEditFunction() {
+    return AssignableFunction.get(field.createSetFunction());
+  }
 
-	@Override
-	public JSAssignable createValueFunction()
-	{
-		return new AnonymousFunction(new ReturnStatement(field.createGetExpression()));
-	}
+  @Override
+  public JSAssignable createResetFunction() {
+    return AssignableFunction.get(field.createResetFunction());
+  }
 
-	@Override
-	protected ElementId getIdForLabel()
-	{
-		return field;
-	}
+  @Override
+  public JSAssignable createTextFunction() {
+    return new AnonymousFunction(new ReturnStatement(field.createGetExpression()));
+  }
+
+  @Override
+  public JSAssignable createValueFunction() {
+    return new AnonymousFunction(new ReturnStatement(field.createGetExpression()));
+  }
+
+  @Override
+  protected ElementId getIdForLabel() {
+    return field;
+  }
 }

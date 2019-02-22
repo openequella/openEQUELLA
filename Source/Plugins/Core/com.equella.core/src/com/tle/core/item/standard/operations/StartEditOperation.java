@@ -22,11 +22,9 @@ import com.tle.common.security.SecurityConstants;
 import com.tle.core.security.impl.SecureOnCall;
 
 @SecureOnCall(priv = SecurityConstants.EDIT_ITEM)
-public class StartEditOperation extends AbstractStartEditOperation
-{
-	@AssistedInject
-	protected StartEditOperation(@Assisted boolean modify)
-	{
-		super(modify, false);
-	}
+public class StartEditOperation extends AbstractStartEditOperation {
+  @AssistedInject
+  protected StartEditOperation(@Assisted boolean modify) {
+    super(modify, false);
+  }
 }

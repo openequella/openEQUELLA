@@ -20,24 +20,19 @@ import com.tle.core.guice.PluginTrackerModule;
 import com.tle.web.searching.SearchTab;
 import com.tle.web.searching.VideoPreviewRenderer;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public class SearchTrackerModule extends PluginTrackerModule
-{
-	@Override
-	protected String getPluginId()
-	{
-		return "com.tle.web.searching";
-	}
+public class SearchTrackerModule extends PluginTrackerModule {
+  @Override
+  protected String getPluginId() {
+    return "com.tle.web.searching";
+  }
 
-	@Override
-	protected void configure()
-	{
-		final TrackerProvider<SearchTab> tabTracker = bindTracker(SearchTab.class, "searchTab", "bean");
-		tabTracker.orderByParameter("order");
+  @Override
+  protected void configure() {
+    final TrackerProvider<SearchTab> tabTracker = bindTracker(SearchTab.class, "searchTab", "bean");
+    tabTracker.orderByParameter("order");
 
-		bindTracker(VideoPreviewRenderer.class, "videoPreviewRenderer", "bean");
-	}
+    bindTracker(VideoPreviewRenderer.class, "videoPreviewRenderer", "bean");
+  }
 }

@@ -22,9 +22,8 @@ import com.tle.web.bulk.workflow.operations.WorkflowMoveOperation;
 import com.tle.web.bulk.workflow.operations.WorkflowRemoveOperation;
 
 @BindFactory
-public interface BulkWorkflowOperationFactory
-{
-	WorkflowRemoveOperation createRemove();
+public interface BulkWorkflowOperationFactory {
+  WorkflowRemoveOperation createRemove();
 
-	WorkflowMoveOperation taskMove(@Assisted("msg") String msg, @Assisted("toStep") String toStep);
+  WorkflowMoveOperation taskMove(@Assisted("msg") String msg, @Assisted("toStep") String toStep);
 }

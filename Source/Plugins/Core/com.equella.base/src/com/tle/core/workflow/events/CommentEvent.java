@@ -18,26 +18,20 @@ package com.tle.core.workflow.events;
 
 import com.tle.beans.item.HistoryEvent;
 
-/**
- * @author jmaginnis
- */
-public class CommentEvent extends WorkflowEvent
-{
-	private static final long serialVersionUID = 1L;
+/** @author jmaginnis */
+public class CommentEvent extends WorkflowEvent {
+  private static final long serialVersionUID = 1L;
 
-	public CommentEvent(HistoryEvent event)
-	{
-		super(event);
-	}
+  public CommentEvent(HistoryEvent event) {
+    super(event);
+  }
 
-	@Override
-	public String getComment()
-	{
-		return event.getComment();
-	}
+  @Override
+  public String getComment() {
+    return event.getComment();
+  }
 
-	public void setComment(String comment)
-	{
-		event.setComment(comment);
-	}
+  public void setComment(String comment) {
+    event.setComment(comment);
+  }
 }

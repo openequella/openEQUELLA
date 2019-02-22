@@ -23,12 +23,11 @@ import com.tle.web.bulk.workflowtask.operations.TaskReassignModeratorOperation;
 import com.tle.web.bulk.workflowtask.operations.TaskRejectOperation;
 
 @BindFactory
-public interface BulkWorkflowTaskOperationFactory
-{
-	TaskApproveOperation approve(@Assisted("message") String message,
-		@Assisted("acceptAllUsers") boolean acceptAllUsers);
+public interface BulkWorkflowTaskOperationFactory {
+  TaskApproveOperation approve(
+      @Assisted("message") String message, @Assisted("acceptAllUsers") boolean acceptAllUsers);
 
-	TaskRejectOperation reject(@Assisted("message") String message);
+  TaskRejectOperation reject(@Assisted("message") String message);
 
-	TaskReassignModeratorOperation changeModeratorAssign(@Assisted("toUser") String toUser);
+  TaskReassignModeratorOperation changeModeratorAssign(@Assisted("toUser") String toUser);
 }

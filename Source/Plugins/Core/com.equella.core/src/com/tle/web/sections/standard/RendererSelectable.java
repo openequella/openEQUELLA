@@ -20,7 +20,6 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.web.sections.SectionInfo;
 
 @NonNullByDefault
-public interface RendererSelectable
-{
-	void setRendererType(SectionInfo info, String type);
+public interface RendererSelectable {
+  void setRendererType(SectionInfo info, String type);
 }

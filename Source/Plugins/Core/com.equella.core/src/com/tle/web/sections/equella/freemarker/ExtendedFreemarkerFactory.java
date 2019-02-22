@@ -16,11 +16,6 @@
 
 package com.tle.web.sections.equella.freemarker;
 
-import java.io.Writer;
-import java.util.Map;
-
-import javax.inject.Inject;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.i18n.BundleCache;
@@ -31,32 +26,31 @@ import com.tle.web.sections.generic.InfoBookmark;
 import com.tle.web.sections.render.TextUtils;
 import com.tle.web.sections.result.util.BundleWriter;
 import com.tle.web.sections.result.util.HeaderUtils;
+import java.io.Writer;
+import java.util.Map;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public class ExtendedFreemarkerFactory extends PluginFreemarkerFactory
-{
-	@Inject
-	private BundleCache bundleCache;
+public class ExtendedFreemarkerFactory extends PluginFreemarkerFactory {
+  @Inject private BundleCache bundleCache;
 
-	@Inject
-	public void setConfiguration(ExtendedConfiguration configuration)
-	{
-		this.configuration = configuration;
-	}
+  @Inject
+  public void setConfiguration(ExtendedConfiguration configuration) {
+    this.configuration = configuration;
+  }
 
-	@Override
-	protected void addRootObjects(Map<String, Object> map, FreemarkerSectionResult result, Writer writer)
-	{
-		super.addRootObjects(map, result, writer);
-		map.put("b", new BundleWriter(pluginId, bundleCache));
-		map.put("t", TextUtils.INSTANCE);
-		map.put("currentUser", CurrentUser.getUserState());
-		if( writer instanceof SectionWriter )
-		{
-			SectionWriter sWriter = (SectionWriter) writer;
-			map.put("head", new HeaderUtils(sWriter));
-			map.put("baseHref", InfoBookmark.getBaseHref(sWriter).toString());
-		}
-	}
+  @Override
+  protected void addRootObjects(
+      Map<String, Object> map, FreemarkerSectionResult result, Writer writer) {
+    super.addRootObjects(map, result, writer);
+    map.put("b", new BundleWriter(pluginId, bundleCache));
+    map.put("t", TextUtils.INSTANCE);
+    map.put("currentUser", CurrentUser.getUserState());
+    if (writer instanceof SectionWriter) {
+      SectionWriter sWriter = (SectionWriter) writer;
+      map.put("head", new HeaderUtils(sWriter));
+      map.put("baseHref", InfoBookmark.getBaseHref(sWriter).toString());
+    }
+  }
 }

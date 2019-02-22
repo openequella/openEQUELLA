@@ -18,20 +18,21 @@ package com.tle.core.settings.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tle.web.api.newuitheme.impl.NewUITheme;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
 public interface ThemeSettingsService {
 
-	NewUITheme getTheme() throws IOException;
-	InputStream getCustomLogo() throws IOException;
+  NewUITheme getTheme() throws IOException;
 
-	void setTheme(NewUITheme theme) throws JsonProcessingException;
-	void setLogo(File logoFile) throws IOException;
+  InputStream getCustomLogo() throws IOException;
 
-	boolean isCustomLogo();
+  void setTheme(NewUITheme theme) throws JsonProcessingException;
 
-	void deleteLogo();
+  void setLogo(File logoFile) throws IOException;
+
+  boolean isCustomLogo();
+
+  void deleteLogo();
 }

@@ -16,92 +16,80 @@
 
 package com.tle.core.connectors.canvas.beans;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 @XmlRootElement
-public class CanvasCourseBean
-{
-	private String id;
-	private String name;
-	@JsonProperty("course_code")
-	private String code;
-	@JsonProperty("workflow_state")
-	private String state;
-	@JsonProperty("root_account_id")
-	private String rootAccountId;
-	@JsonProperty("account_id")
-	private String accountId;
+public class CanvasCourseBean {
+  private String id;
+  private String name;
 
-	public String getState()
-	{
-		return state;
-	}
+  @JsonProperty("course_code")
+  private String code;
 
-	public void setState(String state)
-	{
-		this.state = state;
-	}
+  @JsonProperty("workflow_state")
+  private String state;
 
-	public String getName()
-	{
-		return name;
-	}
+  @JsonProperty("root_account_id")
+  private String rootAccountId;
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  @JsonProperty("account_id")
+  private String accountId;
 
-	public String getId()
-	{
-		return id;
-	}
+  public String getState() {
+    return state;
+  }
 
-	public void setId(String id)
-	{
-		this.id = id;
-	}
+  public void setState(String state) {
+    this.state = state;
+  }
 
-	public String getCode()
-	{
-		return code;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setCode(String code)
-	{
-		this.code = code;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public String getAccountId()
-	{
-		return accountId;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public void setAccountId(String accountId)
-	{
-		this.accountId = accountId;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public String getRootAccountId()
-	{
-		return rootAccountId;
-	}
+  public String getCode() {
+    return code;
+  }
 
-	public void setRootAccountId(String rootAccountId)
-	{
-		this.rootAccountId = rootAccountId;
-	}
+  public void setCode(String code) {
+    this.code = code;
+  }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		boolean equals = super.equals(obj);
-		if( obj instanceof CanvasCourseBean )
-		{
-			equals |= ((CanvasCourseBean) obj).getId().equals(this.getId());
-		}
-		return equals;
-	}
+  public String getAccountId() {
+    return accountId;
+  }
+
+  public void setAccountId(String accountId) {
+    this.accountId = accountId;
+  }
+
+  public String getRootAccountId() {
+    return rootAccountId;
+  }
+
+  public void setRootAccountId(String rootAccountId) {
+    this.rootAccountId = rootAccountId;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    boolean equals = super.equals(obj);
+    if (obj instanceof CanvasCourseBean) {
+      equals |= ((CanvasCourseBean) obj).getId().equals(this.getId());
+    }
+    return equals;
+  }
 }

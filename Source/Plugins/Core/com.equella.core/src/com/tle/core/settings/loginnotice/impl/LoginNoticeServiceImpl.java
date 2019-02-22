@@ -21,76 +21,68 @@ import com.tle.core.security.TLEAclManager;
 import com.tle.core.settings.loginnotice.LoginNoticeService;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.exceptions.PrivilegeRequiredException;
-import org.apache.commons.lang.StringUtils;
-
+import java.util.Collections;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Collections;
+import org.apache.commons.lang.StringUtils;
 
 @Singleton
 @Bind(LoginNoticeService.class)
-public class LoginNoticeServiceImpl implements LoginNoticeService
-{
-	@Inject
-	TLEAclManager tleAclManager;
-	@Inject
-	ConfigurationService configurationService;
+public class LoginNoticeServiceImpl implements LoginNoticeService {
+  @Inject TLEAclManager tleAclManager;
+  @Inject ConfigurationService configurationService;
 
-	private static final String PERMISSION_KEY = "EDIT_SYSTEM_SETTINGS";
-	private static final String PRE_LOGIN_NOTICE_KEY = "pre.login.notice";
-	private static final String POST_LOGIN_NOTICE_KEY = "post.login.notice";
+  private static final String PERMISSION_KEY = "EDIT_SYSTEM_SETTINGS";
+  private static final String PRE_LOGIN_NOTICE_KEY = "pre.login.notice";
+  private static final String POST_LOGIN_NOTICE_KEY = "post.login.notice";
 
-	@Override
-	public String getPreLoginNotice()
-	{
-		return configurationService.getProperty(PRE_LOGIN_NOTICE_KEY);
-	}
+  @Override
+  public String getPreLoginNotice() {
+    return configurationService.getProperty(PRE_LOGIN_NOTICE_KEY);
+  }
 
-	@Override
-	public void setPreLoginNotice(String notice)
-	{
-		checkPermissions();
-		if(StringUtils.isBlank(notice)) {
-			configurationService.deleteProperty(PRE_LOGIN_NOTICE_KEY);
-		} else {
-			configurationService.setProperty(PRE_LOGIN_NOTICE_KEY, notice);
-		}
-	}
+  @Override
+  public void setPreLoginNotice(String notice) {
+    checkPermissions();
+    if (StringUtils.isBlank(notice)) {
+      configurationService.deleteProperty(PRE_LOGIN_NOTICE_KEY);
+    } else {
+      configurationService.setProperty(PRE_LOGIN_NOTICE_KEY, notice);
+    }
+  }
 
-	@Override
-	public void deletePreLoginNotice()
-	{
-		checkPermissions();
-		configurationService.deleteProperty(PRE_LOGIN_NOTICE_KEY);
-	}
+  @Override
+  public void deletePreLoginNotice() {
+    checkPermissions();
+    configurationService.deleteProperty(PRE_LOGIN_NOTICE_KEY);
+  }
 
-	@Override
-	public String getPostLoginNotice()
-	{
-		return configurationService.getProperty(POST_LOGIN_NOTICE_KEY);
-	}
+  @Override
+  public String getPostLoginNotice() {
+    return configurationService.getProperty(POST_LOGIN_NOTICE_KEY);
+  }
 
-	@Override
-	public void setPostLoginNotice(String notice)
-	{
-		checkPermissions();
-		if(StringUtils.isBlank(notice)) {
-			configurationService.deleteProperty(POST_LOGIN_NOTICE_KEY);
-		} else {
-			configurationService.setProperty(POST_LOGIN_NOTICE_KEY, notice);
-		}
-	}
+  @Override
+  public void setPostLoginNotice(String notice) {
+    checkPermissions();
+    if (StringUtils.isBlank(notice)) {
+      configurationService.deleteProperty(POST_LOGIN_NOTICE_KEY);
+    } else {
+      configurationService.setProperty(POST_LOGIN_NOTICE_KEY, notice);
+    }
+  }
 
-	@Override
-	public void deletePostLoginNotice()
-	{
-		checkPermissions();
-		configurationService.deleteProperty(POST_LOGIN_NOTICE_KEY);
-	}
+  @Override
+  public void deletePostLoginNotice() {
+    checkPermissions();
+    configurationService.deleteProperty(POST_LOGIN_NOTICE_KEY);
+  }
 
-	private void checkPermissions() {
-		if (tleAclManager.filterNonGrantedPrivileges(Collections.singleton(PERMISSION_KEY), false).isEmpty()) {
-			throw new PrivilegeRequiredException(PERMISSION_KEY);
-		}
-	}
+  private void checkPermissions() {
+    if (tleAclManager
+        .filterNonGrantedPrivileges(Collections.singleton(PERMISSION_KEY), false)
+        .isEmpty()) {
+      throw new PrivilegeRequiredException(PERMISSION_KEY);
+    }
+  }
 }

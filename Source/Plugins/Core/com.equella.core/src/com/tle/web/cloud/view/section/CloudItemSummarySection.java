@@ -16,9 +16,6 @@
 
 package com.tle.web.cloud.view.section;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.core.cloud.beans.converted.CloudItem;
@@ -42,96 +39,89 @@ import com.tle.web.template.Decorations;
 import com.tle.web.template.Decorations.MenuMode;
 import com.tle.web.viewitem.summary.section.AbstractItemSummarySection;
 import com.tle.web.viewurl.ViewItemResource;
+import java.util.Collection;
+import java.util.List;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class CloudItemSummarySection extends AbstractItemSummarySection<CloudItem>
-{
-	@PlugKey("viewitem.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("viewitem.breadcrumb.title")
-	private static Label LABEL_BREADCRUMB_TITLE;
-	@PlugKey("search.breadcrumb.title")
-	private static Label LABEL_BREADCRUMB_SEARCH_TITLE;
+public class CloudItemSummarySection extends AbstractItemSummarySection<CloudItem> {
+  @PlugKey("viewitem.title")
+  private static Label LABEL_TITLE;
 
-	@PlugURL("css/item/summary.css")
-	private static String CSS_URL;
+  @PlugKey("viewitem.breadcrumb.title")
+  private static Label LABEL_BREADCRUMB_TITLE;
 
-	@TreeLookup
-	private RootCloudViewItemSection rootSection;
+  @PlugKey("search.breadcrumb.title")
+  private static Label LABEL_BREADCRUMB_SEARCH_TITLE;
 
-	@Nullable
-	@Override
-	public Collection<String> ensureOnePrivilege()
-	{
-		return null;
-	}
+  @PlugURL("css/item/summary.css")
+  private static String CSS_URL;
 
-	@Override
-	public SectionResult view(RenderContext info, ViewItemResource resource)
-	{
-		final CloudViewableItem vitem = (CloudViewableItem) resource.getViewableItem();
-		if( vitem.isIntegration() )
-		{
-			final Decorations decorations = Decorations.getDecorations(info);
-			decorations.setBanner(false);
-			decorations.setMenuMode(MenuMode.HIDDEN);
-		}
+  @TreeLookup private RootCloudViewItemSection rootSection;
 
-		return super.view(info, resource);
-	}
+  @Nullable
+  @Override
+  public Collection<String> ensureOnePrivilege() {
+    return null;
+  }
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		super.addBreadcrumbsAndTitle(info, decorations, crumbs);
+  @Override
+  public SectionResult view(RenderContext info, ViewItemResource resource) {
+    final CloudViewableItem vitem = (CloudViewableItem) resource.getViewableItem();
+    if (vitem.isIntegration()) {
+      final Decorations decorations = Decorations.getDecorations(info);
+      decorations.setBanner(false);
+      decorations.setMenuMode(MenuMode.HIDDEN);
+    }
 
-		final HtmlLinkState cloudBreadcrumb = new HtmlLinkState(LABEL_BREADCRUMB_SEARCH_TITLE, new InfoBookmark(
-			info.createForward(CloudWebConstants.URL_CLOUD_SEARCH)));
-		if( CloudItemSectionInfo.getItemInfo(info).getViewableItem().isIntegration() )
-		{
-			cloudBreadcrumb.setDisabled(true);
-		}
-		crumbs.add(cloudBreadcrumb);
+    return super.view(info, resource);
+  }
 
-		final CloudItem item = getItem(info);
-		crumbs.setForcedLastCrumb(new WrappedLabel(new BundleLabel(item.getName(), item.getUuid(), bundleCache), 60,
-			true));
-	}
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    super.addBreadcrumbsAndTitle(info, decorations, crumbs);
 
-	@Override
-	protected String getContentBodyClass(SectionInfo info)
-	{
-		return "cloud-layout itemsummary-layout";
-	}
+    final HtmlLinkState cloudBreadcrumb =
+        new HtmlLinkState(
+            LABEL_BREADCRUMB_SEARCH_TITLE,
+            new InfoBookmark(info.createForward(CloudWebConstants.URL_CLOUD_SEARCH)));
+    if (CloudItemSectionInfo.getItemInfo(info).getViewableItem().isIntegration()) {
+      cloudBreadcrumb.setDisabled(true);
+    }
+    crumbs.add(cloudBreadcrumb);
 
-	@Override
-	protected CloudItem getItem(SectionInfo info)
-	{
-		return CloudItemSectionInfo.getItemInfo(info).getViewableItem().getItem();
-	}
+    final CloudItem item = getItem(info);
+    crumbs.setForcedLastCrumb(
+        new WrappedLabel(new BundleLabel(item.getName(), item.getUuid(), bundleCache), 60, true));
+  }
 
-	@Override
-	protected Label getPageTitle(SectionInfo info)
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  protected String getContentBodyClass(SectionInfo info) {
+    return "cloud-layout itemsummary-layout";
+  }
 
-	@Override
-	protected List<CssInclude> getCssUrls(SectionInfo info)
-	{
-		final List<CssInclude> cssUrls = super.getCssUrls(info);
-		cssUrls.add(CssInclude.include(CSS_URL).hasRtl().make());
-		return cssUrls;
-	}
+  @Override
+  protected CloudItem getItem(SectionInfo info) {
+    return CloudItemSectionInfo.getItemInfo(info).getViewableItem().getItem();
+  }
 
-	@Override
-	protected boolean isPreview(SectionInfo info)
-	{
-		return false;
-	}
+  @Override
+  protected Label getPageTitle(SectionInfo info) {
+    return LABEL_TITLE;
+  }
+
+  @Override
+  protected List<CssInclude> getCssUrls(SectionInfo info) {
+    final List<CssInclude> cssUrls = super.getCssUrls(info);
+    cssUrls.add(CssInclude.include(CSS_URL).hasRtl().make());
+    return cssUrls;
+  }
+
+  @Override
+  protected boolean isPreview(SectionInfo info) {
+    return false;
+  }
 }

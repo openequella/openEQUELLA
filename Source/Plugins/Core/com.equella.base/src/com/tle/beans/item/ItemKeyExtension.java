@@ -16,7 +16,6 @@
 
 package com.tle.beans.item;
 
-public interface ItemKeyExtension extends ItemKey
-{
-	String getExtensionId();
+public interface ItemKeyExtension extends ItemKey {
+  String getExtensionId();
 }

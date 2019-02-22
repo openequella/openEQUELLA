@@ -25,26 +25,22 @@ import com.tle.web.sections.standard.RendererCallback;
 import com.tle.web.sections.standard.js.DelayedRenderer;
 
 @NonNullByDefault
-public abstract class AbstractDelayedJS<T> implements RendererCallback, DelayedRenderer<T>
-{
-	protected ElementId id;
+public abstract class AbstractDelayedJS<T> implements RendererCallback, DelayedRenderer<T> {
+  protected ElementId id;
 
-	public AbstractDelayedJS(ElementId id)
-	{
-		this.id = id;
-	}
+  public AbstractDelayedJS(ElementId id) {
+    this.id = id;
+  }
 
-	@Override
-	public final void rendererSelected(RenderContext info, SectionRenderable renderer)
-	{
-		info.setAttribute(this, renderer);
-	}
+  @Override
+  public final void rendererSelected(RenderContext info, SectionRenderable renderer) {
+    info.setAttribute(this, renderer);
+  }
 
-	@Nullable
-	@Override
-	@SuppressWarnings("unchecked")
-	public T getSelectedRenderer(RenderContext info)
-	{
-		return (T) info.getAttribute(this);
-	}
+  @Nullable
+  @Override
+  @SuppressWarnings("unchecked")
+  public T getSelectedRenderer(RenderContext info) {
+    return (T) info.getAttribute(this);
+  }
 }

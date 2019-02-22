@@ -21,26 +21,21 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.ElementId;
 import com.tle.web.sections.js.JSUtils;
 
-public class ElementIdExpression extends AbstractExpression
-{
-	private final ElementId id;
+public class ElementIdExpression extends AbstractExpression {
+  private final ElementId id;
 
-	public ElementIdExpression(ElementId id)
-	{
-		this.id = id;
-		id.registerUse();
-	}
+  public ElementIdExpression(ElementId id) {
+    this.id = id;
+    id.registerUse();
+  }
 
-	@Override
-	public String getExpression(RenderContext info)
-	{
-		return JSUtils.toJSString(id.getElementId(info));
-	}
+  @Override
+  public String getExpression(RenderContext info) {
+    return JSUtils.toJSString(id.getElementId(info));
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		// nothing
-	}
-
+  @Override
+  public void preRender(PreRenderContext info) {
+    // nothing
+  }
 }

@@ -16,10 +16,6 @@
 
 package com.tle.web.connectors.canvas.editor;
 
-import java.util.Map;
-
-import javax.inject.Inject;
-
 import com.tle.common.Check;
 import com.tle.common.connectors.entity.Connector;
 import com.tle.common.i18n.CurrentLocale;
@@ -44,158 +40,137 @@ import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.Div;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
+import java.util.Map;
+import javax.inject.Inject;
 
 @Bind
 public class CanvasConnectorEditor
-	extends
-		AbstractConnectorEditorSection<CanvasConnectorEditor.CanvasConnectorEditorModel>
-{
-	@PlugKey("editor.error.badtoken")
-	private static Label BAD_TOKEN_ERROR;
+    extends AbstractConnectorEditorSection<CanvasConnectorEditor.CanvasConnectorEditorModel> {
+  @PlugKey("editor.error.badtoken")
+  private static Label BAD_TOKEN_ERROR;
 
-	@PlugKey("canvas.testtoken.response.")
-	private static String PFX_TOKEN_RESPONSE;
+  @PlugKey("canvas.testtoken.response.")
+  private static String PFX_TOKEN_RESPONSE;
 
-	@Component(stateful = false)
-	private TextField manualTokenEntry;
-	@Component
-	@PlugKey("editor.button.test")
-	private Button testTokenButton;
+  @Component(stateful = false)
+  private TextField manualTokenEntry;
 
-	@ViewFactory
-	private FreemarkerFactory view;
-	@EventFactory
-	private EventGenerator events;
+  @Component
+  @PlugKey("editor.button.test")
+  private Button testTokenButton;
 
-	@Inject
-	private CanvasConnectorService connectorService;
+  @ViewFactory private FreemarkerFactory view;
+  @EventFactory private EventGenerator events;
 
-	@Override
-	protected SectionRenderable renderFields(RenderEventContext context,
-		EntityEditingSession<ConnectorEditingBean, Connector> session)
-	{
+  @Inject private CanvasConnectorService connectorService;
 
-		return view.createResult("canvasconnector.ftl", context);
-	}
+  @Override
+  protected SectionRenderable renderFields(
+      RenderEventContext context, EntityEditingSession<ConnectorEditingBean, Connector> session) {
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+    return view.createResult("canvasconnector.ftl", context);
+  }
 
-		testTokenButton.setClickHandler(ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("testAccessToken"), getAjaxDivId()));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@EventHandlerMethod
-	public void testAccessToken(SectionInfo info)
-	{
-		final EntityEditingSession<ConnectorEditingBean, Connector> session = saveToSession(info);
-		final ConnectorEditingBean connector = session.getBean();
+    testTokenButton.setClickHandler(
+        ajax.getAjaxUpdateDomFunction(
+            tree, this, events.getEventHandler("testAccessToken"), getAjaxDivId()));
+  }
 
-		CanvasConnectorEditorModel model = getModel(info);
+  @EventHandlerMethod
+  public void testAccessToken(SectionInfo info) {
+    final EntityEditingSession<ConnectorEditingBean, Connector> session = saveToSession(info);
+    final ConnectorEditingBean connector = session.getBean();
 
-		String testResponse = connectorService.testAccessToken(connector.getServerUrl(),
-			manualTokenEntry.getValue(info));
+    CanvasConnectorEditorModel model = getModel(info);
 
-		model.setStatusClass(testResponse.equals("unauthorized") ? "fail" : testResponse);
-		model.setTestAccessTokenStatus(CurrentLocale.get(PFX_TOKEN_RESPONSE + testResponse));
-		if( testResponse.equals("ok") )
-		{
-			connector.setAttribute(CanvasConnectorConstants.FIELD_TOKEN_OK, true);
-		}
-	}
+    String testResponse =
+        connectorService.testAccessToken(connector.getServerUrl(), manualTokenEntry.getValue(info));
 
-	@Override
-	protected void customValidate(SectionInfo info, ConnectorEditingBean connector, Map<String, Object> errors)
-	{
-		CanvasConnectorEditorModel model = getModel(info);
-		if( Check.isEmpty(manualTokenEntry.getValue(info)) )
-		{
-			errors.put("tokenentry", BAD_TOKEN_ERROR.getText());
-			return;
-		}
+    model.setStatusClass(testResponse.equals("unauthorized") ? "fail" : testResponse);
+    model.setTestAccessTokenStatus(CurrentLocale.get(PFX_TOKEN_RESPONSE + testResponse));
+    if (testResponse.equals("ok")) {
+      connector.setAttribute(CanvasConnectorConstants.FIELD_TOKEN_OK, true);
+    }
+  }
 
-		if( !connector.getAttribute(CanvasConnectorConstants.FIELD_TOKEN_OK, false) )
-		{
-			errors.put("tokentest", BAD_TOKEN_ERROR.getText());
-		}
+  @Override
+  protected void customValidate(
+      SectionInfo info, ConnectorEditingBean connector, Map<String, Object> errors) {
+    CanvasConnectorEditorModel model = getModel(info);
+    if (Check.isEmpty(manualTokenEntry.getValue(info))) {
+      errors.put("tokenentry", BAD_TOKEN_ERROR.getText());
+      return;
+    }
 
-	}
+    if (!connector.getAttribute(CanvasConnectorConstants.FIELD_TOKEN_OK, false)) {
+      errors.put("tokentest", BAD_TOKEN_ERROR.getText());
+    }
+  }
 
-	@Override
-	protected void customLoad(SectionInfo info, ConnectorEditingBean connector)
-	{
-		manualTokenEntry.setValue(info, connector.getAttribute(CanvasConnectorConstants.FIELD_ACCESS_TOKEN));
-	}
+  @Override
+  protected void customLoad(SectionInfo info, ConnectorEditingBean connector) {
+    manualTokenEntry.setValue(
+        info, connector.getAttribute(CanvasConnectorConstants.FIELD_ACCESS_TOKEN));
+  }
 
-	@Override
-	protected void customSave(SectionInfo info, ConnectorEditingBean connector)
-	{
-		connector.setAttribute(CanvasConnectorConstants.FIELD_ACCESS_TOKEN, manualTokenEntry.getValue(info));
+  @Override
+  protected void customSave(SectionInfo info, ConnectorEditingBean connector) {
+    connector.setAttribute(
+        CanvasConnectorConstants.FIELD_ACCESS_TOKEN, manualTokenEntry.getValue(info));
+  }
 
-	}
+  @Override
+  protected Connector createNewConnector() {
+    return new Connector(CanvasConnectorConstants.CONNECTOR_TYPE);
+  }
 
-	@Override
-	protected Connector createNewConnector()
-	{
-		return new Connector(CanvasConnectorConstants.CONNECTOR_TYPE);
-	}
+  @Override
+  protected String getAjaxDivId() {
+    return "canvassetup";
+  }
 
-	@Override
-	protected String getAjaxDivId()
-	{
-		return "canvassetup";
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new CanvasConnectorEditorModel();
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new CanvasConnectorEditorModel();
-	}
+  @Override
+  public Div getUsernameDiv() {
+    return null;
+  }
 
-	@Override
-	public Div getUsernameDiv()
-	{
-		return null;
-	}
+  public TextField getManualTokenEntry() {
+    return manualTokenEntry;
+  }
 
-	public TextField getManualTokenEntry()
-	{
-		return manualTokenEntry;
-	}
+  public Button getTestTokenButton() {
+    return testTokenButton;
+  }
 
-	public Button getTestTokenButton()
-	{
-		return testTokenButton;
-	}
+  public class CanvasConnectorEditorModel
+      extends AbstractConnectorEditorSection<CanvasConnectorEditorModel>
+          .AbstractConnectorEditorModel {
+    private String testAccessTokenStatus;
+    private String statusClass;
 
-	public class CanvasConnectorEditorModel
-		extends
-			AbstractConnectorEditorSection<CanvasConnectorEditorModel>.AbstractConnectorEditorModel
-	{
-		private String testAccessTokenStatus;
-		private String statusClass;
+    public String getStatusClass() {
+      return statusClass;
+    }
 
-		public String getStatusClass()
-		{
-			return statusClass;
-		}
+    public void setStatusClass(String statusClass) {
+      this.statusClass = statusClass;
+    }
 
-		public void setStatusClass(String statusClass)
-		{
-			this.statusClass = statusClass;
-		}
+    public String getTestAccessTokenStatus() {
+      return testAccessTokenStatus;
+    }
 
-		public String getTestAccessTokenStatus()
-		{
-			return testAccessTokenStatus;
-		}
-
-		public void setTestAccessTokenStatus(String testAccessTokenStatus)
-		{
-			this.testAccessTokenStatus = testAccessTokenStatus;
-		}
-
-	}
+    public void setTestAccessTokenStatus(String testAccessTokenStatus) {
+      this.testAccessTokenStatus = testAccessTokenStatus;
+    }
+  }
 }

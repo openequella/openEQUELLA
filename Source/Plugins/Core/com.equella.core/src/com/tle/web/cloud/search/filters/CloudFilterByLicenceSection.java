@@ -28,52 +28,43 @@ import com.tle.web.sections.standard.model.HtmlListModel;
 import com.tle.web.sections.standard.model.Option;
 
 @SuppressWarnings("nls")
-public class CloudFilterByLicenceSection extends AbstractCloudFilter
-{
-	@PlugKey("filter.bylicence.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("filter.bylicence.top")
-	private static String DEFAULT_OPTION;
+public class CloudFilterByLicenceSection extends AbstractCloudFilter {
+  @PlugKey("filter.bylicence.title")
+  private static Label LABEL_TITLE;
 
-	@Override
-	public Label getTitle()
-	{
-		return LABEL_TITLE;
-	}
+  @PlugKey("filter.bylicence.top")
+  private static String DEFAULT_OPTION;
 
-	@Override
-	public void prepareSearch(SectionInfo info, CloudSearchEvent event) throws Exception
-	{
-		String licence = list.getSelectedValueAsString(info);
-		if( !Check.isEmpty(licence) )
-		{
-			event.getCloudSearch().setLicence(licence);
-		}
-	}
+  @Override
+  public Label getTitle() {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	public HtmlListModel<NameValue> buildListModel()
-	{
-		return new DynamicHtmlListModel<NameValue>()
-		{
-			@Override
-			protected Option<NameValue> getTopOption()
-			{
-				return new KeyOption<NameValue>(DEFAULT_OPTION, "", null);
-			}
+  @Override
+  public void prepareSearch(SectionInfo info, CloudSearchEvent event) throws Exception {
+    String licence = list.getSelectedValueAsString(info);
+    if (!Check.isEmpty(licence)) {
+      event.getCloudSearch().setLicence(licence);
+    }
+  }
 
-			@Override
-			protected Iterable<NameValue> populateModel(SectionInfo info)
-			{
-				return cloudService.getCloudFilterInfo().getLicences();
-			}
-		};
-	}
+  @Override
+  public HtmlListModel<NameValue> buildListModel() {
+    return new DynamicHtmlListModel<NameValue>() {
+      @Override
+      protected Option<NameValue> getTopOption() {
+        return new KeyOption<NameValue>(DEFAULT_OPTION, "", null);
+      }
 
-	@Override
-	protected String getPublicParam()
-	{
-		return "lic";
-	}
+      @Override
+      protected Iterable<NameValue> populateModel(SectionInfo info) {
+        return cloudService.getCloudFilterInfo().getLicences();
+      }
+    };
+  }
 
+  @Override
+  protected String getPublicParam() {
+    return "lic";
+  }
 }

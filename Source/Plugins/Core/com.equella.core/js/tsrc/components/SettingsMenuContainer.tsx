@@ -1,5 +1,5 @@
 import * as React from "react";
-import {createStyles, Paper, withStyles, WithStyles} from "@material-ui/core";
+import { createStyles, Paper, withStyles, WithStyles } from "@material-ui/core";
 
 const styles = createStyles({
   container: {
@@ -9,18 +9,13 @@ const styles = createStyles({
 });
 
 class SettingsMenuContainer extends React.Component<WithStyles<typeof styles>> {
-
   constructor(props: WithStyles<typeof styles>) {
     super(props);
-  };
+  }
 
   render() {
     const styles = this.props.classes;
-    return (
-      <Paper className={styles.container}>
-          {this.props.children}
-      </Paper>
-    );
+    return <Paper className={styles.container}>{this.props.children}</Paper>;
   }
 }
 

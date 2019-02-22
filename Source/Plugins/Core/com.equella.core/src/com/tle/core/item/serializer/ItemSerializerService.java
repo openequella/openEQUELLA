@@ -16,69 +16,69 @@
 
 package com.tle.core.item.serializer;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
 import com.tle.web.api.item.interfaces.beans.HistoryEventBean;
 import com.tle.web.api.item.interfaces.beans.ItemExportBean;
 import com.tle.web.api.item.interfaces.beans.ItemLockBean;
+import java.util.Collection;
+import java.util.List;
 
 @SuppressWarnings("nls")
-public interface ItemSerializerService
-{
-	String CATEGORY_BASIC = "basic";
-	String CATEGORY_DETAIL = "detail";
-	String CATEGORY_METADATA = "metadata";
-	String CATEGORY_ATTACHMENT = "attachment";
-	String CATEGORY_ALL = "all";
+public interface ItemSerializerService {
+  String CATEGORY_BASIC = "basic";
+  String CATEGORY_DETAIL = "detail";
+  String CATEGORY_METADATA = "metadata";
+  String CATEGORY_ATTACHMENT = "attachment";
+  String CATEGORY_ALL = "all";
 
-	/**
-	 * @param itemIds
-	 * @param categories
-	 * @param privileges Any privileges for which you want to check with
-	 *            {@link ItemSerializerItemBean#hasPrivilege(long, String)} must
-	 *            be passed in here.
-	 * @return
-	 */
-	ItemSerializerXml createXmlSerializer(Collection<Long> itemIds, Collection<String> categories,
-		String... privileges);
+  /**
+   * @param itemIds
+   * @param categories
+   * @param privileges Any privileges for which you want to check with {@link
+   *     ItemSerializerItemBean#hasPrivilege(long, String)} must be passed in here.
+   * @return
+   */
+  ItemSerializerXml createXmlSerializer(
+      Collection<Long> itemIds, Collection<String> categories, String... privileges);
 
-	/**
-	 * @param itemIds
-	 * @param categories
-	 * @param privileges Any privileges for which you want to check with
-	 *            {@link ItemSerializerItemBean#hasPrivilege(long, String)} must
-	 *            be passed in here.
-	 * @return
-	 */
-	ItemSerializerItemBean createItemBeanSerializer(Collection<Long> itemIds, Collection<String> categories,
-		boolean export, String... privileges);
+  /**
+   * @param itemIds
+   * @param categories
+   * @param privileges Any privileges for which you want to check with {@link
+   *     ItemSerializerItemBean#hasPrivilege(long, String)} must be passed in here.
+   * @return
+   */
+  ItemSerializerItemBean createItemBeanSerializer(
+      Collection<Long> itemIds,
+      Collection<String> categories,
+      boolean export,
+      String... privileges);
 
-	ItemSerializerItemBean createItemBeanSerializer(Collection<Long> itemIds, Collection<String> categories,
-		boolean ignorePriv, boolean export);
+  ItemSerializerItemBean createItemBeanSerializer(
+      Collection<Long> itemIds, Collection<String> categories, boolean ignorePriv, boolean export);
 
-	/**
-	 * @param where
-	 * @param categories
-	 * @param privileges Any privileges for which you want to check with
-	 *            {@link ItemSerializerItemBean#hasPrivilege(long, String)} must
-	 *            be passed in here.
-	 * @return
-	 */
-	ItemSerializerItemBean createItemBeanSerializer(ItemSerializerWhere where, Collection<String> categories,
-		boolean export, String... privileges);
+  /**
+   * @param where
+   * @param categories
+   * @param privileges Any privileges for which you want to check with {@link
+   *     ItemSerializerItemBean#hasPrivilege(long, String)} must be passed in here.
+   * @return
+   */
+  ItemSerializerItemBean createItemBeanSerializer(
+      ItemSerializerWhere where,
+      Collection<String> categories,
+      boolean export,
+      String... privileges);
 
-	/**
-	 * The presence of the optional 'export' flag in query parameters draws
-	 * forth tailored detail.
-	 * 
-	 * @param equellaBean the bean identifying source Item
-	 * @return ItemExportBean
-	 */
-	ItemExportBean getExportDetails(EquellaItemBean equellaBean);
+  /**
+   * The presence of the optional 'export' flag in query parameters draws forth tailored detail.
+   *
+   * @param equellaBean the bean identifying source Item
+   * @return ItemExportBean
+   */
+  ItemExportBean getExportDetails(EquellaItemBean equellaBean);
 
-	ItemLockBean getItemLock(EquellaItemBean equellaBean);
+  ItemLockBean getItemLock(EquellaItemBean equellaBean);
 
-	List<HistoryEventBean> getHistory(String uuid, int version);
+  List<HistoryEventBean> getHistory(String uuid, int version);
 }

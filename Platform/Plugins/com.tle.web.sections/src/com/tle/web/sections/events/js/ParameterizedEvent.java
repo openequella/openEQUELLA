@@ -21,13 +21,12 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.SectionEvent;
 
 @NonNullByDefault
-public interface ParameterizedEvent
-{
-	int getParameterCount();
+public interface ParameterizedEvent {
+  int getParameterCount();
 
-	String getEventId();
+  String getEventId();
 
-	SectionEvent<?> createEvent(SectionInfo info, String[] params);
+  SectionEvent<?> createEvent(SectionInfo info, String[] params);
 
-	boolean isPreventXsrf();
+  boolean isPreventXsrf();
 }

@@ -16,12 +16,6 @@
 
 package com.tle.web.scorm.treeviewer;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
-import javax.inject.Inject;
-
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.attachments.CustomAttachment;
@@ -46,103 +40,90 @@ import com.tle.web.viewurl.ViewItemService;
 import com.tle.web.viewurl.ViewItemViewer;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.AttachmentResourceService;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
-public class ScormTreeNavigationSection extends TreeNavigationSection implements ViewItemFilter
-{
-	public static final String VIEWSCORM_JSP = "viewscorm.jsp";
+public class ScormTreeNavigationSection extends TreeNavigationSection implements ViewItemFilter {
+  public static final String VIEWSCORM_JSP = "viewscorm.jsp";
 
-	@TreeLookup
-	private RootItemFileSection rootSection;
+  @TreeLookup private RootItemFileSection rootSection;
 
-	@Inject
-	private ViewItemService viewItemService;
+  @Inject private ViewItemService viewItemService;
 
-	@Inject
-	private AttachmentResourceService attachmentResourceService;
+  @Inject private AttachmentResourceService attachmentResourceService;
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "scormtree";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "scormtree";
+  }
 
-	@Override
-	protected List<ItemNavigationNode> getTreeNodes(SectionInfo info)
-	{
-		return getTreeNodes(info, Collections.singletonList(getAttachment(info, getModel(info).getResource())), true);
-	}
+  @Override
+  protected List<ItemNavigationNode> getTreeNodes(SectionInfo info) {
+    return getTreeNodes(
+        info, Collections.singletonList(getAttachment(info, getModel(info).getResource())), true);
+  }
 
-	@Nullable
-	@Override
-	public IAttachment getAttachment(SectionInfo info, ViewItemResource resource)
-	{
-		final ViewableItem<?> vitem = resource.getViewableItem();
-		final IItem<?> item = vitem.getItem();
-		final List<CustomAttachment> scorms = new UnmodifiableAttachments(item).getCustomList("scorm");
-		if( scorms.size() > 0 )
-		{
-			return scorms.get(0);
-		}
-		return null;
-	}
+  @Nullable
+  @Override
+  public IAttachment getAttachment(SectionInfo info, ViewItemResource resource) {
+    final ViewableItem<?> vitem = resource.getViewableItem();
+    final IItem<?> item = vitem.getItem();
+    final List<CustomAttachment> scorms = new UnmodifiableAttachments(item).getCustomList("scorm");
+    if (scorms.size() > 0) {
+      return scorms.get(0);
+    }
+    return null;
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		rootSection.addFilterViewer(this);
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    rootSection.addFilterViewer(this);
+  }
 
-	@Override
-	public int getOrder()
-	{
-		return 0;
-	}
+  @Override
+  public int getOrder() {
+    return 0;
+  }
 
-	@Override
-	public ViewItemResource filter(SectionInfo info, ViewItemResource resource)
-	{
-		String rvid = resource.getDefaultViewerId();
-		if( Objects.equals(ScormTreeNavigationSection.VIEWSCORM_JSP, resource.getFilepath()) )
-		{
-			if( Check.isEmpty(rvid) )
-			{
-				ViewableItem<?> vi = resource.getViewableItem();
-				CustomAttachment att = new UnmodifiableAttachments(vi.getItem())
-					.getFirstCustomOfType(ScormUtils.ATTACHMENT_TYPE);
+  @Override
+  public ViewItemResource filter(SectionInfo info, ViewItemResource resource) {
+    String rvid = resource.getDefaultViewerId();
+    if (Objects.equals(ScormTreeNavigationSection.VIEWSCORM_JSP, resource.getFilepath())) {
+      if (Check.isEmpty(rvid)) {
+        ViewableItem<?> vi = resource.getViewableItem();
+        CustomAttachment att =
+            new UnmodifiableAttachments(vi.getItem())
+                .getFirstCustomOfType(ScormUtils.ATTACHMENT_TYPE);
 
-				if( att != null )
-				{
-					if( "pssViewer".equals(viewItemService.getDefaultViewerId(MimeTypeConstants.MIME_SCORM)) )
-					{
-						return new ScormTreeAttachmentViewItemResource(resource,
-							attachmentResourceService.getViewableResource(info, vi, att), false);
-					}
-					return new UseViewer(resource, this);
-				}
-			}
-			else if( Objects.equals(rvid, "downloadIms") || Objects.equals("file", rvid) )
-			{
-				return new UseViewer(resource, this);
-			}
-		}
+        if (att != null) {
+          if ("pssViewer"
+              .equals(viewItemService.getDefaultViewerId(MimeTypeConstants.MIME_SCORM))) {
+            return new ScormTreeAttachmentViewItemResource(
+                resource, attachmentResourceService.getViewableResource(info, vi, att), false);
+          }
+          return new UseViewer(resource, this);
+        }
+      } else if (Objects.equals(rvid, "downloadIms") || Objects.equals("file", rvid)) {
+        return new UseViewer(resource, this);
+      }
+    }
 
-		return resource;
-	}
+    return resource;
+  }
 
-	public class ScormTreeAttachmentViewItemResource extends AbstractAttachmentViewItemResource
-	{
-		public ScormTreeAttachmentViewItemResource(ViewItemResource inner, ViewableResource viewableResource,
-			boolean forcedStream)
-		{
-			super(inner, viewableResource, forcedStream);
-		}
+  public class ScormTreeAttachmentViewItemResource extends AbstractAttachmentViewItemResource {
+    public ScormTreeAttachmentViewItemResource(
+        ViewItemResource inner, ViewableResource viewableResource, boolean forcedStream) {
+      super(inner, viewableResource, forcedStream);
+    }
 
-		@Override
-		public ViewItemViewer getViewer()
-		{
-			return forcedStream ? ScormTreeNavigationSection.this : null;
-		}
-	}
+    @Override
+    public ViewItemViewer getViewer() {
+      return forcedStream ? ScormTreeNavigationSection.this : null;
+    }
+  }
 }

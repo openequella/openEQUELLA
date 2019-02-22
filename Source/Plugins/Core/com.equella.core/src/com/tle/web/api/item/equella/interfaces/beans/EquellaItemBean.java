@@ -16,79 +16,68 @@
 
 package com.tle.web.api.item.equella.interfaces.beans;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.tle.web.api.item.interfaces.beans.ItemBean;
-
 import java.util.List;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @SuppressWarnings("nls")
 @XmlRootElement
-public class EquellaItemBean extends ItemBean
-{
-	private String thumbnail;
-	private List<DisplayField> displayFields;
-	private DisplayOptions displayOptions;
+public class EquellaItemBean extends ItemBean {
+  private String thumbnail;
+  private List<DisplayField> displayFields;
+  private DisplayOptions displayOptions;
 
-	public String getThumbnail()
-	{
-		return thumbnail;
-	}
+  public String getThumbnail() {
+    return thumbnail;
+  }
 
-	public void setThumbnail(String thumbnail)
-	{
-		this.thumbnail = thumbnail;
-	}
+  public void setThumbnail(String thumbnail) {
+    this.thumbnail = thumbnail;
+  }
 
-	public List<DisplayField> getDisplayFields()
-	{
-		return displayFields;
-	}
+  public List<DisplayField> getDisplayFields() {
+    return displayFields;
+  }
 
-	public void setDisplayFields(List<DisplayField> displayFields)
-	{
-		this.displayFields = displayFields;
-	}
+  public void setDisplayFields(List<DisplayField> displayFields) {
+    this.displayFields = displayFields;
+  }
 
-	public void setDisplayOptions(DisplayOptions displayOptions)
-	{
-		this.displayOptions = displayOptions;
-	}
+  public void setDisplayOptions(DisplayOptions displayOptions) {
+    this.displayOptions = displayOptions;
+  }
 
-	public DisplayOptions getDisplayOptions()
-	{
-		return displayOptions;
-	}
+  public DisplayOptions getDisplayOptions() {
+    return displayOptions;
+  }
 
-	/**
-	 * Urggh. This needs to go when I work out how to change the default mapper
-	 * to go to EqIBean
-	 * 
-	 * @param bean
-	 * @return
-	 */
-	public static EquellaItemBean copyFrom(ItemBean bean)
-	{
-		EquellaItemBean eb = new EquellaItemBean();
-		eb.setUuid(bean.getUuid());
-		eb.setVersion(bean.getVersion());
-		eb.setAttachments(bean.getAttachments());
-		eb.setCollaborators(bean.getCollaborators());
-		eb.setCollection(bean.getCollection());
-		eb.setCreatedDate(bean.getCreatedDate());
-		eb.setDescription(bean.getDescription());
-		eb.setDescriptionStrings(bean.getDescriptionStrings());
-		eb.setDrm(bean.getDrm());
-		eb.setExportDetails(bean.getExportDetails());
-		eb.setMetadata(bean.getMetadata());
-		eb.setModifiedDate(bean.getModifiedDate());
-		eb.setName(bean.getName());
-		eb.setNameStrings(bean.getNameStrings());
-		eb.setNavigation(bean.getNavigation());
-		eb.setOwner(bean.getOwner());
-		eb.setRating(bean.getRating());
-		eb.setStatus(bean.getStatus());
-		eb.setThumbnail((String) bean.get("thumbnail"));
-		return eb;
-	}
+  /**
+   * Urggh. This needs to go when I work out how to change the default mapper to go to EqIBean
+   *
+   * @param bean
+   * @return
+   */
+  public static EquellaItemBean copyFrom(ItemBean bean) {
+    EquellaItemBean eb = new EquellaItemBean();
+    eb.setUuid(bean.getUuid());
+    eb.setVersion(bean.getVersion());
+    eb.setAttachments(bean.getAttachments());
+    eb.setCollaborators(bean.getCollaborators());
+    eb.setCollection(bean.getCollection());
+    eb.setCreatedDate(bean.getCreatedDate());
+    eb.setDescription(bean.getDescription());
+    eb.setDescriptionStrings(bean.getDescriptionStrings());
+    eb.setDrm(bean.getDrm());
+    eb.setExportDetails(bean.getExportDetails());
+    eb.setMetadata(bean.getMetadata());
+    eb.setModifiedDate(bean.getModifiedDate());
+    eb.setName(bean.getName());
+    eb.setNameStrings(bean.getNameStrings());
+    eb.setNavigation(bean.getNavigation());
+    eb.setOwner(bean.getOwner());
+    eb.setRating(bean.getRating());
+    eb.setStatus(bean.getStatus());
+    eb.setThumbnail((String) bean.get("thumbnail"));
+    return eb;
+  }
 }

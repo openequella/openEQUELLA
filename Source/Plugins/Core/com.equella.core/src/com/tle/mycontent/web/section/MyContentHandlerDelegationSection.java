@@ -16,10 +16,6 @@
 
 package com.tle.mycontent.web.section;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.tle.mycontent.ContentHandler;
 import com.tle.mycontent.service.MyContentService;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -37,113 +33,95 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.template.Decorations;
+import java.util.List;
+import javax.inject.Inject;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 public class MyContentHandlerDelegationSection
-	extends
-		AbstractPrototypeSection<MyContentHandlerDelegationSection.MyContentHandlerDelegationModel>
-	implements
-		HtmlRenderer
-{
-	@Inject
-	private MyContentService myContentService;
+    extends AbstractPrototypeSection<
+        MyContentHandlerDelegationSection.MyContentHandlerDelegationModel>
+    implements HtmlRenderer {
+  @Inject private MyContentService myContentService;
 
-	@TreeLookup
-	private MyContentContributeSection contrib;
+  @TreeLookup private MyContentContributeSection contrib;
 
-	@ViewFactory
-	private FreemarkerFactory view;
+  @ViewFactory private FreemarkerFactory view;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		MyContentHandlerDelegationModel model = getModel(context);
-		ContentHandler handler = myContentService.getHandlerForId(contrib.getModel(context).getContributeId());
-		if( handler == null )
-		{
-			throw new SectionsRuntimeException("No handler id specified");
-		}
-		model.setHandlerRenderer(handler.render(context));
-		Label title = handler.getTitle(context);
-		model.setTitle(title);
-		Decorations.getDecorations(context).setTitle(title);
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    MyContentHandlerDelegationModel model = getModel(context);
+    ContentHandler handler =
+        myContentService.getHandlerForId(contrib.getModel(context).getContributeId());
+    if (handler == null) {
+      throw new SectionsRuntimeException("No handler id specified");
+    }
+    model.setHandlerRenderer(handler.render(context));
+    Label title = handler.getTitle(context);
+    model.setTitle(title);
+    Decorations.getDecorations(context).setTitle(title);
 
-		final GenericTemplateResult result = new GenericTemplateResult();
-		result.addNamedResult("left", view.createResult("handler.ftl", this));
+    final GenericTemplateResult result = new GenericTemplateResult();
+    result.addNamedResult("left", view.createResult("handler.ftl", this));
 
-		final List<HtmlComponentState> majorActions = handler.getMajorActions(context);
-		if( majorActions != null )
-		{
-			for( HtmlComponentState action : majorActions )
-			{
-				action.setRendererType(EquellaButtonExtension.ACTION_BUTTON);
-			}
-		}
-		final MyContentHandlerDelegationActionsModel actionsModel = new MyContentHandlerDelegationActionsModel();
-		actionsModel.setMajorActions(majorActions);
-		actionsModel.setMinorActions(handler.getMinorActions(context));
+    final List<HtmlComponentState> majorActions = handler.getMajorActions(context);
+    if (majorActions != null) {
+      for (HtmlComponentState action : majorActions) {
+        action.setRendererType(EquellaButtonExtension.ACTION_BUTTON);
+      }
+    }
+    final MyContentHandlerDelegationActionsModel actionsModel =
+        new MyContentHandlerDelegationActionsModel();
+    actionsModel.setMajorActions(majorActions);
+    actionsModel.setMinorActions(handler.getMinorActions(context));
 
-		result.addNamedResult("right", view.createResultWithModel("handleractions.ftl", actionsModel));
-		return result;
-	}
+    result.addNamedResult("right", view.createResultWithModel("handleractions.ftl", actionsModel));
+    return result;
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new MyContentHandlerDelegationModel();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new MyContentHandlerDelegationModel();
+  }
 
-	public static class MyContentHandlerDelegationModel
-	{
-		private SectionRenderable handlerRenderer;
-		private Label title;
+  public static class MyContentHandlerDelegationModel {
+    private SectionRenderable handlerRenderer;
+    private Label title;
 
-		public Label getTitle()
-		{
-			return title;
-		}
+    public Label getTitle() {
+      return title;
+    }
 
-		public void setTitle(Label title)
-		{
-			this.title = title;
-		}
+    public void setTitle(Label title) {
+      this.title = title;
+    }
 
-		public SectionRenderable getHandlerRenderer()
-		{
-			return handlerRenderer;
-		}
+    public SectionRenderable getHandlerRenderer() {
+      return handlerRenderer;
+    }
 
-		public void setHandlerRenderer(SectionRenderable handlerRenderer)
-		{
-			this.handlerRenderer = handlerRenderer;
-		}
-	}
+    public void setHandlerRenderer(SectionRenderable handlerRenderer) {
+      this.handlerRenderer = handlerRenderer;
+    }
+  }
 
-	public static class MyContentHandlerDelegationActionsModel
-	{
-		private List<HtmlComponentState> majorActions;
-		private List<HtmlComponentState> minorActions;
+  public static class MyContentHandlerDelegationActionsModel {
+    private List<HtmlComponentState> majorActions;
+    private List<HtmlComponentState> minorActions;
 
-		public List<HtmlComponentState> getMajorActions()
-		{
-			return majorActions;
-		}
+    public List<HtmlComponentState> getMajorActions() {
+      return majorActions;
+    }
 
-		public void setMajorActions(List<HtmlComponentState> majorActions)
-		{
-			this.majorActions = majorActions;
-		}
+    public void setMajorActions(List<HtmlComponentState> majorActions) {
+      this.majorActions = majorActions;
+    }
 
-		public List<HtmlComponentState> getMinorActions()
-		{
-			return minorActions;
-		}
+    public List<HtmlComponentState> getMinorActions() {
+      return minorActions;
+    }
 
-		public void setMinorActions(List<HtmlComponentState> minorActions)
-		{
-			this.minorActions = minorActions;
-		}
-	}
+    public void setMinorActions(List<HtmlComponentState> minorActions) {
+      this.minorActions = minorActions;
+    }
+  }
 }

@@ -16,28 +16,25 @@
 
 package com.dytech.installer;
 
-/**
- * @author Nicholas Read
- */
-public interface Progress
-{
-	void addMessage(String msg);
+/** @author Nicholas Read */
+public interface Progress {
+  void addMessage(String msg);
 
-	void setWholeAmount(int i);
+  void setWholeAmount(int i);
 
-	void setCurrentAmount(int i);
+  void setCurrentAmount(int i);
 
-	int getWholeAmount();
+  int getWholeAmount();
 
-	int getCurrentAmount();
+  int getCurrentAmount();
 
-	void setCurrentMaximum(int maximum);
+  void setCurrentMaximum(int maximum);
 
-	int getCurrentMaximum();
+  int getCurrentMaximum();
 
-	int getWholeMaximum();
+  int getWholeMaximum();
 
-	void setup(String title, int total);
+  void setup(String title, int total);
 
-	void popupMessage(String title, String message, boolean error);
+  void popupMessage(String title, String message, boolean error);
 }

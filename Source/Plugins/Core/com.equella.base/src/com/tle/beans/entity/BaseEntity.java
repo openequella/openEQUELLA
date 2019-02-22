@@ -16,6 +16,9 @@
 
 package com.tle.beans.entity;
 
+import com.tle.beans.Institution;
+import com.tle.common.Check;
+import com.tle.common.Check.FieldEquality;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,7 +26,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -41,328 +43,271 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
-import com.tle.beans.Institution;
-import com.tle.common.Check;
-import com.tle.common.Check.FieldEquality;
-
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @Entity
 @AccessType("field")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"institution_id", "uuid"})})
-public class BaseEntity implements Serializable, FieldEquality<BaseEntity>
-{
-	private static final long serialVersionUID = 1L;
+public class BaseEntity implements Serializable, FieldEquality<BaseEntity> {
+  private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-	@Column(length = 40, nullable = false)
-	@Index(name = "uuidIndex")
-	private String uuid;
-	@JoinColumn(nullable = false)
-	@ManyToOne(fetch = FetchType.LAZY)
-	@Index(name = "institutionIndex")
-	private Institution institution;
-	@Type(type = "blankable")
-	private String owner;
-	@Column(nullable = false)
-	private Date dateModified;
-	@Column(nullable = false)
-	private Date dateCreated;
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@Index(name = "baseEntityDescription")
-	private LanguageBundle description;
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@Index(name = "baseEntityName")
-	private LanguageBundle name;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	@JoinColumn
-	@ElementCollection(fetch = FetchType.LAZY)
-	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinTable(name = "BaseEntity_attributes")
-	private List<Attribute> attributes;
+  @Column(length = 40, nullable = false)
+  @Index(name = "uuidIndex")
+  private String uuid;
 
-	// was once member of ItemDefinition
-	@Index(name = "baseEntitySystemTypeIndex")
-	private boolean systemType;
+  @JoinColumn(nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @Index(name = "institutionIndex")
+  private Institution institution;
 
-	@Column(nullable = false)
-	@Index(name = "disabledIndex")
-	private boolean disabled;
+  @Type(type = "blankable")
+  private String owner;
 
-	public BaseEntity()
-	{
-		super();
-	}
+  @Column(nullable = false)
+  private Date dateModified;
 
-	public long getId()
-	{
-		return id;
-	}
+  @Column(nullable = false)
+  private Date dateCreated;
 
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @Index(name = "baseEntityDescription")
+  private LanguageBundle description;
 
-	public String getOwner()
-	{
-		return owner;
-	}
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @Index(name = "baseEntityName")
+  private LanguageBundle name;
 
-	public void setOwner(String owner)
-	{
-		this.owner = owner;
-	}
+  @JoinColumn
+  @ElementCollection(fetch = FetchType.LAZY)
+  @Fetch(value = FetchMode.SUBSELECT)
+  @JoinTable(name = "BaseEntity_attributes")
+  private List<Attribute> attributes;
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  // was once member of ItemDefinition
+  @Index(name = "baseEntitySystemTypeIndex")
+  private boolean systemType;
 
-	public void setUuid(String id)
-	{
-		this.uuid = id;
-	}
+  @Column(nullable = false)
+  @Index(name = "disabledIndex")
+  private boolean disabled;
 
-	public Institution getInstitution()
-	{
-		return institution;
-	}
+  public BaseEntity() {
+    super();
+  }
 
-	public void setInstitution(Institution institution)
-	{
-		this.institution = institution;
-	}
+  public long getId() {
+    return id;
+  }
 
-	public Date getDateCreated()
-	{
-		return dateCreated;
-	}
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public void setDateCreated(Date dateCreated)
-	{
-		this.dateCreated = dateCreated;
-	}
+  public String getOwner() {
+    return owner;
+  }
 
-	public Date getDateModified()
-	{
-		return dateModified;
-	}
+  public void setOwner(String owner) {
+    this.owner = owner;
+  }
 
-	public void setDateModified(Date dateModified)
-	{
-		this.dateModified = dateModified;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public LanguageBundle getDescription()
-	{
-		return description;
-	}
+  public void setUuid(String id) {
+    this.uuid = id;
+  }
 
-	public void setDescription(LanguageBundle description)
-	{
-		this.description = description;
-	}
+  public Institution getInstitution() {
+    return institution;
+  }
 
-	public LanguageBundle getName()
-	{
-		return name;
-	}
+  public void setInstitution(Institution institution) {
+    this.institution = institution;
+  }
 
-	public void setName(LanguageBundle name)
-	{
-		this.name = name;
-	}
+  public Date getDateCreated() {
+    return dateCreated;
+  }
 
-	public boolean isSystemType()
-	{
-		return systemType;
-	}
+  public void setDateCreated(Date dateCreated) {
+    this.dateCreated = dateCreated;
+  }
 
-	public void setSystemType(boolean systemType)
-	{
-		this.systemType = systemType;
-	}
+  public Date getDateModified() {
+    return dateModified;
+  }
 
-	public boolean isDisabled()
-	{
-		return disabled;
-	}
+  public void setDateModified(Date dateModified) {
+    this.dateModified = dateModified;
+  }
 
-	public void setDisabled(boolean disabled)
-	{
-		this.disabled = disabled;
-	}
+  public LanguageBundle getDescription() {
+    return description;
+  }
 
-	// Sonar's objection concerning BaseEntity subclasses (Dodgy - Class doesn't
-	// override equals in superclass) sufficiently attended to by commonEquals
-	@Override
-	public boolean equals(Object obj)
-	{
-		return Check.commonEquals(this, obj); // NOSONAR
-	}
+  public void setDescription(LanguageBundle description) {
+    this.description = description;
+  }
 
-	@Override
-	public boolean checkFields(BaseEntity rhs)
-	{
-		return id == rhs.getId();
-	}
+  public LanguageBundle getName() {
+    return name;
+  }
 
-	@Override
-	public int hashCode()
-	{
-		return Long.valueOf(id).hashCode();
-	}
+  public void setName(LanguageBundle name) {
+    this.name = name;
+  }
 
-	public Map<String, String> getAttributes()
-	{
-		Map<String, String> results = new HashMap<String, String>();
-		if( attributes != null )
-		{
-			for( Attribute attribute : attributes )
-			{
-				results.put(attribute.getKey(), attribute.getValue());
-			}
-		}
-		return results;
-	}
+  public boolean isSystemType() {
+    return systemType;
+  }
 
-	public void setAttributes(Map<String, String> values)
-	{
-		attributes = null;
-		if( values != null )
-		{
-			attributes = new ArrayList<Attribute>();
-			for( Map.Entry<String, String> entry : values.entrySet() )
-			{
-				attributes.add(new Attribute(entry.getKey(), entry.getValue()));
-			}
-		}
-	}
+  public void setSystemType(boolean systemType) {
+    this.systemType = systemType;
+  }
 
-	public String getAttribute(String key)
-	{
-		if( attributes != null )
-		{
-			for( Attribute att : attributes )
-			{
-				if( att.getKey().equals(key) )
-				{
-					return att.getValue();
-				}
-			}
-		}
-		return null;
-	}
+  public boolean isDisabled() {
+    return disabled;
+  }
 
-	public boolean getAttribute(String key, boolean defaultValue)
-	{
-		String bool = getAttribute(key);
-		if( Boolean.TRUE.toString().equalsIgnoreCase(bool) )
-		{
-			return true;
-		}
-		else if( Boolean.FALSE.toString().equalsIgnoreCase(bool) )
-		{
-			return false;
-		}
-		else
-		{
-			return defaultValue;
-		}
-	}
+  public void setDisabled(boolean disabled) {
+    this.disabled = disabled;
+  }
 
-	public void setAttribute(String key, boolean value)
-	{
-		setAttribute(key, Boolean.toString(value));
-	}
+  // Sonar's objection concerning BaseEntity subclasses (Dodgy - Class doesn't
+  // override equals in superclass) sufficiently attended to by commonEquals
+  @Override
+  public boolean equals(Object obj) {
+    return Check.commonEquals(this, obj); // NOSONAR
+  }
 
-	public void setAttribute(String key, String value)
-	{
-		if( attributes == null )
-		{
-			attributes = new ArrayList<Attribute>();
-		}
-		else
-		{
-			removeAttribute(key);
-		}
-		attributes.add(new Attribute(key, value));
-	}
+  @Override
+  public boolean checkFields(BaseEntity rhs) {
+    return id == rhs.getId();
+  }
 
-	public void removeAttribute(String key)
-	{
-		if( attributes != null )
-		{
-			for( final Iterator<Attribute> iter = attributes.iterator(); iter.hasNext(); )
-			{
-				final Attribute att = iter.next();
-				if( att.getKey().equals(key) )
-				{
-					iter.remove();
-				}
-			}
-		}
-	}
+  @Override
+  public int hashCode() {
+    return Long.valueOf(id).hashCode();
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public String toString()
-	{
-		return "ID: " + id + ((name != null) ? ", Name: " + name : "");
-	}
+  public Map<String, String> getAttributes() {
+    Map<String, String> results = new HashMap<String, String>();
+    if (attributes != null) {
+      for (Attribute attribute : attributes) {
+        results.put(attribute.getKey(), attribute.getValue());
+      }
+    }
+    return results;
+  }
 
-	@Embeddable
-	@AccessType("field")
-	public static class Attribute implements Serializable
-	{
-		private static final long serialVersionUID = 1L;
+  public void setAttributes(Map<String, String> values) {
+    attributes = null;
+    if (values != null) {
+      attributes = new ArrayList<Attribute>();
+      for (Map.Entry<String, String> entry : values.entrySet()) {
+        attributes.add(new Attribute(entry.getKey(), entry.getValue()));
+      }
+    }
+  }
 
-		@Column(length = 64, nullable = false)
-		private String key;
-		@Column(name = "value", length = 1024)
-		private String value;
+  public String getAttribute(String key) {
+    if (attributes != null) {
+      for (Attribute att : attributes) {
+        if (att.getKey().equals(key)) {
+          return att.getValue();
+        }
+      }
+    }
+    return null;
+  }
 
-		public Attribute()
-		{
-			super();
-		}
+  public boolean getAttribute(String key, boolean defaultValue) {
+    String bool = getAttribute(key);
+    if (Boolean.TRUE.toString().equalsIgnoreCase(bool)) {
+      return true;
+    } else if (Boolean.FALSE.toString().equalsIgnoreCase(bool)) {
+      return false;
+    } else {
+      return defaultValue;
+    }
+  }
 
-		public Attribute(String key, String value)
-		{
-			this.value = value;
-			this.key = key;
-		}
+  public void setAttribute(String key, boolean value) {
+    setAttribute(key, Boolean.toString(value));
+  }
 
-		public String getKey()
-		{
-			return key;
-		}
+  public void setAttribute(String key, String value) {
+    if (attributes == null) {
+      attributes = new ArrayList<Attribute>();
+    } else {
+      removeAttribute(key);
+    }
+    attributes.add(new Attribute(key, value));
+  }
 
-		public void setKey(String key)
-		{
-			this.key = key;
-		}
+  public void removeAttribute(String key) {
+    if (attributes != null) {
+      for (final Iterator<Attribute> iter = attributes.iterator(); iter.hasNext(); ) {
+        final Attribute att = iter.next();
+        if (att.getKey().equals(key)) {
+          iter.remove();
+        }
+      }
+    }
+  }
 
-		public String getValue()
-		{
-			return value;
-		}
+  @SuppressWarnings("nls")
+  @Override
+  public String toString() {
+    return "ID: " + id + ((name != null) ? ", Name: " + name : "");
+  }
 
-		public void setValue(String value)
-		{
-			this.value = value;
-		}
-	}
+  @Embeddable
+  @AccessType("field")
+  public static class Attribute implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @Column(length = 64, nullable = false)
+    private String key;
+
+    @Column(name = "value", length = 1024)
+    private String value;
+
+    public Attribute() {
+      super();
+    }
+
+    public Attribute(String key, String value) {
+      this.value = value;
+      this.key = key;
+    }
+
+    public String getKey() {
+      return key;
+    }
+
+    public void setKey(String key) {
+      this.key = key;
+    }
+
+    public String getValue() {
+      return value;
+    }
+
+    public void setValue(String value) {
+      this.value = value;
+    }
+  }
 }

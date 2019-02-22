@@ -16,13 +16,6 @@
 
 package com.tle.web.manualdatafixes.fixes;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.annotation.NonNullByDefault;
@@ -65,232 +58,203 @@ import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.SimpleHtmlListModel;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @NonNullByDefault
 @Bind
 @SuppressWarnings("nls")
 public class GenerateThumbnailOpSection
-	extends
-		AbstractPrototypeSection<GenerateThumbnailOpSection.GenerateThumbnailOpModel>
-	implements
-		HtmlRenderer,
-		UpdateTaskStatus
-{
-	private static final String TASK_ID = "Generate-Thumbnails";
+    extends AbstractPrototypeSection<GenerateThumbnailOpSection.GenerateThumbnailOpModel>
+    implements HtmlRenderer, UpdateTaskStatus {
+  private static final String TASK_ID = "Generate-Thumbnails";
 
-	@PlugKey("fix.generatethumb.task.key")
-	private static String TASK_PROGRESS_KEY;
-	@PlugKey("fix.generatethumb.task")
-	private static String TASK_NAME_KEY;
-	@PlugKey("fix.generatethumb.all")
-	private static String ALL;
-	@PlugKey("fix.generatethumb.missing")
-	private static String MISSING;
+  @PlugKey("fix.generatethumb.task.key")
+  private static String TASK_PROGRESS_KEY;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("fix.generatethumb.task")
+  private static String TASK_NAME_KEY;
 
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private RunAsInstitution runAs;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private TaskService taskService;
-	@Inject
-	private ThumbnailFilterFactory filterFactory;
+  @PlugKey("fix.generatethumb.all")
+  private static String ALL;
 
-	@Component
-	@PlugKey("fix.generatethumb.execute")
-	private Button execute;
-	@Component(stateful = false)
-	private SingleSelectionList<VoidKeyOption> forceUpdate;
+  @PlugKey("fix.generatethumb.missing")
+  private static String MISSING;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
 
-		List<VoidKeyOption> opts = new ArrayList<VoidKeyOption>();
-		opts.add(new VoidKeyOption(MISSING, "false"));
-		opts.add(new VoidKeyOption(ALL, "true"));
-		forceUpdate.setListModel(new SimpleHtmlListModel<VoidKeyOption>(opts));
-		forceUpdate.setAlwaysSelect(true);
+  @Inject private InstitutionService institutionService;
+  @Inject private RunAsInstitution runAs;
+  @Inject private ItemService itemService;
+  @Inject private TaskService taskService;
+  @Inject private ThumbnailFilterFactory filterFactory;
 
-		execute.setClickHandler(events.getNamedHandler("startGeneratingThumbs"));
-	}
+  @Component
+  @PlugKey("fix.generatethumb.execute")
+  private Button execute;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		GenerateThumbnailOpModel model = getModel(context);
-		TaskStatus status = model.getTaskStatus();
-		if( status != null && !status.isFinished() )
-		{
-			model.setTaskLabel(new KeyLabel(TASK_PROGRESS_KEY, status.getDoneWork(), status.getMaxWork()));
-			model.setInProgress(true);
-		}
+  @Component(stateful = false)
+  private SingleSelectionList<VoidKeyOption> forceUpdate;
 
-		return viewFactory.createResult("generatethumb.ftl", this);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@EventHandlerMethod
-	public void startGeneratingThumbs(SectionInfo info)
-	{
-		boolean force = Boolean.valueOf(forceUpdate.getSelectedValueAsString(info));
-		long instId = CurrentInstitution.get().getUniqueId();
-		taskService.getGlobalTask(
-			new BeanClusteredTask(TASK_ID + instId, GenerateThumbnailOpSection.class, "createTask", instId, force),
-			TimeUnit.SECONDS.toMillis(20));
-	}
+    List<VoidKeyOption> opts = new ArrayList<VoidKeyOption>();
+    opts.add(new VoidKeyOption(MISSING, "false"));
+    opts.add(new VoidKeyOption(ALL, "true"));
+    forceUpdate.setListModel(new SimpleHtmlListModel<VoidKeyOption>(opts));
+    forceUpdate.setAlwaysSelect(true);
 
-	public Task createTask(final long currentInstitution, final boolean force)
-	{
-		return new SingleShotTask()
-		{
-			@Override
-			public void runTask() throws Exception
-			{
-				Institution inst = institutionService.getInstitution(currentInstitution);
-				runAs.executeAsSystem(inst, new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						itemService.operateAll(filterFactory.generateThumbnails(force), new FilterResultListener()
-						{
-							@Override
-							public void total(int total)
-							{
-								setupStatus(TASK_PROGRESS_KEY, total);
-							}
+    execute.setClickHandler(events.getNamedHandler("startGeneratingThumbs"));
+  }
 
-							@Override
-							public void succeeded(ItemKey itemId, ItemPack pack)
-							{
-								incrementWork();
-							}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    GenerateThumbnailOpModel model = getModel(context);
+    TaskStatus status = model.getTaskStatus();
+    if (status != null && !status.isFinished()) {
+      model.setTaskLabel(
+          new KeyLabel(TASK_PROGRESS_KEY, status.getDoneWork(), status.getMaxWork()));
+      model.setInProgress(true);
+    }
 
-							@Override
-							public void failed(ItemKey itemId, Item item, ItemPack pack, Throwable e)
-							{
-								incrementWork();
-							}
-						});
-					}
-				});
-			}
+    return viewFactory.createResult("generatethumb.ftl", this);
+  }
 
-			@Override
-			protected String getTitleKey()
-			{
-				return TASK_NAME_KEY;
-			}
-		};
-	}
+  @EventHandlerMethod
+  public void startGeneratingThumbs(SectionInfo info) {
+    boolean force = Boolean.valueOf(forceUpdate.getSelectedValueAsString(info));
+    long instId = CurrentInstitution.get().getUniqueId();
+    taskService.getGlobalTask(
+        new BeanClusteredTask(
+            TASK_ID + instId, GenerateThumbnailOpSection.class, "createTask", instId, force),
+        TimeUnit.SECONDS.toMillis(20));
+  }
 
-	@BindFactory
-	public interface ThumbnailFilterFactory
-	{
-		GenerateThumbnailFilter generateThumbnails(boolean forceUpdate);
-	}
+  public Task createTask(final long currentInstitution, final boolean force) {
+    return new SingleShotTask() {
+      @Override
+      public void runTask() throws Exception {
+        Institution inst = institutionService.getInstitution(currentInstitution);
+        runAs.executeAsSystem(
+            inst,
+            new Runnable() {
+              @Override
+              public void run() {
+                itemService.operateAll(
+                    filterFactory.generateThumbnails(force),
+                    new FilterResultListener() {
+                      @Override
+                      public void total(int total) {
+                        setupStatus(TASK_PROGRESS_KEY, total);
+                      }
 
-	public static class GenerateThumbnailFilter extends BaseFilter
-	{
-		private final boolean forceUpdate;
+                      @Override
+                      public void succeeded(ItemKey itemId, ItemPack pack) {
+                        incrementWork();
+                      }
 
-		@Inject
-		private GenerateThumbnailOpFactory thumbOpFactory;
-		@Inject
-		private ItemOperationFactory workflowFactory;
+                      @Override
+                      public void failed(ItemKey itemId, Item item, ItemPack pack, Throwable e) {
+                        incrementWork();
+                      }
+                    });
+              }
+            });
+      }
 
-		@AssistedInject
-		protected GenerateThumbnailFilter(@Assisted boolean forceUpdate)
-		{
-			this.forceUpdate = forceUpdate;
-		}
+      @Override
+      protected String getTitleKey() {
+        return TASK_NAME_KEY;
+      }
+    };
+  }
 
-		@Override
-		protected WorkflowOperation[] createOperations()
-		{
-			return new WorkflowOperation[]{thumbOpFactory.generateThumbnail(forceUpdate),
-					workflowFactory.reindexOnly(false)};
-		}
+  @BindFactory
+  public interface ThumbnailFilterFactory {
+    GenerateThumbnailFilter generateThumbnails(boolean forceUpdate);
+  }
 
-		@Override
-		public String getWhereClause()
-		{
-			return "a.class = FileAttachment";
-		}
+  public static class GenerateThumbnailFilter extends BaseFilter {
+    private final boolean forceUpdate;
 
-		@Override
-		public String getJoinClause()
-		{
-			return "JOIN i.attachments a";
-		}
-	}
+    @Inject private GenerateThumbnailOpFactory thumbOpFactory;
+    @Inject private ItemOperationFactory workflowFactory;
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new GenerateThumbnailOpModel();
-	}
+    @AssistedInject
+    protected GenerateThumbnailFilter(@Assisted boolean forceUpdate) {
+      this.forceUpdate = forceUpdate;
+    }
 
-	@NonNullByDefault(false)
-	public class GenerateThumbnailOpModel extends ManualDataFixModel
-	{
-		@Override
-		public TaskStatus getTaskStatus()
-		{
-			if( checkedStatus )
-			{
-				return taskStatus;
-			}
+    @Override
+    protected WorkflowOperation[] createOperations() {
+      return new WorkflowOperation[] {
+        thumbOpFactory.generateThumbnail(forceUpdate), workflowFactory.reindexOnly(false)
+      };
+    }
 
-			String taskId = taskService.getRunningGlobalTask(TASK_ID + CurrentInstitution.get().getUniqueId());
-			taskService.askTaskChanges(Collections.singleton(taskId));
+    @Override
+    public String getWhereClause() {
+      return "a.class = FileAttachment";
+    }
 
-			if( taskId != null )
-			{
-				taskStatus = taskService.waitForTaskStatus(taskId, 2000);
-			}
-			else
-			{
-				taskStatus = null;
-			}
+    @Override
+    public String getJoinClause() {
+      return "JOIN i.attachments a";
+    }
+  }
 
-			checkedStatus = true;
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new GenerateThumbnailOpModel();
+  }
 
-			return taskStatus;
-		}
-	}
+  @NonNullByDefault(false)
+  public class GenerateThumbnailOpModel extends ManualDataFixModel {
+    @Override
+    public TaskStatus getTaskStatus() {
+      if (checkedStatus) {
+        return taskStatus;
+      }
 
-	public Button getExecute()
-	{
-		return execute;
-	}
+      String taskId =
+          taskService.getRunningGlobalTask(TASK_ID + CurrentInstitution.get().getUniqueId());
+      taskService.askTaskChanges(Collections.singleton(taskId));
 
-	public SingleSelectionList<VoidKeyOption> getForceUpdate()
-	{
-		return forceUpdate;
-	}
+      if (taskId != null) {
+        taskStatus = taskService.waitForTaskStatus(taskId, 2000);
+      } else {
+        taskStatus = null;
+      }
 
-	@Override
-	public String getAjaxId()
-	{
-		return "thumb_status";
-	}
+      checkedStatus = true;
 
-	@Override
-	public boolean isFinished(SectionInfo info)
-	{
-		TaskStatus taskStatus = getModel(info).getTaskStatus();
-		return taskStatus != null ? taskStatus.isFinished() : true;
-	}
+      return taskStatus;
+    }
+  }
+
+  public Button getExecute() {
+    return execute;
+  }
+
+  public SingleSelectionList<VoidKeyOption> getForceUpdate() {
+    return forceUpdate;
+  }
+
+  @Override
+  public String getAjaxId() {
+    return "thumb_status";
+  }
+
+  @Override
+  public boolean isFinished(SectionInfo info) {
+    TaskStatus taskStatus = getModel(info).getTaskStatus();
+    return taskStatus != null ? taskStatus.isFinished() : true;
+  }
 }

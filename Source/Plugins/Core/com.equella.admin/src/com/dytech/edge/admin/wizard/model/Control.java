@@ -16,11 +16,6 @@
 
 package com.dytech.edge.admin.wizard.model;
 
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.dytech.edge.admin.wizard.editor.Editor;
 import com.tle.admin.controls.repository.ControlDefinition;
 import com.tle.admin.controls.repository.ControlRepository;
@@ -30,221 +25,182 @@ import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
 import com.tle.core.plugins.AbstractPluginService;
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-/**
- * @author Nicholas Read
- */
+/** @author Nicholas Read */
 @SuppressWarnings("nls")
-public abstract class Control
-{
-	private final ControlDefinition definition;
-	private ControlRepository controlRepository;
-	private Object wrappedObject;
-	private Control parent;
-	private String errorMessage;
-	private final List<Control> children = new ArrayList<Control>();
-	private Component editor;
+public abstract class Control {
+  private final ControlDefinition definition;
+  private ControlRepository controlRepository;
+  private Object wrappedObject;
+  private Control parent;
+  private String errorMessage;
+  private final List<Control> children = new ArrayList<Control>();
+  private Component editor;
 
-	private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
+  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
 
-	protected String getString(String key)
-	{
-		return CurrentLocale.get(getKey(key));
-	}
+  protected String getString(String key) {
+    return CurrentLocale.get(getKey(key));
+  }
 
-	protected String getKey(String key)
-	{
-		return KEY_PFX+key;
-	}
-	/**
-	 * Constructs a new Control.
-	 */
-	public Control(ControlDefinition definition)
-	{
-		this.definition = definition;
-	}
+  protected String getKey(String key) {
+    return KEY_PFX + key;
+  }
+  /** Constructs a new Control. */
+  public Control(ControlDefinition definition) {
+    this.definition = definition;
+  }
 
-	public Control(ControlDefinition definition, Editor editor)
-	{
-		this.definition = definition;
-		this.editor = editor;
-	}
+  public Control(ControlDefinition definition, Editor editor) {
+    this.definition = definition;
+    this.editor = editor;
+  }
 
-	public List<Control> getChildren()
-	{
-		return children;
-	}
+  public List<Control> getChildren() {
+    return children;
+  }
 
-	public ControlDefinition getDefinition()
-	{
-		return definition;
-	}
+  public ControlDefinition getDefinition() {
+    return definition;
+  }
 
-	public Control getParent()
-	{
-		return parent;
-	}
+  public Control getParent() {
+    return parent;
+  }
 
-	public void setParent(Control parent)
-	{
-		this.parent = parent;
-	}
+  public void setParent(Control parent) {
+    this.parent = parent;
+  }
 
-	public Object getWrappedObject()
-	{
-		return wrappedObject;
-	}
+  public Object getWrappedObject() {
+    return wrappedObject;
+  }
 
-	public void setWrappedObject(Object wrappedObject)
-	{
-		this.wrappedObject = wrappedObject;
-	}
+  public void setWrappedObject(Object wrappedObject) {
+    this.wrappedObject = wrappedObject;
+  }
 
-	public Control getNextSibling()
-	{
-		Control sibling = null;
-		if( parent != null )
-		{
-			int index = parent.getChildren().indexOf(this);
-			int lastIndex = parent.getChildren().size() - 1;
+  public Control getNextSibling() {
+    Control sibling = null;
+    if (parent != null) {
+      int index = parent.getChildren().indexOf(this);
+      int lastIndex = parent.getChildren().size() - 1;
 
-			if( index < lastIndex )
-			{
-				sibling = parent.getChildren().get(index + 1);
-			}
-		}
-		return sibling;
-	}
+      if (index < lastIndex) {
+        sibling = parent.getChildren().get(index + 1);
+      }
+    }
+    return sibling;
+  }
 
-	public Control getPreviousSibling()
-	{
-		Control sibling = null;
-		if( parent != null )
-		{
-			int index = parent.getChildren().indexOf(this);
-			if( index > 0 )
-			{
-				sibling = parent.getChildren().get(index - 1);
-			}
-		}
-		return sibling;
-	}
+  public Control getPreviousSibling() {
+    Control sibling = null;
+    if (parent != null) {
+      int index = parent.getChildren().indexOf(this);
+      if (index > 0) {
+        sibling = parent.getChildren().get(index - 1);
+      }
+    }
+    return sibling;
+  }
 
-	public String doValidation(ClientService clientService)
-	{
-		return null;
-	}
+  public String doValidation(ClientService clientService) {
+    return null;
+  }
 
-	public String getErrorMessage()
-	{
-		return errorMessage;
-	}
+  public String getErrorMessage() {
+    return errorMessage;
+  }
 
-	public void setErrorMessage(String errorMessage)
-	{
-		this.errorMessage = errorMessage;
-	}
+  public void setErrorMessage(String errorMessage) {
+    this.errorMessage = errorMessage;
+  }
 
-	public String getTargetBase()
-	{
-		if( parent != null )
-		{
-			return parent.getTargetBase();
-		}
-		return "";
-	}
+  public String getTargetBase() {
+    if (parent != null) {
+      return parent.getTargetBase();
+    }
+    return "";
+  }
 
-	public abstract String getControlClass();
+  public abstract String getControlClass();
 
-	public abstract List<? extends Object> getChildObjects();
+  public abstract List<? extends Object> getChildObjects();
 
-	public abstract String getScript();
+  public abstract String getScript();
 
-	public abstract void setScript(String script);
+  public abstract void setScript(String script);
 
-	public abstract LanguageBundle getTitle();
+  public abstract LanguageBundle getTitle();
 
-	public void setTitle(LanguageBundle title)
-	{
-		// do nothing
-	}
+  public void setTitle(LanguageBundle title) {
+    // do nothing
+  }
 
-	public abstract boolean isPowerSearchInclude();
+  public abstract boolean isPowerSearchInclude();
 
-	public boolean allowsChildren()
-	{
-		return false;
-	}
+  public boolean allowsChildren() {
+    return false;
+  }
 
-	public boolean isScripted()
-	{
-		return !Check.isEmpty(getScript());
-	}
+  public boolean isScripted() {
+    return !Check.isEmpty(getScript());
+  }
 
-	public abstract void setCustomName(String string);
+  public abstract void setCustomName(String string);
 
-	public List<String> getTargets()
-	{
-		return Collections.emptyList();
-	}
+  public List<String> getTargets() {
+    return Collections.emptyList();
+  }
 
-	public abstract void setPowerSearchInclude(boolean b);
+  public abstract void setPowerSearchInclude(boolean b);
 
-	public abstract String getCustomName();
+  public abstract String getCustomName();
 
-	public abstract boolean isRemoveable();
+  public abstract boolean isRemoveable();
 
-	public abstract boolean isScriptable();
+  public abstract boolean isScriptable();
 
-	@Override
-	public String toString()
-	{
-		String customName = getCustomName();
-		if( customName != null && customName.length() > 0 )
-		{
-			return customName;
-		}
+  @Override
+  public String toString() {
+    String customName = getCustomName();
+    if (customName != null && customName.length() > 0) {
+      return customName;
+    }
 
-		String t = LangUtils.getString(getTitle(), CurrentLocale.getLocale(), null);
-		if( !Check.isEmpty(t) )
-		{
-			return t;
-		}
+    String t = LangUtils.getString(getTitle(), CurrentLocale.getLocale(), null);
+    if (!Check.isEmpty(t)) {
+      return t;
+    } else if (definition != null) {
+      return definition.getName();
+    } else {
+      return super.toString();
+    }
+  }
 
-		else if( definition != null )
-		{
-			return definition.getName();
-		}
-		else
-		{
-			return super.toString();
-		}
-	}
+  public abstract Object save();
 
-	public abstract Object save();
+  public List<String> getContexts() {
+    return Collections.emptyList();
+  }
 
-	public List<String> getContexts()
-	{
-		return Collections.emptyList();
-	}
+  public ControlRepository getControlRepository() {
+    return controlRepository;
+  }
 
-	public ControlRepository getControlRepository()
-	{
-		return controlRepository;
-	}
+  public void setControlRepository(ControlRepository controlRepository) {
+    this.controlRepository = controlRepository;
+  }
 
-	public void setControlRepository(ControlRepository controlRepository)
-	{
-		this.controlRepository = controlRepository;
-	}
+  public synchronized Component getEditor() {
+    return editor;
+  }
 
-	public synchronized Component getEditor()
-	{
-		return editor;
-	}
-
-	public synchronized void setEditor(Component editor)
-	{
-		this.editor = editor;
-	}
+  public synchronized void setEditor(Component editor) {
+    this.editor = editor;
+  }
 }

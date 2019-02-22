@@ -17,128 +17,109 @@
 package com.tle.common.accesscontrolbuilder;
 
 import static com.tle.common.security.SecurityConstants.LOGGED_IN_USER_ROLE_ID;
-import static com.tle.common.security.SecurityConstants.getRecipient;
 import static com.tle.common.security.SecurityConstants.Recipient.EVERYONE;
 import static com.tle.common.security.SecurityConstants.Recipient.OWNER;
 import static com.tle.common.security.SecurityConstants.Recipient.ROLE;
-
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.JComponent;
+import static com.tle.common.security.SecurityConstants.getRecipient;
 
 import com.tle.common.security.PrivilegeTree;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.core.remoting.RemoteUserService;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import javax.swing.JComponent;
 
-/**
- * @author Nicholas Read
- */
-public class BasicEditor implements PrivilegeListEditor
-{
-	private final RemoteUserService userService;
+/** @author Nicholas Read */
+public class BasicEditor implements PrivilegeListEditor {
+  private final RemoteUserService userService;
 
-	public BasicEditor(RemoteUserService userService)
-	{
-		this.userService = userService;
-	}
+  public BasicEditor(RemoteUserService userService) {
+    this.userService = userService;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.tle.admin.security.editors.PrivilegeListEditor#canHandle(com.tle.
-	 * common.security.PrivilegeTree.Node,
-	 * com.tle.admin.security.editors.PrivilegeList)
-	 */
-	@Override
-	public boolean canHandle(Node privNode, PrivilegeList list)
-	{
-		return getModeForPrivilegeList(privNode, list) != null;
-	}
+  /*
+   * (non-Javadoc)
+   * @see
+   * com.tle.admin.security.editors.PrivilegeListEditor#canHandle(com.tle.
+   * common.security.PrivilegeTree.Node,
+   * com.tle.admin.security.editors.PrivilegeList)
+   */
+  @Override
+  public boolean canHandle(Node privNode, PrivilegeList list) {
+    return getModeForPrivilegeList(privNode, list) != null;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.tle.admin.security.editors.PrivilegeListEditor#createView(java.lang
-	 * .Object, com.tle.common.security.PrivilegeTree.Node,
-	 * com.tle.admin.security.editors.PrivilegeList)
-	 */
-	@Override
-	public JComponent createView(Object domainObj, Node privNode, PrivilegeList list)
-	{
-		return new BasicEditorPanel(this, userService, privNode, list);
-	}
+  /*
+   * (non-Javadoc)
+   * @see
+   * com.tle.admin.security.editors.PrivilegeListEditor#createView(java.lang
+   * .Object, com.tle.common.security.PrivilegeTree.Node,
+   * com.tle.admin.security.editors.PrivilegeList)
+   */
+  @Override
+  public JComponent createView(Object domainObj, Node privNode, PrivilegeList list) {
+    return new BasicEditorPanel(this, userService, privNode, list);
+  }
 
-	public Mode getModeForPrivilegeList(Node privNode, PrivilegeList list)
-	{
-		List<PrivilegeListEntry> entries = list.getEntries();
-		if( entries == null )
-		{
-			entries = Collections.emptyList();
-		}
+  public Mode getModeForPrivilegeList(Node privNode, PrivilegeList list) {
+    List<PrivilegeListEntry> entries = list.getEntries();
+    if (entries == null) {
+      entries = Collections.emptyList();
+    }
 
-		// Make sure none of the privileges are overrides...
-		for( PrivilegeListEntry entry : entries )
-		{
-			if( entry.isOverride() )
-			{
-				return null;
-			}
-		}
+    // Make sure none of the privileges are overrides...
+    for (PrivilegeListEntry entry : entries) {
+      if (entry.isOverride()) {
+        return null;
+      }
+    }
 
-		if( entries.size() == 1 )
-		{
-			PrivilegeListEntry entry = entries.get(0);
-			if( entry.isGranted() )
-			{
-				String who = entry.getWho();
+    if (entries.size() == 1) {
+      PrivilegeListEntry entry = entries.get(0);
+      if (entry.isGranted()) {
+        String who = entry.getWho();
 
-				// Check if this should be the "everyone" option
-				if( who.equals(getRecipient(EVERYONE)) )
-				{
-					return Mode.EVERYONE;
-				}
+        // Check if this should be the "everyone" option
+        if (who.equals(getRecipient(EVERYONE))) {
+          return Mode.EVERYONE;
+        }
 
-				// Check if this should be the "everyone but guest" option
-				if( who.equals(getRecipient(ROLE, LOGGED_IN_USER_ROLE_ID)) )
-				{
-					return Mode.EVERYONE_BUT_GUESTS;
-				}
+        // Check if this should be the "everyone but guest" option
+        if (who.equals(getRecipient(ROLE, LOGGED_IN_USER_ROLE_ID))) {
+          return Mode.EVERYONE_BUT_GUESTS;
+        }
 
-				// Check if this is just for the owner - no override/default
-				// priorities allowed
-				boolean overrideDefault = PrivilegeTree.isOverrideDefault(privNode, list.getPrivilege());
-				if( who.equals(getRecipient(OWNER)) && !overrideDefault )
-				{
-					return Mode.JUST_THE_OWNER;
-				}
-			}
-		}
+        // Check if this is just for the owner - no override/default
+        // priorities allowed
+        boolean overrideDefault = PrivilegeTree.isOverrideDefault(privNode, list.getPrivilege());
+        if (who.equals(getRecipient(OWNER)) && !overrideDefault) {
+          return Mode.JUST_THE_OWNER;
+        }
+      }
+    }
 
-		if( entries.size() >= 1 )
-		{
-			for( Iterator<PrivilegeListEntry> iter = entries.iterator(); iter.hasNext(); )
-			{
-				PrivilegeListEntry entry = iter.next();
-				if( iter.hasNext() ^ entry.isGranted() )
-				{
-					return null;
-				}
+    if (entries.size() >= 1) {
+      for (Iterator<PrivilegeListEntry> iter = entries.iterator(); iter.hasNext(); ) {
+        PrivilegeListEntry entry = iter.next();
+        if (iter.hasNext() ^ entry.isGranted()) {
+          return null;
+        }
 
-				if( !entries.get(entries.size() - 1).getWho().equals(getRecipient(EVERYONE)) )
-				{
-					return null;
-				}
-			}
-			return Mode.LIMITED_SET;
-		}
+        if (!entries.get(entries.size() - 1).getWho().equals(getRecipient(EVERYONE))) {
+          return null;
+        }
+      }
+      return Mode.LIMITED_SET;
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	public enum Mode
-	{
-		JUST_THE_OWNER, EVERYONE, EVERYONE_BUT_GUESTS, LIMITED_SET;
-	}
+  public enum Mode {
+    JUST_THE_OWNER,
+    EVERYONE,
+    EVERYONE_BUT_GUESTS,
+    LIMITED_SET;
+  }
 }

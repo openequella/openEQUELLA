@@ -16,14 +16,11 @@
 
 package com.tle.web.sections.standard.model;
 
+import com.tle.web.sections.SectionInfo;
 import java.util.List;
 
-import com.tle.web.sections.SectionInfo;
+public interface TabModel {
+  List<TabContent> getVisibleTabs(SectionInfo info);
 
-public interface TabModel
-{
-	List<TabContent> getVisibleTabs(SectionInfo info);
-
-	int getIndexForTab(SectionInfo info, String tabId);
-
+  int getIndexForTab(SectionInfo info, String tabId);
 }

@@ -16,8 +16,6 @@
 
 package com.tle.admin.harvester.standard;
 
-import javax.swing.JComboBox;
-
 import com.tle.admin.Driver;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.common.JNameValuePanel;
@@ -27,81 +25,69 @@ import com.tle.common.harvester.HarvesterProfile;
 import com.tle.common.harvester.HarvesterProfileSettings;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.plugins.AbstractPluginService;
+import javax.swing.JComboBox;
 
-public abstract class HarvesterPlugin<T extends HarvesterProfileSettings>
-{
-	private final Class<T> settingsClass;
-	protected JNameValuePanel panel;
-	protected Driver driver;
+public abstract class HarvesterPlugin<T extends HarvesterProfileSettings> {
+  private final Class<T> settingsClass;
+  protected JNameValuePanel panel;
+  protected Driver driver;
 
-	private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
+  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
 
-	protected String getKey(String key)
-	{
-		return KEY_PFX+key;
-	}
+  protected String getKey(String key) {
+    return KEY_PFX + key;
+  }
 
-	protected String getString(String key)
-	{
-		return CurrentLocale.get(getKey(key));
-	}
+  protected String getString(String key) {
+    return CurrentLocale.get(getKey(key));
+  }
 
-	public HarvesterPlugin(Class<T> settingsClass)
-	{
-		this.settingsClass = settingsClass;
-	}
+  public HarvesterPlugin(Class<T> settingsClass) {
+    this.settingsClass = settingsClass;
+  }
 
-	public void setPanel(JNameValuePanel panel)
-	{
-		this.panel = panel;
-	}
+  public void setPanel(JNameValuePanel panel) {
+    this.panel = panel;
+  }
 
-	public void setDriver(Driver driver)
-	{
-		this.driver = driver;
-	}
+  public void setDriver(Driver driver) {
+    this.driver = driver;
+  }
 
-	public Driver getDriver()
-	{
-		return driver;
-	}
+  public Driver getDriver() {
+    return driver;
+  }
 
-	public T newInstance()
-	{
-		T settings;
-		try
-		{
-			settings = settingsClass.newInstance();
-		}
-		catch( Exception e )
-		{
-			throw new RuntimeException(e);
-		}
-		return settings;
-	}
+  public T newInstance() {
+    T settings;
+    try {
+      settings = settingsClass.newInstance();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    return settings;
+  }
 
-	@SuppressWarnings("unchecked")
-	public void loadSettings(EntityPack<HarvesterProfile> gateway, HarvesterProfileSettings settings)
-	{
-		load((T) settings);
-	}
+  @SuppressWarnings("unchecked")
+  public void loadSettings(
+      EntityPack<HarvesterProfile> gateway, HarvesterProfileSettings settings) {
+    load((T) settings);
+  }
 
-	@SuppressWarnings("unchecked")
-	public void saveSettings(HarvesterProfileSettings settings)
-	{
-		save((T) settings);
-	}
+  @SuppressWarnings("unchecked")
+  public void saveSettings(HarvesterProfileSettings settings) {
+    save((T) settings);
+  }
 
-	public abstract void initGUI();
+  public abstract void initGUI();
 
-	public void validation() throws EditorException
-	{
-		// Do nothing
-	}
+  public void validation() throws EditorException {
+    // Do nothing
+  }
 
-	public abstract void load(T settings);
+  public abstract void load(T settings);
 
-	public abstract void save(T settings);
+  public abstract void save(T settings);
 
-	public abstract void validateSchema(JComboBox<NameValue> collections) throws EditorException;
+  public abstract void validateSchema(JComboBox<NameValue> collections) throws EditorException;
 }

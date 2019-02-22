@@ -16,22 +16,14 @@
 
 package com.tle.web.sections.standard.model;
 
-import java.util.Collection;
+public class HtmlFileDropState extends HtmlFileUploadState {
+  private int maxFiles;
 
-import com.tle.web.sections.js.JSAssignable;
-import com.tle.web.sections.js.JSCallable;
+  public void setMaxFiles(int maxFiles) {
+    this.maxFiles = maxFiles;
+  }
 
-public class HtmlFileDropState extends HtmlFileUploadState
-{
-	private int maxFiles;
-
-	public void setMaxFiles(int maxFiles)
-	{
-		this.maxFiles = maxFiles;
-	}
-
-	public int getMaxFiles()
-	{
-		return maxFiles;
-	}
+  public int getMaxFiles() {
+    return maxFiles;
+  }
 }

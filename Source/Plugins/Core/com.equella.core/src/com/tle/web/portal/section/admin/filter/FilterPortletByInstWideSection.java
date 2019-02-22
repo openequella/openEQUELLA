@@ -38,72 +38,61 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.SimpleHtmlListModel;
 
 public class FilterPortletByInstWideSection extends AbstractPrototypeSection<Object>
-	implements
-		SearchEventListener<PortletSearchEvent>,
-		HtmlRenderer,
-		ResetFiltersListener
-{
-	@ViewFactory
-	protected FreemarkerFactory viewFactory;
+    implements SearchEventListener<PortletSearchEvent>, HtmlRenderer, ResetFiltersListener {
+  @ViewFactory protected FreemarkerFactory viewFactory;
 
-	@Component(name = "iw", parameter = "iw", supported = true)
-	private SingleSelectionList<Boolean> instWide;
+  @Component(name = "iw", parameter = "iw", supported = true)
+  private SingleSelectionList<Boolean> instWide;
 
-	@PlugKey("filter.byinstwide.all")
-	private static String ALL_PORTLETS;
-	@PlugKey("filter.byinstwide.inst")
-	private static String INST_PORTLETS;
-	@PlugKey("filter.byinstwide.user")
-	private static String USER_PORTLETS;
+  @PlugKey("filter.byinstwide.all")
+  private static String ALL_PORTLETS;
 
-	@TreeLookup
-	private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
-	private JSHandler changeHandler;
+  @PlugKey("filter.byinstwide.inst")
+  private static String INST_PORTLETS;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		SimpleHtmlListModel<Boolean> model = new SimpleHtmlListModel<Boolean>();
-		model.add(new KeyOption<Boolean>(ALL_PORTLETS, "all", null)); //$NON-NLS-1$
-		model.add(new KeyOption<Boolean>(INST_PORTLETS, "inst", true)); //$NON-NLS-1$
-		model.add(new KeyOption<Boolean>(USER_PORTLETS, "user", false)); //$NON-NLS-1$
-		instWide.setListModel(model);
-		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
-	}
+  @PlugKey("filter.byinstwide.user")
+  private static String USER_PORTLETS;
 
-	@SuppressWarnings("nls")
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		return viewFactory.createResult("admin/filter/filterbyinstwide.ftl", context);
-	}
+  @TreeLookup private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
+  private JSHandler changeHandler;
 
-	@Override
-	public void prepareSearch(SectionInfo info, PortletSearchEvent event) throws Exception
-	{
-		event.filterByOnlyInstWide(instWide.getSelectedValue(info));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    SimpleHtmlListModel<Boolean> model = new SimpleHtmlListModel<Boolean>();
+    model.add(new KeyOption<Boolean>(ALL_PORTLETS, "all", null)); // $NON-NLS-1$
+    model.add(new KeyOption<Boolean>(INST_PORTLETS, "inst", true)); // $NON-NLS-1$
+    model.add(new KeyOption<Boolean>(USER_PORTLETS, "user", false)); // $NON-NLS-1$
+    instWide.setListModel(model);
+    tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		if( changeHandler == null )
-		{
-			changeHandler = searchResults.getRestartSearchHandler(tree);
-		}
-		instWide.addEventStatements(JSHandler.EVENT_CHANGE, changeHandler);
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    return viewFactory.createResult("admin/filter/filterbyinstwide.ftl", context);
+  }
 
-	public SingleSelectionList<Boolean> getInstWide()
-	{
-		return instWide;
-	}
+  @Override
+  public void prepareSearch(SectionInfo info, PortletSearchEvent event) throws Exception {
+    event.filterByOnlyInstWide(instWide.getSelectedValue(info));
+  }
 
-	@Override
-	public void reset(SectionInfo info)
-	{
-		instWide.setSelectedStringValue(info, ALL_PORTLETS);
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    if (changeHandler == null) {
+      changeHandler = searchResults.getRestartSearchHandler(tree);
+    }
+    instWide.addEventStatements(JSHandler.EVENT_CHANGE, changeHandler);
+  }
+
+  public SingleSelectionList<Boolean> getInstWide() {
+    return instWide;
+  }
+
+  @Override
+  public void reset(SectionInfo info) {
+    instWide.setSelectedStringValue(info, ALL_PORTLETS);
+  }
 }

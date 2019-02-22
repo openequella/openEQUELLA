@@ -16,22 +16,21 @@
 
 package com.tle.core.activation.service;
 
-import java.util.List;
-
 import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.common.util.CsvReader;
 import com.tle.core.entity.EntityEditingBean;
 import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.remoting.RemoteCourseInfoService;
+import java.util.List;
 
-public interface CourseInfoService extends RemoteCourseInfoService, AbstractEntityService<EntityEditingBean, CourseInfo>
-{
-	String PRIV_CREATE_COURSE = "CREATE_COURSE_INFO";
-	String PRIV_EDIT_COURSE = "EDIT_COURSE_INFO";
+public interface CourseInfoService
+    extends RemoteCourseInfoService, AbstractEntityService<EntityEditingBean, CourseInfo> {
+  String PRIV_CREATE_COURSE = "CREATE_COURSE_INFO";
+  String PRIV_EDIT_COURSE = "EDIT_COURSE_INFO";
 
-	void edit(CourseInfo course);
+  void edit(CourseInfo course);
 
-	CourseInfo getByCode(String code);
+  CourseInfo getByCode(String code);
 
-	List<CourseInfo> bulkImport(CsvReader reader, boolean override);
+  List<CourseInfo> bulkImport(CsvReader reader, boolean override);
 }

@@ -22,31 +22,25 @@ import com.tle.web.sections.render.Label;
 /*
  * @author aholland
  */
-public class MimeTypesEditModel
-{
-	@Bookmarked
-	private long editId;
+public class MimeTypesEditModel {
+  @Bookmarked private long editId;
 
-	// Render time
-	private Label errorKey;
+  // Render time
+  private Label errorKey;
 
-	public Label getErrorLabel()
-	{
-		return errorKey;
-	}
+  public Label getErrorLabel() {
+    return errorKey;
+  }
 
-	public void setErrorLabel(Label errorKey)
-	{
-		this.errorKey = errorKey;
-	}
+  public void setErrorLabel(Label errorKey) {
+    this.errorKey = errorKey;
+  }
 
-	public long getEditId()
-	{
-		return editId;
-	}
+  public long getEditId() {
+    return editId;
+  }
 
-	public void setEditId(long editId)
-	{
-		this.editId = editId;
-	}
+  public void setEditId(long editId) {
+    this.editId = editId;
+  }
 }

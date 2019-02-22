@@ -25,21 +25,18 @@ import com.tle.web.portal.section.enduser.ShowPortletsSection;
 import com.tle.web.sections.equella.guice.SectionsModule;
 
 @SuppressWarnings("nls")
-public class PortalModule extends SectionsModule
-{
-	@Override
-	protected void configure()
-	{
-		bind(Object.class).annotatedWith(Names.named("portalTree")).toProvider(portalTree());
-	}
+public class PortalModule extends SectionsModule {
+  @Override
+  protected void configure() {
+    bind(Object.class).annotatedWith(Names.named("portalTree")).toProvider(portalTree());
+  }
 
-	private NodeProvider portalTree()
-	{
-		NodeProvider node = node(RootPortletSection.class);
-		node.innerChild(PortletContributionSection.class);
-		node.child(SelectNewPortletTypeSection.class);
-		node.child(RestoreInstitutionalPortletSection.class);
-		node.child(ShowPortletsSection.class);
-		return node;
-	}
+  private NodeProvider portalTree() {
+    NodeProvider node = node(RootPortletSection.class);
+    node.innerChild(PortletContributionSection.class);
+    node.child(SelectNewPortletTypeSection.class);
+    node.child(RestoreInstitutionalPortletSection.class);
+    node.child(ShowPortletsSection.class);
+    return node;
+  }
 }

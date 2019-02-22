@@ -16,8 +16,6 @@
 
 package com.tle.core.echo.migration;
 
-import javax.inject.Singleton;
-
 import com.tle.beans.Institution;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.LanguageBundle;
@@ -31,29 +29,34 @@ import com.tle.core.migration.AbstractCreateMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
+import javax.inject.Singleton;
 
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class CreateEchoEntities extends AbstractCreateMigration
-{
-	private static PluginResourceHelper r = ResourcesService.getResourceHelper(CreateEchoEntities.class);
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(r.key("migration.echo.info.create"));
-	}
+public class CreateEchoEntities extends AbstractCreateMigration {
+  private static PluginResourceHelper r =
+      ResourcesService.getResourceHelper(CreateEchoEntities.class);
 
-	@Override
-	protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper)
-	{
-		return new TablesOnlyFilter("echo_server");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(r.key("migration.echo.info.create"));
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class[]{EchoServer.class, BaseEntity.class, BaseEntity.Attribute.class, LanguageBundle.class,
-				Institution.class, LanguageString.class};
-	}
+  @Override
+  protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
+    return new TablesOnlyFilter("echo_server");
+  }
+
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class[] {
+      EchoServer.class,
+      BaseEntity.class,
+      BaseEntity.Attribute.class,
+      LanguageBundle.class,
+      Institution.class,
+      LanguageString.class
+    };
+  }
 }

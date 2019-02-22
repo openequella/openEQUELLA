@@ -1,237 +1,151 @@
-/*****************************************************************************
- * Java Plug-in Framework (JPF) Copyright (C) 2007 Dmitry Olshansky This library
- * is free software; you can redistribute it and/or modify it under the terms of
- * the GNU Lesser General Public License as published by the Free Software
- * Foundation; either version 2.1 of the License, or (at your option) any later
- * version. This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
- * for more details. You should have received a copy of the GNU Lesser General
- * Public License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *****************************************************************************/
+/**
+ * *************************************************************************** Java Plug-in
+ * Framework (JPF) Copyright (C) 2007 Dmitry Olshansky This library is free software; you can
+ * redistribute it and/or modify it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version. This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
+ * copy of the GNU Lesser General Public License along with this library; if not, write to the Free
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * ***************************************************************************
+ */
 package com.tle.jpfclasspath.parser;
 
-/**
- * Parameter definition type constants.
- */
-public enum ParameterType
-{
-	/**
-	 * Parameter definition type constant.
-	 */
-	STRING
-	{
-		/**
-		 * @see org.java.plugin.registry.ParameterType#toCode()
-		 */
-		@Override
-		public String toCode()
-		{
-			return "string"; //$NON-NLS-1$
-		}
-	},
+/** Parameter definition type constants. */
+public enum ParameterType {
+  /** Parameter definition type constant. */
+  STRING {
+    /** @see org.java.plugin.registry.ParameterType#toCode() */
+    @Override
+    public String toCode() {
+      return "string"; //$NON-NLS-1$
+    }
+  },
 
-	/**
-	 * Parameter definition type constant.
-	 */
-	BOOLEAN
-	{
-		/**
-		 * @see org.java.plugin.registry.ParameterType#toCode()
-		 */
-		@Override
-		public String toCode()
-		{
-			return "boolean"; //$NON-NLS-1$
-		}
-	},
+  /** Parameter definition type constant. */
+  BOOLEAN {
+    /** @see org.java.plugin.registry.ParameterType#toCode() */
+    @Override
+    public String toCode() {
+      return "boolean"; //$NON-NLS-1$
+    }
+  },
 
-	/**
-	 * Parameter definition type constant.
-	 */
-	NUMBER
-	{
-		/**
-		 * @see org.java.plugin.registry.ParameterType#toCode()
-		 */
-		@Override
-		public String toCode()
-		{
-			return "number"; //$NON-NLS-1$
-		}
-	},
+  /** Parameter definition type constant. */
+  NUMBER {
+    /** @see org.java.plugin.registry.ParameterType#toCode() */
+    @Override
+    public String toCode() {
+      return "number"; //$NON-NLS-1$
+    }
+  },
 
-	/**
-	 * Parameter definition type constant.
-	 */
-	DATE
-	{
-		/**
-		 * @see org.java.plugin.registry.ParameterType#toCode()
-		 */
-		@Override
-		public String toCode()
-		{
-			return "date"; //$NON-NLS-1$
-		}
-	},
+  /** Parameter definition type constant. */
+  DATE {
+    /** @see org.java.plugin.registry.ParameterType#toCode() */
+    @Override
+    public String toCode() {
+      return "date"; //$NON-NLS-1$
+    }
+  },
 
-	/**
-	 * Parameter definition type constant.
-	 */
-	TIME
-	{
-		/**
-		 * @see org.java.plugin.registry.ParameterType#toCode()
-		 */
-		@Override
-		public String toCode()
-		{
-			return "time"; //$NON-NLS-1$
-		}
-	},
+  /** Parameter definition type constant. */
+  TIME {
+    /** @see org.java.plugin.registry.ParameterType#toCode() */
+    @Override
+    public String toCode() {
+      return "time"; //$NON-NLS-1$
+    }
+  },
 
-	/**
-	 * Parameter definition type constant.
-	 */
-	DATE_TIME
-	{
-		/**
-		 * @see org.java.plugin.registry.ParameterType#toCode()
-		 */
-		@Override
-		public String toCode()
-		{
-			return "date-time"; //$NON-NLS-1$
-		}
-	},
+  /** Parameter definition type constant. */
+  DATE_TIME {
+    /** @see org.java.plugin.registry.ParameterType#toCode() */
+    @Override
+    public String toCode() {
+      return "date-time"; //$NON-NLS-1$
+    }
+  },
 
-	/**
-	 * Parameter definition type constant.
-	 */
-	NULL
-	{
-		/**
-		 * @see org.java.plugin.registry.ParameterType#toCode()
-		 */
-		@Override
-		public String toCode()
-		{
-			return "null"; //$NON-NLS-1$
-		}
-	},
+  /** Parameter definition type constant. */
+  NULL {
+    /** @see org.java.plugin.registry.ParameterType#toCode() */
+    @Override
+    public String toCode() {
+      return "null"; //$NON-NLS-1$
+    }
+  },
 
-	/**
-	 * Parameter definition type constant.
-	 */
-	ANY
-	{
-		/**
-		 * @see org.java.plugin.registry.ParameterType#toCode()
-		 */
-		@Override
-		public String toCode()
-		{
-			return "any"; //$NON-NLS-1$
-		}
-	},
+  /** Parameter definition type constant. */
+  ANY {
+    /** @see org.java.plugin.registry.ParameterType#toCode() */
+    @Override
+    public String toCode() {
+      return "any"; //$NON-NLS-1$
+    }
+  },
 
-	/**
-	 * Parameter definition type constant.
-	 */
-	PLUGIN_ID
-	{
-		/**
-		 * @see org.java.plugin.registry.ParameterType#toCode()
-		 */
-		@Override
-		public String toCode()
-		{
-			return "plugin-id"; //$NON-NLS-1$
-		}
-	},
+  /** Parameter definition type constant. */
+  PLUGIN_ID {
+    /** @see org.java.plugin.registry.ParameterType#toCode() */
+    @Override
+    public String toCode() {
+      return "plugin-id"; //$NON-NLS-1$
+    }
+  },
 
-	/**
-	 * Parameter definition type constant.
-	 */
-	EXTENSION_POINT_ID
-	{
-		/**
-		 * @see org.java.plugin.registry.ParameterType#toCode()
-		 */
-		@Override
-		public String toCode()
-		{
-			return "extension-point-id"; //$NON-NLS-1$
-		}
-	},
+  /** Parameter definition type constant. */
+  EXTENSION_POINT_ID {
+    /** @see org.java.plugin.registry.ParameterType#toCode() */
+    @Override
+    public String toCode() {
+      return "extension-point-id"; //$NON-NLS-1$
+    }
+  },
 
-	/**
-	 * Parameter definition type constant.
-	 */
-	EXTENSION_ID
-	{
-		/**
-		 * @see org.java.plugin.registry.ParameterType#toCode()
-		 */
-		@Override
-		public String toCode()
-		{
-			return "extension-id"; //$NON-NLS-1$
-		}
-	},
+  /** Parameter definition type constant. */
+  EXTENSION_ID {
+    /** @see org.java.plugin.registry.ParameterType#toCode() */
+    @Override
+    public String toCode() {
+      return "extension-id"; //$NON-NLS-1$
+    }
+  },
 
-	/**
-	 * Parameter definition type constant.
-	 */
-	FIXED
-	{
-		/**
-		 * @see org.java.plugin.registry.ParameterType#toCode()
-		 */
-		@Override
-		public String toCode()
-		{
-			return "fixed"; //$NON-NLS-1$
-		}
-	},
+  /** Parameter definition type constant. */
+  FIXED {
+    /** @see org.java.plugin.registry.ParameterType#toCode() */
+    @Override
+    public String toCode() {
+      return "fixed"; //$NON-NLS-1$
+    }
+  },
 
-	/**
-	 * Parameter definition type constant.
-	 */
-	RESOURCE
-	{
-		/**
-		 * @see org.java.plugin.registry.ParameterType#toCode()
-		 */
-		@Override
-		public String toCode()
-		{
-			return "resource"; //$NON-NLS-1$
-		}
-	};
+  /** Parameter definition type constant. */
+  RESOURCE {
+    /** @see org.java.plugin.registry.ParameterType#toCode() */
+    @Override
+    public String toCode() {
+      return "resource"; //$NON-NLS-1$
+    }
+  };
 
-	/**
-	 * @return constant code to be used in plug-in manifest
-	 */
-	public abstract String toCode();
+  /** @return constant code to be used in plug-in manifest */
+  public abstract String toCode();
 
-	/**
-	 * Converts plug-in manifest string code to parameter type constant value.
-	 * 
-	 * @param code code from plug-in manifest
-	 * @return parameter type constant value
-	 */
-	public static ParameterType fromCode(final String code)
-	{
-		for( ParameterType item : ParameterType.values() )
-		{
-			if( item.toCode().equals(code) )
-			{
-				return item;
-			}
-		}
-		throw new IllegalArgumentException("unknown parameter type code " + code); //$NON-NLS-1$
-	}
+  /**
+   * Converts plug-in manifest string code to parameter type constant value.
+   *
+   * @param code code from plug-in manifest
+   * @return parameter type constant value
+   */
+  public static ParameterType fromCode(final String code) {
+    for (ParameterType item : ParameterType.values()) {
+      if (item.toCode().equals(code)) {
+        return item;
+      }
+    }
+    throw new IllegalArgumentException("unknown parameter type code " + code); // $NON-NLS-1$
+  }
 }

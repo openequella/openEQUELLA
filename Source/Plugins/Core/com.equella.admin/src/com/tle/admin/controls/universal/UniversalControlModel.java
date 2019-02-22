@@ -16,11 +16,6 @@
 
 package com.tle.admin.controls.universal;
 
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.JOptionPane;
-
 import com.dytech.edge.admin.wizard.Validation;
 import com.dytech.edge.admin.wizard.model.CustomControlModel;
 import com.tle.admin.Driver;
@@ -31,83 +26,80 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.wizard.controls.universal.UniversalControl;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
+import java.util.List;
+import java.util.Set;
+import javax.swing.JOptionPane;
 
 @SuppressWarnings("nls")
-public class UniversalControlModel extends CustomControlModel<UniversalControl>
-{
-	private PluginTracker<UniversalPanelValidator> extensions;
+public class UniversalControlModel extends CustomControlModel<UniversalControl> {
+  private PluginTracker<UniversalPanelValidator> extensions;
 
-	public UniversalControlModel(ControlDefinition definition)
-	{
-		super(definition);
-	}
+  public UniversalControlModel(ControlDefinition definition) {
+    super(definition);
+  }
 
-	private PluginTracker<UniversalPanelValidator> getExtensions(PluginService pluginService)
-	{
-		if( extensions == null )
-		{
-			extensions = new PluginTracker<UniversalPanelValidator>(pluginService, "com.tle.admin.controls.universal",
-				"universalvalidator", "id").setBeanKey("class");
-		}
-		return extensions;
-	}
+  private PluginTracker<UniversalPanelValidator> getExtensions(PluginService pluginService) {
+    if (extensions == null) {
+      extensions =
+          new PluginTracker<UniversalPanelValidator>(
+                  pluginService, "com.tle.admin.controls.universal", "universalvalidator", "id")
+              .setBeanKey("class");
+    }
+    return extensions;
+  }
 
-	@Override
-	public String doValidation(ClientService clientService)
-	{
+  @Override
+  public String doValidation(ClientService clientService) {
 
-		String error = Validation.hasTitle(this);
-		if( error != null )
-		{
-			return error;
-		}
+    String error = Validation.hasTitle(this);
+    if (error != null) {
+      return error;
+    }
 
-		error = Validation.hasTarget(getControl());
-		if( error != null )
-		{
-			return error;
-		}
+    error = Validation.hasTarget(getControl());
+    if (error != null) {
+      return error;
+    }
 
-		UniversalControl control = getControl();
-		@SuppressWarnings("unchecked")
-		Set<String> types = (Set<String>) control.getAttributes().get("AttachmentTypes");
-		if( Check.isEmpty(types) )
-		{
-			String[] buttons = {s("notype.confirm.yes"), s("notype.confirm.no")};
+    UniversalControl control = getControl();
+    @SuppressWarnings("unchecked")
+    Set<String> types = (Set<String>) control.getAttributes().get("AttachmentTypes");
+    if (Check.isEmpty(types)) {
+      String[] buttons = {s("notype.confirm.yes"), s("notype.confirm.no")};
 
-			final int choice = JOptionPane.showOptionDialog(getEditor(), s("notype.confirm.message"),
-				s("notype.confirm.title"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttons,
-				buttons[0]);
+      final int choice =
+          JOptionPane.showOptionDialog(
+              getEditor(),
+              s("notype.confirm.message"),
+              s("notype.confirm.title"),
+              JOptionPane.YES_NO_OPTION,
+              JOptionPane.QUESTION_MESSAGE,
+              null,
+              buttons,
+              buttons[0]);
 
-			if( choice == JOptionPane.NO_OPTION )
-			{
-				return s("notype.confirm.no.message");
-			}
-			else if( choice == JOptionPane.YES_OPTION )
-			{
-				return null;
-			}
-		}
+      if (choice == JOptionPane.NO_OPTION) {
+        return s("notype.confirm.no.message");
+      } else if (choice == JOptionPane.YES_OPTION) {
+        return null;
+      }
+    }
 
-		List<UniversalPanelValidator> panels = getExtensions(Driver.instance().getPluginService()).getBeanList();
-		for( UniversalPanelValidator upv : panels )
-		{
-			if( types.contains(upv.getValidatorType()) )
-			{
-				String validatePanel = upv.doValidation(control, clientService);
-				if( !Check.isEmpty(validatePanel) )
-				{
-					return validatePanel;
-				}
-			}
-		}
+    List<UniversalPanelValidator> panels =
+        getExtensions(Driver.instance().getPluginService()).getBeanList();
+    for (UniversalPanelValidator upv : panels) {
+      if (types.contains(upv.getValidatorType())) {
+        String validatePanel = upv.doValidation(control, clientService);
+        if (!Check.isEmpty(validatePanel)) {
+          return validatePanel;
+        }
+      }
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	private String s(String postfix)
-	{
-		return CurrentLocale.get("com.tle.admin.controls.universal." + postfix);
-	}
-
+  private String s(String postfix) {
+    return CurrentLocale.get("com.tle.admin.controls.universal." + postfix);
+  }
 }

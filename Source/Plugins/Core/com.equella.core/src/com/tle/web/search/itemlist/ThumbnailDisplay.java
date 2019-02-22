@@ -16,12 +16,6 @@
 
 package com.tle.web.search.itemlist;
 
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.dytech.edge.common.Constants;
 import com.google.common.collect.Sets;
 import com.tle.beans.entity.itemdef.SearchDetails;
@@ -39,100 +33,86 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.renderers.ImageRenderer;
 import com.tle.web.viewurl.ViewableResource;
+import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class ThumbnailDisplay implements ItemlikeListEntryExtension<Item, ItemListEntry>
-{
-	@Inject
-	private ItemService itemService;
+public class ThumbnailDisplay implements ItemlikeListEntryExtension<Item, ItemListEntry> {
+  @Inject private ItemService itemService;
 
-	@Override
-	public ProcessEntryCallback<Item, ItemListEntry> processEntries(final RenderContext context,
-		List<ItemListEntry> entries, ListSettings<ItemListEntry> settings)
-	{
-		final List<Item> items = AbstractItemlikeListEntry.getItems(entries);
-		// FIXME: hack
-		final Set<String> refIds = Sets.newHashSet(itemService.getNavReferencedAttachmentUuids(items));
+  @Override
+  public ProcessEntryCallback<Item, ItemListEntry> processEntries(
+      final RenderContext context,
+      List<ItemListEntry> entries,
+      ListSettings<ItemListEntry> settings) {
+    final List<Item> items = AbstractItemlikeListEntry.getItems(entries);
+    // FIXME: hack
+    final Set<String> refIds = Sets.newHashSet(itemService.getNavReferencedAttachmentUuids(items));
 
-		return new ProcessEntryCallback<Item, ItemListEntry>()
-		{
-			@SuppressWarnings("nls")
-			@Override
-			public void processEntry(ItemListEntry entry)
-			{
-				final IItem<?> iitem = entry.getItem();
-				if( iitem != null )
-				{
-					final Item item = (Item) iitem;
-					final String thumb = item.getThumb();
-					if( thumb.contains("none") )
-					{
-						return;
-					}
+    return new ProcessEntryCallback<Item, ItemListEntry>() {
+      @SuppressWarnings("nls")
+      @Override
+      public void processEntry(ItemListEntry entry) {
+        final IItem<?> iitem = entry.getItem();
+        if (iitem != null) {
+          final Item item = (Item) iitem;
+          final String thumb = item.getThumb();
+          if (thumb.contains("none")) {
+            return;
+          }
 
-					final SearchDetails searchDetails = item.getItemDefinition().getSearchDetails();
-					if( searchDetails == null || !searchDetails.isDisableThumbnail() )
-					{
-						List<ViewableResource> viewableResources;
-						try
-						{
-							viewableResources = entry.getViewableResources();
-						}
-						catch( NotFoundException ex )
-						{
-							viewableResources = null;
-						}
+          final SearchDetails searchDetails = item.getItemDefinition().getSearchDetails();
+          if (searchDetails == null || !searchDetails.isDisableThumbnail()) {
+            List<ViewableResource> viewableResources;
+            try {
+              viewableResources = entry.getViewableResources();
+            } catch (NotFoundException ex) {
+              viewableResources = null;
+            }
 
-						if( viewableResources != null && viewableResources.size() > 0 )
-						{
-							for( ViewableResource viewableResource : viewableResources )
-							{
-								if( viewableResource.isCustomThumb()
-									&& (!item.getNavigationSettings().isManualNavigation()
-										|| refIds.contains(viewableResource.getAttachment().getUuid())) )
-								{
-									if( thumb.contains("default") || thumb.contains("initial") )
-									{
-										ImageRenderer image = viewableResource
-											.createStandardThumbnailRenderer(new TextLabel(Constants.BLANK));
-										if( image != null )
-										{
-											entry.addThumbnail(image);
-										}
-									}
-									else if( thumb.contains("custom") )
-									{
-										if( thumb.split(":").length == 2 )
-										{
-											String attchmentUuid = thumb.split(":")[1];
-											if( viewableResource.getAttachment().getUuid().equals(attchmentUuid) )
-											{
-												ImageRenderer image = viewableResource
-													.createStandardThumbnailRenderer(new TextLabel(Constants.BLANK));
-												entry.addThumbnail(image);
-												break;
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		};
-	}
+            if (viewableResources != null && viewableResources.size() > 0) {
+              for (ViewableResource viewableResource : viewableResources) {
+                if (viewableResource.isCustomThumb()
+                    && (!item.getNavigationSettings().isManualNavigation()
+                        || refIds.contains(viewableResource.getAttachment().getUuid()))) {
+                  if (thumb.contains("default") || thumb.contains("initial")) {
+                    ImageRenderer image =
+                        viewableResource.createStandardThumbnailRenderer(
+                            new TextLabel(Constants.BLANK));
+                    if (image != null) {
+                      entry.addThumbnail(image);
+                    }
+                  } else if (thumb.contains("custom")) {
+                    if (thumb.split(":").length == 2) {
+                      String attchmentUuid = thumb.split(":")[1];
+                      if (viewableResource.getAttachment().getUuid().equals(attchmentUuid)) {
+                        ImageRenderer image =
+                            viewableResource.createStandardThumbnailRenderer(
+                                new TextLabel(Constants.BLANK));
+                        entry.addThumbnail(image);
+                        break;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+  }
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		// Do nothing (not a section)
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    // Do nothing (not a section)
+  }
 
-	@Override
-	public String getItemExtensionType()
-	{
-		return null;
-	}
+  @Override
+  public String getItemExtensionType() {
+    return null;
+  }
 }

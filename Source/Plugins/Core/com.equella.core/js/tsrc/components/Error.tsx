@@ -1,31 +1,31 @@
-import { Typography } from '@material-ui/core';
-import Paper from '@material-ui/core/Paper';
-import { Theme, WithStyles, withStyles } from '@material-ui/core/styles';
-import * as React from 'react';
+import { Typography } from "@material-ui/core";
+import Paper from "@material-ui/core/Paper";
+import { Theme, WithStyles, withStyles } from "@material-ui/core/styles";
+import * as React from "react";
 
 const styles = (theme: Theme) => {
-    return {
-        error: {
-            padding: 3 * theme.spacing.unit,
-            backgroundColor: 'rgb(255, 220, 220)'
-        }
+  return {
+    error: {
+      padding: 3 * theme.spacing.unit,
+      backgroundColor: "rgb(255, 220, 220)"
     }
-}
+  };
+};
 
-interface ErrorProps {
-}
+interface ErrorProps {}
 
-type Props = ErrorProps & WithStyles<'error'>;
+type Props = ErrorProps & WithStyles<"error">;
 
 class Error extends React.Component<Props> {
-    render() {
-        return <Paper className={this.props.classes.error}>
-                <Typography color="error" align="center">
-                { this.props.children }
-                </Typography>
-            </Paper>
-        
-    }
+  render() {
+    return (
+      <Paper className={this.props.classes.error}>
+        <Typography color="error" align="center">
+          {this.props.children}
+        </Typography>
+      </Paper>
+    );
+  }
 }
 
 export default withStyles(styles)(Error);

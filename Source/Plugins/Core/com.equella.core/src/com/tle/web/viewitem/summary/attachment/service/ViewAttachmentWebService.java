@@ -16,8 +16,6 @@
 
 package com.tle.web.viewitem.summary.attachment.service;
 
-import java.util.List;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.ItemKey;
@@ -33,66 +31,75 @@ import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewitem.AttachmentViewFilter;
 import com.tle.web.viewitem.attachments.AttachmentView;
 import com.tle.web.viewurl.AttachmentDetail;
+import java.util.List;
 
 @NonNullByDefault
-public interface ViewAttachmentWebService
-{
-	List<AttachmentRowDisplay> createViewsForItem(SectionInfo info, ViewableItem viewableItem, ElementId baseElement,
-		boolean renderSelection, boolean details, boolean thumbnail, boolean filtered);
+public interface ViewAttachmentWebService {
+  List<AttachmentRowDisplay> createViewsForItem(
+      SectionInfo info,
+      ViewableItem viewableItem,
+      ElementId baseElement,
+      boolean renderSelection,
+      boolean details,
+      boolean thumbnail,
+      boolean filtered);
 
-	void filterAttachmentDisplays(SectionInfo info, List<AttachmentRowDisplay> attachmentDisplays);
+  void filterAttachmentDisplays(SectionInfo info, List<AttachmentRowDisplay> attachmentDisplays);
 
-	void filterAttachmentDisplays(SectionInfo info, List<AttachmentRowDisplay> attachmentDisplays,
-		@Nullable AttachmentViewFilter customFilter);
+  void filterAttachmentDisplays(
+      SectionInfo info,
+      List<AttachmentRowDisplay> attachmentDisplays,
+      @Nullable AttachmentViewFilter customFilter);
 
-	JSStatements createShowDetailsFunction(ItemKey itemId, String attachmentsJquerySelector);
+  JSStatements createShowDetailsFunction(ItemKey itemId, String attachmentsJquerySelector);
 
-	JSStatements setupSelectButtonsFunction(JSCallable selectAttachmentFunction, ItemKey itemId,
-		@Nullable String itemExtensionType, String attachmentsJquerySelector);
+  JSStatements setupSelectButtonsFunction(
+      JSCallable selectAttachmentFunction,
+      ItemKey itemId,
+      @Nullable String itemExtensionType,
+      String attachmentsJquerySelector);
 
-	TagRenderer makeShowDetailsLinkRenderer();
+  TagRenderer makeShowDetailsLinkRenderer();
 
-	TagRenderer makeRowRenderer(TagState state, int level, boolean folder);
+  TagRenderer makeRowRenderer(TagState state, int level, boolean folder);
 
-	SectionRenderable makeAttachmentDetailsRenderer(SectionInfo info, ElementId baseElement, String uuid, int index,
-		@Nullable SectionRenderable thumbnail, @Nullable List<AttachmentDetail> details,
-		@Nullable List<LinkTagRenderer> alternateViewerLinks);
+  SectionRenderable makeAttachmentDetailsRenderer(
+      SectionInfo info,
+      ElementId baseElement,
+      String uuid,
+      int index,
+      @Nullable SectionRenderable thumbnail,
+      @Nullable List<AttachmentDetail> details,
+      @Nullable List<LinkTagRenderer> alternateViewerLinks);
 
-	@NonNullByDefault(false)
-	public static class AttachmentRowDisplay
-	{
-		private TagRenderer row; // Actually a LI
-		private AttachmentView attachmentView;
-		private int level;
+  @NonNullByDefault(false)
+  public static class AttachmentRowDisplay {
+    private TagRenderer row; // Actually a LI
+    private AttachmentView attachmentView;
+    private int level;
 
-		public int getLevel()
-		{
-			return level;
-		}
+    public int getLevel() {
+      return level;
+    }
 
-		public void setLevel(int level)
-		{
-			this.level = level;
-		}
+    public void setLevel(int level) {
+      this.level = level;
+    }
 
-		public TagRenderer getRow()
-		{
-			return row;
-		}
+    public TagRenderer getRow() {
+      return row;
+    }
 
-		public void setRow(TagRenderer row)
-		{
-			this.row = row;
-		}
+    public void setRow(TagRenderer row) {
+      this.row = row;
+    }
 
-		public AttachmentView getAttachmentView()
-		{
-			return attachmentView;
-		}
+    public AttachmentView getAttachmentView() {
+      return attachmentView;
+    }
 
-		public void setAttachmentView(AttachmentView attachmentView)
-		{
-			this.attachmentView = attachmentView;
-		}
-	}
+    public void setAttachmentView(AttachmentView attachmentView) {
+      this.attachmentView = attachmentView;
+    }
+  }
 }

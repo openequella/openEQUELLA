@@ -18,43 +18,38 @@ package com.tle.beans.usermanagement.standard.wrapper;
 
 import com.tle.common.settings.annotation.Property;
 
-public class RemoteSupportSettings extends AbstractSystemUserWrapperSettings
-{
-	private static final long serialVersionUID = 1L;
+public class RemoteSupportSettings extends AbstractSystemUserWrapperSettings {
+  private static final long serialVersionUID = 1L;
 
-	public static final String DEFAULT_USERNAME = "TLE_SUPPORT"; //$NON-NLS-1$
+  public static final String DEFAULT_USERNAME = "TLE_SUPPORT"; // $NON-NLS-1$
 
-	@Property(key = "wrapper.remotesupport.enabled")
-	private boolean enabled;
-	@Property(key = "wrapper.remotesupport.username")
-	private String username;
+  @Property(key = "wrapper.remotesupport.enabled")
+  private boolean enabled;
 
-	public RemoteSupportSettings()
-	{
-		this.username = DEFAULT_USERNAME;
-	}
+  @Property(key = "wrapper.remotesupport.username")
+  private String username;
 
-	@Override
-	public boolean isEnabled()
-	{
-		return enabled;
-	}
+  public RemoteSupportSettings() {
+    this.username = DEFAULT_USERNAME;
+  }
 
-	@Override
-	public void setEnabled(boolean enabled)
-	{
-		this.enabled = enabled;
-	}
+  @Override
+  public boolean isEnabled() {
+    return enabled;
+  }
 
-	@Override
-	public String getUsername()
-	{
-		return username;
-	}
+  @Override
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
 
-	@Override
-	public void setUsername(String username)
-	{
-		this.username = username;
-	}
+  @Override
+  public String getUsername() {
+    return username;
+  }
+
+  @Override
+  public void setUsername(String username) {
+    this.username = username;
+  }
 }

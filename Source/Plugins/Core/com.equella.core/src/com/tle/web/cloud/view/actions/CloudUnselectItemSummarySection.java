@@ -23,20 +23,16 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewitem.summary.sidebar.actions.AbstractUnselectItemSummarySection;
 
-/**
- * @author Aaron
- */
-public class CloudUnselectItemSummarySection extends AbstractUnselectItemSummarySection<CloudItem, Object>
-{
-	@Override
-	protected ViewableItem<CloudItem> getViewableItem(SectionInfo info)
-	{
-		return CloudItemSectionInfo.getItemInfo(info).getViewableItem();
-	}
+/** @author Aaron */
+public class CloudUnselectItemSummarySection
+    extends AbstractUnselectItemSummarySection<CloudItem, Object> {
+  @Override
+  protected ViewableItem<CloudItem> getViewableItem(SectionInfo info) {
+    return CloudItemSectionInfo.getItemInfo(info).getViewableItem();
+  }
 
-	@Override
-	protected String getItemExtensionType()
-	{
-		return CloudConstants.ITEM_EXTENSION;
-	}
+  @Override
+  protected String getItemExtensionType() {
+    return CloudConstants.ITEM_EXTENSION;
+  }
 }

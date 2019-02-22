@@ -21,16 +21,13 @@ import com.dytech.edge.wizard.beans.control.EditBox;
 import com.tle.admin.controls.repository.ControlDefinition;
 import com.tle.common.applet.client.ClientService;
 
-public class EditBoxModel extends AbstractControlModel<EditBox>
-{
-	public EditBoxModel(ControlDefinition definition)
-	{
-		super(definition);
-	}
+public class EditBoxModel extends AbstractControlModel<EditBox> {
+  public EditBoxModel(ControlDefinition definition) {
+    super(definition);
+  }
 
-	@Override
-	public String doValidation(ClientService clientService)
-	{
-		return Validation.hasTarget(getControl());
-	}
+  @Override
+  public String doValidation(ClientService clientService) {
+    return Validation.hasTarget(getControl());
+  }
 }

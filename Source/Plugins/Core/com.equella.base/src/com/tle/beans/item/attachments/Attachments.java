@@ -22,32 +22,31 @@ import java.util.List;
 /*
  * @author aholland
  */
-public interface Attachments extends Iterable<IAttachment>
-{
-	/**
-	 * @param <T>
-	 * @param attachmentType
-	 * @return An UNMODIFIABLE list
-	 */
-	<T extends IAttachment> List<T> getList(AttachmentType attachmentType);
+public interface Attachments extends Iterable<IAttachment> {
+  /**
+   * @param <T>
+   * @param attachmentType
+   * @return An UNMODIFIABLE list
+   */
+  <T extends IAttachment> List<T> getList(AttachmentType attachmentType);
 
-	ImsAttachment getIms();
+  ImsAttachment getIms();
 
-	<T extends IAttachment> Iterator<T> getIterator(AttachmentType attachmentType);
+  <T extends IAttachment> Iterator<T> getIterator(AttachmentType attachmentType);
 
-	List<CustomAttachment> getCustomList(String type);
+  List<CustomAttachment> getCustomList(String type);
 
-	CustomAttachment getFirstCustomOfType(String type);
+  CustomAttachment getFirstCustomOfType(String type);
 
-	IAttachment getAttachmentByUuid(String uuid);
+  IAttachment getAttachmentByUuid(String uuid);
 
-	IAttachment getAttachmentByFilename(String filename);
+  IAttachment getAttachmentByFilename(String filename);
 
-	/**
-	 * Does a UUID comparison.
-	 * 
-	 * @param attachment
-	 * @return
-	 */
-	boolean contains(IAttachment attachment);
+  /**
+   * Does a UUID comparison.
+   *
+   * @param attachment
+   * @return
+   */
+  boolean contains(IAttachment attachment);
 }

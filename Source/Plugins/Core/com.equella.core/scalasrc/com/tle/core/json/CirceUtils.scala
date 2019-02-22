@@ -31,10 +31,15 @@ object CirceUtils {
       o
     }
 
-    JSUtils.convertExpression(j.fold(null, java.lang.Boolean.valueOf, _.toDouble,
-      identity, a => new ArrayExpression(a.map(jsonToExpression): _*), objExpression))
+    JSUtils.convertExpression(
+      j.fold(null,
+             java.lang.Boolean.valueOf,
+             _.toDouble,
+             identity,
+             a => new ArrayExpression(a.map(jsonToExpression): _*),
+             objExpression))
   }
 
-  def circeToExpression[A : Encoder](a: A): JSExpression = jsonToExpression(a.asJson)
+  def circeToExpression[A: Encoder](a: A): JSExpression = jsonToExpression(a.asJson)
 
 }

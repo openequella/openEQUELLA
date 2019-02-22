@@ -16,11 +16,6 @@
 
 package com.tle.web.scorm;
 
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.common.URLUtils;
@@ -36,61 +31,52 @@ import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.AttachmentResourceExtension;
 import com.tle.web.viewurl.resource.AbstractRealFileResource;
 import com.tle.web.viewurl.resource.SimpleUrlResource;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
 public class ScormChildResource
-	implements
-		AttachmentResourceExtension<CustomAttachment>,
-		RegisterMimeTypeExtension<Attachment>
-{
-	@Inject
-	private MimeTypeService mimeService;
-	@Inject
-	private FileSystemService fileSystemService;
-	@Inject
-	private ViewItemUrlFactory urlFactory;
+    implements AttachmentResourceExtension<CustomAttachment>,
+        RegisterMimeTypeExtension<Attachment> {
+  @Inject private MimeTypeService mimeService;
+  @Inject private FileSystemService fileSystemService;
+  @Inject private ViewItemUrlFactory urlFactory;
 
-	@Override
-	public ViewableResource process(SectionInfo info, ViewableResource resource, CustomAttachment attachment)
-	{
-		String filename = attachment.getUrl();
-		if( URLUtils.isAbsoluteUrl(filename) )
-		{
-			return new SimpleUrlResource(resource, filename, attachment.getDescription(), false);
-		}
+  @Override
+  public ViewableResource process(
+      SectionInfo info, ViewableResource resource, CustomAttachment attachment) {
+    String filename = attachment.getUrl();
+    if (URLUtils.isAbsoluteUrl(filename)) {
+      return new SimpleUrlResource(resource, filename, attachment.getDescription(), false);
+    }
 
-		ScormChildAttachmentResource attachmentResource = new ScormChildAttachmentResource(resource, filename,
-			mimeService.getMimeTypeForFilename(filename));
-		attachmentResource.setAttribute(ViewableResource.KEY_HIDDEN, true);
-		return attachmentResource;
-	}
+    ScormChildAttachmentResource attachmentResource =
+        new ScormChildAttachmentResource(
+            resource, filename, mimeService.getMimeTypeForFilename(filename));
+    attachmentResource.setAttribute(ViewableResource.KEY_HIDDEN, true);
+    return attachmentResource;
+  }
 
-	public class ScormChildAttachmentResource extends AbstractRealFileResource
-	{
-		public ScormChildAttachmentResource(ViewableResource inner, String filePath, String mimeType)
-		{
-			super(inner, filePath, mimeType, urlFactory, fileSystemService);
-		}
+  public class ScormChildAttachmentResource extends AbstractRealFileResource {
+    public ScormChildAttachmentResource(ViewableResource inner, String filePath, String mimeType) {
+      super(inner, filePath, mimeType, urlFactory, fileSystemService);
+    }
 
-		@Override
-		public List<AttachmentDetail> getCommonAttachmentDetails()
-		{
-			return null;
-		}
-	}
+    @Override
+    public List<AttachmentDetail> getCommonAttachmentDetails() {
+      return null;
+    }
+  }
 
-	@Override
-	public String getMimeType(Attachment attachment)
-	{
-		String filename = attachment.getUrl();
-		if( URLUtils.isAbsoluteUrl(filename) )
-		{
-			return MimeTypeConstants.MIME_LINK;
-		}
-		else
-		{
-			return mimeService.getMimeTypeForFilename(filename);
-		}
-	}
+  @Override
+  public String getMimeType(Attachment attachment) {
+    String filename = attachment.getUrl();
+    if (URLUtils.isAbsoluteUrl(filename)) {
+      return MimeTypeConstants.MIME_LINK;
+    } else {
+      return mimeService.getMimeTypeForFilename(filename);
+    }
+  }
 }

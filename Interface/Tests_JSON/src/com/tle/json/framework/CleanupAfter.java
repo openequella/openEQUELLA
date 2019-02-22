@@ -1,6 +1,5 @@
 package com.tle.json.framework;
 
-public interface CleanupAfter
-{
-	void cleanUp();
+public interface CleanupAfter {
+  void cleanUp();
 }

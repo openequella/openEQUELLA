@@ -25,7 +25,12 @@ import com.tle.core.hibernate.CurrentDataSource
 import com.tle.core.migration.{Migration, MigrationExt, MigrationInfo, MigrationResult}
 import io.doolse.simpledba.jdbc.JDBCIO
 
-abstract class SimpleMigration(val id: String, year: Int, month: Int, day: Int, strings: StringLookup) extends MigrationExt {
+abstract class SimpleMigration(val id: String,
+                               year: Int,
+                               month: Int,
+                               day: Int,
+                               strings: StringLookup)
+    extends MigrationExt {
 
   def migration(progress: MigrationResult, schema: DBSchemaMigration): JDBCIO[Unit]
 

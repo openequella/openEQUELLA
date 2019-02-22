@@ -20,15 +20,11 @@ import java.io.Serializable;
 import java.util.Map;
 
 // FIXME: not implemented
-/**
- * @author Aaron
- */
-public interface HtmlTagScriptType extends Serializable
-{
-	String getName();
+/** @author Aaron */
+public interface HtmlTagScriptType extends Serializable {
+  String getName();
 
-	HtmlTagScriptType setName();
+  HtmlTagScriptType setName();
 
-	Map<String, String> getAttributes();
-
+  Map<String, String> getAttributes();
 }

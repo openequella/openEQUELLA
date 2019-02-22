@@ -27,11 +27,18 @@ import com.tle.web.settings.{SettingsList, SettingsPage}
 @Bind
 class AdminConsoleExtensions extends StartupBean {
   @Inject
-  var adminService : RemoteAdminService = _
+  var adminService: RemoteAdminService = _
 
   override def startup(): Unit = {
-    SettingsList += SettingsPage(ResourcesService.getResourceHelper(getClass),
-      "adminconsole", "general", "admin.link.title", "admin.link.description",
-      "jnlp/admin.jnlp", "web", () => !adminService.getAllowedTools.isEmpty)
+    SettingsList += SettingsPage(
+      ResourcesService.getResourceHelper(getClass),
+      "adminconsole",
+      "general",
+      "admin.link.title",
+      "admin.link.description",
+      "jnlp/admin.jnlp",
+      "web",
+      () => !adminService.getAllowedTools.isEmpty
+    )
   }
 }

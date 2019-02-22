@@ -16,13 +16,6 @@
 
 package com.tle.core.hierarchy.convert;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.thoughtworks.xstream.XStream;
 import com.tle.beans.hierarchy.HierarchyTopic;
 import com.tle.beans.item.Item;
@@ -31,81 +24,70 @@ import com.tle.core.entity.convert.BaseEntityTreeNodeConverter;
 import com.tle.core.guice.Bind;
 import com.tle.core.hierarchy.HierarchyDao;
 import com.tle.core.institution.convert.ConverterParams;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class HierarchyConverter extends BaseEntityTreeNodeConverter<HierarchyTopic>
-{
-	@Inject
-	private HierarchyDao hierarchyDao;
+public class HierarchyConverter extends BaseEntityTreeNodeConverter<HierarchyTopic> {
+  @Inject private HierarchyDao hierarchyDao;
 
-	@SuppressWarnings("nls")
-	public HierarchyConverter()
-	{
-		super("hierarchy", "hierarchy.xml");
-	}
+  @SuppressWarnings("nls")
+  public HierarchyConverter() {
+    super("hierarchy", "hierarchy.xml");
+  }
 
-	@Override
-	public HierarchyDao getDao()
-	{
-		return hierarchyDao;
-	}
+  @Override
+  public HierarchyDao getDao() {
+    return hierarchyDao;
+  }
 
-	@Override
-	protected Map<Long, Long> getIdMap(ConverterParams params)
-	{
-		return params.getHierarchies();
-	}
+  @Override
+  protected Map<Long, Long> getIdMap(ConverterParams params) {
+    return params.getHierarchies();
+  }
 
-	@Override
-	public String getStringId()
-	{
-		return "HIERARCHY";
-	}
+  @Override
+  public String getStringId() {
+    return "HIERARCHY";
+  }
 
-	@Override
-	protected void preInsert(HierarchyTopic topic, ConverterParams params)
-	{
-		List<Item> keyResources = topic.getKeyResources();
-		if( keyResources != null )
-		{
-			Iterator<Item> keyIter = keyResources.iterator();
-			while( keyIter.hasNext() )
-			{
-				Item item = keyIter.next();
-				Long newId = params.getItems().get(item.getId());
-				if( newId != null )
-				{
-					item.setId(newId);
-				}
-				else
-				{
-					keyIter.remove();
-				}
-			}
-		}
-	}
+  @Override
+  protected void preInsert(HierarchyTopic topic, ConverterParams params) {
+    List<Item> keyResources = topic.getKeyResources();
+    if (keyResources != null) {
+      Iterator<Item> keyIter = keyResources.iterator();
+      while (keyIter.hasNext()) {
+        Item item = keyIter.next();
+        Long newId = params.getItems().get(item.getId());
+        if (newId != null) {
+          item.setId(newId);
+        } else {
+          keyIter.remove();
+        }
+      }
+    }
+  }
 
-	@Override
-	protected void preExport(HierarchyTopic topic, ConverterParams params)
-	{
-		if( params.hasFlag(ConverterParams.NO_ITEMS) )
-		{
-			topic.setKeyResources(null);
-		}
-	}
+  @Override
+  protected void preExport(HierarchyTopic topic, ConverterParams params) {
+    if (params.hasFlag(ConverterParams.NO_ITEMS)) {
+      topic.setKeyResources(null);
+    }
+  }
 
-	@Override
-	public Class<HierarchyTopic> getNodeClass()
-	{
-		return HierarchyTopic.class;
-	}
+  @Override
+  public Class<HierarchyTopic> getNodeClass() {
+    return HierarchyTopic.class;
+  }
 
-	@Override
-	protected XStream createXStream()
-	{
-		XStream x = super.createXStream();
-		x.registerConverter(new IdOnlyConverter(Item.class));
-		return x;
-	}
+  @Override
+  protected XStream createXStream() {
+    XStream x = super.createXStream();
+    x.registerConverter(new IdOnlyConverter(Item.class));
+    return x;
+  }
 }

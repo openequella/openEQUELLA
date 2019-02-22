@@ -16,11 +16,10 @@
 
 package com.tle.common.i18n;
 
-public interface BundleReference
-{
-	long getBundleId();
+public interface BundleReference {
+  long getBundleId();
 
-	String getValue();
+  String getValue();
 
-	long getIdValue();
+  long getIdValue();
 }

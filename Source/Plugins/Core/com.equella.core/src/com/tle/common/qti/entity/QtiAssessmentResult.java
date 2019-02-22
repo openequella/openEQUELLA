@@ -16,8 +16,8 @@
 
 package com.tle.common.qti.entity;
 
+import com.google.common.collect.Lists;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,134 +26,108 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.IndexColumn;
 
-import com.google.common.collect.Lists;
-
 /**
  * See assessmentResult
  * http://www.imsglobal.org/question/qtiv2p1/imsqti_resultv2p1.html#element10803
- * <p>
- * Additionally, since there is a one-to-one relationship between
- * assessmentResult and context, as well as testResult, I've rolled those fields
- * into the same object
- * </p>
- * <p>
- * See context http://www.imsglobal.org/question/qtiv2p1/imsqti_resultv2p1.html#
- * element10807
- * </p>
- * <p>
- * See testResult
- * http://www.imsglobal.org/question/qtiv2p1/imsqti_resultv2p1.html#element10814
- * </p>
- * 
+ *
+ * <p>Additionally, since there is a one-to-one relationship between assessmentResult and context,
+ * as well as testResult, I've rolled those fields into the same object
+ *
+ * <p>See context http://www.imsglobal.org/question/qtiv2p1/imsqti_resultv2p1.html# element10807
+ *
+ * <p>See testResult http://www.imsglobal.org/question/qtiv2p1/imsqti_resultv2p1.html#element10814
+ *
  * @author Aaron
  */
 @Entity
 @AccessType("field")
-public class QtiAssessmentResult extends QtiAbstractResult
-{
-	private static final long serialVersionUID = 1;
+public class QtiAssessmentResult extends QtiAbstractResult {
+  private static final long serialVersionUID = 1;
 
-	// No mention of what the max length of this is
-	@Index(name = "qtiAssessresultResIdx")
-	@Column(length = 1024, nullable = false)
-	private String resourceLinkId;
+  // No mention of what the max length of this is
+  @Index(name = "qtiAssessresultResIdx")
+  @Column(length = 1024, nullable = false)
+  private String resourceLinkId;
 
-	// --- context fields ---
-	// http://www.imsglobal.org/question/qtiv2p1/imsqti_resultv2p1.html#element10807
+  // --- context fields ---
+  // http://www.imsglobal.org/question/qtiv2p1/imsqti_resultv2p1.html#element10807
 
-	// Aka context.sourcedId
-	// Spec says this can be up to 2048, but Oracle bitches about 2000+.
-	// Let's be realistic about it
-	@Index(name = "qtiAssessresultUserIdx")
-	@Column(length = 255, nullable = false)
-	private String userId;
+  // Aka context.sourcedId
+  // Spec says this can be up to 2048, but Oracle bitches about 2000+.
+  // Let's be realistic about it
+  @Index(name = "qtiAssessresultUserIdx")
+  @Column(length = 255, nullable = false)
+  private String userId;
 
-	// tool_consumer_instance_guid
-	@Index(name = "qtiAssessresultLmsIdx")
-	@Column(length = 255)
-	private String lmsInstanceId;
+  // tool_consumer_instance_guid
+  @Index(name = "qtiAssessresultLmsIdx")
+  @Column(length = 255)
+  private String lmsInstanceId;
 
-	// private List<String> sessionIdentifiers;
+  // private List<String> sessionIdentifiers;
 
-	// --- testResult fields ---
-	@Index(name = "qtiAssessresultTestIdx")
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	private QtiAssessmentTest test;
+  // --- testResult fields ---
+  @Index(name = "qtiAssessresultTestIdx")
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  private QtiAssessmentTest test;
 
-	@IndexColumn(name = "resindex", nullable = false)
-	@JoinColumn(name = "assessment_result_id", nullable = false)
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<QtiItemResult> itemResults = Lists.newArrayList();
+  @IndexColumn(name = "resindex", nullable = false)
+  @JoinColumn(name = "assessment_result_id", nullable = false)
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<QtiItemResult> itemResults = Lists.newArrayList();
 
-	/**
-	 * XML representation of the TestSessionState as returned by
-	 * TestSessionStateXmlMarshaller
-	 */
-	@Lob
-	private String testSessionState;
+  /** XML representation of the TestSessionState as returned by TestSessionStateXmlMarshaller */
+  @Lob private String testSessionState;
 
-	public String getResourceLinkId()
-	{
-		return resourceLinkId;
-	}
+  public String getResourceLinkId() {
+    return resourceLinkId;
+  }
 
-	public void setResourceLinkId(String resourceLinkId)
-	{
-		this.resourceLinkId = resourceLinkId;
-	}
+  public void setResourceLinkId(String resourceLinkId) {
+    this.resourceLinkId = resourceLinkId;
+  }
 
-	public String getLmsInstanceId()
-	{
-		return lmsInstanceId;
-	}
+  public String getLmsInstanceId() {
+    return lmsInstanceId;
+  }
 
-	public void setLmsInstanceId(String lmsInstanceId)
-	{
-		this.lmsInstanceId = lmsInstanceId;
-	}
+  public void setLmsInstanceId(String lmsInstanceId) {
+    this.lmsInstanceId = lmsInstanceId;
+  }
 
-	public String getUserId()
-	{
-		return userId;
-	}
+  public String getUserId() {
+    return userId;
+  }
 
-	public void setUserId(String userId)
-	{
-		this.userId = userId;
-	}
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
 
-	public QtiAssessmentTest getTest()
-	{
-		return test;
-	}
+  public QtiAssessmentTest getTest() {
+    return test;
+  }
 
-	public void setTest(QtiAssessmentTest test)
-	{
-		this.test = test;
-	}
+  public void setTest(QtiAssessmentTest test) {
+    this.test = test;
+  }
 
-	public List<QtiItemResult> getItemResults()
-	{
-		return itemResults;
-	}
+  public List<QtiItemResult> getItemResults() {
+    return itemResults;
+  }
 
-	public void setItemResults(List<QtiItemResult> itemResults)
-	{
-		this.itemResults = itemResults;
-	}
+  public void setItemResults(List<QtiItemResult> itemResults) {
+    this.itemResults = itemResults;
+  }
 
-	public String getTestSessionState()
-	{
-		return testSessionState;
-	}
+  public String getTestSessionState() {
+    return testSessionState;
+  }
 
-	public void setTestSessionState(String testSessionState)
-	{
-		this.testSessionState = testSessionState;
-	}
+  public void setTestSessionState(String testSessionState) {
+    this.testSessionState = testSessionState;
+  }
 }

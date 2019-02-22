@@ -22,11 +22,12 @@ import com.tle.core.settings.security.AbstractSettingsPrivilegeTreeProvider;
 import com.tle.web.resources.ResourcesService;
 
 @Bind
-public class ThemePrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider
-{
-	public ThemePrivilegeTreeProvider()
-	{
-		super(Type.SYSTEM_SETTING, ResourcesService.getResourceHelper(ThemePrivilegeTreeProvider.class).key(
-			"securitytree.theme"), new SettingsTarget("theme"));
-	}
+public class ThemePrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider {
+  public ThemePrivilegeTreeProvider() {
+    super(
+        Type.SYSTEM_SETTING,
+        ResourcesService.getResourceHelper(ThemePrivilegeTreeProvider.class)
+            .key("securitytree.theme"),
+        new SettingsTarget("theme"));
+  }
 }

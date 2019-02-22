@@ -27,50 +27,39 @@ import com.tle.web.sections.render.HtmlRenderer;
 
 @Bind
 public class BulkRemoveWorkflowSection
-	extends
-		AbstractPrototypeSection<BulkRemoveWorkflowSection.BulkRemoveWorkflowModel>
-	implements HtmlRenderer
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+    extends AbstractPrototypeSection<BulkRemoveWorkflowSection.BulkRemoveWorkflowModel>
+    implements HtmlRenderer {
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		getModel(context).setShowExecuteButton(true);
-		return viewFactory.createResult("bulkremoveworkflow.ftl", context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    getModel(context).setShowExecuteButton(true);
+    return viewFactory.createResult("bulkremoveworkflow.ftl", context);
+  }
 
-	@Override
-	public Class<BulkRemoveWorkflowModel> getModelClass()
-	{
-		return BulkRemoveWorkflowModel.class;
-	}
+  @Override
+  public Class<BulkRemoveWorkflowModel> getModelClass() {
+    return BulkRemoveWorkflowModel.class;
+  }
 
-	public static class BulkRemoveWorkflowModel
-	{
-		private String title;
-		@Bookmarked
-		private boolean showExecuteButton;
+  public static class BulkRemoveWorkflowModel {
+    private String title;
+    @Bookmarked private boolean showExecuteButton;
 
-		public boolean isShowExecuteButton()
-		{
-			return showExecuteButton;
-		}
+    public boolean isShowExecuteButton() {
+      return showExecuteButton;
+    }
 
-		public void setShowExecuteButton(boolean showExecuteButton)
-		{
-			this.showExecuteButton = showExecuteButton;
-		}
+    public void setShowExecuteButton(boolean showExecuteButton) {
+      this.showExecuteButton = showExecuteButton;
+    }
 
-		public String getTitle()
-		{
-			return title;
-		}
+    public String getTitle() {
+      return title;
+    }
 
-		public void setTitle(String title)
-		{
-			this.title = title;
-		}
-	}
+    public void setTitle(String title) {
+      this.title = title;
+    }
+  }
 }

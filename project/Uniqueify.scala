@@ -11,7 +11,8 @@ object Uniqueify {
     rec(1)
   }
 
-  def uniqueSeq[A](mkUniqueAttempt: (Int, A) => A, contains: List[A] => A => Boolean)(list: Seq[A]): Seq[A] = {
+  def uniqueSeq[A](mkUniqueAttempt: (Int, A) => A, contains: List[A] => A => Boolean)(
+      list: Seq[A]): Seq[A] = {
     val uniqf = uniqueify(mkUniqueAttempt) _
     list.foldRight(List.empty[A])((a, already) => uniqf(contains(already), a) :: already)
   }

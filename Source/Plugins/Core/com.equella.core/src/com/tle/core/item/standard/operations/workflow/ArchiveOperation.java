@@ -26,12 +26,10 @@ import com.tle.core.security.impl.SecureOnCall;
 @SecureOnCall(priv = SecurityConstants.ARCHIVE_ITEM)
 @SecureNotInModeration
 @SecureItemStatus(ItemStatus.LIVE)
-public class ArchiveOperation extends AbstractStandardWorkflowOperation
-{
-	@Override
-	public boolean execute()
-	{
-		setState(ItemStatus.ARCHIVED);
-		return true;
-	}
+public class ArchiveOperation extends AbstractStandardWorkflowOperation {
+  @Override
+  public boolean execute() {
+    setState(ItemStatus.ARCHIVED);
+    return true;
+  }
 }

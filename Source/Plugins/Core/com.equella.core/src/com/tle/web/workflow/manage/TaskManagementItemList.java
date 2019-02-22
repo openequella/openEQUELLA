@@ -16,12 +16,6 @@
 
 package com.tle.web.workflow.manage;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
-
 import com.google.inject.Provider;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
@@ -55,186 +49,174 @@ import com.tle.web.viewurl.ViewItemUrlFactory;
 import com.tle.web.workflow.manage.TaskManagementItemList.TaskManagementListEntry;
 import com.tle.web.workflow.tasks.AbstractTaskListEntry;
 import com.tle.web.workflow.view.CurrentModerationLinkSection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
 
 @Bind
 public class TaskManagementItemList
-	extends
-		AbstractItemList<TaskManagementListEntry, AbstractItemList.Model<TaskManagementListEntry>>
-{
-	public static final String DIV_PFX = "tml_";
+    extends AbstractItemList<
+        TaskManagementListEntry, AbstractItemList.Model<TaskManagementListEntry>> {
+  public static final String DIV_PFX = "tml_";
 
-	@PlugKey("tasklist.moderators")
-	private static String KEY_MODERATORS;
-	@PlugKey("tasklist.comments")
-	private static String KEY_COMMENTS;
-	@PlugKey("tasklist.summary")
-	private static Label LABEL_SUMMARY;
-	@PlugKey("tasklist.selecttask")
-	private static Label LABEL_SELECT;
-	@PlugKey("tasklist.unselecttask")
-	private static Label LABEL_UNSELECT;
+  @PlugKey("tasklist.moderators")
+  private static String KEY_MODERATORS;
 
-	@Inject
-	private WorkflowService workflowService;
-	@Inject
-	private Provider<TaskManagementListEntry> entryProvider;
+  @PlugKey("tasklist.comments")
+  private static String KEY_COMMENTS;
 
-	@Inject
-	private TaskModeratorsDialog moderatorsDialog;
-	@Inject
-	private ViewCommentsDialog commentsDialog;
+  @PlugKey("tasklist.summary")
+  private static Label LABEL_SUMMARY;
 
-	@Inject
-	private ViewItemUrlFactory urlFactory;
-	@EventFactory
-	private EventGenerator events;
-	@TreeLookup
-	private TaskSelectionSection selectionSection;
-	private JSCallable removeCall;
-	private JSCallable selectCall;
+  @PlugKey("tasklist.selecttask")
+  private static Label LABEL_SELECT;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.registerInnerSection(moderatorsDialog, id);
-		tree.registerInnerSection(commentsDialog, id);
-	}
+  @PlugKey("tasklist.unselecttask")
+  private static Label LABEL_UNSELECT;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		selectCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("selectTask"));
-		removeCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("unSelectTask"));
-	}
+  @Inject private WorkflowService workflowService;
+  @Inject private Provider<TaskManagementListEntry> entryProvider;
 
+  @Inject private TaskModeratorsDialog moderatorsDialog;
+  @Inject private ViewCommentsDialog commentsDialog;
 
-	@SuppressWarnings("nls")
-	@Override
-	protected Set<String> getExtensionTypes()
-	{
-		return Collections.singleton("task");
-	}
+  @Inject private ViewItemUrlFactory urlFactory;
+  @EventFactory private EventGenerator events;
+  @TreeLookup private TaskSelectionSection selectionSection;
+  private JSCallable removeCall;
+  private JSCallable selectCall;
 
-	@Override
-	protected TaskManagementListEntry createItemListEntry(SectionInfo info, Item item, FreetextResult result)
-	{
-		TaskManagementListEntry entry = entryProvider.get();
-		entry.setItem(item);
-		entry.setInfo(info);
-		entry.setItemList(this);
-		return entry;
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.registerInnerSection(moderatorsDialog, id);
+    tree.registerInnerSection(commentsDialog, id);
+  }
 
-	@EventHandlerMethod
-	public void summary(SectionInfo info, ItemId itemId, boolean progress)
-	{
-		ViewItemUrl vurl = urlFactory.createItemUrl(info, itemId);
-		SectionInfo vinfo = vurl.getSectionInfo();
-		if( progress )
-		{
-			vinfo.lookupSection(CurrentModerationLinkSection.class).execute(vinfo);
-		}
-		vurl.forward(info);
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    selectCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("selectTask"));
+    removeCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("unSelectTask"));
+  }
 
-	@Bind
-	public static class TaskManagementListEntry extends AbstractTaskListEntry
-	{
-		private TaskManagementItemList itemList;
+  @SuppressWarnings("nls")
+  @Override
+  protected Set<String> getExtensionTypes() {
+    return Collections.singleton("task");
+  }
 
-		@Override
-		public HtmlLinkState getTitle()
-		{
-			return itemList.getSummaryLink(info, getTitleLabel(), getItemTaskId(), true);
-		}
+  @Override
+  protected TaskManagementListEntry createItemListEntry(
+      SectionInfo info, Item item, FreetextResult result) {
+    TaskManagementListEntry entry = entryProvider.get();
+    entry.setItem(item);
+    entry.setInfo(info);
+    entry.setItemList(this);
+    return entry;
+  }
 
-		public void setItemList(TaskManagementItemList itemList)
-		{
-			this.itemList = itemList;
-		}
-	}
+  @EventHandlerMethod
+  public void summary(SectionInfo info, ItemId itemId, boolean progress) {
+    ViewItemUrl vurl = urlFactory.createItemUrl(info, itemId);
+    SectionInfo vinfo = vurl.getSectionInfo();
+    if (progress) {
+      vinfo.lookupSection(CurrentModerationLinkSection.class).execute(vinfo);
+    }
+    vurl.forward(info);
+  }
 
-	public HtmlLinkState getModeratorLink(SectionInfo info, ItemTaskId itemTaskId)
-	{
-		List<TaskModerator> mods = workflowService.getModeratorList(itemTaskId, true);
-		int remaining = 0;
-		for( TaskModerator taskModerator : mods )
-		{
-			if( !taskModerator.isAccepted() )
-			{
-				remaining++;
-			}
-		}
-		return new HtmlLinkState(new PluralKeyLabel(KEY_MODERATORS, remaining),
-			new OverrideHandler(moderatorsDialog.getOpenFunction(), itemTaskId));
-	}
+  @Bind
+  public static class TaskManagementListEntry extends AbstractTaskListEntry {
+    private TaskManagementItemList itemList;
 
-	public HtmlLinkState getCommentLink(SectionInfo info, ItemTaskId itemTaskId, int comments)
-	{
-		return new HtmlLinkState(new PluralKeyLabel(KEY_COMMENTS, comments),
-			new OverrideHandler(commentsDialog.getOpenFunction(), itemTaskId));
-	}
+    @Override
+    public HtmlLinkState getTitle() {
+      return itemList.getSummaryLink(info, getTitleLabel(), getItemTaskId(), true);
+    }
 
-	public HtmlLinkState getSummaryLink(SectionInfo info, Label label, ItemTaskId itemTaskId, boolean progress)
-	{
-		return new HtmlLinkState(label,
-			new BookmarkAndModify(info, events.getNamedModifier("summary", ItemId.fromKey(itemTaskId), progress))); //$NON-NLS-1$
-	}
+    public void setItemList(TaskManagementItemList itemList) {
+      this.itemList = itemList;
+    }
+  }
 
-	@EventHandlerMethod
-	public void selectTask(SectionInfo info, ItemTaskId itemTaskId)
-	{
-		selectionSection.addSelection(info, itemTaskId);
-		addAjaxDiv(info, itemTaskId);
-	}
+  public HtmlLinkState getModeratorLink(SectionInfo info, ItemTaskId itemTaskId) {
+    List<TaskModerator> mods = workflowService.getModeratorList(itemTaskId, true);
+    int remaining = 0;
+    for (TaskModerator taskModerator : mods) {
+      if (!taskModerator.isAccepted()) {
+        remaining++;
+      }
+    }
+    return new HtmlLinkState(
+        new PluralKeyLabel(KEY_MODERATORS, remaining),
+        new OverrideHandler(moderatorsDialog.getOpenFunction(), itemTaskId));
+  }
 
-	@EventHandlerMethod
-	public void unSelectTask(SectionInfo info, ItemTaskId itemTaskId)
-	{
-		selectionSection.removeSelection(info, itemTaskId);
-		addAjaxDiv(info, itemTaskId);
-	}
+  public HtmlLinkState getCommentLink(SectionInfo info, ItemTaskId itemTaskId, int comments) {
+    return new HtmlLinkState(
+        new PluralKeyLabel(KEY_COMMENTS, comments),
+        new OverrideHandler(commentsDialog.getOpenFunction(), itemTaskId));
+  }
 
-	private void addAjaxDiv(SectionInfo info, ItemTaskId itemId)
-	{
-		AjaxRenderContext renderContext = info.getAttributeForClass(AjaxRenderContext.class);
-		if( renderContext != null )
-		{
-			renderContext.addAjaxDivs(DIV_PFX + itemId.toString());
-		}
-	}
+  public HtmlLinkState getSummaryLink(
+      SectionInfo info, Label label, ItemTaskId itemTaskId, boolean progress) {
+    return new HtmlLinkState(
+        label,
+        new BookmarkAndModify(
+            info,
+            events.getNamedModifier(
+                "summary", ItemId.fromKey(itemTaskId), progress))); // $NON-NLS-1$
+  }
 
+  @EventHandlerMethod
+  public void selectTask(SectionInfo info, ItemTaskId itemTaskId) {
+    selectionSection.addSelection(info, itemTaskId);
+    addAjaxDiv(info, itemTaskId);
+  }
 
-	@Override
-	protected void customiseListEntries(RenderContext context, List<TaskManagementListEntry> entries) {
-		super.customiseListEntries(context, entries);
+  @EventHandlerMethod
+  public void unSelectTask(SectionInfo info, ItemTaskId itemTaskId) {
+    selectionSection.removeSelection(info, itemTaskId);
+    addAjaxDiv(info, itemTaskId);
+  }
 
-		for (TaskManagementListEntry entry : entries)
-		{
-			ItemTaskId itemTaskId = entry.getItemTaskId();
-			entry.getTag().setElementId(new SimpleElementId(DIV_PFX + itemTaskId.toString()));
-			entry.addRatingMetadata(getSummaryLink(context, LABEL_SUMMARY, itemTaskId, false));
-			entry.addRatingMetadata(getModeratorLink(context, itemTaskId));
-			List<WorkflowMessage> comments = workflowService.getCommentsForTask(itemTaskId);
-			if( !comments.isEmpty() )
-			{
-				entry.addRatingMetadata(getCommentLink(context, itemTaskId, comments.size()));
-			}
-			ButtonRenderer selectButton;
-			if( selectionSection.isSelected(context, itemTaskId) )
-			{
-				selectButton = new ButtonRenderer(new HtmlLinkState(LABEL_UNSELECT,
-						new OverrideHandler(removeCall, itemTaskId))).showAs(ButtonType.UNSELECT);
-				entry.setSelected(true);
-			}
-			else
-			{
-				selectButton = new ButtonRenderer(new HtmlLinkState(LABEL_SELECT,
-						new OverrideHandler(selectCall, itemTaskId))).showAs(ButtonType.SELECT);
-			}
-			entry.addRatingAction(selectButton);
-		}
-	}
+  private void addAjaxDiv(SectionInfo info, ItemTaskId itemId) {
+    AjaxRenderContext renderContext = info.getAttributeForClass(AjaxRenderContext.class);
+    if (renderContext != null) {
+      renderContext.addAjaxDivs(DIV_PFX + itemId.toString());
+    }
+  }
+
+  @Override
+  protected void customiseListEntries(
+      RenderContext context, List<TaskManagementListEntry> entries) {
+    super.customiseListEntries(context, entries);
+
+    for (TaskManagementListEntry entry : entries) {
+      ItemTaskId itemTaskId = entry.getItemTaskId();
+      entry.getTag().setElementId(new SimpleElementId(DIV_PFX + itemTaskId.toString()));
+      entry.addRatingMetadata(getSummaryLink(context, LABEL_SUMMARY, itemTaskId, false));
+      entry.addRatingMetadata(getModeratorLink(context, itemTaskId));
+      List<WorkflowMessage> comments = workflowService.getCommentsForTask(itemTaskId);
+      if (!comments.isEmpty()) {
+        entry.addRatingMetadata(getCommentLink(context, itemTaskId, comments.size()));
+      }
+      ButtonRenderer selectButton;
+      if (selectionSection.isSelected(context, itemTaskId)) {
+        selectButton =
+            new ButtonRenderer(
+                    new HtmlLinkState(LABEL_UNSELECT, new OverrideHandler(removeCall, itemTaskId)))
+                .showAs(ButtonType.UNSELECT);
+        entry.setSelected(true);
+      } else {
+        selectButton =
+            new ButtonRenderer(
+                    new HtmlLinkState(LABEL_SELECT, new OverrideHandler(selectCall, itemTaskId)))
+                .showAs(ButtonType.SELECT);
+      }
+      entry.addRatingAction(selectButton);
+    }
+  }
 }

@@ -16,11 +16,10 @@
 
 package com.tle.core.migration;
 
-public interface Migration
-{
-	boolean isBackwardsCompatible();
+public interface Migration {
+  boolean isBackwardsCompatible();
 
-	void migrate(MigrationResult status) throws Exception;
+  void migrate(MigrationResult status) throws Exception;
 
-	MigrationInfo createMigrationInfo();
+  MigrationInfo createMigrationInfo();
 }

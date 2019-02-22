@@ -21,22 +21,19 @@ import com.tle.beans.entity.BaseEntity;
 import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.guice.PluginTrackerModule;
 
-public class EntityTrackerModule extends PluginTrackerModule
-{
-	@Override
-	protected String getPluginId()
-	{
-		return "com.tle.core.entity";
-	}
+public class EntityTrackerModule extends PluginTrackerModule {
+  @Override
+  protected String getPluginId() {
+    return "com.tle.core.entity";
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	protected void configure()
-	{
-		TypeLiteral<AbstractEntityService<?, BaseEntity>> entityService = new TypeLiteral<AbstractEntityService<?, BaseEntity>>()
-		{
-			// empty
-		};
-		bindTracker(entityService.getType(), "entityService", "serviceClass").orderByParameter("order");
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected void configure() {
+    TypeLiteral<AbstractEntityService<?, BaseEntity>> entityService =
+        new TypeLiteral<AbstractEntityService<?, BaseEntity>>() {
+          // empty
+        };
+    bindTracker(entityService.getType(), "entityService", "serviceClass").orderByParameter("order");
+  }
 }

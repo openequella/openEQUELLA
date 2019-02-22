@@ -30,81 +30,69 @@ import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.user.UserService;
 import com.tle.core.workflow.service.WorkflowService;
 
-public class GuiceModule extends AbstractModule
-{
-	@Override
-	protected void configure()
-	{
-		// just provider
-	}
+public class GuiceModule extends AbstractModule {
+  @Override
+  protected void configure() {
+    // just provider
+  }
 
-	@Provides
-	@Named("remoteSchemaService")
-	Object provideSchemaService(SchemaService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remoteSchemaService")
+  Object provideSchemaService(SchemaService remote) {
+    return remote;
+  }
 
-	@Provides
-	@Named("remoteLanguageService")
-	Object provideLanguageService(LanguageService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remoteLanguageService")
+  Object provideLanguageService(LanguageService remote) {
+    return remote;
+  }
 
-	@Provides
-	@Named("remoteUserService")
-	Object provideUserService(UserService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remoteUserService")
+  Object provideUserService(UserService remote) {
+    return remote;
+  }
 
-	@Provides
-	@Named("remoteWorkflowService")
-	Object provideWorkflowService(WorkflowService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remoteWorkflowService")
+  Object provideWorkflowService(WorkflowService remote) {
+    return remote;
+  }
 
-	@Provides
-	@Named("remoteItemdefinitionService")
-	Object provideItemdefinitionService(ItemDefinitionService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remoteItemdefinitionService")
+  Object provideItemdefinitionService(ItemDefinitionService remote) {
+    return remote;
+  }
 
-	@Provides
-	@Named("remotePowerSearchService")
-	Object providePowerSearchService(PowerSearchService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remotePowerSearchService")
+  Object providePowerSearchService(PowerSearchService remote) {
+    return remote;
+  }
 
-	@Provides
-	@Named("remoteItemService")
-	Object provideItemService(ItemService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remoteItemService")
+  Object provideItemService(ItemService remote) {
+    return remote;
+  }
 
-	@Provides
-	@Named("remotePrivilegeTreeService")
-	Object provideItemService(PrivilegeTreeService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remotePrivilegeTreeService")
+  Object provideItemService(PrivilegeTreeService remote) {
+    return remote;
+  }
 
-	@Provides
-	@Named("remoteAclService")
-	Object provideAclService(TLEAclManager remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remoteAclService")
+  Object provideAclService(TLEAclManager remote) {
+    return remote;
+  }
 
-	@Provides
-	@Named("remoteBaseEntityService")
-	Object provideBaseEntityService(BaseEntityService remote)
-	{
-		return remote;
-	}
+  @Provides
+  @Named("remoteBaseEntityService")
+  Object provideBaseEntityService(BaseEntityService remote) {
+    return remote;
+  }
 }

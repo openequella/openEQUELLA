@@ -16,26 +16,23 @@
 
 package com.tle.core.fedsearch.migrations;
 
-import javax.inject.Singleton;
-
 import com.tle.core.guice.Bind;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.plugins.impl.PluginServiceImpl;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class RemoveDSMFedSearchMigration extends AbstractRemoveFedSearchMigration
-{
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(PluginServiceImpl.getMyPluginId(RemoveDSMFedSearchMigration.class) + ".removedsm.title");
-	}
+public class RemoveDSMFedSearchMigration extends AbstractRemoveFedSearchMigration {
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(
+        PluginServiceImpl.getMyPluginId(RemoveDSMFedSearchMigration.class) + ".removedsm.title");
+  }
 
-	@Override
-	protected String getFedSearchType()
-	{
-		return "DSMSearchEngine";
-	}
+  @Override
+  protected String getFedSearchType() {
+    return "DSMSearchEngine";
+  }
 }

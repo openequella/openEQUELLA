@@ -28,51 +28,43 @@ import com.tle.web.sections.standard.model.HtmlListModel;
 import com.tle.web.sections.standard.model.Option;
 
 @SuppressWarnings("nls")
-public class CloudFilterByEducationLevelSection extends AbstractCloudFilter
-{
-	@PlugKey("filter.byeducationlevel.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("filter.byeducationlevel.top")
-	private static String DEFAULT_OPTION;
+public class CloudFilterByEducationLevelSection extends AbstractCloudFilter {
+  @PlugKey("filter.byeducationlevel.title")
+  private static Label LABEL_TITLE;
 
-	@Override
-	public Label getTitle()
-	{
-		return LABEL_TITLE;
-	}
+  @PlugKey("filter.byeducationlevel.top")
+  private static String DEFAULT_OPTION;
 
-	@Override
-	public void prepareSearch(SectionInfo info, CloudSearchEvent event) throws Exception
-	{
-		String educationLevel = list.getSelectedValueAsString(info);
-		if( !Check.isEmpty(educationLevel) )
-		{
-			event.getCloudSearch().setEducationLevel(educationLevel);
-		}
-	}
+  @Override
+  public Label getTitle() {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	public HtmlListModel<NameValue> buildListModel()
-	{
-		return new DynamicHtmlListModel<NameValue>()
-		{
-			@Override
-			protected Option<NameValue> getTopOption()
-			{
-				return new KeyOption<NameValue>(DEFAULT_OPTION, "", null);
-			}
+  @Override
+  public void prepareSearch(SectionInfo info, CloudSearchEvent event) throws Exception {
+    String educationLevel = list.getSelectedValueAsString(info);
+    if (!Check.isEmpty(educationLevel)) {
+      event.getCloudSearch().setEducationLevel(educationLevel);
+    }
+  }
 
-			@Override
-			protected Iterable<NameValue> populateModel(SectionInfo info)
-			{
-				return cloudService.getCloudFilterInfo().getEducationLevels();
-			}
-		};
-	}
+  @Override
+  public HtmlListModel<NameValue> buildListModel() {
+    return new DynamicHtmlListModel<NameValue>() {
+      @Override
+      protected Option<NameValue> getTopOption() {
+        return new KeyOption<NameValue>(DEFAULT_OPTION, "", null);
+      }
 
-	@Override
-	protected String getPublicParam()
-	{
-		return "el";
-	}
+      @Override
+      protected Iterable<NameValue> populateModel(SectionInfo info) {
+        return cloudService.getCloudFilterInfo().getEducationLevels();
+      }
+    };
+  }
+
+  @Override
+  protected String getPublicParam() {
+    return "el";
+  }
 }

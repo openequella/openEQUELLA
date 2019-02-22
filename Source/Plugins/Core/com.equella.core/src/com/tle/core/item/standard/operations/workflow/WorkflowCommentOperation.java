@@ -26,50 +26,44 @@ import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.workflow.WorkflowMessage;
 import com.tle.core.filesystem.WorkflowMessageFile;
 import com.tle.core.security.impl.SecureInModeration;
-
 import java.io.IOException;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
 @SecureInModeration
 public final class WorkflowCommentOperation extends SpecificTaskOperation // NOSONAR
 {
-	private final String msg;
-	private final String messageUuid;
+  private final String msg;
+  private final String messageUuid;
 
-	@AssistedInject
-	private WorkflowCommentOperation(@Assisted("taskId") String taskId, @Assisted("comment") String msg,
-		@Assisted("messageUuid") @Nullable String messageUuid)
-	{
-		super(taskId);
-		this.msg = msg;
-		this.messageUuid = messageUuid;
-	}
+  @AssistedInject
+  private WorkflowCommentOperation(
+      @Assisted("taskId") String taskId,
+      @Assisted("comment") String msg,
+      @Assisted("messageUuid") @Nullable String messageUuid) {
+    super(taskId);
+    this.msg = msg;
+    this.messageUuid = messageUuid;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		HistoryEvent comment = createHistory(Type.comment);
-		comment.setComment(msg);
-		setStepFromTask(comment);
-		addMessage(WorkflowMessage.TYPE_COMMENT, msg, messageUuid);
-		getModerationStatus().setLastAction(params.getDateNow());
+  @Override
+  public boolean execute() {
+    HistoryEvent comment = createHistory(Type.comment);
+    comment.setComment(msg);
+    setStepFromTask(comment);
+    addMessage(WorkflowMessage.TYPE_COMMENT, msg, messageUuid);
+    getModerationStatus().setLastAction(params.getDateNow());
 
-		if (messageUuid != null)
-		{
-			try
-			{
-				fileSystemService.commitFiles(new StagingFile(messageUuid), new WorkflowMessageFile(messageUuid));
-			}
-			catch (IOException ex)
-			{
-				throw Throwables.propagate(ex);
-			}
-		}
+    if (messageUuid != null) {
+      try {
+        fileSystemService.commitFiles(
+            new StagingFile(messageUuid), new WorkflowMessageFile(messageUuid));
+      } catch (IOException ex) {
+        throw Throwables.propagate(ex);
+      }
+    }
 
-		return true;
-	}
+    return true;
+  }
 }

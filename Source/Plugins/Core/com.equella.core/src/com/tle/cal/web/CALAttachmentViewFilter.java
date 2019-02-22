@@ -16,8 +16,6 @@
 
 package com.tle.cal.web;
 
-import javax.inject.Inject;
-
 import com.tle.beans.cal.CALHolding;
 import com.tle.beans.cal.CALPortion;
 import com.tle.beans.cal.CALSection;
@@ -26,24 +24,21 @@ import com.tle.core.copyright.service.CopyrightService;
 import com.tle.core.guice.Bind;
 import com.tle.web.copyright.AbstractCopyrightAttachmentFilter;
 import com.tle.web.copyright.service.CopyrightWebService;
+import javax.inject.Inject;
 
 @Bind
-public class CALAttachmentViewFilter extends AbstractCopyrightAttachmentFilter<CALHolding, CALPortion, CALSection>
-{
+public class CALAttachmentViewFilter
+    extends AbstractCopyrightAttachmentFilter<CALHolding, CALPortion, CALSection> {
 
-	@Inject
-	private CALWebServiceImpl calWebService;
+  @Inject private CALWebServiceImpl calWebService;
 
-	@Override
-	protected CopyrightService<CALHolding, CALPortion, CALSection> getCopyrightServiceImpl()
-	{
-		return calWebService.getCopyrightServiceImpl();
-	}
+  @Override
+  protected CopyrightService<CALHolding, CALPortion, CALSection> getCopyrightServiceImpl() {
+    return calWebService.getCopyrightServiceImpl();
+  }
 
-	@Override
-	protected CopyrightWebService<CALHolding> getCopyrightWebServiceImpl()
-	{
-		return calWebService;
-	}
-
+  @Override
+  protected CopyrightWebService<CALHolding> getCopyrightWebServiceImpl() {
+    return calWebService;
+  }
 }

@@ -23,22 +23,19 @@ import com.tle.core.filesystem.InstitutionFile;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public class ThumbnailQueueFile extends InstitutionFile
-{
-	private static final long serialVersionUID = 1L;
-	private static final String THUMB_QUEUE_FOLDER = "ThumbQueue";
+public class ThumbnailQueueFile extends InstitutionFile {
+  private static final long serialVersionUID = 1L;
+  private static final String THUMB_QUEUE_FOLDER = "ThumbQueue";
 
-	private final String requestUuid;
+  private final String requestUuid;
 
-	public ThumbnailQueueFile(String requestUuid)
-	{
-		this.requestUuid = requestUuid;
-	}
+  public ThumbnailQueueFile(String requestUuid) {
+    this.requestUuid = requestUuid;
+  }
 
-	@Override
-	protected String createAbsolutePath()
-	{
-		return PathUtils.filePath(super.createAbsolutePath(), THUMB_QUEUE_FOLDER,
-			FileHandleUtils.getHashedPath(requestUuid));
-	}
+  @Override
+  protected String createAbsolutePath() {
+    return PathUtils.filePath(
+        super.createAbsolutePath(), THUMB_QUEUE_FOLDER, FileHandleUtils.getHashedPath(requestUuid));
+  }
 }
