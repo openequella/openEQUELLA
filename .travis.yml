@@ -31,7 +31,7 @@ before_script:
 - psql -c 'CREATE DATABASE equellatests WITH OWNER = equellatests;' -U postgres
 script:
 - sbt -Dconfig.file=travis.conf installEquella startEquella
-- sbt -Dconfig.file=travis.conf configureInstall setupForTests Tests/test
+- sbt -Dconfig.file=travis.conf configureInstall setupForTests Tests/test Tests/Serial/test
 - sbt -Dconfig.file=travis.conf coverageReport
 after_script:
 - sbt -Dconfig.file=travis.conf collectArtifacts

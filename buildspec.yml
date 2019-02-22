@@ -13,7 +13,7 @@ phases:
   build:
     commands:
       - sbt -no-colors installEquella startEquella
-      - sbt -no-colors configureInstall setupForTests Tests/test
+      - sbt -no-colors configureInstall setupForTests Tests/test Tests/Serial/test
       - sbt -no-colors ${OTHER_TESTS}
   post_build:
     commands:
