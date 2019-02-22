@@ -16,7 +16,7 @@
 
 package com.tle.core.db.types
 
-import io.circe.{Decoder, Encoder}
+import io.circe.{Decoder, Encoder, Json, JsonObject}
 import io.doolse.simpledba.Iso
 import io.circe.syntax._
 import io.circe.parser._
@@ -28,4 +28,7 @@ object JsonColumn {
     Iso(a => Some(a.asJson.noSpaces), _.map { s =>
       decode[A](s).fold(throw _, identity)
     }.getOrElse(default))
+
+  val jsonStringIso: Iso[Json, String] =
+    Iso(a => a.asJson.noSpaces, s => parse(s).fold(throw _, identity))
 }

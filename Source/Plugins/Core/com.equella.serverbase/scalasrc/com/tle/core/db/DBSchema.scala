@@ -19,16 +19,18 @@ package com.tle.core.db
 import java.util
 
 import com.tle.core.db.migration.DBSchemaMigration
-import com.tle.core.db.tables.{AttachmentViewCount, AuditLogEntry, ItemViewCount, Setting}
+import com.tle.core.db.tables._
 import com.tle.core.db.types.{DbUUID, InstId, JsonColumn}
 import com.tle.core.hibernate.factory.guice.HibernateFactoryModule
 import fs2.Stream
+import io.circe.{Json, JsonObject}
 import io.doolse.simpledba._
 import io.doolse.simpledba.jdbc._
 import io.doolse.simpledba.syntax._
 import shapeless._
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 trait DBSchema extends StdColumns {
 
@@ -38,15 +40,23 @@ trait DBSchema extends StdColumns {
 
   def schemaSQL: JDBCSchemaSQL = config.schemaSQL
 
-  def indexEach(cols: TableColumns, name: NamedColumn => String): Seq[String] =
+  val allTables: mutable.Buffer[TableDefinition]         = mutable.Buffer()
+  val allIndexes: mutable.Buffer[(TableColumns, String)] = mutable.Buffer()
+
+  def indexEach(cols: TableColumns, name: NamedColumn => String): Seq[(TableColumns, String)] =
     cols.columns.map { cb =>
-      schemaSQL.createIndex(TableColumns(cols.name, Seq(cb)), name(cb))
+      TableColumns(cols.name, Seq(cb)) -> name(cb)
     }
+
+  implicit def dbJsonCol(implicit scol: C[String]): C[Json] =
+    wrap[String, Json](scol, _.isoMap(JsonColumn.jsonStringIso), jsonColumnMod)
 
   def jsonColumnMod(ct: ColumnType): ColumnType = ct
 
-  implicit def jsonColumns[A <: JsonColumn](implicit c: Iso[A, Option[String]],
-                                            col: C[Option[String]]): C[A] =
+  implicit def jsonColumns[A <: JsonColumn](
+      implicit c: Iso[A, Option[String]],
+      col: C[Option[String]]
+  ): C[A] =
     wrap[Option[String], A](col, _.isoMap[A](c), jsonColumnMod)
 
   def autoIdCol: C[Long]
@@ -70,10 +80,16 @@ trait DBSchema extends StdColumns {
   val auditLogTable = auditLog.definition
 
   val auditLogIndexColumns: TableColumns = auditLog.subset(
-    Cols('institution_id, 'timestamp, 'event_category, 'event_type, 'user_id) ++ Cols('session_id,
-                                                                                      'data1,
-                                                                                      'data2,
-                                                                                      'data3))
+    Cols('institution_id, 'timestamp, 'event_category, 'event_type, 'user_id) ++ Cols(
+      'session_id,
+      'data1,
+      'data2,
+      'data3
+    )
+  )
+
+  allTables += auditLogTable
+  allIndexes ++= indexEach(auditLogIndexColumns, "audit_" + _.name)
 
   val auditLogNewColumns = auditLog.subset(Cols('meta))
 
@@ -84,6 +100,8 @@ trait DBSchema extends StdColumns {
     .keys(itemViewId ++ Cols('attachment))
 
   val viewCountTables = Seq(itemViewCount.definition, attachmentViewCount.definition)
+
+  allTables ++= viewCountTables
 
   val countByCol = JDBCQueries.queryRawSQL(
     "select sum(\"count\") from viewcount_item vci " +
@@ -120,21 +138,42 @@ trait DBSchema extends StdColumns {
     )
   }
 
-  def creationSQL: util.Collection[String] = {
-    Seq(schemaSQL.createTable(auditLogTable)) ++
-      indexEach(auditLogIndexColumns, "audit_" + _.name) ++
-      viewCountTables.map(schemaSQL.createTable)
-  }.asJava
-
   val settingsRel =
     TableMapper[Setting].table("configuration_property").keys(Cols('institution_id, 'property))
 
-  val settingsQueries = SettingsQueries(settingsRel.writes,
-                                        settingsRel.byPK,
-                                        settingsRel.query
-                                          .where(Cols('institution_id), BinOp.EQ)
-                                          .where(Cols('property), BinOp.LIKE)
-                                          .build)
+  val settingsQueries = SettingsQueries(
+    settingsRel.writes,
+    settingsRel.byPK,
+    settingsRel.query
+      .where(Cols('institution_id), BinOp.EQ)
+      .where(Cols('property), BinOp.LIKE)
+      .build,
+    settingsRel.query
+      .where(Cols('property), BinOp.LIKE)
+      .build
+  )
+
+  val entityTable = TableMapper[OEQEntity].table("entities").keys(Cols('inst_id, 'uuid))
+
+  val entityTypeIdx = (entityTable.subset(Cols('inst_id, 'typeid)), "entityTypeIdx")
+
+  val newEntityTables  = Seq(entityTable.definition)
+  val newEntityIndexes = Seq(entityTypeIdx)
+
+  val entityQueries = EntityQueries(
+    entityTable.writes,
+    entityTable.query.where(Cols('inst_id, 'typeid), BinOp.EQ).build,
+    entityTable.byPK,
+    entityTable.query.where(Cols('inst_id), BinOp.EQ).build
+  )
+
+  allTables ++= newEntityTables
+  allIndexes ++= newEntityIndexes
+
+  def creationSQL: util.Collection[String] = {
+    allTables.map(schemaSQL.createTable) ++
+      allIndexes.map(i => schemaSQL.createIndex(i._1, i._2))
+  }.asJava
 
 }
 

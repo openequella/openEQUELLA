@@ -18,6 +18,7 @@ package com.tle.core.institution.convert.service.impl;
 
 import com.dytech.devlib.PropBagEx;
 import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.tle.beans.Institution;
@@ -29,23 +30,18 @@ import com.tle.common.filesystem.handle.ImportFile;
 import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.common.hash.Hash;
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.CurrentTimeZone;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.util.Dates;
 import com.tle.common.util.LocalDate;
+import com.tle.core.filesystem.convert.FilestoreConverter;
 import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.institution.InstitutionValidationError;
+import com.tle.core.institution.OEQEntityConverter;
 import com.tle.core.institution.RunAsInstitution;
-import com.tle.core.institution.convert.Converter;
-import com.tle.core.institution.convert.ConverterParams;
-import com.tle.core.institution.convert.InstitutionImport;
-import com.tle.core.institution.convert.InstitutionInfo;
-import com.tle.core.institution.convert.ItemXmlMigrator;
-import com.tle.core.institution.convert.Migrator;
-import com.tle.core.institution.convert.PostReadMigrator;
+import com.tle.core.institution.convert.*;
 import com.tle.core.institution.convert.extension.InstitutionInfoInitialiser;
 import com.tle.core.institution.convert.service.InstitutionImportService;
 import com.tle.core.plugins.PluginService;
@@ -96,6 +92,11 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
   @Inject private PluginTracker<Migrator> xmlMigTracker;
   @Inject private PluginTracker<ItemXmlMigrator> itemXmlMigTracker;
   @Inject private PluginTracker<InstitutionInfoInitialiser> institutionInfoInitialisers;
+  @Inject private ZippingConverter zippingConverter;
+  @Inject private FilestoreConverter filestoreConverter;
+
+  private List<Converter> converterList;
+  private Map<String, Converter> converterMap;
 
   @Inject
   public void setPluginService(PluginService pluginService) {
@@ -168,8 +169,20 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
     return tasks;
   }
 
-  private List<Converter> getConverters() {
-    return converterTracker.getBeanList();
+  private synchronized List<Converter> getConverters() {
+    if (converterList == null) {
+      converterMap = Maps.newHashMap();
+      converterList = Lists.newArrayList(converterTracker.getBeanList());
+      OEQEntityConverter oeqConverter = new OEQEntityConverter();
+      converterList.add(oeqConverter);
+      converterList.add(filestoreConverter);
+      converterList.add(zippingConverter);
+      converterMap.put(OEQEntityConverter.TaskId(), oeqConverter);
+      converterMap.put(FilestoreConverter.CONVERTER_ID, filestoreConverter);
+      converterMap.put(FilestoreConverter.CLEANUP_ID, filestoreConverter);
+      converterMap.put(ZippingConverter.ID, zippingConverter);
+    }
+    return converterList;
   }
 
   @Override
@@ -226,6 +239,9 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
   }
 
   Converter getConverter(String task) {
+    if (converterMap.containsKey(task)) {
+      return converterMap.get(task);
+    }
     return converterTracker.getBeanMap().get(task);
   }
 
@@ -558,50 +574,6 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
   @Override
   public void cancelImport(ImportFile staging) {
     fileSystemService.removeFile(staging, "");
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see
-   * com.tle.core.services.InstitutionService#getMatchingConversions(java.
-   * util.Collection)
-   */
-  @Override
-  public Collection<NameValue> getMatchingConversions(Collection<String> conversions) {
-    List<NameValue> entries = new ArrayList<NameValue>();
-    Map<String, Extension> extensionMap = converterTracker.getExtensionMap();
-    for (String cid : conversions) {
-      Extension extension = extensionMap.get(cid);
-      if (extension != null) {
-        Collection<Parameter> parameters = extension.getParameters("selections");
-        for (Parameter parameter : parameters) {
-          String id = parameter.getSubParameter("id").valueAsString();
-          if (id.equals(cid)) {
-            entries.add(
-                new NameValue(
-                    CurrentLocale.get(parameter.getSubParameter("nameKey").valueAsString()), cid));
-          }
-        }
-      } else {
-        LOGGER.warn("Unhandled conversion:" + cid);
-      }
-    }
-    return entries;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see
-   * com.tle.core.services.InstitutionService#getMatchingIds(java.util.List)
-   */
-  @Override
-  public Set<String> getMatchingIds(Collection<String> values) {
-    return new HashSet<String>(values);
-  }
-
-  @Override
-  public Set<String> getAllConversions() {
-    return converterTracker.getExtensionMap().keySet();
   }
 
   @Override

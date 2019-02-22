@@ -31,19 +31,36 @@ trait DBSchemaMigration {
     config.withPrepareLogger(sql => progress.addLogEntry(new MigrationStatusLog(sql, false)))
   }
 
+  def sqlStmts(progress: MigrationResult, sql: Seq[String]): JDBCIO[Unit] = {
+    implicit val c = withSQLLog(progress)
+    Stream.emits(sql.map(rawSQL)).covary[JDBCIO].flush.compile.drain
+  }
+
   def addColumns(columns: TableColumns, progress: MigrationResult): JDBCIO[Unit] = {
     progress.setCanRetry(true)
-    implicit val c = withSQLLog(progress)
-    Stream.emits(schemaSQL.addColumns(columns).map(rawSQL)).covary[JDBCIO].flush.compile.drain
+    sqlStmts(progress, schemaSQL.addColumns(columns))
   }
 
   def addTables(tables: Seq[TableDefinition], progress: MigrationResult): JDBCIO[Unit] = {
+    addTablesAndIndexes(tables, Seq.empty, progress)
+  }
+
+  def addTablesAndIndexes(tables: Seq[TableDefinition],
+                          indexes: Seq[(TableColumns, String)],
+                          progress: MigrationResult): JDBCIO[Unit] = {
     progress.setCanRetry(true)
-    implicit val c = withSQLLog(progress)
-    Stream.emits(tables.map(schemaSQL.createTable).map(rawSQL)).covary[JDBCIO].flush.compile.drain
+    val sql = tables.map(schemaSQL.createTable) ++
+      indexes.map(i => schemaSQL.createIndex(i._1, i._2))
+    sqlStmts(progress, sql)
+  }
+
+  def addIndexes(indexes: Seq[(TableColumns, String)], progress: MigrationResult): JDBCIO[Unit] = {
+    addTablesAndIndexes(Seq.empty, indexes, progress)
   }
 
   def auditLogNewColumns: TableColumns
   def viewCountTables: Seq[TableDefinition]
 
+  def newEntityTables: Seq[TableDefinition]
+  def newEntityIndexes: Seq[(TableColumns, String)]
 }

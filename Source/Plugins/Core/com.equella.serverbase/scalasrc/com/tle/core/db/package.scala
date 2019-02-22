@@ -17,19 +17,30 @@
 package com.tle.core
 
 import cats.data.Kleisli
-import io.doolse.simpledba.jdbc._
-import fs2.Stream
+import cats.syntax.applicative._
 import cats.~>
+import fs2.Stream
+import io.doolse.simpledba.WriteOp
+import io.doolse.simpledba.jdbc._
+import io.doolse.simpledba.syntax._
 
 package object db {
   type DB[A] = Kleisli[JDBCIO, UserContext, A]
 
-  val translate = new (JDBCIO ~> DB) {
+  val getContext: DB[UserContext] = Kleisli.ask
+
+  def withContext[A](f: UserContext => A): DB[A] =
+    Kleisli(uc => f(uc).pure[JDBCIO])
+
+  val flushDB: Stream[JDBCIO, WriteOp] => DB[Unit] =
+    a => Kleisli.liftF(a.flush.compile.drain)
+
+  val translateDB = new (JDBCIO ~> DB) {
     override def apply[A](fa: JDBCIO[A]): DB[A] = Kleisli.liftF(fa)
   }
 
   def dbStream[A](f: UserContext => Stream[JDBCIO, A]): Stream[DB, A] =
     Stream.eval[DB, UserContext](Kleisli.ask[JDBCIO, UserContext]).flatMap { uc =>
-      f(uc).translate[DB](translate)
+      f(uc).translate(translateDB)
     }
 }

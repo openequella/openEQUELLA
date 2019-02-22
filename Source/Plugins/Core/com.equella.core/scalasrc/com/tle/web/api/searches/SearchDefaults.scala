@@ -15,13 +15,20 @@
  */
 
 package com.tle.web.api.searches
+import java.util.{Date, UUID}
 
 object SearchDefaults {
 
   val defaultMap: Map[String, SearchConfig] = Map(
     "search" -> SearchConfig(
-      None,
+      UUID.randomUUID(),
       "item",
+      "Default search",
+      None,
+      None,
+      None,
+      new Date,
+      new Date,
       Map(
         "resultsheader" -> Array(
           SortControl("relevance", true)

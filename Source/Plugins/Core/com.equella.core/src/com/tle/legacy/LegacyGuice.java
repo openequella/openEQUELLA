@@ -30,6 +30,7 @@ import com.tle.core.item.standard.service.ItemCommentService;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.search.service.impl.SearchPrivilegeTreeProvider;
 import com.tle.core.security.TLEAclManager;
+import com.tle.core.services.FileSystemService;
 import com.tle.core.services.UrlService;
 import com.tle.core.services.user.UserPreferenceService;
 import com.tle.core.services.user.UserService;
@@ -174,6 +175,8 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static ViewItemService viewItemService;
 
   @Inject public static ItemHelper itemHelper;
+
+  @Inject public static FileSystemService fileSystemService;
 
   @Inject public static Provider<IntegrationService> integrationService;
 

@@ -32,7 +32,7 @@ object SettingsDB {
 
   def ensureEditSystem[A](db: DB[A]): DB[A] = AclChecks.ensureOnePriv("EDIT_SYSTEM_SETTINGS")(db)
 
-  def q = DBSchema.queries.settingsQueries
+  private val q = DBSchema.queries.settingsQueries
 
   def singleProperty(name: String): OptionT[DB, Setting] = OptionT {
     Kleisli { uc =>
