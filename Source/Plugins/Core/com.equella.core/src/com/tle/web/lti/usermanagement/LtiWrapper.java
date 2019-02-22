@@ -98,17 +98,19 @@ public class LtiWrapper extends AbstractUserDirectory {
     boolean userCreated = false;
 
     if (!Check.isEmpty(ltiVersion) && !Check.isEmpty(ltiMessageType)) {
-      LtiConsumer consumer =
+      final LtiConsumer consumer =
           consumerService.findByConsumerKey(
               request.getParameter(LtiConsumerConstants.PARAM_CONSUMER_KEY));
 
       ModifiableUserState userState = null;
       final String username = getUsername(request, null, consumer);
+      final String userId = getUserId(request);
+
       if (username != null) {
         userState = getChain().authenticateUserFromUsername(username, null);
         if (userState == null) {
           if (consumer.getUnknownUser() == UnknownUser.CREATE.getValue()) {
-            userCreated = createOrEditUser(request, username);
+            userCreated = createOrEditUser(request, username, userId);
             userState = getChain().authenticateUserFromUsername(username, null);
             if (userCreated) {
               createGroups = consumer.getUnknownGroups();
@@ -140,12 +142,9 @@ public class LtiWrapper extends AbstractUserDirectory {
         final List<String> groupIds = Lists.newArrayList(createGroups);
         runAs.executeAsSystem(
             CurrentInstitution.get(),
-            new Runnable() {
-              @Override
-              public void run() {
-                for (String groupId : groupIds) {
-                  tleGroupService.addUserToGroup(groupId, getUserId(request));
-                }
+            () -> {
+              for (String groupId : groupIds) {
+                tleGroupService.addUserToGroup(groupId, userId);
               }
             });
       }
@@ -257,8 +256,7 @@ public class LtiWrapper extends AbstractUserDirectory {
     return null;
   }
 
-  private boolean createOrEditUser(HttpServletRequest request, String username) {
-    String userId = getUserId(request);
+  private boolean createOrEditUser(HttpServletRequest request, String username, String userId) {
     TLEUser tleUser = tleUserService.get(userId);
     if (tleUser != null) {
       final TLEUser updateUser = tleUser;
