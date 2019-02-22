@@ -19,12 +19,9 @@ package com.tle.web.api.activation.impl;
 import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.beans.exception.ValidationError;
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.core.activation.service.CourseInfoService;
 import com.tle.core.guice.Bind;
-import com.tle.core.plugins.AbstractPluginService;
-import com.tle.core.security.TLEAclManager;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.api.activation.CourseBean;
 import com.tle.web.api.activation.CourseBeanSerializer;
@@ -49,9 +46,6 @@ public class CourseResourceImpl
     implements CourseResource {
   @Inject private CourseInfoService courseService;
   @Inject private CourseBeanSerializer courseSerializer;
-  @Inject private TLEAclManager aclService;
-
-  private static String KEY_PFX = AbstractPluginService.getMyPluginId(CourseResource.class) + ".";
 
   /** Provide the full course data in the results */
   @Override
@@ -79,9 +73,7 @@ public class CourseResourceImpl
       final CourseInfo courseSameCode = courseService.getByCode(courseCode);
       if (courseSameCode != null && (isNew || !uuid.equals(courseSameCode.getUuid()))) {
         throw new InvalidDataException(
-            new ValidationError(
-                "code",
-                CurrentLocale.get(KEY_PFX + "course.edit.validation.codeinuse", courseCode)));
+            new ValidationError("code", getString("course.edit.validation.codeinuse", courseCode)));
       }
     }
   }

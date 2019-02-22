@@ -6,9 +6,9 @@ import {
   FormHelperText,
   Grid,
   Input,
-  Paper,
   InputLabel,
   MenuItem,
+  Paper,
   Switch,
   Tab,
   Tabs,
@@ -17,15 +17,17 @@ import {
 } from "@material-ui/core";
 import Select from "@material-ui/core/Select";
 import { StyleRules, WithStyles, withStyles } from "@material-ui/core/styles";
+import { DateTime } from "luxon";
 //import SwipeableViews from 'react-swipeable-views';
 import { DatePicker } from "material-ui-pickers";
 import * as React from "react";
-import { Dispatch, connect } from "react-redux";
+import { connect, Dispatch } from "react-redux";
 import courseService from ".";
 import aclService from "../acl/index";
 import { Course } from "../api";
 import { AclEditorChangeEvent, TargetListEntry } from "../api/acleditor";
 import { Error, Loader } from "../components/index";
+import MessageInfo from "../components/MessageInfo";
 import {
   EditEntityDispatchProps,
   EditEntityProps,
@@ -37,8 +39,6 @@ import { StoreState } from "../store";
 import { commonString } from "../util/commonstrings";
 import { properties } from "../util/dictionary";
 import { prepLangStrings } from "../util/langstrings";
-import MessageInfo from "../components/MessageInfo";
-import { DateTime } from "luxon";
 
 const styles = (theme: Theme) => {
   //TODO: get drawerWidth passed in somehow
@@ -208,6 +208,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
   handleSave() {
     if (this.props.entity) {
       const { versionSelection } = this.props.entity;
+      const { router, routes } = this.props.bridge;
       const vs = versionSelection === "DEFAULT" ? undefined : versionSelection;
 
       let course = {
@@ -223,7 +224,18 @@ class EditCourse extends React.Component<Props, EditCourseState> {
       this.props.validateEntity(course).then(function(valErrors) {
         if (properties(valErrors).length === 0) {
           saveEntity(course)
-            .then(_ => thiss.setState({ changed: false, justSaved: true }))
+            .then(editedCourse => {
+              // change the URL, but only if it's new
+              if (!thiss.props.uuid) {
+                // FIXME: remove the unload event listener
+                //window.removeEventListener('beforeunload');
+                const uuid = editedCourse.result.uuid;
+                const courseEditRoute = router(routes.CourseEdit(uuid));
+                window.location.href = courseEditRoute.href;
+              } else {
+                thiss.setState({ changed: false, justSaved: true });
+              }
+            })
             .catch(r => thiss.setState({ errored: true }));
         } else {
           thiss.setState({ activeTab: 0 });

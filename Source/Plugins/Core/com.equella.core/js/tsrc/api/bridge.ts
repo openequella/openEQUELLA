@@ -6,6 +6,7 @@ import { ClickableLink } from "./General";
 export interface Bridge {
   routes: Routes;
   router: (route: Route) => ClickableLink;
+  forcePushRoute: (Route: Route) => void;
   Template: React.ComponentType<TemplateProps>;
   AclEditor: React.ComponentType<AclEditorProps>;
 }
