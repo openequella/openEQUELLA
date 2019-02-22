@@ -55,6 +55,7 @@ import com.tle.web.viewurl.ItemSectionInfo;
 import com.tle.web.wizard.WizardExceptionHandler;
 import com.tle.web.wizard.WizardService;
 import com.tle.web.wizard.WizardState;
+import com.tle.web.wizard.WizardStateInterface;
 import com.tle.web.wizard.impl.WizardCommand;
 import com.tle.web.wizard.section.model.WizardForm;
 import com.tle.web.workflow.tasks.ModerationService;
@@ -133,15 +134,15 @@ public class RootWizardSection extends TwoColumnLayout<WizardForm>
     }
 
     final DefaultWizardSectionInfo winfo = infoProvider.get();
+    winfo.setWizardState(state);
     info.setAttribute(WizardSectionInfo.class, winfo);
     info.setAttribute(ItemSectionInfo.class, winfo);
-    winfo.setWizardState(state);
+    info.setAttribute(WizardStateInterface.class, state);
 
     List<WizardStateListener> listeners = stateListeners.getAllImplementors(info);
     for (WizardStateListener stateListener : listeners) {
       stateListener.handleWizardState(info, state);
     }
-    // FIXME: save here??
   }
 
   @Override
@@ -248,8 +249,7 @@ public class RootWizardSection extends TwoColumnLayout<WizardForm>
     }
 
     context.getForm().setName("WizardForm");
-    final WizardSectionInfo winfo = getWizardInfo(context);
-    final WizardState state = winfo.getWizardState();
+
     return super.renderHtml(context);
   }
 
