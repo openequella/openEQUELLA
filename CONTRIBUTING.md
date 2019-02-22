@@ -10,11 +10,11 @@ do, please take a moment to consult the below.
 If before any of the below you'd like to discuss an issue or some code, then come and chat with
 us on one of the following platforms:
 
-* [Users mailing list](https://groups.google.com/a/apereo.org/forum/#!forum/equella-users) - Most
+- [Users mailing list](https://groups.google.com/a/apereo.org/forum/#!forum/equella-users) - Most
   active, best for more usage centric questions
-* [Developer mailing list](https://groups.google.com/a/apereo.org/forum/#!forum/equella-dev) - For
+- [Developer mailing list](https://groups.google.com/a/apereo.org/forum/#!forum/equella-dev) - For
   discussing work on the code
-* \#Equella channel in [Apereo's slack](https://apereo.slack.com/)
+- \#Equella channel in [Apereo's slack](https://apereo.slack.com/)
 
 ## Submitting Issues
 
@@ -28,8 +28,8 @@ When you submit an issue, please take the time to provide as much info as you ca
 
 ## Contributing Code / Pull Requests
 
-As per standard Apereo projects:  If you wish to contribute to Open EQUELLA itself, you should first
-subscribe to the Open EQUELLA Google Group as outlined above and discuss your contributions with
+As per standard Apereo projects: If you wish to contribute to openEQUELLA itself, you should first
+subscribe to the openEQUELLA Google Group as outlined above and discuss your contributions with
 the other developers. You will also need to sign a
 [Contributor License Agreement](https://www.apereo.org/node/676).
 
@@ -78,7 +78,7 @@ Historically some branches did not follow that format, so if you're looking for 
 version:
 
 | Version | Branch       |
-|---------|--------------|
+| ------- | ------------ |
 | 6.6     | `stable-6.6` |
 | 6.5     | `stable`     |
 | 6.4     | `6.4`        |
@@ -92,7 +92,7 @@ environment. Effort was undertaken in 6.5 to remove these linkages.
 ## Setting up a development environment
 
 Note: There are a couple of changes to the build process, and some discussion on Scala / Java and
-the frontend that should be understood when working on Equella code - please take a look at this
+the frontend that should be understood when working on openEQUELLA code - please take a look at this
 [Google Group
 thread](https://groups.google.com/a/apereo.org/forum/#!topic/equella-users/bLV_XXQFOTI) and this
 [issue ticket](https://github.com/equella/Equella/issues/437). This page will be updated once the
@@ -124,18 +124,42 @@ EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.ManagedClas
 EclipseKeys.eclipseOutput := Some("target/scala-2.11/classes/")
 ```
 
+#### Code Formatters
+
+All code should be formatted using the following formatting tools:
+
+- Scala - [scalafmt](https://scalameta.org/scalafmt/)
+- Java - [Google Java Format](https://github.com/google/google-java-format)
+- Typescript/JS - [Prettier](https://prettier.io/)
+
+Each formatter has various IDE plugins, in particular IntelliJ is well supported:
+
+- [Google Java Format](https://plugins.jetbrains.com/plugin/8527-google-java-format)
+- scalafmt is built in
+- [Prettier](https://plugins.jetbrains.com/plugin/10456-prettier)
+
+#### Pre-commit hook
+
+openEQUELLA provides a script to set up git pre-commit hooks to format the code
+you have modified before commiting. To set it up you must run the installer once
+(from the root dir):
+
+```bash
+yarn install
+```
+
 #### Create dev configuration settings
 
-EQUELLA requires a configuration folder (`learningedge-config`) in order to start and there
+openEQUELLA requires a configuration folder (`learningedge-config`) in order to start and there
 is an sbt task which will generate configuration files suitable for running with your dev environment:
 
 ```bash
 sbt prepareDevConfig
 ```
 
-This will create a configuration in the `{Equella repo}/Dev/learningedge-config` folder which you can
+This will create a configuration in the `{openEQUELLA repo}/Dev/learningedge-config` folder which you can
 modify for your needs, in particular you will need to configure `hibernate.properties` to point to
-the database that you have created for EQUELLA.
+the database that you have created for openEQUELLA.
 
 The default admin url will be: `http://localhost:8080/`
 
@@ -152,7 +176,7 @@ task is required to copy the jars into a known location for the runner. This tas
 
 #### Running SBT task to generate non-java resources
 
-When you build EQUELLA from within IntelliJ, it will only compile Scala/Java sources and copy
+When you build openEQUELLA from within IntelliJ, it will only compile Scala/Java sources and copy
 resources from the resource folders, it won't run any of the scripts that generate resoureces (such
 as compile code to Javascript), in order to do this you can run:
 
@@ -176,7 +200,7 @@ Inside the `Source/Server/equellaserver` project.
 
 Ensure that your runner settings compiles the whole project before running:
 
-* IntelliJ - `Before Launch -> Build Project`
+- IntelliJ - `Before Launch -> Build Project`
 
 #### Running the admin tool
 
@@ -199,7 +223,7 @@ of separate JS bundles which are generated and you could develop them easier by 
 ~/Source/Plugins/Core/com.equella.core/js$ yarn run dev:index
 ```
 
-This will build the javascript bundle to the correct location for running a dev EQUELLA and will
+This will build the javascript bundle to the correct location for running a dev openEQUELLA and will
 watch for source changes and re-build if required.
 
 ### SBT Notes
@@ -211,28 +235,28 @@ Plug-ins are global to the build but can be turned on/off on a per project basis
 
 The root build is located in the following files:
 
-* `build.sbt`
-* `project/*.scala`
-* `project/plugins.sbt`
+- `build.sbt`
+- `project/*.scala`
+- `project/plugins.sbt`
 
 Located in the "project" folder is a series of SBT AutoPlugins which are responsible for replicating
 some of what the ant build used to do:
 
-* `JPFScanPlugin` - scanning for plug-in projects
-* `JPFPlugin` - default folder layout and settings for JPF plug-in projects
-* `JPFRunnerPlugin` - collecting plug-ins for deployment or running
+- `JPFScanPlugin` - scanning for plug-in projects
+- `JPFPlugin` - default folder layout and settings for JPF plug-in projects
+- `JPFRunnerPlugin` - collecting plug-ins for deployment or running
 
 The root plug-in manually defines the sub-project location and their inter-project dependencies:
 
-* `equellaserver` - contains the server bootstrap code and contains the dependency list for the
+- `equellaserver` - contains the server bootstrap code and contains the dependency list for the
   server, produces the upgrade zip
-* `InstallerZip` - produces the installer zip
-* `UpgradeZip` - produces the upgrade zip
-* `UpgradeInstallation` - the installation upgrader which is part of the upgrade zip
-* `UpgradeManager` - the upgrade manager web app
-* `conversion` - the conversion service
-* `allPlugins` - an aggregate project which can be used for building all the JPF plug-ins
-* `adminTool` - contains the admin console client launcher
+- `InstallerZip` - produces the installer zip
+- `UpgradeZip` - produces the upgrade zip
+- `UpgradeInstallation` - the installation upgrader which is part of the upgrade zip
+- `UpgradeManager` - the upgrade manager web app
+- `conversion` - the conversion service
+- `allPlugins` - an aggregate project which can be used for building all the JPF plug-ins
+- `adminTool` - contains the admin console client launcher
 
 #### Misc
 
