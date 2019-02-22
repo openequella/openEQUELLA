@@ -1,3 +1,11 @@
+lazy val Serial = config("serial") extend Test
+
+configs(Serial)
+
+dependsOn(LocalProject("IntegTester"), LocalProject("config"))
+
+inConfig(Serial)(Defaults.testTasks)
+
 val circeVersion = "0.9.3"
 val http4sVersion = "0.18.14"
 val catsVersion = "1.1.0"
@@ -33,7 +41,7 @@ libraryDependencies ++= Seq(
   "org.jvnet.hudson" % "xstream" % "1.3.1-hudson-8",
   "com.typesafe" % "config" % "1.3.1",
   "org.slf4j" % "slf4j-simple" % "1.7.5",
-  "org.scalacheck" %% "scalacheck" % "1.13.5" % Test,
+  "org.scalacheck" %% "scalacheck" % "1.13.5" % "test,serial",
   "org.http4s" %% "http4s-async-http-client" % http4sVersion,
   "org.http4s" %% "http4s-blaze-client" % http4sVersion,
   "org.http4s" %% "http4s-circe" % http4sVersion,
@@ -42,8 +50,25 @@ libraryDependencies ++= Seq(
 
 unmanagedBase in Compile := baseDirectory.value / "lib/adminjars"
 
-testOptions in Test := Seq(
-  Tests.Argument(TestFrameworks.ScalaCheck, "-s", "1")
+def serialFilter(name: String): Boolean = {
+  name endsWith "PropertiesSerial"
+}
+def stdFilter(name: String): Boolean = {
+  (name endsWith "Properties") && !serialFilter(name)
+}
+
+val commonOptions = Seq(
+  sbt.Tests.Argument(TestFrameworks.ScalaCheck, "-s", "1")
 )
+testOptions in Serial := commonOptions
+
+testOptions in Test := commonOptions
+
+testOptions in Test += sbt.Tests.Filter(stdFilter)
+
+testOptions in Serial += sbt.Tests.Filter(serialFilter)
+
+
+parallelExecution in Serial := false
 
 parallelExecution in Test := buildConfig.value.getBoolean("tests.parallel")

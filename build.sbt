@@ -7,26 +7,24 @@ import sbt.complete.DefaultParsers.spaceDelimited
 
 import scala.sys.process._
 import Path.rebase
+
 import scala.collection.JavaConverters._
 
 name := "equella-autotests"
 
 libraryDependencies += "org.jacoco" % "org.jacoco.agent" % "0.7.9" classifier "runtime"
 
-lazy val common = Seq(
-  scalaVersion := "2.12.6",
-  version := "1.0"
-)
+scalaVersion in ThisBuild := "2.12.6"
+version in ThisBuild := "1.0"
 
-common
 
-lazy val config = (project in file("config")).settings(resourceDirectory in Compile := baseDirectory.value / "resources").settings(common)
+lazy val config = (project in file("config")).settings(resourceDirectory in Compile := baseDirectory.value / "resources")
 
 lazy val IntegTester = project in file("IntegTester")
 
-lazy val Tests = (project in file("Tests")).settings(common).dependsOn(config, IntegTester)
+lazy val Tests = project in file("Tests")
 
-lazy val OldTests = (project in file("OldTests")).settings(common).dependsOn(Tests, config)
+lazy val OldTests = (project in file("OldTests")).dependsOn(Tests, config)
 
 
 buildConfig in ThisBuild := {

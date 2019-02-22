@@ -8,7 +8,7 @@ import org.openqa.selenium.By
 import org.scalacheck.Prop
 import org.scalacheck.Prop.forAll
 
-object LoginNoticeMenuProperties extends ShotProperties("Login Notice Menu Properties") {
+object LoginNoticeMenuPropertiesSerial extends ShotProperties("Login Notice Menu Properties") {
 
   property("pre login notice creation") = forAll { w1: RandomWord =>
     withLogon(autoTestLogon) { context =>
