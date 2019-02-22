@@ -21,7 +21,6 @@ import com.tle.beans.Staging;
 import com.tle.core.hibernate.dao.GenericDao;
 
 @NonNullByDefault
-public interface StagingDao extends GenericDao<Staging, String>
-{
-	void deleteAllForUserSession(String userSession);
+public interface StagingDao extends GenericDao<Staging, String> {
+  void deleteAllForUserSession(String userSession);
 }

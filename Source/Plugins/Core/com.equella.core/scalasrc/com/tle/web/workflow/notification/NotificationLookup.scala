@@ -32,46 +32,47 @@ import javax.inject.Inject
 import scala.collection.JavaConverters._
 import scala.util.Try
 
-trait NotificationLookup
-{
+trait NotificationLookup {
   @Inject
-  var itemService : ItemService = _
+  var itemService: ItemService = _
 
   @Inject
-  var bundleCache : BundleCache = _
+  var bundleCache: BundleCache = _
 
   @Inject
-  var viewItemUrlFactory : ViewItemUrlFactory = _
+  var viewItemUrlFactory: ViewItemUrlFactory = _
 
   @Inject
-  var controller : SectionsController = _
+  var controller: SectionsController = _
 
-  trait ItemNotification extends NotificationModel
-  {
+  trait ItemNotification extends NotificationModel {
     def note: Notification
     def item: Item
     def getItemName = new ItemNameLabel(item, bundleCache)
-    def getLink = viewItemUrlFactory.createFullItemUrl(item.getItemId)
+    def getLink     = viewItemUrlFactory.createFullItemUrl(item.getItemId)
   }
 
-  trait OwnerLookup extends ItemNotification
-  {
+  trait OwnerLookup extends ItemNotification {
     def lul: LazyUserLookup
     def getOwner = new UserLabel(item.getOwner, lul)
   }
 
-  trait TaskNotification extends ItemNotification
-  {
-    val itemTaskId = Try(new ItemTaskId(note.getItemid)).getOrElse(new ItemTaskId(new ItemId(note.getItemidOnly), ""))
-    def taskId = itemTaskId.getTaskId
+  trait TaskNotification extends ItemNotification {
+    val itemTaskId = Try(new ItemTaskId(note.getItemid))
+      .getOrElse(new ItemTaskId(new ItemId(note.getItemidOnly), ""))
+    def taskId      = itemTaskId.getTaskId
     def getTaskName = taskLabel(taskId)
     def getTaskLink = linkToTask(taskId)
-    def workflowItem(taskId: String) : Option[WorkflowNode] =
-      Option(item.getItemDefinition.getWorkflow).flatMap(_.getNodes.asScala.find(_.getUuid == taskId))
+    def workflowItem(taskId: String): Option[WorkflowNode] =
+      Option(item.getItemDefinition.getWorkflow)
+        .flatMap(_.getNodes.asScala.find(_.getUuid == taskId))
 
-
-    def taskLabel(taskId: String) : Label = {
-      workflowItem(taskId).map { wn => new BundleLabel(wn.getName, bundleCache) }.getOrElse(NotificationLangStrings.unknownTask(taskId))
+    def taskLabel(taskId: String): Label = {
+      workflowItem(taskId)
+        .map { wn =>
+          new BundleLabel(wn.getName, bundleCache)
+        }
+        .getOrElse(NotificationLangStrings.unknownTask(taskId))
     }
     def linkToTask(taskId: String) = {
       RootTaskListSection.createModerateBookmark(controller, new ItemTaskId(item.getItemId, taskId))
@@ -80,22 +81,27 @@ trait NotificationLookup
 
   def createItemNotification(tName: String)(n: Notification, i: Item): ItemNotification =
     new ItemNotification {
-      def item = i
-      def note = n
+      def item  = i
+      def note  = n
       def group = StdNotificationGroup(tName, n.getReason)
     }
 
-  def createItemNotifications(templateName: String, notifications: Iterable[Notification]): Iterable[ItemNotification] =
-    createDataIgnore(notifications, createItemNotification(templateName)).toSeq.sortBy(_.getItemName.getText.toLowerCase)
+  def createItemNotifications(templateName: String,
+                              notifications: Iterable[Notification]): Iterable[ItemNotification] =
+    createDataIgnore(notifications, createItemNotification(templateName)).toSeq
+      .sortBy(_.getItemName.getText.toLowerCase)
 
-  def createDataIgnore[A](notifications: Iterable[Notification], f: (Notification, Item) => A): Iterable[A] =
-    createData(notifications, (n,oi) => oi.map(f(n, _)))
+  def createDataIgnore[A](notifications: Iterable[Notification],
+                          f: (Notification, Item) => A): Iterable[A] =
+    createData(notifications, (n, oi) => oi.map(f(n, _)))
 
-  protected def createData[A](notifications: Iterable[Notification], f: (Notification, Option[Item]) => Option[A]): Iterable[A] = {
-    def itemOnly(n: Notification) : ItemId = new ItemId(n.getItemidOnly)
-    val itemIds = notifications.toBuffer[Notification].map(itemOnly)
-    val itemMap = itemService.queryItemsByItemIds(itemIds.asJava)
-    notifications.flatMap { n => f(n, Option(itemMap.get(itemOnly(n)))) }
+  protected def createData[A](notifications: Iterable[Notification],
+                              f: (Notification, Option[Item]) => Option[A]): Iterable[A] = {
+    def itemOnly(n: Notification): ItemId = new ItemId(n.getItemidOnly)
+    val itemIds                           = notifications.toBuffer[Notification].map(itemOnly)
+    val itemMap                           = itemService.queryItemsByItemIds(itemIds.asJava)
+    notifications.flatMap { n =>
+      f(n, Option(itemMap.get(itemOnly(n))))
+    }
   }
 }
-

@@ -16,21 +16,6 @@
 
 package com.tle.admin.hierarchy;
 
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.Collection;
-import java.util.Collections;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-
-import com.tle.core.plugins.AbstractPluginService;
-import net.miginfocom.swing.MigLayout;
-
 import com.dytech.gui.ComponentHelper;
 import com.tle.admin.common.gui.tree.AbstractTreeEditor;
 import com.tle.admin.common.gui.tree.AbstractTreeEditorTree;
@@ -44,103 +29,106 @@ import com.tle.common.applet.client.EntityCache;
 import com.tle.common.hierarchy.RemoteHierarchyService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.remoting.RemoteTLEAclManager;
+import com.tle.core.plugins.AbstractPluginService;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import net.miginfocom.swing.MigLayout;
 
 @SuppressWarnings("nls")
-public class HierarchyDialog extends JDialog
-{
-	private static final long serialVersionUID = 1L;
+public class HierarchyDialog extends JDialog {
+  private static final long serialVersionUID = 1L;
 
-	protected AbstractTreeEditor<HierarchyTreeNode> tree;
+  protected AbstractTreeEditor<HierarchyTreeNode> tree;
 
-	private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
+  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
 
-	protected String getString(String key)
-	{
-		return CurrentLocale.get(getKey(key));
-	}
+  protected String getString(String key) {
+    return CurrentLocale.get(getKey(key));
+  }
 
-	protected String getKey(String key)
-	{
-		return KEY_PFX+key;
-	}
+  protected String getKey(String key) {
+    return KEY_PFX + key;
+  }
 
-	public HierarchyDialog(Frame frame, final ClientService clientService)
-	{
-		super(frame);
+  public HierarchyDialog(Frame frame, final ClientService clientService) {
+    super(frame);
 
-		final RemoteHierarchyService hierarchyService = clientService.getService(RemoteHierarchyService.class);
+    final RemoteHierarchyService hierarchyService =
+        clientService.getService(RemoteHierarchyService.class);
 
-		tree = new AbstractTreeEditor<HierarchyTreeNode>()
-		{
-			private static final long serialVersionUID = 1L;
+    tree =
+        new AbstractTreeEditor<HierarchyTreeNode>() {
+          private static final long serialVersionUID = 1L;
 
-			protected EntityCache cache;
+          protected EntityCache cache;
 
-			@Override
-			protected AbstractTreeNodeEditor createEditor(HierarchyTreeNode node)
-			{
-				if( !tree.canEdit(node) )
-				{
-					return new BasicMessageEditor(getString("notopic.noteditable"));
-				}
+          @Override
+          protected AbstractTreeNodeEditor createEditor(HierarchyTreeNode node) {
+            if (!tree.canEdit(node)) {
+              return new BasicMessageEditor(getString("notopic.noteditable"));
+            }
 
-				HierarchyPack pack = hierarchyService.getHierarchyPack(node.getId());
-				if( cache == null )
-				{
-					cache = new EntityCache(clientService);
-				}
-				return new TopicEditor(clientService, cache, node, pack);
-			}
+            HierarchyPack pack = hierarchyService.getHierarchyPack(node.getId());
+            if (cache == null) {
+              cache = new EntityCache(clientService);
+            }
+            return new TopicEditor(clientService, cache, node, pack);
+          }
 
-			@Override
-			protected AbstractTreeEditorTree<HierarchyTreeNode> createTree()
-			{
-				final boolean canAddRootTopics = !clientService.getService(RemoteTLEAclManager.class)
-					.filterNonGrantedPrivileges(null, "EDIT_HIERARCHY_TOPIC").isEmpty();
+          @Override
+          protected AbstractTreeEditorTree<HierarchyTreeNode> createTree() {
+            final boolean canAddRootTopics =
+                !clientService
+                    .getService(RemoteTLEAclManager.class)
+                    .filterNonGrantedPrivileges(null, "EDIT_HIERARCHY_TOPIC")
+                    .isEmpty();
 
-				return new TreeEditor(hierarchyService, canAddRootTopics);
-			}
-		};
+            return new TreeEditor(hierarchyService, canAddRootTopics);
+          }
+        };
 
-		JPanel all = new JPanel(new MigLayout("fill, wrap 1", "[grow]", "[fill, grow][][]"));
-		all.add(tree, "grow, push");
-		all.add(new JSeparator(), "growx");
-		all.add(new JButton(closeAction), "alignx right");
+    JPanel all = new JPanel(new MigLayout("fill, wrap 1", "[grow]", "[fill, grow][][]"));
+    all.add(tree, "grow, push");
+    all.add(new JSeparator(), "growx");
+    all.add(new JButton(closeAction), "alignx right");
 
-		setTitle(getString("hierarchydialog.title"));
-		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		getContentPane().add(all);
-		setModal(true);
+    setTitle(getString("hierarchydialog.title"));
+    setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+    getContentPane().add(all);
+    setModal(true);
 
-		addWindowListener(new WindowAdapter()
-		{
-			@Override
-			public void windowClosing(WindowEvent e)
-			{
-				closeAction.actionPerformed(null);
-			}
-		});
+    addWindowListener(
+        new WindowAdapter() {
+          @Override
+          public void windowClosing(WindowEvent e) {
+            closeAction.actionPerformed(null);
+          }
+        });
 
-		ComponentHelper.percentageOfScreen(this, 0.9f, 0.9f);
-		ComponentHelper.centreOnScreen(this);
-	}
+    ComponentHelper.percentageOfScreen(this, 0.9f, 0.9f);
+    ComponentHelper.centreOnScreen(this);
+  }
 
-	private final TLEAction closeAction = new com.tle.admin.gui.common.actions.CloseAction()
-	{
-		private static final long serialVersionUID = 1L;
+  private final TLEAction closeAction =
+      new com.tle.admin.gui.common.actions.CloseAction() {
+        private static final long serialVersionUID = 1L;
 
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			Runnable actionAfterSave = new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					dispose();
-				}
-			};
-			tree.saveChanges(actionAfterSave);
-		}
-	};
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          Runnable actionAfterSave =
+              new Runnable() {
+                @Override
+                public void run() {
+                  dispose();
+                }
+              };
+          tree.saveChanges(actionAfterSave);
+        }
+      };
 }

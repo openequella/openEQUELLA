@@ -16,12 +16,6 @@
 
 package com.tle.web.viewitem.summary.section;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
-
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.SummaryDisplayTemplate;
 import com.tle.beans.item.Item;
@@ -58,223 +52,187 @@ import com.tle.web.viewitem.section.AbstractParentViewItemSection;
 import com.tle.web.viewitem.section.ParentViewItemSectionUtils;
 import com.tle.web.viewitem.summary.content.VersionsContentSection;
 import com.tle.web.viewurl.ItemSectionInfo;
+import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public abstract class AbstractItemDetailsSection<M extends AbstractItemDetailsSection.ItemDetailsModel>
-	extends
-		AbstractParentViewItemSection<M>
-	implements HideableFromDRMSection
-{
-	@Inject
-	private UserLinkService userLinkService;
-	private UserLinkSection userLinkSection;
-	@Inject
-	private BreadcrumbService breadcrumbService;
-	@Inject
-	private TLEAclManager aclService;
+public abstract class AbstractItemDetailsSection<
+        M extends AbstractItemDetailsSection.ItemDetailsModel>
+    extends AbstractParentViewItemSection<M> implements HideableFromDRMSection {
+  @Inject private UserLinkService userLinkService;
+  private UserLinkSection userLinkSection;
+  @Inject private BreadcrumbService breadcrumbService;
+  @Inject private TLEAclManager aclService;
 
-	@EventFactory
-	private EventGenerator events;
-	@ViewFactory
-	private FreemarkerFactory view;
+  @EventFactory private EventGenerator events;
+  @ViewFactory private FreemarkerFactory view;
 
-	@TreeLookup(mandatory = false)
-	protected ItemSummaryContentSection contentSection;
-	@TreeLookup(mandatory = false)
-	private VersionsContentSection versionsContentSection;
+  @TreeLookup(mandatory = false)
+  protected ItemSummaryContentSection contentSection;
 
-	@Component(name = "sv")
-	@PlugKey("summary.sidebar.itemdetailsgroup.display")
-	private Link showVersionsLink;
+  @TreeLookup(mandatory = false)
+  private VersionsContentSection versionsContentSection;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !canView(context) )
-		{
-			return null;
-		}
-		final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(context);
-		final Item item = itemInfo.getItem();
-		final ItemDefinition itemDefinition = item.getItemDefinition();
-		final SummaryDisplayTemplate summaryConfig = itemDefinition.getItemSummaryDisplayTemplate();
-		final ItemDetailsModel model = getModel(context);
+  @Component(name = "sv")
+  @PlugKey("summary.sidebar.itemdetailsgroup.display")
+  private Link showVersionsLink;
 
-		if( !summaryConfig.isHideOwner() )
-		{
-			model.setOwnerLink(userLinkSection.createLink(context, item.getOwner()));
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (!canView(context)) {
+      return null;
+    }
+    final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(context);
+    final Item item = itemInfo.getItem();
+    final ItemDefinition itemDefinition = item.getItemDefinition();
+    final SummaryDisplayTemplate summaryConfig = itemDefinition.getItemSummaryDisplayTemplate();
+    final ItemDetailsModel model = getModel(context);
 
-		if( !summaryConfig.isHideCollaborators() )
-		{
-			Set<String> collabs = item.getCollaborators();
-			if( !Check.isEmpty(collabs) )
-			{
-				model.setCollaboratorLinks(userLinkSection.createLinks(context, collabs));
-			}
-		}
+    if (!summaryConfig.isHideOwner()) {
+      model.setOwnerLink(userLinkSection.createLink(context, item.getOwner()));
+    }
 
-		TagState col = breadcrumbService.getSearchCollectionCrumb(context, itemDefinition.getUuid());
-		if( col instanceof HtmlLinkState )
-		{
-			((HtmlLinkState) col).setDisabled(isForPreview(context) || isInIntegration(context));
-		}
+    if (!summaryConfig.isHideCollaborators()) {
+      Set<String> collabs = item.getCollaborators();
+      if (!Check.isEmpty(collabs)) {
+        model.setCollaboratorLinks(userLinkSection.createLinks(context, collabs));
+      }
+    }
 
-		model.setCollectionLink(col);
+    TagState col = breadcrumbService.getSearchCollectionCrumb(context, itemDefinition.getUuid());
+    if (col instanceof HtmlLinkState) {
+      ((HtmlLinkState) col).setDisabled(isForPreview(context) || isInIntegration(context));
+    }
 
-		model.setStatus(CurrentLocale.get(ItemStatusKeys.get(item.getStatus())));
-		model.setVersion(new NumberLabel(item.getVersion()));
-		if (!aclService.filterNonGrantedPrivileges(item, SecurityConstants.VIEW_VIEWCOUNT).isEmpty())
-		{
-			model.setViews(ViewCountJavaDao.getSummaryViewCount(item.getItemId()));
-		}
+    model.setCollectionLink(col);
 
-		List<SectionRenderable> sections = renderChildren(context, new ResultListCollector()).getResultList();
-		model.setSections(sections);
-		return view.createResult(getTemplate(context), context);
-	}
+    model.setStatus(CurrentLocale.get(ItemStatusKeys.get(item.getStatus())));
+    model.setVersion(new NumberLabel(item.getVersion()));
+    if (!aclService.filterNonGrantedPrivileges(item, SecurityConstants.VIEW_VIEWCOUNT).isEmpty()) {
+      model.setViews(ViewCountJavaDao.getSummaryViewCount(item.getItemId()));
+    }
 
-	protected abstract String getTemplate(RenderEventContext context);
+    List<SectionRenderable> sections =
+        renderChildren(context, new ResultListCollector()).getResultList();
+    model.setSections(sections);
+    return view.createResult(getTemplate(context), context);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		userLinkSection = userLinkService.register(tree, id);
-		showVersionsLink.setClickHandler(events.getNamedHandler("showVersions"));
-	}
+  protected abstract String getTemplate(RenderEventContext context);
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		return !getModel(info).isHide();
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    userLinkSection = userLinkService.register(tree, id);
+    showVersionsLink.setClickHandler(events.getNamedHandler("showVersions"));
+  }
 
-	@EventHandlerMethod
-	public void showVersions(SectionInfo info)
-	{
-		contentSection.setSummaryId(info, versionsContentSection);
-	}
+  @Override
+  public boolean canView(SectionInfo info) {
+    return !getModel(info).isHide();
+  }
 
-	@Override
-	public ItemDetailsModel instantiateModel(SectionInfo info)
-	{
-		return new ItemDetailsModel();
-	}
+  @EventHandlerMethod
+  public void showVersions(SectionInfo info) {
+    contentSection.setSummaryId(info, versionsContentSection);
+  }
 
-	@Override
-	public void showSection(SectionInfo info, boolean show)
-	{
-		getModel(info).setHide(!show);
-	}
+  @Override
+  public ItemDetailsModel instantiateModel(SectionInfo info) {
+    return new ItemDetailsModel();
+  }
 
-	public Link getShowVersionsLink()
-	{
-		return showVersionsLink;
-	}
+  @Override
+  public void showSection(SectionInfo info, boolean show) {
+    getModel(info).setHide(!show);
+  }
 
-	public void setContentSection(ItemSummaryContentSection contentSection)
-	{
-		this.contentSection = contentSection;
-	}
+  public Link getShowVersionsLink() {
+    return showVersionsLink;
+  }
 
-	public void setVersionsContentSection(VersionsContentSection versionsContentSection)
-	{
-		this.versionsContentSection = versionsContentSection;
-	}
+  public void setContentSection(ItemSummaryContentSection contentSection) {
+    this.contentSection = contentSection;
+  }
 
-	public static class ItemDetailsModel
-	{
-		private HtmlLinkState ownerLink;
-		private List<HtmlLinkState> collaboratorLinks;
-		private TagState collectionLink;
-		private String status;
-		private Label version;
-		private List<SectionRenderable> sections;
-		private boolean hide;
-		private Integer views;
+  public void setVersionsContentSection(VersionsContentSection versionsContentSection) {
+    this.versionsContentSection = versionsContentSection;
+  }
 
-		public HtmlLinkState getOwnerLink()
-		{
-			return ownerLink;
-		}
+  public static class ItemDetailsModel {
+    private HtmlLinkState ownerLink;
+    private List<HtmlLinkState> collaboratorLinks;
+    private TagState collectionLink;
+    private String status;
+    private Label version;
+    private List<SectionRenderable> sections;
+    private boolean hide;
+    private Integer views;
 
-		public void setOwnerLink(HtmlLinkState ownerLink)
-		{
-			this.ownerLink = ownerLink;
-		}
+    public HtmlLinkState getOwnerLink() {
+      return ownerLink;
+    }
 
-		public List<HtmlLinkState> getCollaboratorLinks()
-		{
-			return collaboratorLinks;
-		}
+    public void setOwnerLink(HtmlLinkState ownerLink) {
+      this.ownerLink = ownerLink;
+    }
 
-		public void setCollaboratorLinks(List<HtmlLinkState> collaboratorLinks)
-		{
-			this.collaboratorLinks = collaboratorLinks;
-		}
+    public List<HtmlLinkState> getCollaboratorLinks() {
+      return collaboratorLinks;
+    }
 
-		public TagState getCollectionLink()
-		{
-			return collectionLink;
-		}
+    public void setCollaboratorLinks(List<HtmlLinkState> collaboratorLinks) {
+      this.collaboratorLinks = collaboratorLinks;
+    }
 
-		public void setCollectionLink(TagState collectionLink)
-		{
-			this.collectionLink = collectionLink;
-		}
+    public TagState getCollectionLink() {
+      return collectionLink;
+    }
 
-		public String getStatus()
-		{
-			return status;
-		}
+    public void setCollectionLink(TagState collectionLink) {
+      this.collectionLink = collectionLink;
+    }
 
-		public void setStatus(String status)
-		{
-			this.status = status;
-		}
+    public String getStatus() {
+      return status;
+    }
 
-		public Label getVersion()
-		{
-			return version;
-		}
+    public void setStatus(String status) {
+      this.status = status;
+    }
 
-		public void setVersion(Label version)
-		{
-			this.version = version;
-		}
+    public Label getVersion() {
+      return version;
+    }
 
-		public List<SectionRenderable> getSections()
-		{
-			return sections;
-		}
+    public void setVersion(Label version) {
+      this.version = version;
+    }
 
-		public void setSections(List<SectionRenderable> sections)
-		{
-			this.sections = sections;
-		}
+    public List<SectionRenderable> getSections() {
+      return sections;
+    }
 
-		public boolean isHide()
-		{
-			return hide;
-		}
+    public void setSections(List<SectionRenderable> sections) {
+      this.sections = sections;
+    }
 
-		public void setHide(boolean hide)
-		{
-			this.hide = hide;
-		}
+    public boolean isHide() {
+      return hide;
+    }
 
-		public Integer getViews()
-		{
-			return views;
-		}
+    public void setHide(boolean hide) {
+      this.hide = hide;
+    }
 
-		public void setViews(Integer views)
-		{
-			this.views = views;
-		}
-	}
+    public Integer getViews() {
+      return views;
+    }
+
+    public void setViews(Integer views) {
+      this.views = views;
+    }
+  }
 }

@@ -28,42 +28,36 @@ import com.tle.web.search.guice.AbstractSearchModule;
 import com.tle.web.search.sort.SortOptionsSection;
 
 @SuppressWarnings("nls")
-public class BrowseByModule extends AbstractSearchModule
-{
-	@Override
-	protected String getTreeName()
-	{
-		return "/access/browseby";
-	}
+public class BrowseByModule extends AbstractSearchModule {
+  @Override
+  protected String getTreeName() {
+    return "/access/browseby";
+  }
 
-	@Override
-	protected NodeProvider getRootNode()
-	{
-		NodeProvider node = node(BrowsePage.class);
-		node.child(BrowseSection.class);
-		return node;
-	}
+  @Override
+  protected NodeProvider getRootNode() {
+    NodeProvider node = node(BrowsePage.class);
+    node.child(BrowseSection.class);
+    return node;
+  }
 
-	@Override
-	protected NodeProvider getQueryNode()
-	{
-		return null;
-	}
+  @Override
+  protected NodeProvider getQueryNode() {
+    return null;
+  }
 
-	@Override
-	protected NodeProvider getResultsNode()
-	{
-		return node(BrowseSearchResults.class);
-	}
+  @Override
+  protected NodeProvider getResultsNode() {
+    return node(BrowseSearchResults.class);
+  }
 
-	@Override
-	protected void addSearchResultsActions(NodeProvider node)
-	{
-		node.child(ShareSearchQueryAction.class);
-		node.child(SortOptionsSection.class);
-		node.child(FilterByKeywordSection.class);
-		node.child(FilterByOwnerSection.class);
-		node.child(FilterByDateRangeSection.class);
-		node.child(FilterByMimeTypeSection.class);
-	}
+  @Override
+  protected void addSearchResultsActions(NodeProvider node) {
+    node.child(ShareSearchQueryAction.class);
+    node.child(SortOptionsSection.class);
+    node.child(FilterByKeywordSection.class);
+    node.child(FilterByOwnerSection.class);
+    node.child(FilterByDateRangeSection.class);
+    node.child(FilterByMimeTypeSection.class);
+  }
 }

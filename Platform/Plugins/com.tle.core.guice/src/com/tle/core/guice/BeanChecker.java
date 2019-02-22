@@ -16,11 +16,9 @@
 
 package com.tle.core.guice;
 
+import com.tle.core.plugins.PluginService;
 import java.util.Set;
 
-import com.tle.core.plugins.PluginService;
-
-public interface BeanChecker
-{
-	void check(PluginService pluginService, Class<?> actualClass, Set<Class<?>> interfaces);
+public interface BeanChecker {
+  void check(PluginService pluginService, Class<?> actualClass, Set<Class<?>> interfaces);
 }

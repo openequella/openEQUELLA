@@ -16,279 +16,216 @@
 
 package com.tle.web.wizard.controls;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.wizard.beans.control.WizardControl;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
-import com.tle.beans.entity.LanguageBundle;
 import com.tle.core.wizard.controls.HTMLControl;
 import com.tle.core.wizard.controls.WizardPage;
+import java.util.ArrayList;
+import java.util.List;
 
-public class GroupsCtrl extends OptionCtrl
-{
-	private static final long serialVersionUID = 1L;
+public class GroupsCtrl extends OptionCtrl {
+  private static final long serialVersionUID = 1L;
 
-	private WizardGroupListener listener;
-	private final List<ControlGroup> groups = new ArrayList<ControlGroup>();
-	private final transient Object groupsLock = new Object();
+  private WizardGroupListener listener;
+  private final List<ControlGroup> groups = new ArrayList<ControlGroup>();
+  private final transient Object groupsLock = new Object();
 
-	public GroupsCtrl(WizardPage page, int controlNumber, int nestingLevel, WizardControl controlBean)
-	{
-		super(page, controlNumber, nestingLevel, controlBean);
-	}
+  public GroupsCtrl(
+      WizardPage page, int controlNumber, int nestingLevel, WizardControl controlBean) {
+    super(page, controlNumber, nestingLevel, controlBean);
+  }
 
-	protected void clearGroups()
-	{
-		synchronized( groupsLock )
-		{
-			groups.clear();
-		}
-	}
+  protected void clearGroups() {
+    synchronized (groupsLock) {
+      groups.clear();
+    }
+  }
 
-	protected void addGroup(ControlGroup group)
-	{
-		synchronized( groupsLock )
-		{
-			groups.add(group);
-		}
-	}
+  protected void addGroup(ControlGroup group) {
+    synchronized (groupsLock) {
+      groups.add(group);
+    }
+  }
 
-	protected void addGroup(int index, ControlGroup group)
-	{
-		synchronized( groupsLock )
-		{
-			groups.add(index, group);
-		}
-	}
+  protected void addGroup(int index, ControlGroup group) {
+    synchronized (groupsLock) {
+      groups.add(index, group);
+    }
+  }
 
-	protected void removeGroup(int index)
-	{
-		synchronized( groupsLock )
-		{
-			groups.remove(index);
-		}
-	}
+  protected void removeGroup(int index) {
+    synchronized (groupsLock) {
+      groups.remove(index);
+    }
+  }
 
-	protected int getGroupSize()
-	{
-		synchronized( groupsLock )
-		{
-			return groups.size();
-		}
-	}
+  protected int getGroupSize() {
+    synchronized (groupsLock) {
+      return groups.size();
+    }
+  }
 
-	@Override
-	public void doEvaluate()
-	{
-		super.doEvaluate();
+  @Override
+  public void doEvaluate() {
+    super.doEvaluate();
 
-		for( ControlGroup group : getGroups() )
-		{
-			for( HTMLControl control : group.getControls() )
-			{
-				control.evaluate();
-			}
-		}
-	}
+    for (ControlGroup group : getGroups()) {
+      for (HTMLControl control : group.getControls()) {
+        control.evaluate();
+      }
+    }
+  }
 
-	@Override
-	public void resetToDefaults()
-	{
-		for( ControlGroup group : getGroups() )
-		{
-			resetGroup(group);
-		}
-	}
+  @Override
+  public void resetToDefaults() {
+    for (ControlGroup group : getGroups()) {
+      resetGroup(group);
+    }
+  }
 
-	@Override
-	public void setDontShowEmpty(boolean b)
-	{
-		super.setDontShowEmpty(b);
-		for( ControlGroup group : getGroups() )
-		{
-			for( HTMLControl c : group.getControls() )
-			{
-				c.setDontShowEmpty(b);
-			}
-		}
-	}
+  @Override
+  public void setDontShowEmpty(boolean b) {
+    super.setDontShowEmpty(b);
+    for (ControlGroup group : getGroups()) {
+      for (HTMLControl c : group.getControls()) {
+        c.setDontShowEmpty(b);
+      }
+    }
+  }
 
-	@Override
-	public void validate()
-	{
-		for( ControlGroup group : getGroups() )
-		{
-			for( HTMLControl c : group.getControls() )
-			{
-				validate(c);
-			}
-		}
-	}
+  @Override
+  public void validate() {
+    for (ControlGroup group : getGroups()) {
+      for (HTMLControl c : group.getControls()) {
+        validate(c);
+      }
+    }
+  }
 
-	@Override
-	public void clearInvalid()
-	{
-		super.clearInvalid();
-		for( ControlGroup group : getGroups() )
-		{
-			for( HTMLControl c : group.getControls() )
-			{
-				c.clearInvalid();
-			}
-		}
-	}
+  @Override
+  public void clearInvalid() {
+    super.clearInvalid();
+    for (ControlGroup group : getGroups()) {
+      for (HTMLControl c : group.getControls()) {
+        c.clearInvalid();
+      }
+    }
+  }
 
-	protected void validate(HTMLControl control)
-	{
-		control.validate();
-		if( control.isViewable() && (control.isInvalid() || (control.isEmpty() && control.isMandatory())) )
-		{
-			setInvalid(true, null);
-			return;
-		}
-	}
+  protected void validate(HTMLControl control) {
+    control.validate();
+    if (control.isViewable()
+        && (control.isInvalid() || (control.isEmpty() && control.isMandatory()))) {
+      setInvalid(true, null);
+      return;
+    }
+  }
 
-	@Override
-	public void setHidden(boolean hidden)
-	{
-		super.setHidden(hidden);
-		for( ControlGroup group : getGroups() )
-		{
-			for( HTMLControl c : group.getControls() )
-			{
-				c.setHidden(hidden);
-			}
-		}
-	}
+  @Override
+  public void setHidden(boolean hidden) {
+    super.setHidden(hidden);
+    for (ControlGroup group : getGroups()) {
+      for (HTMLControl c : group.getControls()) {
+        c.setHidden(hidden);
+      }
+    }
+  }
 
-	public ImmutableList<ControlGroup> getGroups()
-	{
-		synchronized( groupsLock )
-		{
-			return ImmutableList.copyOf(groups);
-		}
-	}
+  public ImmutableList<ControlGroup> getGroups() {
+    synchronized (groupsLock) {
+      return ImmutableList.copyOf(groups);
+    }
+  }
 
-	protected void loadGroup(ControlGroup group, PropBagEx itemxml, boolean dontshow)
-	{
-		for( HTMLControl ctrl : group.getControls() )
-		{
-			if( ctrl.isViewable() )
-			{
-				ctrl.loadFromDocument(itemxml);
-			}
-		}
-	}
+  protected void loadGroup(ControlGroup group, PropBagEx itemxml, boolean dontshow) {
+    for (HTMLControl ctrl : group.getControls()) {
+      if (ctrl.isViewable()) {
+        ctrl.loadFromDocument(itemxml);
+      }
+    }
+  }
 
-	protected void resetGroup(ControlGroup group)
-	{
-		for( HTMLControl ctrl : group.getControls() )
-		{
-			ctrl.resetToDefaults();
-		}
-	}
+  protected void resetGroup(ControlGroup group) {
+    for (HTMLControl ctrl : group.getControls()) {
+      ctrl.resetToDefaults();
+    }
+  }
 
-	protected void saveGroup(ControlGroup group, PropBagEx itemxml, boolean clear) throws Exception
-	{
-		for( HTMLControl ctrl : group.getControls() )
-		{
-			// only process the values if not disabled
-			if( clear || !ctrl.isVisible() )
-			{
-				ctrl.clearTargets(itemxml);
-			}
-			else if( !ctrl.isHidden() )
-			{
-				ctrl.saveToDocument(itemxml);
-			}
-		}
-	}
+  protected void saveGroup(ControlGroup group, PropBagEx itemxml, boolean clear) throws Exception {
+    for (HTMLControl ctrl : group.getControls()) {
+      // only process the values if not disabled
+      if (clear || !ctrl.isVisible()) {
+        ctrl.clearTargets(itemxml);
+      } else if (!ctrl.isHidden()) {
+        ctrl.saveToDocument(itemxml);
+      }
+    }
+  }
 
-	@Override
-	public void afterSaveValidate()
-	{
-		super.afterSaveValidate();
-		for( ControlGroup group : getGroups() )
-		{
-			afterSaveValidateGroup(group);
-		}
-	}
+  @Override
+  public void afterSaveValidate() {
+    super.afterSaveValidate();
+    for (ControlGroup group : getGroups()) {
+      afterSaveValidateGroup(group);
+    }
+  }
 
-	protected void afterSaveValidateGroup(ControlGroup group)
-	{
-		for( HTMLControl ctrl : group.getControls() )
-		{
-			try
-			{
-				ctrl.afterSaveValidate();
-			}
-			catch( Exception e )
-			{
-				throw Throwables.propagate(e);
-			}
-		}
-	}
+  protected void afterSaveValidateGroup(ControlGroup group) {
+    for (HTMLControl ctrl : group.getControls()) {
+      try {
+        ctrl.afterSaveValidate();
+      } catch (Exception e) {
+        throw Throwables.propagate(e);
+      }
+    }
+  }
 
-	public void setListener(WizardGroupListener listener)
-	{
-		this.listener = listener;
-	}
+  public void setListener(WizardGroupListener listener) {
+    this.listener = listener;
+  }
 
-	protected WizardGroupListener getListener()
-	{
-		return listener;
-	}
+  protected WizardGroupListener getListener() {
+    return listener;
+  }
 
-	public static class ControlGroup
-	{
-		private final List<HTMLControl> controls;
-		private int index;
+  public static class ControlGroup {
+    private final List<HTMLControl> controls;
+    private int index;
 
-		public ControlGroup(List<HTMLControl> controls, int index)
-		{
-			super();
-			this.controls = controls;
-			this.index = index;
-		}
+    public ControlGroup(List<HTMLControl> controls, int index) {
+      super();
+      this.controls = controls;
+      this.index = index;
+    }
 
-		public List<HTMLControl> getControls()
-		{
-			return controls;
-		}
+    public List<HTMLControl> getControls() {
+      return controls;
+    }
 
-		public int getIndex()
-		{
-			return index;
-		}
+    public int getIndex() {
+      return index;
+    }
 
-		public void setIndex(int index)
-		{
-			this.index = index;
-		}
+    public void setIndex(int index) {
+      this.index = index;
+    }
 
-		public boolean contains(HTMLControl control)
-		{
-			return controls.contains(control);
-		}
-	}
+    public boolean contains(HTMLControl control) {
+      return controls.contains(control);
+    }
+  }
 
-	@Override
-	public int getIndex(HTMLControl child)
-	{
-		for(int i = 0; i < groups.size(); i ++)
-		{
-			for(HTMLControl control : groups.get(i).getControls())
-			{
-				if(control == child)
-				{
-					return i;
-				}
-			}
-		}
-		return -1;
-	}
-
+  @Override
+  public int getIndex(HTMLControl child) {
+    for (int i = 0; i < groups.size(); i++) {
+      for (HTMLControl control : groups.get(i).getControls()) {
+        if (control == child) {
+          return i;
+        }
+      }
+    }
+    return -1;
+  }
 }

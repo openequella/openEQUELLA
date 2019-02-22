@@ -16,11 +16,7 @@
 
 package com.tle.core.workflow.standard.service;
 
-/**
- * @author Aaron
- *
- */
-public interface WorkflowStandardService
-{
-	//Nothing really...
+/** @author Aaron */
+public interface WorkflowStandardService {
+  // Nothing really...
 }

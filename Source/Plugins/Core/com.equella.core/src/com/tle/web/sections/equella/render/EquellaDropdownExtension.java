@@ -16,7 +16,7 @@
 
 package com.tle.web.sections.equella.render;
 
-import javax.inject.Singleton;
+import static com.tle.web.sections.standard.RendererConstants.DROPDOWN;
 
 import com.google.inject.Inject;
 import com.tle.core.accessibility.AccessibilityModeService;
@@ -28,48 +28,36 @@ import com.tle.web.sections.standard.RendererFactory;
 import com.tle.web.sections.standard.RendererFactoryExtension;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlListState;
+import javax.inject.Singleton;
 
-import static com.tle.web.sections.standard.RendererConstants.DROPDOWN;
-
-/**
- * plugin defines the stateClassName as HtmlListState
- */
+/** plugin defines the stateClassName as HtmlListState */
 @Bind
 @Singleton
-public class EquellaDropdownExtension implements RendererFactoryExtension
-{
-	public static String AUTOCOMPLETE_RENDERER = "autocomplete";
-	private static String AUTOCOMPLETE_FULL = AUTOCOMPLETE_RENDERER + "_" + DROPDOWN;
+public class EquellaDropdownExtension implements RendererFactoryExtension {
+  public static String AUTOCOMPLETE_RENDERER = "autocomplete";
+  private static String AUTOCOMPLETE_FULL = AUTOCOMPLETE_RENDERER + "_" + DROPDOWN;
 
-	@Inject
-	private AccessibilityModeService acMode;
+  @Inject private AccessibilityModeService acMode;
 
-	@Override
-	public SectionRenderable getRenderer(RendererFactory rendererFactory, SectionInfo info, String renderer,
-		HtmlComponentState state)
-	{
-		HtmlListState htmlListState = (HtmlListState) state; // NOSONAR
+  @Override
+  public SectionRenderable getRenderer(
+      RendererFactory rendererFactory,
+      SectionInfo info,
+      String renderer,
+      HtmlComponentState state) {
+    HtmlListState htmlListState = (HtmlListState) state; // NOSONAR
 
-		if( renderer.equals(BootstrapDropDownRenderer.RENDER_CONSTANT) )
-		{
-			return new BootstrapDropDownRenderer(htmlListState, false);
-		}
-		else if( renderer.equals(BootstrapDropDownRenderer.ACTIVE_RENDER_CONSTANT) )
-		{
-			return new BootstrapDropDownRenderer(htmlListState, true);
-		}
-		else if( renderer.equals(BootstrapSplitDropDownRenderer.SPLIT_RENDER_CONSTANT) )
-		{
-			return new BootstrapSplitDropDownRenderer((HtmlListState) state);
-		}
-		else if( renderer.equals(BootstrapSplitDropDownRenderer.SPLIT_NAVBAR_RENDER_CONSTANT) )
-		{
-			return new BootstrapSplitDropDownRenderer((HtmlListState) state, ButtonType.NAV);
-		}
-		else if (renderer.equals(AUTOCOMPLETE_FULL))
-		{
-			return new AutocompleteDropdownRenderer(htmlListState);
-		}
-		return new StylishDropDownRenderer(htmlListState);
-	}
+    if (renderer.equals(BootstrapDropDownRenderer.RENDER_CONSTANT)) {
+      return new BootstrapDropDownRenderer(htmlListState, false);
+    } else if (renderer.equals(BootstrapDropDownRenderer.ACTIVE_RENDER_CONSTANT)) {
+      return new BootstrapDropDownRenderer(htmlListState, true);
+    } else if (renderer.equals(BootstrapSplitDropDownRenderer.SPLIT_RENDER_CONSTANT)) {
+      return new BootstrapSplitDropDownRenderer((HtmlListState) state);
+    } else if (renderer.equals(BootstrapSplitDropDownRenderer.SPLIT_NAVBAR_RENDER_CONSTANT)) {
+      return new BootstrapSplitDropDownRenderer((HtmlListState) state, ButtonType.NAV);
+    } else if (renderer.equals(AUTOCOMPLETE_FULL)) {
+      return new AutocompleteDropdownRenderer(htmlListState);
+    }
+    return new StylishDropDownRenderer(htmlListState);
+  }
 }

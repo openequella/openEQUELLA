@@ -28,51 +28,43 @@ import com.tle.web.sections.standard.model.HtmlListModel;
 import com.tle.web.sections.standard.model.Option;
 
 @SuppressWarnings("nls")
-public class CloudFilterByPublisherSection extends AbstractCloudFilter
-{
-	@PlugKey("filter.bypublisher.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("filter.bypublisher.top")
-	private static String DEFAULT_OPTION;
+public class CloudFilterByPublisherSection extends AbstractCloudFilter {
+  @PlugKey("filter.bypublisher.title")
+  private static Label LABEL_TITLE;
 
-	@Override
-	public Label getTitle()
-	{
-		return LABEL_TITLE;
-	}
+  @PlugKey("filter.bypublisher.top")
+  private static String DEFAULT_OPTION;
 
-	@Override
-	public void prepareSearch(SectionInfo info, CloudSearchEvent event) throws Exception
-	{
-		String publisher = list.getSelectedValueAsString(info);
-		if( !Check.isEmpty(publisher) )
-		{
-			event.getCloudSearch().setPublisher(publisher);
-		}
-	}
+  @Override
+  public Label getTitle() {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	public HtmlListModel<NameValue> buildListModel()
-	{
-		return new DynamicHtmlListModel<NameValue>()
-		{
-			@Override
-			protected Option<NameValue> getTopOption()
-			{
-				return new KeyOption<NameValue>(DEFAULT_OPTION, "", null);
-			}
+  @Override
+  public void prepareSearch(SectionInfo info, CloudSearchEvent event) throws Exception {
+    String publisher = list.getSelectedValueAsString(info);
+    if (!Check.isEmpty(publisher)) {
+      event.getCloudSearch().setPublisher(publisher);
+    }
+  }
 
-			@Override
-			protected Iterable<NameValue> populateModel(SectionInfo info)
-			{
-				return cloudService.getCloudFilterInfo().getPublishers();
-			}
-		};
-	}
+  @Override
+  public HtmlListModel<NameValue> buildListModel() {
+    return new DynamicHtmlListModel<NameValue>() {
+      @Override
+      protected Option<NameValue> getTopOption() {
+        return new KeyOption<NameValue>(DEFAULT_OPTION, "", null);
+      }
 
-	@Override
-	protected String getPublicParam()
-	{
-		return "pub";
-	}
+      @Override
+      protected Iterable<NameValue> populateModel(SectionInfo info) {
+        return cloudService.getCloudFilterInfo().getPublishers();
+      }
+    };
+  }
+
+  @Override
+  protected String getPublicParam() {
+    return "pub";
+  }
 }

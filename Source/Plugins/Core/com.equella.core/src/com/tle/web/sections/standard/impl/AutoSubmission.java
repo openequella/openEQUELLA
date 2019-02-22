@@ -30,27 +30,32 @@ import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.PreRenderable;
 
 @SuppressWarnings("nls")
-public class AutoSubmission implements PreRenderable
-{
-	private static final PluginResourceHelper URL_HELPER = ResourcesService.getResourceHelper(AutoSubmission.class);
+public class AutoSubmission implements PreRenderable {
+  private static final PluginResourceHelper URL_HELPER =
+      ResourcesService.getResourceHelper(AutoSubmission.class);
 
-	protected static final String NAMESPACE = "AutoSubmit.";
-	protected static final JSCallable SETUP = new ExternallyDefinedFunction(NAMESPACE + "setupAutoSubmit",
-		new IncludeFile(URL_HELPER.url("js/autosubmit.js")), new CssInclude(URL_HELPER.url("css/autosubmit.css")));
+  protected static final String NAMESPACE = "AutoSubmit.";
+  protected static final JSCallable SETUP =
+      new ExternallyDefinedFunction(
+          NAMESPACE + "setupAutoSubmit",
+          new IncludeFile(URL_HELPER.url("js/autosubmit.js")),
+          new CssInclude(URL_HELPER.url("css/autosubmit.css")));
 
-	protected final ElementId control;
-	protected final ElementId autoSubmitButton;
+  protected final ElementId control;
+  protected final ElementId autoSubmitButton;
 
-	public AutoSubmission(ElementId control, ElementId autoSubmitButton)
-	{
-		this.control = control;
-		this.autoSubmitButton = autoSubmitButton;
-	}
+  public AutoSubmission(ElementId control, ElementId autoSubmitButton) {
+    this.control = control;
+    this.autoSubmitButton = autoSubmitButton;
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		JQueryCore.appendReady(info, new FunctionCallStatement(SETUP, new ElementByIdExpression(control),
-			new ElementByIdExpression(autoSubmitButton)));
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    JQueryCore.appendReady(
+        info,
+        new FunctionCallStatement(
+            SETUP,
+            new ElementByIdExpression(control),
+            new ElementByIdExpression(autoSubmitButton)));
+  }
 }

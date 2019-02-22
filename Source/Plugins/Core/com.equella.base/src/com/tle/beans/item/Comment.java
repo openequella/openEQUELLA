@@ -18,7 +18,6 @@ package com.tle.beans.item;
 
 import java.io.Serializable;
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -30,7 +29,6 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.NamedQueries;
@@ -38,117 +36,112 @@ import org.hibernate.annotations.NamedQuery;
 
 @Entity
 @AccessType("field")
-@Table(name = "comments", uniqueConstraints = {@UniqueConstraint(columnNames = {"item_id", "uuid"})})
+@Table(
+    name = "comments",
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"item_id", "uuid"})})
 @NamedQueries({
-		@NamedQuery(name = "getItemCommentByUuid", cacheable = true, readOnly = true, query = ""
-			+ "FROM Comment WHERE item = :item AND uuid = :uuid"),
-		@NamedQuery(name = "getAverageRatingForItem", cacheable = true, readOnly = true, query = ""
-			+ "SELECT rating FROM Item WHERE uuid = :uuid AND version = :version AND institution = :institution")})
-public class Comment implements Serializable, ForeignItemKey
-{
-	private static final long serialVersionUID = 1L;
+  @NamedQuery(
+      name = "getItemCommentByUuid",
+      cacheable = true,
+      readOnly = true,
+      query = "" + "FROM Comment WHERE item = :item AND uuid = :uuid"),
+  @NamedQuery(
+      name = "getAverageRatingForItem",
+      cacheable = true,
+      readOnly = true,
+      query =
+          ""
+              + "SELECT rating FROM Item WHERE uuid = :uuid AND version = :version AND institution = :institution")
+})
+public class Comment implements Serializable, ForeignItemKey {
+  private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-	@Column(length = 40, nullable = false)
-	@Index(name = "commentUuidIndex")
-	private String uuid;
-	@JoinColumn(nullable = false)
-	@ManyToOne(fetch = FetchType.LAZY)
-	@Index(name = "commentItem")
-	private Item item;
-	private int rating;
-	@Lob
-	private String comment;
-	private String owner;
-	private Date dateCreated;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	private boolean anonymous;
+  @Column(length = 40, nullable = false)
+  @Index(name = "commentUuidIndex")
+  private String uuid;
 
-	public Comment()
-	{
-		super();
-	}
+  @JoinColumn(nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @Index(name = "commentItem")
+  private Item item;
 
-	public long getId()
-	{
-		return id;
-	}
+  private int rating;
+  @Lob private String comment;
+  private String owner;
+  private Date dateCreated;
 
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  private boolean anonymous;
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  public Comment() {
+    super();
+  }
 
-	public void setUuid(String uuid)
-	{
-		this.uuid = uuid;
-	}
+  public long getId() {
+    return id;
+  }
 
-	public Item getItem()
-	{
-		return item;
-	}
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	@Override
-	public void setItem(Item item)
-	{
-		this.item = item;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public String getComment()
-	{
-		return comment;
-	}
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-	public void setComment(String comment)
-	{
-		this.comment = comment;
-	}
+  public Item getItem() {
+    return item;
+  }
 
-	public int getRating()
-	{
-		return rating;
-	}
+  @Override
+  public void setItem(Item item) {
+    this.item = item;
+  }
 
-	public void setRating(int rating)
-	{
-		this.rating = rating;
-	}
+  public String getComment() {
+    return comment;
+  }
 
-	public String getOwner()
-	{
-		return owner;
-	}
+  public void setComment(String comment) {
+    this.comment = comment;
+  }
 
-	public void setOwner(String user)
-	{
-		this.owner = user;
-	}
+  public int getRating() {
+    return rating;
+  }
 
-	public Date getDateCreated()
-	{
-		return dateCreated;
-	}
+  public void setRating(int rating) {
+    this.rating = rating;
+  }
 
-	public void setDateCreated(Date dateCreated)
-	{
-		this.dateCreated = dateCreated;
-	}
+  public String getOwner() {
+    return owner;
+  }
 
-	public boolean isAnonymous()
-	{
-		return anonymous;
-	}
+  public void setOwner(String user) {
+    this.owner = user;
+  }
 
-	public void setAnonymous(boolean anonymous)
-	{
-		this.anonymous = anonymous;
-	}
+  public Date getDateCreated() {
+    return dateCreated;
+  }
+
+  public void setDateCreated(Date dateCreated) {
+    this.dateCreated = dateCreated;
+  }
+
+  public boolean isAnonymous() {
+    return anonymous;
+  }
+
+  public void setAnonymous(boolean anonymous) {
+    this.anonymous = anonymous;
+  }
 }

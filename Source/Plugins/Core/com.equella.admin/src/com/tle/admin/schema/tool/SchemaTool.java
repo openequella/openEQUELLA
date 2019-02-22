@@ -25,34 +25,28 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.remoting.RemoteAbstractEntityService;
 import com.tle.core.remoting.RemoteSchemaService;
 
-public class SchemaTool extends BaseEntityTool<Schema>
-{
-	public SchemaTool() throws Exception
-	{
-		super(Schema.class, RemoteSchemaService.ENTITY_TYPE);
-	}
+public class SchemaTool extends BaseEntityTool<Schema> {
+  public SchemaTool() throws Exception {
+    super(Schema.class, RemoteSchemaService.ENTITY_TYPE);
+  }
 
-	@Override
-	protected RemoteAbstractEntityService<Schema> getService(ClientService client)
-	{
-		return client.getService(RemoteSchemaService.class);
-	}
+  @Override
+  protected RemoteAbstractEntityService<Schema> getService(ClientService client) {
+    return client.getService(RemoteSchemaService.class);
+  }
 
-	@Override
-	protected BaseEntityEditor<Schema> createEditor(boolean readonly)
-	{
-		return new SchemaManager(this, readonly);
-	}
+  @Override
+  protected BaseEntityEditor<Schema> createEditor(boolean readonly) {
+    return new SchemaManager(this, readonly);
+  }
 
-	@Override
-	protected String getEntityName()
-	{
-		return CurrentLocale.get("com.tle.admin.gui.schematool.name");
-	}
+  @Override
+  protected String getEntityName() {
+    return CurrentLocale.get("com.tle.admin.gui.schematool.name");
+  }
 
-	@Override
-	protected String getErrorPath()
-	{
-		return "schema";
-	}
+  @Override
+  protected String getErrorPath() {
+    return "schema";
+  }
 }

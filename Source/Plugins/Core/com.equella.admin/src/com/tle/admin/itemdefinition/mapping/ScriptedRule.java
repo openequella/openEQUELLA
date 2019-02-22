@@ -16,45 +16,31 @@
 
 package com.tle.admin.itemdefinition.mapping;
 
-class ScriptedRule
-{
-	private String literal;
-	private String script;
+class ScriptedRule {
+  private String literal;
+  private String script;
 
-	public ScriptedRule()
-	{
-		super();
-	}
+  public ScriptedRule() {
+    super();
+  }
 
-	/**
-	 * @return Returns the literal.
-	 */
-	public String getLiteral()
-	{
-		return literal;
-	}
+  /** @return Returns the literal. */
+  public String getLiteral() {
+    return literal;
+  }
 
-	/**
-	 * @param literal The literal to set.
-	 */
-	public void setLiteral(String literal)
-	{
-		this.literal = literal;
-	}
+  /** @param literal The literal to set. */
+  public void setLiteral(String literal) {
+    this.literal = literal;
+  }
 
-	/**
-	 * @return Returns the script.
-	 */
-	public String getScript()
-	{
-		return script;
-	}
+  /** @return Returns the script. */
+  public String getScript() {
+    return script;
+  }
 
-	/**
-	 * @param script The script to set.
-	 */
-	public void setScript(String script)
-	{
-		this.script = script;
-	}
+  /** @param script The script to set. */
+  public void setScript(String script) {
+    this.script = script;
+  }
 }

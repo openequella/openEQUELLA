@@ -24,14 +24,12 @@ import com.tle.core.security.impl.SecureOnCall;
 
 @SecureOnCall(priv = SecurityConstants.ARCHIVE_ITEM)
 @SecureItemStatus(ItemStatus.ARCHIVED)
-public class ReactivateOperation extends TaskOperation
-{
-	@Override
-	public boolean execute()
-	{
-		setState(ItemStatus.LIVE);
-		getItem().setModerating(getModerationStatus().isUnarchiveModerating());
-		restoreTasksForItem();
-		return true;
-	}
+public class ReactivateOperation extends TaskOperation {
+  @Override
+  public boolean execute() {
+    setState(ItemStatus.LIVE);
+    getItem().setModerating(getModerationStatus().isUnarchiveModerating());
+    restoreTasksForItem();
+    return true;
+  }
 }

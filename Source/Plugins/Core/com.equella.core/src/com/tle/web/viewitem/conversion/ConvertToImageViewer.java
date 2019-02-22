@@ -16,20 +16,11 @@
 
 package com.tle.web.viewitem.conversion;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.PathUtils;
 import com.tle.common.filesystem.handle.ConversionFile;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.imagemagick.ImageMagickService;
 import com.tle.core.imagemagick.ThumbnailOptions;
@@ -44,98 +35,94 @@ import com.tle.web.viewurl.ViewAuditEntry;
 import com.tle.web.viewurl.ViewItemResource;
 import com.tle.web.viewurl.ViewItemViewer;
 import com.tle.web.viewurl.ViewableResource;
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
- * TODO: should be probably call off to extension points, eg. a
- * com.tle.web.imagemagick plugin. Granted, ImageMagick is a mandatory plugin,
- * but may not be in future and we should be able to drop in plugins with an
- * ImageConverter interface...
- * 
+ * TODO: should be probably call off to extension points, eg. a com.tle.web.imagemagick plugin.
+ * Granted, ImageMagick is a mandatory plugin, but may not be in future and we should be able to
+ * drop in plugins with an ImageConverter interface...
+ *
  * @author aholland
  */
 @Bind
 @Singleton
-public class ConvertToImageViewer extends AbstractResourceViewer implements ViewItemViewer
-{
-	private static final String TARGET_EXTENSION = ".jpeg"; //$NON-NLS-1$
-	@SuppressWarnings("nls")
-	private static final Set<String> UNREQUIRED_IMAGE_TYPES = new HashSet<String>(Arrays.asList(new String[]{
-			"image/jpeg", "image/png", "image/gif"}));
+public class ConvertToImageViewer extends AbstractResourceViewer implements ViewItemViewer {
+  private static final String TARGET_EXTENSION = ".jpeg"; // $NON-NLS-1$
 
-	@Inject
-	private ImageMagickService imageMagickService;
-	@Inject
-	private FileSystemService fileSystemService;
+  @SuppressWarnings("nls")
+  private static final Set<String> UNREQUIRED_IMAGE_TYPES =
+      new HashSet<String>(Arrays.asList(new String[] {"image/jpeg", "image/png", "image/gif"}));
 
-	@Override
-	public String getViewerId()
-	{
-		return "toimg"; //$NON-NLS-1$
-	}
+  @Inject private ImageMagickService imageMagickService;
+  @Inject private FileSystemService fileSystemService;
 
-	@Override
-	public Class<? extends SectionId> getViewerSectionClass()
-	{
-		return null;
-	}
+  @Override
+  public String getViewerId() {
+    return "toimg"; //$NON-NLS-1$
+  }
 
-	@Override
-	public ViewAuditEntry getAuditEntry(SectionInfo info, ViewItemResource resource)
-	{
-		return null;
-	}
+  @Override
+  public Class<? extends SectionId> getViewerSectionClass() {
+    return null;
+  }
 
-	@Override
-	public ViewItemViewer getViewer(SectionInfo info, ViewItemResource resource)
-	{
-		return this;
-	}
+  @Override
+  public ViewAuditEntry getAuditEntry(SectionInfo info, ViewItemResource resource) {
+    return null;
+  }
 
-	@Override
-	public Collection<String> ensureOnePrivilege()
-	{
-		return VIEW_ITEM_AND_VIEW_ATTACHMENTS_PRIV;
-	}
+  @Override
+  public ViewItemViewer getViewer(SectionInfo info, ViewItemResource resource) {
+    return this;
+  }
 
-	@Override
-	public SectionResult view(RenderContext info, ViewItemResource resource)
-	{
-		final String resultFilename = resource.getFilenameWithoutPath() + TARGET_EXTENSION;
-		final ViewableItem viewableItem = resource.getViewableItem();
-		final FileHandle fileHandle = viewableItem.getFileHandle();
-		final ConversionFile conversionFile = new ConversionFile(fileHandle);
-		final String convertedFile = PathUtils.filePath(conversionFile.getMyPathComponent(), resultFilename);
+  @Override
+  public Collection<String> ensureOnePrivilege() {
+    return VIEW_ITEM_AND_VIEW_ATTACHMENTS_PRIV;
+  }
 
-		if( !fileSystemService.fileExists(conversionFile, resultFilename) )
-		{
-			File dest = fileSystemService.getExternalFile(conversionFile, resultFilename);
+  @Override
+  public SectionResult view(RenderContext info, ViewItemResource resource) {
+    final String resultFilename = resource.getFilenameWithoutPath() + TARGET_EXTENSION;
+    final ViewableItem viewableItem = resource.getViewableItem();
+    final FileHandle fileHandle = viewableItem.getFileHandle();
+    final ConversionFile conversionFile = new ConversionFile(fileHandle);
+    final String convertedFile =
+        PathUtils.filePath(conversionFile.getMyPathComponent(), resultFilename);
 
-			ThumbnailOptions thumbnailOptions = new ThumbnailOptions();
-			thumbnailOptions.setNoSize(true);
-			thumbnailOptions.setSkipBlankCheck(true);
-			imageMagickService.generateThumbnailAdvanced(
-				fileSystemService.getExternalFile(fileHandle, resource.getFilepath()), dest, thumbnailOptions);
-		}
-		info.forwardToUrl(viewableItem.createStableResourceUrl(convertedFile).getHref());
-		return null;
-	}
+    if (!fileSystemService.fileExists(conversionFile, resultFilename)) {
+      File dest = fileSystemService.getExternalFile(conversionFile, resultFilename);
 
-	@Override
-	public boolean supports(SectionInfo info, ViewableResource resource)
-	{
-		String mimeType = resource.getMimeType();
-		if( imageMagickService.supported(mimeType) && !UNREQUIRED_IMAGE_TYPES.contains(mimeType) )
-		{
-			IAttachment attach = resource.getAttachment();
-			if( attach != null )
-			{
-				if( attach instanceof FileAttachment )
-				{
-					return ((FileAttachment) attach).isConversion();
-				}
-			}
-			return true;
-		}
-		return false;
-	}
+      ThumbnailOptions thumbnailOptions = new ThumbnailOptions();
+      thumbnailOptions.setNoSize(true);
+      thumbnailOptions.setSkipBlankCheck(true);
+      imageMagickService.generateThumbnailAdvanced(
+          fileSystemService.getExternalFile(fileHandle, resource.getFilepath()),
+          dest,
+          thumbnailOptions);
+    }
+    info.forwardToUrl(viewableItem.createStableResourceUrl(convertedFile).getHref());
+    return null;
+  }
+
+  @Override
+  public boolean supports(SectionInfo info, ViewableResource resource) {
+    String mimeType = resource.getMimeType();
+    if (imageMagickService.supported(mimeType) && !UNREQUIRED_IMAGE_TYPES.contains(mimeType)) {
+      IAttachment attach = resource.getAttachment();
+      if (attach != null) {
+        if (attach instanceof FileAttachment) {
+          return ((FileAttachment) attach).isConversion();
+        }
+      }
+      return true;
+    }
+    return false;
+  }
 }

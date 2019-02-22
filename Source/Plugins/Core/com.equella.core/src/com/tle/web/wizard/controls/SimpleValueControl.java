@@ -18,13 +18,12 @@ package com.tle.web.wizard.controls;
 
 import com.tle.web.sections.js.JSAssignable;
 
-public interface SimpleValueControl extends WebControl
-{
-	JSAssignable createEditFunction();
+public interface SimpleValueControl extends WebControl {
+  JSAssignable createEditFunction();
 
-	JSAssignable createValueFunction();
+  JSAssignable createValueFunction();
 
-	JSAssignable createTextFunction();
+  JSAssignable createTextFunction();
 
-	JSAssignable createResetFunction();
+  JSAssignable createResetFunction();
 }

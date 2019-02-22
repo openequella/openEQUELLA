@@ -21,8 +21,8 @@ import com.tle.web.sections.{Section, SectionInfo, SectionTree}
 abstract class AbstractScalaSection extends Section {
   type M <: Any
 
-  var treeRegisteredIn : SectionTree = _
-  var sectionId : String = _
+  var treeRegisteredIn: SectionTree = _
+  var sectionId: String             = _
 
   def getModel(info: SectionInfo): M = info.getModelForId(getSectionId)
   def newModel: SectionInfo => M
@@ -46,7 +46,9 @@ abstract class AbstractScalaSection extends Section {
 
   override def getDefaultPropertyName: String = {
     val _className = getClass.getSimpleName
-    val className = if (_className.endsWith("Section")) _className.substring(0, _className.length - 7) else _className
+    val className =
+      if (_className.endsWith("Section")) _className.substring(0, _className.length - 7)
+      else _className
     val caps: Array[String] = className.split("[a-z0-9]*")
     caps.mkString("").toLowerCase
   }

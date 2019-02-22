@@ -28,30 +28,23 @@ import com.tle.web.viewurl.ItemSectionInfo;
 
 @NonNullByDefault
 public abstract class AbstractParentViewItemSection<M> extends AbstractPrototypeSection<M>
-	implements
-		ViewableChildInterface,
-		HtmlRenderer
-{
-	@ViewFactory(fixed = false, optional = true)
-	protected FreemarkerFactory viewFactory;
+    implements ViewableChildInterface, HtmlRenderer {
+  @ViewFactory(fixed = false, optional = true)
+  protected FreemarkerFactory viewFactory;
 
-	public static ItemSectionInfo getItemInfo(SectionInfo info)
-	{
-		return ParentViewItemSectionUtils.getItemInfo(info);
-	}
+  public static ItemSectionInfo getItemInfo(SectionInfo info) {
+    return ParentViewItemSectionUtils.getItemInfo(info);
+  }
 
-	protected boolean canViewChildren(SectionInfo info)
-	{
-		return SectionUtils.canViewChildren(info, this);
-	}
+  protected boolean canViewChildren(SectionInfo info) {
+    return SectionUtils.canViewChildren(info, this);
+  }
 
-	protected boolean isForPreview(SectionInfo info)
-	{
-		return ParentViewItemSectionUtils.isForPreview(info);
-	}
+  protected boolean isForPreview(SectionInfo info) {
+    return ParentViewItemSectionUtils.isForPreview(info);
+  }
 
-	protected boolean isInIntegration(SectionInfo info)
-	{
-		return ParentViewItemSectionUtils.isInIntegration(info);
-	}
+  protected boolean isInIntegration(SectionInfo info) {
+    return ParentViewItemSectionUtils.isInIntegration(info);
+  }
 }

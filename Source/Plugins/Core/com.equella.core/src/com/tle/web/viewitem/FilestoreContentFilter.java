@@ -16,18 +16,18 @@
 
 package com.tle.web.viewitem;
 
+import com.tle.beans.item.Item;
+import com.tle.beans.item.attachments.IAttachment;
 import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tle.beans.item.Item;
-import com.tle.beans.item.attachments.IAttachment;
+public interface FilestoreContentFilter {
+  FilestoreContentStream filter(
+      FilestoreContentStream contentStream,
+      HttpServletRequest request,
+      HttpServletResponse response)
+      throws IOException;
 
-public interface FilestoreContentFilter
-{
-	FilestoreContentStream filter(FilestoreContentStream contentStream, HttpServletRequest request,
-		HttpServletResponse response) throws IOException;
-
-	boolean canView(Item item, IAttachment attachment);
+  boolean canView(Item item, IAttachment attachment);
 }

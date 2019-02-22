@@ -16,13 +16,6 @@
 
 package com.tle.admin.collection.summarydisplay;
 
-import java.awt.Component;
-import java.awt.GridLayout;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-
 import com.tle.admin.Driver;
 import com.tle.admin.baseentity.EditorState;
 import com.tle.admin.schema.SchemaModel;
@@ -31,81 +24,73 @@ import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.plugins.AbstractPluginService;
+import java.awt.Component;
+import java.awt.GridLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 @SuppressWarnings("nls")
-public class NoConfigurationConfig extends JPanel implements SummaryDisplayConfig
-{
-	private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
+public class NoConfigurationConfig extends JPanel implements SummaryDisplayConfig {
+  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
 
-	protected String getString(String key)
-	{
-		return CurrentLocale.get(getKey(key));
-	}
+  protected String getString(String key) {
+    return CurrentLocale.get(getKey(key));
+  }
 
-	protected String getKey(String key)
-	{
-		return KEY_PFX+key;
-	}
+  protected String getKey(String key) {
+    return KEY_PFX + key;
+  }
 
-	@Override
-	public void setup()
-	{
-		JLabel label = new JLabel(getString("summarysections.noconfiguration"));
-		label.setHorizontalAlignment(SwingConstants.CENTER);
-		setLayout(new GridLayout(1, 1));
-		add(label);
-	}
+  @Override
+  public void setup() {
+    JLabel label = new JLabel(getString("summarysections.noconfiguration"));
+    label.setHorizontalAlignment(SwingConstants.CENTER);
+    setLayout(new GridLayout(1, 1));
+    add(label);
+  }
 
-	@Override
-	public void clearChanges()
-	{
-		// Nothing to do
-	}
+  @Override
+  public void clearChanges() {
+    // Nothing to do
+  }
 
-	@Override
-	public boolean hasDetectedChanges()
-	{
-		return false;
-	}
+  @Override
+  public boolean hasDetectedChanges() {
+    return false;
+  }
 
-	@Override
-	public void save(SummarySectionsConfig element)
-	{
-		// Nothing to do
-	}
+  @Override
+  public void save(SummarySectionsConfig element) {
+    // Nothing to do
+  }
 
-	@Override
-	public void load(SummarySectionsConfig element)
-	{
-		// Nothing to do
-	}
+  @Override
+  public void load(SummarySectionsConfig element) {
+    // Nothing to do
+  }
 
-	@Override
-	public Component getComponent()
-	{
-		return this;
-	}
+  @Override
+  public Component getComponent() {
+    return this;
+  }
 
-	public void setDriver(Driver driver)
-	{
-		// Nothing to do
-	}
+  public void setDriver(Driver driver) {
+    // Nothing to do
+  }
 
-	@Override
-	public void setState(EditorState<ItemDefinition> state)
-	{
-		// Nothing to do
-	}
+  @Override
+  public void setState(EditorState<ItemDefinition> state) {
+    // Nothing to do
+  }
 
-	@Override
-	public void setSchemaModel(SchemaModel model)
-	{
-		// Nothing to do
-	}
+  @Override
+  public void setSchemaModel(SchemaModel model) {
+    // Nothing to do
+  }
 
-	@Override
-	public void setClientService(ClientService service)
-	{
-		// Nothing to do
-	}
+  @Override
+  public void setClientService(ClientService service) {
+    // Nothing to do
+  }
 }

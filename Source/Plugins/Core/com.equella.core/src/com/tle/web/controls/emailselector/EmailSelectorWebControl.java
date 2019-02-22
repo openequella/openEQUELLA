@@ -16,11 +16,6 @@
 
 package com.tle.web.controls.emailselector;
 
-import java.util.Collection;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.dytech.edge.common.Constants;
 import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.google.common.base.Function;
@@ -64,263 +59,237 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.wizard.controls.AbstractWebControl;
 import com.tle.web.wizard.controls.CCustomControl;
 import com.tle.web.wizard.controls.WebControlModel;
+import java.util.Collection;
+import java.util.List;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
-public class EmailSelectorWebControl extends AbstractWebControl<EmailSelectorWebControl.EmailSelectorWebControlModel>
-{
-	@PlugKey("prompt.selectsingle")
-	private static Label LABEL_PROMPTSINGLE;
-	@PlugKey("prompt.selectmultiple")
-	private static Label LABEL_PROMPTMULTIPLE;
-	@PlugKey("title.selectsingle")
-	private static Label LABEL_TITLESINGLE;
-	@PlugKey("title.selectmultiple")
-	private static Label LABEL_TITLEMULTIPLE;
+public class EmailSelectorWebControl
+    extends AbstractWebControl<EmailSelectorWebControl.EmailSelectorWebControlModel> {
+  @PlugKey("prompt.selectsingle")
+  private static Label LABEL_PROMPTSINGLE;
 
-	@PlugKey("confirmremove")
-	private static String KEY_CONFIRM;
-	@PlugKey("currentlyselectedstuff.remove")
-	private static Label LABEL_REMOVE;
+  @PlugKey("prompt.selectmultiple")
+  private static Label LABEL_PROMPTMULTIPLE;
 
-	private EmailSelectorControl definitionControl;
-	private CCustomControl storageControl;
+  @PlugKey("title.selectsingle")
+  private static Label LABEL_TITLESINGLE;
 
-	@ViewFactory(name="wizardFreemarkerFactory")
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("title.selectmultiple")
+  private static Label LABEL_TITLEMULTIPLE;
 
-	@Inject
-	private ComponentFactory componentFactory;
-	@Inject
-	private SelectUserDialog selectUserDialog;
-	@Inject
-	private UserService userService;
-	@Inject
-	private EmailService emailService;
+  @PlugKey("confirmremove")
+  private static String KEY_CONFIRM;
 
-	@Component(name = "e")
-	private TextField email;
-	@Component(name = "a")
-	@PlugKey("button.addemail")
-	private Button addEmail;
-	@Component
-	private SelectionsTable selectedTable;
+  @PlugKey("currentlyselectedstuff.remove")
+  private static Label LABEL_REMOVE;
 
-	private JSCallable removeFunction;
+  private EmailSelectorControl definitionControl;
+  private CCustomControl storageControl;
 
-	@Override
-	public void setWrappedControl(final HTMLControl control)
-	{
-		definitionControl = new EmailSelectorControl((CustomControl) control.getControlBean());
-		storageControl = (CCustomControl) control;
-		super.setWrappedControl(control);
-	}
+  @ViewFactory(name = "wizardFreemarkerFactory")
+  private FreemarkerFactory viewFactory;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		final EmailSelectorWebControlModel model = getModel(context);
+  @EventFactory private EventGenerator events;
 
-		boolean allowAdd = (isEmpty() || definitionControl.isSelectMultiple());
-		model.setAllowAdd(allowAdd);
+  @Inject private ComponentFactory componentFactory;
+  @Inject private SelectUserDialog selectUserDialog;
+  @Inject private UserService userService;
+  @Inject private EmailService emailService;
 
-		addDisablers(context, email, allowAdd ? selectUserDialog.getOpener() : null, allowAdd ? addEmail : null);
+  @Component(name = "e")
+  private TextField email;
 
-		return viewFactory.createResult("emailselectorwebcontrol.ftl", context);
-	}
+  @Component(name = "a")
+  @PlugKey("button.addemail")
+  private Button addEmail;
 
-	@Override
-	public void registered(final String id, final SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Component private SelectionsTable selectedTable;
 
-		final boolean multiple = definitionControl.isSelectMultiple();
+  private JSCallable removeFunction;
 
-		selectUserDialog.setMultipleUsers(multiple);
-		selectUserDialog.setTitle(multiple ? LABEL_TITLEMULTIPLE : LABEL_TITLESINGLE);
-		selectUserDialog.setPrompt(multiple ? LABEL_PROMPTMULTIPLE : LABEL_PROMPTSINGLE);
-		selectUserDialog.setOkCallback(getReloadFunction(true, events.getEventHandler("select")));
+  @Override
+  public void setWrappedControl(final HTMLControl control) {
+    definitionControl = new EmailSelectorControl((CustomControl) control.getControlBean());
+    storageControl = (CCustomControl) control;
+    super.setWrappedControl(control);
+  }
 
-		componentFactory.registerComponent(id, "s", tree, selectUserDialog);
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    final EmailSelectorWebControlModel model = getModel(context);
 
-		addEmail.setClickHandler(getReloadFunction(true, events.getEventHandler("addEmail")));
+    boolean allowAdd = (isEmpty() || definitionControl.isSelectMultiple());
+    model.setAllowAdd(allowAdd);
 
-		removeFunction = getReloadFunction(true, events.getEventHandler("removeEmail"));
+    addDisablers(
+        context, email, allowAdd ? selectUserDialog.getOpener() : null, allowAdd ? addEmail : null);
 
-		selectedTable.setSelectionsModel(new EmailsModel());
-	}
+    return viewFactory.createResult("emailselectorwebcontrol.ftl", context);
+  }
 
-	@Override
-	public boolean isEmpty()
-	{
-		return storageControl.getValues().size() == 0;
-	}
+  @Override
+  public void registered(final String id, final SectionTree tree) {
+    super.registered(id, tree);
 
-	@EventHandlerMethod
-	public void select(final SectionInfo info, List<SelectedUser> users) throws Exception
-	{
-		// no sneaky backdoor additions
-		if( !definitionControl.isSelectMultiple() && !isEmpty() )
-		{
-			return;
-		}
-		getModel(info).setSelectedUsers(users);
-	}
+    final boolean multiple = definitionControl.isSelectMultiple();
 
-	@EventHandlerMethod
-	public void removeEmail(final SectionInfo info, final String emailAddress) throws Exception
-	{
-		storageControl.getValues().remove(emailAddress);
-	}
+    selectUserDialog.setMultipleUsers(multiple);
+    selectUserDialog.setTitle(multiple ? LABEL_TITLEMULTIPLE : LABEL_TITLESINGLE);
+    selectUserDialog.setPrompt(multiple ? LABEL_PROMPTMULTIPLE : LABEL_PROMPTSINGLE);
+    selectUserDialog.setOkCallback(getReloadFunction(true, events.getEventHandler("select")));
 
-	@EventHandlerMethod
-	public void addEmail(SectionInfo info)
-	{
-		final String address = email.getValue(info);
-		final List<String> values = storageControl.getValues();
-		if( !values.contains(address) && validateEmail(info, address) )
-		{
-			values.add(address);
-			email.setValue(info, Constants.BLANK);
-		}
-	}
+    componentFactory.registerComponent(id, "s", tree, selectUserDialog);
 
-	private boolean validateEmail(SectionInfo info, String address)
-	{
-		if( !emailService.isValidAddress(address) )
-		{
-			getModel(info).setWarning("error.invalidemail");
-			return false;
-		}
-		return true;
-	}
+    addEmail.setClickHandler(getReloadFunction(true, events.getEventHandler("addEmail")));
 
-	@Override
-	public void doEdits(SectionInfo info)
-	{
-		final EmailSelectorWebControlModel model = getModel(info);
-		if( model.getSelectedUsers() != null )
-		{
-			final Collection<String> selectedUuids = Collections2.transform(model.getSelectedUsers(),
-				new Function<SelectedUser, String>()
-				{
-					@Override
-					public String apply(SelectedUser user)
-					{
-						return user.getUuid();
-					}
-				});
+    removeFunction = getReloadFunction(true, events.getEventHandler("removeEmail"));
 
-			final List<String> controlValues = storageControl.getValues();
-			for( UserBean ub : userService.getInformationForUsers(selectedUuids).values() )
-			{
-				String emailAddress = ub.getEmailAddress();
-				if( Check.isEmpty(emailAddress) )
-				{
-					model.setWarning("warning.noemails");
-				}
-				else if( !controlValues.contains(emailAddress) )
-				{
-					controlValues.add(emailAddress);
-				}
-			}
-		}
-	}
+    selectedTable.setSelectionsModel(new EmailsModel());
+  }
 
-	@Override
-	public Class<EmailSelectorWebControlModel> getModelClass()
-	{
-		return EmailSelectorWebControlModel.class;
-	}
+  @Override
+  public boolean isEmpty() {
+    return storageControl.getValues().size() == 0;
+  }
 
-	public SelectUserDialog getSelectUserDialog()
-	{
-		return selectUserDialog;
-	}
+  @EventHandlerMethod
+  public void select(final SectionInfo info, List<SelectedUser> users) throws Exception {
+    // no sneaky backdoor additions
+    if (!definitionControl.isSelectMultiple() && !isEmpty()) {
+      return;
+    }
+    getModel(info).setSelectedUsers(users);
+  }
 
-	public TextField getEmail()
-	{
-		return email;
-	}
+  @EventHandlerMethod
+  public void removeEmail(final SectionInfo info, final String emailAddress) throws Exception {
+    storageControl.getValues().remove(emailAddress);
+  }
 
-	public Button getAddEmailButton()
-	{
-		return addEmail;
-	}
+  @EventHandlerMethod
+  public void addEmail(SectionInfo info) {
+    final String address = email.getValue(info);
+    final List<String> values = storageControl.getValues();
+    if (!values.contains(address) && validateEmail(info, address)) {
+      values.add(address);
+      email.setValue(info, Constants.BLANK);
+    }
+  }
 
-	public SelectionsTable getSelectedTable()
-	{
-		return selectedTable;
-	}
+  private boolean validateEmail(SectionInfo info, String address) {
+    if (!emailService.isValidAddress(address)) {
+      getModel(info).setWarning("error.invalidemail");
+      return false;
+    }
+    return true;
+  }
 
-	private class EmailsModel extends DynamicSelectionsTableModel<String>
-	{
-		@Override
-		protected List<String> getSourceList(SectionInfo info)
-		{
-			return storageControl.getValues();
-		}
+  @Override
+  public void doEdits(SectionInfo info) {
+    final EmailSelectorWebControlModel model = getModel(info);
+    if (model.getSelectedUsers() != null) {
+      final Collection<String> selectedUuids =
+          Collections2.transform(
+              model.getSelectedUsers(),
+              new Function<SelectedUser, String>() {
+                @Override
+                public String apply(SelectedUser user) {
+                  return user.getUuid();
+                }
+              });
 
-		@Override
-		protected void transform(SectionInfo info, SelectionsTableSelection selection, String emailAddress,
-			List<SectionRenderable> actions, int index)
-		{
-			selection.setName(new TextLabel(emailAddress));
-			if( isEnabled() )
-			{
-				final JSHandler removeHandler = new OverrideHandler(removeFunction, emailAddress);
-				removeHandler.addValidator(new Confirm(new KeyLabel(KEY_CONFIRM, emailAddress)));
-				actions.add(makeRemoveAction(LABEL_REMOVE, removeHandler));
-			}
-		}
-	}
+      final List<String> controlValues = storageControl.getValues();
+      for (UserBean ub : userService.getInformationForUsers(selectedUuids).values()) {
+        String emailAddress = ub.getEmailAddress();
+        if (Check.isEmpty(emailAddress)) {
+          model.setWarning("warning.noemails");
+        } else if (!controlValues.contains(emailAddress)) {
+          controlValues.add(emailAddress);
+        }
+      }
+    }
+  }
 
-	public static class EmailSelectorWebControlModel extends WebControlModel
-	{
-		@Bookmarked(name = "w", stateful = false)
-		private String warning;
-		private boolean allowAdd;
-		/**
-		 * For shoving de-JSONed results into.
-		 */
-		private List<SelectedUser> selectedUsers;
+  @Override
+  public Class<EmailSelectorWebControlModel> getModelClass() {
+    return EmailSelectorWebControlModel.class;
+  }
 
-		public String getWarning()
-		{
-			return warning;
-		}
+  public SelectUserDialog getSelectUserDialog() {
+    return selectUserDialog;
+  }
 
-		public void setWarning(String warning)
-		{
-			this.warning = warning;
-		}
+  public TextField getEmail() {
+    return email;
+  }
 
-		public boolean isAllowAdd()
-		{
-			return allowAdd;
-		}
+  public Button getAddEmailButton() {
+    return addEmail;
+  }
 
-		public void setAllowAdd(boolean allowAdd)
-		{
-			this.allowAdd = allowAdd;
-		}
+  public SelectionsTable getSelectedTable() {
+    return selectedTable;
+  }
 
-		public List<SelectedUser> getSelectedUsers()
-		{
-			return selectedUsers;
-		}
+  private class EmailsModel extends DynamicSelectionsTableModel<String> {
+    @Override
+    protected List<String> getSourceList(SectionInfo info) {
+      return storageControl.getValues();
+    }
 
-		public void setSelectedUsers(final List<SelectedUser> selectedUsers)
-		{
-			this.selectedUsers = selectedUsers;
-		}
-	}
+    @Override
+    protected void transform(
+        SectionInfo info,
+        SelectionsTableSelection selection,
+        String emailAddress,
+        List<SectionRenderable> actions,
+        int index) {
+      selection.setName(new TextLabel(emailAddress));
+      if (isEnabled()) {
+        final JSHandler removeHandler = new OverrideHandler(removeFunction, emailAddress);
+        removeHandler.addValidator(new Confirm(new KeyLabel(KEY_CONFIRM, emailAddress)));
+        actions.add(makeRemoveAction(LABEL_REMOVE, removeHandler));
+      }
+    }
+  }
 
-	@Override
-	protected ElementId getIdForLabel()
-	{
-		return email;
-	}
+  public static class EmailSelectorWebControlModel extends WebControlModel {
+    @Bookmarked(name = "w", stateful = false)
+    private String warning;
+
+    private boolean allowAdd;
+    /** For shoving de-JSONed results into. */
+    private List<SelectedUser> selectedUsers;
+
+    public String getWarning() {
+      return warning;
+    }
+
+    public void setWarning(String warning) {
+      this.warning = warning;
+    }
+
+    public boolean isAllowAdd() {
+      return allowAdd;
+    }
+
+    public void setAllowAdd(boolean allowAdd) {
+      this.allowAdd = allowAdd;
+    }
+
+    public List<SelectedUser> getSelectedUsers() {
+      return selectedUsers;
+    }
+
+    public void setSelectedUsers(final List<SelectedUser> selectedUsers) {
+      this.selectedUsers = selectedUsers;
+    }
+  }
+
+  @Override
+  protected ElementId getIdForLabel() {
+    return email;
+  }
 }

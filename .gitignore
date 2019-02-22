@@ -14,3 +14,5 @@ generated.keystore
 # Remove this one day
 Source/Plugins/Kaltura
 server.xml
+node_modules/
+

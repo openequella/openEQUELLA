@@ -16,17 +16,15 @@
 
 package com.tle.beans;
 
+import com.tle.beans.entity.BaseEntity;
 import java.io.Serializable;
 
-import com.tle.beans.entity.BaseEntity;
+public interface EntityScript<T extends BaseEntity> extends Serializable {
+  T getEntity();
 
-public interface EntityScript<T extends BaseEntity> extends Serializable
-{
-	T getEntity();
+  void setEntity(T entity);
 
-	void setEntity(T entity);
+  String getScript();
 
-	String getScript();
-
-	void setScript(String script);
+  void setScript(String script);
 }

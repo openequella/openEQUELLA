@@ -16,40 +16,33 @@
 
 package com.tle.web.remoting.impl;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.guice.Bind;
 import com.tle.core.remoting.RemoteLoginService;
 import com.tle.core.services.user.UserService;
 import com.tle.core.services.user.UserSessionService;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class LoginServiceImpl implements RemoteLoginService
-{
-	@Inject
-	private UserService userService;
-	@Inject
-	private UserSessionService sessionService;
+public class LoginServiceImpl implements RemoteLoginService {
+  @Inject private UserService userService;
+  @Inject private UserSessionService sessionService;
 
-	@Override
-	public String getLoggedInUserId()
-	{
-		return CurrentUser.getUserID();
-	}
+  @Override
+  public String getLoggedInUserId() {
+    return CurrentUser.getUserID();
+  }
 
-	@Override
-	public void keepAlive()
-	{
-		userService.keepAlive();
-	}
+  @Override
+  public void keepAlive() {
+    userService.keepAlive();
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	public void logout()
-	{
-		sessionService.setAttribute("$LOGOUT$", Boolean.TRUE);
-	}
+  @Override
+  @SuppressWarnings("nls")
+  public void logout() {
+    sessionService.setAttribute("$LOGOUT$", Boolean.TRUE);
+  }
 }

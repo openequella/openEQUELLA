@@ -33,6 +33,8 @@ object OracleSchema extends DBSchemaMigration with DBSchema with DBQueries with 
   override def insertAuditLog = insertWith(auditLog, hibSeq)
 
   def dbUuidCol =
-    wrap[String, DbUUID](stringCol, _.isoMap(Iso(_.id.toString, DbUUID.fromString)), _.copy(typeName = "VARCHAR(36)"))
+    wrap[String, DbUUID](stringCol,
+                         _.isoMap(Iso(_.id.toString, DbUUID.fromString)),
+                         _.copy(typeName = "VARCHAR(36)"))
 
 }

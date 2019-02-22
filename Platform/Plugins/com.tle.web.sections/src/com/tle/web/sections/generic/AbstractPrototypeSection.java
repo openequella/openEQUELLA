@@ -25,104 +25,90 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 
 /**
- * An abstract {@code Section} class which must be declared as "prototype" scope
- * in Spring, in order for there to be one instance per usage in a
- * {@code SectionTree}. <br>
- * <p>
- * There is no requirement that {@code Section}s have one instance per use, and
- * it is perfectly legitimate to create a Singleton, however there are benefits
- * to making them "prototype" scoped:
+ * An abstract {@code Section} class which must be declared as "prototype" scope in Spring, in order
+ * for there to be one instance per usage in a {@code SectionTree}. <br>
+ *
+ * <p>There is no requirement that {@code Section}s have one instance per use, and it is perfectly
+ * legitimate to create a Singleton, however there are benefits to making them "prototype" scoped:
+ *
  * <ul>
- * <li>You can store per {@link SectionTree} data in your instance rather than
- * storing it against the {@code SectionTree} itself (with
- * {@link SectionTree#setData(String, Object)}).
- * <li>Each instance knows which id it is registered under. Thus it can
- * implement {@link SectionId}.</li>
+ *   <li>You can store per {@link SectionTree} data in your instance rather than storing it against
+ *       the {@code SectionTree} itself (with {@link SectionTree#setData(String, Object)}).
+ *   <li>Each instance knows which id it is registered under. Thus it can implement {@link
+ *       SectionId}.
  * </ul>
- * 
+ *
  * @author jmaginnis
  * @param <M> The type of the {@code Section}'s model.
  */
 @NonNullByDefault
-public abstract class AbstractPrototypeSection<M> extends AbstractSection
-{
-	@Nullable
-	private String id;
-	@Nullable
-	private SectionTree treeRegisteredIn;
+public abstract class AbstractPrototypeSection<M> extends AbstractSection {
+  @Nullable private String id;
+  @Nullable private SectionTree treeRegisteredIn;
 
-	@Override
-	public String getSectionId()
-	{
-		if( id == null )
-		{
-			throw new Error(getClass() + " is not registered yet"); //$NON-NLS-1$
-		}
-		return id;
-	}
+  @Override
+  public String getSectionId() {
+    if (id == null) {
+      throw new Error(getClass() + " is not registered yet"); // $NON-NLS-1$
+    }
+    return id;
+  }
 
-	@Override
-	public String toString()
-	{
-		return (id == null ? getClass().getName() + " (unregistered)" : id); //$NON-NLS-1$
-	}
+  @Override
+  public String toString() {
+    return (id == null ? getClass().getName() + " (unregistered)" : id); // $NON-NLS-1$
+  }
 
-	/**
-	 * Create a {@link SectionContext} for this {@code Section}.
-	 * 
-	 * @param info The current info
-	 * @return The newly created context.
-	 */
-	@Deprecated
-	public SectionContext getContext(SectionInfo info)
-	{
-		return info.getContextForId(getSectionId());
-	}
+  /**
+   * Create a {@link SectionContext} for this {@code Section}.
+   *
+   * @param info The current info
+   * @return The newly created context.
+   */
+  @Deprecated
+  public SectionContext getContext(SectionInfo info) {
+    return info.getContextForId(getSectionId());
+  }
 
-	/**
-	 * Return this {@code Section}'s model.
-	 * 
-	 * @see SectionInfo#getModelForId(String)
-	 * @param info The current info
-	 * @return The model
-	 */
-	public M getModel(SectionInfo context)
-	{
-		return context.<M> getModelForId(id);
-	}
+  /**
+   * Return this {@code Section}'s model.
+   *
+   * @see SectionInfo#getModelForId(String)
+   * @param info The current info
+   * @return The model
+   */
+  public M getModel(SectionInfo context) {
+    return context.<M>getModelForId(id);
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Class<M> getModelClass()
-	{
-		return (Class<M>) Object.class;
-	}
+  @SuppressWarnings("unchecked")
+  @Override
+  public Class<M> getModelClass() {
+    return (Class<M>) Object.class;
+  }
 
-	/**
-	 * Records the id assigned to this {@code Section}, which can be retrieved
-	 * via the {@code SectionId} interface.
-	 */
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		if( treeRegisteredIn != null )
-		{
-			throw new Error(getClass().getName() + " Already registered in tree:" + treeRegisteredIn); //$NON-NLS-1$
-		}
-		treeRegisteredIn = tree;
-		this.id = id;
-	}
+  /**
+   * Records the id assigned to this {@code Section}, which can be retrieved via the {@code
+   * SectionId} interface.
+   */
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    if (treeRegisteredIn != null) {
+      throw new Error(
+          getClass().getName() + " Already registered in tree:" + treeRegisteredIn); // $NON-NLS-1$
+    }
+    treeRegisteredIn = tree;
+    this.id = id;
+  }
 
-	@Override
-	public SectionTree getTree()
-	{
-		return treeRegisteredIn;
-	}
+  @Override
+  public SectionTree getTree() {
+    return treeRegisteredIn;
+  }
 
-	@Override
-	public Section getSectionObject()
-	{
-		return this;
-	}
+  @Override
+  public Section getSectionObject() {
+    return this;
+  }
 }

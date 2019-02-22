@@ -19,9 +19,6 @@ package com.tle.core.customlinks.service;
 import com.tle.common.customlinks.entity.CustomLink;
 import com.tle.core.entity.EntityEditingSession;
 
-/**
- * @author aholland
- */
-public interface CustomLinkEditingSession extends EntityEditingSession<CustomLinkEditingBean, CustomLink>
-{
-}
+/** @author aholland */
+public interface CustomLinkEditingSession
+    extends EntityEditingSession<CustomLinkEditingBean, CustomLink> {}

@@ -19,187 +19,163 @@ package com.tle.web.wizard.section.model;
 import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.equella.layout.TwoColumnLayout.TwoColumnModel;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
+public class WizardForm extends TwoColumnModel {
+  // Wizard stuff
+  @Bookmarked protected String wizid;
 
-public class WizardForm extends TwoColumnModel
-{
-	// Wizard stuff
-	@Bookmarked
-	protected String wizid;
-	@Bookmarked(onlyForContext = "wizardEntry")
-	private String method;
-	@Bookmarked(onlyForContext = "wizardEntry")
-	private String itemdefUuid;
-	@Bookmarked(onlyForContext = "wizardEntry")
-	private String uuid;
-	@Bookmarked(onlyForContext = "wizardEntry")
-	private int version;
-	@Bookmarked(onlyForContext = "wizardEntry")
-	private boolean redraft;
-	@Bookmarked(onlyForContext = "wizardEntry")
-	private boolean edit;
-	@Bookmarked(onlyForContext = "wizardEntry")
-	private boolean newversion;
-	@Bookmarked(onlyForContext = "wizardEntry")
-	private String transform;
-	@Bookmarked(onlyForContext = "wizardEntry")
-	private boolean cloneAttachments;
+  @Bookmarked(onlyForContext = "wizardEntry")
+  private String method;
 
-	private String reason;
-	private boolean showErrorHelp;
+  @Bookmarked(onlyForContext = "wizardEntry")
+  private String itemdefUuid;
 
-	private boolean noCancel;
-	private Throwable exception;
+  @Bookmarked(onlyForContext = "wizardEntry")
+  private String uuid;
 
-	public String getReason()
-	{
-		return reason;
-	}
+  @Bookmarked(onlyForContext = "wizardEntry")
+  private int version;
 
-	public void setReason(final String reason)
-	{
-		this.reason = reason;
-	}
+  @Bookmarked(onlyForContext = "wizardEntry")
+  private boolean redraft;
 
-	public boolean isShowErrorHelp()
-	{
-		return showErrorHelp;
-	}
+  @Bookmarked(onlyForContext = "wizardEntry")
+  private boolean edit;
 
-	public void setShowErrorHelp(boolean showErrorHelp)
-	{
-		this.showErrorHelp = showErrorHelp;
-	}
+  @Bookmarked(onlyForContext = "wizardEntry")
+  private boolean newversion;
 
-	public String getWizid()
-	{
-		return wizid;
-	}
+  @Bookmarked(onlyForContext = "wizardEntry")
+  private String transform;
 
-	public void setWizid(final String wizid)
-	{
-		this.wizid = wizid;
-	}
+  @Bookmarked(onlyForContext = "wizardEntry")
+  private boolean cloneAttachments;
 
-	public boolean isEdit()
-	{
-		return edit;
-	}
+  private String reason;
+  private boolean showErrorHelp;
 
-	public void setEdit(final boolean edit)
-	{
-		this.edit = edit;
-	}
+  private boolean noCancel;
+  private Throwable exception;
 
-	public boolean isRedraft()
-	{
-		return redraft;
-	}
+  public String getReason() {
+    return reason;
+  }
 
-	public void setRedraft(final boolean redraft)
-	{
-		this.redraft = redraft;
-	}
+  public void setReason(final String reason) {
+    this.reason = reason;
+  }
 
-	public boolean isNewversion()
-	{
-		return newversion;
-	}
+  public boolean isShowErrorHelp() {
+    return showErrorHelp;
+  }
 
-	public void setNewversion(final boolean newversion)
-	{
-		this.newversion = newversion;
-	}
+  public void setShowErrorHelp(boolean showErrorHelp) {
+    this.showErrorHelp = showErrorHelp;
+  }
 
-	public String getItemdefUuid()
-	{
-		return itemdefUuid;
-	}
+  public String getWizid() {
+    return wizid;
+  }
 
-	public void setItemdefUuid(final String itemdefUuid)
-	{
-		this.itemdefUuid = itemdefUuid;
-	}
+  public void setWizid(final String wizid) {
+    this.wizid = wizid;
+  }
 
-	public String getUuid()
-	{
-		return uuid;
-	}
+  public boolean isEdit() {
+    return edit;
+  }
 
-	public void setUuid(final String uuid)
-	{
-		this.uuid = uuid;
-	}
+  public void setEdit(final boolean edit) {
+    this.edit = edit;
+  }
 
-	public int getVersion()
-	{
-		return version;
-	}
+  public boolean isRedraft() {
+    return redraft;
+  }
 
-	public void setVersion(final int version)
-	{
-		this.version = version;
-	}
+  public void setRedraft(final boolean redraft) {
+    this.redraft = redraft;
+  }
 
-	public String getMethod()
-	{
-		return method;
-	}
+  public boolean isNewversion() {
+    return newversion;
+  }
 
-	public void setMethod(final String method)
-	{
-		this.method = method;
-	}
+  public void setNewversion(final boolean newversion) {
+    this.newversion = newversion;
+  }
 
-	// public LanguageBundle getTitle()
-	// {
-	// return title;
-	// }
-	//
-	// public void setTitle(final LanguageBundle title)
-	// {
-	// this.title = title;
-	// }
+  public String getItemdefUuid() {
+    return itemdefUuid;
+  }
 
-	public String getTransform()
-	{
-		return transform;
-	}
+  public void setItemdefUuid(final String itemdefUuid) {
+    this.itemdefUuid = itemdefUuid;
+  }
 
-	public void setTransform(final String transform)
-	{
-		this.transform = transform;
-	}
+  public String getUuid() {
+    return uuid;
+  }
 
-	public boolean isCloneAttachments()
-	{
-		return cloneAttachments;
-	}
+  public void setUuid(final String uuid) {
+    this.uuid = uuid;
+  }
 
-	public void setCloneAttachments(final boolean cloneAttachments)
-	{
-		this.cloneAttachments = cloneAttachments;
-	}
+  public int getVersion() {
+    return version;
+  }
 
-	public boolean isNoCancel()
-	{
-		return noCancel;
-	}
+  public void setVersion(final int version) {
+    this.version = version;
+  }
 
-	public void setNoCancel(final boolean noCancel)
-	{
-		this.noCancel = noCancel;
-	}
+  public String getMethod() {
+    return method;
+  }
 
-	public Throwable getException()
-	{
-		return exception;
-	}
+  public void setMethod(final String method) {
+    this.method = method;
+  }
 
-	public void setException(Throwable exception)
-	{
-		this.exception = exception;
-	}
+  // public LanguageBundle getTitle()
+  // {
+  // return title;
+  // }
+  //
+  // public void setTitle(final LanguageBundle title)
+  // {
+  // this.title = title;
+  // }
+
+  public String getTransform() {
+    return transform;
+  }
+
+  public void setTransform(final String transform) {
+    this.transform = transform;
+  }
+
+  public boolean isCloneAttachments() {
+    return cloneAttachments;
+  }
+
+  public void setCloneAttachments(final boolean cloneAttachments) {
+    this.cloneAttachments = cloneAttachments;
+  }
+
+  public boolean isNoCancel() {
+    return noCancel;
+  }
+
+  public void setNoCancel(final boolean noCancel) {
+    this.noCancel = noCancel;
+  }
+
+  public Throwable getException() {
+    return exception;
+  }
+
+  public void setException(Throwable exception) {
+    this.exception = exception;
+  }
 }

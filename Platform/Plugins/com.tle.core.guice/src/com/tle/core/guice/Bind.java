@@ -23,10 +23,8 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Bind
-{
-	Class<?> value() default Bind.class;
+public @interface Bind {
+  Class<?> value() default Bind.class;
 
-	Type[] types() default {};
-
+  Type[] types() default {};
 }

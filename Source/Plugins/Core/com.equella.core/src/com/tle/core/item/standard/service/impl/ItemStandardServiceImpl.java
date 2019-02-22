@@ -16,21 +16,6 @@
 
 package com.tle.core.item.standard.service.impl;
 
-import java.io.Serializable;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.wizard.beans.DRMPage;
 import com.dytech.edge.wizard.beans.WizardPage;
@@ -82,331 +67,306 @@ import com.tle.core.url.URLCheckerService.URLCheckMode;
 import com.tle.core.url.URLEvent;
 import com.tle.core.url.URLEvent.URLEventType;
 import com.tle.core.url.URLListener;
+import java.io.Serializable;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @NonNullByDefault
 @Bind(ItemStandardService.class)
 @Singleton
 public class ItemStandardServiceImpl
-	implements
-		ItemStandardService,
-		UserChangeListener,
-		UpdateReferencedUrlsListener,
-		URLListener,
-		SchemaSaveExtension,
-		CollectionSaveExtension,
-		ItemMovedCollectionEventListener
-{
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private FilterFactory filterFactory;
-	@Inject
-	private ItemOperationFactory itemOperationFactory;
-	@Inject
-	private URLCheckerService urlCheckerService;
-	@Inject
-	private EventService eventService;
-	@Inject
-	private ItemDefinitionService collectionService;
-	@Inject
-	private FileSystemService fileSystemService;
+    implements ItemStandardService,
+        UserChangeListener,
+        UpdateReferencedUrlsListener,
+        URLListener,
+        SchemaSaveExtension,
+        CollectionSaveExtension,
+        ItemMovedCollectionEventListener {
+  @Inject private ItemService itemService;
+  @Inject private FilterFactory filterFactory;
+  @Inject private ItemOperationFactory itemOperationFactory;
+  @Inject private URLCheckerService urlCheckerService;
+  @Inject private EventService eventService;
+  @Inject private ItemDefinitionService collectionService;
+  @Inject private FileSystemService fileSystemService;
 
-	@Override
-	@Transactional
-	public void delete(ItemId itemId, boolean purge, boolean waitForIndex, boolean purgeIfDeleted)
-	{
-		Item item = itemService.getUnsecure(itemId);
-		if( item.getStatus() == ItemStatus.DELETED )
-		{
-			if( !purge && !purgeIfDeleted)
-			{
-				return;
-			}
-			itemService.operation(itemId, itemOperationFactory.purge(waitForIndex));
-			return;
-		}
-		WorkflowOperation secondOp;
-		if( purge )
-		{
-			secondOp = itemOperationFactory.purge(waitForIndex);
-		}
-		else
-		{
-			secondOp = itemOperationFactory.save();
-		}
-		itemService.operation(itemId, itemOperationFactory.delete(), secondOp);
-	}
+  @Override
+  @Transactional
+  public void delete(ItemId itemId, boolean purge, boolean waitForIndex, boolean purgeIfDeleted) {
+    Item item = itemService.getUnsecure(itemId);
+    if (item.getStatus() == ItemStatus.DELETED) {
+      if (!purge && !purgeIfDeleted) {
+        return;
+      }
+      itemService.operation(itemId, itemOperationFactory.purge(waitForIndex));
+      return;
+    }
+    WorkflowOperation secondOp;
+    if (purge) {
+      secondOp = itemOperationFactory.purge(waitForIndex);
+    } else {
+      secondOp = itemOperationFactory.save();
+    }
+    itemService.operation(itemId, itemOperationFactory.delete(), secondOp);
+  }
 
-	@Override
-	public void updateReferencedUrlsEvent(UpdateReferencedUrlsEvent event)
-	{
-		itemService.operation(event.getItemKey(), new WorkflowOperation[]{itemOperationFactory.updateReferencedUrls(),
-				itemOperationFactory.reIndexIfRequired(),});
-	}
+  @Override
+  public void updateReferencedUrlsEvent(UpdateReferencedUrlsEvent event) {
+    itemService.operation(
+        event.getItemKey(),
+        new WorkflowOperation[] {
+          itemOperationFactory.updateReferencedUrls(), itemOperationFactory.reIndexIfRequired(),
+        });
+  }
 
-	@Override
-	public void urlEvent(URLEvent event)
-	{
-		// Notify users of URLs reaching the warning or disabled stage.
-		URLEventType type = event.getType();
-		if( type == URLEventType.URL_WARNING || type == URLEventType.URL_DISABLED )
-		{
-			final ReferencedURL rurl = urlCheckerService.getUrlStatus(event.getUrl(), URLCheckMode.RECORDS_ONLY);
-			itemService.operateAll(filterFactory.notifyBadUrl(rurl));
-		}
-	}
+  @Override
+  public void urlEvent(URLEvent event) {
+    // Notify users of URLs reaching the warning or disabled stage.
+    URLEventType type = event.getType();
+    if (type == URLEventType.URL_WARNING || type == URLEventType.URL_DISABLED) {
+      final ReferencedURL rurl =
+          urlCheckerService.getUrlStatus(event.getUrl(), URLCheckMode.RECORDS_ONLY);
+      itemService.operateAll(filterFactory.notifyBadUrl(rurl));
+    }
+  }
 
-	@Override
-	public void userDeletedEvent(UserDeletedEvent event)
-	{
-		itemService.operateAll(filterFactory.userDeleted(event.getUserID()), null);
-	}
+  @Override
+  public void userDeletedEvent(UserDeletedEvent event) {
+    itemService.operateAll(filterFactory.userDeleted(event.getUserID()), null);
+  }
 
-	@Override
-	public void userEditedEvent(UserEditEvent event)
-	{
-		// Nothing to do here
-	}
+  @Override
+  public void userEditedEvent(UserEditEvent event) {
+    // Nothing to do here
+  }
 
-	@Override
-	public void userIdChangedEvent(UserIdChangedEvent event)
-	{
-		itemService.operateAll(filterFactory.changeUserId(event.getFromUserId(), event.getToUserId()));
-	}
+  @Override
+  public void userIdChangedEvent(UserIdChangedEvent event) {
+    itemService.operateAll(filterFactory.changeUserId(event.getFromUserId(), event.getToUserId()));
+  }
 
-	@Override
-	public void schemaSaved(Schema oldSchema, Schema newSchema)
-	{
-		if( oldSchema != null )
-		{
-			// Refresh item name and description if either of the XPaths has changed
-			if( !newSchema.getItemNamePath().equals(oldSchema.getItemNamePath())
-				|| !newSchema.getItemDescriptionPath().equals(oldSchema.getItemDescriptionPath()) )
-			{
-				publishEventAfterCommit(new ItemOperationEvent(new FactoryMethodLocator<BaseFilter>(FilterFactory.class,
-					"refreshSchemaItems", newSchema.getId())));
-				return;
-			}
+  @Override
+  public void schemaSaved(Schema oldSchema, Schema newSchema) {
+    if (oldSchema != null) {
+      // Refresh item name and description if either of the XPaths has changed
+      if (!newSchema.getItemNamePath().equals(oldSchema.getItemNamePath())
+          || !newSchema.getItemDescriptionPath().equals(oldSchema.getItemDescriptionPath())) {
+        publishEventAfterCommit(
+            new ItemOperationEvent(
+                new FactoryMethodLocator<BaseFilter>(
+                    FilterFactory.class, "refreshSchemaItems", newSchema.getId())));
+        return;
+      }
 
-			// Re-index items if the indexing settings for schema nodes has changed
-			if( !getIndexedPaths(newSchema).equals(getIndexedPaths(oldSchema)) )
-			{
-				eventService.publishApplicationEvent(new ItemReindexEvent(new SchemaFilter(newSchema)));
-				return;
-			}
-		}
-	}
+      // Re-index items if the indexing settings for schema nodes has changed
+      if (!getIndexedPaths(newSchema).equals(getIndexedPaths(oldSchema))) {
+        eventService.publishApplicationEvent(new ItemReindexEvent(new SchemaFilter(newSchema)));
+        return;
+      }
+    }
+  }
 
-	@SuppressWarnings("nls")
-	private Set<String> getIndexedPaths(Schema s)
-	{
-		Set<String> rv = new HashSet<String>();
-		getIndexedPaths(rv, s.getDefinitionNonThreadSafe(), "");
-		return rv;
-	}
+  @SuppressWarnings("nls")
+  private Set<String> getIndexedPaths(Schema s) {
+    Set<String> rv = new HashSet<String>();
+    getIndexedPaths(rv, s.getDefinitionNonThreadSafe(), "");
+    return rv;
+  }
 
-	@SuppressWarnings("nls")
-	private void getIndexedPaths(Set<String> rv, PropBagEx xml, String path)
-	{
-		for( PropBagEx sxml : xml.iterator() )
-		{
-			final String spath = path + '/' + sxml.getNodeName();
+  @SuppressWarnings("nls")
+  private void getIndexedPaths(Set<String> rv, PropBagEx xml, String path) {
+    for (PropBagEx sxml : xml.iterator()) {
+      final String spath = path + '/' + sxml.getNodeName();
 
-			if( sxml.isNodeTrue("@field") )
-			{
-				rv.add("f" + spath);
-			}
+      if (sxml.isNodeTrue("@field")) {
+        rv.add("f" + spath);
+      }
 
-			if( sxml.isNodeTrue("@search") )
-			{
-				rv.add("s" + spath);
-			}
+      if (sxml.isNodeTrue("@search")) {
+        rv.add("s" + spath);
+      }
 
-			getIndexedPaths(rv, sxml, spath);
-		}
-	}
+      getIndexedPaths(rv, sxml, spath);
+    }
+  }
 
-	private void publishEventAfterCommit(final ApplicationEvent<?> event)
-	{
-		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter()
-		{
-			@Override
-			public void afterCommit()
-			{
-				eventService.publishApplicationEvent(event);
-			}
-		});
-	}
+  private void publishEventAfterCommit(final ApplicationEvent<?> event) {
+    TransactionSynchronizationManager.registerSynchronization(
+        new TransactionSynchronizationAdapter() {
+          @Override
+          public void afterCommit() {
+            eventService.publishApplicationEvent(event);
+          }
+        });
+  }
 
-	@Override
-	public void collectionSaved(ItemDefinition oldCollection, ItemDefinition newCollection)
-	{
-		processDRM(newCollection);
+  @Override
+  public void collectionSaved(ItemDefinition oldCollection, ItemDefinition newCollection) {
+    processDRM(newCollection);
 
-		if( oldCollection != null )
-		{
-			boolean fireEvent = false;
-			final ItemOperationBatchEvent batchEvent = new ItemOperationBatchEvent();
+    if (oldCollection != null) {
+      boolean fireEvent = false;
+      final ItemOperationBatchEvent batchEvent = new ItemOperationBatchEvent();
 
-			// Check if the workflow has changed
-			if( !Objects.equals(oldCollection.getWorkflow(), newCollection.getWorkflow()) )
-			{
-				fireEvent = true;
-				batchEvent.addEvent(new ItemOperationEvent(new FactoryMethodLocator<BaseFilter>(FilterFactory.class,
-					"workflowChanged", newCollection.getId())));
-			}
+      // Check if the workflow has changed
+      if (!Objects.equals(oldCollection.getWorkflow(), newCollection.getWorkflow())) {
+        fireEvent = true;
+        batchEvent.addEvent(
+            new ItemOperationEvent(
+                new FactoryMethodLocator<BaseFilter>(
+                    FilterFactory.class, "workflowChanged", newCollection.getId())));
+      }
 
-			if( metadataRuleChanged(oldCollection.getItemMetadataRules(), newCollection)
-				|| dynamicMetadataRuleChanged(oldCollection.getDynamicMetadataRules(), newCollection)
-				|| searchDisplayNodesChanged(oldCollection.getSearchDetails(), newCollection.getSearchDetails()) )
-			{
-				fireEvent = true;
-				batchEvent.addEvent(new ItemOperationEvent(new FactoryMethodLocator<BaseFilter>(FilterFactory.class,
-					"refreshCollectionItems", newCollection.getId())));
-			}
+      if (metadataRuleChanged(oldCollection.getItemMetadataRules(), newCollection)
+          || dynamicMetadataRuleChanged(oldCollection.getDynamicMetadataRules(), newCollection)
+          || searchDisplayNodesChanged(
+              oldCollection.getSearchDetails(), newCollection.getSearchDetails())) {
+        fireEvent = true;
+        batchEvent.addEvent(
+            new ItemOperationEvent(
+                new FactoryMethodLocator<BaseFilter>(
+                    FilterFactory.class, "refreshCollectionItems", newCollection.getId())));
+      }
 
-			if( fireEvent )
-			{
-				publishEventAfterCommit(batchEvent);
-			}
-		}
-	}
+      if (fireEvent) {
+        publishEventAfterCommit(batchEvent);
+      }
+    }
+  }
 
-	@Transactional
-	@Override
-	public void itemMovedCollection(ItemMovedCollectionEvent event)
-	{
-		// Delete the old folder if the filestore ID of the old collection != filestore ID of new collection
-		// OR they are the same, but one is buckets and the other is not
-		final String oldCollectionUuid = event.getFromCollectionUuid();
-		final String newCollectionUuid = event.getToCollectionUuid();
-		if( !oldCollectionUuid.equals(newCollectionUuid) )
-		{
-			final ItemDefinition oldCollection = collectionService.getByUuid(oldCollectionUuid);
-			final ItemDefinition newCollection = collectionService.getByUuid(newCollectionUuid);
-			final String oldFilestoreId = oldCollection
-				.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
-			final String newFilestoreId = newCollection
-				.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
-			final boolean oldBucket = oldCollection.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_BUCKETS,
-				false);
-			final boolean newBucket = newCollection.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_BUCKETS,
-				false);
-			if( !Objects.equals(oldFilestoreId, newFilestoreId) || oldBucket != newBucket )
-			{
-				final ItemKey itemId = event.getItemId();
-				ItemFile oldHandle = new ItemFile(itemId.getUuid(), itemId.getVersion(),
-					oldBucket ? oldCollectionUuid : null);
-				oldHandle.setFilestoreId("default".equals(oldFilestoreId) ? null : oldFilestoreId);
-				fileSystemService.removeFile(oldHandle);
-			}
-		}
-	}
+  @Transactional
+  @Override
+  public void itemMovedCollection(ItemMovedCollectionEvent event) {
+    // Delete the old folder if the filestore ID of the old collection != filestore ID of new
+    // collection
+    // OR they are the same, but one is buckets and the other is not
+    final String oldCollectionUuid = event.getFromCollectionUuid();
+    final String newCollectionUuid = event.getToCollectionUuid();
+    if (!oldCollectionUuid.equals(newCollectionUuid)) {
+      final ItemDefinition oldCollection = collectionService.getByUuid(oldCollectionUuid);
+      final ItemDefinition newCollection = collectionService.getByUuid(newCollectionUuid);
+      final String oldFilestoreId =
+          oldCollection.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
+      final String newFilestoreId =
+          newCollection.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
+      final boolean oldBucket =
+          oldCollection.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, false);
+      final boolean newBucket =
+          newCollection.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, false);
+      if (!Objects.equals(oldFilestoreId, newFilestoreId) || oldBucket != newBucket) {
+        final ItemKey itemId = event.getItemId();
+        ItemFile oldHandle =
+            new ItemFile(
+                itemId.getUuid(), itemId.getVersion(), oldBucket ? oldCollectionUuid : null);
+        oldHandle.setFilestoreId("default".equals(oldFilestoreId) ? null : oldFilestoreId);
+        fileSystemService.removeFile(oldHandle);
+      }
+    }
+  }
 
-	private void processDRM(ItemDefinition itemdef)
-	{
-		Set<String> pageIds = Sets.newHashSet();
-		Wizard wizard = itemdef.getWizard();
-		if( wizard != null )
-		{
-			List<WizardPage> pages = wizard.getPages();
-			for( WizardPage page : pages )
-			{
-				if( page instanceof DRMPage )
-				{
-					pageIds.add(((DRMPage) page).getUuid());
-				}
-			}
-			if( !pageIds.isEmpty() )
-			{
-				publishEventAfterCommit(new ItemOperationEvent(new FactoryMethodLocator<BaseFilter>(FilterFactory.class,
-					"drmUpdate", itemdef.getId(), (Serializable) pageIds)));
-			}
-		}
-	}
+  private void processDRM(ItemDefinition itemdef) {
+    Set<String> pageIds = Sets.newHashSet();
+    Wizard wizard = itemdef.getWizard();
+    if (wizard != null) {
+      List<WizardPage> pages = wizard.getPages();
+      for (WizardPage page : pages) {
+        if (page instanceof DRMPage) {
+          pageIds.add(((DRMPage) page).getUuid());
+        }
+      }
+      if (!pageIds.isEmpty()) {
+        publishEventAfterCommit(
+            new ItemOperationEvent(
+                new FactoryMethodLocator<BaseFilter>(
+                    FilterFactory.class, "drmUpdate", itemdef.getId(), (Serializable) pageIds)));
+      }
+    }
+  }
 
-	private boolean metadataRuleChanged(List<ItemMetadataRule> oldRules, ItemDefinition newCollection)
-	{
-		List<ItemMetadataRule> newRules = newCollection.getItemMetadataRules();
-		return !listContentsIdentical(oldRules, newRules, new Comparator<ItemMetadataRule>()
-		{
-			@Override
-			public int compare(ItemMetadataRule o1, ItemMetadataRule o2)
-			{
-				// Id and Script. Don't care about name changes
-				if( !Objects.equals(o1.getId(), o2.getId()) || !Objects.equals(o1.getScript(), o2.getScript()) )
-				{
-					return 1;
-				}
+  private boolean metadataRuleChanged(
+      List<ItemMetadataRule> oldRules, ItemDefinition newCollection) {
+    List<ItemMetadataRule> newRules = newCollection.getItemMetadataRules();
+    return !listContentsIdentical(
+        oldRules,
+        newRules,
+        new Comparator<ItemMetadataRule>() {
+          @Override
+          public int compare(ItemMetadataRule o1, ItemMetadataRule o2) {
+            // Id and Script. Don't care about name changes
+            if (!Objects.equals(o1.getId(), o2.getId())
+                || !Objects.equals(o1.getScript(), o2.getScript())) {
+              return 1;
+            }
 
-				return 0;
-			}
-		});
-	}
+            return 0;
+          }
+        });
+  }
 
-	private boolean dynamicMetadataRuleChanged(List<DynamicMetadataRule> oldRules, ItemDefinition newCollection)
-	{
-		List<DynamicMetadataRule> newRules = newCollection.getDynamicMetadataRules();
-		return !listContentsIdentical(oldRules, newRules, new Comparator<DynamicMetadataRule>()
-		{
-			@Override
-			public int compare(DynamicMetadataRule o1, DynamicMetadataRule o2)
-			{
-				// Id, Path, Type, Privileges. Don't care about name changes
-				if( !Objects.equals(o1.getId(), o2.getId()) || !Objects.equals(o1.getPath(), o2.getPath())
-					|| !Objects.equals(o1.getType(), o2.getType())
-					|| !Check.bothNullOrDeepEqual(o1.getTargetList(), o2.getTargetList()) )
-				{
-					return 1;
-				}
+  private boolean dynamicMetadataRuleChanged(
+      List<DynamicMetadataRule> oldRules, ItemDefinition newCollection) {
+    List<DynamicMetadataRule> newRules = newCollection.getDynamicMetadataRules();
+    return !listContentsIdentical(
+        oldRules,
+        newRules,
+        new Comparator<DynamicMetadataRule>() {
+          @Override
+          public int compare(DynamicMetadataRule o1, DynamicMetadataRule o2) {
+            // Id, Path, Type, Privileges. Don't care about name changes
+            if (!Objects.equals(o1.getId(), o2.getId())
+                || !Objects.equals(o1.getPath(), o2.getPath())
+                || !Objects.equals(o1.getType(), o2.getType())
+                || !Check.bothNullOrDeepEqual(o1.getTargetList(), o2.getTargetList())) {
+              return 1;
+            }
 
-				return 0;
-			}
-		});
-	}
+            return 0;
+          }
+        });
+  }
 
-	private boolean searchDisplayNodesChanged(SearchDetails oldDetails, SearchDetails newDetails)
-	{
-		List<DisplayNode> oldNodes = oldDetails == null ? null : oldDetails.getDisplayNodes();
-		List<DisplayNode> newNodes = newDetails == null ? null : newDetails.getDisplayNodes();
-		return !listContentsIdentical(oldNodes, newNodes, new Comparator<DisplayNode>()
-		{
-			@Override
-			public int compare(DisplayNode node1, DisplayNode node2)
-			{
-				return Check.bothNullOrDeepEqual(node1, node2) ? 0 : 1;
-			}
-		});
-	}
+  private boolean searchDisplayNodesChanged(SearchDetails oldDetails, SearchDetails newDetails) {
+    List<DisplayNode> oldNodes = oldDetails == null ? null : oldDetails.getDisplayNodes();
+    List<DisplayNode> newNodes = newDetails == null ? null : newDetails.getDisplayNodes();
+    return !listContentsIdentical(
+        oldNodes,
+        newNodes,
+        new Comparator<DisplayNode>() {
+          @Override
+          public int compare(DisplayNode node1, DisplayNode node2) {
+            return Check.bothNullOrDeepEqual(node1, node2) ? 0 : 1;
+          }
+        });
+  }
 
-	private <T> boolean listContentsIdentical(List<T> oldRules, List<T> newRules, Comparator<T> comparator)
-	{
-		if( oldRules == null && newRules == null || (oldRules == null && newRules != null && newRules.size() == 0) )
-		{
-			return true;
-		}
-		else if( oldRules == null || newRules == null || oldRules.size() != newRules.size() )
-		{
-			return false;
-		}
-		else
-		{
-			Iterator<T> ai = oldRules.iterator();
-			Iterator<T> bi = newRules.iterator();
+  private <T> boolean listContentsIdentical(
+      List<T> oldRules, List<T> newRules, Comparator<T> comparator) {
+    if (oldRules == null && newRules == null
+        || (oldRules == null && newRules != null && newRules.size() == 0)) {
+      return true;
+    } else if (oldRules == null || newRules == null || oldRules.size() != newRules.size()) {
+      return false;
+    } else {
+      Iterator<T> ai = oldRules.iterator();
+      Iterator<T> bi = newRules.iterator();
 
-			while( ai.hasNext() )
-			{
-				if( comparator.compare(ai.next(), bi.next()) != 0 )
-				{
-					return false;
-				}
-			}
+      while (ai.hasNext()) {
+        if (comparator.compare(ai.next(), bi.next()) != 0) {
+          return false;
+        }
+      }
 
-			return true;
-		}
-	}
+      return true;
+    }
+  }
 }

@@ -16,46 +16,36 @@
 
 package com.tle.web.api.item.equella.interfaces.beans;
 
-public class FileAttachmentBean extends AbstractFileAttachmentBean
-{
-	private static final String TYPE = "file";
+public class FileAttachmentBean extends AbstractFileAttachmentBean {
+  private static final String TYPE = "file";
 
-	private String parentZip;
-	private boolean conversion;
+  private String parentZip;
+  private boolean conversion;
 
-	public boolean isConversion()
-	{
-		return conversion;
-	}
+  public boolean isConversion() {
+    return conversion;
+  }
 
-	public void setConversion(boolean conversion)
-	{
-		this.conversion = conversion;
-	}
+  public void setConversion(boolean conversion) {
+    this.conversion = conversion;
+  }
 
-	/**
-	 * @deprecated Use getThumbnail
-	 */
-	@Deprecated
-	public String getThumbFilename()
-	{
-		return getThumbnail();
-	}
+  /** @deprecated Use getThumbnail */
+  @Deprecated
+  public String getThumbFilename() {
+    return getThumbnail();
+  }
 
-	@Override
-	public String getRawAttachmentType()
-	{
-		return TYPE;
-	}
+  @Override
+  public String getRawAttachmentType() {
+    return TYPE;
+  }
 
-	public String getParentZip()
-	{
-		return parentZip;
-	}
+  public String getParentZip() {
+    return parentZip;
+  }
 
-	public void setParentZip(String parentZip)
-	{
-		this.parentZip = parentZip;
-	}
-
+  public void setParentZip(String parentZip) {
+    this.parentZip = parentZip;
+  }
 }

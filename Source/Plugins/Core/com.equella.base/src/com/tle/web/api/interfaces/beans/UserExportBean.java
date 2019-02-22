@@ -16,29 +16,25 @@
 
 package com.tle.web.api.interfaces.beans;
 
-public class UserExportBean
-{
-	@SuppressWarnings("nls")
-	private String exportVersion = "1.0";
-	private String passwordHash;
+public class UserExportBean {
+  @SuppressWarnings("nls")
+  private String exportVersion = "1.0";
 
-	public String getExportVersion()
-	{
-		return exportVersion;
-	}
+  private String passwordHash;
 
-	public void setExportVersion(String exportVersion)
-	{
-		this.exportVersion = exportVersion;
-	}
+  public String getExportVersion() {
+    return exportVersion;
+  }
 
-	public String getPasswordHash()
-	{
-		return passwordHash;
-	}
+  public void setExportVersion(String exportVersion) {
+    this.exportVersion = exportVersion;
+  }
 
-	public void setPasswordHash(String passwordHash)
-	{
-		this.passwordHash = passwordHash;
-	}
+  public String getPasswordHash() {
+    return passwordHash;
+  }
+
+  public void setPasswordHash(String passwordHash) {
+    this.passwordHash = passwordHash;
+  }
 }

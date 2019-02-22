@@ -16,20 +16,15 @@
 
 package com.tle.common.filesystem.remoting;
 
+import com.tle.common.NameValue;
 import java.util.List;
 
-import com.tle.common.NameValue;
-
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public interface RemoteFileSystemService
-{
-	String DEFAULT_FILESTORE_ID = "default";
+public interface RemoteFileSystemService {
+  String DEFAULT_FILESTORE_ID = "default";
 
-	List<NameValue> listFilestores();
+  List<NameValue> listFilestores();
 
-	boolean isAdvancedFilestore();
+  boolean isAdvancedFilestore();
 }

@@ -16,11 +16,10 @@
 
 package com.tle.common.mimetypes;
 
-import java.util.List;
-
 import com.tle.common.NameValue;
+import java.util.List;
 
 public interface RemoteMimetypeService {
 
-	List<NameValue> listAll();
+  List<NameValue> listAll();
 }

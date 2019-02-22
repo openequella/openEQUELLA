@@ -16,15 +16,11 @@
 
 package com.tle.core.connectors.dao;
 
-import java.util.List;
-
 import com.tle.common.connectors.entity.Connector;
 import com.tle.core.entity.dao.AbstractEntityDao;
+import java.util.List;
 
-/**
- * @author aholland
- */
-public interface ConnectorDao extends AbstractEntityDao<Connector>
-{
-	List<Connector> enumerateForUrl(String url);
+/** @author aholland */
+public interface ConnectorDao extends AbstractEntityDao<Connector> {
+  List<Connector> enumerateForUrl(String url);
 }

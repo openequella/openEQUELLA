@@ -16,23 +16,19 @@
 
 package com.tle.web.cloud.search.section;
 
-import javax.inject.Inject;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.core.guice.Bind;
 import com.tle.web.search.actions.AbstractShareSearchQueryDialog;
 import com.tle.web.search.actions.AbstractShareSearchQuerySection;
+import javax.inject.Inject;
 
 @NonNullByDefault
 @Bind
-public class CloudShareSearchQueryDialog extends AbstractShareSearchQueryDialog
-{
-	@Inject
-	private CloudShareSearchQuerySection contentSection;
+public class CloudShareSearchQueryDialog extends AbstractShareSearchQueryDialog {
+  @Inject private CloudShareSearchQuerySection contentSection;
 
-	@Override
-	protected AbstractShareSearchQuerySection getContentSection()
-	{
-		return contentSection;
-	}
+  @Override
+  protected AbstractShareSearchQuerySection getContentSection() {
+    return contentSection;
+  }
 }

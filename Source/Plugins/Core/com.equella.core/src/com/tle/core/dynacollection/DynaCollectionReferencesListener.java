@@ -16,12 +16,10 @@
 
 package com.tle.core.dynacollection;
 
-import java.util.List;
-
 import com.tle.beans.entity.DynaCollection;
 import com.tle.core.events.listeners.ApplicationListener;
+import java.util.List;
 
-public interface DynaCollectionReferencesListener extends ApplicationListener
-{
-	void addDynaCollectionReferencingClasses(DynaCollection dc, List<Class<?>> referencingClasses);
+public interface DynaCollectionReferencesListener extends ApplicationListener {
+  void addDynaCollectionReferencingClasses(DynaCollection dc, List<Class<?>> referencingClasses);
 }

@@ -16,9 +16,6 @@
 
 package com.tle.web.recipientselector;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
@@ -27,339 +24,277 @@ import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.HtmlListState;
 import com.tle.web.sections.standard.model.Option;
+import java.util.ArrayList;
+import java.util.List;
 
-public class SelectionDisplayTreeNode
-{
-	private String id;
-	private HtmlListState grouping;
-	private HtmlLinkState delete;
-	private List<ExpressionSelection> expression;
-	private List<SelectionDisplayTreeNode> children = new ArrayList<SelectionDisplayTreeNode>();
+public class SelectionDisplayTreeNode {
+  private String id;
+  private HtmlListState grouping;
+  private HtmlLinkState delete;
+  private List<ExpressionSelection> expression;
+  private List<SelectionDisplayTreeNode> children = new ArrayList<SelectionDisplayTreeNode>();
 
-	public HtmlListState getGrouping()
-	{
-		return grouping;
-	}
+  public HtmlListState getGrouping() {
+    return grouping;
+  }
 
+  public void setGrouping(HtmlListState grouping) {
+    this.grouping = grouping;
+  }
 
-	public void setGrouping(HtmlListState grouping)
-	{
-		this.grouping = grouping;
-	}
+  public HtmlLinkState getDelete() {
+    return delete;
+  }
 
+  public void setDelete(HtmlLinkState delete) {
+    this.delete = delete;
+  }
 
-	public HtmlLinkState getDelete()
-	{
-		return delete;
-	}
+  public List<ExpressionSelection> getExpression() {
+    return expression;
+  }
 
+  public void setExpression(List<ExpressionSelection> expression) {
+    this.expression = expression;
+  }
 
-	public void setDelete(HtmlLinkState delete)
-	{
-		this.delete = delete;
-	}
+  public void addChildren(SelectionDisplayTreeNode children) {
+    this.children.add(children);
+  }
 
+  public String getId() {
+    return id;
+  }
 
-	public List<ExpressionSelection> getExpression()
-	{
-		return expression;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
+  public List<SelectionDisplayTreeNode> getChildren() {
+    return children;
+  }
 
-	public void setExpression(List<ExpressionSelection> expression)
-	{
-		this.expression = expression;
-	}
+  public void setChildren(List<SelectionDisplayTreeNode> children) {
+    this.children = children;
+  }
 
-	public void addChildren(SelectionDisplayTreeNode children)
-	{
-		this.children.add(children);
-	}
+  public static class ExpressionSelection {
+    private String selection;
+    private HtmlLinkState deleteSelection;
 
-	public String getId()
-	{
-		return id;
-	}
+    public ExpressionSelection(String selection) {
+      this.selection = selection;
+    }
 
-	public void setId(String id)
-	{
-		this.id = id;
-	}
+    public String getSelection() {
+      return selection;
+    }
 
-	public List<SelectionDisplayTreeNode> getChildren()
-	{
-		return children;
-	}
+    public void setSelection(String selection) {
+      this.selection = selection;
+    }
 
+    public HtmlLinkState getDeleteSelection() {
+      return deleteSelection;
+    }
 
-	public void setChildren(List<SelectionDisplayTreeNode> children)
-	{
-		this.children = children;
-	}
+    public void setDeleteSelection(HtmlLinkState deleteSelection) {
+      this.deleteSelection = deleteSelection;
+    }
+  }
 
-	public static class ExpressionSelection
-	{
-		private String selection;
-		private HtmlLinkState deleteSelection;
+  public static class SelectUserResultOption implements Option<UserBean> {
+    private final UserBean user;
+    private final HtmlLinkState link;
+    private final HtmlLinkState add;
 
-		public ExpressionSelection(String selection)
-		{
-			this.selection = selection;
-		}
+    protected SelectUserResultOption(UserBean user, HtmlLinkState link, HtmlLinkState add) {
+      this.user = user;
+      this.link = link;
+      this.add = add;
+    }
 
-		public String getSelection()
-		{
-			return selection;
-		}
+    @Override
+    public UserBean getObject() {
+      return user;
+    }
 
-		public void setSelection(String selection)
-		{
-			this.selection = selection;
-		}
+    public HtmlLinkState getLink() {
+      return link;
+    }
 
-		public HtmlLinkState getDeleteSelection()
-		{
-			return deleteSelection;
-		}
+    public HtmlLinkState getAdd() {
+      return add;
+    }
 
-		public void setDeleteSelection(HtmlLinkState deleteSelection)
-		{
-			this.deleteSelection = deleteSelection;
-		}
-	}
+    public Label getUsername() {
+      return new TextLabel(user.getUsername());
+    }
 
-	public static class SelectUserResultOption implements Option<UserBean>
-	{
-		private final UserBean user;
-		private final HtmlLinkState link;
-		private final HtmlLinkState add;
+    @Override
+    public String getName() {
+      return null;
+    }
 
-		protected SelectUserResultOption(UserBean user, HtmlLinkState link, HtmlLinkState add)
-		{
-			this.user = user;
-			this.link = link;
-			this.add = add;
-		}
+    @Override
+    public String getValue() {
+      return user.getUniqueID();
+    }
 
-		@Override
-		public UserBean getObject()
-		{
-			return user;
-		}
+    @Override
+    public String getAltTitleAttr() {
+      return null;
+    }
 
-		public HtmlLinkState getLink()
-		{
-			return link;
-		}
+    @Override
+    public String getGroupName() {
+      return null;
+    }
 
-		public HtmlLinkState getAdd()
-		{
-			return add;
-		}
+    @Override
+    public boolean isDisabled() {
+      return false;
+    }
 
-		public Label getUsername()
-		{
-			return new TextLabel(user.getUsername());
-		}
+    @Override
+    public boolean isNameHtml() {
+      return false;
+    }
 
-		@Override
-		public String getName()
-		{
-			return null;
-		}
+    @Override
+    public boolean hasAltTitleAttr() {
+      return false;
+    }
 
-		@Override
-		public String getValue()
-		{
-			return user.getUniqueID();
-		}
+    @Override
+    public void setDisabled(boolean disabled) {
+      // nothing
+    }
+  }
 
-		@Override
-		public String getAltTitleAttr()
-		{
-			return null;
-		}
+  public static class SelectGroupResultOption implements Option<GroupBean> {
+    private final GroupBean group;
+    private final HtmlLinkState link;
 
-		@Override
-		public String getGroupName()
-		{
-			return null;
-		}
+    public SelectGroupResultOption(GroupBean group, HtmlLinkState link) {
+      this.group = group;
+      this.link = link;
+    }
 
-		@Override
-		public boolean isDisabled()
-		{
-			return false;
-		}
+    @Override
+    public GroupBean getObject() {
+      return group;
+    }
 
-		@Override
-		public boolean isNameHtml()
-		{
-			return false;
-		}
+    @Override
+    public String getName() {
+      return group.getName();
+    }
 
-		@Override
-		public boolean hasAltTitleAttr()
-		{
-			return false;
-		}
+    @Override
+    public String getValue() {
+      return group.getUniqueID();
+    }
 
-		@Override
-		public void setDisabled(boolean disabled)
-		{
-			// nothing
-		}
-	}
+    @Override
+    public String getAltTitleAttr() {
+      return null;
+    }
 
-	public static class SelectGroupResultOption implements Option<GroupBean>
-	{
-		private final GroupBean group;
-		private final HtmlLinkState link;
+    @Override
+    public String getGroupName() {
+      return group.getName();
+    }
 
-		public SelectGroupResultOption(GroupBean group, HtmlLinkState link)
-		{
-			this.group = group;
-			this.link = link;
-		}
+    @Override
+    public boolean isDisabled() {
+      return false;
+    }
 
-		@Override
-		public GroupBean getObject()
-		{
-			return group;
-		}
+    @Override
+    public boolean isNameHtml() {
+      return false;
+    }
 
-		@Override
-		public String getName()
-		{
-			return group.getName();
-		}
+    @Override
+    public boolean hasAltTitleAttr() {
+      return false;
+    }
 
-		@Override
-		public String getValue()
-		{
-			return group.getUniqueID();
-		}
+    public GroupBean getGroup() {
+      return group;
+    }
 
-		@Override
-		public String getAltTitleAttr()
-		{
-			return null;
-		}
+    public HtmlLinkState getLink() {
+      return link;
+    }
 
-		@Override
-		public String getGroupName()
-		{
-			return group.getName();
-		}
+    @Override
+    public void setDisabled(boolean disabled) {
+      // nothing
+    }
+  }
 
-		@Override
-		public boolean isDisabled()
-		{
-			return false;
-		}
+  public static class SelectRoleResultOption implements Option<RoleBean> {
+    private final RoleBean role;
+    private final HtmlLinkState link;
 
-		@Override
-		public boolean isNameHtml()
-		{
-			return false;
-		}
+    public SelectRoleResultOption(RoleBean role, HtmlLinkState link) {
+      this.role = role;
+      this.link = link;
+    }
 
-		@Override
-		public boolean hasAltTitleAttr()
-		{
-			return false;
-		}
+    public RoleBean getRole() {
+      return role;
+    }
 
-		public GroupBean getGroup()
-		{
-			return group;
-		}
+    public HtmlLinkState getLink() {
+      return link;
+    }
 
-		public HtmlLinkState getLink()
-		{
-			return link;
-		}
+    @Override
+    public RoleBean getObject() {
+      return role;
+    }
 
-		@Override
-		public void setDisabled(boolean disabled)
-		{
-			// nothing
-		}
-	}
+    @Override
+    public String getName() {
+      return role.getName();
+    }
 
-	public static class SelectRoleResultOption implements Option<RoleBean>
-	{
-		private final RoleBean role;
-		private final HtmlLinkState link;
+    @Override
+    public String getValue() {
+      return role.getUniqueID();
+    }
 
-		public SelectRoleResultOption(RoleBean role, HtmlLinkState link)
-		{
-			this.role = role;
-			this.link = link;
-		}
+    @Override
+    public String getAltTitleAttr() {
+      return null;
+    }
 
-		public RoleBean getRole()
-		{
-			return role;
-		}
-		public HtmlLinkState getLink()
-		{
-			return link;
-		}
+    @Override
+    public String getGroupName() {
+      return null;
+    }
 
-		@Override
-		public RoleBean getObject()
-		{
-			return role;
-		}
+    @Override
+    public boolean isDisabled() {
+      return false;
+    }
 
-		@Override
-		public String getName()
-		{
-			return role.getName();
-		}
+    @Override
+    public boolean isNameHtml() {
+      return false;
+    }
 
-		@Override
-		public String getValue()
-		{
-			return role.getUniqueID();
-		}
+    @Override
+    public boolean hasAltTitleAttr() {
+      return false;
+    }
 
-		@Override
-		public String getAltTitleAttr()
-		{
-			return null;
-		}
-
-		@Override
-		public String getGroupName()
-		{
-			return null;
-		}
-
-		@Override
-		public boolean isDisabled()
-		{
-			return false;
-		}
-
-		@Override
-		public boolean isNameHtml()
-		{
-			return false;
-		}
-
-		@Override
-		public boolean hasAltTitleAttr()
-		{
-			return false;
-		}
-
-		@Override
-		public void setDisabled(boolean disabled)
-		{
-			// nothing
-		}
-	}
+    @Override
+    public void setDisabled(boolean disabled) {
+      // nothing
+    }
+  }
 }
-

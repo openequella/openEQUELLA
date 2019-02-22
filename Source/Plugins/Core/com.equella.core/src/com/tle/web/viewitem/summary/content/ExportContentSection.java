@@ -16,10 +16,6 @@
 
 package com.tle.web.viewitem.summary.content;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.tle.core.plugins.PluginService;
@@ -38,100 +34,95 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.viewitem.section.ParentViewItemSectionUtils;
 import com.tle.web.viewurl.ItemSectionInfo;
+import java.util.List;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
-public class ExportContentSection extends AbstractContentSection<ExportContentSection.ExportModel>
-{
-	public static final String EXPORT_ITEM = "EXPORT_ITEM";
+public class ExportContentSection extends AbstractContentSection<ExportContentSection.ExportModel> {
+  public static final String EXPORT_ITEM = "EXPORT_ITEM";
 
-	private PluginTracker<SectionId> exporterTracker;
-	private List<SectionId> exporterSections;
+  private PluginTracker<SectionId> exporterTracker;
+  private List<SectionId> exporterSections;
 
-	@PlugKey("summary.content.export.pagetitle")
-	private static Label TITLE_LABEL;
+  @PlugKey("summary.content.export.pagetitle")
+  private static Label TITLE_LABEL;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	public static void assertCanExport(ItemSectionInfo itemInfo)
-	{
-		if( !itemInfo.getPrivileges().contains(EXPORT_ITEM) )
-		{
-			throw new AccessDeniedException("You do not privileges to export items");
-		}
-	}
+  public static void assertCanExport(ItemSectionInfo itemInfo) {
+    if (!itemInfo.getPrivileges().contains(EXPORT_ITEM)) {
+      throw new AccessDeniedException("You do not privileges to export items");
+    }
+  }
 
-	public boolean canView(SectionInfo info)
-	{
-		return ParentViewItemSectionUtils.getItemInfo(info).getPrivileges().contains(EXPORT_ITEM);
-	}
+  public boolean canView(SectionInfo info) {
+    return ParentViewItemSectionUtils.getItemInfo(info).getPrivileges().contains(EXPORT_ITEM);
+  }
 
-	@Override
-	public SectionResult renderHtml(final RenderEventContext context)
-	{
-		final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(context);
+  @Override
+  public SectionResult renderHtml(final RenderEventContext context) {
+    final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(context);
 
-		assertCanExport(itemInfo);
+    assertCanExport(itemInfo);
 
-		addDefaultBreadcrumbs(context, itemInfo, TITLE_LABEL);
+    addDefaultBreadcrumbs(context, itemInfo, TITLE_LABEL);
 
-		getModel(context).setSections(Lists.transform(exporterSections, new Function<SectionId, SectionRenderable>()
-		{
-			@Override
-			public SectionRenderable apply(SectionId exporter)
-			{
-				return renderSection(context, exporter);
-			}
-		}));
+    getModel(context)
+        .setSections(
+            Lists.transform(
+                exporterSections,
+                new Function<SectionId, SectionRenderable>() {
+                  @Override
+                  public SectionRenderable apply(SectionId exporter) {
+                    return renderSection(context, exporter);
+                  }
+                }));
 
-		displayBackButton(context);
-		return viewFactory.createResult("viewitem/exporters.ftl", context);
-	}
+    displayBackButton(context);
+    return viewFactory.createResult("viewitem/exporters.ftl", context);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		exporterSections = exporterTracker.getBeanList();
-		for( SectionId exporter : exporterSections )
-		{
-			tree.registerInnerSection(exporter, id);
-		}
-	}
+    exporterSections = exporterTracker.getBeanList();
+    for (SectionId exporter : exporterSections) {
+      tree.registerInnerSection(exporter, id);
+    }
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "export";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "export";
+  }
 
-	@Override
-	public Class<ExportModel> getModelClass()
-	{
-		return ExportModel.class;
-	}
+  @Override
+  public Class<ExportModel> getModelClass() {
+    return ExportModel.class;
+  }
 
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		exporterTracker = new PluginTracker<SectionId>(pluginService, "com.tle.web.viewitem.summary", "itemExporter", "id",
-			new ExtensionParamComparator());
-		exporterTracker.setBeanKey("class");
-	}
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    exporterTracker =
+        new PluginTracker<SectionId>(
+            pluginService,
+            "com.tle.web.viewitem.summary",
+            "itemExporter",
+            "id",
+            new ExtensionParamComparator());
+    exporterTracker.setBeanKey("class");
+  }
 
-	public static class ExportModel
-	{
-		private List<SectionRenderable> sections;
+  public static class ExportModel {
+    private List<SectionRenderable> sections;
 
-		public void setSections(List<SectionRenderable> sections)
-		{
-			this.sections = sections;
-		}
+    public void setSections(List<SectionRenderable> sections) {
+      this.sections = sections;
+    }
 
-		public List<SectionRenderable> getSections()
-		{
-			return sections;
-		}
-	}
+    public List<SectionRenderable> getSections() {
+      return sections;
+    }
+  }
 }

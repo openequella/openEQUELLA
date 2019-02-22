@@ -16,8 +16,10 @@
 
 package com.tle.core.workflow.migrate.beans;
 
+import com.tle.beans.IdCloneable;
+import com.tle.core.workflow.migrate.ModerationStatus;
+import com.tle.core.workflow.migrate.beans.node.WorkflowNode;
 import java.io.Serializable;
-
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.DiscriminatorValue;
@@ -29,88 +31,74 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
 import org.hibernate.annotations.AccessType;
-
-import com.tle.beans.IdCloneable;
-import com.tle.core.workflow.migrate.ModerationStatus;
-import com.tle.core.workflow.migrate.beans.node.WorkflowNode;
 
 @Entity(name = "WorkflowNodeStatus")
 @AccessType("field")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(discriminatorType = DiscriminatorType.STRING, name = "acttype")
 @DiscriminatorValue("node")
-public class WorkflowNodeStatus implements Serializable, IdCloneable
-{
-	private static final long serialVersionUID = 1L;
+public class WorkflowNodeStatus implements Serializable, IdCloneable {
+  private static final long serialVersionUID = 1L;
 
-	public static final char INCOMPLETE = 'i';
-	public static final char COMPLETE = 'c';
+  public static final char INCOMPLETE = 'i';
+  public static final char COMPLETE = 'c';
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-	@ManyToOne
-	private ModerationStatus modStatus;
-	@ManyToOne
-	@JoinColumn(name = "wnode_id")
-	private WorkflowNode node;
-	private char status;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
 
-	// To delete
-	public String nodeId;
-	public int type;
+  @ManyToOne private ModerationStatus modStatus;
 
-	public WorkflowNodeStatus()
-	{
-		super();
-	}
+  @ManyToOne
+  @JoinColumn(name = "wnode_id")
+  private WorkflowNode node;
 
-	public WorkflowNodeStatus(WorkflowNode node)
-	{
-		this.node = node;
-	}
+  private char status;
 
-	public char getStatus()
-	{
-		return status;
-	}
+  // To delete
+  public String nodeId;
+  public int type;
 
-	public void setStatus(char status)
-	{
-		this.status = status;
-	}
+  public WorkflowNodeStatus() {
+    super();
+  }
 
-	@Override
-	public long getId()
-	{
-		return id;
-	}
+  public WorkflowNodeStatus(WorkflowNode node) {
+    this.node = node;
+  }
 
-	@Override
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+  public char getStatus() {
+    return status;
+  }
 
-	public WorkflowNode getNode()
-	{
-		return node;
-	}
+  public void setStatus(char status) {
+    this.status = status;
+  }
 
-	public void setNode(WorkflowNode node)
-	{
-		this.node = node;
-	}
+  @Override
+  public long getId() {
+    return id;
+  }
 
-	public ModerationStatus getModStatus()
-	{
-		return modStatus;
-	}
+  @Override
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public void setModStatus(ModerationStatus modStatus)
-	{
-		this.modStatus = modStatus;
-	}
+  public WorkflowNode getNode() {
+    return node;
+  }
+
+  public void setNode(WorkflowNode node) {
+    this.node = node;
+  }
+
+  public ModerationStatus getModStatus() {
+    return modStatus;
+  }
+
+  public void setModStatus(ModerationStatus modStatus) {
+    this.modStatus = modStatus;
+  }
 }

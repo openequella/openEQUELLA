@@ -16,9 +16,6 @@
 
 package com.tle.web.mimetypes.section;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
@@ -42,166 +39,142 @@ import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
 import com.tle.web.sections.js.generic.statement.ScriptStatement;
 import com.tle.web.sections.render.HtmlRenderer;
-import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.MutableList;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.StringListModel;
+import java.util.ArrayList;
+import java.util.List;
 
 @Bind
-public class MimeDetailsSection extends AbstractPrototypeSection<MimeDetailsSection.MimeDetailsModel>
-	implements
-		MimeEditExtension,
-		HtmlRenderer
-{
-	@PlugKey("error.mimetype.empty")
-	private static String ERROR_MIME_TYPE_EMPTY;
-	@PlugKey("error.extensions.length")
-	private static String ERROR_EXTENSIONS_LENGTH;
+public class MimeDetailsSection
+    extends AbstractPrototypeSection<MimeDetailsSection.MimeDetailsModel>
+    implements MimeEditExtension, HtmlRenderer {
+  @PlugKey("error.mimetype.empty")
+  private static String ERROR_MIME_TYPE_EMPTY;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @PlugKey("error.extensions.length")
+  private static String ERROR_EXTENSIONS_LENGTH;
 
-	@Component
-	private TextField description;
-	@Component
-	private TextField type;
-	@Component
-	private TextField newExtension;
-	@Component
-	private MutableList<String> extensions;
-	@Component
-	private Button addExtensionButton;
-	@Component
-	private Button removeExtensionButton;
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	private List<String> ajaxIds;
+  @Component private TextField description;
+  @Component private TextField type;
+  @Component private TextField newExtension;
+  @Component private MutableList<String> extensions;
+  @Component private Button addExtensionButton;
+  @Component private Button removeExtensionButton;
+  @AjaxFactory private AjaxGenerator ajax;
 
-	public static class MimeDetailsModel
-	{
-		// nothing
-	}
+  private List<String> ajaxIds;
 
-	@Override
-	public Class<MimeDetailsModel> getModelClass()
-	{
-		return MimeDetailsModel.class;
-	}
+  public static class MimeDetailsModel {
+    // nothing
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "det";
-	}
+  @Override
+  public Class<MimeDetailsModel> getModelClass() {
+    return MimeDetailsModel.class;
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		extensions.setListModel(new StringListModel());
-		addExtensionButton.addClickStatements(
-			new FunctionCallStatement(extensions.createAddFunction(), newExtension.createGetExpression(),
-				newExtension.createGetExpression()),
-			new ScriptStatement(JQuerySelector.valueSetExpression(newExtension, "")));
-		removeExtensionButton.addClickStatements(new FunctionCallStatement(extensions.createRemoveFunction()));
-		ajaxIds = new ArrayList<String>();
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "det";
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		String[] ids = ajaxIds.toArray(new String[ajaxIds.size()]);
-		type.setEventHandler(JSHandler.EVENT_BLUR,
-			new OverrideHandler(ajax.getAjaxUpdateDomFunction(tree, null, null, ids)));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    extensions.setListModel(new StringListModel());
+    addExtensionButton.addClickStatements(
+        new FunctionCallStatement(
+            extensions.createAddFunction(),
+            newExtension.createGetExpression(),
+            newExtension.createGetExpression()),
+        new ScriptStatement(JQuerySelector.valueSetExpression(newExtension, "")));
+    removeExtensionButton.addClickStatements(
+        new FunctionCallStatement(extensions.createRemoveFunction()));
+    ajaxIds = new ArrayList<String>();
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		return viewFactory.createResult("mimedetails.ftl", context);
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    String[] ids = ajaxIds.toArray(new String[ajaxIds.size()]);
+    type.setEventHandler(
+        JSHandler.EVENT_BLUR,
+        new OverrideHandler(ajax.getAjaxUpdateDomFunction(tree, null, null, ids)));
+  }
 
-	@Override
-	public void loadEntry(SectionInfo info, MimeEntry entry)
-	{
-		if( entry != null )
-		{
-			description.setValue(info, entry.getDescription());
-			type.setValue(info, entry.getType());
-			newExtension.setValue(info, "");
-			extensions.getListModel().setValues(info, new ArrayList<String>(entry.getExtensions()));
-		}
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    return viewFactory.createResult("mimedetails.ftl", context);
+  }
 
-	@Override
-	public void saveEntry(SectionInfo info, MimeEntry entry)
-	{
-		if( Check.isEmpty(type.getValue(info)) )
-		{
-			throw new InvalidDataException(new ValidationError("type", null, ERROR_MIME_TYPE_EMPTY));
-		}
-		entry.setDescription(description.getValue(info));
-		entry.setType(type.getValue(info));
+  @Override
+  public void loadEntry(SectionInfo info, MimeEntry entry) {
+    if (entry != null) {
+      description.setValue(info, entry.getDescription());
+      type.setValue(info, entry.getType());
+      newExtension.setValue(info, "");
+      extensions.getListModel().setValues(info, new ArrayList<String>(entry.getExtensions()));
+    }
+  }
 
-		List<String> extensionsList = extensions.getValues(info);
-		for( String ext : extensionsList )
-		{
-			if( ext.length() >= 20 )
-			{
-				throw new InvalidDataException(new ValidationError("extensions", null, ERROR_EXTENSIONS_LENGTH));
-			}
-		}
-		entry.setExtensions(extensions.getValues(info));
-	}
+  @Override
+  public void saveEntry(SectionInfo info, MimeEntry entry) {
+    if (Check.isEmpty(type.getValue(info))) {
+      throw new InvalidDataException(new ValidationError("type", null, ERROR_MIME_TYPE_EMPTY));
+    }
+    entry.setDescription(description.getValue(info));
+    entry.setType(type.getValue(info));
 
-	@Override
-	public NameValue getTabToAppearOn()
-	{
-		return MimeTypesEditSection.TAB_DETAILS;
-	}
+    List<String> extensionsList = extensions.getValues(info);
+    for (String ext : extensionsList) {
+      if (ext.length() >= 20) {
+        throw new InvalidDataException(
+            new ValidationError("extensions", null, ERROR_EXTENSIONS_LENGTH));
+      }
+    }
+    entry.setExtensions(extensions.getValues(info));
+  }
 
-	@Override
-	public boolean isVisible(SectionInfo info)
-	{
-		return true;
-	}
+  @Override
+  public NameValue getTabToAppearOn() {
+    return MimeTypesEditSection.TAB_DETAILS;
+  }
 
-	public TextField getDescription()
-	{
-		return description;
-	}
+  @Override
+  public boolean isVisible(SectionInfo info) {
+    return true;
+  }
 
-	public TextField getType()
-	{
-		return type;
-	}
+  public TextField getDescription() {
+    return description;
+  }
 
-	public TextField getNewExtension()
-	{
-		return newExtension;
-	}
+  public TextField getType() {
+    return type;
+  }
 
-	public MutableList<String> getExtensions()
-	{
-		return extensions;
-	}
+  public TextField getNewExtension() {
+    return newExtension;
+  }
 
-	public Button getAddExtensionButton()
-	{
-		return addExtensionButton;
-	}
+  public MutableList<String> getExtensions() {
+    return extensions;
+  }
 
-	public Button getRemoveExtensionButton()
-	{
-		return removeExtensionButton;
-	}
+  public Button getAddExtensionButton() {
+    return addExtensionButton;
+  }
 
-	public void addAjaxId(String ajaxId)
-	{
-		ajaxIds.add(ajaxId);
-	}
+  public Button getRemoveExtensionButton() {
+    return removeExtensionButton;
+  }
+
+  public void addAjaxId(String ajaxId) {
+    ajaxIds.add(ajaxId);
+  }
 }

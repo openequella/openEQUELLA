@@ -16,12 +16,6 @@
 
 package com.tle.core.system.migration;
 
-import java.util.List;
-
-import javax.inject.Singleton;
-
-import org.hibernate.classic.Session;
-
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.tle.beans.ConfigurationProperty;
@@ -36,140 +30,145 @@ import com.tle.core.migration.MigrationResult;
 import com.tle.core.migration.MigrationService;
 import com.tle.core.migration.beans.SystemConfig;
 import com.tle.core.plugins.impl.PluginServiceImpl;
+import java.util.List;
+import javax.inject.Singleton;
+import org.hibernate.classic.Session;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class InitialMigration extends AbstractHibernateSchemaMigration
-{
-	private static final String KEY_PREFIX = PluginServiceImpl.getMyPluginId(InitialMigration.class) + ".";
+public class InitialMigration extends AbstractHibernateSchemaMigration {
+  private static final String KEY_PREFIX =
+      PluginServiceImpl.getMyPluginId(InitialMigration.class) + ".";
 
-	@Inject
-	@Named("hibernate.connection.url")
-	private String systemUrl;
-	@Inject
-	@Named("hibernate.connection.username")
-	private String systemUsername;
-	@Inject
-	@Named("hibernate.connection.password")
-	private String systemPassword;
-	@Inject
-	@Named("reporting.connection.url")
-	private String reportingUrl;
-	@Inject
-	@Named("reporting.connection.username")
-	private String reportingUsername;
-	@Inject
-	@Named("reporting.connection.password")
-	private String reportingPassword;
+  @Inject
+  @Named("hibernate.connection.url")
+  private String systemUrl;
 
-	@Inject
-	private MigrationService migrationService;
+  @Inject
+  @Named("hibernate.connection.username")
+  private String systemUsername;
 
-	@Override
-	protected List<String> getAddSql(HibernateMigrationHelper helper)
-	{
-		Session session = helper.getFactory().openSession();
-		TablesOnlyFilter filter = new TablesOnlyFilter(SystemConfig.TABLE_NAME, DatabaseSchema.TABLE_NAME);
-		if( !helper.tableExists(session, ConfigurationProperty.TABLE_NAME) )
-		{
-			filter.setIncludeGenerators(true);
-		}
-		session.close();
-		return helper.getCreationSql(filter);
-	}
+  @Inject
+  @Named("hibernate.connection.password")
+  private String systemPassword;
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{SystemConfig.class, ConfigurationProperty.class, DatabaseSchema.class,
-				ConfigurationProperty.PropertyKey.class,};
-	}
+  @Inject
+  @Named("reporting.connection.url")
+  private String reportingUrl;
 
-	@Override
-	protected List<String> getDropModifySql(HibernateMigrationHelper helper)
-	{
-		return null;
-	}
+  @Inject
+  @Named("reporting.connection.username")
+  private String reportingUsername;
 
-	@Override
-	protected int countDataMigrations(HibernateMigrationHelper helper, Session session)
-	{
-		return 2;
-	}
+  @Inject
+  @Named("reporting.connection.password")
+  private String reportingPassword;
 
-	@Override
-	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
-	{
-		if( helper.tableExists(session, ConfigurationProperty.TABLE_NAME) )
-		{
-			// Copy over system properties that we require
-			copyProperty(session, "license");
-			copyProperty(session, "admin.password");
-			copyProperty(session, "admin.emails");
-			copyProperty(session, "smtpserver");
-            copyProperty(session, "noreplysender");
-			// Delete system config from old table
-			session.createQuery("DELETE FROM ConfigurationProperty WHERE key.institutionId = 0").executeUpdate();
-		}
-		else
-		{
-			InstallSettings installSettings = migrationService.getInstallSettings();
-			createConfig(session, "admin.password", installSettings.getHashedPassword());
-			createConfig(session, "admin.emails", installSettings.getEmailsText());
-			createConfig(session, "smtpserver", installSettings.getSmtpServer());
-			createConfig(session, "smtpuser", installSettings.getSmtpUser());
-			createConfig(session, "smtppassword", installSettings.getSmtpPassword());
-            createConfig(session, "noreplysender", installSettings.getNoReplySender());
+  @Inject private MigrationService migrationService;
 
-		}
-		createConfig(session, "unique.id", "1");
-		result.incrementStatus();
+  @Override
+  protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    Session session = helper.getFactory().openSession();
+    TablesOnlyFilter filter =
+        new TablesOnlyFilter(SystemConfig.TABLE_NAME, DatabaseSchema.TABLE_NAME);
+    if (!helper.tableExists(session, ConfigurationProperty.TABLE_NAME)) {
+      filter.setIncludeGenerators(true);
+    }
+    session.close();
+    return helper.getCreationSql(filter);
+  }
 
-		// Create a database schema record based on hibernate.properties
-		DatabaseSchema systemDB = new DatabaseSchema();
-		systemDB.setDescription("Default schema");
-		systemDB.setUseSystem(true);
-		systemDB.setUrl(null);
-		systemDB.setUsername(null);
-		systemDB.setPassword(null);
-		systemDB.setOnline(true);
-		systemDB.setReportingUrl(nullForSame(systemUrl, reportingUrl));
-		systemDB.setReportingUsername(nullForSame(systemUsername, reportingUsername));
-		systemDB.setReportingPassword(nullForSame(systemPassword, reportingPassword));
-		session.save(systemDB);
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {
+      SystemConfig.class,
+      ConfigurationProperty.class,
+      DatabaseSchema.class,
+      ConfigurationProperty.PropertyKey.class,
+    };
+  }
 
-		result.incrementStatus();
-	}
+  @Override
+  protected List<String> getDropModifySql(HibernateMigrationHelper helper) {
+    return null;
+  }
 
-	private String nullForSame(String system, String reporting)
-	{
-		if( system.equals(reporting) )
-		{
-			return null;
-		}
-		return reporting;
-	}
+  @Override
+  protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
+    return 2;
+  }
 
-	private void copyProperty(Session session, String property)
-	{
-		String v = (String) session.createQuery("SELECT value FROM ConfigurationProperty WHERE property = :property")
-			.setParameter("property", property).uniqueResult();
+  @Override
+  protected void executeDataMigration(
+      HibernateMigrationHelper helper, MigrationResult result, Session session) {
+    if (helper.tableExists(session, ConfigurationProperty.TABLE_NAME)) {
+      // Copy over system properties that we require
+      copyProperty(session, "license");
+      copyProperty(session, "admin.password");
+      copyProperty(session, "admin.emails");
+      copyProperty(session, "smtpserver");
+      copyProperty(session, "noreplysender");
+      // Delete system config from old table
+      session
+          .createQuery("DELETE FROM ConfigurationProperty WHERE key.institutionId = 0")
+          .executeUpdate();
+    } else {
+      InstallSettings installSettings = migrationService.getInstallSettings();
+      createConfig(session, "admin.password", installSettings.getHashedPassword());
+      createConfig(session, "admin.emails", installSettings.getEmailsText());
+      createConfig(session, "smtpserver", installSettings.getSmtpServer());
+      createConfig(session, "smtpuser", installSettings.getSmtpUser());
+      createConfig(session, "smtppassword", installSettings.getSmtpPassword());
+      createConfig(session, "noreplysender", installSettings.getNoReplySender());
+    }
+    createConfig(session, "unique.id", "1");
+    result.incrementStatus();
 
-		createConfig(session, property, v);
-	}
+    // Create a database schema record based on hibernate.properties
+    DatabaseSchema systemDB = new DatabaseSchema();
+    systemDB.setDescription("Default schema");
+    systemDB.setUseSystem(true);
+    systemDB.setUrl(null);
+    systemDB.setUsername(null);
+    systemDB.setPassword(null);
+    systemDB.setOnline(true);
+    systemDB.setReportingUrl(nullForSame(systemUrl, reportingUrl));
+    systemDB.setReportingUsername(nullForSame(systemUsername, reportingUsername));
+    systemDB.setReportingPassword(nullForSame(systemPassword, reportingPassword));
+    session.save(systemDB);
 
-	private void createConfig(Session session, String property, String value)
-	{
-		SystemConfig sc = new SystemConfig();
-		sc.setKey(property);
-		sc.setValue(value);
-		session.save(sc);
-	}
+    result.incrementStatus();
+  }
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(KEY_PREFIX + "system.migration.title", KEY_PREFIX + "system.migration.title");
-	}
+  private String nullForSame(String system, String reporting) {
+    if (system.equals(reporting)) {
+      return null;
+    }
+    return reporting;
+  }
+
+  private void copyProperty(Session session, String property) {
+    String v =
+        (String)
+            session
+                .createQuery("SELECT value FROM ConfigurationProperty WHERE property = :property")
+                .setParameter("property", property)
+                .uniqueResult();
+
+    createConfig(session, property, v);
+  }
+
+  private void createConfig(Session session, String property, String value) {
+    SystemConfig sc = new SystemConfig();
+    sc.setKey(property);
+    sc.setValue(value);
+    session.save(sc);
+  }
+
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(
+        KEY_PREFIX + "system.migration.title", KEY_PREFIX + "system.migration.title");
+  }
 }

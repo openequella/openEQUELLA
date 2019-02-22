@@ -41,72 +41,67 @@ import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
 
-/**
- * @author larry
- */
+/** @author larry */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class AddBannedExtDialog extends AbstractOkayableDialog<DialogModel>
-{
-	private static final IncludeFile INCLUDE = new IncludeFile(ResourcesService.getResourceHelper(
-		AddBannedExtDialog.class).url("scripts/dialog/addbannedext.js"));
-	private static final ExternallyDefinedFunction CHECK_EXTENSION_FUNCTION = new ExternallyDefinedFunction(
-		"checkExtension", INCLUDE);
+public class AddBannedExtDialog extends AbstractOkayableDialog<DialogModel> {
+  private static final IncludeFile INCLUDE =
+      new IncludeFile(
+          ResourcesService.getResourceHelper(AddBannedExtDialog.class)
+              .url("scripts/dialog/addbannedext.js"));
+  private static final ExternallyDefinedFunction CHECK_EXTENSION_FUNCTION =
+      new ExternallyDefinedFunction("checkExtension", INCLUDE);
 
-	@PlugKey("addbannedext.dialog.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("addbannedext.dialog.error.validation.invalidextension")
-	private static Label LABEL_INVALID_EXTENSION;
+  @PlugKey("addbannedext.dialog.title")
+  private static Label LABEL_TITLE;
 
-	@Component(stateful = false)
-	private TextField bannedExtText;
+  @PlugKey("addbannedext.dialog.error.validation.invalidextension")
+  private static Label LABEL_INVALID_EXTENSION;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @Component(stateful = false)
+  private TextField bannedExtText;
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		return viewFactory.createResult("dialog/addbannedext.ftl", this);
-	}
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    return viewFactory.createResult("dialog/addbannedext.ftl", this);
+  }
 
-		setAjax(true);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	protected JSHandler createOkHandler(SectionTree tree)
-	{
-		return new OverrideHandler(jscall(getOkCallback(), bannedExtText.createGetExpression()),
-			jscall(getCloseFunction())).addValidator(new FunctionCallValidator(CHECK_EXTENSION_FUNCTION, Jq
-			.$(bannedExtText)).setFailureStatements(Js.alert_s(LABEL_INVALID_EXTENSION)));
-	}
+    setAjax(true);
+  }
 
-	@Override
-	protected String getContentBodyClass(RenderContext context)
-	{
-		return "bed";
-	}
+  @Override
+  protected JSHandler createOkHandler(SectionTree tree) {
+    return new OverrideHandler(
+            jscall(getOkCallback(), bannedExtText.createGetExpression()),
+            jscall(getCloseFunction()))
+        .addValidator(
+            new FunctionCallValidator(CHECK_EXTENSION_FUNCTION, Jq.$(bannedExtText))
+                .setFailureStatements(Js.alert_s(LABEL_INVALID_EXTENSION)));
+  }
 
-	public TextField getBannedExtText()
-	{
-		return bannedExtText;
-	}
+  @Override
+  protected String getContentBodyClass(RenderContext context) {
+    return "bed";
+  }
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return LABEL_TITLE;
-	}
+  public TextField getBannedExtText() {
+    return bannedExtText;
+  }
 
-	@Override
-	public DialogModel instantiateDialogModel(SectionInfo info)
-	{
-		return new DialogModel();
-	}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return LABEL_TITLE;
+  }
+
+  @Override
+  public DialogModel instantiateDialogModel(SectionInfo info) {
+    return new DialogModel();
+  }
 }

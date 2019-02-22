@@ -16,10 +16,6 @@
 
 package com.tle.web.controls.userselector;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -64,228 +60,211 @@ import com.tle.web.sections.standard.renderers.LinkRenderer;
 import com.tle.web.wizard.controls.AbstractWebControl;
 import com.tle.web.wizard.controls.CCustomControl;
 import com.tle.web.wizard.controls.WebControlModel;
+import java.util.List;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
-public class UserSelectorWebControl extends AbstractWebControl<UserSelectorWebControl.UserSelectorWebControlModel>
-	implements
-		CurrentUsersCallback
-{
-	@PlugKey("usersel.prompt.selectsingle")
-	private static Label LABEL_PROMPTSINGLE;
-	@PlugKey("usersel.prompt.selectmultiple")
-	private static Label LABEL_PROMPTMULTIPLE;
-	@PlugKey("usersel.title.selectsingle")
-	private static Label LABEL_TITLESINGLE;
-	@PlugKey("usersel.title.selectmultiple")
-	private static Label LABEL_TITLEMULTIPLE;
+public class UserSelectorWebControl
+    extends AbstractWebControl<UserSelectorWebControl.UserSelectorWebControlModel>
+    implements CurrentUsersCallback {
+  @PlugKey("usersel.prompt.selectsingle")
+  private static Label LABEL_PROMPTSINGLE;
 
-	@PlugKey("usersel.confirmremove")
-	private static Confirm KEY_CONFIRM;
-	@PlugKey("usersel.remove")
-	private static Label LABEL_REMOVE;
+  @PlugKey("usersel.prompt.selectmultiple")
+  private static Label LABEL_PROMPTMULTIPLE;
 
-	private UserSelectorControl definitionControl;
-	private CCustomControl storageControl;
+  @PlugKey("usersel.title.selectsingle")
+  private static Label LABEL_TITLESINGLE;
 
-	@Inject
-	private ComponentFactory componentFactory;
-	@Inject
-	private SelectUserDialog selectUserDialog;
-	@Inject
-	private UserService userService;
-	@Inject
-	private UserLinkService userLinkService;
-	private UserLinkSection userLinkSection;
+  @PlugKey("usersel.title.selectmultiple")
+  private static Label LABEL_TITLEMULTIPLE;
 
-	@ViewFactory(name="wizardFreemarkerFactory")
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
-	@AjaxFactory
-	private AjaxGenerator ajax;
+  @PlugKey("usersel.confirmremove")
+  private static Confirm KEY_CONFIRM;
 
-	@Component
-	private SelectionsTable usersTable;
-	@Component
-	@PlugKey("usersel.button.selectuser")
-	private Link addLink;
+  @PlugKey("usersel.remove")
+  private static Label LABEL_REMOVE;
 
-	private JSCallable removeUserFunction;
+  private UserSelectorControl definitionControl;
+  private CCustomControl storageControl;
 
-	@Override
-	public void setWrappedControl(final HTMLControl control)
-	{
-		definitionControl = new UserSelectorControl((CustomControl) control.getControlBean());
-		storageControl = (CCustomControl) control;
-		super.setWrappedControl(control);
-	}
+  @Inject private ComponentFactory componentFactory;
+  @Inject private SelectUserDialog selectUserDialog;
+  @Inject private UserService userService;
+  @Inject private UserLinkService userLinkService;
+  private UserLinkSection userLinkSection;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		addDisabler(context, addLink);
-		return viewFactory.createResult("userselectorwebcontrol.ftl", context);
-	}
+  @ViewFactory(name = "wizardFreemarkerFactory")
+  private FreemarkerFactory viewFactory;
 
-	@Override
-	public void registered(final String id, final SectionTree tree)
-	{
-		super.registered(id, tree);
+  @EventFactory private EventGenerator events;
+  @AjaxFactory private AjaxGenerator ajax;
 
-		userLinkSection = userLinkService.register(tree, id);
+  @Component private SelectionsTable usersTable;
 
-		final boolean multiple = definitionControl.isSelectMultiple();
+  @Component
+  @PlugKey("usersel.button.selectuser")
+  private Link addLink;
 
-		selectUserDialog.setMultipleUsers(multiple);
-		selectUserDialog.setTitle(multiple ? LABEL_TITLEMULTIPLE : LABEL_TITLESINGLE);
-		selectUserDialog.setPrompt(multiple ? LABEL_PROMPTMULTIPLE : LABEL_PROMPTSINGLE);
-		selectUserDialog.setOkCallback(getReloadFunction(true, events.getEventHandler("select")));
-		selectUserDialog.setUsersCallback(this);
-		selectUserDialog.setGroupFilter(definitionControl.isRestricted(UserSelectorControl.KEY_RESTRICT_USER_GROUPS)
-			? definitionControl.getRestrictedTo(UserSelectorControl.KEY_RESTRICT_USER_GROUPS) : null);
+  private JSCallable removeUserFunction;
 
-		componentFactory.registerComponent(id, "s", tree, selectUserDialog);
-		removeUserFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("removeUser"),
-			id + "userselector");
+  @Override
+  public void setWrappedControl(final HTMLControl control) {
+    definitionControl = new UserSelectorControl((CustomControl) control.getControlBean());
+    storageControl = (CCustomControl) control;
+    super.setWrappedControl(control);
+  }
 
-		addLink.setClickHandler(selectUserDialog.getOpenFunction());
-		addLink.setDisablable(true);
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    addDisabler(context, addLink);
+    return viewFactory.createResult("userselectorwebcontrol.ftl", context);
+  }
 
-		usersTable.setSelectionsModel(new UsersModel());
-		usersTable.setAddAction(addLink);
-	}
+  @Override
+  public void registered(final String id, final SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	public boolean isEmpty()
-	{
-		return storageControl.getValues().size() == 0;
-	}
+    userLinkSection = userLinkService.register(tree, id);
 
-	@Override
-	public BaseQuery getPowerSearchQuery()
-	{
-		if( storageControl.hasTargets() )
-		{
-			return storageControl.getDefaultPowerSearchQuery(storageControl.getValues(), false);
-		}
-		return null;
-	}
+    final boolean multiple = definitionControl.isSelectMultiple();
 
-	@EventHandlerMethod
-	public void select(final SectionContext context, final String usersJson) throws Exception
-	{
-		final UserSelectorWebControlModel model = getModel(context);
-		model.setSelectedUsers(SelectUserDialog.usersFromJsonString(usersJson));
-	}
+    selectUserDialog.setMultipleUsers(multiple);
+    selectUserDialog.setTitle(multiple ? LABEL_TITLEMULTIPLE : LABEL_TITLESINGLE);
+    selectUserDialog.setPrompt(multiple ? LABEL_PROMPTMULTIPLE : LABEL_PROMPTSINGLE);
+    selectUserDialog.setOkCallback(getReloadFunction(true, events.getEventHandler("select")));
+    selectUserDialog.setUsersCallback(this);
+    selectUserDialog.setGroupFilter(
+        definitionControl.isRestricted(UserSelectorControl.KEY_RESTRICT_USER_GROUPS)
+            ? definitionControl.getRestrictedTo(UserSelectorControl.KEY_RESTRICT_USER_GROUPS)
+            : null);
 
-	@EventHandlerMethod
-	public void removeUser(final SectionContext context, final String userId) throws Exception
-	{
-		storageControl.getValues().remove(userId);
-	}
+    componentFactory.registerComponent(id, "s", tree, selectUserDialog);
+    removeUserFunction =
+        ajax.getAjaxUpdateDomFunction(
+            tree, this, events.getEventHandler("removeUser"), id + "userselector");
 
-	@Override
-	public void doEdits(SectionInfo info)
-	{
-		final UserSelectorWebControlModel model = getModel(info);
+    addLink.setClickHandler(selectUserDialog.getOpenFunction());
+    addLink.setDisablable(true);
 
-		if( model.getSelectedUsers() != null )
-		{
-			final List<String> controlValues = storageControl.getValues();
-			controlValues.clear();
-			controlValues.addAll(Lists.transform(model.getSelectedUsers(), new Function<SelectedUser, String>()
-			{
-				@Override
-				public String apply(SelectedUser user)
-				{
-					return user.getUuid();
-				}
-			}));
-		}
-	}
+    usersTable.setSelectionsModel(new UsersModel());
+    usersTable.setAddAction(addLink);
+  }
 
-	@Override
-	public Class<UserSelectorWebControlModel> getModelClass()
-	{
-		return UserSelectorWebControlModel.class;
-	}
+  @Override
+  public boolean isEmpty() {
+    return storageControl.getValues().size() == 0;
+  }
 
-	@Override
-	public List<SelectedUser> getCurrentSelectedUsers(final SectionInfo info)
-	{
-		return Lists.transform(storageControl.getValues(), new Function<String, SelectedUser>()
-		{
-			@Override
-			public SelectedUser apply(String uuidOrEmail)
-			{
-				final UserBean userBean = userService.getInformationForUser(uuidOrEmail);
-				final String displayName;
-				if( userBean == null )
-				{
-					displayName = uuidOrEmail;
-				}
-				else
-				{
-					displayName = Format.format(userBean);
-				}
-				return new SelectedUser(uuidOrEmail, displayName);
-			}
-		});
-	}
+  @Override
+  public BaseQuery getPowerSearchQuery() {
+    if (storageControl.hasTargets()) {
+      return storageControl.getDefaultPowerSearchQuery(storageControl.getValues(), false);
+    }
+    return null;
+  }
 
-	public SelectUserDialog getSelectUserDialog()
-	{
-		return selectUserDialog;
-	}
+  @EventHandlerMethod
+  public void select(final SectionContext context, final String usersJson) throws Exception {
+    final UserSelectorWebControlModel model = getModel(context);
+    model.setSelectedUsers(SelectUserDialog.usersFromJsonString(usersJson));
+  }
 
-	public SelectionsTable getUsersTable()
-	{
-		return usersTable;
-	}
+  @EventHandlerMethod
+  public void removeUser(final SectionContext context, final String userId) throws Exception {
+    storageControl.getValues().remove(userId);
+  }
 
-	private class UsersModel extends DynamicSelectionsTableModel<String>
-	{
-		@Override
-		protected List<String> getSourceList(SectionInfo info)
-		{
-			return storageControl.getValues();
-		}
+  @Override
+  public void doEdits(SectionInfo info) {
+    final UserSelectorWebControlModel model = getModel(info);
 
-		@Override
-		protected void transform(SectionInfo info, SelectionsTableSelection selection, String userId,
-			List<SectionRenderable> actions, int index)
-		{
-			selection.setViewAction(new LinkRenderer(userLinkSection.createLink(info, userId)));
-			if( isEnabled() )
-			{
-				actions.add(makeRemoveAction(LABEL_REMOVE,
-					new OverrideHandler(removeUserFunction, userId).addValidator(KEY_CONFIRM)));
-			}
-		}
-	}
+    if (model.getSelectedUsers() != null) {
+      final List<String> controlValues = storageControl.getValues();
+      controlValues.clear();
+      controlValues.addAll(
+          Lists.transform(
+              model.getSelectedUsers(),
+              new Function<SelectedUser, String>() {
+                @Override
+                public String apply(SelectedUser user) {
+                  return user.getUuid();
+                }
+              }));
+    }
+  }
 
-	public static class UserSelectorWebControlModel extends WebControlModel
-	{
-		/**
-		 * For shoving de-JSONed results into.
-		 */
-		private List<SelectedUser> selectedUsers;
+  @Override
+  public Class<UserSelectorWebControlModel> getModelClass() {
+    return UserSelectorWebControlModel.class;
+  }
 
-		public List<SelectedUser> getSelectedUsers()
-		{
-			return selectedUsers;
-		}
+  @Override
+  public List<SelectedUser> getCurrentSelectedUsers(final SectionInfo info) {
+    return Lists.transform(
+        storageControl.getValues(),
+        new Function<String, SelectedUser>() {
+          @Override
+          public SelectedUser apply(String uuidOrEmail) {
+            final UserBean userBean = userService.getInformationForUser(uuidOrEmail);
+            final String displayName;
+            if (userBean == null) {
+              displayName = uuidOrEmail;
+            } else {
+              displayName = Format.format(userBean);
+            }
+            return new SelectedUser(uuidOrEmail, displayName);
+          }
+        });
+  }
 
-		public void setSelectedUsers(final List<SelectedUser> selectedUsers)
-		{
-			this.selectedUsers = selectedUsers;
-		}
-	}
+  public SelectUserDialog getSelectUserDialog() {
+    return selectUserDialog;
+  }
 
-	@Override
-	protected ElementId getIdForLabel()
-	{
-		return null;
-	}
+  public SelectionsTable getUsersTable() {
+    return usersTable;
+  }
+
+  private class UsersModel extends DynamicSelectionsTableModel<String> {
+    @Override
+    protected List<String> getSourceList(SectionInfo info) {
+      return storageControl.getValues();
+    }
+
+    @Override
+    protected void transform(
+        SectionInfo info,
+        SelectionsTableSelection selection,
+        String userId,
+        List<SectionRenderable> actions,
+        int index) {
+      selection.setViewAction(new LinkRenderer(userLinkSection.createLink(info, userId)));
+      if (isEnabled()) {
+        actions.add(
+            makeRemoveAction(
+                LABEL_REMOVE,
+                new OverrideHandler(removeUserFunction, userId).addValidator(KEY_CONFIRM)));
+      }
+    }
+  }
+
+  public static class UserSelectorWebControlModel extends WebControlModel {
+    /** For shoving de-JSONed results into. */
+    private List<SelectedUser> selectedUsers;
+
+    public List<SelectedUser> getSelectedUsers() {
+      return selectedUsers;
+    }
+
+    public void setSelectedUsers(final List<SelectedUser> selectedUsers) {
+      this.selectedUsers = selectedUsers;
+    }
+  }
+
+  @Override
+  protected ElementId getIdForLabel() {
+    return null;
+  }
 }

@@ -20,11 +20,10 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
 
-public interface RemoteItemService
-{
-	Item get(ItemKey key);
+public interface RemoteItemService {
+  Item get(ItemKey key);
 
-	String getNameForId(long id);
+  String getNameForId(long id);
 
-	String getAsXml(ItemId key);
+  String getAsXml(ItemId key);
 }

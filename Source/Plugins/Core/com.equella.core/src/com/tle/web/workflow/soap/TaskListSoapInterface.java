@@ -16,11 +16,10 @@
 
 package com.tle.web.workflow.soap;
 
-public interface TaskListSoapInterface
-{
-	String getTaskFilterCounts(boolean ignoreZero);
+public interface TaskListSoapInterface {
+  String getTaskFilterCounts(boolean ignoreZero);
 
-	String[] getTaskFilterNames();
+  String[] getTaskFilterNames();
 
-	String getTaskList(String filterName, int start, int numResults) throws Exception;
+  String getTaskList(String filterName, int start, int numResults) throws Exception;
 }

@@ -20,7 +20,6 @@ import com.google.inject.assistedinject.Assisted;
 import com.tle.core.guice.BindFactory;
 
 @BindFactory
-public interface ExecuteScriptFactory
-{
-	ExecuteScriptOperation executeScript(@Assisted("script") String script);
+public interface ExecuteScriptFactory {
+  ExecuteScriptOperation executeScript(@Assisted("script") String script);
 }

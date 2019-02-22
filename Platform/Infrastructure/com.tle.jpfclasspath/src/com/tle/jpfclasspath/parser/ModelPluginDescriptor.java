@@ -1,21 +1,17 @@
 package com.tle.jpfclasspath.parser;
 
-final public class ModelPluginDescriptor extends ModelPluginManifest
-{
-	private String className;
+public final class ModelPluginDescriptor extends ModelPluginManifest {
+  private String className;
 
-	ModelPluginDescriptor()
-	{
-		// no-op
-	}
+  ModelPluginDescriptor() {
+    // no-op
+  }
 
-	String getClassName()
-	{
-		return className;
-	}
+  String getClassName() {
+    return className;
+  }
 
-	void setClassName(final String value)
-	{
-		className = value;
-	}
+  void setClassName(final String value) {
+    className = value;
+  }
 }

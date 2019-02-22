@@ -16,10 +16,6 @@
 
 package com.tle.web.wizard.standard.controls;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import com.tle.common.NameValue;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
@@ -64,149 +60,151 @@ import com.tle.web.sections.standard.model.StringListModel;
 import com.tle.web.wizard.controls.AbstractWebControl;
 import com.tle.web.wizard.controls.CMultiCtrl;
 import com.tle.web.wizard.controls.WebControlModel;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Bind
 @SuppressWarnings("nls")
-public class ShuffleList extends AbstractWebControl<WebControlModel> implements JSDisableable
-{
-	static
-	{
-		PluginResourceHandler.init(ShuffleList.class);
-	}
+public class ShuffleList extends AbstractWebControl<WebControlModel> implements JSDisableable {
+  static {
+    PluginResourceHandler.init(ShuffleList.class);
+  }
 
-	@PlugURL("js/shufflelist.js")
-	private static String shufflelist_url;
+  @PlugURL("js/shufflelist.js")
+  private static String shufflelist_url;
 
-	protected static final PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(ShuffleList.class);
+  protected static final PluginResourceHelper urlHelper =
+      ResourcesService.getResourceHelper(ShuffleList.class);
 
-	private static JSCallable SHUFFLELIST_SETUP = new ExternallyDefinedFunction("shufflelist", new IncludeFile(
-		shufflelist_url), new IncludeFile("scripts/utf8.js"), JQueryCore.PRERENDER, SelectModule.INCLUDE);
+  private static JSCallable SHUFFLELIST_SETUP =
+      new ExternallyDefinedFunction(
+          "shufflelist",
+          new IncludeFile(shufflelist_url),
+          new IncludeFile("scripts/utf8.js"),
+          JQueryCore.PRERENDER,
+          SelectModule.INCLUDE);
 
-	@PlugKey("shuffle.mandatory")
-	private static Label MANDATORY_ALERT;
-	@PlugKey("shuffle.action.edit")
-	private static String EDIT;
-	@PlugKey("shuffle.action.delete")
-	private static String DELETE;
+  @PlugKey("shuffle.mandatory")
+  private static Label MANDATORY_ALERT;
 
-	@ViewFactory(name="wizardFreemarkerFactory")
-	private FreemarkerFactory viewFactory;
-	@Component
-	private Div div;
-	@Component
-	private TextField text;
-	@Component(stateful = false)
-	private MutableList<String> list;
+  @PlugKey("shuffle.action.edit")
+  private static String EDIT;
 
-	@PlugKey("shuffle.add")
-	@Component
-	private Button addButton;
+  @PlugKey("shuffle.action.delete")
+  private static String DELETE;
 
-	protected CMultiCtrl multi;
-	private JSCallable disableFunc;
+  @ViewFactory(name = "wizardFreemarkerFactory")
+  private FreemarkerFactory viewFactory;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		list.setParameterId(getFormName());
-		list.setListModel(new ListModel());
-		list.setStyle("display: none;");
+  @Component private Div div;
+  @Component private TextField text;
 
-		ObjectExpression multiObj = new ObjectExpression();
-		multiObj.put("alertmsg", MANDATORY_ALERT);
-		multiObj.put("list", new ElementByIdExpression(list));
-		multiObj.put("addbutton", new ElementByIdExpression(addButton));
-		multiObj.put("control", new ElementByIdExpression(text));
-		multiObj.put("edit", CurrentLocale.get(EDIT));
-		multiObj.put("del", CurrentLocale.get(DELETE));
+  @Component(stateful = false)
+  private MutableList<String> list;
 
-		div.setStyleClass("shuffle");
-		div.addReadyStatements(new ScriptStatement(PropertyExpression.create(new JQuerySelector(div),
-			new FunctionCallExpression(SHUFFLELIST_SETUP, multiObj))));
-	}
+  @PlugKey("shuffle.add")
+  @Component
+  private Button addButton;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		addDisablers(context, addButton, text, list, this);
-		return viewFactory.createResult("shufflelist.ftl", context);
-	}
+  protected CMultiCtrl multi;
+  private JSCallable disableFunc;
 
-	@Override
-	public void doEdits(SectionInfo info)
-	{
-		Collection<String> vals = list.getValues(info);
-		setValues(vals.toArray(new String[vals.size()]));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    list.setParameterId(getFormName());
+    list.setListModel(new ListModel());
+    list.setStyle("display: none;");
 
-	@Override
-	public void setWrappedControl(HTMLControl control)
-	{
-		super.setWrappedControl(control);
-		multi = (CMultiCtrl) control;
-	}
+    ObjectExpression multiObj = new ObjectExpression();
+    multiObj.put("alertmsg", MANDATORY_ALERT);
+    multiObj.put("list", new ElementByIdExpression(list));
+    multiObj.put("addbutton", new ElementByIdExpression(addButton));
+    multiObj.put("control", new ElementByIdExpression(text));
+    multiObj.put("edit", CurrentLocale.get(EDIT));
+    multiObj.put("del", CurrentLocale.get(DELETE));
 
-	@Override
-	public Class<WebControlModel> getModelClass()
-	{
-		return WebControlModel.class;
-	}
+    div.setStyleClass("shuffle");
+    div.addReadyStatements(
+        new ScriptStatement(
+            PropertyExpression.create(
+                new JQuerySelector(div), new FunctionCallExpression(SHUFFLELIST_SETUP, multiObj))));
+  }
 
-	private class ListModel extends StringListModel
-	{
-		@Override
-		public List<Option<String>> getOptions(SectionInfo info)
-		{
-			List<Option<String>> opts = new ArrayList<Option<String>>();
-			List<NameValue> nvs = multi.getNamesValues();
-			for( NameValue nameValue : nvs )
-			{
-				opts.add(new NameValueOption<String>(nameValue, nameValue.getValue()));
-			}
-			return opts;
-		}
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    addDisablers(context, addButton, text, list, this);
+    return viewFactory.createResult("shufflelist.ftl", context);
+  }
 
-	public TextField getText()
-	{
-		return text;
-	}
+  @Override
+  public void doEdits(SectionInfo info) {
+    Collection<String> vals = list.getValues(info);
+    setValues(vals.toArray(new String[vals.size()]));
+  }
 
-	public MutableList<String> getList()
-	{
-		return list;
-	}
+  @Override
+  public void setWrappedControl(HTMLControl control) {
+    super.setWrappedControl(control);
+    multi = (CMultiCtrl) control;
+  }
 
-	public Button getAddButton()
-	{
-		return addButton;
-	}
+  @Override
+  public Class<WebControlModel> getModelClass() {
+    return WebControlModel.class;
+  }
 
-	public Div getDiv()
-	{
-		return div;
-	}
+  private class ListModel extends StringListModel {
+    @Override
+    public List<Option<String>> getOptions(SectionInfo info) {
+      List<Option<String>> opts = new ArrayList<Option<String>>();
+      List<NameValue> nvs = multi.getNamesValues();
+      for (NameValue nameValue : nvs) {
+        opts.add(new NameValueOption<String>(nameValue, nameValue.getValue()));
+      }
+      return opts;
+    }
+  }
 
-	@Override
-	public JSCallable createDisableFunction()
-	{
-		if( disableFunc == null )
-		{
-			ScriptVariable dis = new ScriptVariable("dis");
-			ScriptVariable elem = new ScriptVariable("elem");
-			disableFunc = new SimpleFunction("dis", this, StatementBlock.get(new DeclarationStatement(elem, div),
-				new ScriptStatement("if(dis){$(elem).addClass('disabled');}else{$(elem).removeClass('disabled');}")),
-				dis);
-		}
+  public TextField getText() {
+    return text;
+  }
 
-		return disableFunc;
-	}
+  public MutableList<String> getList() {
+    return list;
+  }
 
-	@Override
-	protected ElementId getIdForLabel()
-	{
+  public Button getAddButton() {
+    return addButton;
+  }
 
-		return text;
-	}
+  public Div getDiv() {
+    return div;
+  }
+
+  @Override
+  public JSCallable createDisableFunction() {
+    if (disableFunc == null) {
+      ScriptVariable dis = new ScriptVariable("dis");
+      ScriptVariable elem = new ScriptVariable("elem");
+      disableFunc =
+          new SimpleFunction(
+              "dis",
+              this,
+              StatementBlock.get(
+                  new DeclarationStatement(elem, div),
+                  new ScriptStatement(
+                      "if(dis){$(elem).addClass('disabled');}else{$(elem).removeClass('disabled');}")),
+              dis);
+    }
+
+    return disableFunc;
+  }
+
+  @Override
+  protected ElementId getIdForLabel() {
+
+    return text;
+  }
 }

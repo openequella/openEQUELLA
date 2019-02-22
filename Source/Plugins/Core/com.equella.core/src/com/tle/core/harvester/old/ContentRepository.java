@@ -16,82 +16,71 @@
 
 package com.tle.core.harvester.old;
 
-import java.util.Collection;
-import java.util.Date;
-
 import com.dytech.devlib.PropBagEx;
 import com.tle.common.harvester.HarvesterProfile;
 import com.tle.common.searching.Search;
+import java.util.Collection;
+import java.util.Date;
 
-/**
- * @author Nicholas Read
- */
-public interface ContentRepository
-{
+/** @author Nicholas Read */
+public interface ContentRepository {
 
-	/**
-	 * Processes a learning object to see if it is currently in the repository,
-	 * needs updating or is current. Then uploads the item and its attachments
-	 * 
-	 * @param lobject The object to process
-	 */
-	void processLearningObject(LearningObject lobject);
+  /**
+   * Processes a learning object to see if it is currently in the repository, needs updating or is
+   * current. Then uploads the item and its attachments
+   *
+   * @param lobject The object to process
+   */
+  void processLearningObject(LearningObject lobject);
 
-	/**
-	 * Sets the profiles lastRun date to the current time
-	 */
-	void updateProfileRunDate(Date started);
+  /** Sets the profiles lastRun date to the current time */
+  void updateProfileRunDate(Date started);
 
-	/**
-	 * Used to set up a harvester task. Should implementations should override
-	 * then call the parent method
-	 * 
-	 * @param profile The harvester profile
-	 * @param testOnly Whether to run the harvester or just return the number of
-	 *            results
-	 * @return If testOnly is true, the number of results found is returned
-	 */
-	int setupAndRun(HarvesterProfile profile, boolean testOnly) throws Exception;
+  /**
+   * Used to set up a harvester task. Should implementations should override then call the parent
+   * method
+   *
+   * @param profile The harvester profile
+   * @param testOnly Whether to run the harvester or just return the number of results
+   * @return If testOnly is true, the number of results found is returned
+   */
+  int setupAndRun(HarvesterProfile profile, boolean testOnly) throws Exception;
 
-	/**
-	 * Gets a list of Learning Objects from the content repository that have
-	 * been added/changed since the given date.
-	 * 
-	 * @param since the date for getting new/modified objects since.
-	 * @return a collection of LearningObjects
-	 * @throws Exception if anything goes wrong.
-	 */
-	Collection<LearningObject> getUpdatedLearningObjects(Date since) throws Exception;
+  /**
+   * Gets a list of Learning Objects from the content repository that have been added/changed since
+   * the given date.
+   *
+   * @param since the date for getting new/modified objects since.
+   * @return a collection of LearningObjects
+   * @throws Exception if anything goes wrong.
+   */
+  Collection<LearningObject> getUpdatedLearningObjects(Date since) throws Exception;
 
-	/**
-	 * Returns the SearchRequest for finding old versions of the given
-	 * LearningObject in TLE.
-	 */
-	Search getTLESearchRequest(LearningObject lobject);
+  /** Returns the SearchRequest for finding old versions of the given LearningObject in TLE. */
+  Search getTLESearchRequest(LearningObject lobject);
 
-	/**
-	 * Create a name for the attachment
-	 * 
-	 * @param lobject The item
-	 * @return
-	 */
-	String createAttachmentName(LearningObject lobject);
+  /**
+   * Create a name for the attachment
+   *
+   * @param lobject The item
+   * @return
+   */
+  String createAttachmentName(LearningObject lobject);
 
-	/**
-	 * Called just before the item is uploaded to the repository.
-	 * 
-	 * @param xml The item xml
-	 * @param lobject The learning object
-	 */
-	void postProcessing(PropBagEx xml, LearningObject lobject) throws Exception;
+  /**
+   * Called just before the item is uploaded to the repository.
+   *
+   * @param xml The item xml
+   * @param lobject The learning object
+   */
+  void postProcessing(PropBagEx xml, LearningObject lobject) throws Exception;
 
-	/**
-	 * Called to download the object from the remote repository. StagingID can
-	 * be used to save any attachments.
-	 * 
-	 * @param lobject The object
-	 * @param stagingID Staging id for the new item
-	 */
-	void downloadLO(LearningObject lobject, String stagingID) throws Exception;
-
+  /**
+   * Called to download the object from the remote repository. StagingID can be used to save any
+   * attachments.
+   *
+   * @param lobject The object
+   * @param stagingID Staging id for the new item
+   */
+  void downloadLO(LearningObject lobject, String stagingID) throws Exception;
 }

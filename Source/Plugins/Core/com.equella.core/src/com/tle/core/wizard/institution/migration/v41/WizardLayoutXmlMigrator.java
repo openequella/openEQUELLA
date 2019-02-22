@@ -16,10 +16,6 @@
 
 package com.tle.core.wizard.institution.migration.v41;
 
-import java.util.List;
-
-import javax.inject.Singleton;
-
 import com.dytech.devlib.PropBagEx;
 import com.tle.common.Check;
 import com.tle.common.filesystem.handle.SubTemporaryFile;
@@ -27,58 +23,57 @@ import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
+import com.tle.core.institution.convert.DefaultMessageCallback;
 import com.tle.core.institution.convert.InstitutionInfo;
 import com.tle.core.institution.convert.XmlMigrator;
-import com.tle.core.institution.convert.DefaultMessageCallback;
 import com.tle.core.plugins.AbstractPluginService;
+import java.util.List;
+import javax.inject.Singleton;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class WizardLayoutXmlMigrator extends XmlMigrator
-{
-	private static String KEY_PFX = AbstractPluginService.getMyPluginId(WizardLayoutXmlMigrator.class)+".";
-	@Override
-	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
-	{
-		final SubTemporaryFile itemdefFolder = new SubTemporaryFile(staging, "itemdefinition");
-		final List<String> entries = xmlHelper.getXmlFileList(itemdefFolder);
+public class WizardLayoutXmlMigrator extends XmlMigrator {
+  private static String KEY_PFX =
+      AbstractPluginService.getMyPluginId(WizardLayoutXmlMigrator.class) + ".";
 
-		DefaultMessageCallback message = new DefaultMessageCallback(
-				KEY_PFX+"institution.migration.v41.layoutmigrator.progressmessage");
-		params.setMessageCallback(message);
-		message.setType(CurrentLocale.get(KEY_PFX+"wizard"));
-		message.setTotal(entries.size());
+  @Override
+  public void execute(
+      TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) {
+    final SubTemporaryFile itemdefFolder = new SubTemporaryFile(staging, "itemdefinition");
+    final List<String> entries = xmlHelper.getXmlFileList(itemdefFolder);
 
-		for( String collection : entries )
-		{
-			PropBagEx itemDef = xmlHelper.readToPropBagEx(itemdefFolder, collection);
+    DefaultMessageCallback message =
+        new DefaultMessageCallback(
+            KEY_PFX + "institution.migration.v41.layoutmigrator.progressmessage");
+    params.setMessageCallback(message);
+    message.setType(CurrentLocale.get(KEY_PFX + "wizard"));
+    message.setTotal(entries.size());
 
-			PropBagEx wizard = itemDef.getSubtree("slow/wizard");
-			if( wizard != null )
-			{
-				// The latest version of the code removes the layout, so we
-				// won't even bother updating the XML.
+    for (String collection : entries) {
+      PropBagEx itemDef = xmlHelper.readToPropBagEx(itemdefFolder, collection);
 
-				// String layout = wizard.getNode("layout");
-				// if( Check.isEmpty(layout) )
-				// {
-				// wizard.setNode("layout",
-				// WizardConstants.DEFAULT_WIZARD_LAYOUT);
-				// }
+      PropBagEx wizard = itemDef.getSubtree("slow/wizard");
+      if (wizard != null) {
+        // The latest version of the code removes the layout, so we
+        // won't even bother updating the XML.
 
-				// Not strictly necessary...
-				String allowNonSequentialNavigation = wizard.getNode("allowNonSequentialNavigation");
-				if( Check.isEmpty(allowNonSequentialNavigation) )
-				{
-					wizard.setNode("allowNonSequentialNavigation", "false");
-				}
-			}
-			xmlHelper.writeFromPropBagEx(itemdefFolder, collection, itemDef);
-			message.incrementCurrent();
-		}
-	}
+        // String layout = wizard.getNode("layout");
+        // if( Check.isEmpty(layout) )
+        // {
+        // wizard.setNode("layout",
+        // WizardConstants.DEFAULT_WIZARD_LAYOUT);
+        // }
+
+        // Not strictly necessary...
+        String allowNonSequentialNavigation = wizard.getNode("allowNonSequentialNavigation");
+        if (Check.isEmpty(allowNonSequentialNavigation)) {
+          wizard.setNode("allowNonSequentialNavigation", "false");
+        }
+      }
+      xmlHelper.writeFromPropBagEx(itemdefFolder, collection, itemDef);
+      message.incrementCurrent();
+    }
+  }
 }

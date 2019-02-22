@@ -46,181 +46,162 @@ import com.tle.web.wizard.controls.CCalendar;
 import com.tle.web.wizard.controls.WebControlModel;
 import com.tle.web.wizard.standard.controls.Calendar.CalendarWebControlModel;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class Calendar extends AbstractWebControl<CalendarWebControlModel>
-{
-	@ViewFactory(name="wizardFreemarkerFactory")
-	private FreemarkerFactory factory;
-	@EventFactory
-	private EventGenerator events;
-	@AjaxFactory
-	private AjaxGenerator ajax;
+public class Calendar extends AbstractWebControl<CalendarWebControlModel> {
+  @ViewFactory(name = "wizardFreemarkerFactory")
+  private FreemarkerFactory factory;
 
-	@Component(stateful = false)
-	private com.tle.web.sections.standard.Calendar date1;
-	@Component(stateful = false)
-	private com.tle.web.sections.standard.Calendar date2;
-	@Component
-	private Link clearLink;
+  @EventFactory private EventGenerator events;
+  @AjaxFactory private AjaxGenerator ajax;
 
-	private CCalendar cal;
+  @Component(stateful = false)
+  private com.tle.web.sections.standard.Calendar date1;
 
-	@Override
-	public void setWrappedControl(HTMLControl control)
-	{
-		cal = (CCalendar) control;
-		super.setWrappedControl(control);
-	}
+  @Component(stateful = false)
+  private com.tle.web.sections.standard.Calendar date2;
 
-	public boolean isRange()
-	{
-		return cal.isRange();
-	}
+  @Component private Link clearLink;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		UpdateDomFunction updateFunction = ajax.getAjaxUpdateDomFunction(getTree(), this,
-			events.getEventHandler("showClear"), ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), id + "_clear");
+  private CCalendar cal;
 
-		date1.setConceptual(true);
-		date1.setEventHandler(JSHandler.EVENT_CHANGE, new OverrideHandler(updateFunction));
-		date1.setConceptual(true);
+  @Override
+  public void setWrappedControl(HTMLControl control) {
+    cal = (CCalendar) control;
+    super.setWrappedControl(control);
+  }
 
-		if( isRange() )
-		{
-			date2.setConceptual(true);
-			date2.setEventHandler(JSHandler.EVENT_CHANGE, new OverrideHandler(updateFunction));
-			date2.setConceptual(true);
-		}
+  public boolean isRange() {
+    return cal.isRange();
+  }
 
-		clearLink.setClickHandler(new OverrideHandler(ajax.getAjaxUpdateDomFunction(getTree(), this,
-			events.getEventHandler("clear"), ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), id
-				+ "_calendar-control")));
-		clearLink.setDisablable(true);
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    UpdateDomFunction updateFunction =
+        ajax.getAjaxUpdateDomFunction(
+            getTree(),
+            this,
+            events.getEventHandler("showClear"),
+            ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
+            id + "_clear");
 
-	@EventHandlerMethod
-	public void clear(SectionInfo info)
-	{
-		date1.clearDate(info);
-		if( isRange() )
-		{
-			date2.clearDate(info);
-		}
-		this.getModel(info).setShowClearLink(false);
-	}
+    date1.setConceptual(true);
+    date1.setEventHandler(JSHandler.EVENT_CHANGE, new OverrideHandler(updateFunction));
+    date1.setConceptual(true);
 
-	@EventHandlerMethod
-	public void showClear(SectionInfo info)
-	{
-		checkForDates(info);
-	}
+    if (isRange()) {
+      date2.setConceptual(true);
+      date2.setEventHandler(JSHandler.EVENT_CHANGE, new OverrideHandler(updateFunction));
+      date2.setConceptual(true);
+    }
 
-	private void checkForDates(SectionInfo info)
-	{
-		CalendarWebControlModel model = getModel(info);
-		if( date1.isDateSet(info) || date2.isDateSet(info) )
-		{
-			model.setShowClearLink(true);
-		}
-	}
+    clearLink.setClickHandler(
+        new OverrideHandler(
+            ajax.getAjaxUpdateDomFunction(
+                getTree(),
+                this,
+                events.getEventHandler("clear"),
+                ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
+                id + "_calendar-control")));
+    clearLink.setDisablable(true);
+  }
 
-	@Override
-	public Class<CalendarWebControlModel> getModelClass()
-	{
-		return Calendar.CalendarWebControlModel.class;
-	}
+  @EventHandlerMethod
+  public void clear(SectionInfo info) {
+    date1.clearDate(info);
+    if (isRange()) {
+      date2.clearDate(info);
+    }
+    this.getModel(info).setShowClearLink(false);
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		setupFormDate(context, date1, cal.getDateFrom());
-		addDisabler(context, date1);
+  @EventHandlerMethod
+  public void showClear(SectionInfo info) {
+    checkForDates(info);
+  }
 
-		DateFormat df = cal.getDateFormat();
-		date1.getState(context).setPickerType(df.name());
+  private void checkForDates(SectionInfo info) {
+    CalendarWebControlModel model = getModel(info);
+    if (date1.isDateSet(info) || date2.isDateSet(info)) {
+      model.setShowClearLink(true);
+    }
+  }
 
-		if( isRange() )
-		{
-			addDisabler(context, date2);
-			setupFormDate(context, date2, cal.getDateTo());
-			date2.getState(context).setPickerType(df.name());
+  @Override
+  public Class<CalendarWebControlModel> getModelClass() {
+    return Calendar.CalendarWebControlModel.class;
+  }
 
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    setupFormDate(context, date1, cal.getDateFrom());
+    addDisabler(context, date1);
 
-		checkForDates(context);
-		if( getModel(context).isShowClearLink() )
-		{
-			addDisabler(context, clearLink);
-		}
+    DateFormat df = cal.getDateFormat();
+    date1.getState(context).setPickerType(df.name());
 
-		return factory.createResult("calendar/calendar.ftl", context);
-	}
+    if (isRange()) {
+      addDisabler(context, date2);
+      setupFormDate(context, date2, cal.getDateTo());
+      date2.getState(context).setPickerType(df.name());
+    }
 
-	private void setupFormDate(SectionInfo info, com.tle.web.sections.standard.Calendar formDate,
-		@Nullable TleDate value)
-	{
-		if( value != null )
-		{
-			formDate.setDate(info, value);
-		}
-		else
-		{
-			formDate.clearDate(info);
-		}
-		if( cal.isReload() )
-		{
-			formDate.setEventHandler(info, JSHandler.EVENT_CHANGE, new StatementHandler(getReloadFunction(true)));
-			clearLink.setClickHandler(info, getReloadFunction(true, events.getEventHandler("clear")));
-		}
-	}
+    checkForDates(context);
+    if (getModel(context).isShowClearLink()) {
+      addDisabler(context, clearLink);
+    }
 
-	@Override
-	public void doEdits(SectionInfo info)
-	{
-		cal.setDates(new TleDate[]{date1.getDate(info), date2.getDate(info)});
-	}
+    return factory.createResult("calendar/calendar.ftl", context);
+  }
 
-	public com.tle.web.sections.standard.Calendar getDate1()
-	{
-		return date1;
-	}
+  private void setupFormDate(
+      SectionInfo info, com.tle.web.sections.standard.Calendar formDate, @Nullable TleDate value) {
+    if (value != null) {
+      formDate.setDate(info, value);
+    } else {
+      formDate.clearDate(info);
+    }
+    if (cal.isReload()) {
+      formDate.setEventHandler(
+          info, JSHandler.EVENT_CHANGE, new StatementHandler(getReloadFunction(true)));
+      clearLink.setClickHandler(info, getReloadFunction(true, events.getEventHandler("clear")));
+    }
+  }
 
-	public com.tle.web.sections.standard.Calendar getDate2()
-	{
-		return date2;
-	}
+  @Override
+  public void doEdits(SectionInfo info) {
+    cal.setDates(new TleDate[] {date1.getDate(info), date2.getDate(info)});
+  }
 
-	public static class CalendarWebControlModel extends WebControlModel
-	{
-		private boolean showClearLink;
+  public com.tle.web.sections.standard.Calendar getDate1() {
+    return date1;
+  }
 
-		public boolean isShowClearLink()
-		{
-			return showClearLink;
-		}
+  public com.tle.web.sections.standard.Calendar getDate2() {
+    return date2;
+  }
 
-		public void setShowClearLink(boolean showClearLink)
-		{
-			this.showClearLink = showClearLink;
-		}
-	}
+  public static class CalendarWebControlModel extends WebControlModel {
+    private boolean showClearLink;
 
-	public Link getClearLink()
-	{
-		return clearLink;
-	}
+    public boolean isShowClearLink() {
+      return showClearLink;
+    }
 
-	@Override
-	protected ElementId getIdForLabel()
-	{
-		return date1;
-	}
+    public void setShowClearLink(boolean showClearLink) {
+      this.showClearLink = showClearLink;
+    }
+  }
+
+  public Link getClearLink() {
+    return clearLink;
+  }
+
+  @Override
+  protected ElementId getIdForLabel() {
+    return date1;
+  }
 }

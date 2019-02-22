@@ -16,19 +16,16 @@
 
 package com.tle.core.taxonomy.impl;
 
-import javax.inject.Singleton;
-
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.guice.Bind;
 import com.tle.core.taxonomy.TaxonomyDao;
+import javax.inject.Singleton;
 
 @Bind(TaxonomyDao.class)
 @Singleton
-public class TaxonomyDaoImpl extends AbstractEntityDaoImpl<Taxonomy> implements TaxonomyDao
-{
-	public TaxonomyDaoImpl()
-	{
-		super(Taxonomy.class);
-	}
+public class TaxonomyDaoImpl extends AbstractEntityDaoImpl<Taxonomy> implements TaxonomyDao {
+  public TaxonomyDaoImpl() {
+    super(Taxonomy.class);
+  }
 }

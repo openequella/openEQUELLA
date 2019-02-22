@@ -16,8 +16,6 @@
 
 package com.tle.web.controls.mypages;
 
-import javax.inject.Inject;
-
 import com.tle.beans.item.attachments.HtmlAttachment;
 import com.tle.mypages.service.MyPagesService;
 import com.tle.mypages.web.event.SavePageEvent;
@@ -37,113 +35,95 @@ import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.standard.Checkbox;
 import com.tle.web.sections.standard.annotations.Component;
+import javax.inject.Inject;
 
-/**
- * @author dlashmar
- */
+/** @author dlashmar */
 public class MyPagesExtrasSection extends AbstractPrototypeSection<MyPagesPreviewModel>
-	implements
-		HtmlRenderer,
-		SavePageEventListener
-{
-	@Inject
-	private MyPagesService myPagesService;
+    implements HtmlRenderer, SavePageEventListener {
+  @Inject private MyPagesService myPagesService;
 
-	@PlugKey("handlers.mypages.checkbox.preview")
-	@Component(stateful = false)
-	private Checkbox previewCheckBox;
-	@PlugKey("handlers.mypages.checkbox.restrict")
-	@Component(stateful = false)
-	private Checkbox restrictCheckbox;
+  @PlugKey("handlers.mypages.checkbox.preview")
+  @Component(stateful = false)
+  private Checkbox previewCheckBox;
 
-	@TreeLookup
-	private MyPagesContributeSection contribSection;
+  @PlugKey("handlers.mypages.checkbox.restrict")
+  @Component(stateful = false)
+  private Checkbox restrictCheckbox;
 
-	@ViewFactory
-	protected FreemarkerFactory viewFactory;
+  @TreeLookup private MyPagesContributeSection contribSection;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		MyPagesContributeModel model = contribSection.getModel(context);
-		HtmlAttachment page = myPagesService.getPageAttachment(context, model.getSession(), model.getItemId(),
-			model.getPageUuid());
-		if( page != null )
-		{
-			previewCheckBox.setChecked(context, page.isPreview());
-			restrictCheckbox.setChecked(context, page.isRestricted());
-			return viewFactory.createResult("mypagesextra.ftl", context);
-		}
-		return null;
-	}
+  @ViewFactory protected FreemarkerFactory viewFactory;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.addListener(null, SavePageEventListener.class, id);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    MyPagesContributeModel model = contribSection.getModel(context);
+    HtmlAttachment page =
+        myPagesService.getPageAttachment(
+            context, model.getSession(), model.getItemId(), model.getPageUuid());
+    if (page != null) {
+      previewCheckBox.setChecked(context, page.isPreview());
+      restrictCheckbox.setChecked(context, page.isRestricted());
+      return viewFactory.createResult("mypagesextra.ftl", context);
+    }
+    return null;
+  }
 
-	@Override
-	public void doSavePageEvent(SectionInfo info, SavePageEvent event)
-	{
-		MyPagesContributeModel model = contribSection.getModel(info);
-		HtmlAttachment page = myPagesService.getPageAttachment(info, model.getSession(), model.getItemId(),
-			model.getPageUuid());
-		page.setPreview(previewCheckBox.isDisplayed(info) && previewCheckBox.isChecked(info));
-		page.setRestricted(restrictCheckbox.isChecked(info));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.addListener(null, SavePageEventListener.class, id);
+  }
 
-	public void setShowPreview(SectionInfo info, boolean preview)
-	{
-		final MyPagesPreviewModel model = getModel(info);
-		model.setShowPreview(preview);
-	}
+  @Override
+  public void doSavePageEvent(SectionInfo info, SavePageEvent event) {
+    MyPagesContributeModel model = contribSection.getModel(info);
+    HtmlAttachment page =
+        myPagesService.getPageAttachment(
+            info, model.getSession(), model.getItemId(), model.getPageUuid());
+    page.setPreview(previewCheckBox.isDisplayed(info) && previewCheckBox.isChecked(info));
+    page.setRestricted(restrictCheckbox.isChecked(info));
+  }
 
-	public void setShowRestrict(SectionInfo info, boolean restrict)
-	{
-		getModel(info).setShowRestrict(restrict);
-	}
+  public void setShowPreview(SectionInfo info, boolean preview) {
+    final MyPagesPreviewModel model = getModel(info);
+    model.setShowPreview(preview);
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new MyPagesPreviewModel();
-	}
+  public void setShowRestrict(SectionInfo info, boolean restrict) {
+    getModel(info).setShowRestrict(restrict);
+  }
 
-	public Checkbox getPreviewCheckBox()
-	{
-		return previewCheckBox;
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new MyPagesPreviewModel();
+  }
 
-	public Checkbox getRestrictCheckbox()
-	{
-		return restrictCheckbox;
-	}
+  public Checkbox getPreviewCheckBox() {
+    return previewCheckBox;
+  }
 
-	public static class MyPagesPreviewModel
-	{
-		private boolean showPreview;
-		private boolean showRestrict;
+  public Checkbox getRestrictCheckbox() {
+    return restrictCheckbox;
+  }
 
-		public boolean isShowPreview()
-		{
-			return showPreview;
-		}
+  public static class MyPagesPreviewModel {
+    private boolean showPreview;
+    private boolean showRestrict;
 
-		public void setShowPreview(boolean showPreview)
-		{
-			this.showPreview = showPreview;
-		}
+    public boolean isShowPreview() {
+      return showPreview;
+    }
 
-		public boolean isShowRestrict()
-		{
-			return showRestrict;
-		}
+    public void setShowPreview(boolean showPreview) {
+      this.showPreview = showPreview;
+    }
 
-		public void setShowRestrict(boolean showRestrict)
-		{
-			this.showRestrict = showRestrict;
-		}
-	}
+    public boolean isShowRestrict() {
+      return showRestrict;
+    }
+
+    public void setShowRestrict(boolean showRestrict) {
+      this.showRestrict = showRestrict;
+    }
+  }
 }

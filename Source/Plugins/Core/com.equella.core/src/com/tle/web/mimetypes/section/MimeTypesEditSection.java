@@ -16,10 +16,6 @@
 
 package com.tle.web.mimetypes.section;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.NameValue;
 import com.tle.common.beans.exception.InvalidDataException;
@@ -62,198 +58,184 @@ import com.tle.web.sections.standard.model.TabSection;
 import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import java.util.List;
+import javax.inject.Inject;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
-public class MimeTypesEditSection extends AbstractPrototypeSection<MimeTypesEditModel> implements HtmlRenderer
-{
-	private static PluginResourceHelper resources = ResourcesService.getResourceHelper(MimeTypesEditSection.class);
-	public static final NameValue TAB_DETAILS = new BundleNameValue(resources.key("tab.details"), "details");
-	public static final NameValue TAB_VIEWERS = new BundleNameValue(resources.key("tab.viewers"), "viewers");
+public class MimeTypesEditSection extends AbstractPrototypeSection<MimeTypesEditModel>
+    implements HtmlRenderer {
+  private static PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(MimeTypesEditSection.class);
+  public static final NameValue TAB_DETAILS =
+      new BundleNameValue(resources.key("tab.details"), "details");
+  public static final NameValue TAB_VIEWERS =
+      new BundleNameValue(resources.key("tab.viewers"), "viewers");
 
-	@PlugKey("edit.pagetitle")
-	private static Label EDIT_TITLE_LABEL;
-	@PlugKey("add.pagetitle")
-	private static Label ADD_TITLE_LABEL;
-	@PlugKey("edit.parentbreadcrumb.label")
-	private static Label PARENT_BREADCRUMB_LABEL;
-	@PlugKey("edit.parentbreadcrumb.title")
-	private static Label PARENT_BREADCRUMB_TITLE;
+  @PlugKey("edit.pagetitle")
+  private static Label EDIT_TITLE_LABEL;
 
-	@Inject
-	private MimeTypeService mimeService;
-	@Inject
-	private MimeSearchPrivilegeTreeProvider securityProvider;
-	@Inject
-	private InstitutionService institutionService;
+  @PlugKey("add.pagetitle")
+  private static Label ADD_TITLE_LABEL;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("edit.parentbreadcrumb.label")
+  private static Label PARENT_BREADCRUMB_LABEL;
 
-	@Component
-	private TabLayout tabs;
-	@Component
-	@PlugKey("button.save")
-	private Button saveButton;
-	@Component
-	@PlugKey("mimetypes.button.cancel")
-	private Button cancelButton;
+  @PlugKey("edit.parentbreadcrumb.title")
+  private static Label PARENT_BREADCRUMB_TITLE;
 
-	private PluginTracker<MimeEditExtension> extensions;
-	private CollectInterfaceHandler<TabSection> tabSections;
-	private CollectInterfaceHandler<MimeEntryEditSection> editors;
-	private HtmlLinkState parentBreadcrumb;
+  @Inject private MimeTypeService mimeService;
+  @Inject private MimeSearchPrivilegeTreeProvider securityProvider;
+  @Inject private InstitutionService institutionService;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		securityProvider.checkAuthorised();
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
 
-		Decorations.getDecorations(context)
-			.setTitle(getModel(context).getEditId() == 0 ? ADD_TITLE_LABEL : EDIT_TITLE_LABEL);
+  @Component private TabLayout tabs;
 
-		Breadcrumbs breadcrumbs = Breadcrumbs.get(context);
-		breadcrumbs.add(SettingsUtils.getBreadcrumb(context));
-		breadcrumbs.add(parentBreadcrumb);
+  @Component
+  @PlugKey("button.save")
+  private Button saveButton;
 
-		final GenericTemplateResult result = new GenericTemplateResult();
-		result.addNamedResult("body", viewFactory.createResult("mimeedit.ftl", context));
-		result.addNamedResult("help", viewFactory.createResult("helponedit.ftl", context));
-		return result;
-	}
+  @Component
+  @PlugKey("mimetypes.button.cancel")
+  private Button cancelButton;
 
-	@EventHandlerMethod
-	public void save(final SectionInfo info)
-	{
-		MimeTypesEditModel model = getModel(info);
-		try
-		{
-			mimeService.saveOrUpdate(model.getEditId(), new MimeEntryChanges()
-			{
-				@Override
-				public void editMimeEntry(MimeEntry entry)
-				{
-					List<MimeEntryEditSection> editorList = editors.getAllImplementors(info);
-					for( MimeEntryEditSection editor : editorList )
-					{
-						editor.saveEntry(info, entry);
-					}
-				}
-			});
-			goBack(info);
-		}
-		catch( InvalidDataException ve )
-		{
-			info.preventGET();
-			ValidationError firstError = ve.getErrors().get(0);
-			model.setErrorLabel(new KeyLabel(firstError.getKey(), firstError.getMessage()));
-		}
-	}
+  private PluginTracker<MimeEditExtension> extensions;
+  private CollectInterfaceHandler<TabSection> tabSections;
+  private CollectInterfaceHandler<MimeEntryEditSection> editors;
+  private HtmlLinkState parentBreadcrumb;
 
-	@EventHandlerMethod
-	public void cancel(SectionInfo info)
-	{
-		goBack(info);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    securityProvider.checkAuthorised();
 
-	private void goBack(SectionInfo info)
-	{
-		info.forwardToUrl(institutionService.institutionalise(MimeEditorUtils.MIME_BOOKMARK));
-	}
+    Decorations.getDecorations(context)
+        .setTitle(getModel(context).getEditId() == 0 ? ADD_TITLE_LABEL : EDIT_TITLE_LABEL);
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+    Breadcrumbs breadcrumbs = Breadcrumbs.get(context);
+    breadcrumbs.add(SettingsUtils.getBreadcrumb(context));
+    breadcrumbs.add(parentBreadcrumb);
 
-		saveButton.setClickHandler(events.getNamedHandler("save"));
-		cancelButton.setClickHandler(events.getNamedHandler("cancel"));
+    final GenericTemplateResult result = new GenericTemplateResult();
+    result.addNamedResult("body", viewFactory.createResult("mimeedit.ftl", context));
+    result.addNamedResult("help", viewFactory.createResult("helponedit.ftl", context));
+    return result;
+  }
 
-		parentBreadcrumb = new HtmlLinkState(new SimpleBookmark(MimeEditorUtils.MIME_BOOKMARK));
-		parentBreadcrumb.setLabel(PARENT_BREADCRUMB_LABEL);
-		parentBreadcrumb.setTitle(PARENT_BREADCRUMB_TITLE);
+  @EventHandlerMethod
+  public void save(final SectionInfo info) {
+    MimeTypesEditModel model = getModel(info);
+    try {
+      mimeService.saveOrUpdate(
+          model.getEditId(),
+          new MimeEntryChanges() {
+            @Override
+            public void editMimeEntry(MimeEntry entry) {
+              List<MimeEntryEditSection> editorList = editors.getAllImplementors(info);
+              for (MimeEntryEditSection editor : editorList) {
+                editor.saveEntry(info, entry);
+              }
+            }
+          });
+      goBack(info);
+    } catch (InvalidDataException ve) {
+      info.preventGET();
+      ValidationError firstError = ve.getErrors().get(0);
+      model.setErrorLabel(new KeyLabel(firstError.getKey(), firstError.getMessage()));
+    }
+  }
 
-		// register plugin points
-		tree.registerSections(extensions.getBeanList(), id);
+  @EventHandlerMethod
+  public void cancel(SectionInfo info) {
+    goBack(info);
+  }
 
-		editors = new CollectInterfaceHandler<MimeEntryEditSection>(MimeEntryEditSection.class);
-		tabSections = new CollectInterfaceHandler<TabSection>(TabSection.class);
-		tree.addRegistrationHandler(editors);
-		tree.addRegistrationHandler(tabSections);
-	}
+  private void goBack(SectionInfo info) {
+    info.forwardToUrl(institutionService.institutionalise(MimeEditorUtils.MIME_BOOKMARK));
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
-		tabs.addTabSections(tabSections.getAllImplementors(tree));
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	public Class<MimeTypesEditModel> getModelClass()
-	{
-		return MimeTypesEditModel.class;
-	}
+    saveButton.setClickHandler(events.getNamedHandler("save"));
+    cancelButton.setClickHandler(events.getNamedHandler("cancel"));
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "";
-	}
+    parentBreadcrumb = new HtmlLinkState(new SimpleBookmark(MimeEditorUtils.MIME_BOOKMARK));
+    parentBreadcrumb.setLabel(PARENT_BREADCRUMB_LABEL);
+    parentBreadcrumb.setTitle(PARENT_BREADCRUMB_TITLE);
 
-	public Button getSaveButton()
-	{
-		return saveButton;
-	}
+    // register plugin points
+    tree.registerSections(extensions.getBeanList(), id);
 
-	public Button getCancelButton()
-	{
-		return cancelButton;
-	}
+    editors = new CollectInterfaceHandler<MimeEntryEditSection>(MimeEntryEditSection.class);
+    tabSections = new CollectInterfaceHandler<TabSection>(TabSection.class);
+    tree.addRegistrationHandler(editors);
+    tree.addRegistrationHandler(tabSections);
+  }
 
-	public static void edit(SectionInfo info, long id)
-	{
-		SectionInfo forward = createEditUrl(info);
-		MimeTypesEditSection mimeEditSection = forward.lookupSection(MimeTypesEditSection.class);
-		mimeEditSection.editMimeType(forward, id);
-		info.forwardAsBookmark(forward);
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
+    tabs.addTabSections(tabSections.getAllImplementors(tree));
+  }
 
-	private void editMimeType(SectionInfo info, long id)
-	{
-		MimeEntry entry = mimeService.getEntryForId(id);
-		getModel(info).setEditId(id);
-		List<MimeEntryEditSection> editorList = editors.getAllImplementors(info);
-		for( MimeEntryEditSection editor : editorList )
-		{
-			editor.loadEntry(info, entry);
-		}
-	}
+  @Override
+  public Class<MimeTypesEditModel> getModelClass() {
+    return MimeTypesEditModel.class;
+  }
 
-	private static SectionInfo createEditUrl(SectionInfo info)
-	{
-		return info.createForward("/access/mimeedit.do");
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "";
+  }
 
-	public static void newEntry(SectionInfo info)
-	{
-		edit(info, 0);
-	}
+  public Button getSaveButton() {
+    return saveButton;
+  }
 
-	public TabLayout getTabs()
-	{
-		return tabs;
-	}
+  public Button getCancelButton() {
+    return cancelButton;
+  }
 
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		extensions = new PluginTracker<MimeEditExtension>(pluginService, "com.tle.web.mimetypes", "editExtension",
-			"id", new ExtensionParamComparator("order"));
-		extensions.setBeanKey("class");
-	}
+  public static void edit(SectionInfo info, long id) {
+    SectionInfo forward = createEditUrl(info);
+    MimeTypesEditSection mimeEditSection = forward.lookupSection(MimeTypesEditSection.class);
+    mimeEditSection.editMimeType(forward, id);
+    info.forwardAsBookmark(forward);
+  }
+
+  private void editMimeType(SectionInfo info, long id) {
+    MimeEntry entry = mimeService.getEntryForId(id);
+    getModel(info).setEditId(id);
+    List<MimeEntryEditSection> editorList = editors.getAllImplementors(info);
+    for (MimeEntryEditSection editor : editorList) {
+      editor.loadEntry(info, entry);
+    }
+  }
+
+  private static SectionInfo createEditUrl(SectionInfo info) {
+    return info.createForward("/access/mimeedit.do");
+  }
+
+  public static void newEntry(SectionInfo info) {
+    edit(info, 0);
+  }
+
+  public TabLayout getTabs() {
+    return tabs;
+  }
+
+  @Inject
+  public void setPluginService(PluginService pluginService) {
+    extensions =
+        new PluginTracker<MimeEditExtension>(
+            pluginService,
+            "com.tle.web.mimetypes",
+            "editExtension",
+            "id",
+            new ExtensionParamComparator("order"));
+    extensions.setBeanKey("class");
+  }
 }

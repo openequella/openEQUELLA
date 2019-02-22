@@ -20,44 +20,36 @@ import com.dytech.edge.admin.script.ifmodel.Equality;
 import com.dytech.edge.admin.script.ifmodel.Equals;
 import com.dytech.edge.admin.script.ifmodel.NotEquals;
 
-public abstract class UserMethodMethod
-{
-	public abstract String toScript();
+public abstract class UserMethodMethod {
+  public abstract String toScript();
 
-	public abstract Equality getOp();
+  public abstract Equality getOp();
 
-	public String toEasyRead()
-	{
-		return getOp().toEasyRead();
-	}
+  public String toEasyRead() {
+    return getOp().toEasyRead();
+  }
 
-	public static class HasRole extends UserMethodMethod
-	{
-		@Override
-		public String toScript()
-		{
-			return "hasRole";
-		}
+  public static class HasRole extends UserMethodMethod {
+    @Override
+    public String toScript() {
+      return "hasRole";
+    }
 
-		@Override
-		public Equality getOp()
-		{
-			return new Equals();
-		}
-	}
+    @Override
+    public Equality getOp() {
+      return new Equals();
+    }
+  }
 
-	public static class DoesntHasRole extends UserMethodMethod
-	{
-		@Override
-		public String toScript()
-		{
-			return "doesntHaveRole";
-		}
+  public static class DoesntHasRole extends UserMethodMethod {
+    @Override
+    public String toScript() {
+      return "doesntHaveRole";
+    }
 
-		@Override
-		public Equality getOp()
-		{
-			return new NotEquals();
-		}
-	}
+    @Override
+    public Equality getOp() {
+      return new NotEquals();
+    }
+  }
 }

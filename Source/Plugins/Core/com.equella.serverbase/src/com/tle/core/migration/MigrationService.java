@@ -16,51 +16,49 @@
 
 package com.tle.core.migration;
 
+import com.tle.beans.DatabaseSchema;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import com.tle.beans.DatabaseSchema;
+public interface MigrationService {
+  MigrationStatus getMigrationsStatus();
 
-public interface MigrationService
-{
-	MigrationStatus getMigrationsStatus();
+  void executeMigrationsForSchemas(Collection<Long> schemaIds);
 
-	void executeMigrationsForSchemas(Collection<Long> schemaIds);
+  List<MigrationStatusLog> getWarnings(String taskId);
 
-	List<MigrationStatusLog> getWarnings(String taskId);
+  Migration getMigration(MigrationState ext);
 
-	Migration getMigration(MigrationState ext);
+  void refreshSchema(long schemaId);
 
-	void refreshSchema(long schemaId);
+  void setSchemasOnline(Collection<Long> schemaIds, boolean online);
 
-	void setSchemasOnline(Collection<Long> schemaIds, boolean online);
+  boolean isSomeSchemasUp();
 
-	boolean isSomeSchemasUp();
+  DatabaseSchema getSchema(long schemaId);
 
-	DatabaseSchema getSchema(long schemaId);
+  SchemaInfo getSystemSchemaInfo();
 
-	SchemaInfo getSystemSchemaInfo();
+  long addSchema(DatabaseSchema ds, boolean initialise);
 
-	long addSchema(DatabaseSchema ds, boolean initialise);
+  void editSchema(DatabaseSchema ds);
 
-	void editSchema(DatabaseSchema ds);
+  void deleteSchema(long schemaId);
 
-	void deleteSchema(long schemaId);
+  Collection<Long> getAvailableSchemaIds();
 
-	Collection<Long> getAvailableSchemaIds();
+  boolean isSystemSchemaUp();
 
-	boolean isSystemSchemaUp();
+  void setInstallSettings(InstallSettings installSettings);
 
-	void setInstallSettings(InstallSettings installSettings);
+  InstallSettings getInstallSettings();
 
-	InstallSettings getInstallSettings();
+  Set<MigrationExt> getOrderedMigrations();
 
-	Set<MigrationExt> getOrderedMigrations();
+  MigrationErrorReport getErrorReport(long schemaId);
 
-	MigrationErrorReport getErrorReport(long schemaId);
+  void refreshSystemSchema();
 
-	void refreshSystemSchema();
-
-	void migrateSystemSchema();
+  void migrateSystemSchema();
 }

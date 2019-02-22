@@ -16,10 +16,6 @@
 
 package com.tle.web.institution.tab;
 
-import java.util.Map;
-
-import javax.inject.Inject;
-
 import com.google.common.collect.Maps;
 import com.tle.common.Check;
 import com.tle.core.email.EmailService;
@@ -47,200 +43,178 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
+import java.util.Map;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
-public class EmailsTab extends AbstractPrototypeSection<EmailsTab.EmailsModel> implements HtmlRenderer
-{
-	@PlugKey("install.noreplyemailsblank")
-	private static Label LABEL_EMAILSBLANK;
-    @PlugKey("install.emailsblank")
-    private static Label LABEL_NOREPLYEMAILSBLANK;
-	@PlugKey("install.smtpblank")
-	private static Label LABEL_SMTPBLANK;
-	@PlugKey("install.invalidemail")
-	private static Label LABEL_INVALIDEMAIL;
-	@PlugKey("install.smtpuserpassword")
-	private static Label LABEL_SMTPUSERPASSWORD;
-	@Inject
-	private SystemConfigService systemConfigService;
+public class EmailsTab extends AbstractPrototypeSection<EmailsTab.EmailsModel>
+    implements HtmlRenderer {
+  @PlugKey("install.noreplyemailsblank")
+  private static Label LABEL_EMAILSBLANK;
 
-	@Inject
-	private EmailService emailService;
+  @PlugKey("install.emailsblank")
+  private static Label LABEL_NOREPLYEMAILSBLANK;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("install.smtpblank")
+  private static Label LABEL_SMTPBLANK;
 
-	@TreeLookup
-	private InstitutionSection institutionSection;
+  @PlugKey("install.invalidemail")
+  private static Label LABEL_INVALIDEMAIL;
 
-	@Component
-	private TextField emails;
-    @Component
-    private TextField noReplySender;
-	@Component
-	private TextField smtpServer;
-	@Component
-	private TextField smtpUser;
-	@Component(stateful = false)
-	private TextField smtpPassword;
-	@Component(stateful = false)
-	private TextField confirmPassword;
+  @PlugKey("install.smtpuserpassword")
+  private static Label LABEL_SMTPUSERPASSWORD;
 
-	@Component
-	@PlugKey(value = "institutions.server.emails.save")
-	private Button save;
+  @Inject private SystemConfigService systemConfigService;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		SubmitValuesFunction funcExpr = events.getSubmitValuesFunction("saveClicked");
-		// Require the passwords match only if the smtp username is supplied. A
-		// separate
-		// validation will ensure that either all 3 fields a blanks, or all
-		// three populated
-		SimpleValidator validateCall = new SimpleValidator(new FunctionCallExpression("ensurePasswordMatch", smtpUser,
-			smtpPassword.createGetExpression(), confirmPassword.createGetExpression()));
-		save.setClickHandler(new OverrideHandler(validateCall, new FunctionCallStatement(funcExpr)));
-	}
+  @Inject private EmailService emailService;
 
-	@EventHandlerMethod
-	public void saveClicked(SectionContext context)
-	{
-		EmailsModel model = getModel(context);
-		String emailsText = emails.getValue(context);
-		String smtpText = smtpServer.getValue(context);
-		String smtpUserText = smtpUser.getValue(context);
-		String smtpPasswordText = smtpPassword.getValue(context);
-        String emailsNoReplySender = noReplySender.getValue(context);
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
 
-		if( Check.isEmpty(emailsText) )
-		{
-			model.addError("emails", LABEL_EMAILSBLANK);
-		}
-		String[] emailsArray = emailsText.split(";");
-		for( String email : emailsArray )
-		{
-			if( !emailService.isValidAddress(email) )
-			{
-				model.addError("emails", LABEL_INVALIDEMAIL);
-			}
-		}
-		if( Check.isEmpty(emailsNoReplySender) )
-		{
-			model.addError("noreplysender", LABEL_NOREPLYEMAILSBLANK);
-		}
+  @TreeLookup private InstitutionSection institutionSection;
 
-        if( Check.isEmpty(smtpText) )
-        {
-            model.addError("smtp", LABEL_SMTPBLANK);
-        }
+  @Component private TextField emails;
+  @Component private TextField noReplySender;
+  @Component private TextField smtpServer;
+  @Component private TextField smtpUser;
 
-		if( (!Check.isEmpty(smtpUserText) && Check.isEmpty(smtpPasswordText))
-			|| (Check.isEmpty(smtpUserText) && !Check.isEmpty(smtpPasswordText)) )
-		{
-			model.addError("smtpuser", LABEL_SMTPUSERPASSWORD);
-			model.addError("smtppassword", LABEL_SMTPUSERPASSWORD);
-		}
+  @Component(stateful = false)
+  private TextField smtpPassword;
 
-		if( model.getErrors().isEmpty() )
-		{
-			systemConfigService.setEmails(emails.getValue(context));
-			systemConfigService.setSmtpServer(smtpServer.getValue(context));
-			systemConfigService.setSmtpUser(smtpUser.getValue(context));
-			systemConfigService.setSmtpPassword(smtpPassword.getValue(context));
-            systemConfigService.setNoReplySender(noReplySender.getValue(context));
-		}
-		else
-		{
-			context.preventGET();
-		}
-	}
+  @Component(stateful = false)
+  private TextField confirmPassword;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( systemConfigService.adminPasswordNotSet() )
-		{
-			return null;
-		}
+  @Component
+  @PlugKey(value = "institutions.server.emails.save")
+  private Button save;
 
-		emails.setValue(context, systemConfigService.getEmails());
-		smtpServer.setValue(context, systemConfigService.getSmtpServer());
-		smtpUser.setValue(context, systemConfigService.getSmtpUser());
-		smtpPassword.setValue(context, systemConfigService.getSmtpPassword());
-        noReplySender.setValue(context, systemConfigService.getNoReplySender());
-		confirmPassword.setValue(context, systemConfigService.getSmtpPassword());
-		return viewFactory.createResult("tab/emails.ftl", context);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    SubmitValuesFunction funcExpr = events.getSubmitValuesFunction("saveClicked");
+    // Require the passwords match only if the smtp username is supplied. A
+    // separate
+    // validation will ensure that either all 3 fields a blanks, or all
+    // three populated
+    SimpleValidator validateCall =
+        new SimpleValidator(
+            new FunctionCallExpression(
+                "ensurePasswordMatch",
+                smtpUser,
+                smtpPassword.createGetExpression(),
+                confirmPassword.createGetExpression()));
+    save.setClickHandler(new OverrideHandler(validateCall, new FunctionCallStatement(funcExpr)));
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "email_notification";
-	}
+  @EventHandlerMethod
+  public void saveClicked(SectionContext context) {
+    EmailsModel model = getModel(context);
+    String emailsText = emails.getValue(context);
+    String smtpText = smtpServer.getValue(context);
+    String smtpUserText = smtpUser.getValue(context);
+    String smtpPasswordText = smtpPassword.getValue(context);
+    String emailsNoReplySender = noReplySender.getValue(context);
 
-	public Button getSave()
-	{
-		return save;
-	}
-
-	public TextField getEmails()
-	{
-		return emails;
-	}
-
-	public TextField getSmtpServer()
-	{
-		return smtpServer;
-	}
-
-	public TextField getSmtpUser()
-	{
-		return smtpUser;
-	}
-
-	public TextField getSmtpPassword()
-	{
-		return smtpPassword;
-	}
-
-    public TextField getNoReplySender()
-    {
-        return noReplySender;
+    if (Check.isEmpty(emailsText)) {
+      model.addError("emails", LABEL_EMAILSBLANK);
+    }
+    String[] emailsArray = emailsText.split(";");
+    for (String email : emailsArray) {
+      if (!emailService.isValidAddress(email)) {
+        model.addError("emails", LABEL_INVALIDEMAIL);
+      }
+    }
+    if (Check.isEmpty(emailsNoReplySender)) {
+      model.addError("noreplysender", LABEL_NOREPLYEMAILSBLANK);
     }
 
-	public TextField getConfirmPassword()
-	{
-		return confirmPassword;
-	}
+    if (Check.isEmpty(smtpText)) {
+      model.addError("smtp", LABEL_SMTPBLANK);
+    }
 
-	@Override
-	public Class<EmailsModel> getModelClass()
-	{
-		return EmailsModel.class;
-	}
+    if ((!Check.isEmpty(smtpUserText) && Check.isEmpty(smtpPasswordText))
+        || (Check.isEmpty(smtpUserText) && !Check.isEmpty(smtpPasswordText))) {
+      model.addError("smtpuser", LABEL_SMTPUSERPASSWORD);
+      model.addError("smtppassword", LABEL_SMTPUSERPASSWORD);
+    }
 
-	public static class EmailsModel
-	{
-		private final Map<String, Label> errors = Maps.newHashMap();
+    if (model.getErrors().isEmpty()) {
+      systemConfigService.setEmails(emails.getValue(context));
+      systemConfigService.setSmtpServer(smtpServer.getValue(context));
+      systemConfigService.setSmtpUser(smtpUser.getValue(context));
+      systemConfigService.setSmtpPassword(smtpPassword.getValue(context));
+      systemConfigService.setNoReplySender(noReplySender.getValue(context));
+    } else {
+      context.preventGET();
+    }
+  }
 
-		public boolean hasError()
-		{
-			return !errors.isEmpty();
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (systemConfigService.adminPasswordNotSet()) {
+      return null;
+    }
 
-		public void addError(String id, Label label)
-		{
-			errors.put(id, label);
-		}
+    emails.setValue(context, systemConfigService.getEmails());
+    smtpServer.setValue(context, systemConfigService.getSmtpServer());
+    smtpUser.setValue(context, systemConfigService.getSmtpUser());
+    smtpPassword.setValue(context, systemConfigService.getSmtpPassword());
+    noReplySender.setValue(context, systemConfigService.getNoReplySender());
+    confirmPassword.setValue(context, systemConfigService.getSmtpPassword());
+    return viewFactory.createResult("tab/emails.ftl", context);
+  }
 
-		public Map<String, Label> getErrors()
-		{
-			return errors;
-		}
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "email_notification";
+  }
 
+  public Button getSave() {
+    return save;
+  }
+
+  public TextField getEmails() {
+    return emails;
+  }
+
+  public TextField getSmtpServer() {
+    return smtpServer;
+  }
+
+  public TextField getSmtpUser() {
+    return smtpUser;
+  }
+
+  public TextField getSmtpPassword() {
+    return smtpPassword;
+  }
+
+  public TextField getNoReplySender() {
+    return noReplySender;
+  }
+
+  public TextField getConfirmPassword() {
+    return confirmPassword;
+  }
+
+  @Override
+  public Class<EmailsModel> getModelClass() {
+    return EmailsModel.class;
+  }
+
+  public static class EmailsModel {
+    private final Map<String, Label> errors = Maps.newHashMap();
+
+    public boolean hasError() {
+      return !errors.isEmpty();
+    }
+
+    public void addError(String id, Label label) {
+      errors.put(id, label);
+    }
+
+    public Map<String, Label> getErrors() {
+      return errors;
+    }
+  }
 }

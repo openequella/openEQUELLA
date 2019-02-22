@@ -18,18 +18,16 @@ package com.tle.common.beans.progress;
 
 import java.io.Serializable;
 
-public interface ProgressCallback extends Serializable
-{
-	ProgressResponse getResponse();
+public interface ProgressCallback extends Serializable {
+  ProgressResponse getResponse();
 
-	void setFinished();
+  void setFinished();
 
-	boolean isFinished();
+  boolean isFinished();
 
-	interface ProgressResponse
-	{
-		boolean isFinished();
+  interface ProgressResponse {
+    boolean isFinished();
 
-		String getErrorMessage();
-	}
+    String getErrorMessage();
+  }
 }

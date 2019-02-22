@@ -20,12 +20,11 @@ import com.google.inject.name.Names;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.equella.guice.SectionsModule;
 
-public class MyResourceModule extends SectionsModule
-{
-	@Override
-	protected void configure()
-	{
-		bind(SectionTree.class).annotatedWith(Names.named("myresources")).toProvider(tree(node(MyResourceContributeSection.class)));
-	}
-
+public class MyResourceModule extends SectionsModule {
+  @Override
+  protected void configure() {
+    bind(SectionTree.class)
+        .annotatedWith(Names.named("myresources"))
+        .toProvider(tree(node(MyResourceContributeSection.class)));
+  }
 }

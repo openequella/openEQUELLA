@@ -16,11 +16,10 @@
 
 package com.tle.core.services;
 
-public interface ZipProgress
-{
-    int getTotalFiles();
+public interface ZipProgress {
+  int getTotalFiles();
 
-    int getCurrentFile();
+  int getCurrentFile();
 
-    boolean isFinished();
+  boolean isFinished();
 }

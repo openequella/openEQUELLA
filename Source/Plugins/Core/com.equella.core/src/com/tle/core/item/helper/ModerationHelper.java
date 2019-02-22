@@ -16,40 +16,36 @@
 
 package com.tle.core.item.helper;
 
-import java.util.Set;
-
-import javax.inject.Singleton;
-
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.Constants;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ModerationStatus;
 import com.tle.core.guice.Bind;
+import java.util.Set;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class ModerationHelper extends AbstractHelper
-{
-	@Override
-	public void load(PropBagEx itemxml, Item bean)
-	{
-		itemxml = itemxml.aquireSubtree("moderation"); //$NON-NLS-1$
-		itemxml.deleteAll(Constants.XML_WILD);
+public class ModerationHelper extends AbstractHelper {
+  @Override
+  public void load(PropBagEx itemxml, Item bean) {
+    itemxml = itemxml.aquireSubtree("moderation"); // $NON-NLS-1$
+    itemxml.deleteAll(Constants.XML_WILD);
 
-		ModerationStatus moderation = bean.getModeration();
-		if( moderation != null )
-		{
-			if( moderation.getLiveApprovalDate() != null )
-			{
-				itemxml.setNode("liveapprovaldate", formatDate(moderation //$NON-NLS-1$
-					.getLiveApprovalDate()));
-			}
-		}
-	}
+    ModerationStatus moderation = bean.getModeration();
+    if (moderation != null) {
+      if (moderation.getLiveApprovalDate() != null) {
+        itemxml.setNode(
+            "liveapprovaldate",
+            formatDate(
+                moderation //$NON-NLS-1$
+                    .getLiveApprovalDate()));
+      }
+    }
+  }
 
-	@Override
-	public void save(PropBagEx xml, Item item, Set<String> handled)
-	{
-		// nothing
-	}
+  @Override
+  public void save(PropBagEx xml, Item item, Set<String> handled) {
+    // nothing
+  }
 }

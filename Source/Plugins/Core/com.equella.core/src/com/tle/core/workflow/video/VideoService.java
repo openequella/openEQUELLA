@@ -16,16 +16,15 @@
 
 package com.tle.core.workflow.video;
 
-import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.attachments.Attachment;
+import com.tle.common.filesystem.handle.FileHandle;
 
-public interface VideoService
-{
-	boolean isVideo(Attachment attachment);
+public interface VideoService {
+  boolean isVideo(Attachment attachment);
 
-	boolean canConvertVideo(String filename);
+  boolean canConvertVideo(String filename);
 
-	boolean videoPreviewExists(FileHandle handle, String filename);
+  boolean videoPreviewExists(FileHandle handle, String filename);
 
-	boolean makeGalleryVideoPreviews(FileHandle handle, String filename);
+  boolean makeGalleryVideoPreviews(FileHandle handle, String filename);
 }

@@ -18,20 +18,19 @@ package com.tle.core.copyright;
 
 /**
  * Absolutely nothing to do with Sections
- * 
+ *
  * @author Aaron
  */
-public interface Section
-{
-	boolean isIllustration();
+public interface Section {
+  boolean isIllustration();
 
-	long getId();
+  long getId();
 
-	String getRange();
+  String getRange();
 
-	String getCopyrightStatus();
+  String getCopyrightStatus();
 
-	String getAttachment();
+  String getAttachment();
 
-	Portion getPortion();
+  Portion getPortion();
 }

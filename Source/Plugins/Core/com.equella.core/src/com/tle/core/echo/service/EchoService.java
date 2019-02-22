@@ -16,21 +16,20 @@
 
 package com.tle.core.echo.service;
 
-import com.tle.common.beans.exception.InvalidDataException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.core.echo.entity.EchoServer;
 import com.tle.core.entity.EntityEditingBean;
 import com.tle.core.entity.service.AbstractEntityService;
 
-public interface EchoService extends AbstractEntityService<EntityEditingBean, EchoServer>
-{
-	EchoServer getForEdit(String uuid);
+public interface EchoService extends AbstractEntityService<EntityEditingBean, EchoServer> {
+  EchoServer getForEdit(String uuid);
 
-	String addEchoServer(EchoServer es) throws InvalidDataException;
+  String addEchoServer(EchoServer es) throws InvalidDataException;
 
-	void editEchoServer(String uuid, EchoServer es) throws InvalidDataException;
+  void editEchoServer(String uuid, EchoServer es) throws InvalidDataException;
 
-	String getAuthenticatedUrl(String esn, String redirectUrl);
+  String getAuthenticatedUrl(String esn, String redirectUrl);
 
-	ObjectMapper getMapper();
+  ObjectMapper getMapper();
 }

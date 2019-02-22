@@ -16,14 +16,6 @@
 
 package com.tle.web.customlinks.menu;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.common.Check;
 import com.tle.common.customlinks.entity.CustomLink;
 import com.tle.common.i18n.CurrentLocale;
@@ -37,87 +29,81 @@ import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.template.section.MenuContributor;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class CustomLinksMenuContributor implements MenuContributor
-{
-	private static final String SESSION_KEY = "CUSTOM-LINKS-MENU";
+public class CustomLinksMenuContributor implements MenuContributor {
+  private static final String SESSION_KEY = "CUSTOM-LINKS-MENU";
 
-	@Inject
-	private CustomLinkService linkService;
-	@Inject
-	private UserSessionService userSessionService;
-	@Inject
-	private InstitutionService institutionService;
+  @Inject private CustomLinkService linkService;
+  @Inject private UserSessionService userSessionService;
+  @Inject private InstitutionService institutionService;
 
-	@Override
-	public List<MenuContribution> getMenuContributions(SectionInfo info)
-	{
-		List<CustomLinkLabel> cachedLinks = userSessionService.getAttribute(SESSION_KEY);
+  @Override
+  public List<MenuContribution> getMenuContributions(SectionInfo info) {
+    List<CustomLinkLabel> cachedLinks = userSessionService.getAttribute(SESSION_KEY);
 
-		if( cachedLinks == null )
-		{
-			cachedLinks = new ArrayList<CustomLinkLabel>();
+    if (cachedLinks == null) {
+      cachedLinks = new ArrayList<CustomLinkLabel>();
 
-			List<CustomLink> links = linkService.listLinksForUser();
+      List<CustomLink> links = linkService.listLinksForUser();
 
-			for( CustomLink lk : links )
-			{
-				String name = CurrentLocale.get(lk.getName(), "");
-				boolean newWindow = lk.getAttribute("newWindow", false);
-				String url = lk.getUrl();
+      for (CustomLink lk : links) {
+        String name = CurrentLocale.get(lk.getName(), "");
+        boolean newWindow = lk.getAttribute("newWindow", false);
+        String url = lk.getUrl();
 
-				String iconUrl = null;
-				String file = lk.getAttribute("fileName");
-				if( !Check.isEmpty(file) )
-				{
-					try
-					{
-						file = new URI(null, null, file, null).toString();
-					}
-					catch( URISyntaxException e )
-					{
-						// nothing
-					}
+        String iconUrl = null;
+        String file = lk.getAttribute("fileName");
+        if (!Check.isEmpty(file)) {
+          try {
+            file = new URI(null, null, file, null).toString();
+          } catch (URISyntaxException e) {
+            // nothing
+          }
 
-					iconUrl = institutionService.institutionalise("entity/" + lk.getId() + "/" + file);
-				}
+          iconUrl = institutionService.institutionalise("entity/" + lk.getId() + "/" + file);
+        }
 
-				cachedLinks.add(new CustomLinkLabel(name, url, newWindow, iconUrl));
-			}
+        cachedLinks.add(new CustomLinkLabel(name, url, newWindow, iconUrl));
+      }
 
-			userSessionService.setAttribute(SESSION_KEY, cachedLinks);
-		}
+      userSessionService.setAttribute(SESSION_KEY, cachedLinks);
+    }
 
-		List<MenuContribution> mcs = new ArrayList<MenuContribution>();
+    List<MenuContribution> mcs = new ArrayList<MenuContribution>();
 
-		int pri = 0;
-		for( CustomLinkLabel aLink : cachedLinks )
-		{
-			mcs.add(newLink(aLink.getName(), aLink.getUrl(), pri++, aLink.isNewWindow(), aLink.getIconUrl()));
-		}
+    int pri = 0;
+    for (CustomLinkLabel aLink : cachedLinks) {
+      mcs.add(
+          newLink(aLink.getName(), aLink.getUrl(), pri++, aLink.isNewWindow(), aLink.getIconUrl()));
+    }
 
-		return mcs;
-	}
+    return mcs;
+  }
 
-	private MenuContribution newLink(String name, String url, int order, boolean newWindow, String iconUrl)
-	{
-		final String target = newWindow ? "_blank" : null;
+  private MenuContribution newLink(
+      String name, String url, int order, boolean newWindow, String iconUrl) {
+    final String target = newWindow ? "_blank" : null;
 
-		HtmlLinkState link = new HtmlLinkState(new SimpleBookmark(url));
-		link.setLabel(new TextLabel(name));
-		link.setTarget(target);
+    HtmlLinkState link = new HtmlLinkState(new SimpleBookmark(url));
+    link.setLabel(new TextLabel(name));
+    link.setTarget(target);
 
-		MenuContribution mc = new MenuContribution(link, iconUrl, 20, order);
-		mc.setCustomImage(true);
-		return mc;
-	}
+    MenuContribution mc = new MenuContribution(link, iconUrl, 20, order);
+    mc.setCustomImage(true);
+    return mc;
+  }
 
-	@Override
-	public void clearCachedData()
-	{
-		userSessionService.removeAttribute(SESSION_KEY);
-	}
+  @Override
+  public void clearCachedData() {
+    userSessionService.removeAttribute(SESSION_KEY);
+  }
 }

@@ -16,14 +16,6 @@
 
 package com.tle.web.controls.itunesu;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.attachments.Attachment;
@@ -73,7 +65,6 @@ import com.tle.web.sections.standard.renderers.popup.PopupLinkRenderer;
 import com.tle.web.viewurl.ItemSectionInfo;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.AttachmentResourceService;
-
 import edu.asu.itunesu.Course;
 import edu.asu.itunesu.Division;
 import edu.asu.itunesu.Group;
@@ -82,449 +73,407 @@ import edu.asu.itunesu.ITunesUException;
 import edu.asu.itunesu.Section;
 import edu.asu.itunesu.Site;
 import edu.asu.itunesu.Track;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
 @NonNullByDefault
-public class ITunesUHandler extends BasicAbstractAttachmentHandler<ITunesUHandler.ITunesUHandlerModel>
-{
-	public static final String ITUNESU_TYPE = "itunesu";
-	public static final String ITUNESU_URL = "trackUrl";
-	public static final String ITUNESU_TRACK = "trackName";
+public class ITunesUHandler
+    extends BasicAbstractAttachmentHandler<ITunesUHandler.ITunesUHandlerModel> {
+  public static final String ITUNESU_TYPE = "itunesu";
+  public static final String ITUNESU_URL = "trackUrl";
+  public static final String ITUNESU_TRACK = "trackName";
 
-	@PlugKey("itunesu.name")
-	private static Label NAME_LABEL;
-	@PlugKey("itunesu.description")
-	private static Label DESCRIPTION_LABEL;
-	@PlugKey("itunesu.add.title")
-	private static Label ADD_TITLE_LABEL;
-	@PlugKey("error.configproblem.heading")
-	private static Label CONFIG_ERROR_HEADING;
-	@PlugKey("itunesu.edit.title")
-	private static Label EDIT_TITLE_LABEL;
-	@PlugKey("add.add")
-	private static Label ADD_LABEL;
-	@PlugKey("error.noinstitutionid")
-	private static Label ERROR_NO_INST;
-	@PlugKey("error.badinstitutionid")
-	private static String BAD_ID_ERROR;
+  @PlugKey("itunesu.name")
+  private static Label NAME_LABEL;
 
-	@PlugKey("itunesu.details.viewlink")
-	private static Label VIEW_LINK_LABEL;
+  @PlugKey("itunesu.description")
+  private static Label DESCRIPTION_LABEL;
 
-	@Inject
-	private AttachmentResourceService attachmentResourceService;
+  @PlugKey("itunesu.add.title")
+  private static Label ADD_TITLE_LABEL;
 
-	@AjaxFactory
-	private AjaxGenerator ajaxFactory;
+  @PlugKey("error.configproblem.heading")
+  private static Label CONFIG_ERROR_HEADING;
 
-	@Component
-	private Tree treeView;
+  @PlugKey("itunesu.edit.title")
+  private static Label EDIT_TITLE_LABEL;
 
-	private ITunesUSettings iTunesUSettings;
+  @PlugKey("add.add")
+  private static Label ADD_LABEL;
 
-	private String institutionId;
-	private ITunesTreeModel itunesModel;
+  @PlugKey("error.noinstitutionid")
+  private static Label ERROR_NO_INST;
 
-	private JSCallable showTreeFunc;
-	private JSCallable addTrackFunc;
+  @PlugKey("error.badinstitutionid")
+  private static String BAD_ID_ERROR;
 
-	@Override
-	public String getHandlerId()
-	{
-		return "iTunesUHandler";
-	}
+  @PlugKey("itunesu.details.viewlink")
+  private static Label VIEW_LINK_LABEL;
 
-	private String getUrlForTrack(String trackId)
-	{
-		return "http://deimos.apple.com/WebObjects/Core.woa/Browsev2/" + institutionId + "." + trackId;
-	}
+  @Inject private AttachmentResourceService attachmentResourceService;
 
-	@Override
-	public void onRegister(SectionTree tree, String parentId, UniversalControlState state)
-	{
-		super.onRegister(tree, parentId, state);
-		iTunesUSettings = new ITunesUSettings(state.getControlConfiguration());
-	}
+  @AjaxFactory private AjaxGenerator ajaxFactory;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Component private Tree treeView;
 
-		showTreeFunc = ajaxFactory.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("loadTree"),
-			ajaxFactory.getEffectFunction(EffectType.FADEIN), "itunesTree");
-		addTrackFunc = events.getSubmitValuesFunction("addTrack");
-	}
+  private ITunesUSettings iTunesUSettings;
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		super.treeFinished(id, tree);
+  private String institutionId;
+  private ITunesTreeModel itunesModel;
 
-		institutionId = iTunesUSettings.getInstitutionId();
-		itunesModel = new ITunesTreeModel(new ITunesUConnection(
-			"https://deimos.apple.com/WebObjects/Core.woa/Browsev2/" + institutionId, "", "", new String[]{""}));
+  private JSCallable showTreeFunc;
+  private JSCallable addTrackFunc;
 
-		treeView.setModel(itunesModel);
-		treeView.setLazyLoad(true);
-	}
+  @Override
+  public String getHandlerId() {
+    return "iTunesUHandler";
+  }
 
-	@Override
-	public AttachmentHandlerLabel getLabel()
-	{
-		return new AttachmentHandlerLabel(NAME_LABEL, DESCRIPTION_LABEL);
-	}
+  private String getUrlForTrack(String trackId) {
+    return "http://deimos.apple.com/WebObjects/Core.woa/Browsev2/" + institutionId + "." + trackId;
+  }
 
-	@Override
-	public boolean supports(IAttachment attachment)
-	{
-		if( attachment instanceof CustomAttachment )
-		{
-			CustomAttachment ca = (CustomAttachment) attachment;
-			return ITUNESU_TYPE.equals(ca.getType());
-		}
-		return false;
-	}
+  @Override
+  public void onRegister(SectionTree tree, String parentId, UniversalControlState state) {
+    super.onRegister(tree, parentId, state);
+    iTunesUSettings = new ITunesUSettings(state.getControlConfiguration());
+  }
 
-	@Override
-	public Label getTitleLabel(RenderContext context, boolean editing)
-	{
-		return editing ? EDIT_TITLE_LABEL : ADD_TITLE_LABEL;
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	protected SectionRenderable renderDetails(RenderContext context, DialogRenderOptions renderOptions)
-	{
-		// Common details
-		ITunesUHandlerModel model = getModel(context);
-		final Attachment attachment = getDetailsAttachment(context);
-		ItemSectionInfo itemInfo = context.getAttributeForClass(ItemSectionInfo.class);
-		ViewableResource resource = attachmentResourceService.getViewableResource(context, itemInfo.getViewableItem(),
-			attachment);
-		addAttachmentDetails(context, resource.getCommonAttachmentDetails());
+    showTreeFunc =
+        ajaxFactory.getAjaxUpdateDomFunction(
+            tree,
+            this,
+            events.getEventHandler("loadTree"),
+            ajaxFactory.getEffectFunction(EffectType.FADEIN),
+            "itunesTree");
+    addTrackFunc = events.getSubmitValuesFunction("addTrack");
+  }
 
-		// Listen link
-		String href = (String) attachment.getData("trackUrl");
-		HtmlLinkState linkState = new HtmlLinkState(VIEW_LINK_LABEL, new SimpleBookmark(href));
-		linkState.setTarget(HtmlLinkState.TARGET_BLANK);
-		model.setViewlink(new LinkRenderer(linkState));
-		return viewFactory.createResult("edit-itunesu.ftl", this);
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    super.treeFinished(id, tree);
 
-	@Override
-	protected SectionRenderable renderAdd(RenderContext context, DialogRenderOptions renderOptions)
-	{
-		if( !itunesModel.isInitialised() && itunesModel.checkBadId() )
-		{
-			renderOptions.setShowAddReplace(false);
-			renderOptions.setShowSave(false);
-			HeadingRenderer heading = new HeadingRenderer(3, CONFIG_ERROR_HEADING);
-			LabelRenderer error;
-			if( Check.isEmpty(iTunesUSettings.getInstitutionId()) )
-			{
-				error = new LabelRenderer(ERROR_NO_INST);
-			}
-			else
-			{
-				error = new LabelRenderer(new KeyLabel(BAD_ID_ERROR, iTunesUSettings.getInstitutionId()));
-			}
+    institutionId = iTunesUSettings.getInstitutionId();
+    itunesModel =
+        new ITunesTreeModel(
+            new ITunesUConnection(
+                "https://deimos.apple.com/WebObjects/Core.woa/Browsev2/" + institutionId,
+                "",
+                "",
+                new String[] {""}));
 
-			return new CombinedRenderer(heading, error);
-		}
+    treeView.setModel(itunesModel);
+    treeView.setLazyLoad(true);
+  }
 
-		if( !itunesModel.isInitialised() )
-		{
-			getModel(context).setLoading(true);
-			treeView.addReadyStatements(context, showTreeFunc);
-		}
-		else
-		{
-			treeView.addReadyStatements(context, new PreRenderOnly(addTrackFunc));
-		}
-		renderOptions.setShowSave(false);
-		return viewFactory.createResult("add-itunesu.ftl", this);
-	}
+  @Override
+  public AttachmentHandlerLabel getLabel() {
+    return new AttachmentHandlerLabel(NAME_LABEL, DESCRIPTION_LABEL);
+  }
 
-	@Override
-	protected List<Attachment> createAttachments(SectionInfo info)
-	{
-		Attachment rv = getModel(info).getNewTrack();
-		if( rv != null )
-		{
-			return Collections.singletonList(rv);
-		}
-		return Collections.emptyList();
-	}
+  @Override
+  public boolean supports(IAttachment attachment) {
+    if (attachment instanceof CustomAttachment) {
+      CustomAttachment ca = (CustomAttachment) attachment;
+      return ITUNESU_TYPE.equals(ca.getType());
+    }
+    return false;
+  }
 
-	@Override
-	public boolean isMultipleAllowed(SectionInfo info)
-	{
-		return false;
-	}
+  @Override
+  public Label getTitleLabel(RenderContext context, boolean editing) {
+    return editing ? EDIT_TITLE_LABEL : ADD_TITLE_LABEL;
+  }
 
-	@EventHandlerMethod
-	public void addTrack(SectionInfo info, String trackName, String trackId)
-	{
-		final CustomAttachment a = new CustomAttachment();
-		a.setType(ITUNESU_TYPE);
-		a.setData(ITUNESU_URL, getUrlForTrack(trackId));
-		a.setData(ITUNESU_TRACK, trackName);
-		a.setDescription(trackName);
-		getModel(info).setNewTrack(a);
-		dialogState.save(info);
-	}
+  @Override
+  protected SectionRenderable renderDetails(
+      RenderContext context, DialogRenderOptions renderOptions) {
+    // Common details
+    ITunesUHandlerModel model = getModel(context);
+    final Attachment attachment = getDetailsAttachment(context);
+    ItemSectionInfo itemInfo = context.getAttributeForClass(ItemSectionInfo.class);
+    ViewableResource resource =
+        attachmentResourceService.getViewableResource(
+            context, itemInfo.getViewableItem(), attachment);
+    addAttachmentDetails(context, resource.getCommonAttachmentDetails());
 
-	@EventHandlerMethod
-	public void loadTree(SectionInfo info)
-	{
-		if( Check.isEmpty(institutionId) )
-		{
-			throw new RuntimeException(ERROR_NO_INST.getText());
-		}
-		itunesModel.ensureInit();
-	}
+    // Listen link
+    String href = (String) attachment.getData("trackUrl");
+    HtmlLinkState linkState = new HtmlLinkState(VIEW_LINK_LABEL, new SimpleBookmark(href));
+    linkState.setTarget(HtmlLinkState.TARGET_BLANK);
+    model.setViewlink(new LinkRenderer(linkState));
+    return viewFactory.createResult("edit-itunesu.ftl", this);
+  }
 
-	public Tree getTreeView()
-	{
-		return treeView;
-	}
+  @Override
+  protected SectionRenderable renderAdd(RenderContext context, DialogRenderOptions renderOptions) {
+    if (!itunesModel.isInitialised() && itunesModel.checkBadId()) {
+      renderOptions.setShowAddReplace(false);
+      renderOptions.setShowSave(false);
+      HeadingRenderer heading = new HeadingRenderer(3, CONFIG_ERROR_HEADING);
+      LabelRenderer error;
+      if (Check.isEmpty(iTunesUSettings.getInstitutionId())) {
+        error = new LabelRenderer(ERROR_NO_INST);
+      } else {
+        error = new LabelRenderer(new KeyLabel(BAD_ID_ERROR, iTunesUSettings.getInstitutionId()));
+      }
 
-	@Override
-	public Class<ITunesUHandlerModel> getModelClass()
-	{
-		return ITunesUHandlerModel.class;
-	}
+      return new CombinedRenderer(heading, error);
+    }
 
-	@NonNullByDefault(false)
-	public static class ITunesUHandlerModel extends AbstractDetailsAttachmentHandler.AbstractAttachmentHandlerModel
-	{
-		private boolean loading;
-		private CustomAttachment newTrack;
+    if (!itunesModel.isInitialised()) {
+      getModel(context).setLoading(true);
+      treeView.addReadyStatements(context, showTreeFunc);
+    } else {
+      treeView.addReadyStatements(context, new PreRenderOnly(addTrackFunc));
+    }
+    renderOptions.setShowSave(false);
+    return viewFactory.createResult("add-itunesu.ftl", this);
+  }
 
-		public boolean isLoading()
-		{
-			return loading;
-		}
+  @Override
+  protected List<Attachment> createAttachments(SectionInfo info) {
+    Attachment rv = getModel(info).getNewTrack();
+    if (rv != null) {
+      return Collections.singletonList(rv);
+    }
+    return Collections.emptyList();
+  }
 
-		public void setLoading(boolean loading)
-		{
-			this.loading = loading;
-		}
+  @Override
+  public boolean isMultipleAllowed(SectionInfo info) {
+    return false;
+  }
 
-		public CustomAttachment getNewTrack()
-		{
-			return newTrack;
-		}
+  @EventHandlerMethod
+  public void addTrack(SectionInfo info, String trackName, String trackId) {
+    final CustomAttachment a = new CustomAttachment();
+    a.setType(ITUNESU_TYPE);
+    a.setData(ITUNESU_URL, getUrlForTrack(trackId));
+    a.setData(ITUNESU_TRACK, trackName);
+    a.setDescription(trackName);
+    getModel(info).setNewTrack(a);
+    dialogState.save(info);
+  }
 
-		public void setNewTrack(CustomAttachment newTrack)
-		{
-			this.newTrack = newTrack;
-		}
-	}
+  @EventHandlerMethod
+  public void loadTree(SectionInfo info) {
+    if (Check.isEmpty(institutionId)) {
+      throw new RuntimeException(ERROR_NO_INST.getText());
+    }
+    itunesModel.ensureInit();
+  }
 
-	public class ITunesTreeModel implements HtmlTreeModel
-	{
-		private final Map<String, List<HtmlTreeNode>> childNodes = new HashMap<String, List<HtmlTreeNode>>();
-		private boolean initialised;
-		private final ITunesUConnection connection;
+  public Tree getTreeView() {
+    return treeView;
+  }
 
-		public ITunesTreeModel(ITunesUConnection connection)
-		{
-			this.connection = connection;
-		}
+  @Override
+  public Class<ITunesUHandlerModel> getModelClass() {
+    return ITunesUHandlerModel.class;
+  }
 
-		public boolean isInitialised()
-		{
-			return initialised;
-		}
+  @NonNullByDefault(false)
+  public static class ITunesUHandlerModel
+      extends AbstractDetailsAttachmentHandler.AbstractAttachmentHandlerModel {
+    private boolean loading;
+    private CustomAttachment newTrack;
 
-		public synchronized void ensureInit()
-		{
-			if( !initialised )
-			{
-				try
-				{
-					Site site = connection.getSite();
-					addNode(new ITunesNode(this, site), "");
-				}
-				catch( ITunesUException e )
-				{
-					throw new RuntimeException(new KeyLabel(BAD_ID_ERROR, iTunesUSettings.getInstitutionId()).getText());
-				}
-				initialised = true;
-			}
-		}
+    public boolean isLoading() {
+      return loading;
+    }
 
-		public boolean checkBadId()
-		{
-			try
-			{
-				connection.getSite();
-				return false;
-			}
-			catch( ITunesUException e )
-			{
-				return true;
-			}
-		}
+    public void setLoading(boolean loading) {
+      this.loading = loading;
+    }
 
-		public void addNode(ITunesNode node, String parent)
-		{
-			List<HtmlTreeNode> list = childNodes.get(parent);
-			if( list == null )
-			{
-				list = new ArrayList<HtmlTreeNode>();
-				childNodes.put(parent, list);
-			}
-			list.add(node);
-		}
+    public CustomAttachment getNewTrack() {
+      return newTrack;
+    }
 
-		@Override
-		public List<HtmlTreeNode> getChildNodes(@Nullable SectionInfo info, @Nullable String id)
-		{
-			ensureInit();
-			if( id == null )
-			{
-				id = "";
-			}
-			List<HtmlTreeNode> list = childNodes.get(id);
-			if( list == null )
-			{
-				return Collections.emptyList();
-			}
-			return list;
-		}
-	}
+    public void setNewTrack(CustomAttachment newTrack) {
+      this.newTrack = newTrack;
+    }
+  }
 
-	public class ITunesNode implements HtmlTreeNode
-	{
-		private String id;
-		@Nullable
-		private Label name;
-		private SectionRenderable renderer;
-		private boolean leaf;
-		private boolean shouldHide;
-		@Nullable
-		private String textName;
+  public class ITunesTreeModel implements HtmlTreeModel {
+    private final Map<String, List<HtmlTreeNode>> childNodes =
+        new HashMap<String, List<HtmlTreeNode>>();
+    private boolean initialised;
+    private final ITunesUConnection connection;
 
-		public ITunesNode(ITunesTreeModel tunesTreeModel, Object dodge)
-		{
-			List<?> children = null;
-			if( dodge instanceof Site )
-			{
-				Site site = (Site) dodge;
-				id = 'i' + site.getHandle();
-				children = site.getSections();
-				textName = site.getName();
-			}
-			else if( dodge instanceof Section )
-			{
-				Section section = (Section) dodge;
-				id = 's' + section.getHandle();
-				children = section.getSectionItems();
-				textName = section.getName();
-			}
-			else if( dodge instanceof Division )
-			{
-				Division division = (Division) dodge;
-				id = 'd' + division.getHandle();
-				children = division.getSections();
-				textName = division.getName();
-			}
-			else if( dodge instanceof Course )
-			{
-				Course course = (Course) dodge;
-				id = 'c' + course.getHandle();
-				children = course.getGroups();
-				textName = course.getName();
-			}
-			else if( dodge instanceof Group )
-			{
-				Group group = (Group) dodge;
-				id = 'g' + group.getHandle();
-				children = group.getTracks();
-				textName = group.getName();
-			}
-			else if( dodge instanceof Track )
-			{
-				Track track = (Track) dodge;
-				id = 't' + track.getHandle();
-				leaf = true;
-				textName = track.getName();
-				HtmlLinkState link = new HtmlLinkState(new SimpleBookmark(getUrlForTrack(track.getHandle())));
-				link.setLabel(getLabel());
-				PopupLinkRenderer viewLink = new PopupLinkRenderer(link);
-				HtmlComponentState addButton = new HtmlComponentState(new OverrideHandler(addTrackFunc,
-					track.getName(), track.getHandle()));
-				addButton.setLabel(ADD_LABEL);
-				renderer = new DivRenderer(new CombinedRenderer(viewLink, new SimpleSectionResult(" "),
-					new ButtonRenderer(addButton).setTrait(ButtonTrait.SUCCESS).setIcon(Icon.ADD)
-						.setSize(ButtonSize.SMALL)));
-			}
-			if( textName == null )
-			{
-				shouldHide = true;
-			}
-			boolean hasKids = false;
-			if( children != null )
-			{
-				for( Object child : children )
-				{
-					ITunesNode childNode = new ITunesNode(tunesTreeModel, child);
-					if( !childNode.isShouldHide() )
-					{
-						tunesTreeModel.addNode(childNode, id);
-						hasKids = true;
-					}
-				}
-			}
-			shouldHide |= !leaf && !hasKids;
-		}
+    public ITunesTreeModel(ITunesUConnection connection) {
+      this.connection = connection;
+    }
 
-		@Override
-		public String getId()
-		{
-			return id;
-		}
+    public boolean isInitialised() {
+      return initialised;
+    }
 
-		@Override
-		public Label getLabel()
-		{
-			if( name == null )
-			{
-				name = new TextLabel(textName);
-			}
-			return name;
-		}
+    public synchronized void ensureInit() {
+      if (!initialised) {
+        try {
+          Site site = connection.getSite();
+          addNode(new ITunesNode(this, site), "");
+        } catch (ITunesUException e) {
+          throw new RuntimeException(
+              new KeyLabel(BAD_ID_ERROR, iTunesUSettings.getInstitutionId()).getText());
+        }
+        initialised = true;
+      }
+    }
 
-		@Override
-		public SectionRenderable getRenderer()
-		{
-			return renderer;
-		}
+    public boolean checkBadId() {
+      try {
+        connection.getSite();
+        return false;
+      } catch (ITunesUException e) {
+        return true;
+      }
+    }
 
-		@Override
-		public boolean isLeaf()
-		{
-			return leaf;
-		}
+    public void addNode(ITunesNode node, String parent) {
+      List<HtmlTreeNode> list = childNodes.get(parent);
+      if (list == null) {
+        list = new ArrayList<HtmlTreeNode>();
+        childNodes.put(parent, list);
+      }
+      list.add(node);
+    }
 
-		public boolean isShouldHide()
-		{
-			return shouldHide;
-		}
-	}
+    @Override
+    public List<HtmlTreeNode> getChildNodes(@Nullable SectionInfo info, @Nullable String id) {
+      ensureInit();
+      if (id == null) {
+        id = "";
+      }
+      List<HtmlTreeNode> list = childNodes.get(id);
+      if (list == null) {
+        return Collections.emptyList();
+      }
+      return list;
+    }
+  }
 
-	@Override
-	protected boolean validateAddPage(SectionInfo info)
-	{
-		return true;
-	}
+  public class ITunesNode implements HtmlTreeNode {
+    private String id;
+    @Nullable private Label name;
+    private SectionRenderable renderer;
+    private boolean leaf;
+    private boolean shouldHide;
+    @Nullable private String textName;
 
-	@Override
-	public String getMimeType(SectionInfo info)
-	{
-		return "equella/attachment-itunesu";
-	}
+    public ITunesNode(ITunesTreeModel tunesTreeModel, Object dodge) {
+      List<?> children = null;
+      if (dodge instanceof Site) {
+        Site site = (Site) dodge;
+        id = 'i' + site.getHandle();
+        children = site.getSections();
+        textName = site.getName();
+      } else if (dodge instanceof Section) {
+        Section section = (Section) dodge;
+        id = 's' + section.getHandle();
+        children = section.getSectionItems();
+        textName = section.getName();
+      } else if (dodge instanceof Division) {
+        Division division = (Division) dodge;
+        id = 'd' + division.getHandle();
+        children = division.getSections();
+        textName = division.getName();
+      } else if (dodge instanceof Course) {
+        Course course = (Course) dodge;
+        id = 'c' + course.getHandle();
+        children = course.getGroups();
+        textName = course.getName();
+      } else if (dodge instanceof Group) {
+        Group group = (Group) dodge;
+        id = 'g' + group.getHandle();
+        children = group.getTracks();
+        textName = group.getName();
+      } else if (dodge instanceof Track) {
+        Track track = (Track) dodge;
+        id = 't' + track.getHandle();
+        leaf = true;
+        textName = track.getName();
+        HtmlLinkState link =
+            new HtmlLinkState(new SimpleBookmark(getUrlForTrack(track.getHandle())));
+        link.setLabel(getLabel());
+        PopupLinkRenderer viewLink = new PopupLinkRenderer(link);
+        HtmlComponentState addButton =
+            new HtmlComponentState(
+                new OverrideHandler(addTrackFunc, track.getName(), track.getHandle()));
+        addButton.setLabel(ADD_LABEL);
+        renderer =
+            new DivRenderer(
+                new CombinedRenderer(
+                    viewLink,
+                    new SimpleSectionResult(" "),
+                    new ButtonRenderer(addButton)
+                        .setTrait(ButtonTrait.SUCCESS)
+                        .setIcon(Icon.ADD)
+                        .setSize(ButtonSize.SMALL)));
+      }
+      if (textName == null) {
+        shouldHide = true;
+      }
+      boolean hasKids = false;
+      if (children != null) {
+        for (Object child : children) {
+          ITunesNode childNode = new ITunesNode(tunesTreeModel, child);
+          if (!childNode.isShouldHide()) {
+            tunesTreeModel.addNode(childNode, id);
+            hasKids = true;
+          }
+        }
+      }
+      shouldHide |= !leaf && !hasKids;
+    }
+
+    @Override
+    public String getId() {
+      return id;
+    }
+
+    @Override
+    public Label getLabel() {
+      if (name == null) {
+        name = new TextLabel(textName);
+      }
+      return name;
+    }
+
+    @Override
+    public SectionRenderable getRenderer() {
+      return renderer;
+    }
+
+    @Override
+    public boolean isLeaf() {
+      return leaf;
+    }
+
+    public boolean isShouldHide() {
+      return shouldHide;
+    }
+  }
+
+  @Override
+  protected boolean validateAddPage(SectionInfo info) {
+    return true;
+  }
+
+  @Override
+  public String getMimeType(SectionInfo info) {
+    return "equella/attachment-itunesu";
+  }
 }

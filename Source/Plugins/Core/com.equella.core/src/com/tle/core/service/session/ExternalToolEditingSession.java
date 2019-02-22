@@ -20,12 +20,11 @@ import com.tle.common.EntityPack;
 import com.tle.common.externaltools.entity.ExternalTool;
 import com.tle.core.entity.service.impl.EntityEditingSessionImpl;
 
-public class ExternalToolEditingSession extends EntityEditingSessionImpl<ExternalToolEditingBean, ExternalTool>
-{
+public class ExternalToolEditingSession
+    extends EntityEditingSessionImpl<ExternalToolEditingBean, ExternalTool> {
 
-	public ExternalToolEditingSession(String sessionId, EntityPack<ExternalTool> pack, ExternalToolEditingBean bean)
-	{
-		super(sessionId, pack, bean);
-	}
-
+  public ExternalToolEditingSession(
+      String sessionId, EntityPack<ExternalTool> pack, ExternalToolEditingBean bean) {
+    super(sessionId, pack, bean);
+  }
 }

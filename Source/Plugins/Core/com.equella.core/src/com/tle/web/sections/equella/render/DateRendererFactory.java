@@ -16,14 +16,12 @@
 
 package com.tle.web.sections.equella.render;
 
+import com.tle.core.guice.BindFactory;
 import java.util.Date;
 
-import com.tle.core.guice.BindFactory;
-
 @BindFactory
-public interface DateRendererFactory
-{
-	DateRenderer createDateRenderer(Date date);
+public interface DateRendererFactory {
+  DateRenderer createDateRenderer(Date date);
 
-	DateRenderer createDateRenderer(Date date, boolean suppressSuffix);
+  DateRenderer createDateRenderer(Date date, boolean suppressSuffix);
 }

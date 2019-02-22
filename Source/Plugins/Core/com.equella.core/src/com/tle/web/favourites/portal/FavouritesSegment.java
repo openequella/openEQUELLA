@@ -16,7 +16,6 @@
 
 package com.tle.web.favourites.portal;
 
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -25,14 +24,13 @@ import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.home.RecentSelectionsSegment;
 
 @Bind
-public class FavouritesSegment extends FavouritesPortletRenderer implements RecentSelectionsSegment
-{
-	@PlugKey("favourites.portal.name")
-	private static Label TITLE;
+public class FavouritesSegment extends FavouritesPortletRenderer
+    implements RecentSelectionsSegment {
+  @PlugKey("favourites.portal.name")
+  private static Label TITLE;
 
-	@Override
-	public String getTitle(SectionInfo info, SelectionSession session)
-	{
-		return TITLE.getText(); //$NON-NLS-1$
-	}
+  @Override
+  public String getTitle(SectionInfo info, SelectionSession session) {
+    return TITLE.getText(); // $NON-NLS-1$
+  }
 }

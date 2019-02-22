@@ -16,8 +16,6 @@
 
 package com.tle.web.google.api.settings;
 
-import javax.inject.Inject;
-
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
 import com.tle.core.settings.service.ConfigurationService;
@@ -41,82 +39,71 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import javax.inject.Inject;
 
 @Bind
-public class GoogleApiSettingsEditorSection extends OneColumnLayout<OneColumnLayout.OneColumnLayoutModel>
-{
-	@PlugKey("google.settings.title")
-	private static Label TITLE_LABEL;
-	@PlugKey("google.settings.save.receipt")
-	private static Label SAVE_RECEIPT_LABEL;
+public class GoogleApiSettingsEditorSection
+    extends OneColumnLayout<OneColumnLayout.OneColumnLayoutModel> {
+  @PlugKey("google.settings.title")
+  private static Label TITLE_LABEL;
 
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("google.settings.save.receipt")
+  private static Label SAVE_RECEIPT_LABEL;
 
-	@Inject
-	private ConfigurationService configService;
-	@Inject
-	private ReceiptService receiptService;
-	@Inject
-	private GoogleApiSettingsPrivilegeTreeProvider securityProvider;
+  @EventFactory private EventGenerator events;
 
-	@Component
-	private TextField apiKey;
+  @Inject private ConfigurationService configService;
+  @Inject private ReceiptService receiptService;
+  @Inject private GoogleApiSettingsPrivilegeTreeProvider securityProvider;
 
-	@Component
-	@PlugKey("settings.save.button")
-	private Button saveButton;
+  @Component private TextField apiKey;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		saveButton.setClickHandler(events.getNamedHandler("save"));
-	}
+  @Component
+  @PlugKey("settings.save.button")
+  private Button saveButton;
 
-	@Override
-	protected TemplateResult getTemplateResult(RenderEventContext context)
-	{
-		securityProvider.checkAuthorised();
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    saveButton.setClickHandler(events.getNamedHandler("save"));
+  }
 
-		final String acctId = configService.getProperty(GoogleApiUtils.GOOGLE_API_KEY);
-		apiKey.setValue(context, acctId);
+  @Override
+  protected TemplateResult getTemplateResult(RenderEventContext context) {
+    securityProvider.checkAuthorised();
 
-		GenericTemplateResult templateResult = new GenericTemplateResult();
-		templateResult.addNamedResult("body", viewFactory.createResult("googleapi.ftl", this));
-		return templateResult;
-	}
+    final String acctId = configService.getProperty(GoogleApiUtils.GOOGLE_API_KEY);
+    apiKey.setValue(context, acctId);
 
-	@EventHandlerMethod
-	public void save(SectionInfo info)
-	{
-		final String key = apiKey.getValue(info).trim();
-		if( !Check.isEmpty(key) )
-		{
-			configService.setProperty(GoogleApiUtils.GOOGLE_API_KEY, key);
-		}
-		else
-		{
-			configService.deleteProperty(GoogleApiUtils.GOOGLE_API_KEY);
-		}
+    GenericTemplateResult templateResult = new GenericTemplateResult();
+    templateResult.addNamedResult("body", viewFactory.createResult("googleapi.ftl", this));
+    return templateResult;
+  }
 
-		receiptService.setReceipt(SAVE_RECEIPT_LABEL);
-	}
+  @EventHandlerMethod
+  public void save(SectionInfo info) {
+    final String key = apiKey.getValue(info).trim();
+    if (!Check.isEmpty(key)) {
+      configService.setProperty(GoogleApiUtils.GOOGLE_API_KEY, key);
+    } else {
+      configService.deleteProperty(GoogleApiUtils.GOOGLE_API_KEY);
+    }
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		decorations.setTitle(TITLE_LABEL);
-		crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
-	}
+    receiptService.setReceipt(SAVE_RECEIPT_LABEL);
+  }
 
-	public TextField getApiKey()
-	{
-		return apiKey;
-	}
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    decorations.setTitle(TITLE_LABEL);
+    crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
+  }
 
-	public Button getSaveButton()
-	{
-		return saveButton;
-	}
+  public TextField getApiKey() {
+    return apiKey;
+  }
+
+  public Button getSaveButton() {
+    return saveButton;
+  }
 }

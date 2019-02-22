@@ -16,12 +16,10 @@
 
 package com.tle.core.harvester;
 
-import java.util.Date;
-
 import com.tle.common.harvester.HarvesterProfile;
 import com.tle.core.entity.dao.AbstractEntityDao;
+import java.util.Date;
 
-public interface HarvesterProfileDao extends AbstractEntityDao<HarvesterProfile>
-{
-	void updateLastRun(HarvesterProfile profile, Date date);
+public interface HarvesterProfileDao extends AbstractEntityDao<HarvesterProfile> {
+  void updateLastRun(HarvesterProfile profile, Date date);
 }

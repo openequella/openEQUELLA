@@ -27,46 +27,38 @@ import com.tle.web.sections.render.GenericNamedResult;
 import com.tle.web.sections.render.HtmlRenderer;
 
 @SuppressWarnings("nls")
-public class ServerMessageSection extends AbstractPrototypeSection<ServerMessageSection.ServerMessageModel>
-	implements
-		HtmlRenderer
-{
-	@Inject
-	private SystemConfigService systemConfigService;
+public class ServerMessageSection
+    extends AbstractPrototypeSection<ServerMessageSection.ServerMessageModel>
+    implements HtmlRenderer {
+  @Inject private SystemConfigService systemConfigService;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !systemConfigService.isSystemSchemaUp() || !systemConfigService.isServerMessageEnabled() )
-		{
-			return null;
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (!systemConfigService.isSystemSchemaUp() || !systemConfigService.isServerMessageEnabled()) {
+      return null;
+    }
 
-		getModel(context).setServerMessage(systemConfigService.getServerMessage());
-		return new GenericNamedResult("servermessage", viewFactory.createResult("servermessage.ftl", context));
-	}
+    getModel(context).setServerMessage(systemConfigService.getServerMessage());
+    return new GenericNamedResult(
+        "servermessage", viewFactory.createResult("servermessage.ftl", context));
+  }
 
-	@Override
-	public Class<ServerMessageModel> getModelClass()
-	{
-		return ServerMessageModel.class;
-	}
+  @Override
+  public Class<ServerMessageModel> getModelClass() {
+    return ServerMessageModel.class;
+  }
 
-	public static class ServerMessageModel
-	{
-		private String serverMessage;
+  public static class ServerMessageModel {
+    private String serverMessage;
 
-		public String getServerMessage()
-		{
-			return serverMessage;
-		}
+    public String getServerMessage() {
+      return serverMessage;
+    }
 
-		public void setServerMessage(String serverMessage)
-		{
-			this.serverMessage = serverMessage;
-		}
-	}
+    public void setServerMessage(String serverMessage) {
+      this.serverMessage = serverMessage;
+    }
+  }
 }

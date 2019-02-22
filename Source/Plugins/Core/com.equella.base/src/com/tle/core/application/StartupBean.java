@@ -16,7 +16,6 @@
 
 package com.tle.core.application;
 
-public interface StartupBean
-{
-	void startup();
+public interface StartupBean {
+  void startup();
 }

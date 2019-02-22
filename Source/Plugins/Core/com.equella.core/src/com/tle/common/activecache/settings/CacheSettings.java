@@ -16,11 +16,6 @@
 
 package com.tle.common.activecache.settings;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import com.dytech.devlib.PropBagEx;
 import com.tle.common.settings.ConfigurationProperties;
 import com.tle.common.settings.annotation.Property;
@@ -30,234 +25,196 @@ import com.tle.core.xstream.XMLData;
 import com.tle.core.xstream.XMLDataMappings;
 import com.tle.core.xstream.mapping.ListMapping;
 import com.tle.core.xstream.mapping.NodeMapping;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-/**
- * @author Nicholas Read
- */
-public class CacheSettings implements ConfigurationProperties
-{
-	private static final long serialVersionUID = 1;
-	private static TLEXStream xstream = TLEXStream.instance();
+/** @author Nicholas Read */
+public class CacheSettings implements ConfigurationProperties {
+  private static final long serialVersionUID = 1;
+  private static TLEXStream xstream = TLEXStream.instance();
 
-	@Property(key = "cache.enabled")
-	private boolean enabled;
-	@PropertyBag(key = "cache.groups")
-	private PropBagEx groups;
+  @Property(key = "cache.enabled")
+  private boolean enabled;
 
-	public boolean isEnabled()
-	{
-		return enabled;
-	}
+  @PropertyBag(key = "cache.groups")
+  private PropBagEx groups;
 
-	public void setEnabled(boolean enabled)
-	{
-		this.enabled = enabled;
-	}
+  public boolean isEnabled() {
+    return enabled;
+  }
 
-	public Node getGroups()
-	{
-		if( groups == null )
-		{
-			return null;
-		}
-		return (Node) xstream.fromXML(groups, Node.class);
-	}
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
 
-	public void setGroups(Node groups)
-	{
-		this.groups = xstream.toPropBag(groups, "groups"); //$NON-NLS-1$
-	}
+  public Node getGroups() {
+    if (groups == null) {
+      return null;
+    }
+    return (Node) xstream.fromXML(groups, Node.class);
+  }
 
-	public static class Node implements XMLData
-	{
-		private static final long serialVersionUID = 1L;
+  public void setGroups(Node groups) {
+    this.groups = xstream.toPropBag(groups, "groups"); // $NON-NLS-1$
+  }
 
-		private static final XMLDataMappings smappings;
+  public static class Node implements XMLData {
+    private static final long serialVersionUID = 1L;
 
-		static
-		{
-			smappings = new XMLDataMappings();
-			smappings.addNodeMapping(new NodeMapping("name", "@name"));
-			smappings.addNodeMapping(new NodeMapping("id", "@id"));
-			smappings.addNodeMapping(new NodeMapping("uuid", "@uuid"));
-			smappings.addNodeMapping(new ListMapping("includes", "include", ArrayList.class, Query.class));
-			smappings.addNodeMapping(new ListMapping("excludes", "exclude", ArrayList.class, Query.class));
-			smappings.addNodeMapping(new ListMapping("nodes", "user", ArrayList.class, Node.class)
-			{
-				@Override
-				public boolean hasValue(Object object)
-				{
-					return false;
-				}
-			});
-			smappings.addNodeMapping(new ListMapping("nodes", "group", ArrayList.class, Node.class));
-		}
+    private static final XMLDataMappings smappings;
 
-		private List<Query> includes;
-		private List<Query> excludes;
-		private List<Node> nodes;
+    static {
+      smappings = new XMLDataMappings();
+      smappings.addNodeMapping(new NodeMapping("name", "@name"));
+      smappings.addNodeMapping(new NodeMapping("id", "@id"));
+      smappings.addNodeMapping(new NodeMapping("uuid", "@uuid"));
+      smappings.addNodeMapping(
+          new ListMapping("includes", "include", ArrayList.class, Query.class));
+      smappings.addNodeMapping(
+          new ListMapping("excludes", "exclude", ArrayList.class, Query.class));
+      smappings.addNodeMapping(
+          new ListMapping("nodes", "user", ArrayList.class, Node.class) {
+            @Override
+            public boolean hasValue(Object object) {
+              return false;
+            }
+          });
+      smappings.addNodeMapping(new ListMapping("nodes", "group", ArrayList.class, Node.class));
+    }
 
-		private String id;
-		private String name;
-		private String uuid;
+    private List<Query> includes;
+    private List<Query> excludes;
+    private List<Node> nodes;
 
-		/**
-		 * For serialisation only!
-		 */
-		public Node()
-		{
-			//
-		}
+    private String id;
+    private String name;
+    private String uuid;
 
-		public Node(String string, boolean group)
-		{
-			if( group )
-			{
-				name = string;
-			}
-			else
-			{
-				id = string;
-			}
-			setUuid(UUID.randomUUID().toString());
-		}
+    /** For serialisation only! */
+    public Node() {
+      //
+    }
 
-		@Override
-		public XMLDataMappings getMappings()
-		{
-			return smappings;
-		}
+    public Node(String string, boolean group) {
+      if (group) {
+        name = string;
+      } else {
+        id = string;
+      }
+      setUuid(UUID.randomUUID().toString());
+    }
 
-		public boolean isGroup()
-		{
-			return name != null;
-		}
+    @Override
+    public XMLDataMappings getMappings() {
+      return smappings;
+    }
 
-		public boolean isUser()
-		{
-			return id != null;
-		}
+    public boolean isGroup() {
+      return name != null;
+    }
 
-		public List<Query> getExcludes()
-		{
-			if( excludes == null )
-			{
-				excludes = new ArrayList<Query>();
-			}
-			return excludes;
-		}
+    public boolean isUser() {
+      return id != null;
+    }
 
-		public void setExcludes(List<Query> excludes)
-		{
-			this.excludes = excludes;
-		}
+    public List<Query> getExcludes() {
+      if (excludes == null) {
+        excludes = new ArrayList<Query>();
+      }
+      return excludes;
+    }
 
-		public List<Query> getIncludes()
-		{
-			if( includes == null )
-			{
-				includes = new ArrayList<Query>();
-			}
-			return includes;
-		}
+    public void setExcludes(List<Query> excludes) {
+      this.excludes = excludes;
+    }
 
-		public void setIncludes(List<Query> includes)
-		{
-			this.includes = includes;
-		}
+    public List<Query> getIncludes() {
+      if (includes == null) {
+        includes = new ArrayList<Query>();
+      }
+      return includes;
+    }
 
-		public List<Node> getNodes()
-		{
-			if( nodes == null )
-			{
-				nodes = new ArrayList<Node>();
-			}
-			return nodes;
-		}
+    public void setIncludes(List<Query> includes) {
+      this.includes = includes;
+    }
 
-		public void setNodes(List<Node> nodes)
-		{
-			this.nodes = nodes;
-		}
+    public List<Node> getNodes() {
+      if (nodes == null) {
+        nodes = new ArrayList<Node>();
+      }
+      return nodes;
+    }
 
-		public String getName()
-		{
-			return name;
-		}
+    public void setNodes(List<Node> nodes) {
+      this.nodes = nodes;
+    }
 
-		public void setName(String name)
-		{
-			this.name = name;
-		}
+    public String getName() {
+      return name;
+    }
 
-		public String getId()
-		{
-			return id;
-		}
+    public void setName(String name) {
+      this.name = name;
+    }
 
-		public void setId(String id)
-		{
-			this.id = id;
-		}
+    public String getId() {
+      return id;
+    }
 
-		public String getUuid()
-		{
-			return uuid;
-		}
+    public void setId(String id) {
+      this.id = id;
+    }
 
-		public void setUuid(String uuid)
-		{
-			this.uuid = uuid;
-		}
-	}
+    public String getUuid() {
+      return uuid;
+    }
 
-	public static class Query implements Serializable
-	{
-		private static final long serialVersionUID = 1L;
+    public void setUuid(String uuid) {
+      this.uuid = uuid;
+    }
+  }
 
-		private long itemdef;
-		private String uuid;
-		private String script;
+  public static class Query implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-		public Query()
-		{
-			script = "";
-		}
+    private long itemdef;
+    private String uuid;
+    private String script;
 
-		public Query(long id, String script)
-		{
-			itemdef = id;
-			this.script = script;
-		}
+    public Query() {
+      script = "";
+    }
 
-		public long getItemdef()
-		{
-			return itemdef;
-		}
+    public Query(long id, String script) {
+      itemdef = id;
+      this.script = script;
+    }
 
-		public void setItemdef(long itemdef)
-		{
-			this.itemdef = itemdef;
-		}
+    public long getItemdef() {
+      return itemdef;
+    }
 
-		public String getScript()
-		{
-			return script;
-		}
+    public void setItemdef(long itemdef) {
+      this.itemdef = itemdef;
+    }
 
-		public void setScript(String script)
-		{
-			this.script = script;
-		}
+    public String getScript() {
+      return script;
+    }
 
-		public void setUuid(String uuid)
-		{
-			this.uuid = uuid;
-		}
+    public void setScript(String script) {
+      this.script = script;
+    }
 
-		public String getUuid()
-		{
-			return uuid;
-		}
-	}
+    public void setUuid(String uuid) {
+      this.uuid = uuid;
+    }
+
+    public String getUuid() {
+      return uuid;
+    }
+  }
 }

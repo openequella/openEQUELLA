@@ -24,13 +24,18 @@ import java.lang.annotation.Target;
 
 /**
  * Note: retention of RUNTIME and target of LOCAL are required for Goose.
- * 
+ *
  * @author Aaron
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(value = {ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
-public @interface Nullable
-{
-	// Marker
+@Target(
+    value = {
+      ElementType.METHOD,
+      ElementType.PARAMETER,
+      ElementType.FIELD,
+      ElementType.LOCAL_VARIABLE
+    })
+public @interface Nullable {
+  // Marker
 }

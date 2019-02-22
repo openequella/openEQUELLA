@@ -16,6 +16,8 @@
 
 package com.tle.web.sections.generic;
 
+import com.tle.common.Check;
+import com.tle.web.sections.SectionId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EventListener;
@@ -25,123 +27,102 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.tle.common.Check;
-import com.tle.web.sections.SectionId;
+public class ListenerRegistry {
+  private final Map<ListenerKey, List<Object>> eventListeners =
+      new HashMap<ListenerKey, List<Object>>();
 
-public class ListenerRegistry
-{
-	private final Map<ListenerKey, List<Object>> eventListeners = new HashMap<ListenerKey, List<Object>>();
+  private static class ListenerKey {
+    private final String target;
+    private final Class<? extends EventListener> listenerClass;
 
-	private static class ListenerKey
-	{
-		private final String target;
-		private final Class<? extends EventListener> listenerClass;
+    public ListenerKey(String target, Class<? extends EventListener> listenerClass) {
+      this.target = target;
+      this.listenerClass = listenerClass;
+    }
 
-		public ListenerKey(String target, Class<? extends EventListener> listenerClass)
-		{
-			this.target = target;
-			this.listenerClass = listenerClass;
-		}
+    protected String getTarget() {
+      return target;
+    }
 
-		protected String getTarget()
-		{
-			return target;
-		}
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      }
 
-		@Override
-		public boolean equals(Object obj)
-		{
-			if( this == obj )
-			{
-				return true;
-			}
+      if (!(obj instanceof ListenerKey)) {
+        return false;
+      }
 
-			if( !(obj instanceof ListenerKey) )
-			{
-				return false;
-			}
+      ListenerKey key2 = (ListenerKey) obj;
+      return Check.bothNullOrEqual(target, key2.target) && listenerClass.equals(key2.listenerClass);
+    }
 
-			ListenerKey key2 = (ListenerKey) obj;
-			return Check.bothNullOrEqual(target, key2.target) && listenerClass.equals(key2.listenerClass);
-		}
+    @Override
+    public int hashCode() {
+      return Check.getHashCode(target, listenerClass);
+    }
 
-		@Override
-		public int hashCode()
-		{
-			return Check.getHashCode(target, listenerClass);
-		}
+    @Override
+    public String toString() {
+      return (target != null ? target : "[All Targets]")
+          + ':' //$NON-NLS-1$
+          + (listenerClass != null
+              ? listenerClass.getSimpleName()
+              : "[All Classes]"); //$NON-NLS-1$
+    }
+  }
 
-		@Override
-		public String toString()
-		{
-			return (target != null ? target : "[All Targets]") + ':' //$NON-NLS-1$
-				+ (listenerClass != null ? listenerClass.getSimpleName() : "[All Classes]"); //$NON-NLS-1$
-		}
-	}
+  public <T extends EventListener> void addListener(
+      String target, Class<T> clazz, Object eventListener) {
+    ListenerKey key = new ListenerKey(target, clazz);
+    List<Object> listeners = eventListeners.get(key);
+    if (listeners == null) {
+      listeners = new ArrayList<Object>();
+      eventListeners.put(key, listeners);
+    }
+    listeners.add(eventListener);
+  }
 
-	public <T extends EventListener> void addListener(String target, Class<T> clazz, Object eventListener)
-	{
-		ListenerKey key = new ListenerKey(target, clazz);
-		List<Object> listeners = eventListeners.get(key);
-		if( listeners == null )
-		{
-			listeners = new ArrayList<Object>();
-			eventListeners.put(key, listeners);
-		}
-		listeners.add(eventListener);
-	}
+  public <T extends EventListener> List<Object> getListeners(
+      String target, Class<? extends T> clazz) {
+    ListenerKey key = new ListenerKey(target, clazz);
+    List<Object> listeners = eventListeners.get(key);
+    if (listeners == null) {
+      return Collections.emptyList();
+    }
+    return listeners;
+  }
 
-	public <T extends EventListener> List<Object> getListeners(String target, Class<? extends T> clazz)
-	{
-		ListenerKey key = new ListenerKey(target, clazz);
-		List<Object> listeners = eventListeners.get(key);
-		if( listeners == null )
-		{
-			return Collections.emptyList();
-		}
-		return listeners;
-	}
+  public void removeListeners(String target) {
+    List<ListenerKey> removal = new ArrayList<ListenerKey>();
+    for (Entry<ListenerKey, List<Object>> entry : eventListeners.entrySet()) {
+      final ListenerKey key = entry.getKey();
 
-	public void removeListeners(String target)
-	{
-		List<ListenerKey> removal = new ArrayList<ListenerKey>();
-		for( Entry<ListenerKey, List<Object>> entry : eventListeners.entrySet() )
-		{
-			final ListenerKey key = entry.getKey();
+      String etarget = key.getTarget();
+      if (etarget != null && etarget.equals(target)) {
+        removal.add(key);
+        continue;
+      }
 
-			String etarget = key.getTarget();
-			if( etarget != null && etarget.equals(target) )
-			{
-				removal.add(key);
-				continue;
-			}
+      final Iterator<Object> listenersIt = entry.getValue().iterator();
 
-			final Iterator<Object> listenersIt = entry.getValue().iterator();
-
-			while( listenersIt.hasNext() )
-			{
-				Object listener = listenersIt.next();
-				if( listener instanceof String )
-				{
-					if( listener.equals(target) )
-					{
-						listenersIt.remove();
-					}
-				}
-				else if( listener instanceof SectionId )
-				{
-					String sectionId = ((SectionId) listener).getSectionId();
-					if( sectionId != null && sectionId.equals(target) )
-					{
-						listenersIt.remove();
-					}
-				}
-
-			}
-		}
-		for( ListenerKey rem : removal )
-		{
-			eventListeners.remove(rem);
-		}
-	}
+      while (listenersIt.hasNext()) {
+        Object listener = listenersIt.next();
+        if (listener instanceof String) {
+          if (listener.equals(target)) {
+            listenersIt.remove();
+          }
+        } else if (listener instanceof SectionId) {
+          String sectionId = ((SectionId) listener).getSectionId();
+          if (sectionId != null && sectionId.equals(target)) {
+            listenersIt.remove();
+          }
+        }
+      }
+    }
+    for (ListenerKey rem : removal) {
+      eventListeners.remove(rem);
+    }
+  }
 }

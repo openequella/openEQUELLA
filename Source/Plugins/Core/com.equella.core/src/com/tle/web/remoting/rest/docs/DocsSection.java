@@ -28,22 +28,18 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.template.Decorations;
 
 @Bind
-public class DocsSection extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	@PlugKey("docs.title")
-	private static Label LABEL_TITLE;
+public class DocsSection extends AbstractPrototypeSection<Object> implements HtmlRenderer {
+  @PlugKey("docs.title")
+  private static Label LABEL_TITLE;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		Decorations decorations = Decorations.getDecorations(context);
-		decorations.setTitle(LABEL_TITLE);
-		decorations.setExcludeForm(true);
-		// decorations.clearAllDecorations();
-		return viewFactory.createResult("swagger.ftl", this);
-	}
-
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    Decorations decorations = Decorations.getDecorations(context);
+    decorations.setTitle(LABEL_TITLE);
+    decorations.setExcludeForm(true);
+    // decorations.clearAllDecorations();
+    return viewFactory.createResult("swagger.ftl", this);
+  }
 }

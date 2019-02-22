@@ -16,15 +16,11 @@
 
 package com.tle.core.collection.event.listener;
 
-import java.util.List;
-
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.core.events.listeners.ApplicationListener;
+import java.util.List;
 
-/**
- * @author Aaron
- */
-public interface ItemDefinitionReferencesListener extends ApplicationListener
-{
-	void addItemDefinitionReferencingClasses(ItemDefinition collection, List<Class<?>> classes);
+/** @author Aaron */
+public interface ItemDefinitionReferencesListener extends ApplicationListener {
+  void addItemDefinitionReferencingClasses(ItemDefinition collection, List<Class<?>> classes);
 }

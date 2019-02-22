@@ -20,35 +20,29 @@ import com.tle.admin.gui.EditorException;
 import com.tle.admin.plugin.GeneralPlugin;
 import com.tle.beans.usermanagement.shibboleth.wrapper.ExternalAuthorisationWrapperSettings;
 
-/**
- * @author aholland
- */
-public class ExternalAuthorisationPlugin extends GeneralPlugin<ExternalAuthorisationWrapperSettings>
-{
-	private final ExternalAuthorisationSettingsPanel generalPanel;
+/** @author aholland */
+public class ExternalAuthorisationPlugin
+    extends GeneralPlugin<ExternalAuthorisationWrapperSettings> {
+  private final ExternalAuthorisationSettingsPanel generalPanel;
 
-	public ExternalAuthorisationPlugin()
-	{
-		generalPanel = new ExternalAuthorisationSettingsPanel();
+  public ExternalAuthorisationPlugin() {
+    generalPanel = new ExternalAuthorisationSettingsPanel();
 
-		setup();
-	}
+    setup();
+  }
 
-	protected void setup()
-	{
-		addFillComponent(generalPanel);
-	}
+  protected void setup() {
+    addFillComponent(generalPanel);
+  }
 
-	@Override
-	public void load(ExternalAuthorisationWrapperSettings settings)
-	{
-		generalPanel.load(settings);
-	}
+  @Override
+  public void load(ExternalAuthorisationWrapperSettings settings) {
+    generalPanel.load(settings);
+  }
 
-	@Override
-	public boolean save(ExternalAuthorisationWrapperSettings settings) throws EditorException
-	{
-		generalPanel.save(settings);
-		return true;
-	}
+  @Override
+  public boolean save(ExternalAuthorisationWrapperSettings settings) throws EditorException {
+    generalPanel.save(settings);
+    return true;
+  }
 }

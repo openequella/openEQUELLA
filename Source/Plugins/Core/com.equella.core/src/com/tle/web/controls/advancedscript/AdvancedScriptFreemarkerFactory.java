@@ -16,14 +16,12 @@
 
 package com.tle.web.controls.advancedscript;
 
-import javax.inject.Singleton;
-
 import com.tle.core.guice.Bind;
 import com.tle.web.freemarker.BasicFreemarkerFactory;
+import javax.inject.Singleton;
 
 @Bind(BasicFreemarkerFactory.class)
 @Singleton
-public class AdvancedScriptFreemarkerFactory extends BasicFreemarkerFactory
-{
-	// nothing
+public class AdvancedScriptFreemarkerFactory extends BasicFreemarkerFactory {
+  // nothing
 }

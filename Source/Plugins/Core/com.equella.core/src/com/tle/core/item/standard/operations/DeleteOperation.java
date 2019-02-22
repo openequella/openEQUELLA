@@ -23,29 +23,24 @@ import com.tle.core.item.standard.operations.workflow.TaskOperation;
 import com.tle.core.security.impl.SecureItemStatus;
 import com.tle.core.security.impl.SecureOnCall;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @SecureOnCall(priv = "DELETE_ITEM")
 @SecureItemStatus(value = ItemStatus.DELETED, not = true)
-public class DeleteOperation extends TaskOperation
-{
-	@Override
-	public boolean execute()
-	{
-		ModerationStatus moderationStatus = getModerationStatus();
-		moderationStatus.setDeletedStatus(getItemStatus());
-		Item item = getItem();
-		moderationStatus.setDeletedModerating(item.isModerating());
-		setState(ItemStatus.DELETED);
-		exitTasksForItem();
-		item.setModerating(false);
-		return true;
-	}
+public class DeleteOperation extends TaskOperation {
+  @Override
+  public boolean execute() {
+    ModerationStatus moderationStatus = getModerationStatus();
+    moderationStatus.setDeletedStatus(getItemStatus());
+    Item item = getItem();
+    moderationStatus.setDeletedModerating(item.isModerating());
+    setState(ItemStatus.DELETED);
+    exitTasksForItem();
+    item.setModerating(false);
+    return true;
+  }
 
-	@Override
-	public boolean isDeleteLike()
-	{
-		return true;
-	}
+  @Override
+  public boolean isDeleteLike() {
+    return true;
+  }
 }

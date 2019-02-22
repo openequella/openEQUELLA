@@ -16,67 +16,57 @@
 
 package com.tle.web.sections.ajax.handler;
 
-import java.util.Objects;
-import java.util.Set;
-
 import com.tle.common.Check;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.events.js.ParameterizedEvent;
+import java.util.Objects;
+import java.util.Set;
 
-public class UpdateDomKey
-{
-	private final SectionId modalId;
-	private final Set<String> ajaxIds;
-	private final ParameterizedEvent innerEvent;
+public class UpdateDomKey {
+  private final SectionId modalId;
+  private final Set<String> ajaxIds;
+  private final ParameterizedEvent innerEvent;
 
-	public UpdateDomKey(SectionId modalId, Set<String> ajaxIds, ParameterizedEvent innerEvent)
-	{
-		this.modalId = modalId;
-		this.ajaxIds = ajaxIds;
-		this.innerEvent = innerEvent;
-	}
+  public UpdateDomKey(SectionId modalId, Set<String> ajaxIds, ParameterizedEvent innerEvent) {
+    this.modalId = modalId;
+    this.ajaxIds = ajaxIds;
+    this.innerEvent = innerEvent;
+  }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		if( this == obj )
-		{
-			return true;
-		}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
 
-		if( !(obj instanceof UpdateDomKey) )
-		{
-			return false;
-		}
+    if (!(obj instanceof UpdateDomKey)) {
+      return false;
+    }
 
-		UpdateDomKey other = (UpdateDomKey) obj;
-		return Objects.equals(idForSectionId(modalId), idForSectionId(other.modalId))
-			&& Objects.equals(ajaxIds, other.ajaxIds) && Objects.equals(innerEvent, other.innerEvent);
-	}
+    UpdateDomKey other = (UpdateDomKey) obj;
+    return Objects.equals(idForSectionId(modalId), idForSectionId(other.modalId))
+        && Objects.equals(ajaxIds, other.ajaxIds)
+        && Objects.equals(innerEvent, other.innerEvent);
+  }
 
-	private static String idForSectionId(SectionId sectionId)
-	{
-		return sectionId != null ? sectionId.getSectionId() : null;
-	}
+  private static String idForSectionId(SectionId sectionId) {
+    return sectionId != null ? sectionId.getSectionId() : null;
+  }
 
-	@Override
-	public int hashCode()
-	{
-		return Check.getHashCode(idForSectionId(modalId), ajaxIds, innerEvent);
-	}
+  @Override
+  public int hashCode() {
+    return Check.getHashCode(idForSectionId(modalId), ajaxIds, innerEvent);
+  }
 
-	public SectionId getModalId()
-	{
-		return modalId;
-	}
+  public SectionId getModalId() {
+    return modalId;
+  }
 
-	public Set<String> getAjaxIds()
-	{
-		return ajaxIds;
-	}
+  public Set<String> getAjaxIds() {
+    return ajaxIds;
+  }
 
-	public ParameterizedEvent getInnerEvent()
-	{
-		return innerEvent;
-	}
+  public ParameterizedEvent getInnerEvent() {
+    return innerEvent;
+  }
 }

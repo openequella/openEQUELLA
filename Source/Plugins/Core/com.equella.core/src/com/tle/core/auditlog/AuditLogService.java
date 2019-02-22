@@ -16,77 +16,77 @@
 
 package com.tle.core.auditlog;
 
-import java.util.Collection;
-
 import com.tle.beans.Institution;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.WebAuthenticationDetails;
-import com.tle.web.viewable.ViewableItem;
-
+import java.util.Collection;
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * @author Nicholas Read
- */
-public interface AuditLogService
-{
-	void logUserLoggedIn(UserState us, HttpServletRequest request);
+/** @author Nicholas Read */
+public interface AuditLogService {
+  void logUserLoggedIn(UserState us, HttpServletRequest request);
 
-	void logUserLoggedOut(UserState us, HttpServletRequest request);
+  void logUserLoggedOut(UserState us, HttpServletRequest request);
 
-	void logUserFailedAuthentication(String username, WebAuthenticationDetails wad);
+  void logUserFailedAuthentication(String username, WebAuthenticationDetails wad);
 
-	void logEntityCreated(long entityId);
+  void logEntityCreated(long entityId);
 
-	void logEntityModified(long entityId);
+  void logEntityModified(long entityId);
 
-	void logEntityDeleted(long entityId);
+  void logEntityDeleted(long entityId);
 
-	/**
-	 * @param objectId
-	 * @param friendlyName Should be 20 characters or less, otherwise will be
-	 *            truncated
-	 */
-	void logObjectDeleted(long objectId, String friendlyName);
+  /**
+   * @param objectId
+   * @param friendlyName Should be 20 characters or less, otherwise will be truncated
+   */
+  void logObjectDeleted(long objectId, String friendlyName);
 
-	void removeOldLogs(int daysOld);
+  void removeOldLogs(int daysOld);
 
-	void logSearch(String type, String freeText, String within, long resultCount);
+  void logSearch(String type, String freeText, String within, long resultCount);
 
-	void logFederatedSearch(String freeText, String searchId);
+  void logFederatedSearch(String freeText, String searchId);
 
-	/**
-	 * Exists solely for the purpose of non-item items.  Ie. CloudItem
-	 *
-	 * @param category E.g. CLOUD_ITEM
-	 * @param itemId
-	 */
-	void logSummaryViewed(String category, ItemKey itemId, HttpServletRequest request);
+  /**
+   * Exists solely for the purpose of non-item items. Ie. CloudItem
+   *
+   * @param category E.g. CLOUD_ITEM
+   * @param itemId
+   */
+  void logSummaryViewed(String category, ItemKey itemId, HttpServletRequest request);
 
-	void logItemSummaryViewed(Item item, HttpServletRequest request);
+  void logItemSummaryViewed(Item item, HttpServletRequest request);
 
-	/**
-	 * Exists solely for the purpose of non-item item attachments.  Ie. CloudAttachment
-	 *
-	 * @param category E.g. CLOUD_ITEM
-	 * @param itemId
-	 * @param contentType
-	 * @param path
-	 */
-	void logContentViewed(String category, ItemKey itemId, String contentType, String path, HttpServletRequest request);
+  /**
+   * Exists solely for the purpose of non-item item attachments. Ie. CloudAttachment
+   *
+   * @param category E.g. CLOUD_ITEM
+   * @param itemId
+   * @param contentType
+   * @param path
+   */
+  void logContentViewed(
+      String category, ItemKey itemId, String contentType, String path, HttpServletRequest request);
 
-	//void logItemContentViewed(ItemKey itemId, String contentType, String path);
+  // void logItemContentViewed(ItemKey itemId, String contentType, String path);
 
-	void logItemContentViewed(ItemKey itemId, String contentType, String path, Attachment attachment, HttpServletRequest request);
+  void logItemContentViewed(
+      ItemKey itemId,
+      String contentType,
+      String path,
+      Attachment attachment,
+      HttpServletRequest request);
 
-	void logItemPurged(Item item);
+  void logItemPurged(Item item);
 
-	void logGeneric(String category, String type, String data1, String data2, String data3, String data4);
+  void logGeneric(
+      String category, String type, String data1, String data2, String data3, String data4);
 
-	Collection<AuditLogExtension> getExtensions();
+  Collection<AuditLogExtension> getExtensions();
 
-	void removeEntriesForInstitution(Institution institution);
+  void removeEntriesForInstitution(Institution institution);
 }

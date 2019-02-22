@@ -16,17 +16,15 @@
 
 package com.tle.web.sections.ajax.handler;
 
+import com.tle.web.sections.events.SectionEvent;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import com.tle.web.sections.events.SectionEvent;
-
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AjaxMethod
-{
-	String name() default "";
+public @interface AjaxMethod {
+  String name() default "";
 
-	String factoryName() default "";
+  String factoryName() default "";
 
-	int priority() default SectionEvent.PRIORITY_EVENTS;
+  int priority() default SectionEvent.PRIORITY_EVENTS;
 }

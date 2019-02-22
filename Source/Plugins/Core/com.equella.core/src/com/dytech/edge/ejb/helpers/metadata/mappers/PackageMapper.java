@@ -16,20 +16,17 @@
 
 package com.dytech.edge.ejb.helpers.metadata.mappers;
 
-import java.util.List;
-
 import com.dytech.devlib.PropBagEx;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.filesystem.handle.FileHandle;
+import java.util.List;
 
-/**
- * @author aholland
- */
-public interface PackageMapper
-{
-	boolean isSupportedPackage(FileHandle handle, String packageExtractedFolder);
+/** @author aholland */
+public interface PackageMapper {
+  boolean isSupportedPackage(FileHandle handle, String packageExtractedFolder);
 
-	void mapMetadata(ItemDefinition itemdef, PropBagEx item, FileHandle handle, String packageExtractedFolder);
+  void mapMetadata(
+      ItemDefinition itemdef, PropBagEx item, FileHandle handle, String packageExtractedFolder);
 
-	List<String> getSupportedFormatsForDisplay();
+  List<String> getSupportedFormatsForDisplay();
 }

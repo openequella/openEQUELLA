@@ -18,7 +18,6 @@ package com.tle.common.settings;
 
 import java.io.Serializable;
 
-public interface ConfigurationProperties extends Serializable
-{
-	// EMPTY
+public interface ConfigurationProperties extends Serializable {
+  // EMPTY
 }

@@ -19,21 +19,15 @@ package com.tle.core.workflow.guice;
 import com.tle.core.guice.PluginTrackerModule;
 import com.tle.core.workflow.extension.WorkflowNodesSaveExtension;
 
-/**
- * @author Aaron
- *
- */
-public class WorkflowModule extends PluginTrackerModule
-{
-	@Override
-	protected String getPluginId()
-	{
-		return "com.tle.core.workflow";
-	}
+/** @author Aaron */
+public class WorkflowModule extends PluginTrackerModule {
+  @Override
+  protected String getPluginId() {
+    return "com.tle.core.workflow";
+  }
 
-	@Override
-	protected void configure()
-	{
-		bindTracker(WorkflowNodesSaveExtension.class, "workflowNodesSave", "bean");
-	}
+  @Override
+  protected void configure() {
+    bindTracker(WorkflowNodesSaveExtension.class, "workflowNodesSave", "bean");
+  }
 }

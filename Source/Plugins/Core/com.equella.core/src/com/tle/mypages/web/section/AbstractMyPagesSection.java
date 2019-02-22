@@ -28,38 +28,30 @@ import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 
-/**
- * @author aholland
- */
-public abstract class AbstractMyPagesSection<M> extends AbstractPrototypeSection<M>
-{
-	protected static final PluginResourceHelper RESOURCES = ResourcesService
-		.getResourceHelper(AbstractMyPagesSection.class);
+/** @author aholland */
+public abstract class AbstractMyPagesSection<M> extends AbstractPrototypeSection<M> {
+  protected static final PluginResourceHelper RESOURCES =
+      ResourcesService.getResourceHelper(AbstractMyPagesSection.class);
 
-	@EventFactory
-	protected EventGenerator events;
+  @EventFactory protected EventGenerator events;
 
-	@ViewFactory(fixed = false)
-	protected FreemarkerFactory viewFactory;
+  @ViewFactory(fixed = false)
+  protected FreemarkerFactory viewFactory;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		if( this instanceof SavePageEventListener )
-		{
-			tree.addListener(null, SavePageEventListener.class, id);
-		}
+    if (this instanceof SavePageEventListener) {
+      tree.addListener(null, SavePageEventListener.class, id);
+    }
 
-		if( this instanceof LoadItemEventListener )
-		{
-			tree.addListener(null, LoadItemEventListener.class, id);
-		}
+    if (this instanceof LoadItemEventListener) {
+      tree.addListener(null, LoadItemEventListener.class, id);
+    }
 
-		if( this instanceof SaveItemEventListener )
-		{
-			tree.addListener(null, SaveItemEventListener.class, id);
-		}
-	}
+    if (this instanceof SaveItemEventListener) {
+      tree.addListener(null, SaveItemEventListener.class, id);
+    }
+  }
 }

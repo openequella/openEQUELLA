@@ -25,21 +25,17 @@ import com.tle.web.search.selection.AbstractSelectItemListExtension;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewable.ViewableItem;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
-public class CloudSelectItemListExtension extends AbstractSelectItemListExtension<CloudItem, CloudSearchListEntry>
-{
-	@Override
-	protected ViewableItem<CloudItem> getViewableItem(SectionInfo info, CloudItem item)
-	{
-		return new CloudViewableItem(item);
-	}
+public class CloudSelectItemListExtension
+    extends AbstractSelectItemListExtension<CloudItem, CloudSearchListEntry> {
+  @Override
+  protected ViewableItem<CloudItem> getViewableItem(SectionInfo info, CloudItem item) {
+    return new CloudViewableItem(item);
+  }
 
-	@Override
-	public String getItemExtensionType()
-	{
-		return CloudConstants.ITEM_EXTENSION;
-	}
+  @Override
+  public String getItemExtensionType() {
+    return CloudConstants.ITEM_EXTENSION;
+  }
 }

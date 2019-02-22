@@ -16,8 +16,6 @@
 
 package com.tle.web.controls.universal;
 
-import javax.inject.Inject;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.IAttachment;
@@ -30,93 +28,81 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
+import javax.inject.Inject;
 
 /**
- * An abstract {@link AttachmentHandler}. It contains a
- * {@link FreemarkerFactory} and {@link EventGenerator} and registers itself as
- * a sub-inner Section off the parentId passed into the
+ * An abstract {@link AttachmentHandler}. It contains a {@link FreemarkerFactory} and {@link
+ * EventGenerator} and registers itself as a sub-inner Section off the parentId passed into the
  * {@link #onRegister(SectionTree, String, UniversalControlState)} method.
- * 
+ *
  * @see AbstractDetailsAttachmentHandler
  * @author jolz
  * @param <M>
  */
 @NonNullByDefault
-public abstract class AbstractAttachmentHandler<M> extends AbstractPrototypeSection<M> implements AttachmentHandler
-{
-	@ViewFactory(fixed = false)
-	protected FreemarkerFactory viewFactory;
-	@EventFactory
-	protected EventGenerator events;
+public abstract class AbstractAttachmentHandler<M> extends AbstractPrototypeSection<M>
+    implements AttachmentHandler {
+  @ViewFactory(fixed = false)
+  protected FreemarkerFactory viewFactory;
 
-	protected UniversalSettings settings;
-	protected boolean singular;
+  @EventFactory protected EventGenerator events;
 
-	protected UniversalControlState dialogState;
+  protected UniversalSettings settings;
+  protected boolean singular;
 
-	@Inject
-	private ItemResolver itemResolver;
+  protected UniversalControlState dialogState;
 
-	@Override
-	public void onRegister(SectionTree tree, String parentId, UniversalControlState state)
-	{
-		this.settings = new UniversalSettings(state.getControlConfiguration());
-		this.dialogState = state;
-		tree.registerSubInnerSection(this, parentId);
-	}
+  @Inject private ItemResolver itemResolver;
 
-	@Override
-	public void setSingular(boolean singular)
-	{
-		this.singular = singular;
-	}
+  @Override
+  public void onRegister(SectionTree tree, String parentId, UniversalControlState state) {
+    this.settings = new UniversalSettings(state.getControlConfiguration());
+    this.dialogState = state;
+    tree.registerSubInnerSection(this, parentId);
+  }
 
-	public boolean isMultipleAllowed(SectionInfo info)
-	{
-		return isMultiple() && !dialogState.isReplacing(info);
-	}
+  @Override
+  public void setSingular(boolean singular) {
+    this.singular = singular;
+  }
 
-	public boolean isMultiple()
-	{
-		return settings.isMultipleSelection();
-	}
+  public boolean isMultipleAllowed(SectionInfo info) {
+    return isMultiple() && !dialogState.isReplacing(info);
+  }
 
-	public boolean isMaxFilesEnabled(SectionInfo info)
-	{
-		return isMaxFiles() && !dialogState.isReplacing(info);
-	}
+  public boolean isMultiple() {
+    return settings.isMultipleSelection();
+  }
 
-	public boolean isMaxFiles()
-	{
-		return settings.isMaxFilesEnabled();
-	}
+  public boolean isMaxFilesEnabled(SectionInfo info) {
+    return isMaxFiles() && !dialogState.isReplacing(info);
+  }
 
-	public int getMaxFiles()
-	{
-		return settings.getMaxFiles();
-	}
+  public boolean isMaxFiles() {
+    return settings.isMaxFilesEnabled();
+  }
 
-	public UniversalControlState getDialogState()
-	{
-		return dialogState;
-	}
+  public int getMaxFiles() {
+    return settings.getMaxFiles();
+  }
 
-	@Override
-	public boolean show()
-	{
-		return true;
-	}
+  public UniversalControlState getDialogState() {
+    return dialogState;
+  }
 
-	@Override
-	public boolean isHiddenFromSummary(IAttachment attachment)
-	{
-		final Item item = dialogState.getRepository().getItem();
-		return itemResolver.checkRestrictedAttachment(item, attachment, null);
-	}
+  @Override
+  public boolean show() {
+    return true;
+  }
 
-	public boolean canRestrictAttachments()
-	{
-		final Item item = dialogState.getRepository().getItem();
-		return itemResolver.canRestrictAttachments(item, null);
-	}
+  @Override
+  public boolean isHiddenFromSummary(IAttachment attachment) {
+    final Item item = dialogState.getRepository().getItem();
+    return itemResolver.checkRestrictedAttachment(item, attachment, null);
+  }
+
+  public boolean canRestrictAttachments() {
+    final Item item = dialogState.getRepository().getItem();
+    return itemResolver.canRestrictAttachments(item, null);
+  }
 }

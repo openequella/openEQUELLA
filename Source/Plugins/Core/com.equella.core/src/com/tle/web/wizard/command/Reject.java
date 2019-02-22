@@ -28,54 +28,45 @@ import com.tle.web.workflow.tasks.CurrentTaskSection;
 import com.tle.web.workflow.tasks.TaskListState;
 import com.tle.web.workflow.tasks.dialog.RejectDialog;
 
-public class Reject extends WizardCommand
-{
-	static
-	{
-		PluginResourceHandler.init(Reject.class);
-	}
+public class Reject extends WizardCommand {
+  static {
+    PluginResourceHandler.init(Reject.class);
+  }
 
-	@PlugKey("command.reject.name")
-	private static String KEY_NAME;
+  @PlugKey("command.reject.name")
+  private static String KEY_NAME;
 
-	public Reject()
-	{
-		super(KEY_NAME, "reject"); //$NON-NLS-1$
-	}
+  public Reject() {
+    super(KEY_NAME, "reject"); // $NON-NLS-1$
+  }
 
-	@Override
-	public JSHandler getJavascript(SectionInfo info, WizardSectionInfo winfo, JSCallable submitFunc)
-	{
-		RejectDialog rejectDialog = info.lookupSection(RejectDialog.class);
-		return new OverrideHandler(rejectDialog.getOpenFunction());
-	}
+  @Override
+  public JSHandler getJavascript(SectionInfo info, WizardSectionInfo winfo, JSCallable submitFunc) {
+    RejectDialog rejectDialog = info.lookupSection(RejectDialog.class);
+    return new OverrideHandler(rejectDialog.getOpenFunction());
+  }
 
-	@Override
-	public boolean isEnabled(SectionInfo info, WizardSectionInfo winfo)
-	{
-		CurrentTaskSection currentTaskSection = info.lookupSection(CurrentTaskSection.class);
-		TaskListState tls = (currentTaskSection == null ? null : currentTaskSection.getCurrentState(info));
-		if (tls != null)
-		{
-			return !tls.isEditing();
-		}
-		return false;
-	}
+  @Override
+  public boolean isEnabled(SectionInfo info, WizardSectionInfo winfo) {
+    CurrentTaskSection currentTaskSection = info.lookupSection(CurrentTaskSection.class);
+    TaskListState tls =
+        (currentTaskSection == null ? null : currentTaskSection.getCurrentState(info));
+    if (tls != null) {
+      return !tls.isEditing();
+    }
+    return false;
+  }
 
-	@Override
-	public void execute(SectionInfo info, WizardSectionInfo winfo, String data) throws Exception
-	{
-	}
+  @Override
+  public void execute(SectionInfo info, WizardSectionInfo winfo, String data) throws Exception {}
 
-	@Override
-	public boolean isMajorAction()
-	{
-		return true;
-	}
+  @Override
+  public boolean isMajorAction() {
+    return true;
+  }
 
-	@Override
-	public String getStyleClass()
-	{
-		return "moderate-reject";
-	}
+  @Override
+  public String getStyleClass() {
+    return "moderate-reject";
+  }
 }

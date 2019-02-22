@@ -16,22 +16,18 @@
 
 package com.tle.core.search.service.impl;
 
-import javax.inject.Singleton;
-
 import com.tle.common.security.SettingsTarget;
 import com.tle.core.guice.Bind;
 import com.tle.core.settings.security.AbstractSettingsPrivilegeTreeProvider;
+import javax.inject.Singleton;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class SearchPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider
-{
-	public SearchPrivilegeTreeProvider()
-	{
-		super(Type.SYSTEM_SETTING, r.key("securitytree.searchsettings"), new SettingsTarget("searching"));
-	}
+public class SearchPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider {
+  public SearchPrivilegeTreeProvider() {
+    super(
+        Type.SYSTEM_SETTING, r.key("securitytree.searchsettings"), new SettingsTarget("searching"));
+  }
 }

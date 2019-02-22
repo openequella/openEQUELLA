@@ -16,51 +16,43 @@
 
 package com.tle.admin.courseinfo;
 
-import java.awt.Component;
-import java.awt.FlowLayout;
-
 import com.tle.admin.baseentity.BaseEntityTab;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.item.VersionSelectionConfig;
 import com.tle.beans.item.cal.request.CourseInfo;
-import com.tle.common.i18n.CurrentLocale;
+import java.awt.Component;
+import java.awt.FlowLayout;
 
-public class VersionSelectionTab extends BaseEntityTab<CourseInfo>
-{
-	private VersionSelectionConfig config;
+public class VersionSelectionTab extends BaseEntityTab<CourseInfo> {
+  private VersionSelectionConfig config;
 
-	@Override
-	@SuppressWarnings("deprecation")
-	public void init(Component parent)
-	{
-		config = new VersionSelectionConfig(true);
+  @Override
+  @SuppressWarnings("deprecation")
+  public void init(Component parent) {
+    config = new VersionSelectionConfig(true);
 
-		setLayout(new FlowLayout(FlowLayout.LEFT));
-		add(config);
-	}
+    setLayout(new FlowLayout(FlowLayout.LEFT));
+    add(config);
+  }
 
-	@Override
-	@SuppressWarnings("nls")
-	public String getTitle()
-	{
-		return getString("versionstab.title");
-	}
+  @Override
+  @SuppressWarnings("nls")
+  public String getTitle() {
+    return getString("versionstab.title");
+  }
 
-	@Override
-	public void load()
-	{
-		config.load(state.getEntity().getVersionSelection());
-	}
+  @Override
+  public void load() {
+    config.load(state.getEntity().getVersionSelection());
+  }
 
-	@Override
-	public void save()
-	{
-		state.getEntity().setVersionSelection(config.save());
-	}
+  @Override
+  public void save() {
+    state.getEntity().setVersionSelection(config.save());
+  }
 
-	@Override
-	public void validation() throws EditorException
-	{
-		// Nothing to validate
-	}
+  @Override
+  public void validation() throws EditorException {
+    // Nothing to validate
+  }
 }

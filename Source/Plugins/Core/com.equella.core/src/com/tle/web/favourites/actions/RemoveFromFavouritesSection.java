@@ -16,12 +16,10 @@
 
 package com.tle.web.favourites.actions;
 
-import javax.inject.Inject;
-
 import com.tle.beans.item.Bookmark;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.favourites.service.BookmarkService;
 import com.tle.core.guice.Bind;
-import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.favourites.actions.RemoveFromFavouritesSection.RemoveFromFavouritesModel;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
@@ -41,99 +39,85 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.viewitem.section.AbstractParentViewItemSection;
+import javax.inject.Inject;
 
 @Bind
 @SuppressWarnings("nls")
-public class RemoveFromFavouritesSection extends AbstractParentViewItemSection<RemoveFromFavouritesModel>
-	implements
-		HideableFromDRMSection
-{
-	@PlugKey("viewitem.receipt.remove")
-	private static Label RECEIPT_LABEL;
-	@PlugURL("css/favourites.css")
-	private static String CSS;
+public class RemoveFromFavouritesSection
+    extends AbstractParentViewItemSection<RemoveFromFavouritesModel>
+    implements HideableFromDRMSection {
+  @PlugKey("viewitem.receipt.remove")
+  private static Label RECEIPT_LABEL;
 
-	@EventFactory
-	protected EventGenerator events;
+  @PlugURL("css/favourites.css")
+  private static String CSS;
 
-	@Inject
-	private BookmarkService bookmarkService;
-	@Inject
-	private ReceiptService receiptService;
+  @EventFactory protected EventGenerator events;
 
-	@Component
-	@PlugKey("viewitem.button.remove")
-	private Button button;
+  @Inject private BookmarkService bookmarkService;
+  @Inject private ReceiptService receiptService;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Component
+  @PlugKey("viewitem.button.remove")
+  private Button button;
 
-		button.setClickHandler(events.getNamedHandler("remove"));
-		button.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
-		button.setStyleClass("removeFromFavourites");
-		button.addPrerenderables(CssInclude.include(CSS).hasRtl().make());
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		boolean hide = getModel(info).isHide();
+    button.setClickHandler(events.getNamedHandler("remove"));
+    button.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
+    button.setStyleClass("removeFromFavourites");
+    button.addPrerenderables(CssInclude.include(CSS).hasRtl().make());
+  }
 
-		if( hide )
-		{
-			return false;
-		}
-		else
-		{
-			return !CurrentUser.isGuest() && !CurrentUser.wasAutoLoggedIn()
-				&& bookmarkService.getByItem(getItemInfo(info).getItemId()) != null;
-		}
-	}
+  @Override
+  public boolean canView(SectionInfo info) {
+    boolean hide = getModel(info).isHide();
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !canView(context) )
-		{
-			return null;
-		}
-		return SectionUtils.renderSectionResult(context, button);
-	}
+    if (hide) {
+      return false;
+    } else {
+      return !CurrentUser.isGuest()
+          && !CurrentUser.wasAutoLoggedIn()
+          && bookmarkService.getByItem(getItemInfo(info).getItemId()) != null;
+    }
+  }
 
-	@EventHandlerMethod
-	public void remove(SectionInfo info)
-	{
-		Bookmark fav = bookmarkService.getByItem(getItemInfo(info).getItemId());
-		bookmarkService.delete(fav.getId());
-		receiptService.setReceipt(RECEIPT_LABEL);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (!canView(context)) {
+      return null;
+    }
+    return SectionUtils.renderSectionResult(context, button);
+  }
 
-	@Override
-	public void showSection(SectionInfo info, boolean show)
-	{
-		getModel(info).setHide(!show);
-	}
+  @EventHandlerMethod
+  public void remove(SectionInfo info) {
+    Bookmark fav = bookmarkService.getByItem(getItemInfo(info).getItemId());
+    bookmarkService.delete(fav.getId());
+    receiptService.setReceipt(RECEIPT_LABEL);
+  }
 
-	@Override
-	public Class<RemoveFromFavouritesModel> getModelClass()
-	{
-		return RemoveFromFavouritesModel.class;
-	}
+  @Override
+  public void showSection(SectionInfo info, boolean show) {
+    getModel(info).setHide(!show);
+  }
 
-	public static class RemoveFromFavouritesModel
-	{
-		private boolean hide;
+  @Override
+  public Class<RemoveFromFavouritesModel> getModelClass() {
+    return RemoveFromFavouritesModel.class;
+  }
 
-		public boolean isHide()
-		{
-			return hide;
-		}
+  public static class RemoveFromFavouritesModel {
+    private boolean hide;
 
-		public void setHide(boolean hide)
-		{
-			this.hide = hide;
-		}
-	}
+    public boolean isHide() {
+      return hide;
+    }
+
+    public void setHide(boolean hide) {
+      this.hide = hide;
+    }
+  }
 }

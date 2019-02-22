@@ -17,107 +17,91 @@
 package com.tle.core.migration.log;
 
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-
 import org.hibernate.annotations.AccessType;
 
 @Entity
 @AccessType("field")
-public class MigrationLog
-{
-	public enum LogStatus
-	{
-		EXECUTED, SKIPPED, OBSOLETE, ERRORED
-	}
+public class MigrationLog {
+  public enum LogStatus {
+    EXECUTED,
+    SKIPPED,
+    OBSOLETE,
+    ERRORED
+  }
 
-	@Id
-	@Column(length = 255)
-	private String migrationId;
+  @Id
+  @Column(length = 255)
+  private String migrationId;
 
-	@Column(nullable = false)
-	private Date executed;
+  @Column(nullable = false)
+  private Date executed;
 
-	private boolean mustExist;
-	private boolean canRetry;
+  private boolean mustExist;
+  private boolean canRetry;
 
-	@Column(nullable = false)
-	private LogStatus status;
-	@Lob
-	private String message;
-	@Lob
-	private String errorMessage;
+  @Column(nullable = false)
+  private LogStatus status;
 
-	public Date getExecuted()
-	{
-		return executed;
-	}
+  @Lob private String message;
+  @Lob private String errorMessage;
 
-	public void setExecuted(Date executed)
-	{
-		this.executed = executed;
-	}
+  public Date getExecuted() {
+    return executed;
+  }
 
-	public String getMigrationId()
-	{
-		return migrationId;
-	}
+  public void setExecuted(Date executed) {
+    this.executed = executed;
+  }
 
-	public void setMigrationId(String migrationId)
-	{
-		this.migrationId = migrationId;
-	}
+  public String getMigrationId() {
+    return migrationId;
+  }
 
-	public boolean isMustExist()
-	{
-		return mustExist;
-	}
+  public void setMigrationId(String migrationId) {
+    this.migrationId = migrationId;
+  }
 
-	public void setMustExist(boolean mustExist)
-	{
-		this.mustExist = mustExist;
-	}
+  public boolean isMustExist() {
+    return mustExist;
+  }
 
-	public LogStatus getStatus()
-	{
-		return status;
-	}
+  public void setMustExist(boolean mustExist) {
+    this.mustExist = mustExist;
+  }
 
-	public void setStatus(LogStatus status)
-	{
-		this.status = status;
-	}
+  public LogStatus getStatus() {
+    return status;
+  }
 
-	public String getMessage()
-	{
-		return message;
-	}
+  public void setStatus(LogStatus status) {
+    this.status = status;
+  }
 
-	public void setMessage(String message)
-	{
-		this.message = message;
-	}
+  public String getMessage() {
+    return message;
+  }
 
-	public boolean isCanRetry()
-	{
-		return canRetry;
-	}
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
-	public void setCanRetry(boolean canRetry)
-	{
-		this.canRetry = canRetry;
-	}
+  public boolean isCanRetry() {
+    return canRetry;
+  }
 
-	public String getErrorMessage()
-	{
-		return errorMessage;
-	}
+  public void setCanRetry(boolean canRetry) {
+    this.canRetry = canRetry;
+  }
 
-	public void setErrorMessage(String errorMessage)
-	{
-		this.errorMessage = errorMessage;
-	}
+  public String getErrorMessage() {
+    return errorMessage;
+  }
+
+  public void setErrorMessage(String errorMessage) {
+    this.errorMessage = errorMessage;
+  }
 }

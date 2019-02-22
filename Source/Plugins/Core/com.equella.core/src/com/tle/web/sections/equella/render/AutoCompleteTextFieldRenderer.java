@@ -16,8 +16,6 @@
 
 package com.tle.web.sections.equella.render;
 
-import java.io.IOException;
-
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.equella.annotation.PlugURL;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;
@@ -40,113 +38,108 @@ import com.tle.web.sections.standard.model.HtmlTextFieldState;
 import com.tle.web.sections.standard.model.HtmlValueState;
 import com.tle.web.sections.standard.renderers.AbstractComponentRenderer;
 import com.tle.web.sections.standard.renderers.TextFieldRenderer;
+import java.io.IOException;
 
 @SuppressWarnings("nls")
-public class AutoCompleteTextFieldRenderer extends AbstractComponentRenderer implements JSDisableable
-{
-	static
-	{
-		PluginResourceHandler.init(AutoCompleteTextFieldRenderer.class);
-	}
+public class AutoCompleteTextFieldRenderer extends AbstractComponentRenderer
+    implements JSDisableable {
+  static {
+    PluginResourceHandler.init(AutoCompleteTextFieldRenderer.class);
+  }
 
-	@PlugURL("scripts/component/autocomplete.js")
-	private static String AUTOCOMPLETE_URL;
-	@PlugURL("css/component/autocomplete.css")
-	private static String AUTOCOMPLETE_STYLE;
+  @PlugURL("scripts/component/autocomplete.js")
+  private static String AUTOCOMPLETE_URL;
 
-	private static JSCallable SETUP_AUTOCOMPLETE = new ExternallyDefinedFunction(
-		"autocompletesearch", new IncludeFile(AUTOCOMPLETE_URL), JQueryUIAutocomplete.PRERENDER, //$NON-NLS-1$
-		JQueryCore.PRERENDER);
+  @PlugURL("css/component/autocomplete.css")
+  private static String AUTOCOMPLETE_STYLE;
 
-	private static final CssInclude CSS = CssInclude.include(AUTOCOMPLETE_STYLE).make();
+  private static JSCallable SETUP_AUTOCOMPLETE =
+      new ExternallyDefinedFunction(
+          "autocompletesearch",
+          new IncludeFile(AUTOCOMPLETE_URL),
+          JQueryUIAutocomplete.PRERENDER, // $NON-NLS-1$
+          JQueryCore.PRERENDER);
 
-	private final HtmlTextFieldState htmlTextFieldState;
-	private final TextFieldRenderer tfrReal;
-	private final TextFieldRenderer tfrPrompt;
+  private static final CssInclude CSS = CssInclude.include(AUTOCOMPLETE_STYLE).make();
 
-	public AutoCompleteTextFieldRenderer(HtmlTextFieldState state)
-	{
-		super(state);
-		addClass("autocomplete-container");
+  private final HtmlTextFieldState htmlTextFieldState;
+  private final TextFieldRenderer tfrReal;
+  private final TextFieldRenderer tfrPrompt;
 
-		htmlTextFieldState = state;
+  public AutoCompleteTextFieldRenderer(HtmlTextFieldState state) {
+    super(state);
+    addClass("autocomplete-container");
 
-		final HtmlValueState value = new HtmlValueState();
-		value.setId(state.getId());
-		value.setName(state.getName());
-		value.setValue(state.getValue());
-		tfrReal = new TextFieldRenderer(value);
-		tfrReal.addClass("real");
+    htmlTextFieldState = state;
 
-		final HtmlValueState prompt = new HtmlValueState();
-		prompt.setDisabled(true);
-		prompt.setElementId(new AppendedElementId(state, "_prompt"));
-		tfrPrompt = new TextFieldRenderer(prompt);
-		tfrPrompt.addClass("prompt");
-	}
+    final HtmlValueState value = new HtmlValueState();
+    value.setId(state.getId());
+    value.setName(state.getName());
+    value.setValue(state.getValue());
+    tfrReal = new TextFieldRenderer(value);
+    tfrReal.addClass("real");
 
-	@Override
-	public ElementId getVisibleElementId()
-	{
-		AppendedElementId divId = new AppendedElementId(this, "_autocomplete");
-		divId.registerUse();
-		return divId;
-	}
+    final HtmlValueState prompt = new HtmlValueState();
+    prompt.setDisabled(true);
+    prompt.setElementId(new AppendedElementId(state, "_prompt"));
+    tfrPrompt = new TextFieldRenderer(prompt);
+    tfrPrompt.addClass("prompt");
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		super.preRender(info);
+  @Override
+  public ElementId getVisibleElementId() {
+    AppendedElementId divId = new AppendedElementId(this, "_autocomplete");
+    divId.registerUse();
+    return divId;
+  }
 
-		info.preRender(CSS);
+  @Override
+  public void preRender(PreRenderContext info) {
+    super.preRender(info);
 
-		JSCallable callback = htmlTextFieldState.getAutoCompleteCallback();
-		JSHandler handler = htmlTextFieldState.getHandler("autoselect");
-		if( callback != null )
-		{
-			if( handler != null )
-			{
-				info.addReadyStatements(Js.call_s(SETUP_AUTOCOMPLETE, callback, getVisibleElementId(),
-					new ObjectExpression("autoselect", new AnonymousFunction(handler))));
-			}
-			else
-			{
-				info.addReadyStatements(Js.call_s(SETUP_AUTOCOMPLETE, callback, getVisibleElementId(),
-					new ObjectExpression()));
-			}
-		}
-	}
+    info.preRender(CSS);
 
-	public void setAutoSubmitButton(final Object autoSubmitButton)
-	{
-		tfrReal.setAutoSubmitButton(autoSubmitButton);
-	}
+    JSCallable callback = htmlTextFieldState.getAutoCompleteCallback();
+    JSHandler handler = htmlTextFieldState.getHandler("autoselect");
+    if (callback != null) {
+      if (handler != null) {
+        info.addReadyStatements(
+            Js.call_s(
+                SETUP_AUTOCOMPLETE,
+                callback,
+                getVisibleElementId(),
+                new ObjectExpression("autoselect", new AnonymousFunction(handler))));
+      } else {
+        info.addReadyStatements(
+            Js.call_s(SETUP_AUTOCOMPLETE, callback, getVisibleElementId(), new ObjectExpression()));
+      }
+    }
+  }
 
-	public void setPlaceholderText(final String text)
-	{
-		tfrReal.setPlaceholderText(text);
-	}
+  public void setAutoSubmitButton(final Object autoSubmitButton) {
+    tfrReal.setAutoSubmitButton(autoSubmitButton);
+  }
 
-	@Override
-	protected void writeMiddle(SectionWriter writer) throws IOException
-	{
-		writer.render(tfrReal);
-		if( nestedRenderable != null )
-		{
-			writer.render(nestedRenderable);
-		}
-		writer.render(tfrPrompt);
-	}
+  public void setPlaceholderText(final String text) {
+    tfrReal.setPlaceholderText(text);
+  }
 
-	@Override
-	public JSCallable createDisableFunction()
-	{
-		return new DefaultDisableFunction(this);
-	}
+  @Override
+  protected void writeMiddle(SectionWriter writer) throws IOException {
+    writer.render(tfrReal);
+    if (nestedRenderable != null) {
+      writer.render(nestedRenderable);
+    }
+    writer.render(tfrPrompt);
+  }
 
-	@Override
-	protected String getTag()
-	{
-		return "div";
-	}
+  @Override
+  public JSCallable createDisableFunction() {
+    return new DefaultDisableFunction(this);
+  }
+
+  @Override
+  protected String getTag() {
+    return "div";
+  }
 }

@@ -24,25 +24,24 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.render.SectionRenderable;
 
-public interface EntityEditor<B extends EntityEditingBean, E extends BaseEntity>
-{
-	B getEditedEntity(SectionInfo info);
+public interface EntityEditor<B extends EntityEditingBean, E extends BaseEntity> {
+  B getEditedEntity(SectionInfo info);
 
-	void create(SectionInfo info);
+  void create(SectionInfo info);
 
-	void edit(SectionInfo info, String entUuid, boolean clone);
+  void edit(SectionInfo info, String entUuid, boolean clone);
 
-	SectionRenderable renderEditor(RenderContext context);
+  SectionRenderable renderEditor(RenderContext context);
 
-	SectionRenderable renderHelp(RenderContext context);
+  SectionRenderable renderHelp(RenderContext context);
 
-	boolean save(SectionInfo info);
+  boolean save(SectionInfo info);
 
-	void cancel(SectionInfo info);
+  void cancel(SectionInfo info);
 
-	<S extends EntityEditingSession<B, E>> S saveToSession(SectionInfo info);
+  <S extends EntityEditingSession<B, E>> S saveToSession(SectionInfo info);
 
-	<S extends EntityEditingSession<B, E>> S loadFromSession(SectionInfo info);
+  <S extends EntityEditingSession<B, E>> S loadFromSession(SectionInfo info);
 
-	void register(SectionTree tree, String parentId);
+  void register(SectionTree tree, String parentId);
 }

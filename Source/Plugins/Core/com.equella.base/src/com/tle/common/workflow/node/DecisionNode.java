@@ -16,73 +16,61 @@
 
 package com.tle.common.workflow.node;
 
+import com.tle.beans.entity.LanguageBundle;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
-
 import org.hibernate.annotations.AccessType;
-
-import com.tle.beans.entity.LanguageBundle;
 
 @Entity(name = "WorkflowDecision")
 @AccessType("field")
 @DiscriminatorValue("d")
-public class DecisionNode extends WorkflowTreeNode
-{
-	private static final long serialVersionUID = 1;
+public class DecisionNode extends WorkflowTreeNode {
+  private static final long serialVersionUID = 1;
 
-	@Lob
-	private String script;
-	@Column(length = 40)
-	private String collectionUuid;
+  @Lob private String script;
 
-	public DecisionNode(LanguageBundle name)
-	{
-		super(name);
-		script = ""; //$NON-NLS-1$
-	}
+  @Column(length = 40)
+  private String collectionUuid;
 
-	public DecisionNode()
-	{
-		super();
-	}
+  public DecisionNode(LanguageBundle name) {
+    super(name);
+    script = ""; // $NON-NLS-1$
+  }
 
-	@Override
-	public char getType()
-	{
-		return 'd';
-	}
+  public DecisionNode() {
+    super();
+  }
 
-	public String getScript()
-	{
-		return script;
-	}
+  @Override
+  public char getType() {
+    return 'd';
+  }
 
-	public void setScript(String script)
-	{
-		this.script = script;
-	}
+  public String getScript() {
+    return script;
+  }
 
-	@Override
-	public boolean canAddChildren()
-	{
-		return true;
-	}
+  public void setScript(String script) {
+    this.script = script;
+  }
 
-	@Override
-	public boolean canHaveSiblingRejectPoints()
-	{
-		return true;
-	}
+  @Override
+  public boolean canAddChildren() {
+    return true;
+  }
 
-	public String getCollectionUuid()
-	{
-		return collectionUuid;
-	}
+  @Override
+  public boolean canHaveSiblingRejectPoints() {
+    return true;
+  }
 
-	public void setCollectionUuid(String collectionUuid)
-	{
-		this.collectionUuid = collectionUuid;
-	}
+  public String getCollectionUuid() {
+    return collectionUuid;
+  }
+
+  public void setCollectionUuid(String collectionUuid) {
+    this.collectionUuid = collectionUuid;
+  }
 }

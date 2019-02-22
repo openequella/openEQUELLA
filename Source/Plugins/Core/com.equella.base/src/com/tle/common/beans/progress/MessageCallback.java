@@ -16,7 +16,6 @@
 
 package com.tle.common.beans.progress;
 
-public interface MessageCallback
-{
-	String getMessage();
+public interface MessageCallback {
+  String getMessage();
 }

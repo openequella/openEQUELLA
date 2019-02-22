@@ -20,12 +20,11 @@ import com.tle.common.EntityPack;
 import com.tle.common.lti.consumers.entity.LtiConsumer;
 import com.tle.core.entity.service.impl.EntityEditingSessionImpl;
 
-public class LtiConsumerEditingSession extends EntityEditingSessionImpl<LtiConsumerEditingBean, LtiConsumer>
-{
+public class LtiConsumerEditingSession
+    extends EntityEditingSessionImpl<LtiConsumerEditingBean, LtiConsumer> {
 
-	public LtiConsumerEditingSession(String sessionId, EntityPack<LtiConsumer> pack, LtiConsumerEditingBean bean)
-	{
-		super(sessionId, pack, bean);
-	}
-
+  public LtiConsumerEditingSession(
+      String sessionId, EntityPack<LtiConsumer> pack, LtiConsumerEditingBean bean) {
+    super(sessionId, pack, bean);
+  }
 }

@@ -22,22 +22,21 @@ import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 
-public final class WizardJSLibrary
-{
-	static
-	{
-		PluginResourceHandler.init(WizardJSLibrary.class);
-	}
+public final class WizardJSLibrary {
+  static {
+    PluginResourceHandler.init(WizardJSLibrary.class);
+  }
 
-	@PlugURL("scripts/wizardctrl.js")
-	private static String URL_LIBRARY;
+  @PlugURL("scripts/wizardctrl.js")
+  private static String URL_LIBRARY;
 
-	public static final IncludeFile INCLUDE = new IncludeFile(URL_LIBRARY);
-	private static final ExternallyDefinedFunction WIZARDCTRLCLASS = new ExternallyDefinedFunction("WizardCtrl", INCLUDE);
-	public static final JSCallable AffixDiv = new ExternallyDefinedFunction(WIZARDCTRLCLASS, "affixDiv", 0);
+  public static final IncludeFile INCLUDE = new IncludeFile(URL_LIBRARY);
+  private static final ExternallyDefinedFunction WIZARDCTRLCLASS =
+      new ExternallyDefinedFunction("WizardCtrl", INCLUDE);
+  public static final JSCallable AffixDiv =
+      new ExternallyDefinedFunction(WIZARDCTRLCLASS, "affixDiv", 0);
 
-	private WizardJSLibrary()
-	{
-		throw new Error();
-	}
+  private WizardJSLibrary() {
+    throw new Error();
+  }
 }

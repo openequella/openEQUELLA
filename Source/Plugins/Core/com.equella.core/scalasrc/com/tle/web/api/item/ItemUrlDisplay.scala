@@ -23,9 +23,12 @@ object ItemUrlDisplay {
 
   def addBaseUri(path: String): String = {
     Url.parse(path) match {
-      case rurl: RelativeUrl => AbsoluteUrl.parse(urlService.getBaseInstitutionURI.toString)
-        .withPath(rurl.path)
-        .withQueryString(rurl.query).toString()
+      case rurl: RelativeUrl =>
+        AbsoluteUrl
+          .parse(urlService.getBaseInstitutionURI.toString)
+          .withPath(rurl.path)
+          .withQueryString(rurl.query)
+          .toString()
       case url => url.toString()
     }
   }

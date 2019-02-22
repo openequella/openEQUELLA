@@ -16,22 +16,18 @@
 
 package com.tle.web.htmleditor.tinymce.addon.tle.service;
 
-import java.util.Collection;
-
 import com.tle.beans.mime.MimeEntry;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewurl.ViewableResource;
+import java.util.Collection;
 
-/**
- * @author aholland
- */
-public interface MimeTemplateService
-{
-	String getTemplateForMimeType(String mime);
+/** @author aholland */
+public interface MimeTemplateService {
+  String getTemplateForMimeType(String mime);
 
-	String getTemplateForMimeEntry(MimeEntry mimeEntry);
+  String getTemplateForMimeEntry(MimeEntry mimeEntry);
 
-	String getPopulatedTemplate(SectionInfo info, ViewableResource vres, String title);
+  String getPopulatedTemplate(SectionInfo info, ViewableResource vres, String title);
 
-	Collection<String> getEmbeddableMimeTypes();
+  Collection<String> getEmbeddableMimeTypes();
 }

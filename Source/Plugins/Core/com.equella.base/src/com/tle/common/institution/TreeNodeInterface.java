@@ -16,30 +16,27 @@
 
 package com.tle.common.institution;
 
+import com.tle.beans.IdCloneable;
+import com.tle.beans.Institution;
 import java.io.Serializable;
 import java.util.List;
 
-import com.tle.beans.IdCloneable;
-import com.tle.beans.Institution;
+/** @author Nicholas Read */
+public interface TreeNodeInterface<T extends TreeNodeInterface<T>>
+    extends Serializable, IdCloneable {
+  String getUuid();
 
-/**
- * @author Nicholas Read
- */
-public interface TreeNodeInterface<T extends TreeNodeInterface<T>> extends Serializable, IdCloneable
-{
-	String getUuid();
+  void setUuid(String uuid);
 
-	void setUuid(String uuid);
+  T getParent();
 
-	T getParent();
+  void setParent(T parent);
 
-	void setParent(T parent);
+  Institution getInstitution();
 
-	Institution getInstitution();
+  void setInstitution(Institution institution);
 
-	void setInstitution(Institution institution);
+  List<T> getAllParents();
 
-	List<T> getAllParents();
-
-	void setAllParents(List<T> allParents);
+  void setAllParents(List<T> allParents);
 }

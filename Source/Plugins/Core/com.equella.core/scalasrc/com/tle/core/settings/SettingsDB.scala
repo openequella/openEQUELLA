@@ -27,8 +27,6 @@ import io.circe.{Decoder, Encoder}
 import io.doolse.simpledba.jdbc._
 import io.doolse.simpledba.syntax._
 
-
-
 object SettingsDB {
 
   def ensureEditSystem[A](db: DB[A]): DB[A] = AclChecks.ensureOnePriv("EDIT_SYSTEM_SETTINGS")(db)
@@ -36,27 +34,28 @@ object SettingsDB {
   def q = DBSchema.queries.settingsQueries
 
   def singleProperty(name: String): OptionT[DB, Setting] = OptionT {
-    Kleisli {
-      uc => q.query(uc.inst, name).compile.last
+    Kleisli { uc =>
+      q.query(uc.inst, name).compile.last
     }
   }
 
-  def jsonProperty[A](name: String)(implicit dec: Decoder[A]): OptionT[DB, A] = singleProperty(name).map {
-    s => parse(s.value).flatMap(dec.decodeJson).fold(throw _, identity)
+  def jsonProperty[A](name: String)(implicit dec: Decoder[A]): OptionT[DB, A] =
+    singleProperty(name).map { s =>
+      parse(s.value).flatMap(dec.decodeJson).fold(throw _, identity)
+    }
+
+  def mkSetting(name: String, value: String): DB[Setting] = Kleisli { uc =>
+    Setting(uc.inst, name, value).pure[JDBCIO]
   }
 
-  def mkSetting(name: String, value: String): DB[Setting] = Kleisli {
-    uc => Setting(uc.inst, name, value).pure[JDBCIO]
-  }
-
-  def setJsonProperty[A : Encoder : Decoder](name: String, value: A): DB[Unit] = {
+  def setJsonProperty[A: Encoder: Decoder](name: String, value: A): DB[Unit] = {
     val newJson = value.asJson.noSpaces
     for {
       newSetting <- mkSetting(name, newJson)
-      existProp <- singleProperty(name).value
+      existProp  <- singleProperty(name).value
       _ <- Kleisli.liftF {
         (existProp match {
-          case None => q.write.insert(newSetting)
+          case None           => q.write.insert(newSetting)
           case Some(existing) => q.write.update(existing, newSetting)
         }).flush.compile.drain
       }

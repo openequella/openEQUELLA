@@ -17,22 +17,19 @@
 package com.tle.core.oauth;
 
 import com.tle.common.oauth.beans.OAuthClient;
-import com.tle.core.oauth.dao.OAuthClientDao;
 import com.tle.common.usermanagement.user.UserState;
+import com.tle.core.oauth.dao.OAuthClientDao;
 
-/**
- * @author Aaron
- */
-public interface OAuthUserState extends UserState
-{
-	String getOAuthToken();
+/** @author Aaron */
+public interface OAuthUserState extends UserState {
+  String getOAuthToken();
 
-	String getClientUuid();
+  String getClientUuid();
 
-	/**
-	 * The dao is required in case the transient value is missing
-	 * 
-	 * @return
-	 */
-	OAuthClient getClient(OAuthClientDao dao);
+  /**
+   * The dao is required in case the transient value is missing
+   *
+   * @return
+   */
+  OAuthClient getClient(OAuthClientDao dao);
 }

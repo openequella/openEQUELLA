@@ -40,67 +40,59 @@ import com.tle.web.sections.standard.dialog.model.DialogModel;
 @Bind
 @SuppressWarnings("nls")
 public class RemoteCachingAddGroupDialog
-	extends
-		AbstractOkayableDialog<RemoteCachingAddGroupDialog.RemoteCachingAddGroupDialogModel>
-{
-	@PlugKey("addgrouping.dialog.title")
-	private static Label LABEL_TITLE;
+    extends AbstractOkayableDialog<RemoteCachingAddGroupDialog.RemoteCachingAddGroupDialogModel> {
+  @PlugKey("addgrouping.dialog.title")
+  private static Label LABEL_TITLE;
 
-	@PlugKey("addgrouping.blank.message")
-	private static Label LABEL_NOT_BLANK;
+  @PlugKey("addgrouping.blank.message")
+  private static Label LABEL_NOT_BLANK;
 
-	@Component(stateful = false)
-	private TextField groupingName;
+  @Component(stateful = false)
+  private TextField groupingName;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	protected String getContentBodyClass(RenderContext context)
-	{
-		return "addgroupingdialog";
-	}
+  @Override
+  protected String getContentBodyClass(RenderContext context) {
+    return "addgroupingdialog";
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		setAjax(true);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    setAjax(true);
+  }
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		return viewFactory.createResult("addgroupingdialog.ftl", this);
-	}
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    return viewFactory.createResult("addgroupingdialog.ftl", this);
+  }
 
-	@Override
-	protected JSHandler createOkHandler(SectionTree tree)
-	{
-		return new OverrideHandler(jscall(getOkCallback(), groupingName.createGetExpression()),
-			jscall(getCloseFunction())).addValidator(groupingName.createNotBlankValidator().setFailureStatements(
-			Js.alert_s(LABEL_NOT_BLANK)));
-	}
+  @Override
+  protected JSHandler createOkHandler(SectionTree tree) {
+    return new OverrideHandler(
+            jscall(getOkCallback(), groupingName.createGetExpression()), jscall(getCloseFunction()))
+        .addValidator(
+            groupingName
+                .createNotBlankValidator()
+                .setFailureStatements(Js.alert_s(LABEL_NOT_BLANK)));
+  }
 
-	public TextField getGroupingName()
-	{
-		return groupingName;
-	}
+  public TextField getGroupingName() {
+    return groupingName;
+  }
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return LABEL_TITLE;
-	}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return LABEL_TITLE;
+  }
 
-	@Override
-	public RemoteCachingAddGroupDialogModel instantiateDialogModel(SectionInfo info)
-	{
-		return new RemoteCachingAddGroupDialogModel();
-	}
+  @Override
+  public RemoteCachingAddGroupDialogModel instantiateDialogModel(SectionInfo info) {
+    return new RemoteCachingAddGroupDialogModel();
+  }
 
-	public static class RemoteCachingAddGroupDialogModel extends DialogModel
-	{
-		// Nothing to declare
-	}
+  public static class RemoteCachingAddGroupDialogModel extends DialogModel {
+    // Nothing to declare
+  }
 }

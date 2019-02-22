@@ -30,55 +30,47 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
 
 @NonNullByDefault
-public abstract class AbstractShareSearchQueryDialog extends EquellaDialog<DialogModel>
-{
-	@PlugKey("actions.share.dialog.title")
-	protected static Label TITLE_LABEL;
+public abstract class AbstractShareSearchQueryDialog extends EquellaDialog<DialogModel> {
+  @PlugKey("actions.share.dialog.title")
+  protected static Label TITLE_LABEL;
 
-	private JSCallable reloadParent;
+  private JSCallable reloadParent;
 
-	protected abstract AbstractShareSearchQuerySection getContentSection();
+  protected abstract AbstractShareSearchQuerySection getContentSection();
 
-	protected AbstractShareSearchQueryDialog()
-	{
-		setAjax(true);
-	}
+  protected AbstractShareSearchQueryDialog() {
+    setAjax(true);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		getContentSection().setContainerDialog(this);
-		super.registered(id, tree);
-		tree.registerInnerSection(getContentSection(), id);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    getContentSection().setContainerDialog(this);
+    super.registered(id, tree);
+    tree.registerInnerSection(getContentSection(), id);
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		reloadParent = addParentCallable(new ReloadFunction(false));
-		super.treeFinished(id, tree);
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    reloadParent = addParentCallable(new ReloadFunction(false));
+    super.treeFinished(id, tree);
+  }
 
-	@Override
-	protected SectionRenderable getRenderableContents(RenderContext context)
-	{
-		return SectionUtils.renderSection(context, getContentSection());
-	}
+  @Override
+  protected SectionRenderable getRenderableContents(RenderContext context) {
+    return SectionUtils.renderSection(context, getContentSection());
+  }
 
-	public void close(SectionInfo info)
-	{
-		closeDialog(info, reloadParent);
-	}
+  public void close(SectionInfo info) {
+    closeDialog(info, reloadParent);
+  }
 
-	@Override
-	protected Label getTitleLabel(RenderContext context)
-	{
-		return TITLE_LABEL;
-	}
+  @Override
+  protected Label getTitleLabel(RenderContext context) {
+    return TITLE_LABEL;
+  }
 
-	@Override
-	public DialogModel instantiateDialogModel(SectionInfo info)
-	{
-		return new DialogModel();
-	}
+  @Override
+  public DialogModel instantiateDialogModel(SectionInfo info) {
+    return new DialogModel();
+  }
 }

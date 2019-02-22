@@ -18,7 +18,6 @@ package com.tle.web.api.collection.resource;
 
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.security.PrivilegeTree.Node;
-import com.tle.common.security.SecurityConstants;
 import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.guice.Bind;
@@ -28,7 +27,6 @@ import com.tle.web.api.collection.interfaces.CollectionResource;
 import com.tle.web.api.collection.interfaces.beans.AllCollectionsSecurityBean;
 import com.tle.web.api.collection.interfaces.beans.CollectionBean;
 import com.tle.web.api.entity.resource.AbstractBaseEntityResource;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -36,42 +34,33 @@ import javax.inject.Singleton;
 @Bind(CollectionResource.class)
 @Singleton
 public class CollectionResourceImpl
-	extends
-		AbstractBaseEntityResource<ItemDefinition, AllCollectionsSecurityBean, CollectionBean>
-		implements CollectionResource
-{
-	@Inject
-	private ItemDefinitionService collectionService;
-	@Inject
-	private CollectionBeanSerializer collectionSerializer;
+    extends AbstractBaseEntityResource<ItemDefinition, AllCollectionsSecurityBean, CollectionBean>
+    implements CollectionResource {
+  @Inject private ItemDefinitionService collectionService;
+  @Inject private CollectionBeanSerializer collectionSerializer;
 
-	@Override
-	protected Class<?> getResourceClass()
-	{
-		return CollectionResource.class;
-	}
+  @Override
+  protected Class<?> getResourceClass() {
+    return CollectionResource.class;
+  }
 
-	@Override
-	public AbstractEntityService<?, ItemDefinition> getEntityService()
-	{
-		return collectionService;
-	}
+  @Override
+  public AbstractEntityService<?, ItemDefinition> getEntityService() {
+    return collectionService;
+  }
 
-	@Override
-	protected BaseEntitySerializer<ItemDefinition, CollectionBean> getSerializer()
-	{
-		return collectionSerializer;
-	}
+  @Override
+  protected BaseEntitySerializer<ItemDefinition, CollectionBean> getSerializer() {
+    return collectionSerializer;
+  }
 
-	@Override
-	protected Node[] getAllNodes()
-	{
-		return new Node[]{Node.ALL_COLLECTIONS, Node.GLOBAL_ITEM_STATUS};
-	}
+  @Override
+  protected Node[] getAllNodes() {
+    return new Node[] {Node.ALL_COLLECTIONS, Node.GLOBAL_ITEM_STATUS};
+  }
 
-	@Override
-	protected AllCollectionsSecurityBean createAllSecurityBean()
-	{
-		return new AllCollectionsSecurityBean();
-	}
+  @Override
+  protected AllCollectionsSecurityBean createAllSecurityBean() {
+    return new AllCollectionsSecurityBean();
+  }
 }

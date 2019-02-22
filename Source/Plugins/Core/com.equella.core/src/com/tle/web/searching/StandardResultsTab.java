@@ -27,65 +27,55 @@ import com.tle.web.sections.render.LabelRenderer;
 import com.tle.web.sections.result.util.PluralKeyLabel;
 import com.tle.web.selection.section.CourseListSection;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class StandardResultsTab extends AbstractPrototypeSection<StandardResultsTab.StandardResultsTabModel>
-	implements
-		SearchTab
-{
-	@PlugKey("results.tab.resultcount")
-	private static String KEY_STANDARD_RESULTS_TAB_COUNT;
-	private boolean active;
+public class StandardResultsTab
+    extends AbstractPrototypeSection<StandardResultsTab.StandardResultsTabModel>
+    implements SearchTab {
+  @PlugKey("results.tab.resultcount")
+  private static String KEY_STANDARD_RESULTS_TAB_COUNT;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		// TODO: count
-		return new LabelRenderer(new PluralKeyLabel(KEY_STANDARD_RESULTS_TAB_COUNT, 0));
-	}
+  private boolean active;
 
-	@Override
-	public String getId()
-	{
-		return "standard";
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    // TODO: count
+    return new LabelRenderer(new PluralKeyLabel(KEY_STANDARD_RESULTS_TAB_COUNT, 0));
+  }
 
-	@Override
-	public SectionInfo getForward(SectionInfo info)
-	{
-		// TODO: this is less hacky than before, but still sub-ottstimal.
-		final CourseListSection cls = info.lookupSection(CourseListSection.class);
-		if( cls != null && cls.isApplicable(info) )
-		{
-			return cls.createSearchForward(info);
-		}
-		return info.createForward("/searching.do");
-	}
+  @Override
+  public String getId() {
+    return "standard";
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new StandardResultsTabModel();
-	}
+  @Override
+  public SectionInfo getForward(SectionInfo info) {
+    // TODO: this is less hacky than before, but still sub-ottstimal.
+    final CourseListSection cls = info.lookupSection(CourseListSection.class);
+    if (cls != null && cls.isApplicable(info)) {
+      return cls.createSearchForward(info);
+    }
+    return info.createForward("/searching.do");
+  }
 
-	@Override
-	public void setActive()
-	{
-		active = true;
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new StandardResultsTabModel();
+  }
 
-	@Override
-	public boolean isActive()
-	{
-		return active;
-	}
+  @Override
+  public void setActive() {
+    active = true;
+  }
 
-	public static class StandardResultsTabModel
-	{
-		// Empty, for now
-	}
+  @Override
+  public boolean isActive() {
+    return active;
+  }
+
+  public static class StandardResultsTabModel {
+    // Empty, for now
+  }
 }

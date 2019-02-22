@@ -26,40 +26,33 @@ import com.tle.web.viewitem.summary.content.HistoryContentSection;
 import com.tle.web.viewitem.summary.sidebar.actions.GenericMinorActionWithPageSection;
 import com.tle.web.viewurl.ItemSectionInfo;
 
-public class HistoryLinkSection extends GenericMinorActionWithPageSection
-{
-	@PlugKey("summary.sidebar.summary.history.title")
-	private static Label LINK_LABEL;
+public class HistoryLinkSection extends GenericMinorActionWithPageSection {
+  @PlugKey("summary.sidebar.summary.history.title")
+  private static Label LINK_LABEL;
 
-	@TreeLookup
-	private HistoryContentSection historyContentSection;
+  @TreeLookup private HistoryContentSection historyContentSection;
 
-	public HistoryLinkSection()
-	{
-		setShowForPreview(true);
-	}
+  public HistoryLinkSection() {
+    setShowForPreview(true);
+  }
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return LINK_LABEL;
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return LINK_LABEL;
+  }
 
-	@Override
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		return getItemInfo(info).hasPrivilege(HistoryContentSection.VIEW_PRIVILEGE);
-	}
+  @Override
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    return getItemInfo(info).hasPrivilege(HistoryContentSection.VIEW_PRIVILEGE);
+  }
 
-	@Override
-	protected SectionId getPageSection()
-	{
-		return historyContentSection;
-	}
+  @Override
+  protected SectionId getPageSection() {
+    return historyContentSection;
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return LINK_LABEL.getText();
-	}
+  @Override
+  public String getLinkText() {
+    return LINK_LABEL.getText();
+  }
 }

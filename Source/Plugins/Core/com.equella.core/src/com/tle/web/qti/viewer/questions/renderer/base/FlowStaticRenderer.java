@@ -16,22 +16,17 @@
 
 package com.tle.web.qti.viewer.questions.renderer.base;
 
-import uk.ac.ed.ph.jqtiplus.node.content.basic.FlowStatic;
-
 import com.tle.web.qti.viewer.QtiViewerContext;
 import com.tle.web.qti.viewer.questions.renderer.QtiNodeRenderer;
+import uk.ac.ed.ph.jqtiplus.node.content.basic.FlowStatic;
 
-/**
- * @author Aaron
- */
-public abstract class FlowStaticRenderer extends QtiNodeRenderer
-{
-	@SuppressWarnings("unused")
-	private final FlowStatic flowStatic;
+/** @author Aaron */
+public abstract class FlowStaticRenderer extends QtiNodeRenderer {
+  @SuppressWarnings("unused")
+  private final FlowStatic flowStatic;
 
-	protected FlowStaticRenderer(FlowStatic flowStatic, QtiViewerContext context)
-	{
-		super(flowStatic, context);
-		this.flowStatic = flowStatic;
-	}
+  protected FlowStaticRenderer(FlowStatic flowStatic, QtiViewerContext context) {
+    super(flowStatic, context);
+    this.flowStatic = flowStatic;
+  }
 }

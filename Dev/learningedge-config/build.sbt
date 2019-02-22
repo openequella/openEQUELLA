@@ -2,13 +2,13 @@ import org.apache.commons.configuration.{FileConfiguration, PropertiesConfigurat
 import Path.rebase
 
 prepareDevConfig := {
-  val bc = buildConfig.value.getConfig("devconfig")
-  val javaHome = file(System.getProperty("java.home"))
-  val baseDir = baseDirectory.value
-  val srcRoot = baseDir.getParentFile.getParentFile
-  val pluginRoots = Seq(srcRoot / "Source/Plugins", srcRoot / "Platform", srcRoot / "Interface")
+  val bc              = buildConfig.value.getConfig("devconfig")
+  val javaHome        = file(System.getProperty("java.home"))
+  val baseDir         = baseDirectory.value
+  val srcRoot         = baseDir.getParentFile.getParentFile
+  val pluginRoots     = Seq(srcRoot / "Source/Plugins", srcRoot / "Platform", srcRoot / "Interface")
   val installerConfig = (baseDirectory in LocalProject("Installer")).value / "data/server/learningedge-config"
-  val defaultsDir = baseDirectory.value / "defaults"
+  val defaultsDir     = baseDirectory.value / "defaults"
   val fromInstaller = Seq(
     installerConfig / "hikari.properties",
     installerConfig / "plugins/com.tle.web.viewitem/mandatory.properties"
@@ -21,10 +21,11 @@ prepareDevConfig := {
 
   IO.copy(fromInstaller ++ fromDefaults, CopyOptions().withOverwrite(false))
 
-  val port = bc.getInt("port")
+  val port     = bc.getInt("port")
   val hostname = bc.getString("hostname")
-  val imPath = bc.getString("imagemagick")
-  val adminurl = if (bc.hasPath("adminurl")) bc.getString("adminurl") else s"http://$hostname:$port/"
+  val imPath   = bc.getString("imagemagick")
+  val adminurl =
+    if (bc.hasPath("adminurl")) bc.getString("adminurl") else s"http://$hostname:$port/"
   val mc = new PropertiesConfiguration()
   mc.load(installerConfig / "mandatory-config.properties")
 
@@ -46,6 +47,9 @@ prepareDevConfig := {
   val log = streams.value.log
   log.info(s"Dev configuration with admin url of '$adminurl'")
   log.info(s"ImageMagick binary dir set to '$imPath'")
-  log.info(s"Please edit database configuration file at '${(baseDir / "hibernate.properties").absolutePath}'")
-  jpfWriteDevJars.all(ScopeFilter(inAggregates(LocalProject("allPlugins"), includeRoot = false))).value
+  log.info(
+    s"Please edit database configuration file at '${(baseDir / "hibernate.properties").absolutePath}'")
+  jpfWriteDevJars
+    .all(ScopeFilter(inAggregates(LocalProject("allPlugins"), includeRoot = false)))
+    .value
 }

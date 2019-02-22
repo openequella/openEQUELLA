@@ -19,7 +19,6 @@ package com.tle.core.lti.consumers.dao;
 import com.tle.common.lti.consumers.entity.LtiConsumer;
 import com.tle.core.entity.dao.AbstractEntityDao;
 
-public interface LtiConsumerDao extends AbstractEntityDao<LtiConsumer>
-{
-	LtiConsumer findByConsumerKey(String consumerKey);
+public interface LtiConsumerDao extends AbstractEntityDao<LtiConsumer> {
+  LtiConsumer findByConsumerKey(String consumerKey);
 }

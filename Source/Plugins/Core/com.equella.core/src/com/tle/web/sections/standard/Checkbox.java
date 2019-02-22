@@ -29,77 +29,62 @@ import com.tle.web.sections.standard.renderers.toggle.CheckboxRenderer;
 
 /**
  * A simple boolean checkbox.
- * <p>
- * This component supplies {@link #isChecked(SectionInfo)} and
- * {@link #setChecked(SectionInfo, boolean)}. The default renderer is usually
- * {@link CheckboxRenderer}.
- * 
+ *
+ * <p>This component supplies {@link #isChecked(SectionInfo)} and {@link #setChecked(SectionInfo,
+ * boolean)}. The default renderer is usually {@link CheckboxRenderer}.
+ *
  * @author jmaginnis
  */
 public class Checkbox extends AbstractValueComponent<HtmlBooleanState, JSValueComponent>
-	implements
-		ParametersEventListener,
-		BookmarkEventListener
-{
-	private static final String CHECKED_VALUE = "checked"; //$NON-NLS-1$
+    implements ParametersEventListener, BookmarkEventListener {
+  private static final String CHECKED_VALUE = "checked"; // $NON-NLS-1$
 
-	public Checkbox()
-	{
-		super(RendererConstants.CHECKBOX);
-	}
+  public Checkbox() {
+    super(RendererConstants.CHECKBOX);
+  }
 
-	@Override
-	protected void prepareModel(RenderContext info)
-	{
-		super.prepareModel(info);
-		getState(info).setValue(CHECKED_VALUE);
-	}
+  @Override
+  protected void prepareModel(RenderContext info) {
+    super.prepareModel(info);
+    getState(info).setValue(CHECKED_VALUE);
+  }
 
-	public void setChecked(SectionInfo info, boolean checked)
-	{
-		HtmlBooleanState state = getState(info);
-		state.setChecked(checked);
-	}
+  public void setChecked(SectionInfo info, boolean checked) {
+    HtmlBooleanState state = getState(info);
+    state.setChecked(checked);
+  }
 
-	public boolean isChecked(SectionInfo info)
-	{
-		HtmlBooleanState state = getState(info);
-		return state.isChecked();
-	}
+  public boolean isChecked(SectionInfo info) {
+    HtmlBooleanState state = getState(info);
+    return state.isChecked();
+  }
 
-	@Override
-	public Class<HtmlBooleanState> getModelClass()
-	{
-		return HtmlBooleanState.class;
-	}
+  @Override
+  public Class<HtmlBooleanState> getModelClass() {
+    return HtmlBooleanState.class;
+  }
 
-	@Override
-	public void handleParameters(SectionInfo info, ParametersEvent event)
-	{
-		String param = event.getParameter(getParameterId(), false);
-		HtmlBooleanState state = getState(info);
-		if( param != null && param.equals(CHECKED_VALUE) )
-		{
-			state.setChecked(true);
-		}
-	}
+  @Override
+  public void handleParameters(SectionInfo info, ParametersEvent event) {
+    String param = event.getParameter(getParameterId(), false);
+    HtmlBooleanState state = getState(info);
+    if (param != null && param.equals(CHECKED_VALUE)) {
+      state.setChecked(true);
+    }
+  }
 
-	@Override
-	public void bookmark(SectionInfo info, BookmarkEvent event)
-	{
-		if( addToThisBookmark(info, event) )
-		{
-			HtmlBooleanState state = getState(info);
-			if( state.isChecked() )
-			{
-				event.setParam(getParameterId(), CHECKED_VALUE);
-			}
-		}
-	}
+  @Override
+  public void bookmark(SectionInfo info, BookmarkEvent event) {
+    if (addToThisBookmark(info, event)) {
+      HtmlBooleanState state = getState(info);
+      if (state.isChecked()) {
+        event.setParam(getParameterId(), CHECKED_VALUE);
+      }
+    }
+  }
 
-	@Override
-	public void document(SectionInfo info, DocumentParamsEvent event)
-	{
-		addDocumentedParam(event, getParameterId(), Boolean.TYPE.getName(), CHECKED_VALUE);
-	}
+  @Override
+  public void document(SectionInfo info, DocumentParamsEvent event) {
+    addDocumentedParam(event, getParameterId(), Boolean.TYPE.getName(), CHECKED_VALUE);
+  }
 }

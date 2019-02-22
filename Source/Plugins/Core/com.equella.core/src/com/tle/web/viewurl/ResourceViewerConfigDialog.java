@@ -19,15 +19,14 @@ package com.tle.web.viewurl;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.standard.Button;
 
-public interface ResourceViewerConfigDialog
-{
-	JSCallable getCollectFunction();
+public interface ResourceViewerConfigDialog {
+  JSCallable getCollectFunction();
 
-	JSCallable getPopulateFunction();
+  JSCallable getPopulateFunction();
 
-	JSCallable getOpenFunction();
+  JSCallable getOpenFunction();
 
-	JSCallable getCloseFunction();
+  JSCallable getCloseFunction();
 
-	Button getOkButton();
+  Button getOkButton();
 }

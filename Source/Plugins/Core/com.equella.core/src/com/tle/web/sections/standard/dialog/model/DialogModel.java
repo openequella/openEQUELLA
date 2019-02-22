@@ -22,58 +22,49 @@ import com.tle.web.sections.js.JSStatements;
 import com.tle.web.sections.standard.dialog.renderer.DialogRenderer;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 
-public class DialogModel extends DialogState
-{
-	@Bookmarked(contexts = BookmarkEvent.CONTEXT_SESSION)
-	private boolean showing;
-	private boolean modalViewing;
-	private DialogRenderer dialogRenderer;
-	private JSStatements afterCloseStatements;
+public class DialogModel extends DialogState {
+  @Bookmarked(contexts = BookmarkEvent.CONTEXT_SESSION)
+  private boolean showing;
 
-	public boolean isShowing()
-	{
-		return showing;
-	}
+  private boolean modalViewing;
+  private DialogRenderer dialogRenderer;
+  private JSStatements afterCloseStatements;
 
-	public void setShowing(boolean showing)
-	{
-		this.showing = showing;
-	}
+  public boolean isShowing() {
+    return showing;
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends HtmlComponentState> Class<T> getClassForRendering()
-	{
-		return (Class<T>) DialogState.class;
-	}
+  public void setShowing(boolean showing) {
+    this.showing = showing;
+  }
 
-	public DialogRenderer getDialogRenderer()
-	{
-		return dialogRenderer;
-	}
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T extends HtmlComponentState> Class<T> getClassForRendering() {
+    return (Class<T>) DialogState.class;
+  }
 
-	public void setDialogRenderer(DialogRenderer dialogRenderer)
-	{
-		this.dialogRenderer = dialogRenderer;
-	}
+  public DialogRenderer getDialogRenderer() {
+    return dialogRenderer;
+  }
 
-	public boolean isModalViewing()
-	{
-		return modalViewing;
-	}
+  public void setDialogRenderer(DialogRenderer dialogRenderer) {
+    this.dialogRenderer = dialogRenderer;
+  }
 
-	public void setModalViewing(boolean modalViewing)
-	{
-		this.modalViewing = modalViewing;
-	}
+  public boolean isModalViewing() {
+    return modalViewing;
+  }
 
-	public JSStatements getAfterCloseStatements()
-	{
-		return afterCloseStatements;
-	}
+  public void setModalViewing(boolean modalViewing) {
+    this.modalViewing = modalViewing;
+  }
 
-	public void setAfterCloseStatements(JSStatements afterCloseStatements)
-	{
-		this.afterCloseStatements = afterCloseStatements;
-	}
+  public JSStatements getAfterCloseStatements() {
+    return afterCloseStatements;
+  }
+
+  public void setAfterCloseStatements(JSStatements afterCloseStatements) {
+    this.afterCloseStatements = afterCloseStatements;
+  }
 }

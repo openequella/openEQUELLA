@@ -18,28 +18,21 @@ package com.tle.web.scripting.objects;
 
 import com.tle.common.scripting.ScriptObject;
 import com.tle.web.scripting.ScriptTypeFactory;
-
 import javax.inject.Inject;
 
-/**
- * @author aholland
- */
-public abstract class AbstractScriptWrapper implements ScriptObject
-{
-	private static final long serialVersionUID = -2982385813518349536L;
+/** @author aholland */
+public abstract class AbstractScriptWrapper implements ScriptObject {
+  private static final long serialVersionUID = -2982385813518349536L;
 
-	@Inject
-	protected ScriptTypeFactory scriptTypeFactory;
+  @Inject protected ScriptTypeFactory scriptTypeFactory;
 
-	@Override
-	public void scriptEnter()
-	{
-		// Nothing by default
-	}
+  @Override
+  public void scriptEnter() {
+    // Nothing by default
+  }
 
-	@Override
-	public void scriptExit()
-	{
-		// Nothing by default
-	}
+  @Override
+  public void scriptExit() {
+    // Nothing by default
+  }
 }

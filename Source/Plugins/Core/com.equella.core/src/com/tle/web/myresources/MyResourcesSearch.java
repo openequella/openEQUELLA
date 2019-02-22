@@ -16,31 +16,26 @@
 
 package com.tle.web.myresources;
 
-import java.util.List;
-
 import com.tle.beans.item.ItemStatus;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.usermanagement.user.CurrentUser;
+import java.util.List;
 
-public class MyResourcesSearch extends DefaultSearch
-{
-	private static final long serialVersionUID = 1L;
+public class MyResourcesSearch extends DefaultSearch {
+  private static final long serialVersionUID = 1L;
 
-	public MyResourcesSearch()
-	{
-		setNotItemStatuses(ItemStatus.DELETED);
-	}
+  public MyResourcesSearch() {
+    setNotItemStatuses(ItemStatus.DELETED);
+  }
 
-	@Override
-	public void setItemStatuses(List<ItemStatus> itemStatuses)
-	{
-		super.setItemStatuses(itemStatuses);
-		setNotItemStatuses();
-	}
+  @Override
+  public void setItemStatuses(List<ItemStatus> itemStatuses) {
+    super.setItemStatuses(itemStatuses);
+    setNotItemStatuses();
+  }
 
-	@Override
-	public String getOwner()
-	{
-		return CurrentUser.getUserID();
-	}
+  @Override
+  public String getOwner() {
+    return CurrentUser.getUserID();
+  }
 }

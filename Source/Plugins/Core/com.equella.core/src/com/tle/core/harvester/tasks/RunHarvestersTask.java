@@ -16,40 +16,33 @@
 
 package com.tle.core.harvester.tasks;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import com.tle.core.harvester.impl.LearningEdgeImpl;
-import com.tle.core.plugins.AbstractPluginService;
-import org.apache.log4j.Logger;
-
 import com.tle.common.harvester.HarvesterProfile;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
 import com.tle.core.harvester.HarvesterProfileService;
+import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.scheduler.ScheduledTask;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.apache.log4j.Logger;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class RunHarvestersTask implements ScheduledTask
-{
-	private static final Logger LOGGER = Logger.getLogger(RunHarvestersTask.class);
-	protected static final String KEY_PFX = AbstractPluginService.getMyPluginId(RunHarvestersTask.class)+".";
+public class RunHarvestersTask implements ScheduledTask {
+  private static final Logger LOGGER = Logger.getLogger(RunHarvestersTask.class);
+  protected static final String KEY_PFX =
+      AbstractPluginService.getMyPluginId(RunHarvestersTask.class) + ".";
 
-	@Inject
-	private HarvesterProfileService harvesterProfileService;
-	@Inject
-	private HarvesterProfileService harvesterService;
+  @Inject private HarvesterProfileService harvesterProfileService;
+  @Inject private HarvesterProfileService harvesterService;
 
-	@Override
-	public void execute()
-	{
-		LOGGER.info(CurrentLocale.get(KEY_PFX + "log.runtask"));
-		LOGGER.info("------------------");
-		for( HarvesterProfile profile : harvesterProfileService.enumerateEnabledProfiles() )
-		{
-			harvesterService.startHarvesterTask(profile.getUuid(), false);
-		}
-	}
+  @Override
+  public void execute() {
+    LOGGER.info(CurrentLocale.get(KEY_PFX + "log.runtask"));
+    LOGGER.info("------------------");
+    for (HarvesterProfile profile : harvesterProfileService.enumerateEnabledProfiles()) {
+      harvesterService.startHarvesterTask(profile.getUuid(), false);
+    }
+  }
 }

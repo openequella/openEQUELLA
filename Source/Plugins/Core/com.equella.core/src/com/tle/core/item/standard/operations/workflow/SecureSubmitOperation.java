@@ -22,21 +22,16 @@ import com.tle.annotation.Nullable;
 import com.tle.common.security.SecurityConstants;
 import com.tle.core.security.impl.SecureOnCall;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @SecureOnCall(priv = SecurityConstants.EDIT_ITEM)
-public class SecureSubmitOperation extends SubmitOperation
-{
-	@AssistedInject
-	public SecureSubmitOperation(@Nullable @Assisted String message)
-	{
-		super(message);
-	}
+public class SecureSubmitOperation extends SubmitOperation {
+  @AssistedInject
+  public SecureSubmitOperation(@Nullable @Assisted String message) {
+    super(message);
+  }
 
-	@AssistedInject
-	public SecureSubmitOperation()
-	{
-		// no message;
-	}
+  @AssistedInject
+  public SecureSubmitOperation() {
+    // no message;
+  }
 }

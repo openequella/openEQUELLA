@@ -16,8 +16,6 @@
 
 package com.tle.web.notification.section;
 
-import java.util.List;
-
 import com.google.inject.Inject;
 import com.tle.common.search.DefaultSearch;
 import com.tle.core.notification.standard.indexer.NotificationSearch;
@@ -31,53 +29,46 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
+import java.util.List;
 
 public class NotificationResultsSection
-	extends
-		AbstractFreetextResultsSection<NotificationItemListEntry, AbstractSearchResultsSection.SearchResultsModel>
-{
-	@PlugKey("noresults.items")
-	private static Label LABEL_NOAVAILABLE;
-	@PlugKey("noresults.items.filtered")
-	private static Label LABEL_NORESULTS;
+    extends AbstractFreetextResultsSection<
+        NotificationItemListEntry, AbstractSearchResultsSection.SearchResultsModel> {
+  @PlugKey("noresults.items")
+  private static Label LABEL_NOAVAILABLE;
 
-	@Inject
-	private NotificationItemList itemList;
+  @PlugKey("noresults.items.filtered")
+  private static Label LABEL_NORESULTS;
 
-	@Override
-	protected void registerItemList(SectionTree tree, String id)
-	{
-		tree.registerInnerSection(itemList, id);
-	}
+  @Inject private NotificationItemList itemList;
 
-	@Override
-	public NotificationItemList getItemList(SectionInfo info)
-	{
-		return itemList;
-	}
+  @Override
+  protected void registerItemList(SectionTree tree, String id) {
+    tree.registerInnerSection(itemList, id);
+  }
 
-	@Override
-	protected DefaultSearch createDefaultSearch(SectionInfo info)
-	{
-		return new NotificationSearch();
-	}
+  @Override
+  public NotificationItemList getItemList(SectionInfo info) {
+    return itemList;
+  }
 
-	@Override
-	protected Label getNoResultsTitle(SectionInfo info, FreetextSearchEvent searchEvent,
-		FreetextSearchResultEvent resultsEvent)
-	{
-		if( !searchEvent.isFiltered() )
-		{
-			return LABEL_NOAVAILABLE;
-		}
-		return LABEL_NORESULTS;
-	}
+  @Override
+  protected DefaultSearch createDefaultSearch(SectionInfo info) {
+    return new NotificationSearch();
+  }
 
-	@Override
-	protected void addAjaxUpdateDivs(SectionTree tree, List<String> ajaxList)
-	{
-		super.addAjaxUpdateDivs(tree, ajaxList);
-		ajaxList.add(AbstractBulkSelectionSection.DIVID_SELECTBOX);
-	}
+  @Override
+  protected Label getNoResultsTitle(
+      SectionInfo info, FreetextSearchEvent searchEvent, FreetextSearchResultEvent resultsEvent) {
+    if (!searchEvent.isFiltered()) {
+      return LABEL_NOAVAILABLE;
+    }
+    return LABEL_NORESULTS;
+  }
 
+  @Override
+  protected void addAjaxUpdateDivs(SectionTree tree, List<String> ajaxList) {
+    super.addAjaxUpdateDivs(tree, ajaxList);
+    ajaxList.add(AbstractBulkSelectionSection.DIVID_SELECTBOX);
+  }
 }

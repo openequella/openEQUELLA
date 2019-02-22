@@ -16,86 +16,83 @@
 
 package com.tle.web.template.section;
 
-import java.util.List;
-
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.standard.model.HtmlLinkState;
+import java.util.List;
 
-public interface MenuContributor
-{
-	List<MenuContribution> getMenuContributions(SectionInfo info);
+public interface MenuContributor {
+  List<MenuContribution> getMenuContributions(SectionInfo info);
 
-	void clearCachedData();
+  void clearCachedData();
 
-	class MenuContribution
-	{
-		private final HtmlLinkState link;
-		private final String backgroundImagePath;
-		private final int groupPriority;
-		private final int linkPriority;
-		private final String systemIcon;
-		private final String route;
-		private boolean customImage;
+  class MenuContribution {
+    private final HtmlLinkState link;
+    private final String backgroundImagePath;
+    private final int groupPriority;
+    private final int linkPriority;
+    private final String systemIcon;
+    private final String route;
+    private boolean customImage;
 
-		public MenuContribution(HtmlLinkState link, String backgroundImage, int groupPriority, int linkPriority, String systemIcon,
-								String route)
-		{
-			this.link = link;
-			this.backgroundImagePath = backgroundImage;
-			this.groupPriority = groupPriority;
-			this.linkPriority = linkPriority;
-			this.systemIcon = systemIcon;
-			this.route = route;
-		}
+    public MenuContribution(
+        HtmlLinkState link,
+        String backgroundImage,
+        int groupPriority,
+        int linkPriority,
+        String systemIcon,
+        String route) {
+      this.link = link;
+      this.backgroundImagePath = backgroundImage;
+      this.groupPriority = groupPriority;
+      this.linkPriority = linkPriority;
+      this.systemIcon = systemIcon;
+      this.route = route;
+    }
 
-		public MenuContribution(HtmlLinkState link, String backgroundImage, int groupPriority, int linkPriority, String systemIcon)
-		{
-			this(link, backgroundImage, groupPriority, linkPriority, systemIcon, null);
-		}
+    public MenuContribution(
+        HtmlLinkState link,
+        String backgroundImage,
+        int groupPriority,
+        int linkPriority,
+        String systemIcon) {
+      this(link, backgroundImage, groupPriority, linkPriority, systemIcon, null);
+    }
 
-		public MenuContribution(HtmlLinkState link, String backgroundImage, int groupPriority, int linkPriority)
-		{
-			this(link, backgroundImage, groupPriority, linkPriority, null, null);
-		}
+    public MenuContribution(
+        HtmlLinkState link, String backgroundImage, int groupPriority, int linkPriority) {
+      this(link, backgroundImage, groupPriority, linkPriority, null, null);
+    }
 
-		public String getRoute()
-		{
-			return route;
-		}
+    public String getRoute() {
+      return route;
+    }
 
-		public HtmlLinkState getLink()
-		{
-			return link;
-		}
+    public HtmlLinkState getLink() {
+      return link;
+    }
 
-		public String getBackgroundImagePath()
-		{
-			return backgroundImagePath;
-		}
+    public String getBackgroundImagePath() {
+      return backgroundImagePath;
+    }
 
-		public boolean isCustomImage()
-		{
-			return customImage;
-		}
+    public boolean isCustomImage() {
+      return customImage;
+    }
 
-		public void setCustomImage(boolean customImage)
-		{
-			this.customImage = customImage;
-		}
+    public void setCustomImage(boolean customImage) {
+      this.customImage = customImage;
+    }
 
-		public int getGroupPriority()
-		{
-			return groupPriority;
-		}
+    public int getGroupPriority() {
+      return groupPriority;
+    }
 
-		public int getLinkPriority()
-		{
-			return linkPriority;
-		}
+    public int getLinkPriority() {
+      return linkPriority;
+    }
 
-		public String getSystemIcon()
-		{
-			return systemIcon;
-		}
-	}
+    public String getSystemIcon() {
+      return systemIcon;
+    }
+  }
 }

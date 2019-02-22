@@ -16,14 +16,6 @@
 
 package com.tle.web.controls.youtube;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
 import com.google.common.base.Throwables;
 import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.common.Check;
@@ -43,187 +35,175 @@ import com.tle.web.viewurl.AttachmentDetail;
 import com.tle.web.viewurl.ViewAuditEntry;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.resource.AbstractWrappedResource;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 @SuppressWarnings("nls")
-public class YoutubeViewableResource extends AbstractWrappedResource
-{
-	static
-	{
-		PluginResourceHandler.init(YoutubeViewableResource.class);
-	}
+public class YoutubeViewableResource extends AbstractWrappedResource {
+  static {
+    PluginResourceHandler.init(YoutubeViewableResource.class);
+  }
 
-	@PlugKey("youtube.details.type")
-	private static KeyLabel TYPE;
-	@PlugKey("youtube.details.mimetype")
-	private static KeyLabel MIMETYPE;
-	@PlugKey("youtube.details.title")
-	private static KeyLabel NAME;
-	@PlugKey("youtube.details.duration")
-	private static KeyLabel DURATION;
-	@PlugKey("youtube.details.author")
-	private static KeyLabel AUTHOR;
-	@PlugKey("youtube.details.uploaded")
-	private static KeyLabel UPLOADED;
-	@PlugKey("youtube.details.tags")
-	private static KeyLabel TAGS;
+  @PlugKey("youtube.details.type")
+  private static KeyLabel TYPE;
 
-	private final CustomAttachment youTubeAttachment;
-	private DateRendererFactory dateRendererFactory;
+  @PlugKey("youtube.details.mimetype")
+  private static KeyLabel MIMETYPE;
 
-	public YoutubeViewableResource(ViewableResource resource, CustomAttachment attachment, SelectionService selection,
-		SectionInfo info, DateRendererFactory dateRendererFactory)
-	{
-		super(resource);
-		this.youTubeAttachment = attachment;
-		this.dateRendererFactory = dateRendererFactory;
-		if( selection.getCurrentSession(info) != null )
-		{
-			resource.setAttribute(ViewableResource.PREFERRED_LINK_TARGET, "_blank");
-		}
-	}
+  @PlugKey("youtube.details.title")
+  private static KeyLabel NAME;
 
-	@Override
-	public boolean hasContentStream()
-	{
-		return false;
-	}
+  @PlugKey("youtube.details.duration")
+  private static KeyLabel DURATION;
 
-	@Override
-	public String getMimeType()
-	{
-		return YoutubeUtils.MIME_TYPE;
-	}
+  @PlugKey("youtube.details.author")
+  private static KeyLabel AUTHOR;
 
-	@Override
-	public boolean isExternalResource()
-	{
-		return true;
-	}
+  @PlugKey("youtube.details.uploaded")
+  private static KeyLabel UPLOADED;
 
-	@Override
-	public Bookmark createCanonicalUrl()
-	{
-		return new SimpleBookmark(getPlayUrl());
-	}
+  @PlugKey("youtube.details.tags")
+  private static KeyLabel TAGS;
 
-	private String getPlayUrl()
-	{
-		StringBuilder sb = new StringBuilder("//www.youtube.com/embed/");
-		sb.append((String) youTubeAttachment.getData(YoutubeUtils.PROPERTY_ID));
-		String extraParams = (String) youTubeAttachment.getData(YoutubeUtils.PROPERTY_PARAMETERS);
-		if( !Check.isEmpty(extraParams) )
-		{
-			sb.append("?");
-			Iterator<String> paramIterator = Arrays.asList(extraParams.split(",")).iterator();
-			while( paramIterator.hasNext() )
-			{
-				String param = paramIterator.next();
-				param = param.trim();
-				param = param.replace(" ", "");
-				sb.append(param);
-				if( paramIterator.hasNext() )
-				{
-					sb.append("&");
-				}
-			}
-		}
-		return sb.toString();
-	}
+  private final CustomAttachment youTubeAttachment;
+  private DateRendererFactory dateRendererFactory;
 
-	@Override
-	public ViewAuditEntry getViewAuditEntry()
-	{
-		return new ViewAuditEntry("youtube", getPlayUrl());
-	}
+  public YoutubeViewableResource(
+      ViewableResource resource,
+      CustomAttachment attachment,
+      SelectionService selection,
+      SectionInfo info,
+      DateRendererFactory dateRendererFactory) {
+    super(resource);
+    this.youTubeAttachment = attachment;
+    this.dateRendererFactory = dateRendererFactory;
+    if (selection.getCurrentSession(info) != null) {
+      resource.setAttribute(ViewableResource.PREFERRED_LINK_TARGET, "_blank");
+    }
+  }
 
-	private String getThumbUrl()
-	{
-		return (String) youTubeAttachment.getData(YoutubeUtils.PROPERTY_THUMB_URL);
-	}
+  @Override
+  public boolean hasContentStream() {
+    return false;
+  }
 
-	@Override
-	public ThumbRef getThumbnailReference(SectionInfo info, GalleryParameter gallery)
-	{
-		try
-		{
-			return new ThumbRef(new URL(getThumbUrl()));
-		}
-		catch( MalformedURLException e )
-		{
-			throw Throwables.propagate(e);
-		}
-	}
+  @Override
+  public String getMimeType() {
+    return YoutubeUtils.MIME_TYPE;
+  }
 
-	@Override
-	public ImageRenderer createStandardThumbnailRenderer(Label alt)
-	{
-		return new ImageRenderer(getThumbUrl(), alt);
-	}
+  @Override
+  public boolean isExternalResource() {
+    return true;
+  }
 
-	@Override
-	public boolean isCustomThumb()
-	{
-		return true;
-	}
+  @Override
+  public Bookmark createCanonicalUrl() {
+    return new SimpleBookmark(getPlayUrl());
+  }
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public List<AttachmentDetail> getCommonAttachmentDetails()
-	{
-		List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
+  private String getPlayUrl() {
+    StringBuilder sb = new StringBuilder("//www.youtube.com/embed/");
+    sb.append((String) youTubeAttachment.getData(YoutubeUtils.PROPERTY_ID));
+    String extraParams = (String) youTubeAttachment.getData(YoutubeUtils.PROPERTY_PARAMETERS);
+    if (!Check.isEmpty(extraParams)) {
+      sb.append("?");
+      Iterator<String> paramIterator = Arrays.asList(extraParams.split(",")).iterator();
+      while (paramIterator.hasNext()) {
+        String param = paramIterator.next();
+        param = param.trim();
+        param = param.replace(" ", "");
+        sb.append(param);
+        if (paramIterator.hasNext()) {
+          sb.append("&");
+        }
+      }
+    }
+    return sb.toString();
+  }
 
-		// Type
-		commonDetails.add(makeDetail(TYPE, MIMETYPE));
+  @Override
+  public ViewAuditEntry getViewAuditEntry() {
+    return new ViewAuditEntry("youtube", getPlayUrl());
+  }
 
-		// Name (Proper YouTube video title)
-		String name = (String) youTubeAttachment.getData(YoutubeUtils.PROPERTY_TITLE);
-		if( !Check.isEmpty(name) )
-		{
-			commonDetails.add(makeDetail(NAME, new TextLabel(name)));
-		}
+  private String getThumbUrl() {
+    return (String) youTubeAttachment.getData(YoutubeUtils.PROPERTY_THUMB_URL);
+  }
 
-		// Duration
-		Object durationData = youTubeAttachment.getData(YoutubeUtils.PROPERTY_DURATION);
-		if( durationData instanceof String )
-		{
-			String duration = (String) durationData;
-			setDuration(commonDetails, YoutubeUtils.formatDuration(duration));
-		}
-		else if( durationData instanceof Long )
-		{
-			long oldDuration = (long) durationData;
-			setDuration(commonDetails, YoutubeUtils.formatDuration(oldDuration));
-		}
+  @Override
+  public ThumbRef getThumbnailReference(SectionInfo info, GalleryParameter gallery) {
+    try {
+      return new ThumbRef(new URL(getThumbUrl()));
+    } catch (MalformedURLException e) {
+      throw Throwables.propagate(e);
+    }
+  }
 
-		// Author
-		String author = (String) youTubeAttachment.getData(YoutubeUtils.PROPERTY_AUTHOR);
-		if( !Check.isEmpty(author) )
-		{
-			commonDetails.add(makeDetail(AUTHOR, new TextLabel(author)));
-		}
+  @Override
+  public ImageRenderer createStandardThumbnailRenderer(Label alt) {
+    return new ImageRenderer(getThumbUrl(), alt);
+  }
 
-		// Uploaded
-		Long date = (Long) youTubeAttachment.getData(YoutubeUtils.PROPERTY_DATE);
-		if( date != null )
-		{
-			commonDetails.add(makeDetail(UPLOADED, dateRendererFactory.createDateRenderer(new Date(date))));
-		}
+  @Override
+  public boolean isCustomThumb() {
+    return true;
+  }
 
-		// Tags
-		String tags = (String) youTubeAttachment.getData(YoutubeUtils.PROPERTY_TAGS);
-		if( !Check.isEmpty(tags) )
-		{
-			commonDetails.add(makeDetail(TAGS, new TextLabel(tags)));
-		}
+  @SuppressWarnings("deprecation")
+  @Override
+  public List<AttachmentDetail> getCommonAttachmentDetails() {
+    List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
 
-		return commonDetails;
-	}
+    // Type
+    commonDetails.add(makeDetail(TYPE, MIMETYPE));
 
-	private void setDuration(List<AttachmentDetail> commonDetails, String duration)
-	{
-		if( duration != null )
-		{
-			commonDetails.add(makeDetail(DURATION, new TextLabel(duration)));
-		}
-	}
+    // Name (Proper YouTube video title)
+    String name = (String) youTubeAttachment.getData(YoutubeUtils.PROPERTY_TITLE);
+    if (!Check.isEmpty(name)) {
+      commonDetails.add(makeDetail(NAME, new TextLabel(name)));
+    }
+
+    // Duration
+    Object durationData = youTubeAttachment.getData(YoutubeUtils.PROPERTY_DURATION);
+    if (durationData instanceof String) {
+      String duration = (String) durationData;
+      setDuration(commonDetails, YoutubeUtils.formatDuration(duration));
+    } else if (durationData instanceof Long) {
+      long oldDuration = (long) durationData;
+      setDuration(commonDetails, YoutubeUtils.formatDuration(oldDuration));
+    }
+
+    // Author
+    String author = (String) youTubeAttachment.getData(YoutubeUtils.PROPERTY_AUTHOR);
+    if (!Check.isEmpty(author)) {
+      commonDetails.add(makeDetail(AUTHOR, new TextLabel(author)));
+    }
+
+    // Uploaded
+    Long date = (Long) youTubeAttachment.getData(YoutubeUtils.PROPERTY_DATE);
+    if (date != null) {
+      commonDetails.add(
+          makeDetail(UPLOADED, dateRendererFactory.createDateRenderer(new Date(date))));
+    }
+
+    // Tags
+    String tags = (String) youTubeAttachment.getData(YoutubeUtils.PROPERTY_TAGS);
+    if (!Check.isEmpty(tags)) {
+      commonDetails.add(makeDetail(TAGS, new TextLabel(tags)));
+    }
+
+    return commonDetails;
+  }
+
+  private void setDuration(List<AttachmentDetail> commonDetails, String duration) {
+    if (duration != null) {
+      commonDetails.add(makeDetail(DURATION, new TextLabel(duration)));
+    }
+  }
 }

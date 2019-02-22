@@ -16,9 +16,6 @@
 
 package com.tle.web.usermanagement.autoip;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-
 import com.google.inject.Singleton;
 import com.tle.common.Check;
 import com.tle.common.settings.standard.AutoLogin;
@@ -27,45 +24,39 @@ import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.WebAuthenticationDetails;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserService;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 @Bind
 @Singleton
-public class AutoIpLogonService
-{
-	@Inject
-	private UserService userService;
+public class AutoIpLogonService {
+  @Inject private UserService userService;
 
-	public boolean autoLogon(HttpServletRequest request)
-	{
-		AutoLogin settings = userService.getAttribute(AutoLogin.class);
-		WebAuthenticationDetails details = userService.getWebAuthenticationDetails(request);
-		if( isAutoLoginAvailable(settings, details.getIpAddress()) )
-		{
-			String autoLoginAsUsername = settings.getUsername();
-			if( !Check.isEmpty(autoLoginAsUsername) )
-			{
-				// We want to catch any errors, otherwise we get a great big
-				// stack trace
-				UserState userState = userService.authenticateAsUser(autoLoginAsUsername, details);
-				userState.setWasAutoLoggedIn(true);
-				userService.login(userState, false);
-				return true;
-			}
-		}
-		return false;
-	}
+  public boolean autoLogon(HttpServletRequest request) {
+    AutoLogin settings = userService.getAttribute(AutoLogin.class);
+    WebAuthenticationDetails details = userService.getWebAuthenticationDetails(request);
+    if (isAutoLoginAvailable(settings, details.getIpAddress())) {
+      String autoLoginAsUsername = settings.getUsername();
+      if (!Check.isEmpty(autoLoginAsUsername)) {
+        // We want to catch any errors, otherwise we get a great big
+        // stack trace
+        UserState userState = userService.authenticateAsUser(autoLoginAsUsername, details);
+        userState.setWasAutoLoggedIn(true);
+        userService.login(userState, false);
+        return true;
+      }
+    }
+    return false;
+  }
 
-	public boolean isAutoLoginAvailable(AutoLogin autoLogin, String ipAddress)
-	{
-		if( autoLogin.isEnabledViaIp() )
-		{
-			return autoLogin.getHostMatcher().matches(ipAddress);
-		}
-		return false;
-	}
+  public boolean isAutoLoginAvailable(AutoLogin autoLogin, String ipAddress) {
+    if (autoLogin.isEnabledViaIp()) {
+      return autoLogin.getHostMatcher().matches(ipAddress);
+    }
+    return false;
+  }
 
-	public boolean isAutoLoginAvailable(AutoLogin autoLogin)
-	{
-		return isAutoLoginAvailable(autoLogin, CurrentUser.getUserState().getIpAddress());
-	}
+  public boolean isAutoLoginAvailable(AutoLogin autoLogin) {
+    return isAutoLoginAvailable(autoLogin, CurrentUser.getUserState().getIpAddress());
+  }
 }

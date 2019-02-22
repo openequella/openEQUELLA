@@ -18,12 +18,10 @@ package com.tle.core.workflow.events;
 
 import com.tle.beans.item.HistoryEvent;
 
-public class RejectedEvent extends CommentEvent
-{
-	private static final long serialVersionUID = 1L;
+public class RejectedEvent extends CommentEvent {
+  private static final long serialVersionUID = 1L;
 
-	public RejectedEvent(HistoryEvent event)
-	{
-		super(event);
-	}
+  public RejectedEvent(HistoryEvent event) {
+    super(event);
+  }
 }

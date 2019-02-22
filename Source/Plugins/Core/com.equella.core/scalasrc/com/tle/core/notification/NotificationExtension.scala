@@ -23,5 +23,7 @@ trait NotificationExtension {
 
   def isIndexed(ntype: String): Boolean
 
-  def emails(user: UserBean, notifications: Iterable[Notification], totals: Map[String, Int]): Iterable[NotificationEmail]
+  def emails(user: UserBean,
+             notifications: Iterable[Notification],
+             totals: Map[String, Int]): Iterable[NotificationEmail]
 }

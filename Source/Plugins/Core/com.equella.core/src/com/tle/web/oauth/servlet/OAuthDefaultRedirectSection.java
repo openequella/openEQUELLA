@@ -27,21 +27,17 @@ import com.tle.web.sections.render.TextLabel;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.Decorations.MenuMode;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
-public class OAuthDefaultRedirectSection extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+public class OAuthDefaultRedirectSection extends AbstractPrototypeSection<Object>
+    implements HtmlRenderer {
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@SuppressWarnings("nls")
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		Decorations.getDecorations(context).setMenuMode(MenuMode.HIDDEN);
-		Decorations.setTitle(context, new TextLabel("OAuth Response"));
-		return viewFactory.createResult("oauthdefaultredirect.ftl", this);
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    Decorations.getDecorations(context).setMenuMode(MenuMode.HIDDEN);
+    Decorations.setTitle(context, new TextLabel("OAuth Response"));
+    return viewFactory.createResult("oauthdefaultredirect.ftl", this);
+  }
 }

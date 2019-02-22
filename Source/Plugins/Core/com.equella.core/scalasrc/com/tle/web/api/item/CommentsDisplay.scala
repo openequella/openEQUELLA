@@ -26,36 +26,46 @@ import scala.collection.JavaConverters._
 
 object CommentsDisplay {
 
-
-  def create(ii: ItemSectionInfo, sectionTitle: String, config: String): Option[ItemSummarySection] = {
+  def create(ii: ItemSectionInfo,
+             sectionTitle: String,
+             config: String): Option[ItemSummarySection] = {
 
     val privileges = ii.getPrivileges.asScala
 
     val canCreate = privileges("COMMENT_CREATE_ITEM") // && !isForPreview(info))
-    val canView = privileges("COMMENT_VIEW_ITEM")
+    val canView   = privileges("COMMENT_VIEW_ITEM")
     val canDelete = privileges("COMMENT_DELETE_ITEM")
 
     if (!canCreate && !canView) {
       None
-    } else Some {
-      val (displayIdentity, allowAnonymous, hideUsername, whichName) = if (!Check.isEmpty(config)) {
-        val xml = new PropBagEx(config)
+    } else
+      Some {
+        val (displayIdentity, allowAnonymous, hideUsername, whichName) =
+          if (!Check.isEmpty(config)) {
+            val xml = new PropBagEx(config)
 
-        def boolFlag(str: String): Boolean = {
-          val v = xml.getNode(str)
-          if (v == null) false else v.toLowerCase() == "true"
-        }
-        if (boolFlag("DISPLAY_IDENTITY_KEY")) {
-          (true, boolFlag("ANONYMOUSLY_COMMENTS_KEY"),
-            boolFlag("SUPPRESS_USERNAME_KEY"), NameDisplayType.valueOf(xml.getNode("DISPLAY_NAME_KEY")))
-        } else (false, true, true, NameDisplayType.BOTH)
+            def boolFlag(str: String): Boolean = {
+              val v = xml.getNode(str)
+              if (v == null) false else v.toLowerCase() == "true"
+            }
+            if (boolFlag("DISPLAY_IDENTITY_KEY")) {
+              (true,
+               boolFlag("ANONYMOUSLY_COMMENTS_KEY"),
+               boolFlag("SUPPRESS_USERNAME_KEY"),
+               NameDisplayType.valueOf(xml.getNode("DISPLAY_NAME_KEY")))
+            } else (false, true, true, NameDisplayType.BOTH)
+          } else {
+            (true, true, false, NameDisplayType.BOTH)
+          }
+        CommentSummarySection(sectionTitle,
+                              canView,
+                              canCreate,
+                              canDelete,
+                              whichName.toString.toLowerCase(),
+                              !displayIdentity,
+                              hideUsername,
+                              allowAnonymous)
       }
-      else {
-        (true, true, false, NameDisplayType.BOTH)
-      }
-      CommentSummarySection(sectionTitle, canView, canCreate, canDelete, whichName.toString.toLowerCase(),
-        !displayIdentity, hideUsername, allowAnonymous)
-    }
 
   }
 }

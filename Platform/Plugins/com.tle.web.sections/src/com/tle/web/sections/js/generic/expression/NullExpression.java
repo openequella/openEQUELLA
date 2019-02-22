@@ -22,27 +22,21 @@ import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.ServerSideValue;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @NonNullByDefault
-public class NullExpression extends AbstractExpression implements ServerSideValue
-{
-	@Override
-	public String getExpression(@Nullable RenderContext info)
-	{
-		return "null"; //$NON-NLS-1$
-	}
+public class NullExpression extends AbstractExpression implements ServerSideValue {
+  @Override
+  public String getExpression(@Nullable RenderContext info) {
+    return "null"; //$NON-NLS-1$
+  }
 
-	@Override
-	public void preRender(PreRenderContext info)
-	{
-		// nothing
-	}
+  @Override
+  public void preRender(PreRenderContext info) {
+    // nothing
+  }
 
-	@Override
-	public String getJavaString()
-	{
-		return "null"; //$NON-NLS-1$
-	}
+  @Override
+  public String getJavaString() {
+    return "null"; //$NON-NLS-1$
+  }
 }

@@ -23,11 +23,12 @@ import com.tle.web.resources.ResourcesService;
 
 @Bind
 @SuppressWarnings("nls")
-public class ManualDataFixesPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider
-{
-	public ManualDataFixesPrivilegeTreeProvider()
-	{
-		super(Type.SYSTEM_SETTING, ResourcesService.getResourceHelper(ManualDataFixesPrivilegeTreeProvider.class).key(
-			"securitytree.mdf"), new SettingsTarget("manualdatafixes"));
-	}
+public class ManualDataFixesPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreeProvider {
+  public ManualDataFixesPrivilegeTreeProvider() {
+    super(
+        Type.SYSTEM_SETTING,
+        ResourcesService.getResourceHelper(ManualDataFixesPrivilegeTreeProvider.class)
+            .key("securitytree.mdf"),
+        new SettingsTarget("manualdatafixes"));
+  }
 }

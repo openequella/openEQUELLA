@@ -16,75 +16,66 @@
 
 package com.dytech.edge.gui.workflow;
 
+import com.tle.common.workflow.node.WorkflowNode;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
-import com.tle.common.workflow.node.WorkflowNode;
+public class SerialRenderer extends Renderer {
+  public SerialRenderer(WorkflowNode node) {
+    super(node);
+  }
 
-public class SerialRenderer extends Renderer
-{
-	public SerialRenderer(WorkflowNode node)
-	{
-		super(node);
-	}
+  @Override
+  public void draw(Graphics g, Rectangle bounds) {
+    final int childWidth = bounds.width - (PADDING_SIZE * 2);
 
-	@Override
-	public void draw(Graphics g, Rectangle bounds)
-	{
-		final int childWidth = bounds.width - (PADDING_SIZE * 2);
+    // Start placing children from here...
+    int nextY = bounds.y;
 
-		// Start placing children from here...
-		int nextY = bounds.y;
+    final int childCount = getChildCount();
+    for (int i = 0; i < childCount; i++) {
+      Renderer child = getChild(i);
 
-		final int childCount = getChildCount();
-		for( int i = 0; i < childCount; i++ )
-		{
-			Renderer child = getChild(i);
+      // Determine child boundries
+      Rectangle childBound = new Rectangle();
+      childBound.x = bounds.x + PADDING_SIZE;
+      childBound.y = nextY;
+      childBound.width = childWidth;
+      childBound.height = child.getSize(g).height;
 
-			// Determine child boundries
-			Rectangle childBound = new Rectangle();
-			childBound.x = bounds.x + PADDING_SIZE;
-			childBound.y = nextY;
-			childBound.width = childWidth;
-			childBound.height = child.getSize(g).height;
+      // Draw child
+      child.draw(g, childBound);
 
-			// Draw child
-			child.draw(g, childBound);
+      // Next child Y coordinate.
+      nextY += childBound.height;
+    }
 
-			// Next child Y coordinate.
-			nextY += childBound.height;
-		}
+    int maxY = bounds.y + bounds.height;
+    if (nextY < maxY) {
+      int centreX = (int) bounds.getCenterX();
+      g.setColor(ARROW_COLOUR);
+      g.drawLine(centreX, nextY, centreX, maxY);
+    }
+  }
 
-		int maxY = bounds.y + bounds.height;
-		if( nextY < maxY )
-		{
-			int centreX = (int) bounds.getCenterX();
-			g.setColor(ARROW_COLOUR);
-			g.drawLine(centreX, nextY, centreX, maxY);
-		}
-	}
+  protected Dimension getSizeWithNoPadding(Graphics g) {
+    Dimension total = new Dimension();
 
-	protected Dimension getSizeWithNoPadding(Graphics g)
-	{
-		Dimension total = new Dimension();
+    final int childCount = getChildCount();
+    for (int i = 0; i < childCount; i++) {
+      Dimension childSize = getChild(i).getSize(g);
 
-		final int childCount = getChildCount();
-		for( int i = 0; i < childCount; i++ )
-		{
-			Dimension childSize = getChild(i).getSize(g);
+      total.height += childSize.height;
+      total.width = Math.max(total.width, childSize.width);
+    }
+    return total;
+  }
 
-			total.height += childSize.height;
-			total.width = Math.max(total.width, childSize.width);
-		}
-		return total;
-	}
-
-	@Override
-	public Dimension getSize(Graphics g)
-	{
-		Dimension total = getSizeWithNoPadding(g);
-		total.width += PADDING_SIZE * 2;
-		return total;
-	}
+  @Override
+  public Dimension getSize(Graphics g) {
+    Dimension total = getSizeWithNoPadding(g);
+    total.width += PADDING_SIZE * 2;
+    return total;
+  }
 }

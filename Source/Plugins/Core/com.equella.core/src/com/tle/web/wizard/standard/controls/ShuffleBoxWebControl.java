@@ -23,46 +23,37 @@ import com.tle.web.sections.standard.MultiSelectionList;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.wizard.controls.Item;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @Bind
-public class ShuffleBoxWebControl extends AbstractOptionControl
-{
-	@Component(stateful = false)
-	private MultiSelectionList<Item> list;
+public class ShuffleBoxWebControl extends AbstractOptionControl {
+  @Component(stateful = false)
+  private MultiSelectionList<Item> list;
 
-	@Override
-	public MultiSelectionList<Item> getList()
-	{
-		return list;
-	}
+  @Override
+  public MultiSelectionList<Item> getList() {
+    return list;
+  }
 
-	@Override
-	public void setWrappedControl(HTMLControl control)
-	{
-		super.setWrappedControl(control);
-		if( control.getSize1() == 0 )
-		{
-			control.setSize1(12);
-		}
+  @Override
+  public void setWrappedControl(HTMLControl control) {
+    super.setWrappedControl(control);
+    if (control.getSize1() == 0) {
+      control.setSize1(12);
+    }
 
-		if( control.getSize2() == 0 )
-		{
-			control.setSize2(240);
-		}
-	}
+    if (control.getSize2() == 0) {
+      control.setSize2(240);
+    }
+  }
 
-	@Override
-	protected String getTemplate()
-	{
-		setGroupLabellNeeded(true);
-		return "shufflebox-control.ftl"; //$NON-NLS-1$
-	}
+  @Override
+  protected String getTemplate() {
+    setGroupLabellNeeded(true);
+    return "shufflebox-control.ftl"; //$NON-NLS-1$
+  }
 
-	@Override
-	protected ElementId getIdForLabel()
-	{
-		return list;
-	}
+  @Override
+  protected ElementId getIdForLabel() {
+    return list;
+  }
 }

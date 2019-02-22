@@ -24,23 +24,20 @@ import com.tle.beans.item.ItemPack;
 import com.tle.core.item.standard.operations.AbstractStandardWorkflowOperation;
 import com.tle.web.wizard.WizardState;
 
-public class WizardStateOperation extends AbstractStandardWorkflowOperation
-{
-	private WizardState state;
+public class WizardStateOperation extends AbstractStandardWorkflowOperation {
+  private WizardState state;
 
-	@AssistedInject
-	protected WizardStateOperation(@Assisted WizardState state)
-	{
-		this.state = state;
-	}
+  @AssistedInject
+  protected WizardStateOperation(@Assisted WizardState state) {
+    this.state = state;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		Item item = state.getItem();
-		params.setItemKey(new ItemId(item.getUuid(), item.getVersion()), 0l);
-		params.setItemPack(new ItemPack(item, state.getItemxml(), state.getStagingId()));
-		params.setUpdateSecurity(true);
-		return false;
-	}
+  @Override
+  public boolean execute() {
+    Item item = state.getItem();
+    params.setItemKey(new ItemId(item.getUuid(), item.getVersion()), 0l);
+    params.setItemPack(new ItemPack(item, state.getItemxml(), state.getStagingId()));
+    params.setUpdateSecurity(true);
+    return false;
+  }
 }

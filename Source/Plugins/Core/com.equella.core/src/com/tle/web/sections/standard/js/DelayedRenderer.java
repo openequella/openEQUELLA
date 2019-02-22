@@ -21,8 +21,7 @@ import com.tle.annotation.Nullable;
 import com.tle.web.sections.events.RenderContext;
 
 @NonNullByDefault
-public interface DelayedRenderer<T>
-{
-	@Nullable
-	T getSelectedRenderer(RenderContext info);
+public interface DelayedRenderer<T> {
+  @Nullable
+  T getSelectedRenderer(RenderContext info);
 }

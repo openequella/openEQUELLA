@@ -16,16 +16,12 @@
 
 package com.tle.web.myresource;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
-public final class MyResourceConstants
-{
-	public static final String MYRESOURCE_CONTENT_TYPE = "myresource";
+public final class MyResourceConstants {
+  public static final String MYRESOURCE_CONTENT_TYPE = "myresource";
 
-	private MyResourceConstants()
-	{
-		throw new Error();
-	}
+  private MyResourceConstants() {
+    throw new Error();
+  }
 }

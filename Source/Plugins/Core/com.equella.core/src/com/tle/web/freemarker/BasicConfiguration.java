@@ -16,27 +16,23 @@
 
 package com.tle.web.freemarker;
 
-import javax.inject.Singleton;
-
 import com.tle.core.guice.Bind;
 import com.tle.web.DebugSettings;
-
 import freemarker.cache.NullCacheStorage;
 import freemarker.template.Configuration;
+import javax.inject.Singleton;
 
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class BasicConfiguration extends Configuration
-{
-	public BasicConfiguration()
-	{
-		setDateFormat("full");
-		setTimeFormat("short");
-		setDateTimeFormat("long_short");
-		setLocalizedLookup(false);
-		if (DebugSettings.isDebuggingMode()) {
-			setCacheStorage(new NullCacheStorage());
-		}
-	}
+public class BasicConfiguration extends Configuration {
+  public BasicConfiguration() {
+    setDateFormat("full");
+    setTimeFormat("short");
+    setDateTimeFormat("long_short");
+    setLocalizedLookup(false);
+    if (DebugSettings.isDebuggingMode()) {
+      setCacheStorage(new NullCacheStorage());
+    }
+  }
 }

@@ -18,18 +18,15 @@ package com.tle.web.workflow.portal;
 
 import com.tle.core.guice.PluginTrackerModule;
 
-public class TaskListModule extends PluginTrackerModule
-{
-	@Override
-	protected String getPluginId()
-	{
-		return "com.tle.web.workflow.portal";
-	}
+public class TaskListModule extends PluginTrackerModule {
+  @Override
+  protected String getPluginId() {
+    return "com.tle.web.workflow.portal";
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	protected void configure()
-	{
-		bindTracker(TaskListExtension.class, "filter", "bean").orderByParameter("order");
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected void configure() {
+    bindTracker(TaskListExtension.class, "filter", "bean").orderByParameter("order");
+  }
 }

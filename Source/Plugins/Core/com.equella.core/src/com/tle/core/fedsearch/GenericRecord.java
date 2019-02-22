@@ -16,37 +16,31 @@
 
 package com.tle.core.fedsearch;
 
+import com.dytech.devlib.PropBagEx;
 import java.util.Collection;
 
-import com.dytech.devlib.PropBagEx;
+/** @author aholland */
+public interface GenericRecord {
+  String getTitle();
 
-/**
- * @author aholland
- */
-public interface GenericRecord
-{
-	String getTitle();
+  String getDescription();
 
-	String getDescription();
+  String getIsbn();
 
-	String getIsbn();
+  String getIssn();
 
-	String getIssn();
+  String getLccn();
 
-	String getLccn();
+  String getUri();
 
-	String getUri();
+  String getUrl();
 
-	String getUrl();
+  Collection<String> getAuthors();
 
-	Collection<String> getAuthors();
+  PropBagEx getXml();
 
-	PropBagEx getXml();
+  String getPhysicalDescription();
 
-	String getPhysicalDescription();
-
-	/**
-	 * @return MODS or MARCXML etc
-	 */
-	String getType();
+  /** @return MODS or MARCXML etc */
+  String getType();
 }

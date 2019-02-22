@@ -16,39 +16,37 @@
 
 package com.tle.web.wizard;
 
-import java.io.Serializable;
-
 import com.dytech.devlib.PropBagEx;
-import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemPack;
 import com.tle.beans.item.attachments.ModifiableAttachments;
 import com.tle.beans.workflow.WorkflowStatus;
+import com.tle.common.filesystem.handle.FileHandle;
+import java.io.Serializable;
 
-public interface WizardStateInterface extends Serializable, Cloneable
-{
-	String getWizid();
+public interface WizardStateInterface extends Serializable, Cloneable {
+  String getWizid();
 
-	ModifiableAttachments getAttachments();
+  ModifiableAttachments getAttachments();
 
-	void setItemPack(ItemPack<Item> pack);
+  void setItemPack(ItemPack<Item> pack);
 
-	ItemPack<Item> getItemPack();
+  ItemPack<Item> getItemPack();
 
-	FileHandle getFileHandle();
+  FileHandle getFileHandle();
 
-	Item getItem();
+  Item getItem();
 
-	ItemKey getItemId();
+  ItemKey getItemId();
 
-	PropBagEx getItemxml();
+  PropBagEx getItemxml();
 
-	WorkflowStatus getWorkflowStatus();
+  WorkflowStatus getWorkflowStatus();
 
-	String getStagingId();
+  String getStagingId();
 
-	void onSessionSave();
+  void onSessionSave();
 
-	WizardStateInterface clone();
+  WizardStateInterface clone();
 }

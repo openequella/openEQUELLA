@@ -20,10 +20,7 @@ import com.tle.common.settings.standard.SearchSettings;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 
-/**
- * @author Aaron
- */
-public interface SearchSettingsExtension extends SectionId
-{
-	void save(SectionInfo info, SearchSettings settings);
+/** @author Aaron */
+public interface SearchSettingsExtension extends SectionId {
+  void save(SectionInfo info, SearchSettings settings);
 }

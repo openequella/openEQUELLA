@@ -19,7 +19,7 @@ package com.tle.web.api.interfaces;
 import com.tle.web.api.interfaces.beans.BaseEntityBean;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 
-public interface BaseEntityResource<BEB extends BaseEntityBean, SB extends BaseEntitySecurityBean>
-{
-//    PagingBean<BEB> list(UriInfo uriInfo, String q, String privilege, String resumptionToken, int length, boolean full);
+public interface BaseEntityResource<BEB extends BaseEntityBean, SB extends BaseEntitySecurityBean> {
+  //    PagingBean<BEB> list(UriInfo uriInfo, String q, String privilege, String resumptionToken,
+  // int length, boolean full);
 }

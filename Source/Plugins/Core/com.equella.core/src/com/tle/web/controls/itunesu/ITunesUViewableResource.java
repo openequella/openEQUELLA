@@ -16,9 +16,6 @@
 
 package com.tle.web.controls.itunesu;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
@@ -32,77 +29,72 @@ import com.tle.web.viewurl.AttachmentDetail;
 import com.tle.web.viewurl.ViewAuditEntry;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.resource.AbstractWrappedResource;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ITunesUViewableResource extends AbstractWrappedResource
-{
-	static
-	{
-		PluginResourceHandler.init(ITunesUViewableResource.class);
-	}
+public class ITunesUViewableResource extends AbstractWrappedResource {
+  static {
+    PluginResourceHandler.init(ITunesUViewableResource.class);
+  }
 
-	@PlugKey("itunesu.details.type")
-	private static Label TYPE;
-	@PlugKey("itunesu.details.mimetype")
-	private static Label MIMETYPE;
-	@PlugKey("itunesu.details.name")
-	private static Label NAME;
+  @PlugKey("itunesu.details.type")
+  private static Label TYPE;
 
-	private final CustomAttachment itunesAttachment;
+  @PlugKey("itunesu.details.mimetype")
+  private static Label MIMETYPE;
 
-	public ITunesUViewableResource(ViewableResource resource, CustomAttachment attachment)
-	{
-		super(resource);
-		this.itunesAttachment = attachment;
-	}
+  @PlugKey("itunesu.details.name")
+  private static Label NAME;
 
-	@Override
-	public boolean hasContentStream()
-	{
-		return false;
-	}
+  private final CustomAttachment itunesAttachment;
 
-	@Override
-	public ViewAuditEntry getViewAuditEntry()
-	{
-		return new ViewAuditEntry("itunesu", getTrackUrl()); //$NON-NLS-1$
-	}
+  public ITunesUViewableResource(ViewableResource resource, CustomAttachment attachment) {
+    super(resource);
+    this.itunesAttachment = attachment;
+  }
 
-	@Override
-	public String getMimeType()
-	{
-		return "equella/attachment-itunesu"; //$NON-NLS-1$
-	}
+  @Override
+  public boolean hasContentStream() {
+    return false;
+  }
 
-	@Override
-	public boolean isExternalResource()
-	{
-		return true;
-	}
+  @Override
+  public ViewAuditEntry getViewAuditEntry() {
+    return new ViewAuditEntry("itunesu", getTrackUrl()); // $NON-NLS-1$
+  }
 
-	@Override
-	public Bookmark createCanonicalUrl()
-	{
-		return new SimpleBookmark(getTrackUrl());
-	}
+  @Override
+  public String getMimeType() {
+    return "equella/attachment-itunesu"; //$NON-NLS-1$
+  }
 
-	private String getTrackUrl()
-	{
-		return (String) itunesAttachment.getData("trackUrl"); //$NON-NLS-1$
-	}
+  @Override
+  public boolean isExternalResource() {
+    return true;
+  }
 
-	@Override
-	public List<AttachmentDetail> getCommonAttachmentDetails()
-	{
-		List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
-		IAttachment attachment = getAttachment();
+  @Override
+  public Bookmark createCanonicalUrl() {
+    return new SimpleBookmark(getTrackUrl());
+  }
 
-		// Type
-		commonDetails.add(makeDetail(TYPE, MIMETYPE));
+  private String getTrackUrl() {
+    return (String) itunesAttachment.getData("trackUrl"); // $NON-NLS-1$
+  }
 
-		// Name (real track name if available, otherwise display name)
-		String name = (String) attachment.getData("trackName");
-		commonDetails.add(makeDetail(NAME, new TextLabel(!Check.isEmpty(name) ? name : attachment.getDescription())));
+  @Override
+  public List<AttachmentDetail> getCommonAttachmentDetails() {
+    List<AttachmentDetail> commonDetails = new ArrayList<AttachmentDetail>();
+    IAttachment attachment = getAttachment();
 
-		return commonDetails;
-	}
+    // Type
+    commonDetails.add(makeDetail(TYPE, MIMETYPE));
+
+    // Name (real track name if available, otherwise display name)
+    String name = (String) attachment.getData("trackName");
+    commonDetails.add(
+        makeDetail(NAME, new TextLabel(!Check.isEmpty(name) ? name : attachment.getDescription())));
+
+    return commonDetails;
+  }
 }

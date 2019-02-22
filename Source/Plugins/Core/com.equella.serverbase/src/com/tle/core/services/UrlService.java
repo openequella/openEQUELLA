@@ -16,27 +16,22 @@
 
 package com.tle.core.services;
 
+import hurl.build.QueryBuilder;
 import java.net.URI;
 import java.net.URL;
-
 import javax.servlet.http.HttpServletRequest;
 
-import hurl.build.QueryBuilder;
+/** @author Nicholas Read */
+public interface UrlService {
+  URL getAdminUrl();
 
-/**
- * @author Nicholas Read
- */
-public interface UrlService
-{
-	URL getAdminUrl();
+  URI getUriForRequest(HttpServletRequest request, String parameters);
 
-	URI getUriForRequest(HttpServletRequest request, String parameters);
+  QueryBuilder getQueryBuilderForRequest(HttpServletRequest request);
 
-	QueryBuilder getQueryBuilderForRequest(HttpServletRequest request);
+  URI getBaseUriFromRequest(HttpServletRequest request);
 
-	URI getBaseUriFromRequest(HttpServletRequest request);
+  URI getBaseInstitutionURI();
 
-	URI getBaseInstitutionURI();
-
-	boolean isRelativeUrl(String url);
+  boolean isRelativeUrl(String url);
 }

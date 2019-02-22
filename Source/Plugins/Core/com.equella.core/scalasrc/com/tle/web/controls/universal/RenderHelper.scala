@@ -19,7 +19,7 @@ package com.tle.web.controls.universal
 import com.tle.web.freemarker.{FreemarkerFactory, FreemarkerSectionResult}
 
 trait RenderHelper {
-  def viewFactory : FreemarkerFactory
+  def viewFactory: FreemarkerFactory
   def renderModel(ftl: String, m: AnyRef): FreemarkerSectionResult = {
     val fr = viewFactory.createResultWithModel(ftl, m).asInstanceOf[FreemarkerSectionResult]
     fr.addExtraObject("s", m)

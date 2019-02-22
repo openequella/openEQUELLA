@@ -18,24 +18,21 @@ package com.tle.common.scripting.types;
 
 import java.io.Serializable;
 
-/**
- * @author aholland
- */
-public interface DrmPartyScriptType extends Serializable
-{
-	String getEmail();
+/** @author aholland */
+public interface DrmPartyScriptType extends Serializable {
+  String getEmail();
 
-	void setEmail(String email);
+  void setEmail(String email);
 
-	String getName();
+  String getName();
 
-	void setName(String name);
+  void setName(String name);
 
-	String getUserID();
+  String getUserID();
 
-	void setUserID(String uid);
+  void setUserID(String uid);
 
-	boolean isOwner();
+  boolean isOwner();
 
-	void setOwner(boolean owner);
+  void setOwner(boolean owner);
 }

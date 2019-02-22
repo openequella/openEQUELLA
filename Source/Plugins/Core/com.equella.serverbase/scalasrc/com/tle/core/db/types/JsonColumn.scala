@@ -23,9 +23,9 @@ import io.circe.parser._
 
 trait JsonColumn
 
-object JsonColumn
-{
-  def mkCirceIso[A : Encoder : Decoder](default: A): Iso[A, Option[String]] = Iso(a => Some(a.asJson.noSpaces), _.map {
-    s => decode[A](s).fold(throw _, identity)
-  }.getOrElse(default))
+object JsonColumn {
+  def mkCirceIso[A: Encoder: Decoder](default: A): Iso[A, Option[String]] =
+    Iso(a => Some(a.asJson.noSpaces), _.map { s =>
+      decode[A](s).fold(throw _, identity)
+    }.getOrElse(default))
 }

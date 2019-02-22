@@ -67,13 +67,16 @@ class SearchConfigApi {
   @ApiOperation("Resolve configuration for a page")
   def resolveConfig(@PathParam("pagename") pagename: String): Response = ApiHelper.runAndBuild {
     for {
-      config <- SearchConfigDB.readPageConfig(pagename).flatMap { sc =>
-        SearchConfigDB.readConfig(sc.configId)
-      }.value
+      config <- SearchConfigDB
+        .readPageConfig(pagename)
+        .flatMap { sc =>
+          SearchConfigDB.readConfig(sc.configId)
+        }
+        .value
     } yield {
       (config, SearchDefaults.defaultMap.get(pagename)) match {
         case (Some(c), Some(d)) => Response.ok(SearchDefaults.mergeDefaults(d, c))
-        case (a, b) => ApiHelper.entityOrNotFound(a.orElse(b))
+        case (a, b)             => ApiHelper.entityOrNotFound(a.orElse(b))
       }
     }
   }

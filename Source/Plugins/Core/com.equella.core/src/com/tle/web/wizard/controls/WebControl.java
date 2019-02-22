@@ -26,34 +26,33 @@ import com.tle.web.sections.standard.js.impl.CombinedDisableable;
 import com.tle.web.wizard.WebWizardPage;
 
 @NonNullByDefault
-public interface WebControl extends HTMLControl, Section, HtmlRenderer
-{
-	WebWizardPage getWebWizardPage();
+public interface WebControl extends HTMLControl, Section, HtmlRenderer {
+  WebWizardPage getWebWizardPage();
 
-	void setWebWizardPage(WebWizardPage page);
+  void setWebWizardPage(WebWizardPage page);
 
-	void setInColumn(boolean b);
+  void setInColumn(boolean b);
 
-	boolean isInColumn();
+  boolean isInColumn();
 
-	HTMLControl getWrappedControl();
+  HTMLControl getWrappedControl();
 
-	void setWrappedControl(HTMLControl control);
+  void setWrappedControl(HTMLControl control);
 
-	CombinedDisableable getDisabler(SectionInfo info);
+  CombinedDisableable getDisabler(SectionInfo info);
 
-	// Yes this is rubbish
-	void doEditsIfRequired(SectionInfo info);
+  // Yes this is rubbish
+  void doEditsIfRequired(SectionInfo info);
 
-	void doReads(SectionInfo info);
+  void doReads(SectionInfo info);
 
-	void setNested(boolean nested);
+  void setNested(boolean nested);
 
-	boolean isNested();
+  boolean isNested();
 
-	void clearTargets(SectionInfo info, PropBagEx itemxml);
+  void clearTargets(SectionInfo info, PropBagEx itemxml);
 
-	boolean canHaveChildren();
+  boolean canHaveChildren();
 
-	void deletedFromParent(SectionInfo info);
+  void deletedFromParent(SectionInfo info);
 }

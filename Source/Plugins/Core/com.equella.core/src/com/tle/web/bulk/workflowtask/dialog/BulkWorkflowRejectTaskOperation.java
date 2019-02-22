@@ -16,10 +16,6 @@
 
 package com.tle.web.bulk.workflowtask.dialog;
 
-import java.util.List;
-
-import javax.inject.Singleton;
-
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.tle.core.guice.Bind;
@@ -39,101 +35,89 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.model.Option;
+import java.util.List;
 
 @Bind
-public class BulkWorkflowRejectTaskOperation extends AbstractBulkApproveRejectSection
-{
-	private static final String BULK_REJECT_VAL = "rejecttasks";
+public class BulkWorkflowRejectTaskOperation extends AbstractBulkApproveRejectSection {
+  private static final String BULK_REJECT_VAL = "rejecttasks";
 
-	@PlugKey("bulkop.rejecttask")
-	private static String STRING_REJECT;
-	@PlugKey("bulkop.rejecttask.title")
-	private static Label LABEL_REJECT_TITLE;
-	@PlugKey("bulkop.rejecttask.subtitle")
-	private static Label LABEL_REJECT_SUBTITLE;
+  @PlugKey("bulkop.rejecttask")
+  private static String STRING_REJECT;
 
-	@BindFactory
-	public interface RejectOperationExecutorFactory
-	{
-		RejectExecutor create(@Assisted("message") String message);
-	}
+  @PlugKey("bulkop.rejecttask.title")
+  private static Label LABEL_REJECT_TITLE;
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-	}
+  @PlugKey("bulkop.rejecttask.subtitle")
+  private static Label LABEL_REJECT_SUBTITLE;
 
-	public static class RejectExecutor implements BulkOperationExecutor
-	{
-		private static final long serialVersionUID = 1L;
-		private final String message;
+  @BindFactory
+  public interface RejectOperationExecutorFactory {
+    RejectExecutor create(@Assisted("message") String message);
+  }
 
-		@Inject
-		private ItemOperationFactory workflowFactory;
-		@Inject
-		private BulkWorkflowTaskOperationFactory rejectOperationFactory;
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+  }
 
-		@Inject
-		public RejectExecutor(@Assisted("message") String message)
-		{
-			this.message = message;
-		}
+  public static class RejectExecutor implements BulkOperationExecutor {
+    private static final long serialVersionUID = 1L;
+    private final String message;
 
-		@Override
-		public WorkflowOperation[] getOperations()
-		{
-			return new WorkflowOperation[]{rejectOperationFactory.reject(message),
-					workflowFactory.save()};
-		}
+    @Inject private ItemOperationFactory workflowFactory;
+    @Inject private BulkWorkflowTaskOperationFactory rejectOperationFactory;
 
-		@Override
-		public String getTitleKey()
-		{
-			return "com.tle.web.bulk.workflowtask.bulk.rejecttask.title";
-		}
-	}
+    @Inject
+    public RejectExecutor(@Assisted("message") String message) {
+      this.message = message;
+    }
 
-	@Override
-	public void addOptions(SectionInfo info, List<Option<OperationInfo>> options)
-	{
-		if( isOnMyTaskPage(info) )
-		{
-			if( hasPrivilege("REJECT_BULK_TASKS") )
-			{
-				options.add(new KeyOption<OperationInfo>(STRING_REJECT, BULK_REJECT_VAL,
-					new OperationInfo(this, BULK_REJECT_VAL)));
-			}
-		}
-		else
-		{
-			if( hasPrivilege("MANAGE_WORKFLOW") )
-			{
-				options.add(new KeyOption<OperationInfo>(STRING_REJECT, BULK_REJECT_VAL,
-					new OperationInfo(this, BULK_REJECT_VAL)));
-			}
-		}
-	}
+    @Override
+    public WorkflowOperation[] getOperations() {
+      return new WorkflowOperation[] {
+        rejectOperationFactory.reject(message), workflowFactory.save()
+      };
+    }
 
-	@Override
-	public BeanLocator<RejectExecutor> getExecutor(SectionInfo info, String operationId)
-	{
-		return new FactoryMethodLocator<RejectExecutor>(RejectOperationExecutorFactory.class, "create",
-			getComment(info));
-	}
+    @Override
+    public String getTitleKey() {
+      return "com.tle.web.bulk.workflowtask.bulk.rejecttask.title";
+    }
+  }
 
-	@Override
-	public SectionRenderable renderOptions(RenderContext context, String operationId)
-	{
-		setTitle(context, LABEL_REJECT_TITLE.getText());
-		setSubTitle(context, LABEL_REJECT_SUBTITLE.getText());
-		getModel(context).setMandatoryMessage(true);
-		return renderSection(context, this);
-	}
+  @Override
+  public void addOptions(SectionInfo info, List<Option<OperationInfo>> options) {
+    if (isOnMyTaskPage(info)) {
+      if (hasPrivilege("REJECT_BULK_TASKS")) {
+        options.add(
+            new KeyOption<OperationInfo>(
+                STRING_REJECT, BULK_REJECT_VAL, new OperationInfo(this, BULK_REJECT_VAL)));
+      }
+    } else {
+      if (hasPrivilege("MANAGE_WORKFLOW")) {
+        options.add(
+            new KeyOption<OperationInfo>(
+                STRING_REJECT, BULK_REJECT_VAL, new OperationInfo(this, BULK_REJECT_VAL)));
+      }
+    }
+  }
 
-	@Override
-	public Label getStatusTitleLabel(SectionInfo info, String operationId)
-	{
-		return LABEL_REJECT_TITLE;
-	}
+  @Override
+  public BeanLocator<RejectExecutor> getExecutor(SectionInfo info, String operationId) {
+    return new FactoryMethodLocator<RejectExecutor>(
+        RejectOperationExecutorFactory.class, "create", getComment(info));
+  }
+
+  @Override
+  public SectionRenderable renderOptions(RenderContext context, String operationId) {
+    setTitle(context, LABEL_REJECT_TITLE.getText());
+    setSubTitle(context, LABEL_REJECT_SUBTITLE.getText());
+    getModel(context).setMandatoryMessage(true);
+    return renderSection(context, this);
+  }
+
+  @Override
+  public Label getStatusTitleLabel(SectionInfo info, String operationId) {
+    return LABEL_REJECT_TITLE;
+  }
 }

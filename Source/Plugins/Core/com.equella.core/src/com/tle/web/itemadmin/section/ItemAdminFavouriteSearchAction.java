@@ -16,21 +16,18 @@
 
 package com.tle.web.itemadmin.section;
 
-import javax.inject.Inject;
-
 import com.tle.web.search.actions.AbstractFavouriteSearchAction;
 import com.tle.web.sections.equella.dialog.EquellaDialog;
 import com.tle.web.sections.standard.annotations.Component;
+import javax.inject.Inject;
 
-public class ItemAdminFavouriteSearchAction extends AbstractFavouriteSearchAction
-{
-	@Inject
-	@Component(name = "fd")
-	private ItemAdminFavouriteSearchDialog favDialog;
+public class ItemAdminFavouriteSearchAction extends AbstractFavouriteSearchAction {
+  @Inject
+  @Component(name = "fd")
+  private ItemAdminFavouriteSearchDialog favDialog;
 
-	@Override
-	protected EquellaDialog<?> getDialog()
-	{
-		return favDialog;
-	}
+  @Override
+  protected EquellaDialog<?> getDialog() {
+    return favDialog;
+  }
 }

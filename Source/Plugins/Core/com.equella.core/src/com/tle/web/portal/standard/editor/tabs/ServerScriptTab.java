@@ -16,8 +16,6 @@
 
 package com.tle.web.portal.standard.editor.tabs;
 
-import javax.inject.Inject;
-
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.Constants;
 import com.tle.common.Check;
@@ -42,97 +40,92 @@ import com.tle.web.sections.standard.CodeMirror;
 import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.js.modules.CodeMirrorLibrary.EditorType;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
-public class ServerScriptTab extends AbstractScriptingTab<Object>
-{
-	private static final NameValue NAME = new BundleNameValue(ResourcesService.getResourceHelper(ServerScriptTab.class)
-		.key("editor.freemarker.tab.server.name"), "server"); //$NON-NLS-2$
+public class ServerScriptTab extends AbstractScriptingTab<Object> {
+  private static final NameValue NAME =
+      new BundleNameValue(
+          ResourcesService.getResourceHelper(ServerScriptTab.class)
+              .key("editor.freemarker.tab.server.name"),
+          "server"); //$NON-NLS-2$
 
-	@Inject
-	private UserScriptsService userScriptService;
+  @Inject private UserScriptsService userScriptService;
 
-	@Component(name = "scpt")
-	private CodeMirror scriptEditor;
+  @Component(name = "scpt")
+  private CodeMirror scriptEditor;
 
-	@Component(name = "jsl")
-	@PlugKey("freemarker.scriptlist.action")
-	private SingleSelectionList<UserScript> javaScriptList;
+  @Component(name = "jsl")
+  @PlugKey("freemarker.scriptlist.action")
+  private SingleSelectionList<UserScript> javaScriptList;
 
-	@Override
-	public NameValue getTabToAppearOn()
-	{
-		return NAME;
-	}
+  @Override
+  public NameValue getTabToAppearOn() {
+    return NAME;
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		javaScriptList.setDisplayed(context, userScriptService.executableScriptsAvailable());
-		return thisView.createResult("edit/tabs/serverscripttab.ftl", context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    javaScriptList.setDisplayed(context, userScriptService.executableScriptsAvailable());
+    return thisView.createResult("edit/tabs/serverscripttab.ftl", context);
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		scriptEditor.setEditorType(EditorType.JAVASCRIPT_EDITOR);
-		scriptEditor.setAllowFullScreen(true);
-		scriptEditor.setShowHelp(true);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    scriptEditor.setEditorType(EditorType.JAVASCRIPT_EDITOR);
+    scriptEditor.setAllowFullScreen(true);
+    scriptEditor.setShowHelp(true);
 
-		javaScriptList.setListModel(new ScriptListModel(true));
-		javaScriptList.addChangeEventHandler(new StatementHandler(ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("loadUserScript"), "server-editor")));
-		javaScriptList.setDefaultRenderer(BootstrapDropDownRenderer.RENDER_CONSTANT);
+    javaScriptList.setListModel(new ScriptListModel(true));
+    javaScriptList.addChangeEventHandler(
+        new StatementHandler(
+            ajax.getAjaxUpdateDomFunction(
+                tree, this, events.getEventHandler("loadUserScript"), "server-editor")));
+    javaScriptList.setDefaultRenderer(BootstrapDropDownRenderer.RENDER_CONSTANT);
+  }
 
-	}
+  @Override
+  public void customLoad(SectionInfo info, PortletEditingBean portlet) {
+    PropBagEx config =
+        !Check.isEmpty(portlet.getConfig()) ? new PropBagEx(portlet.getConfig()) : new PropBagEx();
+    scriptEditor.setValue(info, config.getNode("script"));
+  }
 
-	@Override
-	public void customLoad(SectionInfo info, PortletEditingBean portlet)
-	{
-		PropBagEx config = !Check.isEmpty(portlet.getConfig()) ? new PropBagEx(portlet.getConfig()) : new PropBagEx();
-		scriptEditor.setValue(info, config.getNode("script"));
-	}
+  @Override
+  public void customSave(SectionInfo info, PortletEditingBean portlet) {
+    PropBagEx config =
+        !Check.isEmpty(portlet.getConfig()) ? new PropBagEx(portlet.getConfig()) : new PropBagEx();
+    if (scriptEditor.getValue(info) != null) {
+      config.setNode("script", scriptEditor.getValue(info));
+    }
 
-	@Override
-	public void customSave(SectionInfo info, PortletEditingBean portlet)
-	{
-		PropBagEx config = !Check.isEmpty(portlet.getConfig()) ? new PropBagEx(portlet.getConfig()) : new PropBagEx();
-		if( scriptEditor.getValue(info) != null )
-		{
-			config.setNode("script", scriptEditor.getValue(info));
-		}
+    portlet.setConfig(config.toString());
+  }
 
-		portlet.setConfig(config.toString());
-	}
+  @Override
+  public void customClear(SectionInfo info) {
+    scriptEditor.setValue(info, Constants.BLANK);
+  }
 
-	@Override
-	public void customClear(SectionInfo info)
-	{
-		scriptEditor.setValue(info, Constants.BLANK);
-	}
+  @Override
+  protected JSExpression getEditor() {
+    ScriptVariable cm = new ScriptVariable("cm", scriptEditor);
+    return cm;
+  }
 
-	@Override
-	protected JSExpression getEditor()
-	{
-		ScriptVariable cm = new ScriptVariable("cm", scriptEditor);
-		return cm;
-	}
+  public CodeMirror getScriptEditor() {
+    return scriptEditor;
+  }
 
-	public CodeMirror getScriptEditor()
-	{
-		return scriptEditor;
-	}
+  public SingleSelectionList<UserScript> getJavaScriptList() {
+    return javaScriptList;
+  }
 
-	public SingleSelectionList<UserScript> getJavaScriptList()
-	{
-		return javaScriptList;
-	}
-
-	@EventHandlerMethod(priority = SectionEvent.PRIORITY_HIGH)
-	public void loadUserScript(SectionInfo info)
-	{
-		String script = userScriptService.getByUuid(javaScriptList.getSelectedValueAsString(info)).getScript();
-		scriptEditor.setValue(info, script);
-	}
+  @EventHandlerMethod(priority = SectionEvent.PRIORITY_HIGH)
+  public void loadUserScript(SectionInfo info) {
+    String script =
+        userScriptService.getByUuid(javaScriptList.getSelectedValueAsString(info)).getScript();
+    scriptEditor.setValue(info, script);
+  }
 }

@@ -16,33 +16,28 @@
 
 package com.tle.core.workflow.thumbnail;
 
-import javax.inject.Inject;
-
 import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.operations.AbstractWorkflowOperation;
 import com.tle.core.workflow.thumbnail.service.ThumbnailService;
+import javax.inject.Inject;
 
 /**
  * Invoked via preCancel plugin point extension in CancelOperation
- * @author Aaron
  *
+ * @author Aaron
  */
 @Bind
-public class CancelThumbnailOperation extends AbstractWorkflowOperation
-{
-	@Inject
-	private ThumbnailService thumbService;
+public class CancelThumbnailOperation extends AbstractWorkflowOperation {
+  @Inject private ThumbnailService thumbService;
 
-	@Override
-	public boolean execute()
-	{
-		//discard all thumb requests from this staging
-		final StagingFile staging = getStaging();
-		if( staging != null )
-		{
-			thumbService.cancelRequests(getItemId(), staging);
-		}
-		return false;
-	}
+  @Override
+  public boolean execute() {
+    // discard all thumb requests from this staging
+    final StagingFile staging = getStaging();
+    if (staging != null) {
+      thumbService.cancelRequests(getItemId(), staging);
+    }
+    return false;
+  }
 }

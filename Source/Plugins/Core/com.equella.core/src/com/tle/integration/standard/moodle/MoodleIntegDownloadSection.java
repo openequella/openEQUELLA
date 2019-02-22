@@ -25,20 +25,17 @@ import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.render.HtmlRenderer;
 
 @Bind
-public class MoodleIntegDownloadSection extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+public class MoodleIntegDownloadSection extends AbstractPrototypeSection<Object>
+    implements HtmlRenderer {
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		return viewFactory.createResult("moodledownload.ftl", context); //$NON-NLS-1$
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    return viewFactory.createResult("moodledownload.ftl", context); // $NON-NLS-1$
+  }
 
-	@Override
-	public Class<Object> getModelClass()
-	{
-		return Object.class;
-	}
+  @Override
+  public Class<Object> getModelClass() {
+    return Object.class;
+  }
 }

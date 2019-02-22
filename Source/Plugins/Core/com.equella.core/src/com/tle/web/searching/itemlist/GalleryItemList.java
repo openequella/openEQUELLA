@@ -16,10 +16,6 @@
 
 package com.tle.web.searching.itemlist;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import com.tle.core.guice.Bind;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -32,40 +28,39 @@ import com.tle.web.sections.js.JSCallAndReference;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.render.SectionRenderable;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 @Bind
 @SuppressWarnings("nls")
-public class GalleryItemList extends StandardItemList
-{
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@PlugURL("scripts/gallerypreview.js")
-	private static String SCRIPT_URL;
+public class GalleryItemList extends StandardItemList {
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	private final IncludeFile previewHandler = new IncludeFile(SCRIPT_URL);
+  @PlugURL("scripts/gallerypreview.js")
+  private static String SCRIPT_URL;
 
-	public static final String GALLERY_FLAG = "gallery.result";
+  private final IncludeFile previewHandler = new IncludeFile(SCRIPT_URL);
 
-	@Override
-	protected SectionRenderable getRenderable(RenderEventContext context)
-	{
-		JSCallAndReference setupPreviews = new ExternallyDefinedFunction("setupPreviews", previewHandler);
-		getTag(context).addReadyStatements(setupPreviews);
-		return viewFactory.createResult("gallerylist.ftl", this);
-	}
+  public static final String GALLERY_FLAG = "gallery.result";
 
-	@SuppressWarnings("nls")
-	@Override
-	protected void customiseListEntries(RenderContext context, List<StandardItemListEntry> entries)
-	{
-		getListSettings(context).setAttribute(GALLERY_FLAG, true);
-		super.customiseListEntries(context, entries);
-	}
+  @Override
+  protected SectionRenderable getRenderable(RenderEventContext context) {
+    JSCallAndReference setupPreviews =
+        new ExternallyDefinedFunction("setupPreviews", previewHandler);
+    getTag(context).addReadyStatements(setupPreviews);
+    return viewFactory.createResult("gallerylist.ftl", this);
+  }
 
-	@Override
-	protected Set<String> getExtensionTypes()
-	{
-		return Collections.singleton("gallery");
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected void customiseListEntries(RenderContext context, List<StandardItemListEntry> entries) {
+    getListSettings(context).setAttribute(GALLERY_FLAG, true);
+    super.customiseListEntries(context, entries);
+  }
 
+  @Override
+  protected Set<String> getExtensionTypes() {
+    return Collections.singleton("gallery");
+  }
 }

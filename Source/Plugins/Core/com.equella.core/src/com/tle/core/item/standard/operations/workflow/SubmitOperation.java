@@ -27,50 +27,42 @@ import com.tle.common.workflow.Workflow;
 import com.tle.common.workflow.WorkflowMessage;
 import com.tle.core.security.impl.SecureItemStatus;
 
-/**
- * @author jmaginnis
- */
+/** @author jmaginnis */
 @SecureItemStatus(ItemStatus.DRAFT)
-public class SubmitOperation extends TaskOperation
-{
-	private String message;
+public class SubmitOperation extends TaskOperation {
+  private String message;
 
-	@AssistedInject
-	public SubmitOperation(@Nullable @Assisted String message)
-	{
-		this.message = message;
-	}
+  @AssistedInject
+  public SubmitOperation(@Nullable @Assisted String message) {
+    this.message = message;
+  }
 
-	@AssistedInject
-	public SubmitOperation()
-	{
-		// no message;
-	}
+  @AssistedInject
+  public SubmitOperation() {
+    // no message;
+  }
 
-	@Override
-	public boolean execute()
-	{
-		Workflow workflow = getWorkflow();
-		if( workflow != null )
-		{
-			setState(ItemStatus.MODERATING);
-		}
-		// ...else, we don't have a workflow so let the resetWorkflow() call
-		// make the status change. This will still put us in the "moderating"
-		// status if we have a workflow but fall straight through to Live, but
-		// that's fine.
+  @Override
+  public boolean execute() {
+    Workflow workflow = getWorkflow();
+    if (workflow != null) {
+      setState(ItemStatus.MODERATING);
+    }
+    // ...else, we don't have a workflow so let the resetWorkflow() call
+    // make the status change. This will still put us in the "moderating"
+    // status if we have a workflow but fall straight through to Live, but
+    // that's fine.
 
-		resetWorkflow();
-		if( workflow != null && !Check.isEmpty(message) )
-		{
-			String taskId = workflow.getRoot().getUuid();
-			HistoryEvent comment = createHistory(Type.comment);
-			comment.setComment(message);
-			setStepFromTask(comment, taskId);
-			addMessage(taskId, WorkflowMessage.TYPE_SUBMIT, message, null);
-		}
-		getModerationStatus().setLastAction(params.getDateNow());
-		updateModeration();
-		return true;
-	}
+    resetWorkflow();
+    if (workflow != null && !Check.isEmpty(message)) {
+      String taskId = workflow.getRoot().getUuid();
+      HistoryEvent comment = createHistory(Type.comment);
+      comment.setComment(message);
+      setStepFromTask(comment, taskId);
+      addMessage(taskId, WorkflowMessage.TYPE_SUBMIT, message, null);
+    }
+    getModerationStatus().setLastAction(params.getDateNow());
+    updateModeration();
+    return true;
+  }
 }

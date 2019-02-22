@@ -16,16 +16,11 @@
 
 package com.tle.core.workflow.standard.filter;
 
+import com.tle.core.guice.BindFactory;
 import java.util.Collection;
 
-import com.tle.core.guice.BindFactory;
-
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @BindFactory
-public interface WorkflowStandardFilterFactory
-{
-	CheckModerationForStepsFilter checkForSteps(Collection<Long> nodeIds, boolean forceModify);
+public interface WorkflowStandardFilterFactory {
+  CheckModerationForStepsFilter checkForSteps(Collection<Long> nodeIds, boolean forceModify);
 }

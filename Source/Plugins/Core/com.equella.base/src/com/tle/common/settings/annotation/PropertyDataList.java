@@ -16,15 +16,13 @@
 
 package com.tle.common.settings.annotation;
 
+import com.tle.common.settings.ConfigurationProperties;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import com.tle.common.settings.ConfigurationProperties;
-
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PropertyDataList
-{
-	String key();
+public @interface PropertyDataList {
+  String key();
 
-	Class<? extends ConfigurationProperties> type();
+  Class<? extends ConfigurationProperties> type();
 }

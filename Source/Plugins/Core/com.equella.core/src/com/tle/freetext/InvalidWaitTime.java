@@ -24,12 +24,10 @@ package com.tle.freetext;
 
 // This exception is thrown when an
 // invalid wait time is specified
-public class InvalidWaitTime extends Exception
-{
-	private static final long serialVersionUID = 1L;
+public class InvalidWaitTime extends Exception {
+  private static final long serialVersionUID = 1L;
 
-	public InvalidWaitTime()
-	{
-		super();
-	}
+  public InvalidWaitTime() {
+    super();
+  }
 }

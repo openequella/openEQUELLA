@@ -16,23 +16,16 @@
 
 package com.tle.web.institution.tab;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.dytech.common.text.NumberStringComparator;
 import com.google.common.collect.Lists;
 import com.tle.beans.Institution;
 import com.tle.common.PathUtils;
+import com.tle.common.beans.progress.ListProgressCallback;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.institution.InstitutionStatus;
 import com.tle.core.institution.convert.InstitutionInfo;
 import com.tle.core.institution.convert.service.InstitutionImportService;
 import com.tle.core.institution.convert.service.InstitutionImportService.ConvertType;
-import com.tle.common.beans.progress.ListProgressCallback;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.institution.AbstractInstitutionTab;
@@ -63,290 +56,288 @@ import com.tle.web.sections.standard.model.TableState;
 import com.tle.web.sections.standard.model.TableState.TableCell;
 import com.tle.web.sections.standard.renderers.SpanRenderer;
 import com.tle.web.template.Decorations;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
-public class AdminTab extends AbstractInstitutionTab<AdminTab.AdminTabModel>
-{
-	@PlugKey("institutions.admin.title")
-	private static Label TITLE_LABEL;
-	@PlugKey("institutions.admin.link.name")
-	private static Label LINK_LABEL;
+public class AdminTab extends AbstractInstitutionTab<AdminTab.AdminTabModel> {
+  @PlugKey("institutions.admin.title")
+  private static Label TITLE_LABEL;
 
-	// Table columns
-	@PlugKey("column.institution")
-	private static Label LABEL_INSTITUTION;
-	@PlugKey("column.status")
-	private static Label LABEL_STATUS;
-	@PlugKey("column.actions")
-	private static Label LABEL_ACTIONS;
+  @PlugKey("institutions.admin.link.name")
+  private static Label LINK_LABEL;
 
-	// Actions
-	@PlugKey("institutions.admin.login")
-	private static Label LABEL_LOGIN;
-	@PlugKey("institutions.admin.delete")
-	private static Label LABEL_DELETE;
-	@PlugKey("institutions.admin.delete")
-	private static String KEY_DELETE;
-	@PlugKey("institutions.admin.confirm")
-	private static String KEY_CONFIRM_DELETE;
-	@PlugKey("institutions.admin.clone")
-	private static Label LABEL_CLONE;
-	@PlugKey("institutions.admin.dump")
-	private static Label LABEL_EXPORT;
-	@PlugKey("institutions.admin.disable")
-	private static Label LABEL_DISABLE;
-	@PlugKey("institutions.admin.enable")
-	private static Label LABEL_ENABLE;
-	@PlugKey("institutions.admin.edit")
-	private static Label LABEL_EDIT;
+  // Table columns
+  @PlugKey("column.institution")
+  private static Label LABEL_INSTITUTION;
 
-	// Statuses
-	@PlugKey("institutions.admin.status.disabled")
-	private static Label LABEL_STATUS_DISABLED;
-	@PlugKey("institutions.admin.status.enabled")
-	private static Label LABEL_STATUS_ENABLED;
-	@PlugKey("institutions.admin.status.invalid.")
-	private static String KEY_STATUS_INVALID;
+  @PlugKey("column.status")
+  private static Label LABEL_STATUS;
 
-	@Inject
-	private InstitutionService institutionService;
-	@Inject
-	private InstitutionImportService instImportService;
-	@Inject
-	private ExportSection exportSection;
-	@Inject
-	private EditSection editSection;
-	@Inject
-	private CloneSection cloneSection;
+  @PlugKey("column.actions")
+  private static Label LABEL_ACTIONS;
 
-	@TreeLookup
-	private ProgressSection progressSection;
+  // Actions
+  @PlugKey("institutions.admin.login")
+  private static Label LABEL_LOGIN;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("institutions.admin.delete")
+  private static Label LABEL_DELETE;
 
-	@Component(name = "i")
-	private Table institutionsTable;
+  @PlugKey("institutions.admin.delete")
+  private static String KEY_DELETE;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		tree.registerSections(exportSection, id);
-		tree.registerSections(editSection, id);
-		tree.registerSections(cloneSection, id);
+  @PlugKey("institutions.admin.confirm")
+  private static String KEY_CONFIRM_DELETE;
 
-		institutionsTable.setColumnHeadings(LABEL_INSTITUTION, LABEL_STATUS, LABEL_ACTIONS);
-		institutionsTable.setColumnSorts(Sort.PRIMARY_ASC, Sort.SORTABLE_ASC, Sort.NONE);
-	}
+  @PlugKey("institutions.admin.clone")
+  private static Label LABEL_CLONE;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		SectionResult first = renderFirstResult(context);
-		if( first != null )
-		{
-			return first;
-		}
+  @PlugKey("institutions.admin.dump")
+  private static Label LABEL_EXPORT;
 
-		List<InstitutionStatus> institutions = Lists.newArrayList(institutionService.getAllInstitutions());
-		Collections.sort(institutions, new NumberStringComparator<InstitutionStatus>()
-		{
-			@Override
-			public String convertToString(InstitutionStatus t)
-			{
-				return t.getInstitution().getName();
-			}
-		});
+  @PlugKey("institutions.admin.disable")
+  private static Label LABEL_DISABLE;
 
-		getModel(context).setInstitutions(institutions.size() > 0);
+  @PlugKey("institutions.admin.enable")
+  private static Label LABEL_ENABLE;
 
-		TableState tableState = institutionsTable.getState(context);
-		for( InstitutionStatus instStatus : institutions )
-		{
-			final Institution institution = instStatus.getInstitution();
-			final long id = institution.getUniqueId();
+  @PlugKey("institutions.admin.edit")
+  private static Label LABEL_EDIT;
 
-			// Badge Cell
-			TagState tagState = new TagState();
-			tagState.setStyle("display: none;");
-			tagState.addClass("insturl");
-			SpanRenderer instUrlTag = new SpanRenderer(tagState, institution.getUrl());
-			final TableCell badgeCell = new TableCell(viewFactory.createResultWithModelMap("tab/badgeCell.ftl", "name",
-				institution.getName(), "badgeUrl", institutionSection.getBadgeUrl(context, id)), instUrlTag);
-			badgeCell.addClass("badge-row");
-			badgeCell.setSortData(institution.getName());
+  // Statuses
+  @PlugKey("institutions.admin.status.disabled")
+  private static Label LABEL_STATUS_DISABLED;
 
-			// Status and actions
-			Label status = null;
-			final List<Object> actions = Lists.newArrayList();
+  @PlugKey("institutions.admin.status.enabled")
+  private static Label LABEL_STATUS_ENABLED;
 
-			if( !instStatus.isValid() )
-			{
-				status = new KeyLabel(KEY_STATUS_INVALID + instStatus.getInvalidReason().name().toLowerCase());
-			}
+  @PlugKey("institutions.admin.status.invalid.")
+  private static String KEY_STATUS_INVALID;
 
-			if( institution.isEnabled() )
-			{
-				if( instStatus.isValid() )
-				{
-					status = LABEL_STATUS_ENABLED;
-					actions.add(new HtmlLinkState(LABEL_LOGIN,
-						new SimpleBookmark(PathUtils.urlPath(institution.getUrl(), "logon.do"))));
-				}
-				actions.add(actionLink(LABEL_DISABLE, "disableClicked", id));
-			}
-			else if( instStatus.isValid() )
-			{
-				status = LABEL_STATUS_DISABLED;
-				actions.add(actionLink(LABEL_ENABLE, "enableClicked", id));
-			}
-			actions.add(actionLink(LABEL_EDIT, "editClicked", id));
+  @Inject private InstitutionService institutionService;
+  @Inject private InstitutionImportService instImportService;
+  @Inject private ExportSection exportSection;
+  @Inject private EditSection editSection;
+  @Inject private CloneSection cloneSection;
 
-			actions.add(new HtmlLinkState(LABEL_DELETE, events.getNamedHandler("deleteClicked", id)
-				.addValidator(new Confirm(new KeyLabel(KEY_CONFIRM_DELETE, institution.getName())))));
+  @TreeLookup private ProgressSection progressSection;
 
-			actions.add(actionLink(LABEL_CLONE, "cloneClicked", id));
-			actions.add(actionLink(LABEL_EXPORT, "dumpClicked", id));
+  @ViewFactory private FreemarkerFactory viewFactory;
+  @EventFactory private EventGenerator events;
 
-			// Put the status cell together
-			final TableCell statusCell = new TableCell();
-			statusCell.addClass("middle");
-			statusCell.addContent(status);
+  @Component(name = "i")
+  private Table institutionsTable;
 
-			// And put the actions cell together
-			final TableCell actionsCell = new TableCell();
-			actionsCell.addClass("middle");
-			for( Iterator<Object> iter = actions.iterator(); iter.hasNext(); )
-			{
-				actionsCell.addContent(iter.next());
-				if( iter.hasNext() )
-				{
-					actionsCell.addContent(" | ");
-				}
-			}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.registerSections(exportSection, id);
+    tree.registerSections(editSection, id);
+    tree.registerSections(cloneSection, id);
 
-			tableState.addRow(badgeCell, statusCell, actionsCell);
-		}
+    institutionsTable.setColumnHeadings(LABEL_INSTITUTION, LABEL_STATUS, LABEL_ACTIONS);
+    institutionsTable.setColumnSorts(Sort.PRIMARY_ASC, Sort.SORTABLE_ASC, Sort.NONE);
+  }
 
-		Decorations d = Decorations.getDecorations(context);
-		d.setTitle(TITLE_LABEL);
-		return viewFactory.createResult("tab/admin.ftl", context);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    SectionResult first = renderFirstResult(context);
+    if (first != null) {
+      return first;
+    }
 
-	private HtmlLinkState actionLink(Label label, String handler, Object... values)
-	{
-		return new HtmlLinkState(label, events.getNamedHandler(handler, values));
-	}
+    List<InstitutionStatus> institutions =
+        Lists.newArrayList(institutionService.getAllInstitutions());
+    Collections.sort(
+        institutions,
+        new NumberStringComparator<InstitutionStatus>() {
+          @Override
+          public String convertToString(InstitutionStatus t) {
+            return t.getInstitution().getName();
+          }
+        });
 
-	@EventHandlerMethod
-	public void editClicked(SectionInfo info, long institutionId)
-	{
-		editSection.setupEdit(info, institutionId);
-	}
+    getModel(context).setInstitutions(institutions.size() > 0);
 
-	@EventHandlerMethod
-	public void deleteClicked(SectionInfo info, long institutionId)
-	{
-		final Institution i = institutionService.getInstitution(institutionId);
+    TableState tableState = institutionsTable.getState(context);
+    for (InstitutionStatus instStatus : institutions) {
+      final Institution institution = instStatus.getInstitution();
+      final long id = institution.getUniqueId();
 
-		InstitutionInfo instImp = instImportService.getInstitutionInfo(i);
-		instImp.setFlags(new HashSet<String>());
-		progressSection.setupProgress(info, instImportService.getConverterTasks(ConvertType.DELETE, instImp),
-			KEY_DELETE, i, new ProgressRunnable()
-			{
-				@Override
-				public void run(ListProgressCallback callback)
-				{
-					instImportService.delete(i, callback);
-				}
+      // Badge Cell
+      TagState tagState = new TagState();
+      tagState.setStyle("display: none;");
+      tagState.addClass("insturl");
+      SpanRenderer instUrlTag = new SpanRenderer(tagState, institution.getUrl());
+      final TableCell badgeCell =
+          new TableCell(
+              viewFactory.createResultWithModelMap(
+                  "tab/badgeCell.ftl",
+                  "name",
+                  institution.getName(),
+                  "badgeUrl",
+                  institutionSection.getBadgeUrl(context, id)),
+              instUrlTag);
+      badgeCell.addClass("badge-row");
+      badgeCell.setSortData(institution.getName());
 
-				@Override
-				public String getTaskName()
-				{
-					return "delete";
-				}
-			});
-	}
+      // Status and actions
+      Label status = null;
+      final List<Object> actions = Lists.newArrayList();
 
-	@EventHandlerMethod
-	public void cloneClicked(SectionInfo info, int institutionId)
-	{
-		cloneSection.setupClone(info, institutionId);
-	}
+      if (!instStatus.isValid()) {
+        status =
+            new KeyLabel(KEY_STATUS_INVALID + instStatus.getInvalidReason().name().toLowerCase());
+      }
 
-	@EventHandlerMethod
-	public void dumpClicked(SectionInfo info, int institutionId)
-	{
-		exportSection.setupExport(info, institutionId);
-	}
+      if (institution.isEnabled()) {
+        if (instStatus.isValid()) {
+          status = LABEL_STATUS_ENABLED;
+          actions.add(
+              new HtmlLinkState(
+                  LABEL_LOGIN,
+                  new SimpleBookmark(PathUtils.urlPath(institution.getUrl(), "logon.do"))));
+        }
+        actions.add(actionLink(LABEL_DISABLE, "disableClicked", id));
+      } else if (instStatus.isValid()) {
+        status = LABEL_STATUS_DISABLED;
+        actions.add(actionLink(LABEL_ENABLE, "enableClicked", id));
+      }
+      actions.add(actionLink(LABEL_EDIT, "editClicked", id));
 
-	@EventHandlerMethod
-	public void enableClicked(SectionInfo info, int institutionId)
-	{
-		setEnabled(institutionId, true);
-	}
+      actions.add(
+          new HtmlLinkState(
+              LABEL_DELETE,
+              events
+                  .getNamedHandler("deleteClicked", id)
+                  .addValidator(
+                      new Confirm(new KeyLabel(KEY_CONFIRM_DELETE, institution.getName())))));
 
-	@EventHandlerMethod
-	public void disableClicked(SectionInfo info, int institutionId)
-	{
-		setEnabled(institutionId, false);
-	}
+      actions.add(actionLink(LABEL_CLONE, "cloneClicked", id));
+      actions.add(actionLink(LABEL_EXPORT, "dumpClicked", id));
 
-	private void setEnabled(long instId, boolean enabled)
-	{
-		institutionService.setEnabled(instId, enabled);
-	}
+      // Put the status cell together
+      final TableCell statusCell = new TableCell();
+      statusCell.addClass("middle");
+      statusCell.addContent(status);
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "admin";
-	}
+      // And put the actions cell together
+      final TableCell actionsCell = new TableCell();
+      actionsCell.addClass("middle");
+      for (Iterator<Object> iter = actions.iterator(); iter.hasNext(); ) {
+        actionsCell.addContent(iter.next());
+        if (iter.hasNext()) {
+          actionsCell.addContent(" | ");
+        }
+      }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new AdminTabModel();
-	}
+      tableState.addRow(badgeCell, statusCell, actionsCell);
+    }
 
-	@Override
-	public boolean shouldDefault(SectionInfo info)
-	{
-		return !institutionService.getAllInstitutions().isEmpty();
-	}
+    Decorations d = Decorations.getDecorations(context);
+    d.setTitle(TITLE_LABEL);
+    return viewFactory.createResult("tab/admin.ftl", context);
+  }
 
-	@Override
-	protected boolean isTabVisible(SectionInfo info)
-	{
-		return true;
-	}
+  private HtmlLinkState actionLink(Label label, String handler, Object... values) {
+    return new HtmlLinkState(label, events.getNamedHandler(handler, values));
+  }
 
-	@Override
-	public Label getName()
-	{
-		return LINK_LABEL;
-	}
+  @EventHandlerMethod
+  public void editClicked(SectionInfo info, long institutionId) {
+    editSection.setupEdit(info, institutionId);
+  }
 
-	public Table getInstitutionsTable()
-	{
-		return institutionsTable;
-	}
+  @EventHandlerMethod
+  public void deleteClicked(SectionInfo info, long institutionId) {
+    final Institution i = institutionService.getInstitution(institutionId);
 
-	public static class AdminTabModel
-	{
-		private boolean institutions;
+    InstitutionInfo instImp = instImportService.getInstitutionInfo(i);
+    instImp.setFlags(new HashSet<String>());
+    progressSection.setupProgress(
+        info,
+        instImportService.getConverterTasks(ConvertType.DELETE, instImp),
+        KEY_DELETE,
+        i,
+        new ProgressRunnable() {
+          @Override
+          public void run(ListProgressCallback callback) {
+            instImportService.delete(i, callback);
+          }
 
-		public boolean hasInstitutions()
-		{
-			return institutions;
-		}
+          @Override
+          public String getTaskName() {
+            return "delete";
+          }
+        });
+  }
 
-		public void setInstitutions(boolean institutions)
-		{
-			this.institutions = institutions;
-		}
-	}
+  @EventHandlerMethod
+  public void cloneClicked(SectionInfo info, int institutionId) {
+    cloneSection.setupClone(info, institutionId);
+  }
+
+  @EventHandlerMethod
+  public void dumpClicked(SectionInfo info, int institutionId) {
+    exportSection.setupExport(info, institutionId);
+  }
+
+  @EventHandlerMethod
+  public void enableClicked(SectionInfo info, int institutionId) {
+    setEnabled(institutionId, true);
+  }
+
+  @EventHandlerMethod
+  public void disableClicked(SectionInfo info, int institutionId) {
+    setEnabled(institutionId, false);
+  }
+
+  private void setEnabled(long instId, boolean enabled) {
+    institutionService.setEnabled(instId, enabled);
+  }
+
+  @Override
+  public String getDefaultPropertyName() {
+    return "admin";
+  }
+
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new AdminTabModel();
+  }
+
+  @Override
+  public boolean shouldDefault(SectionInfo info) {
+    return !institutionService.getAllInstitutions().isEmpty();
+  }
+
+  @Override
+  protected boolean isTabVisible(SectionInfo info) {
+    return true;
+  }
+
+  @Override
+  public Label getName() {
+    return LINK_LABEL;
+  }
+
+  public Table getInstitutionsTable() {
+    return institutionsTable;
+  }
+
+  public static class AdminTabModel {
+    private boolean institutions;
+
+    public boolean hasInstitutions() {
+      return institutions;
+    }
+
+    public void setInstitutions(boolean institutions) {
+      this.institutions = institutions;
+    }
+  }
 }

@@ -16,14 +16,6 @@
 
 package com.tle.core.hibernate;
 
-import java.util.Properties;
-import java.util.concurrent.ThreadFactory;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import com.google.common.base.Function;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -33,192 +25,177 @@ import com.tle.core.config.guice.PropertiesModule;
 import com.tle.core.guice.Bind;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import java.util.Properties;
+import java.util.concurrent.ThreadFactory;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Bind(DataSourceService.class)
 @Singleton
 @SuppressWarnings("nls")
-public class DataSourceServiceImpl implements DataSourceService
-{
-	@Inject
-	@Named("hibernate.connection.driver_class")
-	private String driverClass;
-	@Inject
-	@Named("hibernate.dialect")
-	private ExtendedDialect dialect;
-	@Inject
-	@Named("hibernate.connection.username")
-	private String systemUsername;
-	@Inject
-	@Named("hibernate.connection.password")
-	private String systemPassword;
-	@Inject
-	@Named("hibernate.connection.url")
-	private String systemUrl;
+public class DataSourceServiceImpl implements DataSourceService {
+  @Inject
+  @Named("hibernate.connection.driver_class")
+  private String driverClass;
 
-	private static Logger LOGGER = LoggerFactory.getLogger(DataSourceService.class);
+  @Inject
+  @Named("hibernate.dialect")
+  private ExtendedDialect dialect;
 
-	private final LoadingCache<SourceKey, DataSourceHolder> dsCache = CacheBuilder.newBuilder().weakValues()
-		.build(CacheLoader.from(new CreateDataSourceFunction()));
+  @Inject
+  @Named("hibernate.connection.username")
+  private String systemUsername;
 
-	private DataSourceHolder systemDataSource;
-	private final Properties baseConfig;
+  @Inject
+  @Named("hibernate.connection.password")
+  private String systemPassword;
 
-	public DataSourceServiceImpl() throws Exception
-	{
-		baseConfig = PropertiesModule.getPropertiesCache().get("/hikari.properties");
-	}
+  @Inject
+  @Named("hibernate.connection.url")
+  private String systemUrl;
 
-	@PostConstruct
-	public void printInfo()
-	{
-		LOGGER.info("System DB URL: "+systemUrl);
-	}
+  private static Logger LOGGER = LoggerFactory.getLogger(DataSourceService.class);
 
-	@Override
-	public synchronized DataSourceHolder getSystemDataSource()
-	{
-		if( systemDataSource == null )
-		{
-			systemDataSource = getDataSource(systemUrl, systemUsername, systemPassword);
-		}
-		return systemDataSource;
-	}
+  private final LoadingCache<SourceKey, DataSourceHolder> dsCache =
+      CacheBuilder.newBuilder()
+          .weakValues()
+          .build(CacheLoader.from(new CreateDataSourceFunction()));
 
-	@Override
-	public String getSystemPassword()
-	{
-		return systemPassword;
-	}
+  private DataSourceHolder systemDataSource;
+  private final Properties baseConfig;
 
-	@Override
-	public String getSystemUrl()
-	{
-		return systemUrl;
-	}
+  public DataSourceServiceImpl() throws Exception {
+    baseConfig = PropertiesModule.getPropertiesCache().get("/hikari.properties");
+  }
 
-	@Override
-	public String getSystemUsername()
-	{
-		return systemUsername;
-	}
+  @PostConstruct
+  public void printInfo() {
+    LOGGER.info("System DB URL: " + systemUrl);
+  }
 
-	@Override
-	public DataSourceHolder getDataSource(String url, String username, String password)
-	{
-		return dsCache.getUnchecked(new SourceKey(url, username, password));
-	}
+  @Override
+  public synchronized DataSourceHolder getSystemDataSource() {
+    if (systemDataSource == null) {
+      systemDataSource = getDataSource(systemUrl, systemUsername, systemPassword);
+    }
+    return systemDataSource;
+  }
 
-	@Override
-	public void removeDataSource(String url, String username, String password)
-	{
-		dsCache.invalidate(new SourceKey(url, username, password));
-	}
+  @Override
+  public String getSystemPassword() {
+    return systemPassword;
+  }
 
-	public class CreateDataSourceFunction implements Function<SourceKey, DataSourceHolder>
-	{
-		@Override
-		public DataSourceHolder apply(SourceKey key)
-		{
-			final HikariConfig newConfig = new HikariConfig(baseConfig);
-			newConfig.setDriverClassName(driverClass);
-			newConfig.setUsername(key.getUsername());
-			newConfig.setPassword(key.getPassword());
-			newConfig.setJdbcUrl(key.getUrl());
-			//Fixed properties: (i.e. do not allow override in hikari.properties)
-			newConfig.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-			newConfig.setAutoCommit(false);
-			newConfig.setInitializationFailFast(false);
-			newConfig.setThreadFactory(new ThreadFactory()
-			{
-				@Override
-				public Thread newThread(final Runnable r)
-				{
-					return new Thread("CustomHikariThread")
-					{
-						@Override
-						public void run()
-						{
-							ClassLoader oldLoader = getContextClassLoader();
-							try
-							{
-								setContextClassLoader(DataSourceServiceImpl.class.getClassLoader());
-								r.run();
-							}
-							catch( Throwable t )
-							{
-								setContextClassLoader(oldLoader);
-							}
-						}
-					};
-				}
-			});
+  @Override
+  public String getSystemUrl() {
+    return systemUrl;
+  }
 
-			return new DataSourceHolder(new HikariDataSource(newConfig), dialect);
-		}
-	}
+  @Override
+  public String getSystemUsername() {
+    return systemUsername;
+  }
 
-	@Override
-	public ExtendedDialect getDialect()
-	{
-		return dialect;
-	}
+  @Override
+  public DataSourceHolder getDataSource(String url, String username, String password) {
+    return dsCache.getUnchecked(new SourceKey(url, username, password));
+  }
 
-	private static class SourceKey
-	{
-		private final String url;
-		private final String username;
-		private final String password;
+  @Override
+  public void removeDataSource(String url, String username, String password) {
+    dsCache.invalidate(new SourceKey(url, username, password));
+  }
 
-		public SourceKey(String url, String username, String password)
-		{
-			this.url = url;
-			this.username = username;
-			this.password = password;
-		}
+  public class CreateDataSourceFunction implements Function<SourceKey, DataSourceHolder> {
+    @Override
+    public DataSourceHolder apply(SourceKey key) {
+      final HikariConfig newConfig = new HikariConfig(baseConfig);
+      newConfig.setDriverClassName(driverClass);
+      newConfig.setUsername(key.getUsername());
+      newConfig.setPassword(key.getPassword());
+      newConfig.setJdbcUrl(key.getUrl());
+      // Fixed properties: (i.e. do not allow override in hikari.properties)
+      newConfig.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
+      newConfig.setAutoCommit(false);
+      newConfig.setInitializationFailFast(false);
+      newConfig.setThreadFactory(
+          new ThreadFactory() {
+            @Override
+            public Thread newThread(final Runnable r) {
+              return new Thread("CustomHikariThread") {
+                @Override
+                public void run() {
+                  ClassLoader oldLoader = getContextClassLoader();
+                  try {
+                    setContextClassLoader(DataSourceServiceImpl.class.getClassLoader());
+                    r.run();
+                  } catch (Throwable t) {
+                    setContextClassLoader(oldLoader);
+                  }
+                }
+              };
+            }
+          });
 
-		public String getUrl()
-		{
-			return url;
-		}
+      return new DataSourceHolder(new HikariDataSource(newConfig), dialect);
+    }
+  }
 
-		public String getUsername()
-		{
-			return username;
-		}
+  @Override
+  public ExtendedDialect getDialect() {
+    return dialect;
+  }
 
-		public String getPassword()
-		{
-			return password;
-		}
+  private static class SourceKey {
+    private final String url;
+    private final String username;
+    private final String password;
 
-		@Override
-		public int hashCode()
-		{
-			return Check.getHashCode(url, username, password);
-		}
+    public SourceKey(String url, String username, String password) {
+      this.url = url;
+      this.username = username;
+      this.password = password;
+    }
 
-		@Override
-		public boolean equals(Object obj)
-		{
-			if( this == obj )
-			{
-				return true;
-			}
-			if( !(obj instanceof SourceKey) )
-			{
-				return false;
-			}
+    public String getUrl() {
+      return url;
+    }
 
-			SourceKey other = (SourceKey) obj;
-			return url.equals(other.url) && username.equals(other.username) && password.equals(other.password);
-		}
-	}
+    public String getUsername() {
+      return username;
+    }
 
-	@Override
-	public String getDriverClass()
-	{
-		return driverClass;
-	}
+    public String getPassword() {
+      return password;
+    }
+
+    @Override
+    public int hashCode() {
+      return Check.getHashCode(url, username, password);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (!(obj instanceof SourceKey)) {
+        return false;
+      }
+
+      SourceKey other = (SourceKey) obj;
+      return url.equals(other.url)
+          && username.equals(other.username)
+          && password.equals(other.password);
+    }
+  }
+
+  @Override
+  public String getDriverClass() {
+    return driverClass;
+  }
 }

@@ -39,7 +39,8 @@ case class InstCacheable[A](pfx: String, query: DB[A]) extends Cacheable[A] {
   def key(userContext: UserContext): String = userContext.inst.getUniqueId + "_" + pfx
 }
 
-case class CacheInvalidationEvent(key: String) extends ApplicationEvent[CacheInvalidation](PostTo.POST_TO_OTHER_CLUSTER_NODES) {
+case class CacheInvalidationEvent(key: String)
+    extends ApplicationEvent[CacheInvalidation](PostTo.POST_TO_OTHER_CLUSTER_NODES) {
   override def getListener: Class[CacheInvalidation] = classOf[CacheInvalidation]
 
   override def postEvent(listener: CacheInvalidation): Unit = listener.invalidateKey(key)
@@ -66,14 +67,19 @@ object Cache extends CacheInvalidation {
     Kleisli { uc: UserContext =>
       StateT.inspectF { s: Connection =>
         val key = c.key(uc)
-        concurrentMap.computeIfAbsent(key,
-          k => fs2.async.once(RunWithDB.executeTransaction(uc.ds.getConnection(), c.query.run(uc).map(IO.pure))).unsafeRunSync()
-        ).asInstanceOf[IO[A]]
+        concurrentMap
+          .computeIfAbsent(
+            key,
+            k =>
+              fs2.async
+                .once(
+                  RunWithDB.executeTransaction(uc.ds.getConnection(), c.query.run(uc).map(IO.pure)))
+                .unsafeRunSync())
+          .asInstanceOf[IO[A]]
       }
     }
   }
 
   override def invalidateKey(key: String): Unit = concurrentMap.remove(key)
-
 
 }

@@ -16,11 +16,6 @@
 
 package com.tle.web.bulk.workflow.dialog;
 
-import java.util.Collection;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.google.inject.assistedinject.Assisted;
 import com.tle.beans.item.ItemPack;
 import com.tle.common.Check;
@@ -50,170 +45,150 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.model.Option;
 import com.tle.web.workflow.manage.FilterByWorkflowSection;
+import java.util.Collection;
+import java.util.List;
+import javax.inject.Inject;
 
 @Bind
-public class BulkWorkflowTaskMoveOperation extends BulkWorkflowTaskMoveSection implements BulkOperationExtension
-{
-	private static final String BULK_MOVETASK_VAL = "movetasks";
+public class BulkWorkflowTaskMoveOperation extends BulkWorkflowTaskMoveSection
+    implements BulkOperationExtension {
+  private static final String BULK_MOVETASK_VAL = "movetasks";
 
-	@PlugKey("bulkop.movetask")
-	private static String STRING_MOVETASK;
-	@PlugKey("bulkop.movetask.title")
-	private static Label LABEL_MOVETASK_TITLE;
+  @PlugKey("bulkop.movetask")
+  private static String STRING_MOVETASK;
 
-	@Inject
-	private WorkflowService workflowService;
+  @PlugKey("bulkop.movetask.title")
+  private static Label LABEL_MOVETASK_TITLE;
 
-	@TreeLookup
-	private ItemAdminFilterByItemStatusSection itemStatus;
-	@TreeLookup
-	private FilterByWorkflowSection filterByWorkflowSection;
-	@TreeLookup
-	private ItemAdminResultsDialog itemAdminResultsDialog;
+  @Inject private WorkflowService workflowService;
 
-	@Override
-	public void register(SectionTree tree, String parentId)
-	{
-		tree.registerInnerSection(this, parentId);
-	}
+  @TreeLookup private ItemAdminFilterByItemStatusSection itemStatus;
+  @TreeLookup private FilterByWorkflowSection filterByWorkflowSection;
+  @TreeLookup private ItemAdminResultsDialog itemAdminResultsDialog;
 
-	private boolean isShowing(SectionInfo info)
-	{
-		String workflowId = getSelectedWorkflowId(info);
-		BulkWorkflowTaskMoveModel model = getModel(info);
-		if( !Check.isEmpty(workflowId) )
-		{
-			Workflow selectedWorkflow = workflowService.getByUuid(workflowId);
-			model.setWorkflow(selectedWorkflow);
-			model.setWorkflowName(CurrentLocale.get(selectedWorkflow.getName()));
-		}
-		return itemStatus.getOnlyInModeration().isChecked(info) && !Check.isEmpty(workflowId);
-	}
+  @Override
+  public void register(SectionTree tree, String parentId) {
+    tree.registerInnerSection(this, parentId);
+  }
 
-	private String getSelectedWorkflowId(SectionInfo info)
-	{
-		return filterByWorkflowSection.getWorkflowList().getSelectedValueAsString(info);
-	}
+  private boolean isShowing(SectionInfo info) {
+    String workflowId = getSelectedWorkflowId(info);
+    BulkWorkflowTaskMoveModel model = getModel(info);
+    if (!Check.isEmpty(workflowId)) {
+      Workflow selectedWorkflow = workflowService.getByUuid(workflowId);
+      model.setWorkflow(selectedWorkflow);
+      model.setWorkflowName(CurrentLocale.get(selectedWorkflow.getName()));
+    }
+    return itemStatus.getOnlyInModeration().isChecked(info) && !Check.isEmpty(workflowId);
+  }
 
-	@Override
-	public void addOptions(SectionInfo info, List<Option<OperationInfo>> options)
-	{
-		if( isShowing(info) )
-		{
-			options.add(new KeyOption<OperationInfo>(STRING_MOVETASK, BULK_MOVETASK_VAL,
-				new OperationInfo(this, BULK_MOVETASK_VAL)));
-		}
-	}
+  private String getSelectedWorkflowId(SectionInfo info) {
+    return filterByWorkflowSection.getWorkflowList().getSelectedValueAsString(info);
+  }
 
-	@BindFactory
-	public interface MoveOperationExecutorFactory
-	{
-		WorkflowTaskMoveExecutor move(@Assisted("msg") String msg, @Assisted("toStep") String toStep);
-	}
+  @Override
+  public void addOptions(SectionInfo info, List<Option<OperationInfo>> options) {
+    if (isShowing(info)) {
+      options.add(
+          new KeyOption<OperationInfo>(
+              STRING_MOVETASK, BULK_MOVETASK_VAL, new OperationInfo(this, BULK_MOVETASK_VAL)));
+    }
+  }
 
-	@Override
-	public BeanLocator<WorkflowTaskMoveExecutor> getExecutor(SectionInfo info, String operationId)
-	{
-		return new FactoryMethodLocator<WorkflowTaskMoveExecutor>(MoveOperationExecutorFactory.class, "move",
-			getComment(info), getSelectedWorkflowNode(info));
-	}
+  @BindFactory
+  public interface MoveOperationExecutorFactory {
+    WorkflowTaskMoveExecutor move(@Assisted("msg") String msg, @Assisted("toStep") String toStep);
+  }
 
-	public static class WorkflowTaskMoveExecutor implements BulkOperationExecutor
-	{
-		private static final long serialVersionUID = 1L;
-		private final String msg;
-		private final String toStep;
+  @Override
+  public BeanLocator<WorkflowTaskMoveExecutor> getExecutor(SectionInfo info, String operationId) {
+    return new FactoryMethodLocator<WorkflowTaskMoveExecutor>(
+        MoveOperationExecutorFactory.class,
+        "move",
+        getComment(info),
+        getSelectedWorkflowNode(info));
+  }
 
-		@Inject
-		public WorkflowTaskMoveExecutor(@Assisted("msg") String msg, @Assisted("toStep") String toStep)
-		{
-			this.msg = msg;
-			this.toStep = toStep;
-		}
+  public static class WorkflowTaskMoveExecutor implements BulkOperationExecutor {
+    private static final long serialVersionUID = 1L;
+    private final String msg;
+    private final String toStep;
 
-		@Inject
-		private ItemOperationFactory workflowFactory;
-		@Inject
-		private BulkWorkflowOperationFactory bulkWorkflowOpFactory;
+    @Inject
+    public WorkflowTaskMoveExecutor(
+        @Assisted("msg") String msg, @Assisted("toStep") String toStep) {
+      this.msg = msg;
+      this.toStep = toStep;
+    }
 
-		@Override
-		public WorkflowOperation[] getOperations()
-		{
-			return new WorkflowOperation[]{bulkWorkflowOpFactory.taskMove(msg, toStep), workflowFactory.save()};
-		}
+    @Inject private ItemOperationFactory workflowFactory;
+    @Inject private BulkWorkflowOperationFactory bulkWorkflowOpFactory;
 
-		@Override
-		public String getTitleKey()
-		{
-			return "com.tle.web.bulk.workflow.bulk.movetask.title";
-		}
+    @Override
+    public WorkflowOperation[] getOperations() {
+      return new WorkflowOperation[] {
+        bulkWorkflowOpFactory.taskMove(msg, toStep), workflowFactory.save()
+      };
+    }
 
-	}
+    @Override
+    public String getTitleKey() {
+      return "com.tle.web.bulk.workflow.bulk.movetask.title";
+    }
+  }
 
-	@Override
-	public void prepareDefaultOptions(SectionInfo info, String operationId)
-	{
-		// none
-	}
+  @Override
+  public void prepareDefaultOptions(SectionInfo info, String operationId) {
+    // none
+  }
 
-	@Override
-	public SectionRenderable renderOptions(RenderContext context, String operationId)
-	{
-		return renderSection(context, this);
-	}
+  @Override
+  public SectionRenderable renderOptions(RenderContext context, String operationId) {
+    return renderSection(context, this);
+  }
 
-	@Override
-	public Label getStatusTitleLabel(SectionInfo info, String operationId)
-	{
-		return LABEL_MOVETASK_TITLE;
-	}
+  @Override
+  public Label getStatusTitleLabel(SectionInfo info, String operationId) {
+    return LABEL_MOVETASK_TITLE;
+  }
 
-	@Override
-	public boolean validateOptions(SectionInfo info, String operationId)
-	{
-		return true;
-	}
+  @Override
+  public boolean validateOptions(SectionInfo info, String operationId) {
+    return true;
+  }
 
-	@Override
-	public boolean areOptionsFinished(SectionInfo info, String operationId)
-	{
-		return itemAdminResultsDialog.getModel(info).isShowOptions();
-	}
+  @Override
+  public boolean areOptionsFinished(SectionInfo info, String operationId) {
+    return itemAdminResultsDialog.getModel(info).isShowOptions();
+  }
 
-	@Override
-	public boolean hasExtraOptions(SectionInfo info, String operationId)
-	{
-		return true;
-	}
+  @Override
+  public boolean hasExtraOptions(SectionInfo info, String operationId) {
+    return true;
+  }
 
-	@Override
-	public boolean hasExtraNavigation(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+  @Override
+  public boolean hasExtraNavigation(SectionInfo info, String operationId) {
+    return false;
+  }
 
-	@Override
-	public Collection<Button> getExtraNavigation(SectionInfo info, String operationId)
-	{
-		return null;
-	}
+  @Override
+  public Collection<Button> getExtraNavigation(SectionInfo info, String operationId) {
+    return null;
+  }
 
-	@Override
-	public boolean hasPreview(SectionInfo info, String operationId)
-	{
-		return false;
-	}
+  @Override
+  public boolean hasPreview(SectionInfo info, String operationId) {
+    return false;
+  }
 
-	@Override
-	public ItemPack runPreview(SectionInfo info, String operationId, long itemId) throws Exception
-	{
-		return null;
-	}
+  @Override
+  public ItemPack runPreview(SectionInfo info, String operationId, long itemId) throws Exception {
+    return null;
+  }
 
-	@Override
-	public boolean showPreviousButton(SectionInfo info, String opererationId)
-	{
-		return true;
-	}
-
+  @Override
+  public boolean showPreviousButton(SectionInfo info, String opererationId) {
+    return true;
+  }
 }

@@ -22,10 +22,8 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.js.JSCallable;
 
 @NonNullByDefault
-public interface HtmlTreeServer
-{
-	Bookmark getAjaxUrlForNode(SectionInfo info, String nodeId);
+public interface HtmlTreeServer {
+  Bookmark getAjaxUrlForNode(SectionInfo info, String nodeId);
 
-	JSCallable getAjaxFunctionForNode(SectionInfo info, String nodeId);
-
+  JSCallable getAjaxFunctionForNode(SectionInfo info, String nodeId);
 }

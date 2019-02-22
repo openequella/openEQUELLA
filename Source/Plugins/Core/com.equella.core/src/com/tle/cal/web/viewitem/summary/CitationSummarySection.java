@@ -16,12 +16,6 @@
 
 package com.tle.cal.web.viewitem.summary;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-
 import com.tle.beans.cal.CALHolding;
 import com.tle.beans.cal.CALPortion;
 import com.tle.beans.entity.itemdef.SummarySectionsConfig;
@@ -40,95 +34,83 @@ import com.tle.web.sections.result.util.BundleLabel;
 import com.tle.web.viewitem.section.AbstractParentViewItemSection;
 import com.tle.web.viewitem.summary.section.DisplaySectionConfiguration;
 import com.tle.web.viewurl.ItemSectionInfo;
-
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
 
 @Bind
-public class CitationSummarySection extends AbstractParentViewItemSection<CitationSummarySection.CitaionSummaryModel>
-	implements
-		DisplaySectionConfiguration
-{
-	@Inject
-	private CALService calService;
-	@Inject
-	private BundleCache bundleCache;
+public class CitationSummarySection
+    extends AbstractParentViewItemSection<CitationSummarySection.CitaionSummaryModel>
+    implements DisplaySectionConfiguration {
+  @Inject private CALService calService;
+  @Inject private BundleCache bundleCache;
 
-	@ViewFactory
-	private FreemarkerFactory view;
+  @ViewFactory private FreemarkerFactory view;
 
-	private SummarySectionsConfig sectionConfig;
+  private SummarySectionsConfig sectionConfig;
 
+  @Override
+  public boolean canView(SectionInfo info) {
+    return calService.isCopyrightedItem(getItemInfo(info).getItem());
+  }
 
-	@Override
-	public boolean canView(SectionInfo info)
-	{
-		return calService.isCopyrightedItem(getItemInfo(info).getItem());
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
+    if (!canView(context)) {
+      return null;
+    }
+    ItemSectionInfo itemInfo = getItemInfo(context);
+    Item item = itemInfo.getItem();
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
-		if( !canView(context) )
-		{
-			return null;
-		}
-		ItemSectionInfo itemInfo = getItemInfo(context);
-		Item item = itemInfo.getItem();
+    CALHolding holding = calService.getHoldingForItem(item);
+    Map<Long, List<CALPortion>> portions =
+        calService.getPortionsForItems(Collections.singletonList(item));
+    CALPortion portion =
+        portions.get(item.getId()) == null ? null : portions.get(item.getId()).get(0);
+    String citation = "";
+    if (holding != null) {
+      citation = calService.citate(holding, portion);
+    }
+    CitaionSummaryModel model = getModel(context);
+    model.setCitation((new TextLabel(citation, true)));
 
-		CALHolding holding = calService.getHoldingForItem(item);
-		Map<Long, List<CALPortion>> portions = calService.getPortionsForItems(Collections.singletonList(item));
-		CALPortion portion = portions.get(item.getId()) == null ? null : portions.get(item.getId()).get(0);
-		String citation = "";
-		if(holding != null){
-			citation = calService.citate(holding, portion);
-		}
-		CitaionSummaryModel model = getModel(context);
-		model.setCitation((new TextLabel(citation, true)));
+    if (sectionConfig != null) {
+      Label title = new BundleLabel(sectionConfig.getBundleTitle(), bundleCache);
+      model.setTitle(title);
+    }
 
-		if( sectionConfig != null )
-		{
-			Label title = new BundleLabel(sectionConfig.getBundleTitle(), bundleCache);
-			model.setTitle(title);
-		}
+    return view.createResult("citationsummary.ftl", this);
+  }
 
-		return view.createResult("citationsummary.ftl", this);
-	}
+  @Override
+  public void associateConfiguration(SummarySectionsConfig config) {
+    sectionConfig = config;
+  }
 
-	@Override
-	public void associateConfiguration(SummarySectionsConfig config)
-	{
-		sectionConfig = config;
-	}
+  @Override
+  public Class<CitaionSummaryModel> getModelClass() {
+    return CitaionSummaryModel.class;
+  }
 
-	@Override
-	public Class<CitaionSummaryModel> getModelClass()
-	{
-		return CitaionSummaryModel.class;
-	}
+  public static class CitaionSummaryModel {
+    Label title;
+    Label citation;
 
-	public static class CitaionSummaryModel
-	{
-		Label title;
-		Label citation;
+    public Label getTitle() {
+      return title;
+    }
 
-		public Label getTitle()
-		{
-			return title;
-		}
+    public void setTitle(Label title) {
+      this.title = title;
+    }
 
-		public void setTitle(Label title)
-		{
-			this.title = title;
-		}
+    public Label getCitation() {
+      return citation;
+    }
 
-		public Label getCitation()
-		{
-			return citation;
-		}
-
-		public void setCitation(Label citation)
-		{
-			this.citation = citation;
-		}
-
-	}
+    public void setCitation(Label citation) {
+      this.citation = citation;
+    }
+  }
 }

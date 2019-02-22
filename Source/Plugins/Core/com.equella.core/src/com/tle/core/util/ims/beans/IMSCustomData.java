@@ -21,35 +21,28 @@ import com.tle.core.xstream.XMLData;
 import com.tle.core.xstream.XMLDataMappings;
 import com.tle.core.xstream.mapping.PropBagMapping;
 
-/**
- * @author Aaron
- */
-public class IMSCustomData implements XMLData
-{
-	private static final long serialVersionUID = 1L;
+/** @author Aaron */
+public class IMSCustomData implements XMLData {
+  private static final long serialVersionUID = 1L;
 
-	private static XMLDataMappings mappings;
+  private static XMLDataMappings mappings;
 
-	private PropBagEx xml;
+  private PropBagEx xml;
 
-	public PropBagEx getXml()
-	{
-		return xml;
-	}
+  public PropBagEx getXml() {
+    return xml;
+  }
 
-	public void setXml(PropBagEx xml)
-	{
-		this.xml = xml;
-	}
+  public void setXml(PropBagEx xml) {
+    this.xml = xml;
+  }
 
-	@Override
-	public synchronized XMLDataMappings getMappings()
-	{
-		if( mappings == null )
-		{
-			mappings = new XMLDataMappings();
-			mappings.addNodeMapping(new PropBagMapping("xml", "custom", true));
-		}
-		return mappings;
-	}
+  @Override
+  public synchronized XMLDataMappings getMappings() {
+    if (mappings == null) {
+      mappings = new XMLDataMappings();
+      mappings.addNodeMapping(new PropBagMapping("xml", "custom", true));
+    }
+    return mappings;
+  }
 }

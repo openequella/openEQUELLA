@@ -9,7 +9,7 @@ object YUICompressPlugin extends AutoPlugin {
 
   object autoImport {
     lazy val yuiResources = taskKey[Seq[File]]("Resources to minify")
-    lazy val minify = taskKey[Seq[File]]("Generate minified resources")
+    lazy val minify       = taskKey[Seq[File]]("Generate minified resources")
   }
 
   override def requires: Plugins = JvmPlugin
@@ -28,30 +28,32 @@ object YUICompressPlugin extends AutoPlugin {
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
     minify in Compile := {
-      val logger = streams.value.log
+      val logger  = streams.value.log
       val baseDir = (resourceManaged in Compile).value
       yuiResources.value.pair(rebase((resourceDirectory in Compile).value, "")).map {
-        case (f, path) => IO.reader(f) { br =>
-          val ind = path.lastIndexOf('.')
-          path.substring(ind + 1) match {
-            case "js" =>
-              val jsCompress = new JavaScriptCompressor(br, jsReporter)
-              val outFile = baseDir / (path.substring(0, ind) + ".min.js")
-              logger.info(s"Minifying ${outFile.absolutePath}")
-              IO.writer(outFile, "", IO.utf8) { bw =>
-                jsCompress.compress(bw, 8000, true, false, false, false)
+        case (f, path) =>
+          IO.reader(f) {
+            br =>
+              val ind = path.lastIndexOf('.')
+              path.substring(ind + 1) match {
+                case "js" =>
+                  val jsCompress = new JavaScriptCompressor(br, jsReporter)
+                  val outFile    = baseDir / (path.substring(0, ind) + ".min.js")
+                  logger.info(s"Minifying ${outFile.absolutePath}")
+                  IO.writer(outFile, "", IO.utf8) { bw =>
+                    jsCompress.compress(bw, 8000, true, false, false, false)
+                  }
+                  outFile
+                case "css" =>
+                  val cssCompress = new CssCompressor(br)
+                  val outFile     = baseDir / (path.substring(0, ind) + ".min.css")
+                  logger.info(s"Minifying ${outFile.absolutePath}")
+                  IO.writer(outFile, "", IO.utf8) { bw =>
+                    cssCompress.compress(bw, 8000)
+                  }
+                  outFile
               }
-              outFile
-            case "css" =>
-              val cssCompress = new CssCompressor(br)
-              val outFile = baseDir / (path.substring(0, ind) + ".min.css")
-              logger.info(s"Minifying ${outFile.absolutePath}")
-              IO.writer(outFile, "", IO.utf8) { bw =>
-                cssCompress.compress(bw, 8000)
-              }
-              outFile
           }
-        }
       }
     },
     resourceGenerators in Compile += (minify in Compile).taskValue

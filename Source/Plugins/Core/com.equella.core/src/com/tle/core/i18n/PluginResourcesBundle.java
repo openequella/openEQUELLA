@@ -16,6 +16,7 @@
 
 package com.tle.core.i18n;
 
+import com.dytech.common.io.UnicodeReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
@@ -27,111 +28,82 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import com.dytech.common.io.UnicodeReader;
+public class PluginResourcesBundle extends ResourceBundle {
+  private final Map<String, Object> lookup = new HashMap<String, Object>();
 
-public class PluginResourcesBundle extends ResourceBundle
-{
-	private final Map<String, Object> lookup = new HashMap<String, Object>();
+  @Override
+  public Enumeration<String> getKeys() {
+    final Iterator<String> keyIter = lookup.keySet().iterator();
+    final Enumeration<String> parentEnum = (parent != null) ? parent.getKeys() : null;
 
-	@Override
-	public Enumeration<String> getKeys()
-	{
-		final Iterator<String> keyIter = lookup.keySet().iterator();
-		final Enumeration<String> parentEnum = (parent != null) ? parent.getKeys() : null;
+    return new Enumeration<String>() {
+      private String next = null;
 
-		return new Enumeration<String>()
-		{
-			private String next = null;
+      @Override
+      public boolean hasMoreElements() {
+        if (next == null) {
+          if (keyIter.hasNext()) {
+            next = keyIter.next();
+          } else if (parentEnum != null) {
+            while (next == null && parentEnum.hasMoreElements()) {
+              next = parentEnum.nextElement();
+              if (lookup.containsKey(next)) {
+                next = null;
+              }
+            }
+          }
+        }
+        return next != null;
+      }
 
-			@Override
-			public boolean hasMoreElements()
-			{
-				if( next == null )
-				{
-					if( keyIter.hasNext() )
-					{
-						next = keyIter.next();
-					}
-					else if( parentEnum != null )
-					{
-						while( next == null && parentEnum.hasMoreElements() )
-						{
-							next = parentEnum.nextElement();
-							if( lookup.containsKey(next) )
-							{
-								next = null;
-							}
-						}
-					}
-				}
-				return next != null;
-			}
+      @Override
+      public String nextElement() {
+        if (hasMoreElements()) {
+          String result = next;
+          next = null;
+          return result;
+        } else {
+          throw new NoSuchElementException();
+        }
+      }
+    };
+  }
 
-			@Override
-			public String nextElement()
-			{
-				if( hasMoreElements() )
-				{
-					String result = next;
-					next = null;
-					return result;
-				}
-				else
-				{
-					throw new NoSuchElementException();
-				}
-			}
-		};
-	}
+  @Override
+  protected Object handleGetObject(String key) {
+    return lookup.get(key);
+  }
 
-	@Override
-	protected Object handleGetObject(String key)
-	{
-		return lookup.get(key);
-	}
+  public boolean isEmpty() {
+    return lookup.isEmpty();
+  }
 
-	public boolean isEmpty()
-	{
-		return lookup.isEmpty();
-	}
+  public void addProperties(InputStream in, String prepend) throws IOException {
+    addProperties(in, prepend, false);
+  }
 
-	public void addProperties(InputStream in, String prepend) throws IOException
-	{
-		addProperties(in, prepend, false);
-	}
+  @SuppressWarnings("nls")
+  public void addProperties(InputStream in, String prepend, boolean isXml) throws IOException {
+    Properties properties = new Properties();
+    if (isXml) {
+      properties.loadFromXML(in);
+    } else {
+      properties.load(new UnicodeReader(in, "UTF-8"));
+    }
 
-	@SuppressWarnings("nls")
-	public void addProperties(InputStream in, String prepend, boolean isXml) throws IOException
-	{
-		Properties properties = new Properties();
-		if( isXml )
-		{
-			properties.loadFromXML(in);
-		}
-		else
-		{
-			properties.load(new UnicodeReader(in, "UTF-8"));
-		}
-
-		for( Entry<Object, Object> entry : properties.entrySet() )
-		{
-			String key = (String) entry.getKey();
-			if( prepend != null )
-			{
-				if( key == null || key.length() == 0 )
-				{
-					throw new Error("Missing key on language string in " + prepend + " plugin");
-				}
-				if( key.charAt(0) == '/' )
-				{
-					key = key.substring(1);
-				}
-				else
-				{
-					key = prepend + key;
-				}
-			}
-			lookup.put(key, entry.getValue());
-		}
-	}
+    for (Entry<Object, Object> entry : properties.entrySet()) {
+      String key = (String) entry.getKey();
+      if (prepend != null) {
+        if (key == null || key.length() == 0) {
+          throw new Error("Missing key on language string in " + prepend + " plugin");
+        }
+        if (key.charAt(0) == '/') {
+          key = key.substring(1);
+        } else {
+          key = prepend + key;
+        }
+      }
+      lookup.put(key, entry.getValue());
+    }
+  }
 }

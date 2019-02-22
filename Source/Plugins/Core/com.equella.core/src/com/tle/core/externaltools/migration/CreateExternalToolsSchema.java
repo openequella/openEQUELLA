@@ -16,8 +16,6 @@
 
 package com.tle.core.externaltools.migration;
 
-import java.util.Set;
-
 import com.google.common.collect.Sets;
 import com.google.inject.Singleton;
 import com.tle.beans.Institution;
@@ -30,32 +28,30 @@ import com.tle.core.migration.AbstractCreateMigration;
 import com.tle.core.migration.ClassDependencies;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.plugins.impl.PluginServiceImpl;
+import java.util.Set;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class CreateExternalToolsSchema extends AbstractCreateMigration
-{
-	private static final String KEY_PFX = PluginServiceImpl.getMyPluginId(CreateExternalToolsSchema.class) + ".";
+public class CreateExternalToolsSchema extends AbstractCreateMigration {
+  private static final String KEY_PFX =
+      PluginServiceImpl.getMyPluginId(CreateExternalToolsSchema.class) + ".";
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(KEY_PFX + "migration.createentity");
-	}
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(KEY_PFX + "migration.createentity");
+  }
 
-	@Override
-	protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper)
-	{
-		return new TablesOnlyFilter("external_tool");
-	}
+  @Override
+  protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
+    return new TablesOnlyFilter("external_tool");
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		final Set<Class<?>> domainClasses = Sets.newHashSet(ClassDependencies.baseEntity());
-		domainClasses.add(Institution.class);
-		domainClasses.add(ExternalTool.class);
-		return domainClasses.toArray(new Class<?>[domainClasses.size()]);
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    final Set<Class<?>> domainClasses = Sets.newHashSet(ClassDependencies.baseEntity());
+    domainClasses.add(Institution.class);
+    domainClasses.add(ExternalTool.class);
+    return domainClasses.toArray(new Class<?>[domainClasses.size()]);
+  }
 }

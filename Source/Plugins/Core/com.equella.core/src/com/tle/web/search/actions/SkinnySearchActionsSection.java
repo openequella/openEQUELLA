@@ -16,8 +16,6 @@
 
 package com.tle.web.search.actions;
 
-import java.util.List;
-
 import com.tle.common.Check;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -43,185 +41,166 @@ import com.tle.web.sections.result.util.IconLabel.Icon;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.HtmlComponentState;
+import java.util.List;
 
 @SuppressWarnings("nls")
 public class SkinnySearchActionsSection
-	extends
-		AbstractSearchActionsSection<SkinnySearchActionsSection.SkinnySearchActionsModel> implements HtmlRenderer
-{
-	private static final String AJAX_ID = "sortandfilter";
+    extends AbstractSearchActionsSection<SkinnySearchActionsSection.SkinnySearchActionsModel>
+    implements HtmlRenderer {
+  private static final String AJAX_ID = "sortandfilter";
 
-	public static enum Showing
-	{
-		NONE, SHARE, SAVE, FILTER, SORT;
-	}
+  public static enum Showing {
+    NONE,
+    SHARE,
+    SAVE,
+    FILTER,
+    SORT;
+  }
 
-	@AjaxFactory
-	private AjaxGenerator ajax;
-	@EventFactory
-	private EventGenerator events;
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @AjaxFactory private AjaxGenerator ajax;
+  @EventFactory private EventGenerator events;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@Component
-	@PlugKey("share.title")
-	private Button share;
-	@Component
-	@PlugKey("save.title")
-	private Button save;
-	@Component
-	@PlugKey("sort.title")
-	private Button sort;
-	@Component
-	@PlugKey("filter.title")
-	private Button filter;
+  @Component
+  @PlugKey("share.title")
+  private Button share;
 
-	private UpdateDomFunction showHandler;
-	private UpdateDomFunction hideHandler;
+  @Component
+  @PlugKey("save.title")
+  private Button save;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Component
+  @PlugKey("sort.title")
+  private Button sort;
 
-		showHandler = ajax.getAjaxUpdateDomFunction(tree, null, events.getEventHandler("show"), AJAX_ID);
-		hideHandler = ajax.getAjaxUpdateDomFunction(tree, null, events.getEventHandler("hide"), AJAX_ID);
+  @Component
+  @PlugKey("filter.title")
+  private Button filter;
 
-		tree.setAttribute(share, Showing.SHARE);
-		tree.setAttribute(save, Showing.SAVE);
-		tree.setAttribute(sort, Showing.SORT);
-		tree.setAttribute(filter, Showing.FILTER);
-	}
+  private UpdateDomFunction showHandler;
+  private UpdateDomFunction hideHandler;
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final SkinnySearchActionsModel model = getModel(context);
-		final Showing showing = model.getShowing();
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		// TopicDisplay section can lookup this section, and set disabled where
-		// appropriate
-		if( model.isSearchDisabled() )
-		{
-			return null;
-		}
+    showHandler =
+        ajax.getAjaxUpdateDomFunction(tree, null, events.getEventHandler("show"), AJAX_ID);
+    hideHandler =
+        ajax.getAjaxUpdateDomFunction(tree, null, events.getEventHandler("hide"), AJAX_ID);
 
-		// setupButton(sort, sortSections, showing, context);
-		// setupButton(filter, filterSections, showing, context);
+    tree.setAttribute(share, Showing.SHARE);
+    tree.setAttribute(save, Showing.SAVE);
+    tree.setAttribute(sort, Showing.SORT);
+    tree.setAttribute(filter, Showing.FILTER);
+  }
 
-		if( !model.isSaveAndShareDisabled() )
-		{
-			// setupButton(share, shareSections, showing, context);
-			setupButton(save, saveSections, showing, context);
-		}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    final SkinnySearchActionsModel model = getModel(context);
+    final Showing showing = model.getShowing();
 
-		return viewFactory.createResult("skinny-sort-and-filters.ftl", this);
-	}
+    // TopicDisplay section can lookup this section, and set disabled where
+    // appropriate
+    if (model.isSearchDisabled()) {
+      return null;
+    }
 
-	private void setupButton(Button button, List<SectionId> childSections, Showing mode, RenderEventContext context)
-	{
-		Showing buttonMode = context.getTree().getAttribute(button);
-		HtmlComponentState state = button.getState(context);
-		if( mode.equals(buttonMode) )
-		{
-			button.setClickHandler(context, new OverrideHandler(hideHandler));
-			state.setAttribute(Icon.class, Icon.UP);
-			state.addClass("active");
+    // setupButton(sort, sortSections, showing, context);
+    // setupButton(filter, filterSections, showing, context);
 
-			getModel(context).setChildSections(SectionUtils.renderSectionIds(context, childSections));
-		}
-		else
-		{
-			button.setClickHandler(context, new OverrideHandler(showHandler, buttonMode.toString()));
-			state.setAttribute(Icon.class, Icon.DOWN);
-		}
-	}
+    if (!model.isSaveAndShareDisabled()) {
+      // setupButton(share, shareSections, showing, context);
+      setupButton(save, saveSections, showing, context);
+    }
 
-	@EventHandlerMethod
-	public void show(SectionInfo info, String mode)
-	{
-		getModel(info).setShowing(parseShowing(mode));
-	}
+    return viewFactory.createResult("skinny-sort-and-filters.ftl", this);
+  }
 
-	@EventHandlerMethod
-	public void hide(SectionInfo info)
-	{
-		getModel(info).setShowing(Showing.NONE);
-	}
+  private void setupButton(
+      Button button, List<SectionId> childSections, Showing mode, RenderEventContext context) {
+    Showing buttonMode = context.getTree().getAttribute(button);
+    HtmlComponentState state = button.getState(context);
+    if (mode.equals(buttonMode)) {
+      button.setClickHandler(context, new OverrideHandler(hideHandler));
+      state.setAttribute(Icon.class, Icon.UP);
+      state.addClass("active");
 
-	private Showing parseShowing(String mode)
-	{
-		if( !Check.isEmpty(mode) )
-		{
-			try
-			{
-				return Showing.valueOf(mode);
-			}
-			catch( IllegalArgumentException ex )
-			{
-				// Not matching - that's fine
-			}
-		}
-		return Showing.NONE;
-	}
+      getModel(context).setChildSections(SectionUtils.renderSectionIds(context, childSections));
+    } else {
+      button.setClickHandler(context, new OverrideHandler(showHandler, buttonMode.toString()));
+      state.setAttribute(Icon.class, Icon.DOWN);
+    }
+  }
 
-	@Override
-	public String[] getResetFilterAjaxIds()
-	{
-		return new String[]{AJAX_ID};
-	}
+  @EventHandlerMethod
+  public void show(SectionInfo info, String mode) {
+    getModel(info).setShowing(parseShowing(mode));
+  }
 
-	public Button getShare()
-	{
-		return share;
-	}
+  @EventHandlerMethod
+  public void hide(SectionInfo info) {
+    getModel(info).setShowing(Showing.NONE);
+  }
 
-	public Button getSave()
-	{
-		return save;
-	}
+  private Showing parseShowing(String mode) {
+    if (!Check.isEmpty(mode)) {
+      try {
+        return Showing.valueOf(mode);
+      } catch (IllegalArgumentException ex) {
+        // Not matching - that's fine
+      }
+    }
+    return Showing.NONE;
+  }
 
-	public Button getSort()
-	{
-		return sort;
-	}
+  @Override
+  public String[] getResetFilterAjaxIds() {
+    return new String[] {AJAX_ID};
+  }
 
-	public Button getFilter()
-	{
-		return filter;
-	}
+  public Button getShare() {
+    return share;
+  }
 
-	@Override
-	public Class<SkinnySearchActionsModel> getModelClass()
-	{
-		return SkinnySearchActionsModel.class;
-	}
+  public Button getSave() {
+    return save;
+  }
 
-	public static class SkinnySearchActionsModel extends AbstractSearchActionsSection.AbstractSearchActionsModel
-	{
-		@Bookmarked(stateful = false)
-		private Showing showing = Showing.NONE;
+  public Button getSort() {
+    return sort;
+  }
 
-		private List<SectionRenderable> childSections;
+  public Button getFilter() {
+    return filter;
+  }
 
-		public Showing getShowing()
-		{
-			return showing;
-		}
+  @Override
+  public Class<SkinnySearchActionsModel> getModelClass() {
+    return SkinnySearchActionsModel.class;
+  }
 
-		public void setShowing(Showing showing)
-		{
-			this.showing = showing;
-		}
+  public static class SkinnySearchActionsModel
+      extends AbstractSearchActionsSection.AbstractSearchActionsModel {
+    @Bookmarked(stateful = false)
+    private Showing showing = Showing.NONE;
 
-		public List<SectionRenderable> getChildSections()
-		{
-			return childSections;
-		}
+    private List<SectionRenderable> childSections;
 
-		public void setChildSections(List<SectionRenderable> childSections)
-		{
-			this.childSections = childSections;
-		}
-	}
+    public Showing getShowing() {
+      return showing;
+    }
+
+    public void setShowing(Showing showing) {
+      this.showing = showing;
+    }
+
+    public List<SectionRenderable> getChildSections() {
+      return childSections;
+    }
+
+    public void setChildSections(List<SectionRenderable> childSections) {
+      this.childSections = childSections;
+    }
+  }
 }

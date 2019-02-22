@@ -16,21 +16,16 @@
 
 package com.tle.core.remoterepo.parser.mods.impl;
 
+import com.tle.core.xml.XmlDocument;
 import org.w3c.dom.Node;
 
-import com.tle.core.xml.XmlDocument;
+/** @author aholland */
+public abstract class ModsPart {
+  protected final XmlDocument xml;
+  protected final Node context;
 
-/**
- * @author aholland
- */
-public abstract class ModsPart
-{
-	protected final XmlDocument xml;
-	protected final Node context;
-
-	protected ModsPart(XmlDocument xml, Node context)
-	{
-		this.xml = xml;
-		this.context = context;
-	}
+  protected ModsPart(XmlDocument xml, Node context) {
+    this.xml = xml;
+    this.context = context;
+  }
 }

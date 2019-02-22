@@ -16,10 +16,6 @@
 
 package com.tle.web.contribute;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.tle.beans.item.Item;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.service.ItemService;
@@ -42,65 +38,58 @@ import com.tle.web.viewitem.section.ParentViewItemSectionUtils;
 import com.tle.web.viewurl.ItemSectionInfo;
 import com.tle.web.wizard.WizardInfo;
 import com.tle.web.wizard.WizardService;
+import java.util.List;
+import javax.inject.Inject;
 
 @Bind
 @SuppressWarnings("nls")
-public class DiscardSection extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	@PlugKey("discard.confirm")
-	private static Confirm DISCARD_CONFIRM;
+public class DiscardSection extends AbstractPrototypeSection<Object> implements HtmlRenderer {
+  @PlugKey("discard.confirm")
+  private static Confirm DISCARD_CONFIRM;
 
-	@EventFactory
-	private EventGenerator events;
+  @EventFactory private EventGenerator events;
 
-	@Inject
-	private WizardService wizardService;
+  @Inject private WizardService wizardService;
 
-	@Inject
-	private ItemService itemService;
+  @Inject private ItemService itemService;
 
-	@Component
-	@PlugKey("discard")
-	private Button discard;
+  @Component
+  @PlugKey("discard")
+  private Button discard;
 
-	private SubmitValuesFunction discardHandler;
+  private SubmitValuesFunction discardHandler;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		discardHandler = events.getSubmitValuesFunction("discard");
-	}
+    discardHandler = events.getSubmitValuesFunction("discard");
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(context);
-		Item item = itemInfo.getItem();
-		List<WizardInfo> resumableWizards = wizardService.listWizardsInSession();
-		if( resumableWizards.size() > 0 )
-		{
-			for( WizardInfo wizInfo : resumableWizards )
-			{
-				if( wizInfo.getItemUuid().equals(item.getUuid()) && wizInfo.getItemVersion() == item.getVersion() )
-				{
-					discard.setClickHandler(context,
-						new OverrideHandler(discardHandler, wizInfo.getUuid()).addValidator(DISCARD_CONFIRM));
-					return renderSection(context, discard);
-				}
-			}
-		}
-		return null;
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(context);
+    Item item = itemInfo.getItem();
+    List<WizardInfo> resumableWizards = wizardService.listWizardsInSession();
+    if (resumableWizards.size() > 0) {
+      for (WizardInfo wizInfo : resumableWizards) {
+        if (wizInfo.getItemUuid().equals(item.getUuid())
+            && wizInfo.getItemVersion() == item.getVersion()) {
+          discard.setClickHandler(
+              context,
+              new OverrideHandler(discardHandler, wizInfo.getUuid()).addValidator(DISCARD_CONFIRM));
+          return renderSection(context, discard);
+        }
+      }
+    }
+    return null;
+  }
 
-	@EventHandlerMethod
-	public void discard(SectionInfo info, String wizardUuid)
-	{
-		wizardService.removeFromSession(info, wizardUuid, true);
-		ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(info);
-		itemService.forceUnlock(itemInfo.getItem());
-		itemInfo.refreshItem(true);
-	}
-
+  @EventHandlerMethod
+  public void discard(SectionInfo info, String wizardUuid) {
+    wizardService.removeFromSession(info, wizardUuid, true);
+    ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(info);
+    itemService.forceUnlock(itemInfo.getItem());
+    itemInfo.refreshItem(true);
+  }
 }

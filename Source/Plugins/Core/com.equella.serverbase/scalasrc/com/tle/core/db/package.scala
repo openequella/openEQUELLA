@@ -22,5 +22,4 @@ import io.doolse.simpledba.jdbc._
 package object db {
   type DB[A] = Kleisli[JDBCIO, UserContext, A]
 
-
 }

@@ -16,16 +16,13 @@
 
 package com.tle.core.taxonomy.wizard;
 
+import com.tle.core.guice.Bind;
 import javax.inject.Inject;
 
-import com.tle.core.guice.Bind;
-
 @Bind
-class PopupBrowserWebControl extends AbstractPopupBrowserWebControl
-{
-	@Inject
-	public PopupBrowserWebControl(PopupBrowserDialog popupBrowserDialog)
-	{
-		super(popupBrowserDialog);
-	}
+class PopupBrowserWebControl extends AbstractPopupBrowserWebControl {
+  @Inject
+  public PopupBrowserWebControl(PopupBrowserDialog popupBrowserDialog) {
+    super(popupBrowserDialog);
+  }
 }

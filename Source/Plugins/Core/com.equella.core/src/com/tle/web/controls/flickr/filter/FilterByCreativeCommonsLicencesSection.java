@@ -16,10 +16,6 @@
 
 package com.tle.web.controls.flickr.filter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import com.tle.common.Check;
 import com.tle.common.NameValue;
 import com.tle.common.NameValueExtra;
@@ -44,127 +40,108 @@ import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.standard.MultiSelectionList;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.SimpleHtmlListModel;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
-/**
- * @author larry
- */
+/** @author larry */
 @SuppressWarnings("nls")
 public class FilterByCreativeCommonsLicencesSection extends AbstractPrototypeSection<Object>
-	implements
-		HtmlRenderer,
-		ResetFiltersListener,
-		SearchEventListener<FlickrSearchEvent>
-{
-	public static final String NOT_FOR_DISPLAY = "not-for-display";
-	public static final String NO_DATA = "no-data";
+    implements HtmlRenderer, ResetFiltersListener, SearchEventListener<FlickrSearchEvent> {
+  public static final String NOT_FOR_DISPLAY = "not-for-display";
+  public static final String NO_DATA = "no-data";
 
-	@Component(name = "v")
-	private MultiSelectionList<NameValueExtra> licenceList;
+  @Component(name = "v")
+  private MultiSelectionList<NameValueExtra> licenceList;
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
+  @ViewFactory private FreemarkerFactory viewFactory;
 
-	@TreeLookup
-	private FlickrSearchResultsSection searchResults;
+  @TreeLookup private FlickrSearchResultsSection searchResults;
 
-	private final List<NameValueExtra> allLicenceValues = new ArrayList<NameValueExtra>();
+  private final List<NameValueExtra> allLicenceValues = new ArrayList<NameValueExtra>();
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		// Retrieve the list of licence names from file.
-		List<NameValue> allLicenceValsFromFile = FlickrUtils.getNameValuesFromFile(
-			FlickrUtils.CREATIVE_COMMONS_LICENCES_KEY + ".txt", FlickrUtils.CREATIVE_COMMONS_ELEMENTS_PER_LINE, true);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    // Retrieve the list of licence names from file.
+    List<NameValue> allLicenceValsFromFile =
+        FlickrUtils.getNameValuesFromFile(
+            FlickrUtils.CREATIVE_COMMONS_LICENCES_KEY + ".txt",
+            FlickrUtils.CREATIVE_COMMONS_ELEMENTS_PER_LINE,
+            true);
 
-		// Extract only those licence records which are NOT recorded as
-		// 'not-for-display'
-		List<NameValueExtra> opts = new ArrayList<NameValueExtra>();
-		for( NameValue nv : allLicenceValsFromFile )
-		{
-			NameValueExtra nve = (NameValueExtra) nv;
-			if( nve.getName() != null && !nve.getName().equals(NOT_FOR_DISPLAY) )
-			{
-				opts.add(nve);
-			}
-			allLicenceValues.add(nve);
-		}
+    // Extract only those licence records which are NOT recorded as
+    // 'not-for-display'
+    List<NameValueExtra> opts = new ArrayList<NameValueExtra>();
+    for (NameValue nv : allLicenceValsFromFile) {
+      NameValueExtra nve = (NameValueExtra) nv;
+      if (nve.getName() != null && !nve.getName().equals(NOT_FOR_DISPLAY)) {
+        opts.add(nve);
+      }
+      allLicenceValues.add(nve);
+    }
 
-		licenceList.setListModel(new SimpleHtmlListModel<NameValueExtra>(opts));
+    licenceList.setListModel(new SimpleHtmlListModel<NameValueExtra>(opts));
 
-		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
-	}
+    tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
+  }
 
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		licenceList.setEventHandler(JSHandler.EVENT_CHANGE,
-			new StatementHandler(searchResults.getRestartSearchHandler(tree)));
-	}
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    licenceList.setEventHandler(
+        JSHandler.EVENT_CHANGE, new StatementHandler(searchResults.getRestartSearchHandler(tree)));
+  }
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context)
-	{
-		return viewFactory.createResult("filter/filterbycreativecommonslicence.ftl", this);
-	}
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    return viewFactory.createResult("filter/filterbycreativecommonslicence.ftl", this);
+  }
 
-	/**
-	 * At present, there's no tie-in between selection of a flickr institution,
-	 * and selection of a specific commons licence, so we are in effect enabling
-	 * a user to search within a creative commons institution for a specifically
-	 * licenced subset. (This may possibly be overkill ...)
-	 */
-	@Override
-	public void prepareSearch(SectionInfo info, FlickrSearchEvent event) throws Exception
-	{
-		String licenceFilter = getLicenceFilter(info);
-		if( !Check.isEmpty(licenceFilter) )
-		{
-			event.getParams().setLicense(licenceFilter);
-			event.setUserFiltered(true);
-		}
-	}
+  /**
+   * At present, there's no tie-in between selection of a flickr institution, and selection of a
+   * specific commons licence, so we are in effect enabling a user to search within a creative
+   * commons institution for a specifically licenced subset. (This may possibly be overkill ...)
+   */
+  @Override
+  public void prepareSearch(SectionInfo info, FlickrSearchEvent event) throws Exception {
+    String licenceFilter = getLicenceFilter(info);
+    if (!Check.isEmpty(licenceFilter)) {
+      event.getParams().setLicense(licenceFilter);
+      event.setUserFiltered(true);
+    }
+  }
 
-	/**
-	 * Convenient public method to determine if a valid selection of any of the
-	 * licence options has been made, and if so to identify the numerical key(s)
-	 * thereof.
-	 * 
-	 * @param info
-	 * @return a compounded, comma-separated string of licence numbers if
-	 *         applicable, otherwise null.
-	 */
-	public String getLicenceFilter(SectionInfo info)
-	{
-		Set<String> licences = licenceList.getSelectedValuesAsStrings(info);
-		return Check.isEmpty(licences) ? null : Utils.join(licences.toArray(), ",");
-	}
+  /**
+   * Convenient public method to determine if a valid selection of any of the licence options has
+   * been made, and if so to identify the numerical key(s) thereof.
+   *
+   * @param info
+   * @return a compounded, comma-separated string of licence numbers if applicable, otherwise null.
+   */
+  public String getLicenceFilter(SectionInfo info) {
+    Set<String> licences = licenceList.getSelectedValuesAsStrings(info);
+    return Check.isEmpty(licences) ? null : Utils.join(licences.toArray(), ",");
+  }
 
-	@Override
-	public void reset(SectionInfo info)
-	{
-		licenceList.setSelectedStringValues(info, null);
-	}
+  @Override
+  public void reset(SectionInfo info) {
+    licenceList.setSelectedStringValues(info, null);
+  }
 
-	public MultiSelectionList<NameValueExtra> getLicenceList()
-	{
-		return licenceList;
-	}
+  public MultiSelectionList<NameValueExtra> getLicenceList() {
+    return licenceList;
+  }
 
-	public String getDisplayLicenceForValue(String value)
-	{
-		for( NameValueExtra nve : allLicenceValues )
-		{
-			if( nve.getValue() != null && nve.getValue().equals(value) )
-			{
-				return nve.getExtra();
-			}
-		}
-		return null;
-	}
+  public String getDisplayLicenceForValue(String value) {
+    for (NameValueExtra nve : allLicenceValues) {
+      if (nve.getValue() != null && nve.getValue().equals(value)) {
+        return nve.getExtra();
+      }
+    }
+    return null;
+  }
 
-	public final List<NameValueExtra> getAllLicenceValues()
-	{
-		return allLicenceValues;
-	}
+  public final List<NameValueExtra> getAllLicenceValues() {
+    return allLicenceValues;
+  }
 }

@@ -18,11 +18,9 @@ package com.tle.web.htmleditor;
 
 import com.google.inject.AbstractModule;
 
-public class HtmlEditorModule extends AbstractModule
-{
-	@Override
-	protected void configure()
-	{
-		// None
-	}
+public class HtmlEditorModule extends AbstractModule {
+  @Override
+  protected void configure() {
+    // None
+  }
 }

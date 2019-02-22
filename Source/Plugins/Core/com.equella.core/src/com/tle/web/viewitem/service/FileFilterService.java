@@ -16,12 +16,9 @@
 
 package com.tle.web.viewitem.service;
 
+import com.tle.web.viewitem.FilestoreContentFilter;
 import java.util.List;
 
-import com.tle.web.viewitem.FilestoreContentFilter;
-
-public interface FileFilterService
-{
-	public List<FilestoreContentFilter> getFilters();
-
+public interface FileFilterService {
+  public List<FilestoreContentFilter> getFilters();
 }

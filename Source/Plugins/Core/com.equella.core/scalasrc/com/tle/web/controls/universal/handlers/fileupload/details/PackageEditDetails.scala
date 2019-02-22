@@ -20,7 +20,12 @@ import com.tle.beans.item.attachments.{Attachment, ImsAttachment}
 import com.tle.common.NameValue
 import com.tle.common.filesystem.FileSystemConstants
 import com.tle.web.controls.universal.handlers.fileupload.{AttachmentDelete, WebFileUploads}
-import com.tle.web.controls.universal.{AbstractDetailsAttachmentHandler, ControlContext, DialogRenderOptions, RenderHelper}
+import com.tle.web.controls.universal.{
+  AbstractDetailsAttachmentHandler,
+  ControlContext,
+  DialogRenderOptions,
+  RenderHelper
+}
 import com.tle.web.freemarker.FreemarkerFactory
 import com.tle.web.freemarker.annotations.ViewFactory
 import com.tle.web.sections.equella.AbstractScalaSection
@@ -40,9 +45,15 @@ object PackageEditDetails {
 
 import com.tle.web.controls.universal.handlers.fileupload.details.PackageEditDetails._
 
-class PackageEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, viewerHandler: ViewerHandler,
-                         showRestrict: Boolean, val editingAttachment: SectionInfo => Attachment)
-  extends AbstractScalaSection with RenderHelper with DetailsPage {
+class PackageEditDetails(parentId: String,
+                         tree: SectionTree,
+                         ctx: ControlContext,
+                         viewerHandler: ViewerHandler,
+                         showRestrict: Boolean,
+                         val editingAttachment: SectionInfo => Attachment)
+    extends AbstractScalaSection
+    with RenderHelper
+    with DetailsPage {
 
   type M = PackageEditDetailsModel
 
@@ -50,7 +61,7 @@ class PackageEditDetails(parentId: String, tree: SectionTree, ctx: ControlContex
 
   val settings = ctx.controlSettings
 
-  @Component var displayName: TextField = _
+  @Component var displayName: TextField           = _
   @ViewFactory var viewFactory: FreemarkerFactory = _
 
   private[details] object ExpandType extends Enumeration {
@@ -59,24 +70,29 @@ class PackageEditDetails(parentId: String, tree: SectionTree, ctx: ControlContex
   }
 
   @Component var expandButtons: SingleSelectionList[ExpandType.ExpandType] = _
-  @Component var viewers: SingleSelectionList[NameValue] = _
-  @Component var previewCheckBox: Checkbox = _
-  @Component var restrictCheckbox: Checkbox = _
+  @Component var viewers: SingleSelectionList[NameValue]                   = _
+  @Component var previewCheckBox: Checkbox                                 = _
+  @Component var restrictCheckbox: Checkbox                                = _
 
   override def getDefaultPropertyName = "pd"
 
   override def registered(id: String, tree: SectionTree): Unit = {
     super.registered(id, tree)
-    expandButtons.setListModel(new SimpleHtmlListModel[ExpandType.ExpandType](ExpandType.SINGLE, ExpandType.EXPAND) {
-      override def convertToOption(obj: ExpandType.ExpandType): model.Option[ExpandType.ExpandType] = new LabelOption[ExpandType.ExpandType](
-        new KeyLabel(KEY_PFXBUTTON + obj.toString.toLowerCase), obj.toString, obj)
-    })
+    expandButtons.setListModel(
+      new SimpleHtmlListModel[ExpandType.ExpandType](ExpandType.SINGLE, ExpandType.EXPAND) {
+        override def convertToOption(
+            obj: ExpandType.ExpandType): model.Option[ExpandType.ExpandType] =
+          new LabelOption[ExpandType.ExpandType](
+            new KeyLabel(KEY_PFXBUTTON + obj.toString.toLowerCase),
+            obj.toString,
+            obj)
+      })
     expandButtons.setAlwaysSelect(true)
     viewers.setListModel(viewerHandler.viewerListModel)
   }
 
   class PackageEditDetailsModel(info: SectionInfo) {
-    lazy val a = editingAttachment(info)
+    lazy val a   = editingAttachment(info)
     var validate = false
 
     def getCommonIncludePath = AbstractDetailsAttachmentHandler.COMMON_INCLUDE_PATH
@@ -113,7 +129,7 @@ class PackageEditDetails(parentId: String, tree: SectionTree, ctx: ControlContex
 
   def isIMSPackage(a: Attachment): Boolean = a match {
     case i: ImsAttachment => true
-    case _ => false
+    case _                => false
   }
 
   def renderDetails(context: RenderContext): (SectionRenderable, DialogRenderOptions => Unit) = {
@@ -123,7 +139,9 @@ class PackageEditDetails(parentId: String, tree: SectionTree, ctx: ControlContex
   def prepareUI(info: SectionInfo): Unit = {
     val et = editingAttachment(info)
     et match {
-      case ims: ImsAttachment => expandButtons.setSelectedValue(info, if (ims.isExpand) ExpandType.EXPAND else ExpandType.SINGLE)
+      case ims: ImsAttachment =>
+        expandButtons.setSelectedValue(info,
+                                       if (ims.isExpand) ExpandType.EXPAND else ExpandType.SINGLE)
       case _ => ()
     }
     displayName.setValue(info, et.getDescription)
@@ -132,13 +150,14 @@ class PackageEditDetails(parentId: String, tree: SectionTree, ctx: ControlContex
     viewers.setSelectedStringValue(info, et.getViewer)
   }
 
-  def editAttachment(info: SectionInfo, a: Attachment, ctx: ControlContext): (Attachment, Option[AttachmentDelete]) = {
+  def editAttachment(info: SectionInfo,
+                     a: Attachment,
+                     ctx: ControlContext): (Attachment, Option[AttachmentDelete]) = {
     a.setDescription(displayName.getValue(info))
     if (showRestrict) {
       a.setRestricted(restrictCheckbox.isChecked(info))
     }
-    if (ctx.controlSettings.isAllowPreviews)
-    {
+    if (ctx.controlSettings.isAllowPreviews) {
       a.setPreview(previewCheckBox.isChecked(info))
     }
     a.setViewer(viewers.getSelectedValueAsString(info))
@@ -148,8 +167,11 @@ class PackageEditDetails(parentId: String, tree: SectionTree, ctx: ControlContex
         ims.setExpand(newExpand)
         if (newExpand) {
           val packageFilename = ims.getUrl
-          ctx.repo.createPackageNavigation(info, packageFilename,
-            FileSystemConstants.IMS_FOLDER + '/' + packageFilename, packageFilename, true)
+          ctx.repo.createPackageNavigation(info,
+                                           packageFilename,
+                                           FileSystemConstants.IMS_FOLDER + '/' + packageFilename,
+                                           packageFilename,
+                                           true)
           None
         } else {
           Some(AttachmentDelete(WebFileUploads.imsResources(ctx.repo), _ => ()))
@@ -158,7 +180,6 @@ class PackageEditDetails(parentId: String, tree: SectionTree, ctx: ControlContex
     }
     (a, ad)
   }
-
 
   override def previewable = false
 

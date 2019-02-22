@@ -20,21 +20,17 @@ import com.tle.common.scripting.service.ScriptContextCreationParams;
 import com.tle.core.guice.Bind;
 import com.tle.core.metadata.scripting.objects.MetadataScriptObject;
 import com.tle.core.scripting.service.ScriptObjectContributor;
-
+import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Map;
 
 @Bind
 @Singleton
-public class MetadataScriptContributor implements ScriptObjectContributor
-{
-	@Inject
-	private MetadataScriptObject metadataScriptObject;
+public class MetadataScriptContributor implements ScriptObjectContributor {
+  @Inject private MetadataScriptObject metadataScriptObject;
 
-	@Override
-	public void addScriptObjects(Map<String, Object> objects, ScriptContextCreationParams params)
-	{
-		objects.put(MetadataScriptObject.DEFAULT_VARIABLE, metadataScriptObject);
-	}
+  @Override
+  public void addScriptObjects(Map<String, Object> objects, ScriptContextCreationParams params) {
+    objects.put(MetadataScriptObject.DEFAULT_VARIABLE, metadataScriptObject);
+  }
 }

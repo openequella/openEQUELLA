@@ -18,10 +18,6 @@ package com.tle.web.connectors.blackboard.editor;
 
 import static com.tle.core.connectors.blackboard.BlackboardConnectorConstants.CONNECTOR_TYPE;
 
-import java.util.Map;
-
-import javax.inject.Inject;
-
 import com.tle.common.Check;
 import com.tle.common.connectors.entity.Connector;
 import com.tle.core.connectors.blackboard.BlackboardConnectorConstants;
@@ -45,264 +41,233 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
+import java.util.Map;
+import javax.inject.Inject;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 public class BlackboardConnectorEditor
-	extends
-		AbstractConnectorEditorSection<BlackboardConnectorEditor.BlackboardConnectorEditorModel>
-{
-	@PlugKey("bb.editor.error.testwebservice.mandatory")
-	private static Label LABEL_TEST_WEBSERVICE_MANDATORY;
-	@PlugKey("editor.error.testwebservice.enteruser")
-	private static Label LABEL_TEST_WEBSERVICE_ENTERUSER;
+    extends AbstractConnectorEditorSection<
+        BlackboardConnectorEditor.BlackboardConnectorEditorModel> {
+  @PlugKey("bb.editor.error.testwebservice.mandatory")
+  private static Label LABEL_TEST_WEBSERVICE_MANDATORY;
 
-	@Inject
-	private BlackboardConnectorService blackboardService;
+  @PlugKey("editor.error.testwebservice.enteruser")
+  private static Label LABEL_TEST_WEBSERVICE_ENTERUSER;
 
-	@Component(name = "pts", stateful = false)
-	private TextField proxyToolSecret;
-	@Component(name = "pp", stateful = false)
-	private TextField proxyToolPass; // this is the global BB password to
+  @Inject private BlackboardConnectorService blackboardService;
 
-	@PlugKey("editor.button.register")
-	@Component
-	private Button registerButton;
-	@Component(name = "twsu", stateful = false)
-	private TextField testWebServiceUsername;
-	@PlugKey("editor.button.testwebservice")
-	@Component
-	private Button testWebServiceButton;
+  @Component(name = "pts", stateful = false)
+  private TextField proxyToolSecret;
 
-	@ViewFactory
-	private FreemarkerFactory view;
-	@EventFactory
-	private EventGenerator events;
+  @Component(name = "pp", stateful = false)
+  private TextField proxyToolPass; // this is the global BB password to
 
-	@Override
-	protected SectionRenderable renderFields(RenderEventContext context,
-		EntityEditingSession<ConnectorEditingBean, Connector> session)
-	{
-		return view.createResult("blackboardconnector.ftl", context);
-	}
+  @PlugKey("editor.button.register")
+  @Component
+  private Button registerButton;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Component(name = "twsu", stateful = false)
+  private TextField testWebServiceUsername;
 
-		registerButton.setClickHandler(ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("registerTool"), "registerdiv"));
+  @PlugKey("editor.button.testwebservice")
+  @Component
+  private Button testWebServiceButton;
 
-		testWebServiceButton.setClickHandler(ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("testWebService"), "testdiv"));
-	}
+  @ViewFactory private FreemarkerFactory view;
+  @EventFactory private EventGenerator events;
 
-	@Override
-	protected String getAjaxDivId()
-	{
-		return "blackboardsetup";
-	}
+  @Override
+  protected SectionRenderable renderFields(
+      RenderEventContext context, EntityEditingSession<ConnectorEditingBean, Connector> session) {
+    return view.createResult("blackboardconnector.ftl", context);
+  }
 
-	@Override
-	protected void onTestUrlFail(SectionInfo info, ConnectorEditingBean connector)
-	{
-		super.onTestUrlFail(info, connector);
-		getModel(info).setTestWebServiceStatus(null);
-		connector.setAttribute(BlackboardConnectorConstants.FIELD_TESTED_WEBSERVICE, false);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@EventHandlerMethod
-	public void registerTool(SectionInfo info)
-	{
-		final EntityEditingSession<ConnectorEditingBean, Connector> session = saveToSession(info);
-		final ConnectorEditingBean connector = session.getBean();
+    registerButton.setClickHandler(
+        ajax.getAjaxUpdateDomFunction(
+            tree, this, events.getEventHandler("registerTool"), "registerdiv"));
 
-		final String result = blackboardService.registerProxyTool(connector.getServerUrl(),
-			proxyToolPass.getValue(info));
-		final BlackboardConnectorEditorModel model = getModel(info);
-		if( result == null )
-		{
-			model.setRegisterToolStatus("ok");
-			model.setRegisterToolOk(true);
-		}
-		else if( result.equals(BlackboardConnectorService.REGISTER_PROXY_TOOL_RESULT_ALREADY_REGISTERED) )
-		{
-			model.setRegisterToolStatus("okalreadyregistered");
-			model.setRegisterToolOk(true);
-		}
-		else
-		{
-			model.setRegisterToolStatus("fail");
-			model.setRegisterToolOk(false);
-			session.getValidationErrors().put("registertool", result);
-		}
-	}
+    testWebServiceButton.setClickHandler(
+        ajax.getAjaxUpdateDomFunction(
+            tree, this, events.getEventHandler("testWebService"), "testdiv"));
+  }
 
-	@EventHandlerMethod
-	public void testWebService(SectionInfo info)
-	{
-		final EntityEditingSession<ConnectorEditingBean, Connector> session = saveToSession(info);
+  @Override
+  protected String getAjaxDivId() {
+    return "blackboardsetup";
+  }
 
-		final String wsUsername = testWebServiceUsername.getValue(info);
-		if( Check.isEmpty(wsUsername) )
-		{
-			session.getValidationErrors().put("systemusername", LABEL_TEST_WEBSERVICE_ENTERUSER.getText());
-			return;
-		}
+  @Override
+  protected void onTestUrlFail(SectionInfo info, ConnectorEditingBean connector) {
+    super.onTestUrlFail(info, connector);
+    getModel(info).setTestWebServiceStatus(null);
+    connector.setAttribute(BlackboardConnectorConstants.FIELD_TESTED_WEBSERVICE, false);
+  }
 
-		final ConnectorEditingBean connector = session.getBean();
+  @EventHandlerMethod
+  public void registerTool(SectionInfo info) {
+    final EntityEditingSession<ConnectorEditingBean, Connector> session = saveToSession(info);
+    final ConnectorEditingBean connector = session.getBean();
 
-		// change the secret if necessary
-		final String secret = proxyToolSecret.getValue(info);
-		if( !Check.isEmpty(secret) )
-		{
-			blackboardService.setSecret(connector.getServerUrl(), secret);
-		}
+    final String result =
+        blackboardService.registerProxyTool(connector.getServerUrl(), proxyToolPass.getValue(info));
+    final BlackboardConnectorEditorModel model = getModel(info);
+    if (result == null) {
+      model.setRegisterToolStatus("ok");
+      model.setRegisterToolOk(true);
+    } else if (result.equals(
+        BlackboardConnectorService.REGISTER_PROXY_TOOL_RESULT_ALREADY_REGISTERED)) {
+      model.setRegisterToolStatus("okalreadyregistered");
+      model.setRegisterToolOk(true);
+    } else {
+      model.setRegisterToolStatus("fail");
+      model.setRegisterToolOk(false);
+      session.getValidationErrors().put("registertool", result);
+    }
+  }
 
-		final String result = blackboardService.testConnection(connector.getServerUrl(), wsUsername);
-		if( result == null )
-		{
-			connector.setAttribute(BlackboardConnectorConstants.FIELD_TESTED_WEBSERVICE, true);
-			getModel(info).setTestWebServiceStatus("ok");
-		}
-		else
-		{
-			connector.setAttribute(BlackboardConnectorConstants.FIELD_TESTED_WEBSERVICE, false);
-			getModel(info).setTestWebServiceStatus("fail");
-			session.getValidationErrors().put("blackboardwebservice", result);
-		}
-	}
+  @EventHandlerMethod
+  public void testWebService(SectionInfo info) {
+    final EntityEditingSession<ConnectorEditingBean, Connector> session = saveToSession(info);
 
-	@Override
-	public SectionRenderable renderHelp(RenderContext context)
-	{
-		return null;
-	}
+    final String wsUsername = testWebServiceUsername.getValue(info);
+    if (Check.isEmpty(wsUsername)) {
+      session
+          .getValidationErrors()
+          .put("systemusername", LABEL_TEST_WEBSERVICE_ENTERUSER.getText());
+      return;
+    }
 
-	@Override
-	protected Connector createNewConnector()
-	{
-		return new Connector(CONNECTOR_TYPE);
-	}
+    final ConnectorEditingBean connector = session.getBean();
 
-	@Override
-	protected void customValidate(SectionInfo info, ConnectorEditingBean connector, Map<String, Object> errors)
-	{
-		if( !connector.getAttribute(BlackboardConnectorConstants.FIELD_TESTED_WEBSERVICE, false) )
-		{
-			errors.put("blackboardwebservice", LABEL_TEST_WEBSERVICE_MANDATORY.getText());
-		}
+    // change the secret if necessary
+    final String secret = proxyToolSecret.getValue(info);
+    if (!Check.isEmpty(secret)) {
+      blackboardService.setSecret(connector.getServerUrl(), secret);
+    }
 
-		if( Check.isEmpty(connector.getAttribute(BlackboardConnectorConstants.SYSTEM_USERNAME)) )
-		{
-			errors.put("systemusername", LABEL_TEST_WEBSERVICE_ENTERUSER.getText());
-		}
-	}
+    final String result = blackboardService.testConnection(connector.getServerUrl(), wsUsername);
+    if (result == null) {
+      connector.setAttribute(BlackboardConnectorConstants.FIELD_TESTED_WEBSERVICE, true);
+      getModel(info).setTestWebServiceStatus("ok");
+    } else {
+      connector.setAttribute(BlackboardConnectorConstants.FIELD_TESTED_WEBSERVICE, false);
+      getModel(info).setTestWebServiceStatus("fail");
+      session.getValidationErrors().put("blackboardwebservice", result);
+    }
+  }
 
-	@Override
-	protected void customLoad(SectionInfo info, ConnectorEditingBean connector)
-	{
-		proxyToolSecret.setValue(info, blackboardService.getSecret(connector.getServerUrl()));
-		testWebServiceUsername.setValue(info, connector.getAttribute(BlackboardConnectorConstants.SYSTEM_USERNAME));
-		final boolean testedWebservice = connector.getAttribute(BlackboardConnectorConstants.FIELD_TESTED_WEBSERVICE,
-			false);
-		if( testedWebservice )
-		{
-			final BlackboardConnectorEditorModel model = getModel(info);
-			model.setTestWebServiceStatus("ok");
-		}
-	}
+  @Override
+  public SectionRenderable renderHelp(RenderContext context) {
+    return null;
+  }
 
-	@Override
-	protected void customSave(SectionInfo info, ConnectorEditingBean connector)
-	{
-		connector.setAttribute(BlackboardConnectorConstants.SYSTEM_USERNAME, testWebServiceUsername.getValue(info));
-		// No need to set the secret. Register proxy tool MUST be invoked to
-		// save this
-	}
+  @Override
+  protected Connector createNewConnector() {
+    return new Connector(CONNECTOR_TYPE);
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new BlackboardConnectorEditorModel();
-	}
+  @Override
+  protected void customValidate(
+      SectionInfo info, ConnectorEditingBean connector, Map<String, Object> errors) {
+    if (!connector.getAttribute(BlackboardConnectorConstants.FIELD_TESTED_WEBSERVICE, false)) {
+      errors.put("blackboardwebservice", LABEL_TEST_WEBSERVICE_MANDATORY.getText());
+    }
 
-	public Button getRegisterButton()
-	{
-		return registerButton;
-	}
+    if (Check.isEmpty(connector.getAttribute(BlackboardConnectorConstants.SYSTEM_USERNAME))) {
+      errors.put("systemusername", LABEL_TEST_WEBSERVICE_ENTERUSER.getText());
+    }
+  }
 
-	public TextField getProxyToolPass()
-	{
-		return proxyToolPass;
-	}
+  @Override
+  protected void customLoad(SectionInfo info, ConnectorEditingBean connector) {
+    proxyToolSecret.setValue(info, blackboardService.getSecret(connector.getServerUrl()));
+    testWebServiceUsername.setValue(
+        info, connector.getAttribute(BlackboardConnectorConstants.SYSTEM_USERNAME));
+    final boolean testedWebservice =
+        connector.getAttribute(BlackboardConnectorConstants.FIELD_TESTED_WEBSERVICE, false);
+    if (testedWebservice) {
+      final BlackboardConnectorEditorModel model = getModel(info);
+      model.setTestWebServiceStatus("ok");
+    }
+  }
 
-	public TextField getProxyToolSecret()
-	{
-		return proxyToolSecret;
-	}
+  @Override
+  protected void customSave(SectionInfo info, ConnectorEditingBean connector) {
+    connector.setAttribute(
+        BlackboardConnectorConstants.SYSTEM_USERNAME, testWebServiceUsername.getValue(info));
+    // No need to set the secret. Register proxy tool MUST be invoked to
+    // save this
+  }
 
-	public TextField getTestWebServiceUsername()
-	{
-		return testWebServiceUsername;
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new BlackboardConnectorEditorModel();
+  }
 
-	public Button getTestWebServiceButton()
-	{
-		return testWebServiceButton;
-	}
+  public Button getRegisterButton() {
+    return registerButton;
+  }
 
-	public class BlackboardConnectorEditorModel
-		extends
-			AbstractConnectorEditorSection<BlackboardConnectorEditorModel>.AbstractConnectorEditorModel
-	{
-		private String registerToolStatus;
-		private boolean registerToolOk;
-		private String testWebServiceStatus;
-		private String proxyToolRegistration;
+  public TextField getProxyToolPass() {
+    return proxyToolPass;
+  }
 
-		public String getRegisterToolStatus()
-		{
-			return registerToolStatus;
-		}
+  public TextField getProxyToolSecret() {
+    return proxyToolSecret;
+  }
 
-		public void setRegisterToolStatus(String registerToolStatus)
-		{
-			this.registerToolStatus = registerToolStatus;
-		}
+  public TextField getTestWebServiceUsername() {
+    return testWebServiceUsername;
+  }
 
-		public boolean isRegisterToolOk()
-		{
-			return registerToolOk;
-		}
+  public Button getTestWebServiceButton() {
+    return testWebServiceButton;
+  }
 
-		public void setRegisterToolOk(boolean registerToolOk)
-		{
-			this.registerToolOk = registerToolOk;
-		}
+  public class BlackboardConnectorEditorModel
+      extends AbstractConnectorEditorSection<BlackboardConnectorEditorModel>
+          .AbstractConnectorEditorModel {
+    private String registerToolStatus;
+    private boolean registerToolOk;
+    private String testWebServiceStatus;
+    private String proxyToolRegistration;
 
-		public String getTestWebServiceStatus()
-		{
-			return testWebServiceStatus;
-		}
+    public String getRegisterToolStatus() {
+      return registerToolStatus;
+    }
 
-		public void setTestWebServiceStatus(String testWebServiceStatus)
-		{
-			this.testWebServiceStatus = testWebServiceStatus;
-		}
+    public void setRegisterToolStatus(String registerToolStatus) {
+      this.registerToolStatus = registerToolStatus;
+    }
 
-		public void setProxyToolRegistration(String proxyToolRegistration)
-		{
-			this.proxyToolRegistration = proxyToolRegistration;
-		}
+    public boolean isRegisterToolOk() {
+      return registerToolOk;
+    }
 
-		public String getProxyToolRegistration()
-		{
-			return proxyToolRegistration;
-		}
-	}
+    public void setRegisterToolOk(boolean registerToolOk) {
+      this.registerToolOk = registerToolOk;
+    }
+
+    public String getTestWebServiceStatus() {
+      return testWebServiceStatus;
+    }
+
+    public void setTestWebServiceStatus(String testWebServiceStatus) {
+      this.testWebServiceStatus = testWebServiceStatus;
+    }
+
+    public void setProxyToolRegistration(String proxyToolRegistration) {
+      this.proxyToolRegistration = proxyToolRegistration;
+    }
+
+    public String getProxyToolRegistration() {
+      return proxyToolRegistration;
+    }
+  }
 }

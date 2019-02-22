@@ -19,18 +19,15 @@ package com.tle.web.spellcheck;
 import com.tle.core.guice.PluginTrackerModule;
 import com.tle.web.spellcheck.dictionary.TLEDictionary;
 
-public class DictionaryTrackerModule extends PluginTrackerModule
-{
-	@Override
-	protected String getPluginId()
-	{
-		return "com.tle.web.spellcheck";
-	}
+public class DictionaryTrackerModule extends PluginTrackerModule {
+  @Override
+  protected String getPluginId() {
+    return "com.tle.web.spellcheck";
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	protected void configure()
-	{
-		bindTracker(TLEDictionary.class, "dictionary", "bean").orderByParameter("order");
-	}
+  @SuppressWarnings("nls")
+  @Override
+  protected void configure() {
+    bindTracker(TLEDictionary.class, "dictionary", "bean").orderByParameter("order");
+  }
 }

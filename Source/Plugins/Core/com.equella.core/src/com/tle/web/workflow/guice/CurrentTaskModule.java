@@ -20,17 +20,14 @@ import com.google.inject.name.Names;
 import com.tle.web.sections.equella.guice.SectionsModule;
 import com.tle.web.workflow.tasks.CurrentTaskSection;
 
-public class CurrentTaskModule extends SectionsModule
-{
-	@SuppressWarnings("nls")
-	@Override
-	protected void configure()
-	{
-		bind(Object.class).annotatedWith(Names.named("$CURRENTTASK$")).toProvider(currentTaskTree());
-	}
+public class CurrentTaskModule extends SectionsModule {
+  @SuppressWarnings("nls")
+  @Override
+  protected void configure() {
+    bind(Object.class).annotatedWith(Names.named("$CURRENTTASK$")).toProvider(currentTaskTree());
+  }
 
-	private NodeProvider currentTaskTree()
-	{
-		return node(CurrentTaskSection.class);
-	}
+  private NodeProvider currentTaskTree() {
+    return node(CurrentTaskSection.class);
+  }
 }

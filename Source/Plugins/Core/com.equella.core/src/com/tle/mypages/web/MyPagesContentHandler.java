@@ -16,14 +16,6 @@
 
 package com.tle.mypages.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Provider;
-import javax.inject.Singleton;
-
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
@@ -53,95 +45,103 @@ import com.tle.web.viewurl.ViewItemUrl;
 import com.tle.web.viewurl.ViewItemUrlFactory;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.AttachmentResourceService;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
-public class MyPagesContentHandler extends SimpleContentHandler<MyPagesContributeSection>
-{
-	private static final PluginResourceHelper RESOURCES = ResourcesService
-		.getResourceHelper(MyPagesContentHandler.class);
+public class MyPagesContentHandler extends SimpleContentHandler<MyPagesContributeSection> {
+  private static final PluginResourceHelper RESOURCES =
+      ResourcesService.getResourceHelper(MyPagesContentHandler.class);
 
-	private static final Label TITLE = new KeyLabel(RESOURCES.key("handler"));
+  private static final Label TITLE = new KeyLabel(RESOURCES.key("handler"));
 
-	@Inject
-	private ViewItemUrlFactory urlFactory;
-	@Inject
-	@Named("myPagesContentTree")
-	private Provider<SectionTree> handlerTree;
-	@Inject
-	private ViewableItemFactory viewableItemFactory;
-	@Inject
-	private AttachmentResourceService attachmentResourceService;
+  @Inject private ViewItemUrlFactory urlFactory;
 
-	@Override
-	protected SectionTree createTree()
-	{
-		return handlerTree.get();
-	}
+  @Inject
+  @Named("myPagesContentTree")
+  private Provider<SectionTree> handlerTree;
 
-	@Override
-	public Label getTitle(SectionInfo info)
-	{
-		return TITLE;
-	}
+  @Inject private ViewableItemFactory viewableItemFactory;
+  @Inject private AttachmentResourceService attachmentResourceService;
 
-	@Override
-	protected void doContribute(MyPagesContributeSection section, SectionInfo info, ItemDefinition collection)
-	{
-		section.contribute(info, collection);
-	}
+  @Override
+  protected SectionTree createTree() {
+    return handlerTree.get();
+  }
 
-	@Override
-	protected void doEdit(MyPagesContributeSection section, SectionInfo info, ItemId id)
-	{
-		section.edit(info, id, false);
-	}
+  @Override
+  public Label getTitle(SectionInfo info) {
+    return TITLE;
+  }
 
-	@Override
-	protected void doAddCrumbs(MyPagesContributeSection section, SectionInfo info, Decorations decorations,
-		Breadcrumbs crumbs)
-	{
-		decorations.setContentBodyClass("mycontent-actions-layout");
-		decorations.setMenuMode(MenuMode.COLLAPSED);
+  @Override
+  protected void doContribute(
+      MyPagesContributeSection section, SectionInfo info, ItemDefinition collection) {
+    section.contribute(info, collection);
+  }
 
-		section.addCrumbs(info, decorations, crumbs);
-	}
+  @Override
+  protected void doEdit(MyPagesContributeSection section, SectionInfo info, ItemId id) {
+    section.edit(info, id, false);
+  }
 
-	@Override
-	public Class<MyPagesContributeSection> getContributeSectionClass()
-	{
-		return MyPagesContributeSection.class;
-	}
+  @Override
+  protected void doAddCrumbs(
+      MyPagesContributeSection section,
+      SectionInfo info,
+      Decorations decorations,
+      Breadcrumbs crumbs) {
+    decorations.setContentBodyClass("mycontent-actions-layout");
+    decorations.setMenuMode(MenuMode.COLLAPSED);
 
-	@Override
-	public boolean isRawFiles()
-	{
-		return false;
-	}
+    section.addCrumbs(info, decorations, crumbs);
+  }
 
-	@Override
-	public HtmlLinkState decorate(SectionInfo info, StandardItemListEntry itemEntry)
-	{
-		Item item = itemEntry.getItem();
-		UnmodifiableAttachments attachments = new UnmodifiableAttachments(item);
-		List<HtmlLinkState> pages = new ArrayList<HtmlLinkState>();
-		List<HtmlAttachment> htmls = attachments.getList(AttachmentType.HTML);
-		NewDefaultViewableItem viewableItem = viewableItemFactory.createNewViewableItem(item.getItemId());
-		for( HtmlAttachment html : htmls )
-		{
-			ViewableResource viewable = attachmentResourceService.getViewableResource(info, viewableItem, html);
-			pages.add(processLink(info,
-				new HtmlLinkState(new TextLabel(html.getDescription()), viewable.createDefaultViewerUrl())));
-		}
-		itemEntry.addDelimitedMetadata(new KeyLabel(RESOURCES.key("result.files")),
-			(Object[]) pages.toArray(new HtmlLinkState[pages.size()]));
-		return processLink(
-			info,
-			new HtmlLinkState(itemEntry.getTitleLabel(), urlFactory.createItemUrl(info, viewableItem,
-				UrlEncodedString.createFromFilePath(MyPagesConstants.VIEW_PAGES), ViewItemUrl.FLAG_IS_RESOURCE)));
-	}
+  @Override
+  public Class<MyPagesContributeSection> getContributeSectionClass() {
+    return MyPagesContributeSection.class;
+  }
+
+  @Override
+  public boolean isRawFiles() {
+    return false;
+  }
+
+  @Override
+  public HtmlLinkState decorate(SectionInfo info, StandardItemListEntry itemEntry) {
+    Item item = itemEntry.getItem();
+    UnmodifiableAttachments attachments = new UnmodifiableAttachments(item);
+    List<HtmlLinkState> pages = new ArrayList<HtmlLinkState>();
+    List<HtmlAttachment> htmls = attachments.getList(AttachmentType.HTML);
+    NewDefaultViewableItem viewableItem =
+        viewableItemFactory.createNewViewableItem(item.getItemId());
+    for (HtmlAttachment html : htmls) {
+      ViewableResource viewable =
+          attachmentResourceService.getViewableResource(info, viewableItem, html);
+      pages.add(
+          processLink(
+              info,
+              new HtmlLinkState(
+                  new TextLabel(html.getDescription()), viewable.createDefaultViewerUrl())));
+    }
+    itemEntry.addDelimitedMetadata(
+        new KeyLabel(RESOURCES.key("result.files")),
+        (Object[]) pages.toArray(new HtmlLinkState[pages.size()]));
+    return processLink(
+        info,
+        new HtmlLinkState(
+            itemEntry.getTitleLabel(),
+            urlFactory.createItemUrl(
+                info,
+                viewableItem,
+                UrlEncodedString.createFromFilePath(MyPagesConstants.VIEW_PAGES),
+                ViewItemUrl.FLAG_IS_RESOURCE)));
+  }
 }

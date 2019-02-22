@@ -23,21 +23,21 @@ import com.tle.web.sections.render.StyleableRenderer;
 import com.tle.web.sections.standard.js.JSDisableable;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 
-public interface LinkTagRenderer extends JSDisableable, NestedRenderable, ElementId, StyleableRenderer
-{
-	void setTarget(String target);
+public interface LinkTagRenderer
+    extends JSDisableable, NestedRenderable, ElementId, StyleableRenderer {
+  void setTarget(String target);
 
-	void setRel(String rel);
+  void setRel(String rel);
 
-	void setTitle(Label title);
+  void setTitle(Label title);
 
-	void setLabel(Label label);
+  void setLabel(Label label);
 
-	void setDisabled(boolean disabled);
+  void setDisabled(boolean disabled);
 
-	void setElementId(ElementId elemId);
+  void setElementId(ElementId elemId);
 
-	void ensureClickable();
+  void ensureClickable();
 
-	HtmlLinkState getLinkState();
+  HtmlLinkState getLinkState();
 }

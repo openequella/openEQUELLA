@@ -21,23 +21,23 @@ import java.util.Set;
 
 public interface MigrationExt {
 
-    Date date();
+  Date date();
 
-    String id();
+  String id();
 
-    boolean placeholder();
+  boolean placeholder();
 
-    Migration migration();
+  Migration migration();
 
-    boolean initial();
+  boolean initial();
 
-    boolean system();
+  boolean system();
 
-    Set<String> getObsoletedBy();
+  Set<String> getObsoletedBy();
 
-    Set<String> getFixes();
+  Set<String> getFixes();
 
-    Set<String> getIfSkipped();
+  Set<String> getIfSkipped();
 
-    Set<String> getDepends();
+  Set<String> getDepends();
 }

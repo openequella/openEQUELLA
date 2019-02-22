@@ -16,17 +16,12 @@
 
 package com.tle.web.htmleditor.tinymce.addon.tle.selection.callback;
 
+import com.tle.core.guice.Bind;
 import javax.inject.Singleton;
 
-import com.tle.core.guice.Bind;
-
-/**
- * @author aholland
- */
+/** @author aholland */
 @Bind
 @Singleton
-public class ResourceLinkerCallback extends AbstractSelectionsMadeCallback
-{
-	private static final long serialVersionUID = 1L;
-
+public class ResourceLinkerCallback extends AbstractSelectionsMadeCallback {
+  private static final long serialVersionUID = 1L;
 }

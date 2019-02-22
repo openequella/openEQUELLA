@@ -16,9 +16,6 @@
 
 package com.tle.web.search.base;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
@@ -41,128 +38,115 @@ import com.tle.web.sections.render.TemplateResult;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.section.event.BlueBarEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 @TreeIndexed
-public abstract class AbstractRootSearchSection<M extends AbstractRootSearchSection.Model> extends TwoColumnLayout<M>
-{
-	@PlugURL("css/search.css")
-	private static String URL_CSS;
+public abstract class AbstractRootSearchSection<M extends AbstractRootSearchSection.Model>
+    extends TwoColumnLayout<M> {
+  @PlugURL("css/search.css")
+  private static String URL_CSS;
 
-	private CssInclude[] cssIncludes;
+  private CssInclude[] cssIncludes;
 
-	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		decorations.setTitle(getTitle(info));
-		decorations.setContentBodyClass(getContentBodyClasses());
-	}
+  @Override
+  protected void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    decorations.setTitle(getTitle(info));
+    decorations.setContentBodyClass(getContentBodyClasses());
+  }
 
-	@SuppressWarnings("nls")
-	protected String getContentBodyClasses()
-	{
-		return "search-layout";
-	}
+  @SuppressWarnings("nls")
+  protected String getContentBodyClasses() {
+    return "search-layout";
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		List<CssInclude> includes = new ArrayList<CssInclude>();
-		createCssIncludes(includes);
-		cssIncludes = includes.toArray(new CssInclude[includes.size()]);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    List<CssInclude> includes = new ArrayList<CssInclude>();
+    createCssIncludes(includes);
+    cssIncludes = includes.toArray(new CssInclude[includes.size()]);
+  }
 
-	protected void createCssIncludes(List<CssInclude> includes)
-	{
-		includes.add(CssInclude.include(URL_CSS).hasRtl().make());
-	}
+  protected void createCssIncludes(List<CssInclude> includes) {
+    includes.add(CssInclude.include(URL_CSS).hasRtl().make());
+  }
 
-	@Override
-	protected TemplateResult getTemplateResult(RenderEventContext info)
-	{
-		CombinedTemplateResult templateResult = new CombinedTemplateResult();
-		M model = getModel(info);
-		SectionId modalSection = model.getModalSection();
-		if( modalSection != null )
-		{
-			templateResult.addNamedResult(OneColumnLayout.BODY, CombinedRenderer.combineMultipleResults(cssIncludes));
-			templateResult.addResult(OneColumnLayout.BODY, SectionUtils.renderSectionResult(info, modalSection));
-			return templateResult;
-		}
+  @Override
+  protected TemplateResult getTemplateResult(RenderEventContext info) {
+    CombinedTemplateResult templateResult = new CombinedTemplateResult();
+    M model = getModel(info);
+    SectionId modalSection = model.getModalSection();
+    if (modalSection != null) {
+      templateResult.addNamedResult(
+          OneColumnLayout.BODY, CombinedRenderer.combineMultipleResults(cssIncludes));
+      templateResult.addResult(
+          OneColumnLayout.BODY, SectionUtils.renderSectionResult(info, modalSection));
+      return templateResult;
+    }
 
-		SectionRenderable bodyHeader = getBodyHeader(info);
-		if( bodyHeader != null )
-		{
-			templateResult.addNamedResult(OneColumnLayout.BODY, bodyHeader);
-		}
-		List<SectionId> children = getChildIds(info);
-		for( SectionId childId : children )
-		{
-			String side = info.getLayout(childId.getSectionId());
+    SectionRenderable bodyHeader = getBodyHeader(info);
+    if (bodyHeader != null) {
+      templateResult.addNamedResult(OneColumnLayout.BODY, bodyHeader);
+    }
+    List<SectionId> children = getChildIds(info);
+    for (SectionId childId : children) {
+      String side = info.getLayout(childId.getSectionId());
 
-			if( !TwoColumnLayout.RIGHT.equals(side) )
-			{
-				side = OneColumnLayout.BODY;
-			}
-			templateResult.addResult(side, SectionUtils.renderSectionResult(info, childId));
-		}
-		templateResult.addNamedResult(OneColumnLayout.BODY, CombinedRenderer.combineMultipleResults(cssIncludes));
+      if (!TwoColumnLayout.RIGHT.equals(side)) {
+        side = OneColumnLayout.BODY;
+      }
+      templateResult.addResult(side, SectionUtils.renderSectionResult(info, childId));
+    }
+    templateResult.addNamedResult(
+        OneColumnLayout.BODY, CombinedRenderer.combineMultipleResults(cssIncludes));
 
-		addBlueBarBits(info, templateResult);
-		return templateResult;
-	}
+    addBlueBarBits(info, templateResult);
+    return templateResult;
+  }
 
-	protected SectionRenderable getBodyHeader(RenderContext info)
-	{
-		return null;
-	}
+  protected SectionRenderable getBodyHeader(RenderContext info) {
+    return null;
+  }
 
-	protected void addBlueBarBits(RenderContext info, GenericTemplateResult templateResult)
-	{
-		BlueBarEvent blueBarEvent = new BlueBarEvent(info);
-		info.processEvent(blueBarEvent);
-	}
+  protected void addBlueBarBits(RenderContext info, GenericTemplateResult templateResult) {
+    BlueBarEvent blueBarEvent = new BlueBarEvent(info);
+    info.processEvent(blueBarEvent);
+  }
 
-	protected List<SectionId> getChildIds(RenderContext info)
-	{
-		return info.getChildIds(this);
-	}
+  protected List<SectionId> getChildIds(RenderContext info) {
+    return info.getChildIds(this);
+  }
 
-	public InfoBookmark getPermanentUrl(SectionInfo info)
-	{
-		M model = getModel(info);
-		InfoBookmark permanentUrl = model.getPermanentUrl();
-		if( permanentUrl == null )
-		{
-			BookmarkEvent bookmarkEvent = new BookmarkEvent(BookmarkEvent.CONTEXT_SUPPORTED);
-			bookmarkEvent.setIgnoredContexts(BookmarkEvent.CONTEXT_SESSION);
-			permanentUrl = new InfoBookmark(info, bookmarkEvent);
-			model.setPermanentUrl(permanentUrl);
-		}
-		return permanentUrl;
-	}
+  public InfoBookmark getPermanentUrl(SectionInfo info) {
+    M model = getModel(info);
+    InfoBookmark permanentUrl = model.getPermanentUrl();
+    if (permanentUrl == null) {
+      BookmarkEvent bookmarkEvent = new BookmarkEvent(BookmarkEvent.CONTEXT_SUPPORTED);
+      bookmarkEvent.setIgnoredContexts(BookmarkEvent.CONTEXT_SESSION);
+      permanentUrl = new InfoBookmark(info, bookmarkEvent);
+      model.setPermanentUrl(permanentUrl);
+    }
+    return permanentUrl;
+  }
 
-	public abstract Label getTitle(SectionInfo info);
+  public abstract Label getTitle(SectionInfo info);
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new Model();
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model();
+  }
 
-	public static class Model extends TwoColumnLayout.TwoColumnModel
-	{
-		private InfoBookmark permanentUrl;
+  public static class Model extends TwoColumnLayout.TwoColumnModel {
+    private InfoBookmark permanentUrl;
 
-		public InfoBookmark getPermanentUrl()
-		{
-			return permanentUrl;
-		}
+    public InfoBookmark getPermanentUrl() {
+      return permanentUrl;
+    }
 
-		public void setPermanentUrl(InfoBookmark permanentUrl)
-		{
-			this.permanentUrl = permanentUrl;
-		}
-	}
-
+    public void setPermanentUrl(InfoBookmark permanentUrl) {
+      this.permanentUrl = permanentUrl;
+    }
+  }
 }

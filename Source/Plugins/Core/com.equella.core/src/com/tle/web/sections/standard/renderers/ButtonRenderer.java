@@ -16,10 +16,6 @@
 
 package com.tle.web.sections.standard.renderers;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Map;
-
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.events.js.JSHandler;
@@ -30,76 +26,74 @@ import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.function.DefaultDisableFunction;
 import com.tle.web.sections.standard.js.JSDisableable;
 import com.tle.web.sections.standard.model.HtmlComponentState;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Map;
 
 @SuppressWarnings("nls")
-public class ButtonRenderer extends AbstractInputRenderer implements JSDisableable
-{
-	public ButtonRenderer(HtmlComponentState state)
-	{
-		super(state, "button");
-	}
+public class ButtonRenderer extends AbstractInputRenderer implements JSDisableable {
+  public ButtonRenderer(HtmlComponentState state) {
+    super(state, "button");
+  }
 
-	@Override
-	protected void writeMiddle(SectionWriter writer) throws IOException
-	{
-		// nothing
-	}
+  @Override
+  protected void writeMiddle(SectionWriter writer) throws IOException {
+    // nothing
+  }
 
-	@Override
-	protected void writeEnd(SectionWriter writer) throws IOException
-	{
-		if( getHtmlState().isCancel() )
-		{
-			writer.writeTag("input", "id", getResetId(), "type", "reset", "value", "RESET", "style", "display:none");
-		}
-	}
+  @Override
+  protected void writeEnd(SectionWriter writer) throws IOException {
+    if (getHtmlState().isCancel()) {
+      writer.writeTag(
+          "input", "id", getResetId(), "type", "reset", "value", "RESET", "style", "display:none");
+    }
+  }
 
-	@Override
-	protected String getName(SectionInfo info)
-	{
-		return null;
-	}
+  @Override
+  protected String getName(SectionInfo info) {
+    return null;
+  }
 
-	@Override
-	protected void prepareFirstAttributes(SectionWriter writer, Map<String, String> attrs) throws IOException
-	{
-		super.prepareFirstAttributes(writer, attrs);
-		StringWriter swriter = new StringWriter();
-		super.writeMiddle(new SectionWriter(swriter, writer));
-		attrs.put("value", swriter.toString());
-	}
+  @Override
+  protected void prepareFirstAttributes(SectionWriter writer, Map<String, String> attrs)
+      throws IOException {
+    super.prepareFirstAttributes(writer, attrs);
+    StringWriter swriter = new StringWriter();
+    super.writeMiddle(new SectionWriter(swriter, writer));
+    attrs.put("value", swriter.toString());
+  }
 
-	@Override
-	protected void processHandler(SectionWriter writer, Map<String, String> attrs, String event, JSHandler handler)
-	{
-		if( !isStillAddClickHandler() && isDisabled() && JSHandler.EVENT_CLICK.equals(event) )
-		{
-			return;
-		}
-		if( getHtmlState().isCancel() )
-		{
-			super.processHandler(writer, attrs, event, Js.handler(
-				Js.statement(JQuerySelector.methodCallExpression(Type.ID, getResetId(), Js.function("click"))),
-				handler.getStatements()));
-			return;
-		}
-		super.processHandler(writer, attrs, event, handler);
-	}
+  @Override
+  protected void processHandler(
+      SectionWriter writer, Map<String, String> attrs, String event, JSHandler handler) {
+    if (!isStillAddClickHandler() && isDisabled() && JSHandler.EVENT_CLICK.equals(event)) {
+      return;
+    }
+    if (getHtmlState().isCancel()) {
+      super.processHandler(
+          writer,
+          attrs,
+          event,
+          Js.handler(
+              Js.statement(
+                  JQuerySelector.methodCallExpression(Type.ID, getResetId(), Js.function("click"))),
+              handler.getStatements()));
+      return;
+    }
+    super.processHandler(writer, attrs, event, handler);
+  }
 
-	private String getResetId()
-	{
-		return getId() + "_reset";
-	}
+  private String getResetId() {
+    return getId() + "_reset";
+  }
 
-	@Override
-	protected boolean isStillAddClickHandler()
-	{
-		return true;
-	}
+  @Override
+  protected boolean isStillAddClickHandler() {
+    return true;
+  }
 
-	@Override
-	public JSCallable createDisableFunction()
-	{
-		return new DefaultDisableFunction(this);
-	}
+  @Override
+  public JSCallable createDisableFunction() {
+    return new DefaultDisableFunction(this);
+  }
 }

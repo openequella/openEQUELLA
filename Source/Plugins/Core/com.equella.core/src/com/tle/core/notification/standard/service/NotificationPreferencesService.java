@@ -16,27 +16,24 @@
 
 package com.tle.core.notification.standard.service;
 
+import com.google.common.collect.Multimap;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
-import com.google.common.collect.Multimap;
+public interface NotificationPreferencesService {
+  String WATCHED_ITEMDEFS = "watched.item.definitions"; // $NON-NLS-1$
+  String OPTEDOUT_ITEMDEFS = "optedout.item.definitions"; // $NON-NLS-1$
+  String NOTIFICATION_PERIOD = "notification.period"; // $NON-NLS-1$
 
-public interface NotificationPreferencesService
-{
-	String WATCHED_ITEMDEFS = "watched.item.definitions"; //$NON-NLS-1$
-	String OPTEDOUT_ITEMDEFS = "optedout.item.definitions"; //$NON-NLS-1$
-	String NOTIFICATION_PERIOD = "notification.period"; //$NON-NLS-1$
+  Multimap<String, String> getWatchedCollectionMap();
 
-	Multimap<String, String> getWatchedCollectionMap();
+  Set<String> getWatchedCollections();
 
-	Set<String> getWatchedCollections();
+  Set<String> getOptedOutCollections();
 
-	Set<String> getOptedOutCollections();
+  Multimap<String, String> getOptedOutCollectionsForUsers(Collection<String> userUuid);
 
-	Multimap<String, String> getOptedOutCollectionsForUsers(Collection<String> userUuid);
+  void setWatchedCollections(Set<String> watches);
 
-	void setWatchedCollections(Set<String> watches);
-
-	void setOptedOutCollections(Set<String> defs);
+  void setOptedOutCollections(Set<String> defs);
 }

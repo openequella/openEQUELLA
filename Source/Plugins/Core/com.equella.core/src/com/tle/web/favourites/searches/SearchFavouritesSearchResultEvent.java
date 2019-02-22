@@ -23,50 +23,47 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.search.event.AbstractSearchResultsEvent;
 import com.tle.web.sections.equella.search.event.SearchResultsListener;
 
-public class SearchFavouritesSearchResultEvent extends AbstractSearchResultsEvent<SearchFavouritesSearchResultEvent>
-{
-	private final SearchResults<FavouriteSearch> results;
-	private final int filteredOut;
+public class SearchFavouritesSearchResultEvent
+    extends AbstractSearchResultsEvent<SearchFavouritesSearchResultEvent> {
+  private final SearchResults<FavouriteSearch> results;
+  private final int filteredOut;
 
-	public SearchFavouritesSearchResultEvent(SearchResults<FavouriteSearch> results, int filteredOut)
-	{
-		this.results = results;
-		this.filteredOut = filteredOut;
-	}
+  public SearchFavouritesSearchResultEvent(
+      SearchResults<FavouriteSearch> results, int filteredOut) {
+    this.results = results;
+    this.filteredOut = filteredOut;
+  }
 
-	@Override
-	public int getCount()
-	{
-		return results.getCount();
-	}
+  @Override
+  public int getCount() {
+    return results.getCount();
+  }
 
-	@Override
-	public int getMaximumResults()
-	{
-		return results.getAvailable();
-	}
+  @Override
+  public int getMaximumResults() {
+    return results.getAvailable();
+  }
 
-	@Override
-	public int getOffset()
-	{
-		return results.getOffset();
-	}
+  @Override
+  public int getOffset() {
+    return results.getOffset();
+  }
 
-	@Override
-	public void fire(SectionId sectionId, SectionInfo info,
-		SearchResultsListener<SearchFavouritesSearchResultEvent> listener) throws Exception
-	{
-		listener.processResults(info, this);
-	}
+  @Override
+  public void fire(
+      SectionId sectionId,
+      SectionInfo info,
+      SearchResultsListener<SearchFavouritesSearchResultEvent> listener)
+      throws Exception {
+    listener.processResults(info, this);
+  }
 
-	public SearchResults<FavouriteSearch> getResults()
-	{
-		return results;
-	}
+  public SearchResults<FavouriteSearch> getResults() {
+    return results;
+  }
 
-	@Override
-	public int getFilteredOut()
-	{
-		return filteredOut;
-	}
+  @Override
+  public int getFilteredOut() {
+    return filteredOut;
+  }
 }

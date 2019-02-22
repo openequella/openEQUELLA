@@ -16,24 +16,22 @@
 
 package com.tle.core.system.dao;
 
-import java.util.Collection;
-
 import com.tle.beans.DatabaseSchema;
 import com.tle.core.hibernate.dao.GenericDao;
+import java.util.Collection;
 
-public interface DatabaseSchemaDao extends GenericDao<DatabaseSchema, Long>
-{
-	// Nothing yet
+public interface DatabaseSchemaDao extends GenericDao<DatabaseSchema, Long> {
+  // Nothing yet
 
-	Collection<DatabaseSchema> enumerate();
+  Collection<DatabaseSchema> enumerate();
 
-	DatabaseSchema setOnline(long schemaId, boolean online);
+  DatabaseSchema setOnline(long schemaId, boolean online);
 
-	DatabaseSchema get(long schemaId);
+  DatabaseSchema get(long schemaId);
 
-	long add(DatabaseSchema ds);
+  long add(DatabaseSchema ds);
 
-	void edit(DatabaseSchema ds);
+  void edit(DatabaseSchema ds);
 
-	boolean deleteSchema(long schemaId);
+  boolean deleteSchema(long schemaId);
 }

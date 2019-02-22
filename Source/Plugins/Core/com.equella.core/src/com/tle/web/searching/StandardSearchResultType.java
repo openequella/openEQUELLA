@@ -21,18 +21,16 @@ import com.tle.web.itemlist.item.AbstractItemList;
 import com.tle.web.itemlist.item.StandardItemListEntry;
 import com.tle.web.sections.SectionTree;
 
-public interface StandardSearchResultType
-{
-	AbstractItemList<StandardItemListEntry, ?> getCustomItemList();
+public interface StandardSearchResultType {
+  AbstractItemList<StandardItemListEntry, ?> getCustomItemList();
 
-	String getKey();
+  String getKey();
 
-	String getValue();
+  String getValue();
 
-	void register(SectionTree tree, String parentId);
+  void register(SectionTree tree, String parentId);
 
-	void addResultTypeDefaultRestrictions(DefaultSearch defaultSearch);
+  void addResultTypeDefaultRestrictions(DefaultSearch defaultSearch);
 
-	boolean isDisabled();
-
+  boolean isDisabled();
 }

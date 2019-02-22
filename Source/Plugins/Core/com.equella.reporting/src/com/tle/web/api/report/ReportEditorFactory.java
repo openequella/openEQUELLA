@@ -22,12 +22,16 @@ import com.tle.beans.entity.report.Report;
 import com.tle.core.guice.BindFactory;
 
 @BindFactory
-public interface ReportEditorFactory
-{
-    ReportEditorImpl createExistingEditor(@Assisted Report report,
-                                          @Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("lockId") @Nullable String lockId,
-                                          @Assisted("editing") boolean editing, @Assisted("importing") boolean importing);
+public interface ReportEditorFactory {
+  ReportEditorImpl createExistingEditor(
+      @Assisted Report report,
+      @Assisted("stagingUuid") @Nullable String stagingUuid,
+      @Assisted("lockId") @Nullable String lockId,
+      @Assisted("editing") boolean editing,
+      @Assisted("importing") boolean importing);
 
-    ReportEditorImpl createNewEditor(@Assisted Report report, @Assisted("stagingUuid") @Nullable String stagingUuid,
-                                     @Assisted("importing") boolean importing);
+  ReportEditorImpl createNewEditor(
+      @Assisted Report report,
+      @Assisted("stagingUuid") @Nullable String stagingUuid,
+      @Assisted("importing") boolean importing);
 }

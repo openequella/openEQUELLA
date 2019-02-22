@@ -16,8 +16,6 @@
 
 package com.tle.web.mimetypes.search.section;
 
-import javax.inject.Inject;
-
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.searching.SearchResults;
 import com.tle.core.mimetypes.MimeTypeService;
@@ -43,99 +41,95 @@ import com.tle.web.sections.events.js.SubmitValuesFunction;
 import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.js.validators.Confirm;
 import com.tle.web.sections.render.Label;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 public class MimeResultsSection
-	extends
-		AbstractSearchResultsSection<MimeListEntry, MimeSearchEvent, MimeSearchResultEvent, SearchResultsModel>
-{
-	static
-	{
-		PluginResourceHandler.init(AbstractSearchResultsSection.class);
-	}
+    extends AbstractSearchResultsSection<
+        MimeListEntry, MimeSearchEvent, MimeSearchResultEvent, SearchResultsModel> {
+  static {
+    PluginResourceHandler.init(AbstractSearchResultsSection.class);
+  }
 
-	@PlugKey("results.title")
-	private static Label LABEL_RESULTSTITLE;
-	@PlugKey("list.result.deleteconfirm")
-	private static Confirm DELETE_CONFIRM;
-	@PlugKey("list.result.deletereceipt")
-	private static Label LABEL_DELETE_RECEIPT;
+  @PlugKey("results.title")
+  private static Label LABEL_RESULTSTITLE;
 
-	@Inject
-	private MimeListEntrySection list;
-	@Inject
-	private MimeTypeService mimeTypeService;
-	@Inject
-	private MimeListEntryFactory entryFactory;
-	@Inject
-	private ReceiptService receiptService;
+  @PlugKey("list.result.deleteconfirm")
+  private static Confirm DELETE_CONFIRM;
 
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("list.result.deletereceipt")
+  private static Label LABEL_DELETE_RECEIPT;
 
-	private SubmitValuesFunction editFunc;
-	private SubmitValuesFunction deleteFunc;
+  @Inject private MimeListEntrySection list;
+  @Inject private MimeTypeService mimeTypeService;
+  @Inject private MimeListEntryFactory entryFactory;
+  @Inject private ReceiptService receiptService;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @EventFactory private EventGenerator events;
 
-		tree.registerInnerSection(list, id);
+  private SubmitValuesFunction editFunc;
+  private SubmitValuesFunction deleteFunc;
 
-		editFunc = events.getSubmitValuesFunction("edit");
-		deleteFunc = events.getSubmitValuesFunction("delete");
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	protected Label getDefaultResultsTitle(SectionInfo info, MimeSearchEvent searchEvent, MimeSearchResultEvent resultsEvent)
-	{
-		return LABEL_RESULTSTITLE;
-	}
+    tree.registerInnerSection(list, id);
 
-	@Override
-	public MimeSearchEvent createSearchEvent(SectionInfo info)
-	{
-		return new MimeSearchEvent();
-	}
+    editFunc = events.getSubmitValuesFunction("edit");
+    deleteFunc = events.getSubmitValuesFunction("delete");
+  }
 
-	@Override
-	public MimeListEntrySection getItemList(SectionInfo info)
-	{
-		return list;
-	}
+  @Override
+  protected Label getDefaultResultsTitle(
+      SectionInfo info, MimeSearchEvent searchEvent, MimeSearchResultEvent resultsEvent) {
+    return LABEL_RESULTSTITLE;
+  }
 
-	@EventHandlerMethod
-	public void edit(SectionInfo info, long id) throws Exception
-	{
-		MimeTypesEditSection.edit(info, id);
-	}
+  @Override
+  public MimeSearchEvent createSearchEvent(SectionInfo info) {
+    return new MimeSearchEvent();
+  }
 
-	@EventHandlerMethod
-	public void delete(SectionInfo info, long id) throws Exception
-	{
-		mimeTypeService.delete(id);
-		receiptService.setReceipt(LABEL_DELETE_RECEIPT);
-	}
+  @Override
+  public MimeListEntrySection getItemList(SectionInfo info) {
+    return list;
+  }
 
-	@Override
-	protected MimeSearchResultEvent createResultsEvent(SectionInfo info, MimeSearchEvent searchEvent)
-	{
-		MimeTypesSearchResults searchByMimeType = mimeTypeService.searchByMimeType(searchEvent.getQuery(),
-			searchEvent.getOffset(), searchEvent.getCount());
-		return new MimeSearchResultEvent(searchByMimeType);
-	}
+  @EventHandlerMethod
+  public void edit(SectionInfo info, long id) throws Exception {
+    MimeTypesEditSection.edit(info, id);
+  }
 
-	@Override
-	public void processResults(SectionInfo info, MimeSearchResultEvent event)
-	{
-		SearchResults<MimeEntry> results = event.getResults();
+  @EventHandlerMethod
+  public void delete(SectionInfo info, long id) throws Exception {
+    mimeTypeService.delete(id);
+    receiptService.setReceipt(LABEL_DELETE_RECEIPT);
+  }
 
-		for( MimeEntry mime : results.getResults() )
-		{
-			list.addListItem(info, entryFactory.createMimeListEntry(info, mime,
-				new OverrideHandler(editFunc, mime.getId()), !MimeMigrator.EQUELLA_TYPES.contains(mime.getType())
-					? new OverrideHandler(deleteFunc, mime.getId()).addValidator(DELETE_CONFIRM) : null));
-		}
-	}
+  @Override
+  protected MimeSearchResultEvent createResultsEvent(
+      SectionInfo info, MimeSearchEvent searchEvent) {
+    MimeTypesSearchResults searchByMimeType =
+        mimeTypeService.searchByMimeType(
+            searchEvent.getQuery(), searchEvent.getOffset(), searchEvent.getCount());
+    return new MimeSearchResultEvent(searchByMimeType);
+  }
+
+  @Override
+  public void processResults(SectionInfo info, MimeSearchResultEvent event) {
+    SearchResults<MimeEntry> results = event.getResults();
+
+    for (MimeEntry mime : results.getResults()) {
+      list.addListItem(
+          info,
+          entryFactory.createMimeListEntry(
+              info,
+              mime,
+              new OverrideHandler(editFunc, mime.getId()),
+              !MimeMigrator.EQUELLA_TYPES.contains(mime.getType())
+                  ? new OverrideHandler(deleteFunc, mime.getId()).addValidator(DELETE_CONFIRM)
+                  : null));
+    }
+  }
 }

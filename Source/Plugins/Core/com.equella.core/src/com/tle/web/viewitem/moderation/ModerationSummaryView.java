@@ -16,9 +16,6 @@
 
 package com.tle.web.viewitem.moderation;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.tle.beans.item.ItemTaskId;
 import com.tle.core.guice.Bind;
 import com.tle.web.sections.SectionInfo;
@@ -30,29 +27,26 @@ import com.tle.web.viewurl.ViewItemUrlFactory;
 import com.tle.web.workflow.tasks.ModerationService;
 import com.tle.web.workflow.tasks.ModerationView;
 import com.tle.web.workflow.view.CurrentModerationLinkSection;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class ModerationSummaryView implements ModerationView
-{
+public class ModerationSummaryView implements ModerationView {
 
-	@Inject
-	private ViewItemUrlFactory urlFactory;
-	@Inject
-	private ViewableItemFactory viewableItemFactory;
+  @Inject private ViewItemUrlFactory urlFactory;
+  @Inject private ViewableItemFactory viewableItemFactory;
 
-	@Override
-	public SectionInfo getViewForward(SectionInfo info, ItemTaskId itemTaskId, String view)
-	{
-		NewDefaultViewableItem viewable = viewableItemFactory.createNewViewableItem(itemTaskId);
-		ViewItemUrl vurl = urlFactory.createItemUrl(info, viewable);
-		vurl.getQueryString();
-		SectionInfo sinfo = vurl.getSectionInfo();
-		if( view.equals(ModerationService.VIEW_PROGRESS) )
-		{
-			sinfo.lookupSection(CurrentModerationLinkSection.class).execute(sinfo);
-		}
-		sinfo.setAttribute(ItemServlet.VIEWABLE_ITEM, viewable);
-		return sinfo;
-	}
+  @Override
+  public SectionInfo getViewForward(SectionInfo info, ItemTaskId itemTaskId, String view) {
+    NewDefaultViewableItem viewable = viewableItemFactory.createNewViewableItem(itemTaskId);
+    ViewItemUrl vurl = urlFactory.createItemUrl(info, viewable);
+    vurl.getQueryString();
+    SectionInfo sinfo = vurl.getSectionInfo();
+    if (view.equals(ModerationService.VIEW_PROGRESS)) {
+      sinfo.lookupSection(CurrentModerationLinkSection.class).execute(sinfo);
+    }
+    sinfo.setAttribute(ItemServlet.VIEWABLE_ITEM, viewable);
+    return sinfo;
+  }
 }

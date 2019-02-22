@@ -16,17 +16,16 @@
 
 package com.tle.core.item.edit.attachment;
 
-public interface AttachmentEditor
-{
-	void editDescription(String description);
+public interface AttachmentEditor {
+  void editDescription(String description);
 
-	void editViewer(String viewer);
+  void editViewer(String viewer);
 
-	void editPreview(boolean preview);
+  void editPreview(boolean preview);
 
-	String getAttachmentUuid();
+  String getAttachmentUuid();
 
-	void editRestricted(boolean restricted);
+  void editRestricted(boolean restricted);
 
-	void editThumbnail(String thumbnail);
+  void editThumbnail(String thumbnail);
 }

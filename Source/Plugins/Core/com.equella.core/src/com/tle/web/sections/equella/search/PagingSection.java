@@ -16,8 +16,6 @@
 
 package com.tle.web.sections.equella.search;
 
-import javax.inject.Inject;
-
 import com.tle.common.settings.standard.SearchSettings;
 import com.tle.core.services.user.UserPreferenceService;
 import com.tle.core.settings.service.ConfigurationService;
@@ -45,306 +43,261 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.SimpleHtmlListModel;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
+import javax.inject.Inject;
 
 @TreeIndexed
-public class PagingSection<E extends AbstractSearchEvent<E>, RE extends AbstractSearchResultsEvent<RE>>
-	extends
-		AbstractPrototypeSection<PagingSection.PagingModel>
-	implements
-		SearchEventListener<E>,
-		SearchResultsListener<RE>,
-		BlueBarEventListener
-{
+public class PagingSection<
+        E extends AbstractSearchEvent<E>, RE extends AbstractSearchResultsEvent<RE>>
+    extends AbstractPrototypeSection<PagingSection.PagingModel>
+    implements SearchEventListener<E>, SearchResultsListener<RE>, BlueBarEventListener {
 
-	@PlugKey("search.resultsshowing")
-	private static String KEY_SHOWING;
-	@PlugKey("pager.topbar.label")
-	private static Label LABEL_PERPAGE;
-	@PlugKey("pager.topbar.label.searchattachment")
-	private static Label LABEL_ATTACHMENT_SEARCH;
-	@PlugKey("pager.options.")
-	protected static String PER_PAGE_PFX;
+  @PlugKey("search.resultsshowing")
+  private static String KEY_SHOWING;
 
-	@Component
-	private Checkbox attachmentSearch;
-	@Component(parameter = "page")
-	private Pager pager;
-	@Component(name = "pp", stateful = true)
-	private SingleSelectionList<PerPageOption> perPage;
-	private boolean editPerPage = true;
-	private int maxPagesShown = 10;
-	private int defaultPerPage = 10;
-	private boolean searchAttachments = false;
+  @PlugKey("pager.topbar.label")
+  private static Label LABEL_PERPAGE;
 
-	@Inject
-	private UserPreferenceService userPrefs;
-	@Inject
-	private ConfigurationService configConstants;
+  @PlugKey("pager.topbar.label.searchattachment")
+  private static Label LABEL_ATTACHMENT_SEARCH;
 
-	private boolean renderScreenOptions = true;
+  @PlugKey("pager.options.")
+  protected static String PER_PAGE_PFX;
 
-	public void setRenderScreenOptions(boolean renderScreenOptions)
-	{
-		this.renderScreenOptions = renderScreenOptions;
-	}
+  @Component private Checkbox attachmentSearch;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		perPage.setListModel(getPerPageListModel());
-		perPage.setAlwaysSelect(true);
-	}
+  @Component(parameter = "page")
+  private Pager pager;
 
-	protected SimpleHtmlListModel<PerPageOption> getPerPageListModel()
-	{
-		return new EnumListModel<PerPageOption>(PER_PAGE_PFX, true, PerPageOption.values());
-	}
+  @Component(name = "pp", stateful = true)
+  private SingleSelectionList<PerPageOption> perPage;
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new PagingModel();
-	}
+  private boolean editPerPage = true;
+  private int maxPagesShown = 10;
+  private int defaultPerPage = 10;
+  private boolean searchAttachments = false;
 
-	public static class PagingModel
-	{
-		private AbstractSearchResultsEvent<?> resultsEvent;
-		private boolean galleryOptions;
-		private boolean videoGallery;
+  @Inject private UserPreferenceService userPrefs;
+  @Inject private ConfigurationService configConstants;
 
-		public boolean isGalleryOptions()
-		{
-			return galleryOptions;
-		}
+  private boolean renderScreenOptions = true;
 
-		public void setGalleryOptions(boolean galleryOptions)
-		{
-			this.galleryOptions = galleryOptions;
-		}
+  public void setRenderScreenOptions(boolean renderScreenOptions) {
+    this.renderScreenOptions = renderScreenOptions;
+  }
 
-		public AbstractSearchResultsEvent<?> getResultsEvent()
-		{
-			return resultsEvent;
-		}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    perPage.setListModel(getPerPageListModel());
+    perPage.setAlwaysSelect(true);
+  }
 
-		public void setResultsEvent(AbstractSearchResultsEvent<?> resultsEvent)
-		{
-			this.resultsEvent = resultsEvent;
-		}
+  protected SimpleHtmlListModel<PerPageOption> getPerPageListModel() {
+    return new EnumListModel<PerPageOption>(PER_PAGE_PFX, true, PerPageOption.values());
+  }
 
-		public boolean isVideoGallery()
-		{
-			return videoGallery;
-		}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new PagingModel();
+  }
 
-		public void setVideoGallery(boolean videoGallery)
-		{
-			this.videoGallery = videoGallery;
-		}
-	}
+  public static class PagingModel {
+    private AbstractSearchResultsEvent<?> resultsEvent;
+    private boolean galleryOptions;
+    private boolean videoGallery;
 
-	public Label getResultsText(SectionInfo info)
-	{
-		AbstractSearchResultsEvent<?> event = getModel(info).getResultsEvent();
-		if( event != null )
-		{
-			return new KeyLabel(KEY_SHOWING, event.getOffset() + 1, event.getCount() + event.getOffset(),
-				event.getMaximumResults());
-		}
-		return null;
-	}
+    public boolean isGalleryOptions() {
+      return galleryOptions;
+    }
 
-	@Override
-	public void prepareSearch(SectionInfo info, E event) throws Exception
-	{
-		int currentPage = getPager().getCurrentPage(info);
-		if( currentPage <= 0 )
-		{
-			currentPage = 1;
-		}
-		int page = getPerPage(info);
-		event.setOffset((currentPage - 1) * page);
-		event.setCount(page);
-	}
+    public void setGalleryOptions(boolean galleryOptions) {
+      this.galleryOptions = galleryOptions;
+    }
 
-	@Override
-	public void processResults(SectionInfo info, RE results)
-	{
-		int maximumResults = results.getMaximumResults();
+    public AbstractSearchResultsEvent<?> getResultsEvent() {
+      return resultsEvent;
+    }
 
-		int page = getPerPage(info);
-		Pager pgr = getPager();
-		if( pgr.getCurrentPage(info) <= 0 )
-		{
-			pgr.setCurrentPage(info, 1);
-		}
-		pgr.setup(info, ((maximumResults - 1) / page) + 1, maxPagesShown);
-		getModel(info).setResultsEvent(results);
-	}
+    public void setResultsEvent(AbstractSearchResultsEvent<?> resultsEvent) {
+      this.resultsEvent = resultsEvent;
+    }
 
-	protected int getPerPage(SectionInfo info)
-	{
-		if( editPerPage )
-		{
-			PerPageOption val = perPage.getSelectedValue(info);
-			if( getModel(info).isGalleryOptions() )
-			{
-				return val.gallery;
-			}
-			else if( getModel(info).isVideoGallery() )
-			{
-				return val.video;
-			}
-			else
-			{
-				return val.standard;
-			}
+    public boolean isVideoGallery() {
+      return videoGallery;
+    }
 
-		}
-		return defaultPerPage;
-	}
+    public void setVideoGallery(boolean videoGallery) {
+      this.videoGallery = videoGallery;
+    }
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public void addBlueBarResults(RenderContext context, BlueBarEvent event)
-	{
-		if( !renderScreenOptions )
-		{
-			return;
-		}
+  public Label getResultsText(SectionInfo info) {
+    AbstractSearchResultsEvent<?> event = getModel(info).getResultsEvent();
+    if (event != null) {
+      return new KeyLabel(
+          KEY_SHOWING,
+          event.getOffset() + 1,
+          event.getCount() + event.getOffset(),
+          event.getMaximumResults());
+    }
+    return null;
+  }
 
-		if( userPrefs.isSearchAttachment() )
-		{
-			attachmentSearch.setChecked(context, true);
-		}
+  @Override
+  public void prepareSearch(SectionInfo info, E event) throws Exception {
+    int currentPage = getPager().getCurrentPage(info);
+    if (currentPage <= 0) {
+      currentPage = 1;
+    }
+    int page = getPerPage(info);
+    event.setOffset((currentPage - 1) * page);
+    event.setCount(page);
+  }
 
-		event.addScreenOptions(new SettingsRenderer(LABEL_PERPAGE, renderSection(context, perPage), "screen-option"));
-		SearchSettings searchingSettings = getSearchSettings();
-		if( isSearchAttachments() && searchingSettings.getAttachmentBoost() != 0 )
-		{
-			event.addScreenOptions(new SettingsRenderer(LABEL_ATTACHMENT_SEARCH,
-				renderSection(context, attachmentSearch), "screen-option"));
-		}
-	}
+  @Override
+  public void processResults(SectionInfo info, RE results) {
+    int maximumResults = results.getMaximumResults();
 
-	private SearchSettings getSearchSettings()
-	{
-		return configConstants.getProperties(new SearchSettings());
-	}
+    int page = getPerPage(info);
+    Pager pgr = getPager();
+    if (pgr.getCurrentPage(info) <= 0) {
+      pgr.setCurrentPage(info, 1);
+    }
+    pgr.setup(info, ((maximumResults - 1) / page) + 1, maxPagesShown);
+    getModel(info).setResultsEvent(results);
+  }
 
-	public Pager getPager()
-	{
-		return pager;
-	}
+  protected int getPerPage(SectionInfo info) {
+    if (editPerPage) {
+      PerPageOption val = perPage.getSelectedValue(info);
+      if (getModel(info).isGalleryOptions()) {
+        return val.gallery;
+      } else if (getModel(info).isVideoGallery()) {
+        return val.video;
+      } else {
+        return val.standard;
+      }
+    }
+    return defaultPerPage;
+  }
 
-	public void resetToFirst(SectionInfo info)
-	{
-		getPager().setCurrentPage(info, 1);
-	}
+  @SuppressWarnings("nls")
+  @Override
+  public void addBlueBarResults(RenderContext context, BlueBarEvent event) {
+    if (!renderScreenOptions) {
+      return;
+    }
 
-	public interface PerPageCallback
-	{
-		int getPerPage(SectionInfo info);
-	}
+    if (userPrefs.isSearchAttachment()) {
+      attachmentSearch.setChecked(context, true);
+    }
 
-	public void setMaxPagesShown(int maxPagesShown)
-	{
-		this.maxPagesShown = maxPagesShown;
-	}
+    event.addScreenOptions(
+        new SettingsRenderer(LABEL_PERPAGE, renderSection(context, perPage), "screen-option"));
+    SearchSettings searchingSettings = getSearchSettings();
+    if (isSearchAttachments() && searchingSettings.getAttachmentBoost() != 0) {
+      event.addScreenOptions(
+          new SettingsRenderer(
+              LABEL_ATTACHMENT_SEARCH, renderSection(context, attachmentSearch), "screen-option"));
+    }
+  }
 
-	public int getDefaultPerPage()
-	{
-		return defaultPerPage;
-	}
+  private SearchSettings getSearchSettings() {
+    return configConstants.getProperties(new SearchSettings());
+  }
 
-	public void setDefaultPerPage(int defaultPerPage)
-	{
-		this.defaultPerPage = defaultPerPage;
-	}
+  public Pager getPager() {
+    return pager;
+  }
 
-	public int getMaxPagesShown()
-	{
-		return maxPagesShown;
-	}
+  public void resetToFirst(SectionInfo info) {
+    getPager().setCurrentPage(info, 1);
+  }
 
-	public boolean isResultsAvailable(SectionInfo info)
-	{
-		final AbstractSearchResultsEvent<?> resultsEvent = getModel(info).getResultsEvent();
-		return resultsEvent != null && resultsEvent.getCount() > 0;
-	}
+  public interface PerPageCallback {
+    int getPerPage(SectionInfo info);
+  }
 
-	public void setChangeHandlers(JSCallable pagechange, JSCallable perPageCall, JSCallable checkBoxCall)
-	{
-		getPager().setEventHandler(JSHandler.EVENT_CHANGE, new StatementHandler(pagechange));
-		perPage.setEventHandler(JSHandler.EVENT_CHANGE, new StatementHandler(perPageCall));
-		SearchSettings searchingSettings = getSearchSettings();
-		if( searchingSettings.getAttachmentBoost() != 0 )
-		{
-			attachmentSearch.setEventHandler(JSHandler.EVENT_CHANGE, new StatementHandler(checkBoxCall));
-		}
-	}
+  public void setMaxPagesShown(int maxPagesShown) {
+    this.maxPagesShown = maxPagesShown;
+  }
 
-	public void toggleDisabled(SectionInfo info)
-	{
-		if( userPrefs.isSearchAttachment() )
-		{
-			userPrefs.setSearchAttachment(false);
-		}
-		else
-		{
-			userPrefs.setSearchAttachment(true);
-		}
-	}
+  public int getDefaultPerPage() {
+    return defaultPerPage;
+  }
 
-	public boolean isEditPerPage()
-	{
-		return editPerPage;
-	}
+  public void setDefaultPerPage(int defaultPerPage) {
+    this.defaultPerPage = defaultPerPage;
+  }
 
-	public void setEditPerPage(boolean editPerPage)
-	{
-		this.editPerPage = editPerPage;
-	}
+  public int getMaxPagesShown() {
+    return maxPagesShown;
+  }
 
-	public void setIsGalleryOptions(SectionInfo info, boolean galleryOptions)
-	{
-		getModel(info).setGalleryOptions(galleryOptions);
-	}
+  public boolean isResultsAvailable(SectionInfo info) {
+    final AbstractSearchResultsEvent<?> resultsEvent = getModel(info).getResultsEvent();
+    return resultsEvent != null && resultsEvent.getCount() > 0;
+  }
 
-	public void setIsVideoGallery(SectionInfo info, boolean videoGallery)
-	{
-		getModel(info).setVideoGallery(videoGallery);
-	}
+  public void setChangeHandlers(
+      JSCallable pagechange, JSCallable perPageCall, JSCallable checkBoxCall) {
+    getPager().setEventHandler(JSHandler.EVENT_CHANGE, new StatementHandler(pagechange));
+    perPage.setEventHandler(JSHandler.EVENT_CHANGE, new StatementHandler(perPageCall));
+    SearchSettings searchingSettings = getSearchSettings();
+    if (searchingSettings.getAttachmentBoost() != 0) {
+      attachmentSearch.setEventHandler(JSHandler.EVENT_CHANGE, new StatementHandler(checkBoxCall));
+    }
+  }
 
-	public boolean isSearchAttachments()
-	{
-		return searchAttachments;
-	}
+  public void toggleDisabled(SectionInfo info) {
+    if (userPrefs.isSearchAttachment()) {
+      userPrefs.setSearchAttachment(false);
+    } else {
+      userPrefs.setSearchAttachment(true);
+    }
+  }
 
-	public void setSearchAttachments(boolean searchAttachments)
-	{
-		this.searchAttachments = searchAttachments;
-	}
+  public boolean isEditPerPage() {
+    return editPerPage;
+  }
 
-	public SingleSelectionList<PerPageOption> getPerPage()
-	{
-		return perPage;
-	}
+  public void setEditPerPage(boolean editPerPage) {
+    this.editPerPage = editPerPage;
+  }
 
-	protected static enum PerPageOption
-	{
-		MIN(10, 30, 30), MIDDLE(50, 60, 60), MAX(100, 90, 90);
+  public void setIsGalleryOptions(SectionInfo info, boolean galleryOptions) {
+    getModel(info).setGalleryOptions(galleryOptions);
+  }
 
-		public int standard;
-		public int gallery;
-		public int video;
+  public void setIsVideoGallery(SectionInfo info, boolean videoGallery) {
+    getModel(info).setVideoGallery(videoGallery);
+  }
 
-		private PerPageOption(int standard, int gallery, int video)
-		{
-			this.standard = standard;
-			this.gallery = gallery;
-			this.video = video;
-		}
-	}
+  public boolean isSearchAttachments() {
+    return searchAttachments;
+  }
+
+  public void setSearchAttachments(boolean searchAttachments) {
+    this.searchAttachments = searchAttachments;
+  }
+
+  public SingleSelectionList<PerPageOption> getPerPage() {
+    return perPage;
+  }
+
+  protected static enum PerPageOption {
+    MIN(10, 30, 30),
+    MIDDLE(50, 60, 60),
+    MAX(100, 90, 90);
+
+    public int standard;
+    public int gallery;
+    public int video;
+
+    private PerPageOption(int standard, int gallery, int video) {
+      this.standard = standard;
+      this.gallery = gallery;
+      this.video = video;
+    }
+  }
 }

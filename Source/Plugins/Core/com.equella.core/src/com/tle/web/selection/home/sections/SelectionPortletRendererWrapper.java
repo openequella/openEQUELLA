@@ -30,62 +30,54 @@ import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.annotations.Component;
 
 @SuppressWarnings("nls")
-public class SelectionPortletRendererWrapper extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	@Component(register = false)
-	private Box box;
+public class SelectionPortletRendererWrapper extends AbstractPrototypeSection<Object>
+    implements HtmlRenderer {
+  @Component(register = false)
+  private Box box;
 
-	private String portletNameKey;
-	private String portletType;
+  private String portletNameKey;
+  private String portletType;
 
-	@Override
-	public final SectionResult renderHtml(RenderEventContext context)
-	{
-		if( !SectionUtils.canViewChildren(context, this) )
-		{
-			return null;
-		}
+  @Override
+  public final SectionResult renderHtml(RenderEventContext context) {
+    if (!SectionUtils.canViewChildren(context, this)) {
+      return null;
+    }
 
-		NestedRenderable result = (NestedRenderable) SectionUtils.renderSectionResult(context, box);
-		result.setNestedRenderable((SectionRenderable) renderFirstResult(context));
-		return result;
-	}
+    NestedRenderable result = (NestedRenderable) SectionUtils.renderSectionResult(context, box);
+    result.setNestedRenderable((SectionRenderable) renderFirstResult(context));
+    return result;
+  }
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		tree.registerInnerSection(box, id);
+    tree.registerInnerSection(box, id);
 
-		box.setLabel(getBoxLabel());
-		box.setNoMinMaxOnHeader(true);
-		box.setStyleClass("portlet_" + portletType + "_content");
-	}
+    box.setLabel(getBoxLabel());
+    box.setNoMinMaxOnHeader(true);
+    box.setStyleClass("portlet_" + portletType + "_content");
+  }
 
-	protected Label getBoxLabel()
-	{
-		return new KeyLabel(portletNameKey);
-	}
+  protected Label getBoxLabel() {
+    return new KeyLabel(portletNameKey);
+  }
 
-	public void setPortletNameKey(String portletNameKey)
-	{
-		this.portletNameKey = portletNameKey;
-	}
+  public void setPortletNameKey(String portletNameKey) {
+    this.portletNameKey = portletNameKey;
+  }
 
-	public void setPortletType(String portletType)
-	{
-		this.portletType = portletType;
-	}
+  public void setPortletType(String portletType) {
+    this.portletType = portletType;
+  }
 
-	public Box getBox()
-	{
-		return box;
-	}
+  public Box getBox() {
+    return box;
+  }
 
-	@Override
-	public Class<Object> getModelClass()
-	{
-		return Object.class;
-	}
+  @Override
+  public Class<Object> getModelClass() {
+    return Object.class;
+  }
 }

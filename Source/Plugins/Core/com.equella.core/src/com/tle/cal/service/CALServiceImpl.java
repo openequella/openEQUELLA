@@ -16,15 +16,6 @@
 
 package com.tle.cal.service;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.Constants;
 import com.tle.beans.activation.ActivateRequest;
@@ -43,116 +34,106 @@ import com.tle.core.copyright.exception.CopyrightViolationException;
 import com.tle.core.copyright.service.AbstractCopyrightService;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.service.ItemService;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Bind(CALService.class)
 @Singleton
-public class CALServiceImpl extends AbstractCopyrightService<CALHolding, CALPortion, CALSection> implements CALService
-{
-	private final CALDao calDao;
+public class CALServiceImpl extends AbstractCopyrightService<CALHolding, CALPortion, CALSection>
+    implements CALService {
+  private final CALDao calDao;
 
-	@Inject
-	private CitationGenerator citationGen;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private ActivateRequestDao requestDao;
-	@Inject
-	private ActivationService activationService;
+  @Inject private CitationGenerator citationGen;
+  @Inject private ItemService itemService;
+  @Inject private ActivateRequestDao requestDao;
+  @Inject private ActivationService activationService;
 
-	@Inject
-	public CALServiceImpl(CALDao calDao)
-	{
-		super(calDao);
-		this.calDao = calDao;
-	}
+  @Inject
+  public CALServiceImpl(CALDao calDao) {
+    super(calDao);
+    this.calDao = calDao;
+  }
 
-	@Override
-	public String getActivationType()
-	{
-		return CALConstants.ACTIVATION_TYPE;
-	}
+  @Override
+  public String getActivationType() {
+    return CALConstants.ACTIVATION_TYPE;
+  }
 
-	@Override
-	protected String getEnabledAttribute()
-	{
-		return CALConstants.ENABLED;
-	}
+  @Override
+  protected String getEnabledAttribute() {
+    return CALConstants.ENABLED;
+  }
 
-	@Override
-	protected String getAgreementFileAttribute()
-	{
-		return CALConstants.AGREEMENTFILE;
-	}
+  @Override
+  protected String getAgreementFileAttribute() {
+    return CALConstants.AGREEMENTFILE;
+  }
 
-	@Override
-	protected String getHasAgreementAttribute()
-	{
-		return CALConstants.HASAGREEMENT;
-	}
+  @Override
+  protected String getHasAgreementAttribute() {
+    return CALConstants.HASAGREEMENT;
+  }
 
-	@Override
-	protected String getInactiveErrorAttribute()
-	{
-		return CALConstants.INACTIVEERROR;
-	}
+  @Override
+  protected String getInactiveErrorAttribute() {
+    return CALConstants.INACTIVEERROR;
+  }
 
-	@Override
-	@Transactional(propagation = Propagation.MANDATORY)
-	public void validateHolding(CALHolding holding, boolean ignoreOverrides, boolean skipPercentage)
-	{
-		List<Item> items = calDao.getAllItemsForHolding(holding);
-		List<ActivateRequest> requests = requestDao.getAllRequestsForItems(getActivationType(), items);
-		ensureStates(requests);
+  @Override
+  @Transactional(propagation = Propagation.MANDATORY)
+  public void validateHolding(CALHolding holding, boolean ignoreOverrides, boolean skipPercentage) {
+    List<Item> items = calDao.getAllItemsForHolding(holding);
+    List<ActivateRequest> requests = requestDao.getAllRequestsForItems(getActivationType(), items);
+    ensureStates(requests);
 
-		CALValidation validator = new CALValidation(holding, requests, activationService);
-		Map<String, String> holdingAttrs = holding.getItem().getItemDefinition().getAttributes();
-		validator.setPerCourseValidation(Boolean.valueOf(holdingAttrs.get(CALConstants.HAS_PERCOURSE_VALIDATION)));
-		validator.setIgnoreOverrides(ignoreOverrides);
-		validator.setSkipPercentage(skipPercentage);
-		validator.setRestrictiveValidation(Boolean.valueOf(holdingAttrs.get(CALConstants.HAS_RESTRICTIVE_VALIDATION)));
-		String percentage = holdingAttrs.get(CALConstants.KEY_PERCENTAGE_REQUIREMENT);
-		if (percentage != null) {
-			validator.setPercentageRequirement(Float.valueOf(percentage));
-		}
-		if( !validator.isValid() )
-		{
-			LanguageBundle calError = LangUtils.getBundleFromXmlString(holdingAttrs.get(CALConstants.ACTIVATIONERROR));
-			CopyrightViolationException cve = new CopyrightViolationException(calError);
-			cve.setCALBookPercentageException(validator.causedByBookPercentageException());
-			throw cve;
-		}
-	}
+    CALValidation validator = new CALValidation(holding, requests, activationService);
+    Map<String, String> holdingAttrs = holding.getItem().getItemDefinition().getAttributes();
+    validator.setPerCourseValidation(
+        Boolean.valueOf(holdingAttrs.get(CALConstants.HAS_PERCOURSE_VALIDATION)));
+    validator.setIgnoreOverrides(ignoreOverrides);
+    validator.setSkipPercentage(skipPercentage);
+    validator.setRestrictiveValidation(
+        Boolean.valueOf(holdingAttrs.get(CALConstants.HAS_RESTRICTIVE_VALIDATION)));
+    String percentage = holdingAttrs.get(CALConstants.KEY_PERCENTAGE_REQUIREMENT);
+    if (percentage != null) {
+      validator.setPercentageRequirement(Float.valueOf(percentage));
+    }
+    if (!validator.isValid()) {
+      LanguageBundle calError =
+          LangUtils.getBundleFromXmlString(holdingAttrs.get(CALConstants.ACTIVATIONERROR));
+      CopyrightViolationException cve = new CopyrightViolationException(calError);
+      cve.setCALBookPercentageException(validator.causedByBookPercentageException());
+      throw cve;
+    }
+  }
 
+  @Transactional
+  @Override
+  public String citate(CALHolding holding, CALPortion portion) {
+    String citation = Constants.BLANK;
 
-	@Transactional
-	@Override
-	public String citate(CALHolding holding, CALPortion portion)
-	{
-		String citation = Constants.BLANK;
+    Item item = holding.getItem();
+    PropBagEx holdingXml = itemService.getItemXmlPropBag(item);
+    PropBagEx copyrightXml = holdingXml.getSubtree("item/copyright"); // $NON-NLS-1$
 
-		Item item = holding.getItem();
-		PropBagEx holdingXml = itemService.getItemXmlPropBag(item);
-		PropBagEx copyrightXml = holdingXml.getSubtree("item/copyright"); //$NON-NLS-1$
+    String type = holding.getType();
 
-		String type = holding.getType();
+    if (type.equals(CALConstants.BOOK)) {
+      citation = citationGen.citeBookPortion(holding, portion, copyrightXml, null);
+    } else if (type.equals(CALConstants.JOURNAL)) {
+      citation = citationGen.citeJournalPortion(holding, portion, copyrightXml, null);
+    }
 
-		if( type.equals(CALConstants.BOOK) )
-		{
-			citation = citationGen.citeBookPortion(holding, portion, copyrightXml, null);
-		}
-		else if( type.equals(CALConstants.JOURNAL) )
-		{
-			citation = citationGen.citeJournalPortion(holding, portion, copyrightXml, null);
-		}
+    return citation;
+  }
 
-		return citation;
-	}
-
-	@Override
-	@Transactional(propagation = Propagation.MANDATORY)
-	public void validateItem(Item item, boolean ignoreOverrides, boolean skipPercentage)
-	{
-		validateHolding(getHoldingForItem(item), ignoreOverrides, skipPercentage);
-	}
-
+  @Override
+  @Transactional(propagation = Propagation.MANDATORY)
+  public void validateItem(Item item, boolean ignoreOverrides, boolean skipPercentage) {
+    validateHolding(getHoldingForItem(item), ignoreOverrides, skipPercentage);
+  }
 }

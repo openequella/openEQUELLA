@@ -21,7 +21,6 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewitem.attachments.AttachmentView;
 
 @NonNullByDefault
-public interface AttachmentViewFilter
-{
-	boolean shouldBeDisplayed(SectionInfo info, AttachmentView attachmentView);
+public interface AttachmentViewFilter {
+  boolean shouldBeDisplayed(SectionInfo info, AttachmentView attachmentView);
 }

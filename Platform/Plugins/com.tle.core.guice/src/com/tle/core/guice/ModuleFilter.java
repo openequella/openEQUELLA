@@ -16,11 +16,9 @@
 
 package com.tle.core.guice;
 
+import com.google.inject.Module;
 import java.util.List;
 
-import com.google.inject.Module;
-
-public interface ModuleFilter
-{
-	List<Module> filterModules(List<Module> modules);
+public interface ModuleFilter {
+  List<Module> filterModules(List<Module> modules);
 }

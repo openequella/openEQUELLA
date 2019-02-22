@@ -16,102 +16,89 @@
 
 package com.tle.core.connectors.brightspace.beans;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @XmlRootElement
-public class CourseOffering
-{
-	@JsonProperty("Identifier")
-	private String id;
-	@JsonProperty("Name")
-	private String name;
-	@JsonProperty("Code")
-	private String code;
-	@JsonProperty("IsActive")
-	private Boolean active;
-	@JsonProperty("Path")
-	private String path;
-	@JsonProperty("StartDate")
-	private String startDate;
-	@JsonProperty("EndDate")
-	private String endDate;
-	//@JsonProperty("CourseTemplate")
-	//@JsonProperty("Semester")
-	//@JsonProperty("Department")
+public class CourseOffering {
+  @JsonProperty("Identifier")
+  private String id;
 
-	public String getId()
-	{
-		return id;
-	}
+  @JsonProperty("Name")
+  private String name;
 
-	public void setId(String id)
-	{
-		this.id = id;
-	}
+  @JsonProperty("Code")
+  private String code;
 
-	public String getName()
-	{
-		return name;
-	}
+  @JsonProperty("IsActive")
+  private Boolean active;
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  @JsonProperty("Path")
+  private String path;
 
-	public String getCode()
-	{
-		return code;
-	}
+  @JsonProperty("StartDate")
+  private String startDate;
 
-	public void setCode(String code)
-	{
-		this.code = code;
-	}
+  @JsonProperty("EndDate")
+  private String endDate;
+  // @JsonProperty("CourseTemplate")
+  // @JsonProperty("Semester")
+  // @JsonProperty("Department")
 
-	public Boolean getActive()
-	{
-		return active;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public void setActive(Boolean active)
-	{
-		this.active = active;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public String getPath()
-	{
-		return path;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setPath(String path)
-	{
-		this.path = path;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public String getStartDate()
-	{
-		return startDate;
-	}
+  public String getCode() {
+    return code;
+  }
 
-	public void setStartDate(String startDate)
-	{
-		this.startDate = startDate;
-	}
+  public void setCode(String code) {
+    this.code = code;
+  }
 
-	public String getEndDate()
-	{
-		return endDate;
-	}
+  public Boolean getActive() {
+    return active;
+  }
 
-	public void setEndDate(String endDate)
-	{
-		this.endDate = endDate;
-	}
+  public void setActive(Boolean active) {
+    this.active = active;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
+  }
+
+  public String getStartDate() {
+    return startDate;
+  }
+
+  public void setStartDate(String startDate) {
+    this.startDate = startDate;
+  }
+
+  public String getEndDate() {
+    return endDate;
+  }
+
+  public void setEndDate(String endDate) {
+    this.endDate = endDate;
+  }
 }

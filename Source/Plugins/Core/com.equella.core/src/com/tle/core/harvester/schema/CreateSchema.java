@@ -16,8 +16,6 @@
 
 package com.tle.core.harvester.schema;
 
-import javax.inject.Singleton;
-
 import com.tle.beans.Institution;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.LanguageBundle;
@@ -32,31 +30,36 @@ import com.tle.core.hibernate.impl.TablesOnlyFilter;
 import com.tle.core.migration.AbstractCreateMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.plugins.AbstractPluginService;
+import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class CreateSchema extends AbstractCreateMigration
-{
-	protected static final String KEY_PFX = AbstractPluginService.getMyPluginId(AbstractHarvesterProtocol.class)+".";
+public class CreateSchema extends AbstractCreateMigration {
+  protected static final String KEY_PFX =
+      AbstractPluginService.getMyPluginId(AbstractHarvesterProtocol.class) + ".";
 
-	@Override
-	protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper)
-	{
-		return new TablesOnlyFilter("harvester_profile"); //$NON-NLS-1$
-	}
+  @Override
+  protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
+    return new TablesOnlyFilter("harvester_profile"); // $NON-NLS-1$
+  }
 
-	@Override
-	protected Class<?>[] getDomainClasses()
-	{
-		return new Class<?>[]{HarvesterProfile.class, BaseEntity.class, LanguageBundle.class, Institution.class,
-				LanguageString.class, ItemdefBlobs.class, BaseEntity.Attribute.class};
-	}
+  @Override
+  protected Class<?>[] getDomainClasses() {
+    return new Class<?>[] {
+      HarvesterProfile.class,
+      BaseEntity.class,
+      LanguageBundle.class,
+      Institution.class,
+      LanguageString.class,
+      ItemdefBlobs.class,
+      BaseEntity.Attribute.class
+    };
+  }
 
-	@Override
-	public MigrationInfo createMigrationInfo()
-	{
-		return new MigrationInfo(KEY_PFX + "harvester.migration.title", //$NON-NLS-1$
-			"com.tle.core.harvester.description"); //$NON-NLS-1$
-	}
-
+  @Override
+  public MigrationInfo createMigrationInfo() {
+    return new MigrationInfo(
+        KEY_PFX + "harvester.migration.title", // $NON-NLS-1$
+        "com.tle.core.harvester.description"); //$NON-NLS-1$
+  }
 }

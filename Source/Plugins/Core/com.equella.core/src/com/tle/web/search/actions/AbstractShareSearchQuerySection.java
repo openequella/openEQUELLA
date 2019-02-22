@@ -16,13 +16,6 @@
 
 package com.tle.web.search.actions;
 
-import java.text.MessageFormat;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import javax.inject.Inject;
-import javax.mail.internet.AddressException;
-
 import com.google.common.base.Strings;
 import com.tle.annotation.Nullable;
 import com.tle.common.i18n.CurrentLocale;
@@ -55,205 +48,181 @@ import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.viewurl.ViewItemUrlFactory;
+import java.text.MessageFormat;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import javax.inject.Inject;
+import javax.mail.internet.AddressException;
 
 @SuppressWarnings("nls")
 public abstract class AbstractShareSearchQuerySection
-	extends
-		AbstractPrototypeSection<AbstractShareSearchQuerySection.ShareSearchModel>
-{
-	protected static final int RESULTS_CAP = 50;
+    extends AbstractPrototypeSection<AbstractShareSearchQuerySection.ShareSearchModel> {
+  protected static final int RESULTS_CAP = 50;
 
-	@PlugKey("actions.share.dialog.email.subject")
-	protected static String SUBJECT_KEY;
-	@PlugKey("unknown.user")
-	protected static String UNKNOWN_USER;
+  @PlugKey("actions.share.dialog.email.subject")
+  protected static String SUBJECT_KEY;
 
-	@PlugKey("actions.share.dialog.email.validation.nonblank")
-	protected static Label BLANK_EMAIL_LABEL;
-	@PlugKey("actions.share.dialog.email.receipt")
-	protected static Label RECEIPT_LABEL_OK;
-	@PlugKey("actions.share.dialog.email.failreceipt")
-	protected static Label RECEIPT_LABEL_FAIL;
-	@PlugKey("actions.share.dialog.email.validation.format")
-	protected static Label VALIDATION_EMAIL_FORMAT_LABEL;
+  @PlugKey("unknown.user")
+  protected static String UNKNOWN_USER;
 
-	@Inject
-	protected FeedServlet feedServlet;
-	@Inject
-	protected ItemService itemService;
-	@Inject
-	protected InstitutionService institutionService;
-	@Inject
-	protected ViewItemUrlFactory urlFactory;
-	@Inject
-	protected UserService userService;
-	@Inject
-	protected FreeTextService freeTextService;
-	@Inject
-	protected RunAsUser runAsUser;
-	@Inject
-	protected ReceiptService receiptService;
-	@Inject
-	protected EmailService emailService;
+  @PlugKey("actions.share.dialog.email.validation.nonblank")
+  protected static Label BLANK_EMAIL_LABEL;
 
-	@TreeLookup
-	protected AbstractRootSearchSection<?> rootSearch;
-	@TreeLookup
-	private AbstractSearchResultsSection<?, ?, ?, ?> searchResultsSection;
+  @PlugKey("actions.share.dialog.email.receipt")
+  protected static Label RECEIPT_LABEL_OK;
 
-	@EventFactory
-	protected EventGenerator events;
+  @PlugKey("actions.share.dialog.email.failreceipt")
+  protected static Label RECEIPT_LABEL_FAIL;
 
-	@Component(name = "u")
-	protected TextField url;
-	@Component(name = "e")
-	protected TextField email;
-	@Component(name = "seb")
-	@PlugKey("actions.share.dialog.email.send")
-	protected Button sendEmailButton;
+  @PlugKey("actions.share.dialog.email.validation.format")
+  protected static Label VALIDATION_EMAIL_FORMAT_LABEL;
 
-	@Nullable
-	private AbstractShareSearchQueryDialog containerDialog;
+  @Inject protected FeedServlet feedServlet;
+  @Inject protected ItemService itemService;
+  @Inject protected InstitutionService institutionService;
+  @Inject protected ViewItemUrlFactory urlFactory;
+  @Inject protected UserService userService;
+  @Inject protected FreeTextService freeTextService;
+  @Inject protected RunAsUser runAsUser;
+  @Inject protected ReceiptService receiptService;
+  @Inject protected EmailService emailService;
 
-	protected abstract String createEmail(SectionInfo info);
+  @TreeLookup protected AbstractRootSearchSection<?> rootSearch;
+  @TreeLookup private AbstractSearchResultsSection<?, ?, ?, ?> searchResultsSection;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @EventFactory protected EventGenerator events;
 
-		JSValidator fail = email.createNotBlankValidator().setFailureStatements(Js.alert_s(BLANK_EMAIL_LABEL));
-		sendEmailButton.setClickHandler(events.getNamedHandler("sendEmail").addValidator(fail));
-	}
+  @Component(name = "u")
+  protected TextField url;
 
-	@EventHandlerMethod
-	public void sendEmail(SectionInfo info)
-	{
-		ShareSearchModel model = getModel(info);
-		try
-		{
-			Future<EmailResult<String>> result = emailService.sendEmail(CurrentLocale.get(SUBJECT_KEY),
-				emailService.parseAddresses(email.getValue(info)), createEmail(info));
+  @Component(name = "e")
+  protected TextField email;
 
-			EmailResult<String> emailResult;
-			emailResult = result.get();
-			boolean successful = emailResult.isSuccessful();
+  @Component(name = "seb")
+  @PlugKey("actions.share.dialog.email.send")
+  protected Button sendEmailButton;
 
-			doSentMessage(info, successful ? RECEIPT_LABEL_OK : RECEIPT_LABEL_FAIL);
+  @Nullable private AbstractShareSearchQueryDialog containerDialog;
 
-			if( containerDialog != null )
-			{
-				containerDialog.close(info);
-			}
-		}
-		catch( AddressException ae )
-		{
-			model.setEmailProblem(VALIDATION_EMAIL_FORMAT_LABEL);
-		}
-		catch( InterruptedException | ExecutionException e )
-		{
-			receiptService.setReceipt(RECEIPT_LABEL_FAIL);
-			if( containerDialog != null )
-			{
-				containerDialog.close(info);
-			}
-		}
-	}
+  protected abstract String createEmail(SectionInfo info);
 
-	protected void doSentMessage(SectionInfo info, Label message)
-	{
-		receiptService.setReceipt(message);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	public void setContainerDialog(AbstractShareSearchQueryDialog containerDialog)
-	{
-		this.containerDialog = containerDialog;
-	}
+    JSValidator fail =
+        email.createNotBlankValidator().setFailureStatements(Js.alert_s(BLANK_EMAIL_LABEL));
+    sendEmailButton.setClickHandler(events.getNamedHandler("sendEmail").addValidator(fail));
+  }
 
-	protected void setupUrl(InfoBookmark bookmark, RenderContext context)
-	{
-		url.setValue(context, bookmark.getHref());
-		url.getState(context).setEditable(false);
-	}
+  @EventHandlerMethod
+  public void sendEmail(SectionInfo info) {
+    ShareSearchModel model = getModel(info);
+    try {
+      Future<EmailResult<String>> result =
+          emailService.sendEmail(
+              CurrentLocale.get(SUBJECT_KEY),
+              emailService.parseAddresses(email.getValue(info)),
+              createEmail(info));
 
-	protected abstract String getKeyPrefix();
+      EmailResult<String> emailResult;
+      emailResult = result.get();
+      boolean successful = emailResult.isSuccessful();
 
-	protected String s(String key, Object... args)
-	{
-		return CurrentLocale.get(getKeyPrefix() + key, args);
-	}
+      doSentMessage(info, successful ? RECEIPT_LABEL_OK : RECEIPT_LABEL_FAIL);
 
-	protected String getUser(UserBean ub)
-	{
-		if( ub == null )
-		{
-			return CurrentLocale.get(UNKNOWN_USER);
-		}
+      if (containerDialog != null) {
+        containerDialog.close(info);
+      }
+    } catch (AddressException ae) {
+      model.setEmailProblem(VALIDATION_EMAIL_FORMAT_LABEL);
+    } catch (InterruptedException | ExecutionException e) {
+      receiptService.setReceipt(RECEIPT_LABEL_FAIL);
+      if (containerDialog != null) {
+        containerDialog.close(info);
+      }
+    }
+  }
 
-		return MessageFormat.format("{0} {1} ({2})", Strings.nullToEmpty(ub.getFirstName()),
-			Strings.nullToEmpty(ub.getLastName()), Strings.nullToEmpty(ub.getEmailAddress()).toString());
-	}
+  protected void doSentMessage(SectionInfo info, Label message) {
+    receiptService.setReceipt(message);
+  }
 
-	protected AbstractSearchResultsSection<?, ?, ?, ?> getSearchResultsSection()
-	{
-		return searchResultsSection;
-	}
+  public void setContainerDialog(AbstractShareSearchQueryDialog containerDialog) {
+    this.containerDialog = containerDialog;
+  }
 
-	@Override
-	public ShareSearchModel instantiateModel(SectionInfo info)
-	{
-		return new ShareSearchModel();
-	}
+  protected void setupUrl(InfoBookmark bookmark, RenderContext context) {
+    url.setValue(context, bookmark.getHref());
+    url.getState(context).setEditable(false);
+  }
 
-	public TextField getUrl()
-	{
-		return url;
-	}
+  protected abstract String getKeyPrefix();
 
-	public TextField getEmail()
-	{
-		return email;
-	}
+  protected String s(String key, Object... args) {
+    return CurrentLocale.get(getKeyPrefix() + key, args);
+  }
 
-	public Button getSendEmailButton()
-	{
-		return sendEmailButton;
-	}
+  protected String getUser(UserBean ub) {
+    if (ub == null) {
+      return CurrentLocale.get(UNKNOWN_USER);
+    }
 
-	public static class ShareSearchModel
-	{
-		private Label emailProblem;
-		private Label emailMessage;
-		private boolean showEmail;
+    return MessageFormat.format(
+        "{0} {1} ({2})",
+        Strings.nullToEmpty(ub.getFirstName()),
+        Strings.nullToEmpty(ub.getLastName()),
+        Strings.nullToEmpty(ub.getEmailAddress()).toString());
+  }
 
-		public Label getEmailProblem()
-		{
-			return emailProblem;
-		}
+  protected AbstractSearchResultsSection<?, ?, ?, ?> getSearchResultsSection() {
+    return searchResultsSection;
+  }
 
-		public void setEmailProblem(Label emailProblem)
-		{
-			this.emailProblem = emailProblem;
-		}
+  @Override
+  public ShareSearchModel instantiateModel(SectionInfo info) {
+    return new ShareSearchModel();
+  }
 
-		public Label getEmailMessage()
-		{
-			return emailMessage;
-		}
+  public TextField getUrl() {
+    return url;
+  }
 
-		public void setEmailMessage(Label emailMessage)
-		{
-			this.emailMessage = emailMessage;
-		}
+  public TextField getEmail() {
+    return email;
+  }
 
-		public boolean isShowEmail()
-		{
-			return showEmail;
-		}
+  public Button getSendEmailButton() {
+    return sendEmailButton;
+  }
 
-		public void setShowEmail(boolean showEmail)
-		{
-			this.showEmail = showEmail;
-		}
-	}
+  public static class ShareSearchModel {
+    private Label emailProblem;
+    private Label emailMessage;
+    private boolean showEmail;
+
+    public Label getEmailProblem() {
+      return emailProblem;
+    }
+
+    public void setEmailProblem(Label emailProblem) {
+      this.emailProblem = emailProblem;
+    }
+
+    public Label getEmailMessage() {
+      return emailMessage;
+    }
+
+    public void setEmailMessage(Label emailMessage) {
+      this.emailMessage = emailMessage;
+    }
+
+    public boolean isShowEmail() {
+      return showEmail;
+    }
+
+    public void setShowEmail(boolean showEmail) {
+      this.showEmail = showEmail;
+    }
+  }
 }

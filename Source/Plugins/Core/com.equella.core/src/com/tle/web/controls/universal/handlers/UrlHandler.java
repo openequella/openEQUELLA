@@ -16,14 +16,6 @@
 
 package com.tle.web.controls.universal.handlers;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.ReferencedURL;
 import com.tle.beans.item.attachments.Attachment;
@@ -54,188 +46,178 @@ import com.tle.web.sections.standard.renderers.LinkRenderer;
 import com.tle.web.viewurl.ItemSectionInfo;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.AttachmentResourceService;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Collections;
+import java.util.List;
+import javax.inject.Inject;
 
 @Bind
 @NonNullByDefault
 @SuppressWarnings("nls")
-public class UrlHandler extends BasicAbstractAttachmentHandler<AbstractAttachmentHandlerModel>
-{
-	@PlugKey("handlers.url.name")
-	private static Label NAME;
-	@PlugKey("handlers.url.description")
-	private static Label DESCRIPTION;
-	@PlugKey("handlers.url.add.title")
-	private static Label TITLE_ADD;
-	@PlugKey("handlers.url.edit.title")
-	private static Label TITLE_EDIT;
+public class UrlHandler extends BasicAbstractAttachmentHandler<AbstractAttachmentHandlerModel> {
+  @PlugKey("handlers.url.name")
+  private static Label NAME;
 
-	@PlugKey("handlers.url.details.lastchecked")
-	private static Label LAST_CHECKED;
-	@PlugKey("handlers.url.details.timeschecked")
-	private static Label TIMES_CHECKED;
-	@PlugKey("handlers.url.details.error")
-	private static Label ERROR;
-	@PlugKey("handlers.url.details.nooftimes")
-	private static String NUMBER;
+  @PlugKey("handlers.url.description")
+  private static Label DESCRIPTION;
 
-	@PlugKey("handlers.url.details.viewlink")
-	private static Label VIEW_LINK_LABEL;
+  @PlugKey("handlers.url.add.title")
+  private static Label TITLE_ADD;
 
-	@PlugKey("handlers.url.error.invalidurl")
-	private static Label LABEL_ERROR_INVALIDURL;
+  @PlugKey("handlers.url.edit.title")
+  private static Label TITLE_EDIT;
 
-	@Inject
-	private URLCheckerService urlCheckerService;
-	@Inject
-	private DateRendererFactory dateRendererFactory;
-	@Inject
-	private AttachmentResourceService attachmentResourceService;
+  @PlugKey("handlers.url.details.lastchecked")
+  private static Label LAST_CHECKED;
 
-	@Component
-	private TextField url;
+  @PlugKey("handlers.url.details.timeschecked")
+  private static Label TIMES_CHECKED;
 
-	@Override
-	public String getHandlerId()
-	{
-		return "urlHandler";
-	}
+  @PlugKey("handlers.url.details.error")
+  private static Label ERROR;
 
-	@Override
-	public AttachmentHandlerLabel getLabel()
-	{
-		return new AttachmentHandlerLabel(NAME, DESCRIPTION);
-	}
+  @PlugKey("handlers.url.details.nooftimes")
+  private static String NUMBER;
 
-	@Override
-	public boolean supports(IAttachment attachment)
-	{
-		return attachment instanceof LinkAttachment;
-	}
+  @PlugKey("handlers.url.details.viewlink")
+  private static Label VIEW_LINK_LABEL;
 
-	@Override
-	protected SectionRenderable renderAdd(RenderContext context, DialogRenderOptions renderOptions)
-	{
-		return viewFactory.createResult("url/url-add.ftl", this);
-	}
+  @PlugKey("handlers.url.error.invalidurl")
+  private static Label LABEL_ERROR_INVALIDURL;
 
-	@Override
-	public boolean isMultipleAllowed(SectionInfo info)
-	{
-		return false;
-	}
+  @Inject private URLCheckerService urlCheckerService;
+  @Inject private DateRendererFactory dateRendererFactory;
+  @Inject private AttachmentResourceService attachmentResourceService;
 
-	@Override
-	protected List<Attachment> createAttachments(SectionInfo info)
-	{
-		LinkAttachment link = new LinkAttachment();
-		String urlString = url.getValue(info);
-		link.setUrl(urlString);
-		link.setDescription(urlString);
-		return Collections.singletonList((Attachment) link);
-	}
+  @Component private TextField url;
 
-	@Override
-	protected boolean validateAddPage(SectionInfo info)
-	{
-		return validateUrlField(info);
-	}
+  @Override
+  public String getHandlerId() {
+    return "urlHandler";
+  }
 
-	@Override
-	protected boolean validateDetailsPage(SectionInfo info)
-	{
-		boolean valid = super.validateDetailsPage(info);
-		valid &= validateUrlField(info);
-		return valid;
-	}
+  @Override
+  public AttachmentHandlerLabel getLabel() {
+    return new AttachmentHandlerLabel(NAME, DESCRIPTION);
+  }
 
-	private boolean validateUrlField(SectionInfo info)
-	{
-		try
-		{
-			URL test = new URL(url.getValue(info));
-			test.toURI();
-			return true;
-		}
-		catch( MalformedURLException | URISyntaxException e )
-		{
-			getModel(info).addError("url", LABEL_ERROR_INVALIDURL);
-			return false;
-		}
-	}
+  @Override
+  public boolean supports(IAttachment attachment) {
+    return attachment instanceof LinkAttachment;
+  }
 
-	@Override
-	protected void saveDetailsToAttachment(SectionInfo info, Attachment attachment)
-	{
-		super.saveDetailsToAttachment(info, attachment);
-		attachment.setUrl(url.getValue(info));
-	}
+  @Override
+  protected SectionRenderable renderAdd(RenderContext context, DialogRenderOptions renderOptions) {
+    return viewFactory.createResult("url/url-add.ftl", this);
+  }
 
-	@Override
-	protected void setupDetailEditing(SectionInfo info)
-	{
-		super.setupDetailEditing(info);
-		Attachment attachment = getDetailsAttachment(info);
-		url.setValue(info, attachment.getUrl());
-	}
+  @Override
+  public boolean isMultipleAllowed(SectionInfo info) {
+    return false;
+  }
 
-	@Override
-	public Label getTitleLabel(RenderContext context, boolean editing)
-	{
-		return editing ? TITLE_EDIT : TITLE_ADD;
-	}
+  @Override
+  protected List<Attachment> createAttachments(SectionInfo info) {
+    LinkAttachment link = new LinkAttachment();
+    String urlString = url.getValue(info);
+    link.setUrl(urlString);
+    link.setDescription(urlString);
+    return Collections.singletonList((Attachment) link);
+  }
 
-	@Override
-	protected SectionRenderable renderDetails(RenderContext context, DialogRenderOptions renderOptions)
-	{
-		AbstractAttachmentHandlerModel model = getModel(context);
+  @Override
+  protected boolean validateAddPage(SectionInfo info) {
+    return validateUrlField(info);
+  }
 
-		// Common details
-		final Attachment a = getDetailsAttachment(context);
-		ItemSectionInfo itemInfo = context.getAttributeForClass(ItemSectionInfo.class);
-		ViewableResource resource = attachmentResourceService.getViewableResource(context, itemInfo.getViewableItem(),
-			a);
-		addAttachmentDetails(context, resource.getCommonAttachmentDetails());
+  @Override
+  protected boolean validateDetailsPage(SectionInfo info) {
+    boolean valid = super.validateDetailsPage(info);
+    valid &= validateUrlField(info);
+    return valid;
+  }
 
-		// Additional details
-		ReferencedURL urlStatus = urlCheckerService.getUrlStatus(a.getUrl(), URLCheckMode.RECORDS_FIRST);
-		if( urlStatus.getTries() > 0 )
-		{
-			addAttachmentDetail(context, LAST_CHECKED,
-				dateRendererFactory.createDateRenderer(urlStatus.getLastChecked()));
-			if( !urlStatus.isSuccess() )
-			{
-				addAttachmentDetail(context, TIMES_CHECKED, new PluralKeyLabel(NUMBER, urlStatus.getTries()));
-				addAttachmentDetail(context, ERROR, new TextLabel(urlStatus.getMessage()));
-			}
-		}
+  private boolean validateUrlField(SectionInfo info) {
+    try {
+      URL test = new URL(url.getValue(info));
+      test.toURI();
+      return true;
+    } catch (MalformedURLException | URISyntaxException e) {
+      getModel(info).addError("url", LABEL_ERROR_INVALIDURL);
+      return false;
+    }
+  }
 
-		if( Check.isEmpty(model.getEditTitle()) )
-		{
-			model.setEditTitle(url.getValue(context));
-		}
+  @Override
+  protected void saveDetailsToAttachment(SectionInfo info, Attachment attachment) {
+    super.saveDetailsToAttachment(info, attachment);
+    attachment.setUrl(url.getValue(info));
+  }
 
-		// View link
-		HtmlLinkState linkState = new HtmlLinkState(VIEW_LINK_LABEL, new SimpleBookmark(a.getUrl()));
-		linkState.setTarget(HtmlLinkState.TARGET_BLANK);
-		model.setViewlink(new LinkRenderer(linkState));
+  @Override
+  protected void setupDetailEditing(SectionInfo info) {
+    super.setupDetailEditing(info);
+    Attachment attachment = getDetailsAttachment(info);
+    url.setValue(info, attachment.getUrl());
+  }
 
-		return viewFactory.createResult("url/url-edit.ftl", this);
-	}
+  @Override
+  public Label getTitleLabel(RenderContext context, boolean editing) {
+    return editing ? TITLE_EDIT : TITLE_ADD;
+  }
 
-	public TextField getUrl()
-	{
-		return url;
-	}
+  @Override
+  protected SectionRenderable renderDetails(
+      RenderContext context, DialogRenderOptions renderOptions) {
+    AbstractAttachmentHandlerModel model = getModel(context);
 
-	@Override
-	public Class<AbstractAttachmentHandlerModel> getModelClass()
-	{
-		return AbstractAttachmentHandlerModel.class;
-	}
+    // Common details
+    final Attachment a = getDetailsAttachment(context);
+    ItemSectionInfo itemInfo = context.getAttributeForClass(ItemSectionInfo.class);
+    ViewableResource resource =
+        attachmentResourceService.getViewableResource(context, itemInfo.getViewableItem(), a);
+    addAttachmentDetails(context, resource.getCommonAttachmentDetails());
 
-	@Override
-	public String getMimeType(SectionInfo info)
-	{
-		return MimeTypeConstants.MIME_LINK;
-	}
+    // Additional details
+    ReferencedURL urlStatus =
+        urlCheckerService.getUrlStatus(a.getUrl(), URLCheckMode.RECORDS_FIRST);
+    if (urlStatus.getTries() > 0) {
+      addAttachmentDetail(
+          context,
+          LAST_CHECKED,
+          dateRendererFactory.createDateRenderer(urlStatus.getLastChecked()));
+      if (!urlStatus.isSuccess()) {
+        addAttachmentDetail(
+            context, TIMES_CHECKED, new PluralKeyLabel(NUMBER, urlStatus.getTries()));
+        addAttachmentDetail(context, ERROR, new TextLabel(urlStatus.getMessage()));
+      }
+    }
+
+    if (Check.isEmpty(model.getEditTitle())) {
+      model.setEditTitle(url.getValue(context));
+    }
+
+    // View link
+    HtmlLinkState linkState = new HtmlLinkState(VIEW_LINK_LABEL, new SimpleBookmark(a.getUrl()));
+    linkState.setTarget(HtmlLinkState.TARGET_BLANK);
+    model.setViewlink(new LinkRenderer(linkState));
+
+    return viewFactory.createResult("url/url-edit.ftl", this);
+  }
+
+  public TextField getUrl() {
+    return url;
+  }
+
+  @Override
+  public Class<AbstractAttachmentHandlerModel> getModelClass() {
+    return AbstractAttachmentHandlerModel.class;
+  }
+
+  @Override
+  public String getMimeType(SectionInfo info) {
+    return MimeTypeConstants.MIME_LINK;
+  }
 }

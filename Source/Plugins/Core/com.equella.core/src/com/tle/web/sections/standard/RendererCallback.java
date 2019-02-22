@@ -21,7 +21,6 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.render.SectionRenderable;
 
 @NonNullByDefault
-public interface RendererCallback
-{
-	void rendererSelected(RenderContext info, SectionRenderable renderer);
+public interface RendererCallback {
+  void rendererSelected(RenderContext info, SectionRenderable renderer);
 }

@@ -27,43 +27,34 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.viewitem.summary.sidebar.actions.GenericMinorActionWithPageSection;
 import com.tle.web.viewurl.ItemSectionInfo;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @Bind
-public class ActivationsLinkSection extends GenericMinorActionWithPageSection
-{
-	@PlugKey("viewitem.sidebar.summary.activations.title")
-	private static Label LABEL;
+public class ActivationsLinkSection extends GenericMinorActionWithPageSection {
+  @PlugKey("viewitem.sidebar.summary.activations.title")
+  private static Label LABEL;
 
-	@TreeLookup
-	private ShowActivationsSection activationsContentSection;
+  @TreeLookup private ShowActivationsSection activationsContentSection;
 
-	@Override
-	protected Label getLinkLabel()
-	{
-		return LABEL;
-	}
+  @Override
+  protected Label getLinkLabel() {
+    return LABEL;
+  }
 
-	@Override
-	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
-	{
-		if( !itemInfo.getViewableItem().isItemForReal() )
-		{
-			return false;
-		}
-		return activationsContentSection.canView(info, itemInfo, status);
-	}
+  @Override
+  protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status) {
+    if (!itemInfo.getViewableItem().isItemForReal()) {
+      return false;
+    }
+    return activationsContentSection.canView(info, itemInfo, status);
+  }
 
-	@Override
-	protected SectionId getPageSection()
-	{
-		return activationsContentSection;
-	}
+  @Override
+  protected SectionId getPageSection() {
+    return activationsContentSection;
+  }
 
-	@Override
-	public String getLinkText()
-	{
-		return LABEL.getText();
-	}
+  @Override
+  public String getLinkText() {
+    return LABEL.getText();
+  }
 }

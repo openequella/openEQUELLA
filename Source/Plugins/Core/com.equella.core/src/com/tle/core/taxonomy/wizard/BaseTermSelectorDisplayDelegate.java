@@ -16,8 +16,6 @@
 
 package com.tle.core.taxonomy.wizard;
 
-import java.util.List;
-
 import com.tle.common.taxonomy.wizard.AutocompleteEditBoxConstants;
 import com.tle.core.taxonomy.wizard.model.BaseTermSelectorWebControlModel;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -45,89 +43,89 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.annotations.Component;
+import java.util.List;
 
-/**
- * @author aholland
- */
+/** @author aholland */
 @SuppressWarnings("nls")
 public abstract class BaseTermSelectorDisplayDelegate<M extends BaseTermSelectorWebControlModel>
-	extends
-		TermSelectorDisplayDelegate<M>
-{
-	@PlugKey("currentlyselectedstuff.nothing")
-	private static Label NO_TERMS_SELECTED_LABEL;
-	@PlugKey("currentlyselectedstuff.remove")
-	private static Label REMOVE_TERM_LABEL;
-	@PlugKey("wizard.basetermselector.confirmremove")
-	private static String CONFIRM_REMOVE_TERM_KEY;
+    extends TermSelectorDisplayDelegate<M> {
+  @PlugKey("currentlyselectedstuff.nothing")
+  private static Label NO_TERMS_SELECTED_LABEL;
 
-	@ViewFactory(fixed = false)
-	protected FreemarkerFactory viewFactory;
-	@EventFactory
-	protected EventGenerator events;
-	@AjaxFactory
-	protected AjaxGenerator ajax;
+  @PlugKey("currentlyselectedstuff.remove")
+  private static Label REMOVE_TERM_LABEL;
 
-	@Component(name = "t")
-	protected SelectionsTable termsTable;
+  @PlugKey("wizard.basetermselector.confirmremove")
+  private static String CONFIRM_REMOVE_TERM_KEY;
 
-	private JSCallable removeFunction;
+  @ViewFactory(fixed = false)
+  protected FreemarkerFactory viewFactory;
 
-	protected abstract String[] getAjaxIds(String id);
+  @EventFactory protected EventGenerator events;
+  @AjaxFactory protected AjaxGenerator ajax;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Component(name = "t")
+  protected SelectionsTable termsTable;
 
-		removeFunction = ajax.getAjaxUpdateDomFunction(getTree(), BaseTermSelectorDisplayDelegate.this,
-			events.getEventHandler("removeTerm"), ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING),
-			getAjaxIds(id));
+  private JSCallable removeFunction;
 
-		termsTable.setNothingSelectedText(NO_TERMS_SELECTED_LABEL);
-		termsTable.setSelectionsModel(new DynamicSelectionsTableModel<String>()
-		{
-			@Override
-			protected List<String> getSourceList(SectionInfo info)
-			{
-				return storageControl.getValues();
-			}
+  protected abstract String[] getAjaxIds(String id);
 
-			@Override
-			protected void transform(SectionInfo info, SelectionsTableSelection selection, String term,
-				List<SectionRenderable> actions, int index)
-			{
-				selection.setName(new TextLabel(term));
-				if( storageControl.isEnabled() )
-				{
-					JSHandler removeHandler;
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-					// if reload page on selection
-					if( definitionControl.getBooleanAttribute(AutocompleteEditBoxConstants.RELOAD_PAGE_ON_SELECTION,
-						false) )
-					{
-						removeHandler = new StatementHandler(termWebControl.getReloadFunction(true,
-							events.getEventHandler("removeTerm")), term);
-					}
-					else
-					{
-						removeHandler = new OverrideHandler(removeFunction, term);
-					}
-					removeHandler.addValidator(new Confirm(new KeyLabel(CONFIRM_REMOVE_TERM_KEY, term)));
-					actions.add(makeRemoveAction(REMOVE_TERM_LABEL, removeHandler));
-				}
-			}
-		});
-	}
+    removeFunction =
+        ajax.getAjaxUpdateDomFunction(
+            getTree(),
+            BaseTermSelectorDisplayDelegate.this,
+            events.getEventHandler("removeTerm"),
+            ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING),
+            getAjaxIds(id));
 
-	@EventHandlerMethod
-	public void removeTerm(final SectionContext context, final String term) throws Exception
-	{
-		storageControl.getValues().remove(term);
-	}
+    termsTable.setNothingSelectedText(NO_TERMS_SELECTED_LABEL);
+    termsTable.setSelectionsModel(
+        new DynamicSelectionsTableModel<String>() {
+          @Override
+          protected List<String> getSourceList(SectionInfo info) {
+            return storageControl.getValues();
+          }
 
-	public SelectionsTable getTermsTable()
-	{
-		return termsTable;
-	}
+          @Override
+          protected void transform(
+              SectionInfo info,
+              SelectionsTableSelection selection,
+              String term,
+              List<SectionRenderable> actions,
+              int index) {
+            selection.setName(new TextLabel(term));
+            if (storageControl.isEnabled()) {
+              JSHandler removeHandler;
+
+              // if reload page on selection
+              if (definitionControl.getBooleanAttribute(
+                  AutocompleteEditBoxConstants.RELOAD_PAGE_ON_SELECTION, false)) {
+                removeHandler =
+                    new StatementHandler(
+                        termWebControl.getReloadFunction(
+                            true, events.getEventHandler("removeTerm")),
+                        term);
+              } else {
+                removeHandler = new OverrideHandler(removeFunction, term);
+              }
+              removeHandler.addValidator(new Confirm(new KeyLabel(CONFIRM_REMOVE_TERM_KEY, term)));
+              actions.add(makeRemoveAction(REMOVE_TERM_LABEL, removeHandler));
+            }
+          }
+        });
+  }
+
+  @EventHandlerMethod
+  public void removeTerm(final SectionContext context, final String term) throws Exception {
+    storageControl.getValues().remove(term);
+  }
+
+  public SelectionsTable getTermsTable() {
+    return termsTable;
+  }
 }

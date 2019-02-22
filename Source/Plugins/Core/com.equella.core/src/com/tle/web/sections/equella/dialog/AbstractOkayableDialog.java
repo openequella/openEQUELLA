@@ -16,8 +16,6 @@
 
 package com.tle.web.sections.equella.dialog;
 
-import java.util.Collection;
-
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.web.sections.SectionTree;
@@ -33,192 +31,161 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
+import java.util.Collection;
 
 /**
  * A dialog containing OK and CANCEL buttons.
- * 
+ *
  * @author aholland
  */
 @NonNullByDefault
-public abstract class AbstractOkayableDialog<S extends DialogModel> extends EquellaDialog<S>
-{
-	protected static final ButtonType OK_BUTTON_TYPE = ButtonType.SAVE;
+public abstract class AbstractOkayableDialog<S extends DialogModel> extends EquellaDialog<S> {
+  protected static final ButtonType OK_BUTTON_TYPE = ButtonType.SAVE;
 
-	@PlugKey("okayabledialog.ok")
-	private static Label OK_LABEL;
+  @PlugKey("okayabledialog.ok")
+  private static Label OK_LABEL;
 
-	@Component
-	private Button ok;
+  @Component private Button ok;
 
-	private Label okLabel;
+  private Label okLabel;
 
-	private JSHandler okHandler;
-	private JSCallable okCallback;
-	private JSHandler cancelHandler;
-	private JSCallable cancelCallback;
+  private JSHandler okHandler;
+  private JSCallable okCallback;
+  private JSHandler cancelHandler;
+  private JSCallable cancelCallback;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-		ok.setLabel(getOkLabel());
-		ok.setComponentAttribute(ButtonType.class, OK_BUTTON_TYPE);
-	}
+    ok.setLabel(getOkLabel());
+    ok.setComponentAttribute(ButtonType.class, OK_BUTTON_TYPE);
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public void treeFinished(String id, SectionTree tree)
-	{
-		if( okHandler == null )
-		{
-			if( okCallback == null )
-			{
-				throw new Error("Must set an ok button callback on " + getClass());
-			}
-			okCallback = addParentCallable(okCallback);
-			okHandler = createOkHandler(tree);
-		}
-		if( okHandler != null )
-		{
-			ok.setClickHandler(okHandler);
-		}
+  @SuppressWarnings("nls")
+  @Override
+  public void treeFinished(String id, SectionTree tree) {
+    if (okHandler == null) {
+      if (okCallback == null) {
+        throw new Error("Must set an ok button callback on " + getClass());
+      }
+      okCallback = addParentCallable(okCallback);
+      okHandler = createOkHandler(tree);
+    }
+    if (okHandler != null) {
+      ok.setClickHandler(okHandler);
+    }
 
-		if( cancelHandler == null )
-		{
-			if( cancelCallback == null )
-			{
-				cancelCallback = getCloseFunction();
-			}
-			else
-			{
-				cancelCallback = addParentCallable(cancelCallback);
-			}
-			cancelHandler = createCancelHandler(tree);
-		}
-		super.treeFinished(id, tree);
-	}
+    if (cancelHandler == null) {
+      if (cancelCallback == null) {
+        cancelCallback = getCloseFunction();
+      } else {
+        cancelCallback = addParentCallable(cancelCallback);
+      }
+      cancelHandler = createCancelHandler(tree);
+    }
+    super.treeFinished(id, tree);
+  }
 
-	protected JSHandler createOkHandler(SectionTree tree)
-	{
-		return new OverrideHandler(createOkCallStatement(tree), new FunctionCallStatement(getCloseFunction()));
-	}
+  protected JSHandler createOkHandler(SectionTree tree) {
+    return new OverrideHandler(
+        createOkCallStatement(tree), new FunctionCallStatement(getCloseFunction()));
+  }
 
-	protected JSStatements createOkCallStatement(SectionTree tree)
-	{
-		return new FunctionCallStatement(getOkCallback());
-	}
+  protected JSStatements createOkCallStatement(SectionTree tree) {
+    return new FunctionCallStatement(getOkCallback());
+  }
 
-	protected JSHandler createCancelHandler(SectionTree tree)
-	{
-		final OkayableDialogCancelStatements cancelStatements = createCancelCallStatement(tree);
+  protected JSHandler createCancelHandler(SectionTree tree) {
+    final OkayableDialogCancelStatements cancelStatements = createCancelCallStatement(tree);
 
-		if( cancelStatements.isClosesDialog() )
-		{
-			return new OverrideHandler(cancelStatements.getStatements());
-		}
+    if (cancelStatements.isClosesDialog()) {
+      return new OverrideHandler(cancelStatements.getStatements());
+    }
 
-		return new OverrideHandler(cancelStatements.getStatements(), new FunctionCallStatement(getCloseFunction()));
-	}
+    return new OverrideHandler(
+        cancelStatements.getStatements(), new FunctionCallStatement(getCloseFunction()));
+  }
 
-	protected OkayableDialogCancelStatements createCancelCallStatement(SectionTree tree)
-	{
-		return new OkayableDialogCancelStatements(true, new FunctionCallStatement(cancelCallback));
-	}
+  protected OkayableDialogCancelStatements createCancelCallStatement(SectionTree tree) {
+    return new OkayableDialogCancelStatements(true, new FunctionCallStatement(cancelCallback));
+  }
 
-	@Override
-	protected JSHandler getTemplateCloseFunction()
-	{
-		return cancelHandler;
-	}
+  @Override
+  protected JSHandler getTemplateCloseFunction() {
+    return cancelHandler;
+  }
 
-	protected Label getOkLabel()
-	{
-		if( okLabel != null )
-		{
-			return okLabel;
-		}
-		return OK_LABEL;
-	}
+  protected Label getOkLabel() {
+    if (okLabel != null) {
+      return okLabel;
+    }
+    return OK_LABEL;
+  }
 
-	public void setOkCallback(JSCallable okCallback)
-	{
-		this.okCallback = okCallback;
-	}
+  public void setOkCallback(JSCallable okCallback) {
+    this.okCallback = okCallback;
+  }
 
-	protected JSCallable getOkCallback()
-	{
-		return okCallback;
-	}
+  protected JSCallable getOkCallback() {
+    return okCallback;
+  }
 
-	public JSCallable getcancelCallback()
-	{
-		return cancelCallback;
-	}
+  public JSCallable getcancelCallback() {
+    return cancelCallback;
+  }
 
-	public void setCancelCallback(JSCallable cancelCallback)
-	{
-		this.cancelCallback = cancelCallback;
-	}
+  public void setCancelCallback(JSCallable cancelCallback) {
+    this.cancelCallback = cancelCallback;
+  }
 
-	public void setOkLabel(Label okLabel)
-	{
-		this.okLabel = okLabel;
-	}
+  public void setOkLabel(Label okLabel) {
+    this.okLabel = okLabel;
+  }
 
-	public Button getOk()
-	{
-		return ok;
-	}
+  public Button getOk() {
+    return ok;
+  }
 
-	public void setOkHandler(JSHandler okHandler)
-	{
-		this.okHandler = okHandler;
-	}
+  public void setOkHandler(JSHandler okHandler) {
+    this.okHandler = okHandler;
+  }
 
-	public void setCancelHandler(JSHandler cancelHandler)
-	{
-		this.cancelHandler = cancelHandler;
-	}
+  public void setCancelHandler(JSHandler cancelHandler) {
+    this.cancelHandler = cancelHandler;
+  }
 
-	@Override
-	protected Collection<Button> collectFooterActions(RenderContext context)
-	{
-		return Lists.newArrayList(ok);
-	}
+  @Override
+  protected Collection<Button> collectFooterActions(RenderContext context) {
+    return Lists.newArrayList(ok);
+  }
 
-	/**
-	 * In at least one specific case, we require a subclass (AddQuotaDialog) to
-	 * have a contained section loaded via an ajax div's readyStatements rather
-	 * than via a callback. Accordingly that subclass will override this method
-	 * and return true.
-	 * 
-	 * @return false by default
-	 */
-	public boolean loadViaReadyStatements()
-	{
-		return false;
-	}
+  /**
+   * In at least one specific case, we require a subclass (AddQuotaDialog) to have a contained
+   * section loaded via an ajax div's readyStatements rather than via a callback. Accordingly that
+   * subclass will override this method and return true.
+   *
+   * @return false by default
+   */
+  public boolean loadViaReadyStatements() {
+    return false;
+  }
 
-	public static class OkayableDialogCancelStatements
-	{
-		private final boolean closesDialog;
-		private final JSStatements statements;
+  public static class OkayableDialogCancelStatements {
+    private final boolean closesDialog;
+    private final JSStatements statements;
 
-		public OkayableDialogCancelStatements(boolean closesDialog, JSStatements statements)
-		{
-			this.closesDialog = closesDialog;
-			this.statements = statements;
-		}
+    public OkayableDialogCancelStatements(boolean closesDialog, JSStatements statements) {
+      this.closesDialog = closesDialog;
+      this.statements = statements;
+    }
 
-		public boolean isClosesDialog()
-		{
-			return closesDialog;
-		}
+    public boolean isClosesDialog() {
+      return closesDialog;
+    }
 
-		public JSStatements getStatements()
-		{
-			return statements;
-		}
-	}
+    public JSStatements getStatements() {
+      return statements;
+    }
+  }
 }

@@ -20,25 +20,21 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class LiteralMapping implements Serializable
-{
-	private static final long serialVersionUID = 1;
+public class LiteralMapping implements Serializable {
+  private static final long serialVersionUID = 1;
 
-	private String value;
-	private Collection<Literal> literals = new ArrayList<Literal>();
+  private String value;
+  private Collection<Literal> literals = new ArrayList<Literal>();
 
-	public String getValue()
-	{
-		return value;
-	}
+  public String getValue() {
+    return value;
+  }
 
-	public void setValue(String value)
-	{
-		this.value = value;
-	}
+  public void setValue(String value) {
+    this.value = value;
+  }
 
-	public Collection<Literal> getLiterals()
-	{
-		return literals;
-	}
+  public Collection<Literal> getLiterals() {
+    return literals;
+  }
 }

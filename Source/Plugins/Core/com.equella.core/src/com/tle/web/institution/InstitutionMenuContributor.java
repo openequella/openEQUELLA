@@ -16,11 +16,6 @@
 
 package com.tle.web.institution;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.google.inject.Singleton;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
@@ -32,71 +27,97 @@ import com.tle.web.sections.registry.handler.CollectInterfaceHandler;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.template.section.MenuContributor;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Bind
 @Singleton
-public class InstitutionMenuContributor implements MenuContributor
-{
-	private static final PluginResourceHelper RESOURCES = ResourcesService
-		.getResourceHelper(InstitutionMenuContributor.class);
+public class InstitutionMenuContributor implements MenuContributor {
+  private static final PluginResourceHelper RESOURCES =
+      ResourcesService.getResourceHelper(InstitutionMenuContributor.class);
 
-	@Override
-	public List<MenuContribution> getMenuContributions(SectionInfo info)
-	{
-		final List<Tabable> tabs = new CollectInterfaceHandler<Tabable>(Tabable.class).getAllImplementors(info);
-		if( Check.isEmpty(tabs) )
-		{
-			return null;
-		}
+  @Override
+  public List<MenuContribution> getMenuContributions(SectionInfo info) {
+    final List<Tabable> tabs =
+        new CollectInterfaceHandler<Tabable>(Tabable.class).getAllImplementors(info);
+    if (Check.isEmpty(tabs)) {
+      return null;
+    }
 
-		final Map<String, JSHandler> tabHandlers = new HashMap<String, JSHandler>();
-		for( Tabable tab : tabs )
-		{
-			List<Tab> tabList = tab.getTabs(info);
-			if( !tabList.isEmpty() )
-			{
-				Tab t = tabList.get(0);
-				String id = t.getId();
-				JSHandler handler = t.getClickHandler();
-				tabHandlers.put(id, handler);
-			}
-		}
+    final Map<String, JSHandler> tabHandlers = new HashMap<String, JSHandler>();
+    for (Tabable tab : tabs) {
+      List<Tab> tabList = tab.getTabs(info);
+      if (!tabList.isEmpty()) {
+        Tab t = tabList.get(0);
+        String id = t.getId();
+        JSHandler handler = t.getClickHandler();
+        tabHandlers.put(id, handler);
+      }
+    }
 
-		if( Check.isEmpty(tabHandlers) )
-		{
-			return null;
-		}
+    if (Check.isEmpty(tabHandlers)) {
+      return null;
+    }
 
-		final List<MenuContribution> mcs = new ArrayList<MenuContribution>();
+    final List<MenuContribution> mcs = new ArrayList<MenuContribution>();
 
-		add(mcs, tabHandlers, "isadmin", 1, 1, "institutions.menu", "images/institutions-menu-icon.png");
-		add(mcs, tabHandlers, "isii", 1, 2, "import.menu", "images/import-menu-icon.png");
-		add(mcs, tabHandlers, "isdt", 1, 3, "databases.menu", "images/databases-menu-icon.png");
+    add(
+        mcs,
+        tabHandlers,
+        "isadmin",
+        1,
+        1,
+        "institutions.menu",
+        "images/institutions-menu-icon.png");
+    add(mcs, tabHandlers, "isii", 1, 2, "import.menu", "images/import-menu-icon.png");
+    add(mcs, tabHandlers, "isdt", 1, 3, "databases.menu", "images/databases-menu-icon.png");
 
-		add(mcs, tabHandlers, "isservertab", 2, 1, "settings.menu", "images/settings-menu-icon.png");
+    add(mcs, tabHandlers, "isservertab", 2, 1, "settings.menu", "images/settings-menu-icon.png");
 
-		add(mcs, tabHandlers, "isclusternodes", 3, 1, "health.menu", "images/clusterhealth-menu-icon.png");
-		add(mcs, tabHandlers, "isthreaddump", 3, 2, "threaddump.menu", "images/threaddump-menu-icon.png");
+    add(
+        mcs,
+        tabHandlers,
+        "isclusternodes",
+        3,
+        1,
+        "health.menu",
+        "images/clusterhealth-menu-icon.png");
+    add(
+        mcs,
+        tabHandlers,
+        "isthreaddump",
+        3,
+        2,
+        "threaddump.menu",
+        "images/threaddump-menu-icon.png");
 
-		return mcs;
-	}
+    return mcs;
+  }
 
-	private void add(List<MenuContribution> mcs, Map<String, JSHandler> tabHandlers, String handlerName,
-		int groupPriority, int linkPriority, String labelKey, String iconPath)
-	{
-		JSHandler handler = tabHandlers.get(handlerName);
-		if( handler != null )
-		{
-			MenuContribution m = new MenuContribution(
-				new HtmlLinkState(new KeyLabel(RESOURCES.key(labelKey)), handler), RESOURCES.url(iconPath),
-				groupPriority, linkPriority);
-			mcs.add(m);
-		}
-	}
+  private void add(
+      List<MenuContribution> mcs,
+      Map<String, JSHandler> tabHandlers,
+      String handlerName,
+      int groupPriority,
+      int linkPriority,
+      String labelKey,
+      String iconPath) {
+    JSHandler handler = tabHandlers.get(handlerName);
+    if (handler != null) {
+      MenuContribution m =
+          new MenuContribution(
+              new HtmlLinkState(new KeyLabel(RESOURCES.key(labelKey)), handler),
+              RESOURCES.url(iconPath),
+              groupPriority,
+              linkPriority);
+      mcs.add(m);
+    }
+  }
 
-	@Override
-	public void clearCachedData()
-	{
-		// Nothing to do here
-	}
+  @Override
+  public void clearCachedData() {
+    // Nothing to do here
+  }
 }

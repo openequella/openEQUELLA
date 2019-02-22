@@ -27,77 +27,70 @@ import com.tle.web.sections.equella.search.event.AbstractSearchResultsEvent;
 import com.tle.web.sections.equella.search.event.SearchResultsListener;
 
 public class ConnectorManagmentSearchResultEvent
-	extends
-		AbstractSearchResultsEvent<ConnectorManagmentSearchResultEvent>
-{
+    extends AbstractSearchResultsEvent<ConnectorManagmentSearchResultEvent> {
 
-	private final SearchResults<ConnectorContent> results;
-	private final FreetextSearchResults<FreetextResult> search;
-	private final ConnectorManagementSearchEvent event;
-	private final Connector connector;
-	private int unfiltered;
+  private final SearchResults<ConnectorContent> results;
+  private final FreetextSearchResults<FreetextResult> search;
+  private final ConnectorManagementSearchEvent event;
+  private final Connector connector;
+  private int unfiltered;
 
-	public ConnectorManagmentSearchResultEvent(ConnectorManagementSearchEvent event,
-		SearchResults<ConnectorContent> results, FreetextSearchResults<FreetextResult> search, int unfiltered,
-		Connector connector)
-	{
-		super();
-		this.results = results;
-		this.search = search;
-		this.unfiltered = unfiltered;
-		this.connector = connector;
-		this.event = event;
-	}
+  public ConnectorManagmentSearchResultEvent(
+      ConnectorManagementSearchEvent event,
+      SearchResults<ConnectorContent> results,
+      FreetextSearchResults<FreetextResult> search,
+      int unfiltered,
+      Connector connector) {
+    super();
+    this.results = results;
+    this.search = search;
+    this.unfiltered = unfiltered;
+    this.connector = connector;
+    this.event = event;
+  }
 
-	@Override
-	public void fire(SectionId sectionId, SectionInfo info,
-		SearchResultsListener<ConnectorManagmentSearchResultEvent> listener) throws Exception
-	{
-		listener.processResults(info, this);
-	}
+  @Override
+  public void fire(
+      SectionId sectionId,
+      SectionInfo info,
+      SearchResultsListener<ConnectorManagmentSearchResultEvent> listener)
+      throws Exception {
+    listener.processResults(info, this);
+  }
 
-	@Override
-	public int getOffset()
-	{
-		return results.getOffset();
-	}
+  @Override
+  public int getOffset() {
+    return results.getOffset();
+  }
 
-	@Override
-	public int getCount()
-	{
-		return results.getCount();
-	}
+  @Override
+  public int getCount() {
+    return results.getCount();
+  }
 
-	@Override
-	public int getMaximumResults()
-	{
-		return results.getAvailable();
-	}
+  @Override
+  public int getMaximumResults() {
+    return results.getAvailable();
+  }
 
-	@Override
-	public int getFilteredOut()
-	{
-		return unfiltered;
-	}
+  @Override
+  public int getFilteredOut() {
+    return unfiltered;
+  }
 
-	public SearchResults<ConnectorContent> getResults()
-	{
-		return results;
-	}
+  public SearchResults<ConnectorContent> getResults() {
+    return results;
+  }
 
-	public FreetextSearchResults<FreetextResult> getSearch()
-	{
-		return search;
-	}
+  public FreetextSearchResults<FreetextResult> getSearch() {
+    return search;
+  }
 
-	public Connector getConnector()
-	{
-		return connector;
-	}
+  public Connector getConnector() {
+    return connector;
+  }
 
-	public ConnectorManagementSearchEvent getEvent()
-	{
-		return event;
-	}
-
+  public ConnectorManagementSearchEvent getEvent() {
+    return event;
+  }
 }

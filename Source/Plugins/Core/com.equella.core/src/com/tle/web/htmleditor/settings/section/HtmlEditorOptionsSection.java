@@ -16,10 +16,8 @@
 
 package com.tle.web.htmleditor.settings.section;
 
-import javax.inject.Inject;
-
-import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.annotation.Nullable;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.core.guice.Bind;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -46,171 +44,154 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.js.modules.CodeMirrorLibrary.EditorType;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
-public class HtmlEditorOptionsSection extends AbstractPrototypeSection<HtmlEditorOptionsSection.HtmlEditorOptionsModel>
-	implements
-		HtmlRenderer,
-		ModalHtmlEditorSettingsSection
-{
-	@PlugKey("settings.editoroptions.front.link")
-	private static Label LABEL_SETTING_LINK;
-	@PlugKey("settings.editoroptions.front.preamble")
-	private static Label LABEL_SETTING_BLURB;
+public class HtmlEditorOptionsSection
+    extends AbstractPrototypeSection<HtmlEditorOptionsSection.HtmlEditorOptionsModel>
+    implements HtmlRenderer, ModalHtmlEditorSettingsSection {
+  @PlugKey("settings.editoroptions.front.link")
+  private static Label LABEL_SETTING_LINK;
 
-	@PlugKey("settings.editoroptions.title")
-	private static Label LABEL_TITLE;
-	@PlugKey("settings.editoroptions.confirm.navigateaway")
-	private static Label LABEL_CONFIRM_NAVIGATE_AWAY;
+  @PlugKey("settings.editoroptions.front.preamble")
+  private static Label LABEL_SETTING_BLURB;
 
-	@TreeLookup
-	private HtmlEditorSettingsFrontPageSection front;
+  @PlugKey("settings.editoroptions.title")
+  private static Label LABEL_TITLE;
 
-	@Component(name = "opt", stateful = false)
-	private CodeMirror editor;
-	@PlugKey("settings.editoroptions.button.save")
-	@Component(name = "s")
-	private Button saveButton;
-	@PlugKey("settings.editoroptions.button.cancel")
-	@Component(name = "c")
-	private Button cancelButton;
+  @PlugKey("settings.editoroptions.confirm.navigateaway")
+  private static Label LABEL_CONFIRM_NAVIGATE_AWAY;
 
-	@Inject
-	private HtmlEditorService htmlEditorService;
-	@ViewFactory
-	private FreemarkerFactory view;
-	@EventFactory
-	private EventGenerator events;
+  @TreeLookup private HtmlEditorSettingsFrontPageSection front;
 
-	@Override
-	public SectionRenderable renderHtml(RenderEventContext context)
-	{
-		final HtmlEditorOptionsModel model = getModel(context);
-		final HtmlEditorConfigurationEditingSession session = htmlEditorService.getEditorConfigEditingSession(model
-			.getSessionId());
-		editor.setValue(context, session.getConfig().getEditorOptions());
-		return view.createResult("setting/editoroptions.ftl", context);
-	}
+  @Component(name = "opt", stateful = false)
+  private CodeMirror editor;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
-		editor.setEditorType(EditorType.JAVASCRIPT_EDITOR);
-		editor.setAllowFullScreen(true);
-		editor.setShowHelp(true);
-		saveButton.setClickHandler(events.getNamedHandler("save"));
-		saveButton.addEventStatements(JSHandler.EVENT_BEFOREUNLOAD, new ReturnStatement(LABEL_CONFIRM_NAVIGATE_AWAY));
-		cancelButton.setClickHandler(events.getNamedHandler("cancel"));
-	}
+  @PlugKey("settings.editoroptions.button.save")
+  @Component(name = "s")
+  private Button saveButton;
 
-	@EventHandlerMethod
-	public void save(SectionInfo info)
-	{
-		final HtmlEditorOptionsModel model = getModel(info);
+  @PlugKey("settings.editoroptions.button.cancel")
+  @Component(name = "c")
+  private Button cancelButton;
 
-		final String sessionId = model.getSessionId();
-		final HtmlEditorConfigurationEditingSession session = htmlEditorService
-			.getEditorConfigEditingSession(sessionId);
-		final String editorOptions = editor.getValue(info);
-		session.getConfig().setEditorOptions(editorOptions);
+  @Inject private HtmlEditorService htmlEditorService;
+  @ViewFactory private FreemarkerFactory view;
+  @EventFactory private EventGenerator events;
 
-		// validate the JSON
-		try
-		{
-			if( editorOptions.trim().length() != 0 )
-			{
-				htmlEditorService.validateEditorOptions(editorOptions);
-			}
-		}
-		catch( InvalidDataException ide )
-		{
-			model.setError(ide.getMessage());
-			info.preventGET();
-			return;
-		}
+  @Override
+  public SectionRenderable renderHtml(RenderEventContext context) {
+    final HtmlEditorOptionsModel model = getModel(context);
+    final HtmlEditorConfigurationEditingSession session =
+        htmlEditorService.getEditorConfigEditingSession(model.getSessionId());
+    editor.setValue(context, session.getConfig().getEditorOptions());
+    return view.createResult("setting/editoroptions.ftl", context);
+  }
 
-		htmlEditorService.commitEditorConfigEditingSession(sessionId);
-		model.setSessionId(null);
-		front.returnToFrontPage(info);
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    editor.setEditorType(EditorType.JAVASCRIPT_EDITOR);
+    editor.setAllowFullScreen(true);
+    editor.setShowHelp(true);
+    saveButton.setClickHandler(events.getNamedHandler("save"));
+    saveButton.addEventStatements(
+        JSHandler.EVENT_BEFOREUNLOAD, new ReturnStatement(LABEL_CONFIRM_NAVIGATE_AWAY));
+    cancelButton.setClickHandler(events.getNamedHandler("cancel"));
+  }
 
-	@EventHandlerMethod
-	public void cancel(SectionInfo info)
-	{
-		final HtmlEditorOptionsModel model = getModel(info);
-		model.setSessionId(null);
-		front.returnToFrontPage(info);
-	}
+  @EventHandlerMethod
+  public void save(SectionInfo info) {
+    final HtmlEditorOptionsModel model = getModel(info);
 
-	@Override
-	public void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
-	{
-		crumbs.setForcedLastCrumb(LABEL_TITLE);
-		decorations.setTitle(LABEL_TITLE);
-		decorations.setContentBodyClass("htmleditor");
-	}
+    final String sessionId = model.getSessionId();
+    final HtmlEditorConfigurationEditingSession session =
+        htmlEditorService.getEditorConfigEditingSession(sessionId);
+    final String editorOptions = editor.getValue(info);
+    session.getConfig().setEditorOptions(editorOptions);
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new HtmlEditorOptionsModel();
-	}
+    // validate the JSON
+    try {
+      if (editorOptions.trim().length() != 0) {
+        htmlEditorService.validateEditorOptions(editorOptions);
+      }
+    } catch (InvalidDataException ide) {
+      model.setError(ide.getMessage());
+      info.preventGET();
+      return;
+    }
 
-	@Override
-	public void startSession(SectionInfo info)
-	{
-		final HtmlEditorConfigurationEditingSession session = htmlEditorService.createEditorConfigEditingSession();
-		getModel(info).setSessionId(session.getSessionId());
-	}
+    htmlEditorService.commitEditorConfigEditingSession(sessionId);
+    model.setSessionId(null);
+    front.returnToFrontPage(info);
+  }
 
-	@Override
-	@Nullable
-	public SettingInfo getSettingInfo(SectionInfo info)
-	{
-		return new SettingInfo("options", LABEL_SETTING_LINK, LABEL_SETTING_BLURB);
-	}
+  @EventHandlerMethod
+  public void cancel(SectionInfo info) {
+    final HtmlEditorOptionsModel model = getModel(info);
+    model.setSessionId(null);
+    front.returnToFrontPage(info);
+  }
 
-	public CodeMirror getEditor()
-	{
-		return editor;
-	}
+  @Override
+  public void addBreadcrumbsAndTitle(
+      SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
+    crumbs.setForcedLastCrumb(LABEL_TITLE);
+    decorations.setTitle(LABEL_TITLE);
+    decorations.setContentBodyClass("htmleditor");
+  }
 
-	public Button getSaveButton()
-	{
-		return saveButton;
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new HtmlEditorOptionsModel();
+  }
 
-	public Button getCancelButton()
-	{
-		return cancelButton;
-	}
+  @Override
+  public void startSession(SectionInfo info) {
+    final HtmlEditorConfigurationEditingSession session =
+        htmlEditorService.createEditorConfigEditingSession();
+    getModel(info).setSessionId(session.getSessionId());
+  }
 
-	public static class HtmlEditorOptionsModel
-	{
-		@Bookmarked(name = "s")
-		private String sessionId;
-		private String error;
+  @Override
+  @Nullable
+  public SettingInfo getSettingInfo(SectionInfo info) {
+    return new SettingInfo("options", LABEL_SETTING_LINK, LABEL_SETTING_BLURB);
+  }
 
-		public String getSessionId()
-		{
-			return sessionId;
-		}
+  public CodeMirror getEditor() {
+    return editor;
+  }
 
-		public void setSessionId(String sessionId)
-		{
-			this.sessionId = sessionId;
-		}
+  public Button getSaveButton() {
+    return saveButton;
+  }
 
-		public String getError()
-		{
-			return error;
-		}
+  public Button getCancelButton() {
+    return cancelButton;
+  }
 
-		public void setError(String error)
-		{
-			this.error = error;
-		}
-	}
+  public static class HtmlEditorOptionsModel {
+    @Bookmarked(name = "s")
+    private String sessionId;
+
+    private String error;
+
+    public String getSessionId() {
+      return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+      this.sessionId = sessionId;
+    }
+
+    public String getError() {
+      return error;
+    }
+
+    public void setError(String error) {
+      this.error = error;
+    }
+  }
 }

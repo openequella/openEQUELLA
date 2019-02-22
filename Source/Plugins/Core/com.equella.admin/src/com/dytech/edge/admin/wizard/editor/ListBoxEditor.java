@@ -16,13 +16,6 @@
 
 package com.dytech.edge.admin.wizard.editor;
 
-import java.awt.Rectangle;
-
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import com.dytech.edge.admin.wizard.ReloadHandler;
 import com.dytech.edge.admin.wizard.TripleShuffleList;
 import com.dytech.edge.admin.wizard.WizardHelper;
@@ -34,112 +27,120 @@ import com.tle.admin.schema.MultiTargetChooser;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.i18n.BundleCache;
+import java.awt.Rectangle;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
-public class ListBoxEditor extends AbstractPowerSearchControlEditor<ListBox>
-{
-	private static final long serialVersionUID = 1L;
+public class ListBoxEditor extends AbstractPowerSearchControlEditor<ListBox> {
+  private static final long serialVersionUID = 1L;
 
-	private I18nTextField title;
-	private I18nTextField description;
-	private JCheckBox reload;
-	private JCheckBox mandatory;
+  private I18nTextField title;
+  private I18nTextField description;
+  private JCheckBox reload;
+  private JCheckBox mandatory;
 
-	private MultiTargetChooser picker;
-	private TripleShuffleList choices;
+  private MultiTargetChooser picker;
+  private TripleShuffleList choices;
 
-	public ListBoxEditor(Control control, int wizardType, SchemaModel schema)
-	{
-		super(control, wizardType, schema);
-	}
+  public ListBoxEditor(Control control, int wizardType, SchemaModel schema) {
+    super(control, wizardType, schema);
+  }
 
-	@Override
-	protected void loadControl()
-	{
-		ListBox control = getWizardControl();
+  @Override
+  protected void loadControl() {
+    ListBox control = getWizardControl();
 
-		title.load(control.getTitle());
-		description.load(control.getDescription());
-		reload.setSelected(control.isReload());
-		mandatory.setSelected(control.isMandatory());
-		choices.setItems(control.getItems());
+    title.load(control.getTitle());
+    description.load(control.getDescription());
+    reload.setSelected(control.isReload());
+    mandatory.setSelected(control.isMandatory());
+    choices.setItems(control.getItems());
 
-		WizardHelper.loadSchemaChooser(picker, control);
+    WizardHelper.loadSchemaChooser(picker, control);
 
-		super.loadControl();
-	}
+    super.loadControl();
+  }
 
-	@Override
-	protected void saveControl()
-	{
-		ListBox control = getWizardControl();
+  @Override
+  protected void saveControl() {
+    ListBox control = getWizardControl();
 
-		control.setTitle(title.save());
-		control.setDescription(description.save());
-		control.setReload(reload.isSelected());
-		control.setMandatory(mandatory.isSelected());
+    control.setTitle(title.save());
+    control.setDescription(description.save());
+    control.setReload(reload.isSelected());
+    control.setMandatory(mandatory.isSelected());
 
-		control.getItems().clear();
-		control.getItems().addAll(choices.getItems());
+    control.getItems().clear();
+    control.getItems().addAll(choices.getItems());
 
-		WizardHelper.saveSchemaChooser(picker, control);
+    WizardHelper.saveSchemaChooser(picker, control);
 
-		super.saveControl();
-	}
+    super.saveControl();
+  }
 
-	@Override
-	protected void setupGUI()
-	{
-		setShowScripting(true);
+  @Override
+  protected void setupGUI() {
+    setShowScripting(true);
 
-		picker = WizardHelper.createMultiTargetChooser(this);
-		choices = new TripleShuffleList(
-			CurrentLocale.get("com.dytech.edge.admin.wizard.editor.listboxeditor.optionname"), CurrentLocale //$NON-NLS-1$
-				.get("com.dytech.edge.admin.wizard.editor.listboxeditor.optionvalue")); //$NON-NLS-1$
-		choices.setSingleThirdColumnSelection(true);
+    picker = WizardHelper.createMultiTargetChooser(this);
+    choices =
+        new TripleShuffleList(
+            CurrentLocale.get("com.dytech.edge.admin.wizard.editor.listboxeditor.optionname"),
+            CurrentLocale //$NON-NLS-1$
+                .get(
+                "com.dytech.edge.admin.wizard.editor.listboxeditor.optionvalue")); //$NON-NLS-1$
+    choices.setSingleThirdColumnSelection(true);
 
-		addSection(createDetails());
-		addSection(WizardHelper.createMetaData(picker));
-		addSection(WizardHelper.createItems(choices,
-			CurrentLocale.get("com.dytech.edge.admin.wizard.editor.listboxeditor.add"))); //$NON-NLS-1$
+    addSection(createDetails());
+    addSection(WizardHelper.createMetaData(picker));
+    addSection(
+        WizardHelper.createItems(
+            choices,
+            CurrentLocale.get(
+                "com.dytech.edge.admin.wizard.editor.listboxeditor.add"))); //$NON-NLS-1$
 
-		super.setupGUI();
-	}
+    super.setupGUI();
+  }
 
-	private JComponent createDetails()
-	{
-		JLabel titleLabel = new JLabel(CurrentLocale.get("wizard.controls.title")); //$NON-NLS-1$
-		JLabel descriptionLabel = new JLabel(CurrentLocale.get("wizard.controls.description")); //$NON-NLS-1$
+  private JComponent createDetails() {
+    JLabel titleLabel = new JLabel(CurrentLocale.get("wizard.controls.title")); // $NON-NLS-1$
+    JLabel descriptionLabel =
+        new JLabel(CurrentLocale.get("wizard.controls.description")); // $NON-NLS-1$
 
-		title = new I18nTextField(BundleCache.getLanguages());
-		description = new I18nTextField(BundleCache.getLanguages());
-		mandatory = new JCheckBox(CurrentLocale.get("wizard.controls.mandatory")); //$NON-NLS-1$
-		reload = new JCheckBox(CurrentLocale.get("wizard.controls.reload")); //$NON-NLS-1$
+    title = new I18nTextField(BundleCache.getLanguages());
+    description = new I18nTextField(BundleCache.getLanguages());
+    mandatory = new JCheckBox(CurrentLocale.get("wizard.controls.mandatory")); // $NON-NLS-1$
+    reload = new JCheckBox(CurrentLocale.get("wizard.controls.reload")); // $NON-NLS-1$
 
-		reload.addActionListener(new ReloadHandler(reload));
+    reload.addActionListener(new ReloadHandler(reload));
 
-		final int height1 = title.getPreferredSize().height;
-		final int width1 = descriptionLabel.getPreferredSize().width;
+    final int height1 = title.getPreferredSize().height;
+    final int width1 = descriptionLabel.getPreferredSize().width;
 
-		final int[] rows = {height1, height1, height1, height1};
-		final int[] cols = {width1, TableLayout.FILL, TableLayout.DOUBLE_FILL,};
+    final int[] rows = {height1, height1, height1, height1};
+    final int[] cols = {
+      width1, TableLayout.FILL, TableLayout.DOUBLE_FILL,
+    };
 
-		JPanel all = new JPanel(new TableLayout(rows, cols, 5, 5));
+    JPanel all = new JPanel(new TableLayout(rows, cols, 5, 5));
 
-		all.add(titleLabel, new Rectangle(0, 0, 1, 1));
-		all.add(title, new Rectangle(1, 0, 2, 1));
+    all.add(titleLabel, new Rectangle(0, 0, 1, 1));
+    all.add(title, new Rectangle(1, 0, 2, 1));
 
-		all.add(descriptionLabel, new Rectangle(0, 1, 1, 1));
-		all.add(description, new Rectangle(1, 1, 2, 1));
+    all.add(descriptionLabel, new Rectangle(0, 1, 1, 1));
+    all.add(description, new Rectangle(1, 1, 2, 1));
 
-		all.add(mandatory, new Rectangle(0, 2, 3, 1));
+    all.add(mandatory, new Rectangle(0, 2, 3, 1));
 
-		Control parent = getControl().getParent();
-		String classId = parent.getControlClass();
-		if( !classId.equals("multi") ) //$NON-NLS-1$
-		{
-			all.add(reload, new Rectangle(0, 3, 3, 1));
-		}
+    Control parent = getControl().getParent();
+    String classId = parent.getControlClass();
+    if (!classId.equals("multi")) // $NON-NLS-1$
+    {
+      all.add(reload, new Rectangle(0, 3, 3, 1));
+    }
 
-		return all;
-	}
+    return all;
+  }
 }

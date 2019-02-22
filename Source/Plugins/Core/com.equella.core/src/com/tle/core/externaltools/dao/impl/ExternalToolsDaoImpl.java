@@ -24,12 +24,11 @@ import com.tle.core.guice.Bind;
 
 @Bind(ExternalToolsDao.class)
 @Singleton
-public class ExternalToolsDaoImpl extends AbstractEntityDaoImpl<ExternalTool> implements ExternalToolsDao
-{
-	public ExternalToolsDaoImpl()
-	{
-		super(ExternalTool.class);
-	}
+public class ExternalToolsDaoImpl extends AbstractEntityDaoImpl<ExternalTool>
+    implements ExternalToolsDao {
+  public ExternalToolsDaoImpl() {
+    super(ExternalTool.class);
+  }
 
-	// TODO
+  // TODO
 }

@@ -16,15 +16,11 @@
 
 package com.tle.web.workflow.tasks.portal;
 
-import java.util.Arrays;
-
-import javax.inject.Inject;
-
 import com.dytech.edge.queries.FreeTextQuery;
 import com.google.inject.assistedinject.Assisted;
 import com.tle.common.search.DefaultSearch;
-import com.tle.core.guice.BindFactory;
 import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.guice.BindFactory;
 import com.tle.core.workflow.freetext.TaskListSearch;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionsController;
@@ -35,112 +31,105 @@ import com.tle.web.workflow.portal.TaskListSubsearch;
 import com.tle.web.workflow.tasks.FilterByAssignment;
 import com.tle.web.workflow.tasks.FilterByAssignment.Assign;
 import com.tle.web.workflow.tasks.RootTaskListSection;
+import java.util.Arrays;
+import javax.inject.Inject;
 
-public class TaskListFilter implements TaskListSubsearch
-{
-	private final String identifier;
-	private final Assign assigned;
-	private final boolean mustModerate;
-	private final boolean secondLevel;
-	private final SectionsController sectionsController;
+public class TaskListFilter implements TaskListSubsearch {
+  private final String identifier;
+  private final Assign assigned;
+  private final boolean mustModerate;
+  private final boolean secondLevel;
+  private final SectionsController sectionsController;
 
-	@PlugKey("filternames.")
-	private static String KEY_FILTERNAMES;
+  @PlugKey("filternames.")
+  private static String KEY_FILTERNAMES;
 
-	@Inject
-	public TaskListFilter(SectionsController controller, @Assisted String identifier, @Assisted Assign assigned,
-		@Assisted("mustModerate") boolean mustModerate, @Assisted("secondLevel") boolean secondLevel)
-	{
-		this.identifier = identifier;
-		this.assigned = assigned;
-		this.mustModerate = mustModerate;
-		this.secondLevel = secondLevel;
-		this.sectionsController = controller;
-	}
+  @Inject
+  public TaskListFilter(
+      SectionsController controller,
+      @Assisted String identifier,
+      @Assisted Assign assigned,
+      @Assisted("mustModerate") boolean mustModerate,
+      @Assisted("secondLevel") boolean secondLevel) {
+    this.identifier = identifier;
+    this.assigned = assigned;
+    this.mustModerate = mustModerate;
+    this.secondLevel = secondLevel;
+    this.sectionsController = controller;
+  }
 
-	@Override
-	public String getIdentifier()
-	{
-		return identifier;
-	}
+  @Override
+  public String getIdentifier() {
+    return identifier;
+  }
 
-	@SuppressWarnings("nls")
-	@Override
-	public DefaultSearch getSearch()
-	{
-		TaskListSearch searcher = new TaskListSearch();
+  @SuppressWarnings("nls")
+  @Override
+  public DefaultSearch getSearch() {
+    TaskListSearch searcher = new TaskListSearch();
 
-		if( mustModerate )
-		{
-			searcher.addMust(FreeTextQuery.FIELD_WORKFLOW_UNANIMOUS, "true"); //$NON-NLS-1$
-		}
-		String currentUserId = CurrentUser.getUserID();
-		switch( assigned )
-		{
-			case OTHERS:
-				searcher.addMustNot(FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, Arrays.asList(currentUserId, ""));
-				break;
-			case ME:
-				searcher.addMust(FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, currentUserId);
-				break;
-			case NOONE:
-				searcher.addMust(FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, "");
-				break;
+    if (mustModerate) {
+      searcher.addMust(FreeTextQuery.FIELD_WORKFLOW_UNANIMOUS, "true"); // $NON-NLS-1$
+    }
+    String currentUserId = CurrentUser.getUserID();
+    switch (assigned) {
+      case OTHERS:
+        searcher.addMustNot(
+            FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, Arrays.asList(currentUserId, ""));
+        break;
+      case ME:
+        searcher.addMust(FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, currentUserId);
+        break;
+      case NOONE:
+        searcher.addMust(FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, "");
+        break;
 
-			default:
-				// ANY
-				break;
+      default:
+        // ANY
+        break;
+    }
+    return searcher;
+  }
 
-		}
-		return searcher;
-	}
+  @Override
+  public boolean isSecondLevel() {
+    return secondLevel;
+  }
 
-	@Override
-	public boolean isSecondLevel()
-	{
-		return secondLevel;
-	}
+  public void setupFilter(SectionInfo info) {
+    // noop
+  }
 
-	public void setupFilter(SectionInfo info)
-	{
-		// noop
-	}
+  @Override
+  public SectionInfo setupForward(SectionInfo from) {
+    SectionInfo forward;
+    if (from != null) {
+      forward = from.createForward(RootTaskListSection.URL);
+    } else {
+      forward = sectionsController.createForward(RootTaskListSection.URL);
+    }
+    FilterByAssignment filterSection = forward.lookupSection(FilterByAssignment.class);
+    filterSection.getAssignList().setSelectedStringValue(forward, assigned.name());
+    filterSection.getMustCheckbox().setChecked(forward, mustModerate);
+    return forward;
+  }
 
-	@Override
-	public SectionInfo setupForward(SectionInfo from)
-	{
-		SectionInfo forward;
-		if( from != null )
-		{
-			forward = from.createForward(RootTaskListSection.URL);
-		}
-		else
-		{
-			forward = sectionsController.createForward(RootTaskListSection.URL);
-		}
-		FilterByAssignment filterSection = forward.lookupSection(FilterByAssignment.class);
-		filterSection.getAssignList().setSelectedStringValue(forward, assigned.name());
-		filterSection.getMustCheckbox().setChecked(forward, mustModerate);
-		return forward;
-	}
+  @Override
+  public Label getName() {
+    return new KeyLabel(KEY_FILTERNAMES + getIdentifier());
+  }
 
-	@Override
-	public Label getName()
-	{
-		return new KeyLabel(KEY_FILTERNAMES + getIdentifier());
-	}
+  @Override
+  public String getParentIdentifier() {
+    return "taskall"; //$NON-NLS-1$
+  }
 
-	@Override
-	public String getParentIdentifier()
-	{
-		return "taskall"; //$NON-NLS-1$
-	}
-
-	@BindFactory
-	public interface TaskListFilterFactory
-	{
-		TaskListFilter create(String identifier, Assign assigned, @Assisted("mustModerate") boolean mustModerate,
-			@Assisted("secondLevel") boolean secondLevel);
-	}
-
+  @BindFactory
+  public interface TaskListFilterFactory {
+    TaskListFilter create(
+        String identifier,
+        Assign assigned,
+        @Assisted("mustModerate") boolean mustModerate,
+        @Assisted("secondLevel") boolean secondLevel);
+  }
 }

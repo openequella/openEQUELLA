@@ -16,22 +16,21 @@
 
 package com.tle.core.customlinks.service;
 
-import java.util.List;
-
 import com.tle.common.customlinks.entity.CustomLink;
 import com.tle.core.entity.service.AbstractEntityService;
+import java.util.List;
 
-public interface CustomLinkService extends AbstractEntityService<CustomLinkEditingBean, CustomLink>
-{
-	List<CustomLink> enumerateInOrder();
+public interface CustomLinkService
+    extends AbstractEntityService<CustomLinkEditingBean, CustomLink> {
+  List<CustomLink> enumerateInOrder();
 
-	List<CustomLink> listLinksForUser();
+  List<CustomLink> listLinksForUser();
 
-	void insertLink(CustomLink link);
+  void insertLink(CustomLink link);
 
-	void deleteLink(CustomLink link);
+  void deleteLink(CustomLink link);
 
-	boolean showSettingLink();
+  boolean showSettingLink();
 
-	void moveLink(String linkUuid, int newOrder);
+  void moveLink(String linkUuid, int newOrder);
 }
