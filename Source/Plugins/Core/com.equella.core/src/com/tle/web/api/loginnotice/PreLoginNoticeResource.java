@@ -16,7 +16,10 @@
 
 package com.tle.web.api.loginnotice;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.tle.core.settings.loginnotice.impl.PreLoginNotice;
 import io.swagger.annotations.Api;
+import java.io.IOException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
@@ -26,10 +29,10 @@ import javax.ws.rs.core.Response;
 public interface PreLoginNoticeResource {
   @GET
   @Produces("text/plain")
-  Response retrievePreLoginNotice();
+  Response retrievePreLoginNotice() throws IOException;
 
   @PUT
-  Response setPreLoginNotice(String loginNotice);
+  Response setPreLoginNotice(PreLoginNotice loginNotice) throws JsonProcessingException;
 
   @DELETE
   Response deletePreLoginNotice();

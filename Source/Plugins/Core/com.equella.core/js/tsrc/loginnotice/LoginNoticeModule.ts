@@ -9,7 +9,17 @@ export enum NotificationType {
   Clear,
   Revert
 }
-
+export enum ScheduleSettings {
+  OFF = "OFF",
+  ON = "ON",
+  SCHEDULED = "SCHEDULED"
+}
+export interface PreLoginNotice {
+  notice?: String;
+  scheduleSettings: ScheduleSettings;
+  startDate?: Date;
+  endDate?: Date;
+}
 export const strings = prepLangStrings("loginnoticepage", {
   title: "Login Notice Editor",
   currentnotice: "Current Notice: ",
@@ -31,14 +41,23 @@ export const strings = prepLangStrings("loginnoticepage", {
     saved: "Login notice saved successfully.",
     cleared: "Login notice cleared successfully.",
     reverted: "Reverted changes to login notice."
+  },
+  scheduling: {
+    title: "Notice Schedule",
+    start: "Set start date:",
+    end: "Set end date:",
+    scheduled: "Scheduled",
+    alwayson: "Always on",
+    disabled: "Disabled",
+    endbeforestart: "End date must be on or after start date."
   }
 });
 
-export function submitPreLoginNotice(notice: string): AxiosPromise {
+export function submitPreLoginNotice(notice: PreLoginNotice): AxiosPromise {
   return axios.put(PRE_LOGIN_NOTICE_API_URL, notice);
 }
 
-export function getPreLoginNotice(): AxiosPromise {
+export function getPreLoginNotice(): AxiosPromise<PreLoginNotice> {
   return axios.get(PRE_LOGIN_NOTICE_API_URL);
 }
 

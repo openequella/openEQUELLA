@@ -16,9 +16,12 @@
 
 package com.tle.web.api.loginnotice.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tle.core.guice.Bind;
 import com.tle.core.settings.loginnotice.LoginNoticeService;
+import com.tle.core.settings.loginnotice.impl.PreLoginNotice;
 import com.tle.web.api.loginnotice.PreLoginNoticeResource;
+import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Response;
@@ -29,16 +32,17 @@ public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
   @Inject LoginNoticeService noticeService;
 
   @Override
-  public Response retrievePreLoginNotice() {
-    String loginNotice = noticeService.getPreLoginNotice();
+  public Response retrievePreLoginNotice() throws IOException {
+    PreLoginNotice loginNotice = noticeService.getPreLoginNotice();
     if (loginNotice != null) {
-      return Response.ok(loginNotice, "text/plain").build();
+      return Response.ok(loginNotice, "application/json").build();
+    } else {
+      return Response.status(Response.Status.NOT_FOUND).build();
     }
-    return Response.status(Response.Status.NOT_FOUND).entity(null).build();
   }
 
   @Override
-  public Response setPreLoginNotice(String loginNotice) {
+  public Response setPreLoginNotice(PreLoginNotice loginNotice) throws JsonProcessingException {
     noticeService.setPreLoginNotice(loginNotice);
     return Response.ok().build();
   }

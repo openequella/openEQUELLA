@@ -1,8 +1,11 @@
 import * as React from "react";
 import {
   Button,
+  Dialog,
+  DialogActions,
   DialogContent,
   DialogContentText,
+  DialogTitle,
   Grid,
   TextField,
   Typography
@@ -12,14 +15,11 @@ import {
   clearPostLoginNotice,
   getPostLoginNotice,
   NotificationType,
-  submitPostLoginNotice,
-  strings
+  strings,
+  submitPostLoginNotice
 } from "./LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
 
 interface PostLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;

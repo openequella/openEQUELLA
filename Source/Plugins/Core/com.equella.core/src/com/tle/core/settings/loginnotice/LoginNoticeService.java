@@ -16,10 +16,14 @@
 
 package com.tle.core.settings.loginnotice;
 
-public interface LoginNoticeService {
-  String getPreLoginNotice();
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.tle.core.settings.loginnotice.impl.PreLoginNotice;
+import java.io.IOException;
 
-  void setPreLoginNotice(String notice);
+public interface LoginNoticeService {
+  PreLoginNotice getPreLoginNotice() throws IOException;
+
+  void setPreLoginNotice(PreLoginNotice notice) throws JsonProcessingException;
 
   void deletePreLoginNotice();
 
@@ -28,4 +32,6 @@ public interface LoginNoticeService {
   void setPostLoginNotice(String notice);
 
   void deletePostLoginNotice();
+
+  boolean isActive(PreLoginNotice preLoginNotice);
 }

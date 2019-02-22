@@ -1,25 +1,34 @@
 import * as React from "react";
+import { ChangeEvent } from "react";
 import {
   Button,
+  Dialog,
+  DialogActions,
   DialogContent,
   DialogContentText,
+  DialogTitle,
+  FormControl,
+  FormControlLabel,
   Grid,
+  Radio,
+  RadioGroup,
   TextField,
   Typography
 } from "@material-ui/core";
+import { DatePicker } from "material-ui-pickers";
+
 import { commonString } from "../util/commonstrings";
 import {
   clearPreLoginNotice,
   getPreLoginNotice,
   NotificationType,
-  submitPreLoginNotice,
-  strings
+  PreLoginNotice,
+  ScheduleSettings,
+  strings,
+  submitPreLoginNotice
 } from "./LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
 
 interface PreLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
@@ -27,9 +36,15 @@ interface PreLoginNoticeConfiguratorProps {
 }
 
 interface PreLoginNoticeConfiguratorState {
-  preNotice?: string; //what is currently in the textfield
-  dbPreNotice?: string; //what is currently in the database
+  preNotice?: String; //what is currently in the textfield
+  dbPreNotice?: String; //what is currently in the database
   clearStaged: boolean;
+  checked: string;
+  dbChecked: string;
+  startDate?: Date;
+  dbStartDate?: Date;
+  endDate?: Date;
+  dbEndDate?: Date;
 }
 
 class PreLoginNoticeConfigurator extends React.Component<
@@ -41,16 +56,41 @@ class PreLoginNoticeConfigurator extends React.Component<
     this.state = {
       preNotice: "",
       dbPreNotice: "",
-      clearStaged: false
+      clearStaged: false,
+      checked: "ON",
+      dbChecked: "ON",
+      startDate: new Date(),
+      dbStartDate: new Date(),
+      endDate: new Date(),
+      dbEndDate: new Date()
     };
   }
 
   handleSubmitPreNotice = () => {
     if (this.state.preNotice != undefined) {
-      submitPreLoginNotice(this.state.preNotice)
+      let scheduleToSend: ScheduleSettings;
+      switch (this.state.checked) {
+        case "ON":
+          scheduleToSend = ScheduleSettings.ON;
+          break;
+        case "SCHEDULED":
+          scheduleToSend = ScheduleSettings.SCHEDULED;
+          break;
+        case "OFF":
+        default:
+          scheduleToSend = ScheduleSettings.OFF;
+          break;
+      }
+      let noticeToSend: PreLoginNotice = {
+        notice: this.state.preNotice,
+        scheduleSettings: scheduleToSend,
+        startDate: this.state.startDate,
+        endDate: this.state.endDate
+      };
+      submitPreLoginNotice(noticeToSend)
         .then(() => {
           this.props.notify(NotificationType.Save);
-          this.setState({ dbPreNotice: this.state.preNotice });
+          this.setDBToValues();
         })
         .catch((error: AxiosError) => {
           this.props.handleError(error);
@@ -71,7 +111,7 @@ class PreLoginNoticeConfigurator extends React.Component<
   };
 
   handleUndoPreNotice = () => {
-    this.setState({ preNotice: this.state.dbPreNotice });
+    this.setValuesToDB();
     this.props.notify(NotificationType.Revert);
   };
 
@@ -81,10 +121,47 @@ class PreLoginNoticeConfigurator extends React.Component<
     this.setState({ preNotice: e.value });
   };
 
+  mapScheduleSetting = (scheduleSetting: ScheduleSettings): string => {
+    switch (scheduleSetting) {
+      case ScheduleSettings.ON:
+        return "ON";
+      case ScheduleSettings.SCHEDULED:
+        return "SCHEDULED";
+      case ScheduleSettings.OFF:
+        return "OFF";
+      default:
+        return "ON";
+    }
+  };
+
+  setValuesToDB = () => {
+    this.setState({
+      preNotice: this.state.dbPreNotice,
+      checked: this.state.dbChecked,
+      startDate: this.state.dbStartDate,
+      endDate: this.state.dbEndDate
+    });
+  };
+
+  setDBToValues = () => {
+    this.setState({
+      dbPreNotice: this.state.preNotice,
+      dbChecked: this.state.checked,
+      dbStartDate: this.state.startDate,
+      dbEndDate: this.state.endDate
+    });
+  };
+
   componentDidMount = () => {
     getPreLoginNotice()
-      .then((response: AxiosResponse) => {
-        this.setState({ dbPreNotice: response.data, preNotice: response.data });
+      .then((response: AxiosResponse<PreLoginNotice>) => {
+        this.setState({
+          dbPreNotice: response.data.notice,
+          dbChecked: this.mapScheduleSetting(response.data.scheduleSettings),
+          dbStartDate: response.data.startDate,
+          dbEndDate: response.data.endDate
+        });
+        this.setValuesToDB();
       })
       .catch((error: AxiosError) => {
         this.props.handleError(error);
@@ -122,9 +199,96 @@ class PreLoginNoticeConfigurator extends React.Component<
     );
   };
 
+  areButtonsEnabled = (): boolean => {
+    //state matches database?
+    return (
+      this.state.checked == this.state.dbChecked &&
+      this.state.preNotice == this.state.dbPreNotice &&
+      this.state.startDate == this.state.dbStartDate &&
+      this.state.endDate == this.state.dbEndDate
+    );
+  };
+
+  handleRadioButtons = (event: ChangeEvent, value: string) => {
+    this.setState({ checked: value });
+  };
+
+  handleStartDateChange = (value: Date) => {
+    this.setState({ startDate: value });
+  };
+
+  handleEndDateChange = (value: Date) => {
+    this.setState({ endDate: value });
+  };
+
+  resetDatePickers = () => {
+    this.setState({ startDate: undefined, endDate: undefined });
+  };
+
+  ScheduleSettings = () => {
+    return (
+      <FormControl>
+        <Typography color="textSecondary" variant="subheading">
+          {strings.scheduling.title}
+        </Typography>
+
+        <RadioGroup
+          row
+          value={this.state.checked}
+          onChange={this.handleRadioButtons}
+        >
+          <FormControlLabel
+            value="ON"
+            label={strings.scheduling.alwayson}
+            control={<Radio id="onRadioButton" />}
+          />
+          <FormControlLabel
+            value="SCHEDULED"
+            label={strings.scheduling.scheduled}
+            control={<Radio id="scheduledRadioButton" />}
+          />
+          <FormControlLabel
+            value="OFF"
+            label={strings.scheduling.disabled}
+            control={<Radio id="offRadioButton" />}
+          />
+        </RadioGroup>
+
+        <div hidden={this.state.checked != "SCHEDULED"}>
+          <Typography color="textSecondary" variant="subheading">
+            {strings.scheduling.start}
+          </Typography>
+
+          <DatePicker
+            id="startDatePicker"
+            okLabel={<span id="ok">OK</span>}
+            minDate={new Date().toLocaleDateString()}
+            onChange={this.handleStartDateChange}
+            value={
+              this.state.startDate == undefined ? null : this.state.startDate
+            }
+          />
+
+          <Typography color="textSecondary" variant="subheading">
+            {strings.scheduling.end}
+          </Typography>
+
+          <DatePicker
+            id="endDatePicker"
+            minDate={this.state.startDate}
+            minDateMessage={strings.scheduling.endbeforestart}
+            onChange={this.handleEndDateChange}
+            value={this.state.endDate == undefined ? null : this.state.endDate}
+          />
+        </div>
+      </FormControl>
+    );
+  };
+
   render() {
     const { preNotice, dbPreNotice } = this.state;
     const Dialogs = this.Dialogs;
+    const ScheduleSettings = this.ScheduleSettings;
     return (
       <SettingsMenuContainer>
         <Typography color="textSecondary" variant="subheading">
@@ -142,14 +306,17 @@ class PreLoginNoticeConfigurator extends React.Component<
               inputProps={{ length: 12 }}
               placeholder={strings.prelogin.description}
               onChange={e => this.handlePreTextFieldChange(e.target)}
-              value={preNotice}
+              value={preNotice + ""}
             />
+          </Grid>
+          <Grid item>
+            <ScheduleSettings />
           </Grid>
           <Grid item container spacing={8} direction="row-reverse">
             <Grid item>
               <Button
                 id="preApplyButton"
-                disabled={preNotice == dbPreNotice}
+                disabled={this.areButtonsEnabled()}
                 onClick={this.handleSubmitPreNotice}
                 variant="contained"
               >
@@ -169,7 +336,7 @@ class PreLoginNoticeConfigurator extends React.Component<
             <Grid item>
               <Button
                 id="preUndoButton"
-                disabled={dbPreNotice == preNotice}
+                disabled={this.areButtonsEnabled()}
                 onClick={this.handleUndoPreNotice}
                 variant="text"
               >

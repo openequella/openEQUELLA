@@ -2,11 +2,14 @@ import * as React from "react";
 import { Bridge } from "../api/bridge";
 import { AxiosError } from "axios";
 import MessageInfo from "../components/MessageInfo";
-import { ErrorResponse, generateFromAxiosError } from "../api/errors";
+import {
+  ErrorResponse,
+  generateFromAxiosError,
+  generateNewErrorID
+} from "../api/errors";
 import PreLoginNoticeConfigurator from "./PreLoginNoticeConfigurator";
 import PostLoginNoticeConfigurator from "./PostLoginNoticeConfigurator";
-import { Tabs } from "@material-ui/core";
-import Tab from "@material-ui/core/Tab";
+import { Tabs, Tab } from "@material-ui/core";
 import { NotificationType, strings } from "./LoginNoticeModule";
 
 interface LoginNoticeConfigPageProps {
@@ -40,6 +43,11 @@ class LoginNoticeConfigPage extends React.Component<
       switch (axiosError.response.status) {
         case 404:
           //do nothing, this simply means that there is no current login notice
+          break;
+        case 400:
+          this.setState({
+            error: generateNewErrorID(strings.scheduling.endbeforestart)
+          });
           break;
         default:
           this.setState({ error: generateFromAxiosError(axiosError) });

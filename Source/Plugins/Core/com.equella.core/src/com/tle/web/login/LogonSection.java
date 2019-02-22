@@ -30,6 +30,7 @@ import com.tle.core.plugins.PluginTracker;
 import com.tle.core.services.user.UserService;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.core.settings.loginnotice.LoginNoticeService;
+import com.tle.core.settings.loginnotice.impl.PreLoginNotice;
 import com.tle.exceptions.AccountExpiredException;
 import com.tle.exceptions.AuthenticationException;
 import com.tle.exceptions.BadCredentialsException;
@@ -221,7 +222,15 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
     Decorations decorations = Decorations.getDecorations(context);
     decorations.setTitle(TITLE_LABEL);
     decorations.setMenuMode(MenuMode.HIDDEN);
-    model.setLoginNotice(loginNoticeService.getPreLoginNotice());
+    PreLoginNotice preLoginNotice = new PreLoginNotice();
+    try {
+      preLoginNotice = loginNoticeService.getPreLoginNotice();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    if (preLoginNotice != null && loginNoticeService.isActive(preLoginNotice)) {
+      model.setLoginNotice(preLoginNotice.getNotice());
+    }
     model.setChildSections(
         renderChildren(context, this, new ResultListCollector(true)).getFirstResult());
     final List<SectionRenderable> loginLinksRenderables = new ArrayList<>();
