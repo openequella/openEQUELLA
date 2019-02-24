@@ -65,15 +65,13 @@ public class NewVersionSection extends AbstractWizardViewItemActionSection {
     // An item may have one or more versions.
     String selectedItemUuid = selectedItem.getUuid();
     List<Item> items = itemService.getVersionDetails(selectedItemUuid);
-    items.forEach(
-        item -> {
-          if (item.isModerating()) {
-            // Display a warning when creating a new version of this item because there is a current
-            // version awaiting moderation.
-            getComponent()
-                .setClickHandler(context, new OverrideHandler(Js.alert_s(NO_NEW_VERSION_LABEL)));
-          }
-        });
+    Boolean isModerating = items.stream().anyMatch(item -> item.isModerating());
+    if (isModerating) {
+      // Display a warning when creating a new version of this item because there is a current
+      // version awaiting moderation.
+      getComponent()
+          .setClickHandler(context, new OverrideHandler(Js.alert_s(NO_NEW_VERSION_LABEL)));
+    }
     return super.renderHtml(context);
   }
 
