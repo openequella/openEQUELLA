@@ -1,14 +1,14 @@
 {
   "scripts": {
     "install": "./coursier bootstrap com.geirsson:scalafmt-cli_2.12:1.5.1 -f -o node_modules/.bin/scalafmt && ./coursier bootstrap com.google.googlejavaformat:google-java-format:1.7 -f -o node_modules/.bin/google-java-format",
-    "format-commit:scala": "git-format-staged -f 'scalafmt --stdin' '*.scala'",
-    "format-commit:java": "git-format-staged -f 'google-java-format --assume-filename \"{}\" -' '*.java'",
-    "format:scala": "find . -name '*.scala' -o -name '*.sbt' | xargs scalafmt",
-    "format:java": "find . -name '*.java' | xargs google-java-format -r",
-    "format:ts": "prettier --write 'Source/Plugins/Core/**/*.{ts,tsx}'",
+    "format-commit:scala": "git-format-staged -f \"scalafmt --stdin\" \"*.scala\"",
+    "format-commit:java": "git-format-staged -f \"google-java-format --assume-filename \\\"{}\\\" -\" \"*.java\"",
+    "format:scala": "find . -name \"*.scala\" -o -name \"*.sbt\" | xargs scalafmt",
+    "format:java": "find . -name \"*.java\" | xargs google-java-format -r",
+    "format:ts": "prettier --write \"Source/Plugins/Core/**/*.{ts,tsx}\"",
     "check:scala": "find . -name '*.scala' -o -name '*.sbt' | xargs scalafmt --test",
     "check:java": "find . -name '*.java' | xargs google-java-format -n --set-exit-if-changed",
-    "check:ts": "prettier -c 'Source/Plugins/Core/**/*.{ts,tsx}'",
+    "check:ts": "prettier -c \"Source/Plugins/Core/**/*.{ts,tsx}\"",
     "check": "yarn run check:ts && yarn run check:scala && yarn run check:java",
     "format": "yarn run format:ts && yarn run format:scala && yarn run format:java"
   },
