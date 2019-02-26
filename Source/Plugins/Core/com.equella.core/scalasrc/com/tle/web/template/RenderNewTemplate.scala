@@ -32,6 +32,7 @@ import com.tle.web.sections.js.generic.function.IncludeFile
 import com.tle.web.sections.render._
 import com.tle.web.settings.UISettings
 import io.circe.generic.auto._
+import org.jsoup.Jsoup
 
 import scala.collection.JavaConverters._
 
@@ -41,9 +42,20 @@ object RenderNewTemplate {
   val r            = ResourcesService.getResourceHelper(getClass)
   val DisableNewUI = "DISABLE_NEWUI"
   val SetupJSKey   = "setupJSData"
-  val ReactJSKey   = "reactJSBundle"
+//  val ReactHtmlKey   = "reactJSHtml"
+  val (preRenderCss, stdStrings) = {
+    val ok      = Jsoup.parse(getClass.getResourceAsStream("/web/reactjs/index.html"), "UTF-8", "")
+    val links   = ok.getElementsByTag("link")
+    val scripts = ok.getElementsByTag("script")
+    val newCss = new PreRenderable {
+      override def preRender(info: PreRenderContext): Unit = {
+        links.asScala.foreach(l => info.addCss(r.url(l.attr("href"))))
+      }
+    }
+    (newCss, scripts.asScala.map(e => r.url(e.attr("src"))).toArray)
+  }
 
-  val reactTemplate = r.url("reactjs/index.js")
+//  val reactPage = r.url("reactjs/index.html")
 
   val bundleJs = new PreRenderable {
     override def preRender(info: PreRenderContext): Unit = {
@@ -106,15 +118,16 @@ object RenderNewTemplate {
       Option(req.getAttribute(SetupJSKey).asInstanceOf[ObjectExpression => ObjectExpression])
         .map(_.apply(_renderData))
         .getOrElse(_renderData)
-    val bundleJS =
-      Option(req.getAttribute(ReactJSKey).asInstanceOf[String]).getOrElse(reactTemplate)
-    renderReact(context, viewFactory, renderData, bundleJS)
+//    val bundleJS =
+//      Option(req.getAttribute(ReactJSKey).asInstanceOf[String]).getOrElse(reactTemplate)
+    context.preRender(preRenderCss)
+    renderReact(context, viewFactory, renderData, stdStrings)
   }
 
   def renderReact(context: RenderEventContext,
                   viewFactory: FreemarkerFactory,
                   renderData: ObjectExpression,
-                  scriptUrl: String): SectionResult = {
+                  scripts: Array[String]): SectionResult = {
     context.preRender(JQueryCore.PRERENDER)
     if (DebugSettings.isAutoTestMode) {
       context.preRender(RenderTemplate.AUTOTEST_JS)
@@ -127,10 +140,10 @@ object RenderNewTemplate {
     val tempResult = new GenericTemplateResult()
     tempResult.addNamedResult("header", HeaderSection)
     viewFactory.createResultWithModel("layouts/outer/react.ftl",
-                                      TemplateScript(scriptUrl, renderData, tempResult, ""))
+                                      TemplateScript(scripts, renderData, tempResult, ""))
   }
 
-  case class TemplateScript(getScriptUrl: String,
+  case class TemplateScript(getScripts: Array[String],
                             getRenderJs: ObjectExpression,
                             getTemplate: TemplateResult,
                             htmlAttributes: String) {

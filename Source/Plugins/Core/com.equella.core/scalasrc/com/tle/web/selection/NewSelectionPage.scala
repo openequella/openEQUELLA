@@ -41,7 +41,7 @@ object NewSelectionPage {
     }
     val uss = LegacyGuice.userSessionService
     val ss  = uss.getAttribute(sessionId).asInstanceOf[SelectionSession]
-    req.setAttribute(RenderNewTemplate.ReactJSKey, NewSelectionPage.selectionJS)
+//    req.setAttribute(RenderNewTemplate.ReactJSKey, NewSelectionPage.selectionJS)
     req.setAttribute(
       RenderNewTemplate.SetupJSKey, { oe: ObjectExpression =>
         oe.put("selection", mapper.writeValueAsString(ss))

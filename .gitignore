@@ -1,6 +1,7 @@
 *.pyc
 *.pmd
 *.iml
+.cache/
 
 target/
 build.conf

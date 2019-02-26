@@ -22,7 +22,9 @@
     </head>
     <body>
         <div id="mainDiv"></div>
-        <script src="${m.scriptUrl}"></script>
+        <#list m.scripts as script>
+          <script src="${script}"></script>
+        </#list>
         <@render template["postmarkup"]/>
     </body>
 </html>

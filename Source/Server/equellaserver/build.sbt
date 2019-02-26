@@ -21,6 +21,7 @@ val RestEasyVersion  = "3.5.0.Final"
 val simpledbaVersion = "0.1.7-SNAPSHOT"
 val fs2Version       = "0.10.2"
 val circeVersion     = "0.9.1"
+val jsoupVersion     = "1.11.3"
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 
@@ -193,7 +194,7 @@ libraryDependencies ++= Seq(
   "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api"   % "1.0.1",
   "org.eclipse.microprofile.config"      % "microprofile-config-api"        % "1.2.1",
   "javax.json.bind"                      % "javax.json.bind-api"            % "1.0",
-  "org.jsoup"                            % "jsoup"                          % "1.6.1",
+  "org.jsoup"                            % "jsoup"                          % jsoupVersion,
   xstreamDep,
   "org.opensaml" % "xmltooling" % "1.3.1" excludeAll (
     ExclusionRule(organization = "org.slf4j")
