@@ -168,18 +168,26 @@ public class ItemResourceImpl implements EquellaItemResource {
     replacePlaceholderUuids(equellaItemBean);
     final boolean ensureOnIndexList = Boolean.parseBoolean(waitForIndex);
 
-    final ItemIdKey itemId;
-    if (RestImportExportHelper.isImport(uriInfo)) {
-      itemId = itemDeserializerService.importItem(equellaItemBean, stagingUuid, ensureOnIndexList);
+    List<Item> items = itemService.getVersionDetails(itemBean.getUuid());
+    Boolean isModerating = items.stream().anyMatch(item -> item.isModerating());
+    if (isModerating) {
+      throw new ItemEditingException(
+          "A new version of this item cannot be created because there is a current version awaiting moderation");
     } else {
-      itemId =
-          itemDeserializerService.newItem(
-              equellaItemBean, stagingUuid, draft, ensureOnIndexList, false);
+      final ItemIdKey itemId;
+      if (RestImportExportHelper.isImport(uriInfo)) {
+        itemId =
+            itemDeserializerService.importItem(equellaItemBean, stagingUuid, ensureOnIndexList);
+      } else {
+        itemId =
+            itemDeserializerService.newItem(
+                equellaItemBean, stagingUuid, draft, ensureOnIndexList, false);
+      }
+      if (ensureOnIndexList) {
+        freeTextService.waitUntilIndexed(itemId);
+      }
+      return Response.status(Status.CREATED).location(itemLinkService.getItemURI(itemId)).build();
     }
-    if (ensureOnIndexList) {
-      freeTextService.waitUntilIndexed(itemId);
-    }
-    return Response.status(Status.CREATED).location(itemLinkService.getItemURI(itemId)).build();
   }
 
   /**
