@@ -28,7 +28,6 @@ import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.render.Label;
 import com.tle.web.viewurl.ItemSectionInfo;
-import java.util.List;
 import javax.inject.Inject;
 
 @Bind
@@ -64,9 +63,8 @@ public class NewVersionSection extends AbstractWizardViewItemActionSection {
     Item selectedItem = getItemInfo(context).getItem();
     // An item may have one or more versions.
     String selectedItemUuid = selectedItem.getUuid();
-    List<Item> items = itemService.getVersionDetails(selectedItemUuid);
-    Boolean isModerating = items.stream().anyMatch(item -> item.isModerating());
-    if (isModerating) {
+    boolean isItemInModeration = itemService.isItemInModeration(selectedItemUuid);
+    if (isItemInModeration) {
       // Display a warning when creating a new version of this item because there is a current
       // version awaiting moderation.
       getComponent()
