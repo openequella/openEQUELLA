@@ -109,6 +109,7 @@ public class EQUELLAServer {
       ExtendedProperties props = new ExtendedProperties();
       String pathResolver;
       boolean devMode = Boolean.parseBoolean(getProperty(mandatory, "equella.devmode", "false"));
+      System.setProperty("equella.devmode", Boolean.toString(devMode));
       if (devMode) {
         System.out.println("Started server in dev mode");
         pathResolver = StandardPathResolver.class.getName();

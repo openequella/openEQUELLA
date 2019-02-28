@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest
 
 object NewSelectionPage {
 
-  val selectionJS = r.url("reactjs/selection.js")
+  val SelectionPage = "selection.html"
 
   val mapper = LegacyGuice.objectMapperService.createObjectMapper()
 
@@ -41,7 +41,7 @@ object NewSelectionPage {
     }
     val uss = LegacyGuice.userSessionService
     val ss  = uss.getAttribute(sessionId).asInstanceOf[SelectionSession]
-//    req.setAttribute(RenderNewTemplate.ReactJSKey, NewSelectionPage.selectionJS)
+    req.setAttribute(RenderNewTemplate.ReactHtmlKey, SelectionPage)
     req.setAttribute(
       RenderNewTemplate.SetupJSKey, { oe: ObjectExpression =>
         oe.put("selection", mapper.writeValueAsString(ss))

@@ -89,7 +89,8 @@ object UniversalWebControlNew {
                                       JQueryProgression.PRERENDER,
                                       FileDropRenderer.CSS,
                                       ZebraTableRenderer.CSS)
-  val uploadListFunc = new ExternallyDefinedFunction("PS.inlineUpload", uploadListSrc)
+  val uploadListFunc =
+    new ExternallyDefinedFunction("PS[\"Uploads.UploadList\"].inlineUpload", uploadListSrc)
 }
 
 @Bind

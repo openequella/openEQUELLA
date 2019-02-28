@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "outDir": "target/ts",
     "module": "CommonJS",
     "target": "es5",
     "lib": ["es6", "dom"],
@@ -20,9 +19,7 @@
     "noUnusedLocals": true,
     "baseUrl": "http://boorah:3000"
   },
-  "include": [
-    "tsrc/**/*"
-  ],
+  "include": ["tsrc/**/*"],
   "exclude": [
     "node_modules",
     "build",

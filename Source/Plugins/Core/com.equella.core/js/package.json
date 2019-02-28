@@ -2,22 +2,26 @@
   "private": true,
   "config": {
     "buildlang": "target/resources/lang",
-    "devlang": "../target/scala-2.12/classes/lang"
+    "devlang": "../target/scala-2.12/classes/lang",
+    "devjs": "../target/scala-2.12/classes/web/reactjs",
+    "psglob": "output/*/*.js",
+    "dist": "target/resources/web/reactjs"
   },
   "scripts": {
     "install": "cross-env-shell \"psc-package install && mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang}\"",
     "clean": "rm -rf target/ output/ node_modules/ bower_components/ && yarn install",
-    "build": "yarn install && tsc && yarn run build:pages && yarn run build:langbundle",
-    "build:pages": "yarn run build:index && yarn run build:uploadlist && yarn run build:selection",
-    "build:index": "node build-bundle.js OEQ.MainUI.Main index.js",
-    "dev:index": "node build-bundle.js --dev OEQ.MainUI.Main index.js",
-    "build:selection": "node build-bundle.js OEQ.SelectionUI.Main selection.js",
-    "dev:selection": "node build-bundle.js --dev OEQ.SelectionUI.Main selection.js",
-    "build:uploadlist": "node build-bundle.js --lib Uploads.UploadList uploadlist.js",
-    "dev:uploadlist": "node build-bundle.js --dev --lib Uploads.UploadList uploadlist.js",
-    "build:langbundle": "cross-env-shell NODE_PATH=target/ts \"pulp build -O --to output/genlang.js -m Tools.GenLangStrings && node output/genlang.js > ${npm_package_config_buildlang}/jsbundle.json\"",
-    "dev:langbundle": "cross-env-shell NODE_PATH=target/ts \"pulp build -O --to output/genlang.js -m Tools.GenLangStrings && node output/genlang.js > ${npm_package_config_devlang}/jsbundle.json\"",
-    "watchts": "tsc -w"
+    "dev": "parcel watch --no-autoinstall --public-url=./reactjs/ --out-dir=${npm_package_config_devjs} entrydev/*.html",
+    "dev:build": "yarn run bundleps && parcel build --public-url=./reactjs/ --out-dir=${npm_package_config_devjs} entrybuild/*.html entrybuild/uploadlist.js",
+    "dev:uploadlist": "parcel build --no-minify --out-dir=${npm_package_config_devjs} entrybuild/uploadlist.js",
+    "build": "yarn install && npm-run-all build:*",
+    "build:bundles": "yarn run bundleps && parcel build --public-url=./reactjs/ --out-dir=${npm_package_config_dist} entrybuild/*.html entrybuild/uploadlist.js",
+    "build:langbundle": "parcel build entrybuild/genlang.js --no-minify --no-source-maps --target node --out-dir=target && node target/genlang.js > ${npm_package_config_buildlang}/jsbundle.json",
+    "compileps": "pulp build",
+    "bundleps": "npm-run-all compileps && npm-run-all --parallel bundleps:*",
+    "bundleps:main": "purs bundle \"${npm_package_config_psglob}\" -m OEQ.MainUI.Main --main OEQ.MainUI.Main -o entrybuild/main.js",
+    "bundleps:selection": "purs bundle \"${npm_package_config_psglob}\" -m OEQ.SelectionUI.Main --main OEQ.SelectionUI.Main -o entrybuild/selection.js",
+    "bundleps:uploadlist": "purs bundle \"${npm_package_config_psglob}\" -m Uploads.UploadList --main Uploads.UploadList -o entrybuild/uploadlist.js",
+    "bundleps:langbundle": "purs bundle \"${npm_package_config_psglob}\" -m Tools.GenLangStrings --main Tools.GenLangStrings -o entrybuild/genlang.js"
   },
   "dependencies": {
     "@material-ui/core": "^3.1.0",
@@ -55,6 +59,7 @@
     "timeago-react": "^2.0.0",
     "typescript-fsa": "^2.5.0",
     "typescript-fsa-reducers": "^0.4.5",
+    "uploadlist": "^1.0.0",
     "uuid": "^3.2.1"
   },
   "license": "Apache-2.0",
@@ -71,6 +76,7 @@
     "css-vars-ponyfill": "^1.4.0",
     "envify": "^4.1.0",
     "mkdirp": "^0.5.1",
+    "npm-run-all": "^4.1.5",
     "pulp": "^12.3.0",
     "purescript": "^0.12.0",
     "typescript": "^3.0.3",

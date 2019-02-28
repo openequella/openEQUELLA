@@ -16,6 +16,9 @@
 
 package com.tle.web.template
 
+import java.util.concurrent.ConcurrentHashMap
+
+import cats.effect.IO
 import com.tle.common.i18n.{CurrentLocale, LocaleUtils}
 import com.tle.core.db.RunWithDB
 import com.tle.core.i18n.LocaleLookup
@@ -29,6 +32,7 @@ import com.tle.web.sections.events._
 import com.tle.web.sections.jquery.libraries.JQueryCore
 import com.tle.web.sections.js.generic.expression.ObjectExpression
 import com.tle.web.sections.js.generic.function.IncludeFile
+import com.tle.web.sections.js.generic.statement.ScriptStatement
 import com.tle.web.sections.render._
 import com.tle.web.settings.UISettings
 import io.circe.generic.auto._
@@ -39,23 +43,13 @@ import scala.collection.JavaConverters._
 case class ReactPageModel(getReactScript: String)
 
 object RenderNewTemplate {
+
   val r            = ResourcesService.getResourceHelper(getClass)
   val DisableNewUI = "DISABLE_NEWUI"
   val SetupJSKey   = "setupJSData"
-//  val ReactHtmlKey   = "reactJSHtml"
-  val (preRenderCss, stdStrings) = {
-    val ok      = Jsoup.parse(getClass.getResourceAsStream("/web/reactjs/index.html"), "UTF-8", "")
-    val links   = ok.getElementsByTag("link")
-    val scripts = ok.getElementsByTag("script")
-    val newCss = new PreRenderable {
-      override def preRender(info: PreRenderContext): Unit = {
-        links.asScala.foreach(l => info.addCss(r.url(l.attr("href"))))
-      }
-    }
-    (newCss, scripts.asScala.map(e => r.url(e.attr("src"))).toArray)
-  }
+  val ReactHtmlKey = "reactJSHtml"
 
-//  val reactPage = r.url("reactjs/index.html")
+  val htmlBundleCache = new ConcurrentHashMap[String, (PreRenderable, String)]()
 
   val bundleJs = new PreRenderable {
     override def preRender(info: PreRenderContext): Unit = {
@@ -64,7 +58,28 @@ object RenderNewTemplate {
         .preRender(info)
       new IncludeFile(s"api/theme/theme.js").preRender(info)
     }
+  }
 
+  def parseEntryHtml(filename: String): (PreRenderable, String) = {
+    val inpStream = getClass.getResourceAsStream(s"/web/reactjs/$filename")
+    val htmlDoc   = Jsoup.parse(inpStream, "UTF-8", "")
+    inpStream.close()
+    val links   = htmlDoc.getElementsByTag("link").asScala
+    val scripts = htmlDoc.getElementsByTag("script").asScala
+    scripts.foreach { e =>
+      if (e.hasAttr("src")) {
+        e.attr("src", r.url(e.attr("src")))
+      }
+    }
+    val prerender: PreRenderable = info => {
+      info.preRender(JQueryCore.PRERENDER)
+      if (Option(info.getRequest.getHeader("User-Agent")).exists(_.contains("Trident"))) {
+        info.addJs("https://cdn.polyfill.io/v2/polyfill.min.js?features=es6")
+      }
+      info.preRender(bundleJs)
+      links.foreach(l => info.addCss(r.url(l.attr("href"))))
+    }
+    (prerender, htmlDoc.getElementsByTag("body").toString)
   }
 
   val NewLayoutKey = "NEW_LAYOUT"
@@ -118,32 +133,30 @@ object RenderNewTemplate {
       Option(req.getAttribute(SetupJSKey).asInstanceOf[ObjectExpression => ObjectExpression])
         .map(_.apply(_renderData))
         .getOrElse(_renderData)
-//    val bundleJS =
-//      Option(req.getAttribute(ReactJSKey).asInstanceOf[String]).getOrElse(reactTemplate)
-    context.preRender(preRenderCss)
-    renderReact(context, viewFactory, renderData, stdStrings)
+
+    val htmlPage =
+      Option(req.getAttribute(ReactHtmlKey).asInstanceOf[String]).getOrElse("index.html")
+    val (scriptPreRender, body) =
+      if (DebugSettings.isDevMode) parseEntryHtml(htmlPage)
+      else htmlBundleCache.computeIfAbsent(htmlPage, parseEntryHtml)
+    context.preRender(scriptPreRender)
+    renderReact(context, viewFactory, renderData, body)
   }
 
   def renderReact(context: RenderEventContext,
                   viewFactory: FreemarkerFactory,
                   renderData: ObjectExpression,
-                  scripts: Array[String]): SectionResult = {
-    context.preRender(JQueryCore.PRERENDER)
+                  body: String): SectionResult = {
     if (DebugSettings.isAutoTestMode) {
       context.preRender(RenderTemplate.AUTOTEST_JS)
     }
-
-    if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident"))) {
-      context.getPreRenderContext.addJs("https://cdn.polyfill.io/v2/polyfill.min.js?features=es6")
-    }
-    context.preRender(bundleJs)
     val tempResult = new GenericTemplateResult()
     tempResult.addNamedResult("header", HeaderSection)
     viewFactory.createResultWithModel("layouts/outer/react.ftl",
-                                      TemplateScript(scripts, renderData, tempResult, ""))
+                                      TemplateScript(body, renderData, tempResult, ""))
   }
 
-  case class TemplateScript(getScripts: Array[String],
+  case class TemplateScript(getBody: String,
                             getRenderJs: ObjectExpression,
                             getTemplate: TemplateResult,
                             htmlAttributes: String) {

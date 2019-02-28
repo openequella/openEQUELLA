@@ -126,7 +126,7 @@ buildJS := {
   Common.runYarn("build", baseJs)
   val outDir       = (resourceManaged in Compile).value
   val baseJsTarget = baseJs / "target/resources"
-  IO.copy((baseJsTarget ** ("*.js" | "*.css" | "*.json")).pair(rebase(baseJsTarget, outDir))).toSeq
+  IO.copy((baseJsTarget ** ("*.js" | "*.css" | "*.json" | "*.html")).pair(rebase(baseJsTarget, outDir))).toSeq
 }
 
 resourceGenerators in Compile += buildJS.taskValue
