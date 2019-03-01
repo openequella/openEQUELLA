@@ -62,7 +62,8 @@ object RenderNewTemplate {
 
   def parseEntryHtml(filename: String): (PreRenderable, String) = {
     val inpStream = getClass.getResourceAsStream(s"/web/reactjs/$filename")
-    val htmlDoc   = Jsoup.parse(inpStream, "UTF-8", "")
+    if (inpStream == null) sys.error(s"Failed to find $filename react html bundle")
+    val htmlDoc = Jsoup.parse(inpStream, "UTF-8", "")
     inpStream.close()
     val links   = htmlDoc.getElementsByTag("link").asScala
     val scripts = htmlDoc.getElementsByTag("script").asScala
