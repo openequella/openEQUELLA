@@ -15,6 +15,7 @@ import {
   TextField,
   Theme
 } from "@material-ui/core";
+import { sprintf } from "sprintf-js";
 import Select from "@material-ui/core/Select";
 import { StyleRules, WithStyles, withStyles } from "@material-ui/core/styles";
 //import SwipeableViews from 'react-swipeable-views';
