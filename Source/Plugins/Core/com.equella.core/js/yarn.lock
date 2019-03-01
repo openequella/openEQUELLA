@@ -7333,11 +7333,6 @@ upath@^1.0.5, upath@^1.1.0:
   resolved "https://registry.yarnpkg.com/upath/-/upath-1.1.0.tgz#35256597e46a581db4793d0ce47fa9aebfc9fabd"
   integrity sha512-bzpH/oBhoS/QI/YtbkqCg6VEiPYjSZtrHQM6/QnJS6OL9pKUFLqb3aFh4Scvwm45+7iAgiMkLhSbaZxUqmrprw==
 
-uploadlist@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/uploadlist/-/uploadlist-1.0.0.tgz#ef84826e7056f0063f11e60e5f00c31975c08e2d"
-  integrity sha512-eNlKn5OkxcyN5L665NEqxMxtz5Reo2bD/dF9FVq1L0LjZdih2Uw5LCZM9dXp1TfV/B65oMctpV8JagSp+/Kvjw==
-
 urix@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/urix/-/urix-0.1.0.tgz#da937f7a62e21fec1fd18d49b35c2935067a6c72"
