@@ -21,11 +21,13 @@ public final class DebugSettings {
   private static boolean autoTestMode;
   private static boolean debuggingMode;
   private static boolean debugAaron;
+  private static boolean devMode;
 
   static {
     autoTestMode = (System.getProperty("equella.autotest") != null);
     debuggingMode = (System.getProperty("equella.debug") != null);
     debugAaron = (System.getProperty("equella.debugaaron") != null);
+    devMode = Boolean.getBoolean("equella.devmode");
   }
 
   public static boolean isAutoTestMode() {
@@ -38,6 +40,10 @@ public final class DebugSettings {
 
   public static boolean isDebugAaron() {
     return debugAaron;
+  }
+
+  public static boolean isDevMode() {
+    return devMode;
   }
 
   private DebugSettings() {

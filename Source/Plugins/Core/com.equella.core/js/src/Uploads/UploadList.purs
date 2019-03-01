@@ -1,4 +1,4 @@
-module Uploads.UploadList (inlineUpload, universalUpload) where
+module Uploads.UploadList (inlineUpload, universalUpload, main) where
 
 import Prelude hiding (div)
 
@@ -42,11 +42,13 @@ type DialogStrings = {
   drop :: String
 }
 
-jsVoid :: Props
+jsVoid :: Props 
 jsVoid = href "javascript:void(0);"
 
 renderError :: String -> ReactElement
 renderError msg = div [ className "ctrlinvalid" ] [ p [ className "ctrlinvalidmessage" ] [ text msg ] ]
+
+foreign import main :: Effect Unit 
 
 foreign import updateCtrlErrorText :: EffectFn2 String String Unit
 foreign import simpleFormat :: String -> Array String -> String 
