@@ -188,6 +188,12 @@ public class ItemServiceImpl
     return dao.getAllVersionsOfItem(uuid);
   }
 
+  @Override
+  public boolean isItemInModeration(String uuid) {
+    List<Item> items = getVersionDetails(uuid);
+    return items.stream().anyMatch(item -> item.isModerating());
+  }
+
   /*
    * (non-Javadoc)
    * @see

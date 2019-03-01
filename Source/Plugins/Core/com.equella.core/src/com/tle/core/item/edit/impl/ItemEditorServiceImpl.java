@@ -38,6 +38,8 @@ import com.tle.core.item.serializer.ItemDeserializerEditor;
 import com.tle.core.item.service.ItemLockingService;
 import com.tle.core.item.service.ItemService;
 import com.tle.core.security.impl.SecureOnCallSystem;
+import com.tle.web.sections.equella.annotation.PlugKey;
+import com.tle.web.sections.render.Label;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -55,6 +57,9 @@ public class ItemEditorServiceImpl implements ItemEditorService {
   @Inject private ItemDao itemDao;
   @Inject private ItemEditorFactory editorFactory;
   @Inject private ItemDefinitionService collectionService;
+
+  @PlugKey("summary.sidebar.actions.newversion.moderationconflict")
+  private static Label NO_NEW_VERSION_LABEL;
 
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
@@ -93,6 +98,10 @@ public class ItemEditorServiceImpl implements ItemEditorService {
       uuid = UUID.randomUUID().toString();
     } else {
       ItemEditorImpl.checkValidUuid(uuid);
+    }
+    boolean isItemInModeration = itemService.isItemInModeration(uuid);
+    if (isItemInModeration) {
+      throw new ItemEditingException(NO_NEW_VERSION_LABEL.getText());
     }
 
     List<Integer> existingVersions = itemDao.getAllVersionNumbers(uuid);
