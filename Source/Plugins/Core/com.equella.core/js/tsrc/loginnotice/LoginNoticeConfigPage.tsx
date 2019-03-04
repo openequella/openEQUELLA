@@ -2,7 +2,7 @@ import * as React from "react";
 import { Bridge } from "../api/bridge";
 import { AxiosError } from "axios";
 import MessageInfo from "../components/MessageInfo";
-import { ErrorResponse, generateFromAxiosError } from "../api/errors";
+import { ErrorResponse, generateFromError } from "../api/errors";
 import PreLoginNoticeConfigurator from "./PreLoginNoticeConfigurator";
 import PostLoginNoticeConfigurator from "./PostLoginNoticeConfigurator";
 import { Tabs } from "@material-ui/core";
@@ -35,17 +35,15 @@ class LoginNoticeConfigPage extends React.Component<
     selectedTab: 0
   };
 
-  handleError = (axiosError: AxiosError) => {
-    if (axiosError.response != undefined) {
-      switch (axiosError.response.status) {
+  handleError = (error: AxiosError) => {
+    if (error.response != undefined) {
+      switch (error.response.status) {
         case 404:
           //do nothing, this simply means that there is no current login notice
-          break;
-        default:
-          this.setState({ error: generateFromAxiosError(axiosError) });
-          break;
+          return;
       }
     }
+    this.setState({ error: generateFromError(error) });
   };
 
   handleChangeTab = (event: React.ChangeEvent<{}>, value: number) => {

@@ -32,7 +32,7 @@ public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
   public Response retrievePreLoginNotice() {
     String loginNotice = noticeService.getPreLoginNotice();
     if (loginNotice != null) {
-      return Response.ok(loginNotice, "text/plain").build();
+      return Response.ok(loginNotice, "text/html").build();
     }
     return Response.status(Response.Status.NOT_FOUND).entity(null).build();
   }

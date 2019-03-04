@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
 @Api("Pre Login Notice")
 public interface PreLoginNoticeResource {
   @GET
-  @Produces("text/plain")
+  @Produces("text/html")
   Response retrievePreLoginNotice();
 
   @PUT

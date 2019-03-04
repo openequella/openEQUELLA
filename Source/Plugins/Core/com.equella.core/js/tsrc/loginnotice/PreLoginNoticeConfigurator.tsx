@@ -4,7 +4,6 @@ import {
   DialogContent,
   DialogContentText,
   Grid,
-  TextField,
   Typography
 } from "@material-ui/core";
 import { commonString } from "../util/commonstrings";
@@ -12,23 +11,35 @@ import {
   clearPreLoginNotice,
   getPreLoginNotice,
   NotificationType,
-  submitPreLoginNotice,
-  strings
+  strings,
+  submitPreLoginNotice
 } from "./LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
+import { Editor } from "react-draft-wysiwyg";
+import {
+  ContentState,
+  convertFromRaw,
+  convertToRaw,
+  EditorState,
+  RawDraftContentState
+} from "draft-js";
 
+let draftjsToHtml: Function = require("draftjs-to-html");
+let htmlToDraft: Function = require("html-to-draftjs").default;
+
+// require("react-draft-wysiwyg/dist/react-draft-wysiwyg.css");
 interface PreLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
   notify: (notificationType: NotificationType) => void;
 }
 
 interface PreLoginNoticeConfiguratorState {
-  preNotice?: string; //what is currently in the textfield
-  dbPreNotice?: string; //what is currently in the database
+  editorState: EditorState;
+  dbContentState: RawDraftContentState;
   clearStaged: boolean;
 }
 
@@ -39,30 +50,84 @@ class PreLoginNoticeConfigurator extends React.Component<
   constructor(props: PreLoginNoticeConfiguratorProps) {
     super(props);
     this.state = {
-      preNotice: "",
-      dbPreNotice: "",
+      editorState: EditorState.createEmpty(),
+      dbContentState: convertToRaw(ContentState.createFromText("")),
       clearStaged: false
     };
   }
 
-  handleSubmitPreNotice = () => {
-    if (this.state.preNotice != undefined) {
-      submitPreLoginNotice(this.state.preNotice)
-        .then(() => {
-          this.props.notify(NotificationType.Save);
-          this.setState({ dbPreNotice: this.state.preNotice });
-        })
-        .catch((error: AxiosError) => {
-          this.props.handleError(error);
-        });
+  fixImageAlignment = (entity: any) => {
+    //has to be any, as entity has a different type depending on its tag
+    if (entity.type != null) {
+      if (entity.type == "IMAGE") {
+        let textAlign = "center";
+        if (entity.data.alignment) {
+          //entity.data.alignment is for float using the LCR options on the image
+          //'none' means the user clicked center
+          switch (entity.data.alignment) {
+            case "none":
+              textAlign = "center";
+              break;
+            case "left":
+              textAlign = "left";
+              break;
+            case "right":
+              textAlign = "right";
+              break;
+          }
+        }
+        return (
+          '<imagealign style="display:flex; justify-content:' +
+          textAlign +
+          ';">' +
+          '<img src="' +
+          entity.data.src +
+          '"style="height: ' +
+          entity.data.height +
+          ";width: " +
+          entity.data.width +
+          ";float: " +
+          (entity.data.alignment || "none") +
+          '"/>' +
+          "</imagealign>"
+        );
+      }
     }
+    return null;
+  };
+
+  handleSubmitPreNotice = () => {
+    let raw = draftjsToHtml(
+      convertToRaw(this.state.editorState.getCurrentContent()),
+      {
+        trigger: "#",
+        separator: " "
+      },
+      false,
+      (entity: any) => this.fixImageAlignment(entity)
+    );
+    submitPreLoginNotice(raw)
+      .then(() => {
+        this.props.notify(NotificationType.Save);
+        this.setState({
+          dbContentState: convertToRaw(
+            this.state.editorState.getCurrentContent()
+          )
+        });
+      })
+      .catch((error: AxiosError) => {
+        this.props.handleError(error);
+      });
   };
 
   handleClearPreNotice = () => {
-    this.setState({ preNotice: "" });
     clearPreLoginNotice()
       .then(() => {
-        this.setState({ dbPreNotice: "", clearStaged: false });
+        this.setState({
+          editorState: EditorState.createEmpty(),
+          dbContentState: convertToRaw(ContentState.createFromText("")),
+          clearStaged: false
+        });
         this.props.notify(NotificationType.Clear);
       })
       .catch((error: AxiosError) => {
@@ -71,22 +136,42 @@ class PreLoginNoticeConfigurator extends React.Component<
   };
 
   handleUndoPreNotice = () => {
-    this.setState({ preNotice: this.state.dbPreNotice });
+    this.setState({
+      editorState: EditorState.createWithContent(
+        convertFromRaw(this.state.dbContentState)
+      )
+    });
     this.props.notify(NotificationType.Revert);
   };
 
-  handlePreTextFieldChange = (
-    e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-  ) => {
-    this.setState({ preNotice: e.value });
+  stripAlignmentStyles = (nodeName: string, node: HTMLElement) => {
+    if (nodeName === "imagealign") {
+      return node.getElementsByClassName("img").item(0);
+    }
+    return null;
   };
 
   componentDidMount = () => {
     getPreLoginNotice()
       .then((response: AxiosResponse) => {
-        this.setState({ dbPreNotice: response.data, preNotice: response.data });
+        const blocksFromHtml = htmlToDraft(
+          response.data,
+          (nodeName: string, node: HTMLElement) =>
+            this.stripAlignmentStyles(nodeName, node)
+        );
+        const { contentBlocks, entityMap } = blocksFromHtml;
+        const contentState = ContentState.createFromBlockArray(
+          contentBlocks,
+          entityMap
+        );
+        const editorState = EditorState.createWithContent(contentState);
+        this.setState({
+          dbContentState: convertToRaw(contentState),
+          editorState: editorState
+        });
       })
       .catch((error: AxiosError) => {
+        console.log(error);
         this.props.handleError(error);
       });
   };
@@ -123,7 +208,6 @@ class PreLoginNoticeConfigurator extends React.Component<
   };
 
   render() {
-    const { preNotice, dbPreNotice } = this.state;
     const Dialogs = this.Dialogs;
     return (
       <SettingsMenuContainer>
@@ -132,24 +216,17 @@ class PreLoginNoticeConfigurator extends React.Component<
         </Typography>
         <Grid id="preLoginConfig" container spacing={8} direction="column">
           <Grid item>
-            <TextField
-              id="preNoticeField"
-              variant="outlined"
-              rows="12"
-              rowsMax="35"
-              multiline
-              fullWidth
-              inputProps={{ length: 12 }}
-              placeholder={strings.prelogin.description}
-              onChange={e => this.handlePreTextFieldChange(e.target)}
-              value={preNotice}
+            <Editor
+              editorState={this.state.editorState}
+              onEditorStateChange={(editorState: EditorState) =>
+                this.setState({ editorState })
+              }
             />
           </Grid>
           <Grid item container spacing={8} direction="row-reverse">
             <Grid item>
               <Button
                 id="preApplyButton"
-                disabled={preNotice == dbPreNotice}
                 onClick={this.handleSubmitPreNotice}
                 variant="contained"
               >
@@ -159,7 +236,6 @@ class PreLoginNoticeConfigurator extends React.Component<
             <Grid item>
               <Button
                 id="preClearButton"
-                disabled={dbPreNotice == ""}
                 onClick={this.stageClear}
                 variant="text"
               >
@@ -169,7 +245,6 @@ class PreLoginNoticeConfigurator extends React.Component<
             <Grid item>
               <Button
                 id="preUndoButton"
-                disabled={dbPreNotice == preNotice}
                 onClick={this.handleUndoPreNotice}
                 variant="text"
               >
