@@ -19,13 +19,14 @@ package com.tle.web.api.loginnotice;
 import io.swagger.annotations.Api;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import org.mortbay.jetty.MimeTypes;
 
 /** @author Samantha Fisher */
 @Path("preloginnotice/")
 @Api("Pre Login Notice")
 public interface PreLoginNoticeResource {
   @GET
-  @Produces("text/html")
+  @Produces(MimeTypes.TEXT_HTML)
   Response retrievePreLoginNotice();
 
   @PUT
