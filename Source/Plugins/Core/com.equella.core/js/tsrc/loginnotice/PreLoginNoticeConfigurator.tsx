@@ -149,8 +149,6 @@ class PreLoginNoticeConfigurator extends React.Component<
         <Typography color="textSecondary" variant="subheading">
           {strings.prelogin.label}
         </Typography>
-        <Typography>{"HTML " + this.state.html}</Typography>
-        <Typography>{"DB " + this.state.dbHtml}</Typography>
         <Grid id="preLoginConfig" container spacing={8} direction="column">
           <Grid item>
             <RichTextEditor
