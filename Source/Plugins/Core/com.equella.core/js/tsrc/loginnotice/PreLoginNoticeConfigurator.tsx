@@ -31,7 +31,7 @@ import {
 let draftjsToHtml: Function = require("draftjs-to-html");
 let htmlToDraft: Function = require("html-to-draftjs").default;
 
-// require("react-draft-wysiwyg/dist/react-draft-wysiwyg.css");
+require("react-draft-wysiwyg/dist/react-draft-wysiwyg.css");
 interface PreLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
   notify: (notificationType: NotificationType) => void;
