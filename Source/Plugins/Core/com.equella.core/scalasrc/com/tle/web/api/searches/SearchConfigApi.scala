@@ -20,6 +20,7 @@ import java.util.UUID
 
 import cats.syntax.functor._
 import com.tle.core.db.RunWithDB
+import com.tle.core.searches._
 import com.tle.core.settings.SettingsDB
 import com.tle.web.api.{ApiHelper, EntityPaging}
 import io.swagger.annotations.{Api, ApiOperation}

@@ -64,31 +64,31 @@ class OEQEntityConverter extends Converter {
 
   def toEntityJson(oeq: OEQEntity): OEQEntityJson = {
     OEQEntityJson(
-      oeq.uuid.id,
-      oeq.typeid,
-      oeq.name,
-      oeq.name_strings.strings,
-      oeq.description,
-      oeq.description_strings.strings,
-      oeq.owner.id,
-      oeq.created.toEpochMilli,
-      oeq.modified.toEpochMilli,
-      oeq.data
+      uuid = oeq.uuid.id,
+      typeid = oeq.typeid,
+      name = oeq.name,
+      nameStrings = oeq.name_strings.strings,
+      description = oeq.description,
+      descriptionStrings = oeq.description_strings.strings,
+      owner = oeq.owner.id,
+      created = oeq.created.toEpochMilli,
+      modified = oeq.modified.toEpochMilli,
+      data = oeq.data
     )
   }
   def fromEntityJson(inst: InstId)(j: OEQEntityJson): OEQEntity = {
     OEQEntity(
-      DbUUID(j.uuid),
-      inst,
-      j.typeid,
-      j.name,
-      LocaleStrings(j.nameStrings),
-      j.description,
-      LocaleStrings(j.descriptionStrings),
-      UserId(j.owner),
-      Instant.ofEpochMilli(j.created),
-      Instant.ofEpochMilli(j.modified),
-      j.data
+      uuid = DbUUID(j.uuid),
+      inst_id = inst,
+      typeid = j.typeid,
+      name = j.name,
+      name_strings = LocaleStrings(j.nameStrings),
+      description = j.description,
+      description_strings = LocaleStrings(j.descriptionStrings),
+      owner = UserId(j.owner),
+      created = Instant.ofEpochMilli(j.created),
+      modified = Instant.ofEpochMilli(j.modified),
+      data = j.data
     )
   }
 

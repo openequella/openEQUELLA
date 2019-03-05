@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.tle.web.api.searches
+package com.tle.core.searches
 
 import java.time.Instant
 import java.util.{Date, UUID}

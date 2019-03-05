@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.tle.web.api.searches
+package com.tle.core.searches
 
 import java.util.{Date, Locale, UUID}
 
@@ -60,15 +60,15 @@ object SearchConfigDB {
     val oeq = scdb.entity
     val scd = scdb.data
     SearchConfig(
-      oeq.uuid.id,
-      scd.index,
-      oeq.name_strings.closest(locale).getOrElse(oeq.name),
-      oeq.name_strings.stringsOrNone,
-      oeq.description_strings.closest(locale),
-      oeq.description_strings.stringsOrNone,
-      Date.from(oeq.created),
-      Date.from(oeq.modified),
-      scd.sections
+      id = oeq.uuid.id,
+      index = scd.index,
+      name = oeq.name_strings.closest(locale).getOrElse(oeq.name),
+      nameStrings = oeq.name_strings.stringsOrNone,
+      description = oeq.description_strings.closest(locale),
+      descriptionStrings = oeq.description_strings.stringsOrNone,
+      created = Date.from(oeq.created),
+      modified = Date.from(oeq.modified),
+      sections = scd.sections
     )
   }
 
