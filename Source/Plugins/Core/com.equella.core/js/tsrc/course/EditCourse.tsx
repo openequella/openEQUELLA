@@ -372,7 +372,11 @@ class EditCourse extends React.Component<Props, EditCourseState> {
         backRoute={routes.CoursesPage}
         footer={saveOrCancel}
         tabs={
-          <Tabs value={activeTab} onChange={this.handleTabChange()} fullWidth>
+          <Tabs
+            value={activeTab}
+            onChange={this.handleTabChange()}
+            variant="fullWidth"
+          >
             <Tab label={strings.tab} />
             <Tab label={entityStrings.edit.tab.permissions} />
           </Tabs>

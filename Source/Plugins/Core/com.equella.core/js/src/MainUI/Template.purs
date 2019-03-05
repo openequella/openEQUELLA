@@ -35,7 +35,7 @@ import MaterialUI.DialogContentText (dialogContentText_)
 import MaterialUI.DialogTitle (dialogTitle_)
 import MaterialUI.Divider (divider_)
 import MaterialUI.Drawer (drawer)
-import MaterialUI.Enums (css, headline, inherit, left, permanent, primary, secondary, subheading, temporary)
+import MaterialUI.Enums (css, h5, inherit, left, permanent, primary, secondary, subtitle1, temporary)
 import MaterialUI.Enums as String
 import MaterialUI.Hidden (hidden)
 import MaterialUI.Icon (icon, icon_)
@@ -274,7 +274,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
           ], [
             D.div [DP.className classes.titleArea] $ catMaybes [
               toMaybe backRoute $> iconButton { onClick: d GoBack} [ icon_ [D.text "arrow_back" ] ],
-              Just $ typography {variant: headline, color: inherit, className: classes.title} [ D.text titleText ],
+              Just $ typography {variant: h5, color: inherit, className: classes.title} [ D.text titleText ],
               toMaybe titleExtra
             ],
             userMenu 
@@ -331,7 +331,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
               listItemIcon_ $ case iconUrl of 
                 Just url -> img [src url]
                 Nothing -> icon {color: inherit} [ D.text $ fromMaybe "folder" $ systemIcon ],
-              listItemText' {disableTypography: true, primary: typography {variant: subheading, component: "div"} [text title] }
+              listItemText' {disableTypography: true, primary: typography {variant: subtitle1, component: "div"} [text title] }
             ]
             where 
               linkProps = case route of 

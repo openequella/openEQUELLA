@@ -1,10 +1,10 @@
 module Uploads.UploadModel where 
 
-import Effect.Aff.Compat
-import Prelude
+import Effect.Aff.Compat (EffectFnAff, fromEffectFnAff)
+import Prelude 
 
 import Control.Alt ((<|>))
-import Control.Monad.Except (lift, runExcept, throwError)
+import Control.Monad.Except (lift, throwError)
 import Control.Monad.Reader (ask, runReaderT)
 import Control.Parallel (parTraverse_)
 import Data.Argonaut (class DecodeJson, class EncodeJson, Json, decodeJson, encodeJson, jsonParser, (.?))
@@ -22,10 +22,8 @@ import Effect.Aff (Aff, Fiber, error, forkAff, killFiber, runAff_)
 import Effect.Class (liftEffect)
 import Effect.Console (logShow)
 import Effect.Console as Eff
-import Effect.Exception (throwException)
 import Effect.Uncurried (EffectFn1, mkEffectFn1)
-import Foreign (F, Foreign, fail)
-import Network.HTTP.Affjax (AffjaxResponse, affjax, post)
+import Network.HTTP.Affjax (AffjaxResponse, post)
 import Network.HTTP.Affjax.Request as AXReq
 import Network.HTTP.Affjax.Response as AXResp
 import Unsafe.Coerce (unsafeCoerce)
