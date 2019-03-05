@@ -18,7 +18,6 @@ package com.tle.web.template
 
 import java.util.concurrent.ConcurrentHashMap
 
-import cats.effect.IO
 import com.tle.common.i18n.{CurrentLocale, LocaleUtils}
 import com.tle.core.db.RunWithDB
 import com.tle.core.i18n.LocaleLookup
@@ -32,11 +31,10 @@ import com.tle.web.sections.events._
 import com.tle.web.sections.jquery.libraries.JQueryCore
 import com.tle.web.sections.js.generic.expression.ObjectExpression
 import com.tle.web.sections.js.generic.function.IncludeFile
-import com.tle.web.sections.js.generic.statement.ScriptStatement
 import com.tle.web.sections.render._
 import com.tle.web.settings.UISettings
-import io.circe.generic.auto._
 import org.jsoup.Jsoup
+import org.jsoup.nodes.{Document, Element}
 
 import scala.collection.JavaConverters._
 
@@ -49,7 +47,7 @@ object RenderNewTemplate {
   val SetupJSKey   = "setupJSData"
   val ReactHtmlKey = "reactJSHtml"
 
-  val htmlBundleCache = new ConcurrentHashMap[String, (PreRenderable, String)]()
+  val htmlBundleCache = new ConcurrentHashMap[String, (PreRenderable, Document)]()
 
   val bundleJs = new PreRenderable {
     override def preRender(info: PreRenderContext): Unit = {
@@ -60,7 +58,7 @@ object RenderNewTemplate {
     }
   }
 
-  def parseEntryHtml(filename: String): (PreRenderable, String) = {
+  def parseEntryHtml(filename: String): (PreRenderable, Document) = {
     val inpStream = getClass.getResourceAsStream(s"/web/reactjs/$filename")
     if (inpStream == null) sys.error(s"Failed to find $filename react html bundle")
     val htmlDoc = Jsoup.parse(inpStream, "UTF-8", "")
@@ -80,7 +78,7 @@ object RenderNewTemplate {
       info.preRender(bundleJs)
       links.foreach(l => info.addCss(r.url(l.attr("href"))))
     }
-    (prerender, htmlDoc.getElementsByTag("body").toString)
+    (prerender, htmlDoc)
   }
 
   val NewLayoutKey = "NEW_LAYOUT"
@@ -141,7 +139,7 @@ object RenderNewTemplate {
       if (DebugSettings.isDevMode) parseEntryHtml(htmlPage)
       else htmlBundleCache.computeIfAbsent(htmlPage, parseEntryHtml)
     context.preRender(scriptPreRender)
-    renderReact(context, viewFactory, renderData, body)
+    renderReact(context, viewFactory, renderData, body.body().toString)
   }
 
   def renderReact(context: RenderEventContext,
