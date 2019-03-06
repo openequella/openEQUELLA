@@ -107,10 +107,11 @@ object FileUploadHandlerNew {
   val VIEW_LINK_LABEL     = l("handlers.file.viewlink")
   val SCRAPBOOK_LABEL     = l("handlers.file.link.filesfromscrapbook")
 
-  val universalUploadFunc = new ExternallyDefinedFunction("PS.universalUpload",
-                                                          uploadListSrc,
-                                                          AjaxUpload.CSS_INCLUDE,
-                                                          EquellaFileUploadExtension.CSS)
+  val universalUploadFunc = new ExternallyDefinedFunction(
+    "PS[\"Uploads.UploadList\"].universalUpload",
+    uploadListSrc,
+    AjaxUpload.CSS_INCLUDE,
+    EquellaFileUploadExtension.CSS)
 
 }
 
