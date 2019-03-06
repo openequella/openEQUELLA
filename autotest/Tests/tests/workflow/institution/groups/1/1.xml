@@ -1,0 +1,8 @@
+<com.tle.beans.user.TLEGroup>
+  <id>29183</id>
+  <uuid>6b10a2f5-38c1-ced8-e8e6-85173fa33cb0</uuid>
+  <name>Auto Assign Target Group</name>
+  <users>
+    <string>43313ddd-5d4e-97bb-689d-7e149b252129</string>
+  </users>
+</com.tle.beans.user.TLEGroup>

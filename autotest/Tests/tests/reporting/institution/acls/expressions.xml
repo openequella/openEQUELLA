@@ -1,0 +1,37 @@
+<list>
+  <com.tle.beans.security.AccessExpression>
+    <id>3198219</id>
+    <dynamic>false</dynamic>
+    <expression>U:adfcaf58-241b-4eca-9740-6a26d1c3dd58 </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>481</id>
+    <dynamic>false</dynamic>
+    <expression>R:TLE_LOGGED_IN_USER_ROLE </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>3198218</id>
+    <dynamic>false</dynamic>
+    <expression>G:e248ca6a-5a3d-479c-8323-1dbb6eb8166b </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>3198216</id>
+    <dynamic>false</dynamic>
+    <expression>G:6cf92d52-77e2-418c-a983-200ac6fa1364 </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>3198217</id>
+    <dynamic>false</dynamic>
+    <expression>U:a2a86033-83ec-44af-b4c6-38edb025b9b3 </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>1018629</id>
+    <dynamic>false</dynamic>
+    <expression>U:adfcaf58-241b-4eca-9740-6a26d1c3dd58</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>480</id>
+    <dynamic>false</dynamic>
+    <expression>*</expression>
+  </com.tle.beans.security.AccessExpression>
+</list>

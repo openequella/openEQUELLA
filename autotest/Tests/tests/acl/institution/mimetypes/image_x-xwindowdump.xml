@@ -1,0 +1,23 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>131554</id>
+  <institution>
+    <id>131414</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>xwd</string>
+  </extensions>
+  <type>image/x-xwindowdump</type>
+  <description>Image</description>
+  <attributes>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&apos;livNavTreeViewer&apos;, &apos;toimg&apos;]</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/image.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

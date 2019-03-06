@@ -1,0 +1,30 @@
+<com.tle.beans.item.cal.request.CourseInfo>
+  <id>18289</id>
+  <uuid>8b1c07d8-bc80-4dad-b6e8-4fdf4654f702</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2011-09-06 11:13:44.025</dateModified>
+  <dateCreated class="sql-timestamp">2011-09-06 11:13:13.574</dateCreated>
+  <name>
+    <id>18290</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>18291</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Moodle Course</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <students>0</students>
+  <departmentName></departmentName>
+  <courseType>i</courseType>
+  <code>CS101</code>
+  <versionSelection>DEFAULT_TO_CURRENT</versionSelection>
+</com.tle.beans.item.cal.request.CourseInfo>

@@ -1,0 +1,149 @@
+<com.tle.beans.item.Item>
+  <id>415574</id>
+  <uuid>3a149dd6-d510-4681-b4e4-aa6724b8a29d</uuid>
+  <version>1</version>
+  <owner>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</owner>
+  <dateModified class="sql-timestamp">2011-10-04 10:36:04.488</dateModified>
+  <dateCreated class="sql-timestamp">2011-10-04 10:36:04.555</dateCreated>
+  <dateForIndex class="sql-timestamp">2011-10-04 10:36:30.349</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>415581</id>
+      <uuid>f5365ebd-d78c-402b-aa1e-bb4b05b760b6</uuid>
+      <url></url>
+      <description>Luna Venere e Giove su Palermo</description>
+      <value1>flickr</value1>
+      <data>
+        <entry>
+          <string>showUrl</string>
+          <string>http://flickr.com/photos/92803345@N00/3074227829</string>
+        </entry>
+        <entry>
+          <string>licencecode</string>
+          <string>by-nc-sa</string>
+        </entry>
+        <entry>
+          <string>licencekey</string>
+          <string>1</string>
+        </entry>
+        <entry>
+          <string>photoId</string>
+          <string>3074227829</string>
+        </entry>
+        <entry>
+          <string>mediumUrl</string>
+          <string>http://farm4.static.flickr.com/3009/3074227829_23fa17db21.jpg</string>
+        </entry>
+        <entry>
+          <string>uploader</string>
+          <string>lorca56</string>
+        </entry>
+        <entry>
+          <string>thumbUrl</string>
+          <string>http://farm4.static.flickr.com/3009/3074227829_23fa17db21_t.jpg</string>
+        </entry>
+        <entry>
+          <string>uploaded</string>
+          <date>2008-12-02 04:32:41.0 EST</date>
+        </entry>
+        <entry>
+          <string>imagesize</string>
+          <string>1280 x 849</string>
+        </entry>
+        <entry>
+          <string>taken</string>
+          <date>2008-11-30 18:32:45.0 EST</date>
+        </entry>
+        <entry>
+          <string>licencename</string>
+          <string>Attribution-NonCommercial-ShareAlike License</string>
+        </entry>
+      </data>
+    </com.tle.beans.item.attachments.CustomAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="ef19a911-0b3c-85ed-efd9-a56e56edcf37"/>
+  <collaborators/>
+  <badUrls/>
+  <moderation>
+    <id>415578</id>
+    <liveApprovalDate class="sql-timestamp">2011-10-04 10:36:04.488</liveApprovalDate>
+    <start>2011-10-04 17:23:07.721 EST</start>
+    <lastAction class="sql-timestamp">2011-10-04 10:36:04.488</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>415582</id>
+      <user>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</user>
+      <date class="sql-timestamp">2011-10-04 10:36:04.488</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>415583</id>
+      <user>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</user>
+      <date class="sql-timestamp">2011-10-04 10:36:04.488</date>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>415584</id>
+      <user>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</user>
+      <date class="sql-timestamp">2011-10-04 10:36:04.488</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>415579</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>415580</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Palermo revived</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>415575</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>415576</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>crescent moon and stars (venus, jupiter) from Sicily</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

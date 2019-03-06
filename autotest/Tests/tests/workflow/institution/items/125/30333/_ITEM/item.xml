@@ -1,0 +1,20 @@
+<xml>
+  <item global="true" myitem="true">
+    
+    <name>Angle</name>
+    <description>The angle expression.</description>
+    
+    <itemstatus>live</itemstatus>
+    
+    
+    <itembody>
+      <html>            &lt;img src=&quot;http://boorah/dev/workflow/item/image/8de183e8-9696-34b0-caa9-cde5e25f46dc/1/angle.gif&quot;&gt;            90&#160;&#176;</html>
+      
+    </itembody>
+    
+    
+    
+    <keywords>angle degrees</keywords>
+    
+  </item>
+</xml>

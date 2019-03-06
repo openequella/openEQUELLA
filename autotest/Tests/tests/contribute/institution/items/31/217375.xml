@@ -1,0 +1,146 @@
+<com.tle.beans.item.Item>
+  <id>217375</id>
+  <uuid>136f2956-21f9-4a80-8af1-8dbb18ca34e9</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2011-10-04 15:48:36.17</dateModified>
+  <dateCreated class="sql-timestamp">2011-10-04 15:45:29.757</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.529</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>217380</id>
+      <uuid>1aa342e8-7fdb-418a-a59c-e4c4728afe36</uuid>
+      <url>google.png</url>
+      <description>File viewer</description>
+      <value1>7007</value1>
+      <value2>false</value2>
+      <md5sum>169e859db7f28a01e1b51e1c9e2d6b2b</md5sum>
+      <viewer>file</viewer>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>217381</id>
+      <uuid>9c60a0be-2885-4999-85ee-0671c19799dd</uuid>
+      <url>google(2).png</url>
+      <description>Large image viewer</description>
+      <value1>7007</value1>
+      <value2>false</value2>
+      <md5sum>169e859db7f28a01e1b51e1c9e2d6b2b</md5sum>
+      <viewer>livNavTreeViewer</viewer>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>217382</id>
+      <uuid>49aa548d-6249-4123-8952-f79c12f09048</uuid>
+      <url>google(3).png</url>
+      <description>Gallery</description>
+      <value1>7007</value1>
+      <value2>false</value2>
+      <md5sum>169e859db7f28a01e1b51e1c9e2d6b2b</md5sum>
+      <viewer>fancy</viewer>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>217383</id>
+      <uuid>0c8c339d-7bb5-4e21-a9a1-f28f4fa548e0</uuid>
+      <url>google(4).png</url>
+      <description>Download file</description>
+      <value1>7007</value1>
+      <value2>false</value2>
+      <md5sum>169e859db7f28a01e1b51e1c9e2d6b2b</md5sum>
+      <viewer>save</viewer>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="3b7146d3-48ee-4e77-9802-baf51631ab7d"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>217377</id>
+    <liveApprovalDate class="sql-timestamp">2011-10-04 15:45:29.753</liveApprovalDate>
+    <start class="sql-timestamp">2011-10-04 15:48:43.88</start>
+    <lastAction class="sql-timestamp">2011-10-04 15:45:29.753</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>217384</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-10-04 15:45:29.753</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>217385</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-10-04 15:45:29.753</date>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>217386</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-10-04 15:45:29.753</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>217387</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-10-04 15:47:36.083</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>217388</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-10-04 15:48:36.17</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>217378</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>217379</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>BasicViewerImage</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

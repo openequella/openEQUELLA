@@ -1,0 +1,16 @@
+<list>
+  <com.tle.beans.activation.ActivateRequest>
+    <id>63738</id>
+    <uuid>26c9b74a-4a3e-483c-8437-068f15525469</uuid>
+    <type>cal</type>
+    <attachment>72185e80-9cf8-4ffa-a2be-06cbd8dbd87e</attachment>
+    <user>445a6d62-825c-c9c1-8fcc-d738f6330bd6</user>
+    <status>0</status>
+    <time class="sql-timestamp">2009-04-16 15:49:15.643</time>
+    <from class="sql-timestamp">2009-04-16 15:49:02.687</from>
+    <until class="sql-timestamp">2020-04-01 11:00:00.0</until>
+    <course entityclass="com.tle.beans.item.cal.request.CourseInfo" uuid="313213e6-049a-8834-46d1-230be99f4490"/>
+    <citation>Harvard</citation>
+    <description>, &apos;Part Two&apos; in</description>
+  </com.tle.beans.activation.ActivateRequest>
+</list>

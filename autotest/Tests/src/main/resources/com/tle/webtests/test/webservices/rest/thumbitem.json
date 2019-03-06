@@ -1,0 +1,114 @@
+{
+  "uuid" : "${uuid}",
+  "version" : ${version},
+  "name" : "ItemApiEditTest - Thumbnail Item",
+  "metadata" : "<xml><item><attachments><attachment1>63862d54-1b6d-4dce-9a79-44b3a8c9e107</attachment1><attachment1>32f45d7c-6df7-44d8-926a-3d6f841c2009</attachment1><attachment1>32a79ea6-8b67-4b38-af85-341b2d512f09</attachment1><attachment1>78a2de74-96de-48de-8865-22856c22ae49</attachment1><attachment1>b24aa5fa-de50-4021-b7c4-ac4d3a918129</attachment1><attachment1>dd26b4ac-9592-4062-bd15-cb9691bfe9a3</attachment1><attachment1>221b8a48-3a35-4d29-ad3a-0f04a1536b3b</attachment1><attachment1>20196bbc-7f5f-44a4-980d-55dab4e6eec9</attachment1><attachment1>034dfcb7-b66a-45bf-98c8-03da9011c74d</attachment1></attachments><name>ItemApiEditTest - Thumbnail item</name><description>This is a description</description></item></xml>",
+  "status" : "live",
+  "createdDate" : "2012-02-23T17:57:25.615-06:00",
+  "modifiedDate" : "2012-02-23T23:27:53.107-06:00",
+  "owner" : {
+    "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  },
+  "collaborators" : [ {
+    "id" : "c4c9471b-d3e1-4157-9847-2e6d1e8b9b4e"
+  } ],
+  "collection" : {
+    "uuid" : "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c"
+  },
+  "rating" : 5.0,
+  "comments" : [ {
+    "uuid" : "5e7c910e-0da3-47d5-a79f-75c164a0c1e7",
+    "rating" : 3,
+    "anonymous" : false,
+    "comment" : "I'm adding a comment",
+    "postedBy" : {
+      "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+    },
+    "postedDate" : "2012-02-23T23:10:03.140-06:00"
+  }, {
+    "uuid" : "ddd11c14-4c5d-4d7f-81e3-3de7f2730f10",
+    "rating" : 0,
+    "anonymous" : true,
+    "comment" : "Anonymous comment",
+    "postedDate" : "2012-02-23T23:11:49.824-06:00"
+  }, {
+    "uuid" : "4ffdbed8-d286-4a10-a7b3-c771696005fb",
+    "rating" : 5,
+    "anonymous" : false,
+    "comment" : "Average rating",
+    "postedBy" : {
+      "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+    },
+    "postedDate" : "2012-02-23T23:13:53.936-06:00"
+  } ],
+  "attachments" : [ {
+    "type" : "file",
+    "uuid" : "63862d54-1b6d-4dce-9a79-44b3a8c9e107",
+    "description" : "avatar.png",
+    "viewer" : "livNavTreeViewer",
+    "filename" : "avatar.png",
+    "size" : 12627,
+    "md5" : "5a4e69eeae86aa557c4a27d52257b757",
+    "conversion" : false,
+    "links" : {
+      "view" : "http://origliasso/fiveo/items/2f6e9be8-897d-45f1-98ea-7aa31b449c0e/1/?attachment.uuid=63862d54-1b6d-4dce-9a79-44b3a8c9e107"
+    }
+  }, {
+    "type" : "file",
+    "uuid" : "6f80e4aa-560d-4977-9020-366279f82280",
+    "description" : "shopimage.jpeg",
+    "viewer" : "file",
+    "filename" : "shopimage.jpeg",
+    "conversion" : false,
+    "links" : {
+      "view" : "http://origliasso/fiveo/items/2f6e9be8-897d-45f1-98ea-7aa31b449c0e/1/?attachment.uuid=63862d54-1b6d-4dce-9a79-44b3a8c9e107"
+    }
+  }],
+  "history" : [ {
+    "user" : {
+      "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+    },
+    "date" : "2012-02-23T17:57:25.613-06:00",
+    "type" : "contributed",
+    "state" : "draft"
+  }, {
+    "user" : {
+      "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+    },
+    "date" : "2012-02-23T17:57:25.613-06:00",
+    "type" : "edit",
+    "state" : "draft"
+  }, {
+    "user" : {
+      "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+    },
+    "date" : "2012-02-23T17:57:25.613-06:00",
+    "type" : "statechange",
+    "state" : "live"
+  }, {
+    "user" : {
+      "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+    },
+    "date" : "2012-02-23T17:58:48.580-06:00",
+    "type" : "edit",
+    "state" : "live"
+  }, {
+    "user" : {
+      "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+    },
+    "date" : "2012-02-23T23:25:50.626-06:00",
+    "type" : "edit",
+    "state" : "live"
+  }, {
+    "user" : {
+      "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+    },
+    "date" : "2012-02-23T23:27:53.107-06:00",
+    "type" : "edit",
+    "state" : "live"
+  } ],
+  "links" : {
+    "self" : "http://origliasso/fiveo/api/item/2f6e9be8-897d-45f1-98ea-7aa31b449c0e/1/",
+    "view" : "http://origliasso/fiveo/items/2f6e9be8-897d-45f1-98ea-7aa31b449c0e/1/"
+  }
+}

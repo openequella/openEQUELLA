@@ -1,0 +1,36 @@
+<com.tle.beans.entity.FederatedSearch>
+  <id>413651</id>
+  <uuid>415432d9-f9e3-6d1f-6d90-09e27366ad2c</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2007-05-09 15:24:11.363</dateModified>
+  <dateCreated class="sql-timestamp">2007-05-09 15:24:11.363</dateCreated>
+  <name>
+    <id>413652</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>413653</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>EdNA Online</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>username</key>
+      <value>guest</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>url</key>
+      <value>http://www.edna.edu.au/api/search.html</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <type>EdnaOnlineSearchEngine</type>
+  <timeout>30</timeout>
+  <disabled>false</disabled>
+</com.tle.beans.entity.FederatedSearch>

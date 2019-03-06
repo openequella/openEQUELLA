@@ -1,0 +1,29 @@
+<com.tle.common.qti.entity.QtiAssessmentItem>
+  <id>18874</id>
+  <uuid>18530435-fe5b-4464-ae31-d0eac4adeb5e</uuid>
+  <identifier>SineRule-CalcFormQ-001</identifier>
+  <title>Apply the sine rule</title>
+  <itemBody>uk.ac.ed.ph.jqtiplus.node.content.ItemBody@6a7c2ee5(
+    blocks =&gt; java.util.ArrayList[
+        0 =&gt; &lt;p&gt;@2129326848(xPath=/assessmentItem[@identifier=&quot;SineRule-CalcFormQ-001&quot;]/itemBody[1]/p[1],location=XmlSourceLocationInformation@72f7c618(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-13b92f311fc0/SineRule-002-maths.xml,lineNumber=83,columnNumber=12))
+        1 =&gt; &lt;div&gt;@1760464031(xPath=/assessmentItem[@identifier=&quot;SineRule-CalcFormQ-001&quot;]/itemBody[1]/div[1],location=XmlSourceLocationInformation@552508b(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-13b92f311fc0/SineRule-002-maths.xml,lineNumber=85,columnNumber=23))
+        2 =&gt; &lt;div&gt;@1596315751(xPath=/assessmentItem[@identifier=&quot;SineRule-CalcFormQ-001&quot;]/itemBody[1]/div[2],location=XmlSourceLocationInformation@2da282fe(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-13b92f311fc0/SineRule-002-maths.xml,lineNumber=89,columnNumber=23))
+        3 =&gt; &lt;div&gt;@138807578(xPath=/assessmentItem[@identifier=&quot;SineRule-CalcFormQ-001&quot;]/itemBody[1]/div[3],location=XmlSourceLocationInformation@2dff8e34(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-13b92f311fc0/SineRule-002-maths.xml,lineNumber=92,columnNumber=23))
+        4 =&gt; &lt;div&gt;@1691422595(xPath=/assessmentItem[@identifier=&quot;SineRule-CalcFormQ-001&quot;]/itemBody[1]/div[4],location=XmlSourceLocationInformation@5951952a(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-13b92f311fc0/SineRule-002-maths.xml,lineNumber=95,columnNumber=23))
+        5 =&gt; &lt;div&gt;@2065180213(xPath=/assessmentItem[@identifier=&quot;SineRule-CalcFormQ-001&quot;]/itemBody[1]/div[5],location=XmlSourceLocationInformation@6e74a0b5(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-13b92f311fc0/SineRule-002-maths.xml,lineNumber=98,columnNumber=23))
+        6 =&gt; &lt;div&gt;@719520698(xPath=/assessmentItem[@identifier=&quot;SineRule-CalcFormQ-001&quot;]/itemBody[1]/div[6],location=XmlSourceLocationInformation@1e09be55(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-13b92f311fc0/SineRule-002-maths.xml,lineNumber=101,columnNumber=23))
+        7 =&gt; &lt;div&gt;@296668635(xPath=/assessmentItem[@identifier=&quot;SineRule-CalcFormQ-001&quot;]/itemBody[1]/div[7],location=XmlSourceLocationInformation@6b4cedee(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-13b92f311fc0/SineRule-002-maths.xml,lineNumber=104,columnNumber=23))
+    ]
+    id =&gt; null
+    classAttr =&gt; null
+    lang =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    label =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    parent =&gt; &lt;assessmentItem&gt;@127458123(xPath=/assessmentItem[@identifier=&quot;SineRule-CalcFormQ-001&quot;],location=XmlSourceLocationInformation@44651cd2(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-13b92f311fc0/SineRule-002-maths.xml,lineNumber=8,columnNumber=59))(systemId=_SECURE/_QTI/id-13b92f311fc0/SineRule-002-maths.xml)
+    attributes =&gt; uk.ac.ed.ph.jqtiplus.attribute.AttributeList@4a474212
+    sourceLocation =&gt; XmlSourceLocationInformation@c42d1d7(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-13b92f311fc0/SineRule-002-maths.xml,lineNumber=82,columnNumber=15)
+    rootNode =&gt; &lt;assessmentItem&gt;@127458123(xPath=/assessmentItem[@identifier=&quot;SineRule-CalcFormQ-001&quot;],location=XmlSourceLocationInformation@44651cd2(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-13b92f311fc0/SineRule-002-maths.xml,lineNumber=8,columnNumber=59))(systemId=_SECURE/_QTI/id-13b92f311fc0/SineRule-002-maths.xml)
+    nodeGroups =&gt; uk.ac.ed.ph.jqtiplus.group.NodeGroupList@76de808a
+    qtiClassName =&gt; itemBody
+)
+</itemBody>
+  <adaptive>false</adaptive>
+  <timeDependent>false</timeDependent>
+</com.tle.common.qti.entity.QtiAssessmentItem>

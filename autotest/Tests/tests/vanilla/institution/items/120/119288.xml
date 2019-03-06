@@ -1,0 +1,81 @@
+<com.tle.beans.item.Item>
+  <id>119288</id>
+  <uuid>cbd66cbe-5f16-5898-cbbc-d39b58940f48</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2003-03-06 17:00:39.0</dateModified>
+  <dateCreated class="sql-timestamp">2003-03-06 16:14:02.0</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.533</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <attachments/>
+  <searchDetails/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="e8f050dd-f6c0-4cec-559f-e54d7ef19836"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>6982</id>
+      <url>http://boorah/dev/vanilla/item/image/e9a68700-d245-662c-59f2-8caab95f903f/1/mapsinto.gif</url>
+      <urlHash>180fe08ed5eb20f7f648bb93bf9769e2</urlHash>
+      <success>false</success>
+      <status>0</status>
+      <message>java.net.ConnectException: http://boorah/dev/vanilla/item/image/e9a68700-d245-662c-59f2-8caab95f903f/1/mapsinto.gif</message>
+      <tries>9</tries>
+      <lastChecked class="sql-timestamp">2016-05-30 23:10:52.06</lastChecked>
+      <lastIndexed class="sql-timestamp">2016-05-30 23:10:52.06</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>119127</id>
+    <start class="sql-timestamp">2011-08-30 12:05:10.983</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>213608</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>213406</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Maps Into</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>213605</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>213401</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Maps into symbol.</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

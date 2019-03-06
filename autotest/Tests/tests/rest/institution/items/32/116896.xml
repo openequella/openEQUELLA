@@ -1,0 +1,73 @@
+<com.tle.beans.item.Item>
+  <id>116896</id>
+  <uuid>f97966e9-9237-4416-8bf6-9c44fc51043c</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-03-28 15:50:16.463</dateModified>
+  <dateCreated class="sql-timestamp">2014-03-28 15:50:16.463</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.147</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="bfad7ea0-983f-dd58-6b7d-ed5f346e24ab"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>116900</id>
+    <liveApprovalDate class="sql-timestamp">2014-03-28 15:50:16.557</liveApprovalDate>
+    <start class="sql-timestamp">2014-04-11 16:15:52.91</start>
+    <lastAction class="sql-timestamp">2014-03-28 15:50:16.557</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116905</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-28 15:50:16.463</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116906</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-28 15:50:16.557</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>116902</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116904</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>ItemApiRelationTest - Book Portion</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

@@ -1,0 +1,13 @@
+{
+  "id" : "feb557d0-95db-11e2-9e96-0800200c9a66",
+  "username" : "moderator1",
+  "firstName" : "mod1",
+  "lastName" : "mod1",
+  "_export" : {
+    "exportVersion" : "1.0",
+    "passwordHash" : "SHA256:4d78cbe838c54d460bbb00a309e754d4d9ecf277c86aa4b338c857f551aee18c"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/localuser/feb557d0-95db-11e2-9e96-0800200c9a66"
+  }
+}

@@ -1,0 +1,27 @@
+<com.tle.common.payment.entity.SubscriptionPeriod>
+  <id>116500</id>
+  <uuid>bd3669ed-c971-4cc5-a1ac-fa1498c60d55</uuid>
+  <institution>
+    <id>116095</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <name>
+    <id>116501</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116502</id>
+          <locale>en</locale>
+          <priority>0</priority>
+          <text>6 Months</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <duration>6</duration>
+  <durationUnit>2</durationUnit>
+  <magnitude>15552000000</magnitude>
+</com.tle.common.payment.entity.SubscriptionPeriod>

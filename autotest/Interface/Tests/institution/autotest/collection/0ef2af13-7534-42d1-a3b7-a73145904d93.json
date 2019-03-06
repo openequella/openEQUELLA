@@ -1,0 +1,26 @@
+{
+  "uuid" : "0ef2af13-7534-42d1-a3b7-a73145904d93",
+  "name" : "Facet collection",
+  "nameStrings" : {
+    "en" : "Facet collection"
+  },
+  "modifiedDate" : "2014-05-12T15:43:42.446+10:00",
+  "createdDate" : "2014-05-12T15:43:42.445+10:00",
+  "owner" : {
+    "id" : "system"
+  },
+  "security" : {
+    "rules" : [ ],
+    "metadata" : { },
+    "statuses" : { }
+  },
+  "schema" : {
+    "uuid" : "4a5e360e-0cb8-47b3-ad0f-43ca923fe8e4"
+  },
+  "_export" : {
+    "exportVersion" : "1.0"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/collection/0ef2af13-7534-42d1-a3b7-a73145904d93"
+  }
+}

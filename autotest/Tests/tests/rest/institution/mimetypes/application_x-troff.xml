@@ -1,0 +1,20 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>116761</id>
+  <institution>
+    <id>116510</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>roff</string>
+    <string>tr</string>
+    <string>t</string>
+  </extensions>
+  <type>application/x-troff</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

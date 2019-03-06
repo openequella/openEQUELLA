@@ -1,0 +1,136 @@
+<map>
+  <entry>
+    <string>replicated.searchUsersInGroup</string>
+    <string>SELECT DISTINCT u.&quot;uuid&quot; FROM &quot;users&quot; u
+INNER JOIN &quot;groups_users&quot; gu ON gu.user_id = u.id
+INNER JOIN &quot;groups&quot; g ON gu.group_id = g.id
+WHERE g.uuid = ? AND (u.username LIKE ? OR u.&quot;name&quot; LIKE ? OR u.lastname LIKE ?)</string>
+  </entry>
+  <entry>
+    <string>replicated.jdbc.password</string>
+    <string>tle010</string>
+  </entry>
+  <entry>
+    <string>replicated.jdbc.url</string>
+    <string>jdbc:postgresql://vm-autotest2:5432/replicatedDBAutotest</string>
+  </entry>
+  <entry>
+    <string>replicated.groupsContainingUser</string>
+    <string>SELECT DISTINCT g.uuid FROM &quot;users&quot; u
+INNER JOIN &quot;groups_users&quot; gu ON gu.user_id = u.id
+INNER JOIN &quot;groups&quot; g ON gu.group_id = g.id
+WHERE u.uuid = ?</string>
+  </entry>
+  <entry>
+    <string>replicated.searchUsers</string>
+    <string>SELECT uuid FROM &quot;users&quot; WHERE username LIKE ? OR name LIKE ? OR lastname LIKE ? </string>
+  </entry>
+  <entry>
+    <string>replicated.searchGroups</string>
+    <string>SELECT uuid FROM &quot;groups&quot; WHERE name like ? </string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.0.name</string>
+    <string>a role</string>
+  </entry>
+  <entry>
+    <string>replicated.userInfo</string>
+    <string>SELECT uuid, username, name, lastname, email FROM &quot;users&quot; WHERE uuid IN ?</string>
+  </entry>
+  <entry>
+    <string>replicated.usersInGroupRecursive</string>
+    <string>SELECT DISTINCT u.uuid FROM &quot;users&quot; u
+INNER JOIN &quot;groups_users&quot; gu ON gu.user_id = u.id
+INNER JOIN &quot;groups&quot; g ON gu.group_id = g.id
+WHERE g.uuid = ? </string>
+  </entry>
+  <entry>
+    <string>replicated.roleInfo</string>
+    <string>SELECT id, name FROM &quot;roles&quot; WHERE id IN ?</string>
+  </entry>
+  <entry>
+    <string>wrapper.user.enabled</string>
+    <string>true</string>
+  </entry>
+  <entry>
+    <string>replicated.searchUsersInGroupRecursive</string>
+    <string></string>
+  </entry>
+  <entry>
+    <string>wrapper.role.enabled</string>
+    <string>true</string>
+  </entry>
+  <entry>
+    <string>cache.enabled</string>
+    <string>false</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.0.id</string>
+    <string>b43bc451-fe03-4959-a721-7e1b78ee7f35</string>
+  </entry>
+  <entry>
+    <string>replicated.usersInGroup</string>
+    <string>SELECT user_id FROM &quot;groups_users&quot; WHERE group_id = ?</string>
+  </entry>
+  <entry>
+    <string>security.applet.shared.secrets.0.expression</string>
+    <string>*</string>
+  </entry>
+  <entry>
+    <string>replicated.digest</string>
+    <string>Plaintext</string>
+  </entry>
+  <entry>
+    <string>replicated.enabled</string>
+    <string>true</string>
+  </entry>
+  <entry>
+    <string>replicated.userRoles</string>
+    <string>SELECT r.id, r.name FROM &quot;roles&quot; r
+INNER Join &quot;roles_users&quot; ru on r.id = ru.role_id
+INNER Join &quot;users&quot; u on u.id = ru.user_id
+WHERE u.uuid = ?</string>
+  </entry>
+  <entry>
+    <string>replicated.jdbc.username</string>
+    <string>equellauser</string>
+  </entry>
+  <entry>
+    <string>security.applet.shared.secrets.0.id</string>
+    <string>APPLET</string>
+  </entry>
+  <entry>
+    <string>replicated.jdbc.driver</string>
+    <string>org.postgresql.Driver</string>
+  </entry>
+  <entry>
+    <string>replicated.parentGroup</string>
+    <string>SELECT id, name FROM &quot;groups&quot; g INNER JOIN &quot;groups_users&quot; gu
+ON g.id = gu.parent_group_id
+WHERE gu.id = ?</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.0.expression</string>
+    <string>U:edf06d7a-ab68-4d96-9c03-c1f0aea4ab91 </string>
+  </entry>
+  <entry>
+    <string>security.applet.shared.secrets.0.secret</string>
+    <string>390d5b30-10ba-4fa0-a1ae-836225d2f859</string>
+  </entry>
+  <entry>
+    <string>replicated.searchRoles</string>
+    <string>SELECT id, name FROM &quot;roles&quot; WHERE name LIKE ?</string>
+  </entry>
+  <entry>
+    <string>replicated.authenticate</string>
+    <string>SELECT uuid, password, 0 FROM &quot;users&quot; WHERE username = ? </string>
+  </entry>
+  <entry>
+    <string>replicated.groupInfo</string>
+    <string>SELECT uuid, name FROM &quot;groups&quot; WHERE uuid IN ? </string>
+  </entry>
+  <entry>
+    <string>cache.schedule.gap</string>
+    <string>0</string>
+  </entry>
+</map>

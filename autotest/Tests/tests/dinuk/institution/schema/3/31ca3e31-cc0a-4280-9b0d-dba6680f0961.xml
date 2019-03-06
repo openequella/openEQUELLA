@@ -1,0 +1,45 @@
+<com.tle.beans.entity.Schema>
+  <id>40199</id>
+  <uuid>31ca3e31-cc0a-4280-9b0d-dba6680f0961</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-04-27 11:11:37.849</dateModified>
+  <dateCreated class="sql-timestamp">2012-04-27 11:02:21.546</dateCreated>
+  <description>
+    <id>40200</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>40201</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>PowSearch Desc</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>40202</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>40203</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>PowSearch</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <expTransforms/>
+  <impTransforms/>
+  <itemNamePath>/powName</itemNamePath>
+  <itemDescriptionPath>/powDesc</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;powName field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;powDesc field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;powContent1 field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;powContent2 field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>

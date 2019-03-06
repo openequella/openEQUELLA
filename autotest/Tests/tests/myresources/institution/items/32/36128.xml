@@ -1,0 +1,157 @@
+<com.tle.beans.item.Item>
+  <id>36128</id>
+  <uuid>25d3b982-8fd0-40f6-a011-e01c9651750c</uuid>
+  <version>1</version>
+  <owner>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</owner>
+  <dateModified class="sql-timestamp">2011-09-20 15:56:53.009</dateModified>
+  <dateCreated class="sql-timestamp">2011-09-20 15:56:53.16</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.184</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>36142</id>
+      <uuid>fdec3442-a7fe-42c5-bec7-3045cbfa7773</uuid>
+      <url>index.jpeg</url>
+      <description>Hal&apos;s red eye</description>
+      <value1>5170</value1>
+      <value2>false</value2>
+      <md5sum>a10f53bf8b5ee4cc54083a7dbbb53348</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>36144</id>
+      <uuid>751acc1d-6c32-461c-b782-ab9f094d757e</uuid>
+      <url>flickr-yahoo-logo.png</url>
+      <description>Yahoo Flickr Logo</description>
+      <value1>2750</value1>
+      <value2>false</value2>
+      <md5sum>cf949553f3d6ca82ba76debe92a41439</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>36145</id>
+      <uuid>492f4fa3-7673-4179-b5eb-8b40f92068f9</uuid>
+      <url>flickr115.gif</url>
+      <description>Medium Flickr Logo</description>
+      <value1>1909</value1>
+      <value2>false</value2>
+      <md5sum>596b46477edf65244a5b1b7bff3ede38</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>36146</id>
+      <uuid>c9ac1252-7d17-4592-9934-37014286c98c</uuid>
+      <url>flickr.gif</url>
+      <description>Small Flickr Logo</description>
+      <value1>1652</value1>
+      <value2>false</value2>
+      <md5sum>3220afd0b584139f9e2f0ed47a8ab3bc</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="8e3caf16-f3cb-b3dd-d403-e5eb8d545fff"/>
+  <collaborators/>
+  <referencedUrls/>
+  <drmSettings>
+    <id>36130</id>
+    <item reference="../.."/>
+    <drmPageUuid>5a3085cc-c71b-48a8-9558-6862201658c4</drmPageUuid>
+    <hideLicencesFromOwner>false</hideLicencesFromOwner>
+    <showLicenceCount>false</showLicenceCount>
+    <allowSummary>false</allowSummary>
+    <ownerMustAccept>false</ownerMustAccept>
+    <studentsMustAcceptIfInCompilation>true</studentsMustAcceptIfInCompilation>
+    <previewAllowed>true</previewAllowed>
+    <restrictToSector>false</restrictToSector>
+    <attributionOfOwnership>false</attributionOfOwnership>
+    <enforceAttribution>false</enforceAttribution>
+    <currentUsageCount>0</currentUsageCount>
+    <maximumUsageCount>0</maximumUsageCount>
+    <contentOwners>
+      <com.tle.beans.item.DrmSettings_-Party>
+        <userID>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</userID>
+        <name>auto test [AutoTest]</name>
+        <email>AutoTest@autotest.com</email>
+        <owner>true</owner>
+      </com.tle.beans.item.DrmSettings_-Party>
+      <com.tle.beans.item.DrmSettings_-Party>
+        <userID></userID>
+        <name>Is that you,John Wayne?</name>
+        <email>john@wayne.nowhere.org</email>
+        <owner>false</owner>
+      </com.tle.beans.item.DrmSettings_-Party>
+    </contentOwners>
+    <usages/>
+    <requireAcceptanceFrom>* </requireAcceptanceFrom>
+  </drmSettings>
+  <moderation>
+    <id>36136</id>
+    <liveApprovalDate class="sql-timestamp">2011-09-20 15:56:53.009</liveApprovalDate>
+    <start class="sql-timestamp">2011-09-20 15:57:38.353</start>
+    <lastAction class="sql-timestamp">2011-09-20 15:56:53.009</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>36147</id>
+      <user>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</user>
+      <date class="sql-timestamp">2011-09-20 15:56:53.009</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>36148</id>
+      <user>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</user>
+      <date class="sql-timestamp">2011-09-20 15:56:53.009</date>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>36149</id>
+      <user>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</user>
+      <date class="sql-timestamp">2011-09-20 15:56:53.009</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>36138</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>36140</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Hal&apos;s eying Flickr</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

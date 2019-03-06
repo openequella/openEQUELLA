@@ -1,0 +1,80 @@
+<com.tle.beans.entity.PowerSearch>
+  <id>216138</id>
+  <uuid>940b5e84-9657-43d5-a080-8214ef1005e7</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2011-09-16 15:50:01.757</dateModified>
+  <dateCreated class="sql-timestamp">2011-09-16 15:48:11.924</dateCreated>
+  <name>
+    <id>216139</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216140</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>DRM Party search</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <schema entityclass="com.tle.beans.entity.Schema" uuid="d9aba963-4648-e497-d62b-fc1ddf2d0199"/>
+  <itemdefs class="list">
+    <com.tle.beans.entity.itemdef.ItemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="9a961a09-0c6a-b24f-b05b-eb21a696528b"/>
+  </itemdefs>
+  <wizard>
+    <title>
+      <id>0</id>
+      <strings class="java.util.Collections$SingletonMap">
+        <k class="string">en_AU</k>
+        <v class="com.tle.beans.entity.LanguageString">
+          <id>0</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Power Search</text>
+          <bundle reference="../../.."/>
+        </v>
+      </strings>
+    </title>
+    <controls>
+      <com.dytech.edge.wizard.beans.control.EditBox>
+        <mandatory>false</mandatory>
+        <reload>false</reload>
+        <include>true</include>
+        <size1>0</size1>
+        <size2>1</size2>
+        <title>
+          <id>0</id>
+          <strings>
+            <entry>
+              <string>en</string>
+              <com.tle.beans.entity.LanguageString>
+                <id>0</id>
+                <locale>en</locale>
+                <priority>1</priority>
+                <text>Name or Username</text>
+                <bundle reference="../../../.."/>
+              </com.tle.beans.entity.LanguageString>
+            </entry>
+          </strings>
+        </title>
+        <targetnodes>
+          <com.dytech.edge.wizard.TargetNode>
+            <target>/item/rights/offer/party/context/name</target>
+            <attribute></attribute>
+          </com.dytech.edge.wizard.TargetNode>
+        </targetnodes>
+        <items/>
+        <links>false</links>
+        <number>false</number>
+        <forceUnique>false</forceUnique>
+        <checkDuplication>false</checkDuplication>
+        <allowMultiLang>false</allowMultiLang>
+      </com.dytech.edge.wizard.beans.control.EditBox>
+    </controls>
+  </wizard>
+</com.tle.beans.entity.PowerSearch>

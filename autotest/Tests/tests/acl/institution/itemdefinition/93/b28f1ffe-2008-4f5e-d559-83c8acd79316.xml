@@ -1,0 +1,497 @@
+<com.tle.beans.entity.itemdef.ItemDefinition>
+  <id>131440</id>
+  <uuid>b28f1ffe-2008-4f5e-d559-83c8acd79316</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2013-02-08 07:50:14.797</dateModified>
+  <dateCreated class="sql-timestamp">2011-03-17 15:52:05.142</dateCreated>
+  <name>
+    <id>131441</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>131442</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Dynamic Metadata ACLs</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <schema entityclass="com.tle.beans.entity.Schema" uuid="d9aba963-4648-e497-d62b-fc1ddf2d0199"/>
+  <wizardcategory>Basic</wizardcategory>
+  <reviewperiod>-2147483648</reviewperiod>
+  <slow>
+    <id>131443</id>
+    <itemMetadataRules/>
+    <dynamicMetadataRules>
+      <com.tle.beans.entity.itemdef.DynamicMetadataRule>
+        <id>c082d5e0-7266-460b-9e5d-b6751c6ff29f</id>
+        <name>No comments</name>
+        <path>/item/meta_acl/users/nonrestricted</path>
+        <type>USER</type>
+        <targetList>
+          <entries>
+            <com.tle.common.security.TargetListEntry>
+              <granted>false</granted>
+              <override>false</override>
+              <privilege>COMMENT_CREATE_ITEM</privilege>
+              <who>*</who>
+              <postfix></postfix>
+            </com.tle.common.security.TargetListEntry>
+            <com.tle.common.security.TargetListEntry>
+              <granted>false</granted>
+              <override>false</override>
+              <privilege>COMMENT_DELETE_ITEM</privilege>
+              <who>*</who>
+              <postfix></postfix>
+            </com.tle.common.security.TargetListEntry>
+            <com.tle.common.security.TargetListEntry>
+              <granted>false</granted>
+              <override>false</override>
+              <privilege>COMMENT_VIEW_ITEM</privilege>
+              <who>*</who>
+              <postfix></postfix>
+            </com.tle.common.security.TargetListEntry>
+          </entries>
+          <partial>false</partial>
+        </targetList>
+      </com.tle.beans.entity.itemdef.DynamicMetadataRule>
+      <com.tle.beans.entity.itemdef.DynamicMetadataRule>
+        <id>23e3b200-89b9-437a-a9ca-5a25883165a6</id>
+        <name>No delete</name>
+        <path>/item/meta_acl/groups/nonrestricted</path>
+        <type>GROUP</type>
+        <targetList>
+          <entries>
+            <com.tle.common.security.TargetListEntry>
+              <granted>false</granted>
+              <override>false</override>
+              <privilege>DELETE_ITEM</privilege>
+              <who>*</who>
+              <postfix></postfix>
+            </com.tle.common.security.TargetListEntry>
+          </entries>
+          <partial>false</partial>
+        </targetList>
+      </com.tle.beans.entity.itemdef.DynamicMetadataRule>
+      <com.tle.beans.entity.itemdef.DynamicMetadataRule>
+        <id>9ecd1b98-31a2-4b5f-adef-daacdc49b4a3</id>
+        <name>No clone</name>
+        <path>/item/meta_acl/roles</path>
+        <type>ROLE</type>
+        <targetList>
+          <entries>
+            <com.tle.common.security.TargetListEntry>
+              <granted>false</granted>
+              <override>false</override>
+              <privilege>CLONE_ITEM</privilege>
+              <who>*</who>
+              <postfix></postfix>
+            </com.tle.common.security.TargetListEntry>
+          </entries>
+          <partial>false</partial>
+        </targetList>
+      </com.tle.beans.entity.itemdef.DynamicMetadataRule>
+    </dynamicMetadataRules>
+    <wizard>
+      <pages>
+        <com.dytech.edge.wizard.beans.DefaultWizardPage>
+          <title>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en</locale>
+                  <priority>1</priority>
+                  <text>Data</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </title>
+          <controls>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>true</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Name</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/name</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>User selector</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/meta_acl/users/nonrestricted</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <classType>userselector</classType>
+              <attributes>
+                <entry>
+                  <string>IsRestrictedGroups</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>IsSelectMultiple</string>
+                  <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>RestrictToGroups</string>
+                  <set/>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>User Selector (restricted)</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/meta_acl/users/restricted</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <classType>userselector</classType>
+              <attributes>
+                <entry>
+                  <string>IsRestrictedGroups</string>
+                  <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>IsSelectMultiple</string>
+                  <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>RestrictToGroups</string>
+                  <set>
+                    <string>groupception</string>
+                  </set>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Group Selector</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/meta_acl/groups/nonrestricted</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <classType>groupselector</classType>
+              <attributes>
+                <entry>
+                  <string>IsRestrictedGroups</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>IsSelectMultiple</string>
+                  <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>RestrictToGroups</string>
+                  <set/>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Group Selector (restricted)</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/meta_acl/groups/restricted</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <classType>groupselector</classType>
+              <attributes>
+                <entry>
+                  <string>IsRestrictedGroups</string>
+                  <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>IsSelectMultiple</string>
+                  <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>RestrictToGroups</string>
+                  <set>
+                    <string>groupception</string>
+                    <string>b90c6ee8-05d7-408c-a697-1904966ce785</string>
+                  </set>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Role Selector</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/meta_acl/roles</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <classType>roleselector</classType>
+              <attributes>
+                <entry>
+                  <string>IsSelectMultiple</string>
+                  <boolean>true</boolean>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+          </controls>
+        </com.dytech.edge.wizard.beans.DefaultWizardPage>
+      </pages>
+      <redraftScript></redraftScript>
+      <saveScript>//search groups by group name
+var searchedGroup = user.searchGroups(&apos;Alpha&apos;).get(0);
+xml.set(&apos;item/searchedGroup&apos;,searchedGroup);
+
+//get the first group logged in user belongs to
+var userGroup = user.getGroups().get(0);
+xml.set(&apos;item/userGroup&apos;,userGroup);
+xml.set(&apos;item/isMemberOfGroup&apos;,user.isMemberOfGroup(userGroup.getUniqueID()));
+
+//get all user for searched group recursive 
+var usersInAlpha = user.searchUsersInGroups(&quot;*&quot;, searchedGroup.getUniqueID(), true);
+var userIn = &quot;&quot;;
+for(var i = 0; i &lt; usersInAlpha.size(); i++)
+{
+	userIn +=  usersInAlpha.get(i).getUsername();
+	if(userIn != &quot;&quot; &amp;&amp; i &lt; usersInAlpha.size() - 1)
+	{
+		userIn += &quot;, &quot;;
+	}
+}
+xml.set(&apos;item/otherUsersInGroup&apos;, usersInAlpha);
+
+
+
+//all of the user groups
+var groups = user.getGroupsContainingUser(user.getID());
+var gs = &quot;&quot;;
+
+for(var i = 0; i &lt; groups.size(); i++)
+{
+	gs = gs + groups.get(i);
+	if(gs != &quot;&quot; &amp;&amp; i &lt; groups.size() - 1)
+	{
+		gs += &quot;, &quot;;
+	}
+}
+xml.set(&apos;item/containingUserGroup&apos;, gs);
+
+
+var allUsers = user.searchUser</saveScript>
+      <allowNonSequentialNavigation>false</allowNonSequentialNavigation>
+      <showPageTitlesNextPrev>false</showPageTitlesNextPrev>
+      <additionalCssClass></additionalCssClass>
+    </wizard>
+    <metadataMapping>
+      <imsMapping class="list"/>
+      <htmlMapping class="list"/>
+      <literalMapping class="list"/>
+    </metadataMapping>
+    <itemSummarySections>
+      <configList>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>b3cae03c-e18d-4692-9817-b075dd9a2bae</uuid>
+          <value>basicSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Basic Information</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+          <configuration>&lt;map&gt;
+  &lt;entry&gt;
+    &lt;string&gt;owner&lt;/string&gt;
+    &lt;string&gt;true&lt;/string&gt;
+  &lt;/entry&gt;
+&lt;/map&gt;</configuration>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>7058a5f4-e29d-48a6-8d2e-ebc2778f41ac</uuid>
+          <value>attachmentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Links to resources</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+          <configuration>&lt;xml&gt;&lt;SHOW_FULLSCREEN_LINK_KEY&gt;true&lt;/SHOW_FULLSCREEN_LINK_KEY&gt;&lt;SHOW_FULLSCREEN_LINK_NEW_WINDOW_KEY&gt;false&lt;/SHOW_FULLSCREEN_LINK_NEW_WINDOW_KEY&gt;&lt;/xml&gt;</configuration>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>304d17c5-d02a-4fa9-a739-07b9cb8db2c1</uuid>
+          <value>commentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Add a comment</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+          <configuration>&lt;xml&gt;&lt;ANONYMOUSLY_COMMENTS_KEY&gt;true&lt;/ANONYMOUSLY_COMMENTS_KEY&gt;&lt;/xml&gt;</configuration>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+      </configList>
+      <hideOwner>false</hideOwner>
+      <hideCollaborators>false</hideCollaborators>
+    </itemSummarySections>
+  </slow>
+  <denyDirectContribution>false</denyDirectContribution>
+</com.tle.beans.entity.itemdef.ItemDefinition>

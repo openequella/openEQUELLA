@@ -1,0 +1,190 @@
+<com.tle.beans.item.Item>
+  <id>18692</id>
+  <uuid>443594bf-382e-4361-8190-f072914eac7e</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2011-09-26 11:43:31.646</dateModified>
+  <dateCreated class="sql-timestamp">2011-09-05 11:19:17.796</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.284</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>18697</id>
+      <uuid>a44abaa6-1de4-42b2-904d-c7a08194c537</uuid>
+      <url>google.png</url>
+      <description>google.png</description>
+      <value1>7007</value1>
+      <value2>false</value2>
+      <md5sum>169e859db7f28a01e1b51e1c9e2d6b2b</md5sum>
+      <viewer>livNavTreeViewer</viewer>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+    <com.tle.beans.item.attachments.LinkAttachment>
+      <id>18698</id>
+      <uuid>554098e5-b4b7-42f1-8e75-cc5bdc5836b5</uuid>
+      <url>http://dev.equella.com/</url>
+      <description>http://dev.equella.com/</description>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.LinkAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="9a735fbf-226c-4d99-8f8f-6ec8368d9347"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>1091</id>
+      <url>http://dev.equella.com/</url>
+      <urlHash>bd920cb65b27dde0d05210bf9493cb5b</urlHash>
+      <success>true</success>
+      <status>200</status>
+      <tries>0</tries>
+      <lastChecked class="sql-timestamp">2015-04-17 11:41:02.457</lastChecked>
+      <lastIndexed class="sql-timestamp">1970-01-01 11:00:00.0</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>18694</id>
+    <liveApprovalDate class="sql-timestamp">2011-09-05 11:19:17.793</liveApprovalDate>
+    <start class="sql-timestamp">2011-09-05 11:20:24.413</start>
+    <lastAction class="sql-timestamp">2011-09-05 11:19:17.793</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18699</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-05 11:19:17.793</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18700</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-05 11:19:17.793</date>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18701</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-05 11:19:17.793</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18702</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-05 11:19:58.928</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18703</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-26 11:42:32.677</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18704</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-26 11:42:46.563</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18705</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-26 11:43:08.9</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18706</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-26 11:43:21.428</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18707</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-26 11:43:31.646</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes>
+    <com.tle.beans.item.attachments.ItemNavigationNode>
+      <id>18708</id>
+      <uuid>dc07fa68-f1eb-4b9c-83d2-a957d83f5729</uuid>
+      <name>http://dev.equella.com/</name>
+      <tabs>
+        <com.tle.beans.item.attachments.ItemNavigationTab>
+          <id>18709</id>
+          <name>Tab 1</name>
+          <attachment class="com.tle.beans.item.attachments.LinkAttachment" reference="../../../../../attachments/com.tle.beans.item.attachments.LinkAttachment"/>
+          <viewer></viewer>
+        </com.tle.beans.item.attachments.ItemNavigationTab>
+      </tabs>
+      <index>0</index>
+    </com.tle.beans.item.attachments.ItemNavigationNode>
+    <com.tle.beans.item.attachments.ItemNavigationNode>
+      <id>18710</id>
+      <uuid>ae3cfa9b-2b45-43ec-9110-5fb09453e72d</uuid>
+      <name>google.png</name>
+      <tabs>
+        <com.tle.beans.item.attachments.ItemNavigationTab>
+          <id>18711</id>
+          <name>Tab 1</name>
+          <attachment class="com.tle.beans.item.attachments.FileAttachment" reference="../../../../../attachments/com.tle.beans.item.attachments.FileAttachment"/>
+          <viewer>livNavTreeViewer</viewer>
+        </com.tle.beans.item.attachments.ItemNavigationTab>
+      </tabs>
+      <index>1</index>
+    </com.tle.beans.item.attachments.ItemNavigationNode>
+  </treeNodes>
+  <notifications/>
+  <name>
+    <id>18695</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>18696</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>LargeImageViewer</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>true</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

@@ -1,0 +1,23 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>3309839</id>
+  <institution>
+    <id>3309713</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>ai</string>
+  </extensions>
+  <type>application/illustrator</type>
+  <description>Adobe Illustrator</description>
+  <attributes>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&quot;googledocviewer&quot;]</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

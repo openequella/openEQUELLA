@@ -1,0 +1,29 @@
+<com.tle.beans.hierarchy.HierarchyTopic>
+  <id>116405</id>
+  <uuid>b576839c-dead-47cf-9fc5-4891f932e2a3</uuid>
+  <listPosition>0</listPosition>
+  <keyResources/>
+  <showResults>true</showResults>
+  <inheritFreetext>false</inheritFreetext>
+  <addIdefs/>
+  <addSchemas/>
+  <inhIdefs/>
+  <inhSchemas/>
+  <name>
+    <id>116406</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116407</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>see</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
+  <attributes/>
+</com.tle.beans.hierarchy.HierarchyTopic>

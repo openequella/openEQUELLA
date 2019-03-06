@@ -1,0 +1,19 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>217345</id>
+  <institution>
+    <id>217136</id>
+    <uniqueId>0</uniqueId>
+    <quota>0.0</quota>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>dotm</string>
+  </extensions>
+  <type>application/vnd.ms-word.template.macroEnabled.12</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

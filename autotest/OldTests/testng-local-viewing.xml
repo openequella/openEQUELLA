@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Auto Test Suite viewing" parallel="instances" data-provider-thread-count="4" thread-count="4" configfailurepolicy="continue">
+	<test name="Viewing Tests">
+		<packages>
+			<package name="com.tle.webtests.test.viewing" />
+			<package name="com.tle.webtests.test.viewing.actions" />
+			<package name="com.tle.webtests.test.viewing.comments" />	
+		</packages>
+	</test>
+</suite>

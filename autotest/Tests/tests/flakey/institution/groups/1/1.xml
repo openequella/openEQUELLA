@@ -1,0 +1,9 @@
+<com.tle.beans.user.TLEGroup>
+  <id>12707</id>
+  <uuid>dff74147-98b4-34d3-e193-d3eeada6d836</uuid>
+  <name>SelectGroup1</name>
+  <description></description>
+  <users>
+    <string>6285301a-4e6e-e925-aa17-7d6435678f46</string>
+  </users>
+</com.tle.beans.user.TLEGroup>

@@ -1,0 +1,27 @@
+<list>
+  <com.tle.beans.security.AccessExpression>
+    <id>1040</id>
+    <dynamic>false</dynamic>
+    <expression>R:TLE_LOGGED_IN_USER_ROLE </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>1041</id>
+    <dynamic>true</dynamic>
+    <expression>$OWNER</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>1042</id>
+    <dynamic>false</dynamic>
+    <expression>U:f4c788d1-6e97-5247-e06c-3d4982b9469a </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>1043</id>
+    <dynamic>false</dynamic>
+    <expression>*</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>1039</id>
+    <dynamic>false</dynamic>
+    <expression>U:adfcaf58-241b-4eca-9740-6a26d1c3dd58</expression>
+  </com.tle.beans.security.AccessExpression>
+</list>

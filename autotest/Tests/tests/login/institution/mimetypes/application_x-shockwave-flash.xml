@@ -1,0 +1,18 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>2016854</id>
+  <institution>
+    <id>2016849</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>swf</string>
+    <string>fla</string>
+  </extensions>
+  <type>application/x-shockwave-flash</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.gif</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

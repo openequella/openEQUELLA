@@ -1,0 +1,1513 @@
+<com.tle.beans.entity.itemdef.ItemDefinition>
+  <id>216012</id>
+  <uuid>40590135-b44a-66ab-c957-3bf3e8d9c40c</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2011-09-23 16:55:21.689</dateModified>
+  <dateCreated class="sql-timestamp">2011-03-17 16:59:08.365</dateCreated>
+  <name>
+    <id>216013</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216014</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Controls collection</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <schema entityclass="com.tle.beans.entity.Schema" uuid="8d6cf2dd-6166-2e2d-f8bb-129de8b90d3d"/>
+  <wizardcategory>Wizard</wizardcategory>
+  <reviewperiod>-2147483648</reviewperiod>
+  <slow>
+    <id>216015</id>
+    <itemMetadataRules/>
+    <wizard>
+      <pages>
+        <com.dytech.edge.wizard.beans.DefaultWizardPage>
+          <title>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en</locale>
+                  <priority>1</priority>
+                  <text>Data</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </title>
+          <controls>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>true</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Name</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/name</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.CheckBoxGroup>
+              <mandatory>false</mandatory>
+              <reload>true</reload>
+              <include>true</include>
+              <size1>1</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Show</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/visible/basic</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Yes</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>true</value>
+                  <defaultValue></defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+              </items>
+            </com.dytech.edge.wizard.beans.control.CheckBoxGroup>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>3</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Edit Box</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/visible/basic&apos;, &apos;true&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/controls/editbox</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.ListBox>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Listbox</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/visible/basic&apos;, &apos;true&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/controls/listbox</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>One</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>1</value>
+                  <defaultValue>false</defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Two</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>2</value>
+                  <defaultValue>true</defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+              </items>
+            </com.dytech.edge.wizard.beans.control.ListBox>
+            <com.dytech.edge.wizard.beans.control.ShuffleBox>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Shuffle Box</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/visible/basic&apos;, &apos;true&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/controls/shufflebox</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>One</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>1</value>
+                  <defaultValue></defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Two</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>2</value>
+                  <defaultValue></defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+              </items>
+            </com.dytech.edge.wizard.beans.control.ShuffleBox>
+            <com.dytech.edge.wizard.beans.control.CheckBoxGroup>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>1</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Check Box Group</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/visible/basic&apos;, &apos;true&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/controls/checkboxes</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>One</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>1</value>
+                  <defaultValue></defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Two</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>2</value>
+                  <defaultValue></defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Three</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>3</value>
+                  <defaultValue>true</defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+              </items>
+            </com.dytech.edge.wizard.beans.control.CheckBoxGroup>
+            <com.dytech.edge.wizard.beans.control.RadioGroup>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>1</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Radio Button Group</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/visible/basic&apos;, &apos;true&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/controls/radiogroup</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>One</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>1</value>
+                  <defaultValue>false</defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Two</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>2</value>
+                  <defaultValue>false</defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Three</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>3</value>
+                  <defaultValue>true</defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+              </items>
+            </com.dytech.edge.wizard.beans.control.RadioGroup>
+            <com.dytech.edge.wizard.beans.control.ShuffleList>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Shuffle List</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/visible/basic&apos;, &apos;true&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/controls/shufflelist</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <controls/>
+              <tokenise>true</tokenise>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+            </com.dytech.edge.wizard.beans.control.ShuffleList>
+            <com.dytech.edge.wizard.beans.control.MultiEditBox>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Multi-Language Edit Box</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/visible/basic&apos;, &apos;true&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/controls/multilanguage</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+            </com.dytech.edge.wizard.beans.control.MultiEditBox>
+          </controls>
+        </com.dytech.edge.wizard.beans.DefaultWizardPage>
+        <com.dytech.edge.wizard.beans.DefaultWizardPage>
+          <title>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en</locale>
+                  <priority>1</priority>
+                  <text>Calendar</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </title>
+          <controls>
+            <com.dytech.edge.wizard.beans.control.CheckBoxGroup>
+              <mandatory>false</mandatory>
+              <reload>true</reload>
+              <include>true</include>
+              <size1>1</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Show</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/visible/calendar</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Show</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>true</value>
+                  <defaultValue></defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+              </items>
+            </com.dytech.edge.wizard.beans.control.CheckBoxGroup>
+            <com.dytech.edge.wizard.beans.control.Calendar>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Calendar - No Default</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/visible/calendar&apos;, &apos;true&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/controls/calendar/nodefault</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <value></value>
+                  <defaultValue></defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+              </items>
+              <range>false</range>
+            </com.dytech.edge.wizard.beans.control.Calendar>
+            <com.dytech.edge.wizard.beans.control.Calendar>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Calendar - Range</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/visible/calendar&apos;, &apos;true&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/controls/calendar/range</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <value></value>
+                  <defaultValue></defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem reference="../com.dytech.edge.wizard.beans.control.WizardControlItem"/>
+              </items>
+              <range>true</range>
+            </com.dytech.edge.wizard.beans.control.Calendar>
+            <com.dytech.edge.wizard.beans.control.Calendar>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Calendar - Today</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/visible/calendar&apos;, &apos;true&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/controls/calendar/today</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <value>0</value>
+                  <defaultValue></defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+              </items>
+              <range>false</range>
+            </com.dytech.edge.wizard.beans.control.Calendar>
+            <com.dytech.edge.wizard.beans.control.Calendar>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Calendar - Birthday</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/visible/calendar&apos;, &apos;true&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/controls/calendar/birthday</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <value>1980-04-22T00:00:00</value>
+                  <defaultValue></defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+              </items>
+              <range>false</range>
+            </com.dytech.edge.wizard.beans.control.Calendar>
+            <com.dytech.edge.wizard.beans.control.Calendar>
+              <mandatory>false</mandatory>
+              <reload>true</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Calendar - Reload</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/visible/calendar&apos;, &apos;true&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/controls/calendar/reload</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <value></value>
+                  <defaultValue></defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+              </items>
+              <range>false</range>
+            </com.dytech.edge.wizard.beans.control.Calendar>
+            <com.dytech.edge.wizard.beans.control.Html>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <description>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>&lt;div class=&quot;control&quot;&gt;
+&lt;h3&gt;Calendar - Reload HTML&lt;/h3&gt;
+&lt;span id=&quot;rawhtml&quot;&gt;The date has been set and the controls reloaded&lt;/span&gt;
+&lt;/div&gt;</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </description>
+              <script>var bRet = false; 
+if( xml.get(&apos;/item/controls/calendar/reload&apos;) != &apos;&apos; ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes/>
+              <items/>
+            </com.dytech.edge.wizard.beans.control.Html>
+          </controls>
+        </com.dytech.edge.wizard.beans.DefaultWizardPage>
+        <com.dytech.edge.wizard.beans.DefaultWizardPage>
+          <title>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en</locale>
+                  <priority>1</priority>
+                  <text>User Selector</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </title>
+          <controls>
+            <com.dytech.edge.wizard.beans.control.CheckBoxGroup>
+              <mandatory>false</mandatory>
+              <reload>true</reload>
+              <include>true</include>
+              <size1>1</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Show</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/visible/userselector</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Show</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>true</value>
+                  <defaultValue></defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+              </items>
+            </com.dytech.edge.wizard.beans.control.CheckBoxGroup>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>All Users</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/visible/userselector&apos;, &apos;true&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/controls/userselector/allusers</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <classType>userselector</classType>
+              <attributes>
+                <entry>
+                  <string>IsRestrictedGroups</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>IsSelectMultiple</string>
+                  <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>RestrictToGroups</string>
+                  <set/>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Group restriction</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/visible/userselector&apos;, &apos;true&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/controls/userselector/group</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <classType>userselector</classType>
+              <attributes>
+                <entry>
+                  <string>IsRestrictedGroups</string>
+                  <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>IsSelectMultiple</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>RestrictToGroups</string>
+                  <set>
+                    <string>dff74147-98b4-34d3-e193-d3eeada6d836</string>
+                  </set>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+          </controls>
+        </com.dytech.edge.wizard.beans.DefaultWizardPage>
+        <com.dytech.edge.wizard.beans.DefaultWizardPage>
+          <title>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en</locale>
+                  <priority>1</priority>
+                  <text>Email Selector</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </title>
+          <controls>
+            <com.dytech.edge.wizard.beans.control.CheckBoxGroup>
+              <mandatory>false</mandatory>
+              <reload>true</reload>
+              <include>true</include>
+              <size1>1</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Show</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/visible/emailselector</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Show</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>true</value>
+                  <defaultValue></defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+              </items>
+            </com.dytech.edge.wizard.beans.control.CheckBoxGroup>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Email Selector - Multiple</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/visible/emailselector&apos;, &apos;true&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/controls/emailselector/multiple</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <classType>emailselector</classType>
+              <attributes>
+                <entry>
+                  <string>IsSelectMultiple</string>
+                  <boolean>true</boolean>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Email Selector - Single</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/visible/emailselector&apos;, &apos;true&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/controls/emailselector/single</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <classType>emailselector</classType>
+              <attributes>
+                <entry>
+                  <string>IsSelectMultiple</string>
+                  <boolean>false</boolean>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+          </controls>
+        </com.dytech.edge.wizard.beans.DefaultWizardPage>
+        <com.dytech.edge.wizard.beans.DefaultWizardPage>
+          <title>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en</locale>
+                  <priority>1</priority>
+                  <text>Shuffle Group</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </title>
+          <controls>
+            <com.dytech.edge.wizard.beans.control.CheckBoxGroup>
+              <mandatory>false</mandatory>
+              <reload>true</reload>
+              <include>true</include>
+              <size1>1</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Show</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/visible/shufflegroup</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Yes</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>true</value>
+                  <defaultValue></defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+              </items>
+            </com.dytech.edge.wizard.beans.control.CheckBoxGroup>
+            <com.dytech.edge.wizard.beans.control.Multi>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Shuffle Group</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/visible/shufflegroup&apos;, &apos;true&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/controls/shufflegroup</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <controls>
+                <com.dytech.edge.wizard.beans.control.EditBox>
+                  <mandatory>false</mandatory>
+                  <reload>false</reload>
+                  <include>true</include>
+                  <size1>0</size1>
+                  <size2>1</size2>
+                  <title>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Edit Box</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </title>
+                  <targetnodes>
+                    <com.dytech.edge.wizard.TargetNode>
+                      <target>/editbox</target>
+                      <attribute></attribute>
+                    </com.dytech.edge.wizard.TargetNode>
+                  </targetnodes>
+                  <items/>
+                  <links>false</links>
+                  <number>false</number>
+                  <forceUnique>false</forceUnique>
+                  <checkDuplication>false</checkDuplication>
+                  <allowMultiLang>false</allowMultiLang>
+                </com.dytech.edge.wizard.beans.control.EditBox>
+                <com.dytech.edge.wizard.beans.control.ListBox>
+                  <mandatory>false</mandatory>
+                  <reload>false</reload>
+                  <include>true</include>
+                  <size1>0</size1>
+                  <size2>0</size2>
+                  <title>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>List Box</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </title>
+                  <targetnodes>
+                    <com.dytech.edge.wizard.TargetNode>
+                      <target>/listbox</target>
+                      <attribute></attribute>
+                    </com.dytech.edge.wizard.TargetNode>
+                  </targetnodes>
+                  <items>
+                    <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                      <name>
+                        <id>0</id>
+                        <strings>
+                          <entry>
+                            <string>en</string>
+                            <com.tle.beans.entity.LanguageString>
+                              <id>0</id>
+                              <locale>en</locale>
+                              <priority>1</priority>
+                              <text>1</text>
+                              <bundle reference="../../../.."/>
+                            </com.tle.beans.entity.LanguageString>
+                          </entry>
+                        </strings>
+                      </name>
+                      <value>1</value>
+                      <defaultValue></defaultValue>
+                    </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                    <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                      <name>
+                        <id>0</id>
+                        <strings>
+                          <entry>
+                            <string>en</string>
+                            <com.tle.beans.entity.LanguageString>
+                              <id>0</id>
+                              <locale>en</locale>
+                              <priority>1</priority>
+                              <text>2</text>
+                              <bundle reference="../../../.."/>
+                            </com.tle.beans.entity.LanguageString>
+                          </entry>
+                        </strings>
+                      </name>
+                      <value>2</value>
+                      <defaultValue></defaultValue>
+                    </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  </items>
+                </com.dytech.edge.wizard.beans.control.ListBox>
+              </controls>
+            </com.dytech.edge.wizard.beans.control.Multi>
+          </controls>
+        </com.dytech.edge.wizard.beans.DefaultWizardPage>
+      </pages>
+      <redraftScript></redraftScript>
+      <saveScript></saveScript>
+      <allowNonSequentialNavigation>false</allowNonSequentialNavigation>
+      <showPageTitlesNextPrev>false</showPageTitlesNextPrev>
+    </wizard>
+    <metadataMapping>
+      <imsMapping class="list"/>
+      <htmlMapping class="list"/>
+      <literalMapping class="list"/>
+    </metadataMapping>
+    <itemSummarySections>
+      <configList>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>48edf367-4df2-4696-a34f-f0990d240bfa</uuid>
+          <value>basicSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Basic Information</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>e7decf8a-248e-4a2e-95e6-25dc83c57ad0</uuid>
+          <value>attachmentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Links to resources</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>0c5aab8c-93ca-4348-9f4a-91a5f45317fd</uuid>
+          <value>commentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Add a comment</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+      </configList>
+      <hideOwner>false</hideOwner>
+      <hideCollaborators>false</hideCollaborators>
+    </itemSummarySections>
+  </slow>
+  <denyDirectContribution>false</denyDirectContribution>
+</com.tle.beans.entity.itemdef.ItemDefinition>

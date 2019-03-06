@@ -1,0 +1,33 @@
+version: 0.2
+env:
+  variables:
+    AUTOTEST_CONFIG: "codebuild.conf"
+    EQ_EXIFTOOL_PATH: "/usr/bin/exiftool"
+phases:
+  install:
+    commands:
+      - . setupBuildCommands
+      - service postgresql start
+      - npm install -g yarn
+      - (cd $HOME && curl -OL $INSTALLER_DOWNLOAD)
+  build:
+    commands:
+      - sbt -no-colors installEquella startEquella
+      - sbt -no-colors configureInstall setupForTests Tests/test Tests/Serial/test
+      - sbt -no-colors ${OTHER_TESTS}
+  post_build:
+    commands:
+      - sbt -no-colors coverageReport ; publishTestResults
+artifacts:
+  files:
+    - 'OldTests/target/testng/**/*'
+    - 'Tests/target/test-reports/**/*'
+    - 'target/coverage-report/**/*'
+    - 'equella-install/logs/**/*'
+  name: $(testFolder)
+
+cache:
+  paths:
+    - '/root/.ivy2/**/*'
+    - '/root/.npm/**/*'
+    - '/root/.sbt/**/*'

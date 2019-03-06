@@ -1,0 +1,12 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>6031</id>
+  <institution>
+    <id>41</id>
+    <uniqueId>0</uniqueId>
+    <quota>0.0</quota>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list"/>
+  <type>equella/attachment-googlebook</type>
+  <attributes/>
+</com.tle.beans.mime.MimeEntry>

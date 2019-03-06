@@ -1,0 +1,24 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>3309820</id>
+  <institution>
+    <id>3309713</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>pps</string>
+    <string>ppt</string>
+  </extensions>
+  <type>application/powerpoint</type>
+  <description>MS Powerpoint</description>
+  <attributes>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&apos;tohtml&apos;]</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

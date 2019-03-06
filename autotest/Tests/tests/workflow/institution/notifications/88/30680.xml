@@ -1,0 +1,10 @@
+<com.tle.core.notification.beans.Notification>
+  <id>30680</id>
+  <itemid>a1137102-a5f1-ebf9-84ae-8db6e8e45253/1</itemid>
+  <itemidOnly>a1137102-a5f1-ebf9-84ae-8db6e8e45253/1</itemidOnly>
+  <reason>badurl</reason>
+  <userTo>TLE_ADMINISTRATOR</userTo>
+  <date class="sql-timestamp">2012-03-27 10:13:45.83</date>
+  <processed>true</processed>
+  <batched>true</batched>
+</com.tle.core.notification.beans.Notification>

@@ -1,0 +1,7 @@
+<com.tle.beans.user.TLEGroup>
+  <id>29177</id>
+  <uuid>b451edd0-2d3d-50d8-6f4c-51d7e42da04b</uuid>
+  <name>Users with Metadata Reviewer Role</name>
+  <description>Users with Metadata Reviewer Role</description>
+  <users/>
+</com.tle.beans.user.TLEGroup>

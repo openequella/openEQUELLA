@@ -1,0 +1,94 @@
+<com.tle.beans.item.Item>
+  <id>117146</id>
+  <uuid>5fe63c71-d59f-43dd-9cb7-fa40b7b66f92</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-03-28 15:50:53.44</dateModified>
+  <dateCreated class="sql-timestamp">2014-03-28 15:50:53.317</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.291</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.LinkAttachment>
+      <id>117149</id>
+      <uuid>f31eac63-90b2-4737-85bb-0e160b02b660</uuid>
+      <url>http://google.com.au/</url>
+      <description>Link 0</description>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.LinkAttachment>
+    <com.tle.beans.item.attachments.LinkAttachment>
+      <id>117150</id>
+      <uuid>9d42ed5c-6e83-4003-86f7-0710096d108a</uuid>
+      <url>http://google.com.au/</url>
+      <description>Link 1</description>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.LinkAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="c7194cd0-f586-49b6-9fcc-4b1c5237efd9"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>89037</id>
+      <url>http://google.com.au/</url>
+      <urlHash>f80ded1d6e96b73f3ce9c140faca40fc</urlHash>
+      <success>false</success>
+      <status>0</status>
+      <tries>0</tries>
+      <lastChecked class="sql-timestamp">1970-01-01 11:00:00.0</lastChecked>
+      <lastIndexed class="sql-timestamp">1970-01-01 11:00:00.0</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>117148</id>
+    <liveApprovalDate class="sql-timestamp">2014-03-28 15:50:53.357</liveApprovalDate>
+    <start class="sql-timestamp">2014-04-11 16:15:53.047</start>
+    <lastAction class="sql-timestamp">2014-03-28 15:50:53.357</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117151</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-28 15:50:53.317</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117152</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-28 15:50:53.357</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117153</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-28 15:50:53.44</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

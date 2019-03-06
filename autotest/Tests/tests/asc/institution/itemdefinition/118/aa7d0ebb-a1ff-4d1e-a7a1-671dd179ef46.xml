@@ -1,0 +1,303 @@
+<com.tle.beans.entity.itemdef.ItemDefinition>
+  <id>116138</id>
+  <uuid>aa7d0ebb-a1ff-4d1e-a7a1-671dd179ef46</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2012-11-12 14:55:48.472</dateModified>
+  <dateCreated class="sql-timestamp">2012-10-30 14:18:23.543</dateCreated>
+  <name>
+    <id>116139</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116140</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>User script object collection</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <schema entityclass="com.tle.beans.entity.Schema" uuid="d9aba963-4648-e497-d62b-fc1ddf2d0199"/>
+  <wizardcategory>Scripting Objects</wizardcategory>
+  <reviewperiod>-2147483648</reviewperiod>
+  <slow>
+    <id>116141</id>
+    <itemMetadataRules/>
+    <wizard>
+      <pages>
+        <com.dytech.edge.wizard.beans.DefaultWizardPage>
+          <title>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en</locale>
+                  <priority>1</priority>
+                  <text>Data</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </title>
+          <controls>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>true</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Name</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/name</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Description</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/description</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <targetnodes/>
+              <items/>
+              <classType>advancedscript</classType>
+              <attributes>
+                <entry>
+                  <string>StoreJs</string>
+                  <string>if (request.get(&apos;doit&apos;) == &apos;Get user details&apos;)
+{
+	var userDetails = &quot;User ID: &quot; + user.getID() + &quot;\n&quot;;
+	userDetails += &quot;Username: &quot; + user.getUsername() + &quot;\n&quot;;
+	userDetails += &quot;First Name: &quot; + user.getFirstName() + &quot;\n&quot;;
+	userDetails += &quot;Last Name: &quot; + user.getLastName() + &quot;\n&quot;;
+	userDetails += &quot;Email: &quot; + user.getEmail() + &quot;\n&quot;;
+	userDetails += &quot;User&apos;s groups: &quot;;
+	var usersGroups = user.getGroups();
+	for(var x = 0; x &lt; usersGroups.size(); x++)
+	{
+		userDetails += usersGroups.get(x).getName()+&quot; - &quot;+usersGroups.get(x).getUniqueID()+&quot; &quot;;
+	}
+
+	var userIDs = [user.getID()];
+	var userBean = user.getInformationForUsers(userIDs);
+	var findUserDetails =  &quot;User ID: &quot; + userBean.get(0).getUniqueID() + &quot;\n&quot;;
+	findUserDetails += &quot;Username: &quot; + userBean.get(0).getUsername() + &quot;\n&quot;;
+	findUserDetails += &quot;First Name: &quot; + userBean.get(0).getFirstName() + &quot;\n&quot;;
+	findUserDetails += &quot;Last Name: &quot; + userBean.get(0).getLastName() + &quot;\n&quot;;
+	findUserDetails += &quot;Email: &quot; + userBean.get(0).getEmailAddress() + &quot;\n&quot;;	
+	attributes.set(&apos;content&apos;,userDetails);
+	attributes.set(&apos;content1&apos;,findUserDetails);
+	
+}
+if (request.get(&apos;doit&apos;) == &apos;in group&apos;)
+{
+	if(user.isMemberOfGroup(request.get(&apos;groups&apos;)))
+	{
+		attributes.set(&apos;content&apos;,&quot;Yes&quot;);
+	}else
+	{
+		attributes.set(&apos;content&apos;,&quot;No&quot;);
+	}
+}
+if(request.get(&quot;doit&quot;) == &apos;Get Info&apos;)
+{
+	var userArray = [request.get(&quot;users&quot;)];
+	var userDeetsArray = user.getInformationForUsers(userArray);
+	var userDeets = userDeetsArray.get(0);
+	attributes.set(&apos;content&apos;,userDeets);
+	user.getGroupsContainingUsers(request.get(&quot;users&quot;));
+}
+</string>
+                </entry>
+                <entry>
+                  <string>ReadJs</string>
+                  <string>//coverage
+var groups = [&quot;f34c83d6-39d3-4dfc-9767-f4a8c203599a&quot;];
+user.getInformationForGroups(groups);
+</string>
+                </entry>
+                <entry>
+                  <string>JsLibs</string>
+                  <list/>
+                </entry>
+                <entry>
+                  <string>OnSubmitJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>MarkUp</string>
+                  <string>&lt;button name=&quot;${prefix}doit&quot; value=&apos;Get user details&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Get user details&lt;/button&gt;
+&lt;br /&gt;&lt;br /&gt;
+&lt;select id=&quot;groups&quot; name=&quot;${prefix}groups&quot;&gt;
+	&lt;#list user.searchGroups(&quot;group&quot;) as group&gt;
+		&lt;option value=${group.getUniqueID()}&gt;${group.getName()}&lt;/option&gt;
+	&lt;/#list&gt;
+&lt;/select&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;in group&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Is ${user.getUsername()} in group?&lt;/button&gt;
+&lt;br /&gt;&lt;br /&gt;
+&lt;select id=&quot;users&quot; name=&quot;${prefix}users&quot;&gt;
+	&lt;#list user.searchUsers(&quot;*&quot;) as users&gt;
+		&lt;option value=${users.getUniqueID()}&gt;${users.getUsername()}&lt;/option&gt;
+	&lt;/#list&gt;
+&lt;/select&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Get Info&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Get Info&lt;/button&gt;
+&lt;br /&gt;&lt;br /&gt;
+&lt;div id=&quot;ascMessage&quot;&gt;
+&lt;pre&gt;${attributes.get(&apos;content&apos;)}&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&quot;ascMessage1&quot;&gt;
+&lt;pre&gt;${attributes.get(&apos;content1&apos;)}&lt;/pre&gt;
+&lt;/div&gt;</string>
+                </entry>
+                <entry>
+                  <string>OnLoadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>Notes</string>
+                  <string></string>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+          </controls>
+        </com.dytech.edge.wizard.beans.DefaultWizardPage>
+      </pages>
+      <redraftScript></redraftScript>
+      <saveScript></saveScript>
+      <allowNonSequentialNavigation>false</allowNonSequentialNavigation>
+      <showPageTitlesNextPrev>false</showPageTitlesNextPrev>
+    </wizard>
+    <metadataMapping>
+      <imsMapping class="list"/>
+      <htmlMapping class="list"/>
+      <literalMapping class="list"/>
+    </metadataMapping>
+    <itemSummarySections>
+      <configList>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>9ba8391f-c2e2-4302-933d-2d82f66d07ee</uuid>
+          <value>basicSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Basic Information</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>5fd9c6d0-d319-4864-82ab-050e2568e637</uuid>
+          <value>attachmentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Links to resources</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>49c94001-7cf1-4701-b145-ce301c505692</uuid>
+          <value>commentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Add a comment</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+      </configList>
+      <hideOwner>false</hideOwner>
+      <hideCollaborators>false</hideCollaborators>
+    </itemSummarySections>
+  </slow>
+  <denyDirectContribution>false</denyDirectContribution>
+</com.tle.beans.entity.itemdef.ItemDefinition>

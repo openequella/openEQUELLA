@@ -1,0 +1,31 @@
+<com.tle.beans.entity.Schema>
+  <id>116105</id>
+  <uuid>d9aba963-4648-e497-d62b-fc1ddf2d0199</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2011-09-27 13:08:12.368</dateModified>
+  <dateCreated class="sql-timestamp">2011-03-17 15:50:08.671</dateCreated>
+  <name>
+    <id>116106</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116107</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Basic Schema</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms/>
+  <impTransforms/>
+  <itemNamePath>/item/name</itemNamePath>
+  <itemDescriptionPath>/item/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;id attribute=&quot;true&quot; field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;name field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;owner field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;tree1&gt;&lt;tree1_sub1&gt;&lt;tree1_sub1_sub1 type=&quot;text&quot;/&gt;&lt;/tree1_sub1&gt;&lt;tree1_sub2 type=&quot;text&quot;/&gt;&lt;/tree1&gt;&lt;tree2&gt;&lt;tree2_sub1&gt;&lt;tree2_sub1_sub1 type=&quot;text&quot;/&gt;&lt;/tree2_sub1&gt;&lt;tree2_sub2 type=&quot;text&quot;/&gt;&lt;/tree2&gt;&lt;text1 type=&quot;text&quot;/&gt;&lt;text2 type=&quot;text&quot;/&gt;&lt;/item&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>

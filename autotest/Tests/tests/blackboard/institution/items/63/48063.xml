@@ -1,0 +1,131 @@
+<com.tle.beans.item.Item>
+  <id>48063</id>
+  <uuid>33641336-ef9e-4d8c-8a33-390086571199</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2011-09-19 11:29:37.527</dateModified>
+  <dateCreated class="sql-timestamp">2011-09-19 11:29:37.53</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.691</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>48075</id>
+      <uuid>27a09b89-cbaf-480d-89f8-28a553a6dfc2</uuid>
+      <url></url>
+      <description>Testable CAL Book</description>
+      <value1>resource</value1>
+      <data>
+        <entry>
+          <string>uuid</string>
+          <string>4901497d-d3e8-46bb-85d6-3012e63e0f6a</string>
+        </entry>
+        <entry>
+          <string>type</string>
+          <string>p</string>
+        </entry>
+        <entry>
+          <string>version</string>
+          <int>1</int>
+        </entry>
+      </data>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.CustomAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>48077</id>
+      <uuid>8c65a2cc-e7b3-46fa-9f97-046b581d103a</uuid>
+      <url>page.html</url>
+      <description>page.html</description>
+      <value1>68</value1>
+      <value2>false</value2>
+      <md5sum>710a61fcc7cf7040b0e22fff721169d4</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>48079</id>
+      <uuid>b0ba3c24-fa14-4edd-b5d7-12169b33c1d2</uuid>
+      <url>page(2).html</url>
+      <description>page(2).html</description>
+      <value1>68</value1>
+      <value2>false</value2>
+      <md5sum>710a61fcc7cf7040b0e22fff721169d4</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="bfad7ea0-983f-dd58-6b7d-ed5f346e24ab"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>48068</id>
+    <liveApprovalDate class="sql-timestamp">2011-09-19 11:29:37.527</liveApprovalDate>
+    <start class="sql-timestamp">2011-09-19 11:31:52.657</start>
+    <lastAction class="sql-timestamp">2011-09-19 11:29:37.527</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>48081</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-19 11:29:37.527</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>48084</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-19 11:29:37.527</date>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>48087</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-19 11:29:37.527</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>48071</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>48073</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>Testable CAL Book - Chapter 1</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>48064</id>
+    <strings/>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

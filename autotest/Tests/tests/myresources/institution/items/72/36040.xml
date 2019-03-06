@@ -1,0 +1,55 @@
+<com.tle.beans.item.Item>
+  <id>36040</id>
+  <uuid>371f5578-9471-4d83-b338-43f3499cec57</uuid>
+  <version>1</version>
+  <owner>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</owner>
+  <dateModified class="sql-timestamp">2011-09-20 15:53:31.593</dateModified>
+  <dateCreated class="sql-timestamp">2011-09-20 15:53:31.593</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.868</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>PERSONAL</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>36044</id>
+      <uuid>f4b6ddf1-f3a8-4341-b139-7866227d2a25</uuid>
+      <url>index.jpeg</url>
+      <description>index.jpeg</description>
+      <value1>5170</value1>
+      <value2>false</value2>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="6b356e2e-e6a0-235a-5730-15ad1d8ad630"/>
+  <collaborators/>
+  <referencedUrls/>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>36042</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>36043</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Hal&apos;s red eye</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>7062</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

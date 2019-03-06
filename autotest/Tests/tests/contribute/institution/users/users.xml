@@ -1,0 +1,20 @@
+<list>
+  <com.tle.beans.user.TLEUser>
+    <id>217137</id>
+    <uuid>adfcaf58-241b-4eca-9740-6a26d1c3dd58</uuid>
+    <username>AutoTest</username>
+    <firstName>Auto</firstName>
+    <lastName>Test</lastName>
+    <emailAddress>nothing@notarealemail.cx</emailAddress>
+    <password>MD5:a434f46aa79bfef92ecf227e9ee704a1</password>
+  </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>217138</id>
+    <uuid>2ac98ae0-3b6f-46e9-a34d-5a390b0684a4</uuid>
+    <username>SelectionsUser</username>
+    <firstName>Selections</firstName>
+    <lastName>User</lastName>
+    <emailAddress></emailAddress>
+    <password>SHA256:7f79302f9f5af172d5827002b8a64badbe0e39deccb8673bcae901437b47e9f5</password>
+  </com.tle.beans.user.TLEUser>
+</list>

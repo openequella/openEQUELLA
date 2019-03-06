@@ -1,0 +1,19 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>413728</id>
+  <institution>
+    <id>413481</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>qt</string>
+    <string>mov</string>
+  </extensions>
+  <type>video/quicktime</type>
+  <description>Video</description>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/quicktime.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

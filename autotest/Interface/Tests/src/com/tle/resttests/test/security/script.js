@@ -1,0 +1,22 @@
+xml.copy("/item", "/item2");
+xml.pushOverride("/item2", 1);
+xml.pushOverride("/item2", 1);
+xml.setOrAdd("/test", "test");
+xml.setOrAdd("/test", "test");
+xml.add("/boo", "boo");
+xml.deleteNode("/test");
+xml.clearOverrides();
+xml.asString();
+xml.exists("/lala2");
+xml.set("/lala2", "test");
+xml.exists("/lala2");
+xml.get("/lala2");
+xml.getAll("/lala2");
+xml.list("/lala2");
+xml.getAllSubtrees("/lala2");
+xml.deleteAll("/lala2");
+xml.append("/lala2", xml.createSubtree("/gas"));
+xml.appendChildren("/lala2", xml.getOrCreateSubtree("/gas"));
+xml.deleteSubtree(xml.getOrCreateSubtree("/lala2"));
+
+return xml.contains('/item/boolean', 'true');

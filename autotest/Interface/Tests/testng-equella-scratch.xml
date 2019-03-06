@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Auto Test Create Scratch Suite for EQUELLA" parallel="instances" data-provider-thread-count="4" thread-count="10" configfailurepolicy="continue">
+	<test name="Create from scratch">
+		<groups>
+			<run>
+				<exclude name="eps" />
+			</run>
+		</groups>
+		
+		<classes>
+			<class name="com.tle.resttests.setup.CreateFromScratchTest" />
+		</classes>
+	</test>
+</suite>

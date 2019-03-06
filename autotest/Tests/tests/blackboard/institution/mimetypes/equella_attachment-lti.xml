@@ -1,0 +1,32 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>47968</id>
+  <institution>
+    <id>47824</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list"/>
+  <type>equella/attachment-lti</type>
+  <attributes>
+    <entry>
+      <string>viewerConfig-externalToolViewer</string>
+      <string>{&quot;attr&quot;:{},&quot;height&quot;:&quot;600&quot;,&quot;openInNewWindow&quot;:true,&quot;thickbox&quot;:false,&quot;width&quot;:&quot;800&quot;}</string>
+    </entry>
+    <entry>
+      <string>fileViewerDisabled</string>
+      <string>true</string>
+    </entry>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&quot;externalToolViewer&quot;]</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/lti.png</string>
+    </entry>
+    <entry>
+      <string>defaultViewerId</string>
+      <string>externalToolViewer</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

@@ -1,0 +1,25 @@
+<com.tle.common.qti.entity.QtiAssessmentItem>
+  <id>18878</id>
+  <uuid>b0a179a6-74df-424c-a6c0-7a602b3bc862</uuid>
+  <identifier>TheAnswer-001</identifier>
+  <title>The answer to...</title>
+  <itemBody>uk.ac.ed.ph.jqtiplus.node.content.ItemBody@51a0e7a5(
+    blocks =&gt; java.util.ArrayList[
+        0 =&gt; &lt;p&gt;@449325953(xPath=/assessmentItem[@identifier=&quot;TheAnswer-001&quot;]/itemBody[1]/p[1],location=XmlSourceLocationInformation@4ba02fe3(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-f9f3153e2ba4/TheAnswer-001.xml,lineNumber=20,columnNumber=12))
+        1 =&gt; &lt;div&gt;@27789023(xPath=/assessmentItem[@identifier=&quot;TheAnswer-001&quot;]/itemBody[1]/div[1],location=XmlSourceLocationInformation@3e5b1b52(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-f9f3153e2ba4/TheAnswer-001.xml,lineNumber=21,columnNumber=23))
+        2 =&gt; &lt;div&gt;@1331610745(xPath=/assessmentItem[@identifier=&quot;TheAnswer-001&quot;]/itemBody[1]/div[2],location=XmlSourceLocationInformation@56b50ca4(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-f9f3153e2ba4/TheAnswer-001.xml,lineNumber=24,columnNumber=23))
+        3 =&gt; &lt;div&gt;@139530101(xPath=/assessmentItem[@identifier=&quot;TheAnswer-001&quot;]/itemBody[1]/div[3],location=XmlSourceLocationInformation@1cdce97(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-f9f3153e2ba4/TheAnswer-001.xml,lineNumber=27,columnNumber=23))
+    ]
+    id =&gt; null
+    classAttr =&gt; null
+    lang =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    label =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    parent =&gt; &lt;assessmentItem&gt;@1857428589(xPath=/assessmentItem[@identifier=&quot;TheAnswer-001&quot;],location=XmlSourceLocationInformation@760470e3(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-f9f3153e2ba4/TheAnswer-001.xml,lineNumber=9,columnNumber=59))(systemId=_SECURE/_QTI/id-f9f3153e2ba4/TheAnswer-001.xml)
+    attributes =&gt; uk.ac.ed.ph.jqtiplus.attribute.AttributeList@1d8f839d
+    sourceLocation =&gt; XmlSourceLocationInformation@3909c794(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-f9f3153e2ba4/TheAnswer-001.xml,lineNumber=19,columnNumber=15)
+    rootNode =&gt; &lt;assessmentItem&gt;@1857428589(xPath=/assessmentItem[@identifier=&quot;TheAnswer-001&quot;],location=XmlSourceLocationInformation@760470e3(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-f9f3153e2ba4/TheAnswer-001.xml,lineNumber=9,columnNumber=59))(systemId=_SECURE/_QTI/id-f9f3153e2ba4/TheAnswer-001.xml)
+    nodeGroups =&gt; uk.ac.ed.ph.jqtiplus.group.NodeGroupList@310de2cd
+    qtiClassName =&gt; itemBody
+)
+</itemBody>
+  <adaptive>false</adaptive>
+  <timeDependent>false</timeDependent>
+</com.tle.common.qti.entity.QtiAssessmentItem>

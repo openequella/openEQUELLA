@@ -1,0 +1,307 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<learningObject id ="sc_004_csiro_210" title="Air pressure: particle model">
+	<title><![CDATA[Air pressure: particle model]]></title>
+	<instruction id="s2_i">
+		<display><![CDATA[In this activity, you will use a model <br/>of air particles to investigate how <br/>they behave.]]></display>
+		<nextButton><![CDATA[OK]]></nextButton>
+	</instruction>
+	
+	<airChamber>
+		<label><![CDATA[Air chamber]]></label>
+		<description><![CDATA[An air chamber is a container with very strong walls. It is sealed, so no air can get in or out unless we pump it in (or out).]]></description>
+		<size_txt><![CDATA[Chamber size]]></size_txt>
+	</airChamber>
+	<tempControls>
+		<temp_txt><![CDATA[Temperature]]></temp_txt>
+		<heat_txt><![CDATA[Heat]]></heat_txt>
+		<cool_txt><![CDATA[Cool]]></cool_txt>
+		<temp_gauge_txt><![CDATA[Temperature gauge]]></temp_gauge_txt>
+	</tempControls>
+	<pressureControls>
+		<pressure_gauge_txt><![CDATA[Pressure gauge]]></pressure_gauge_txt>
+		<atm_txt><![CDATA[atm]]></atm_txt>
+	</pressureControls>
+	<particleControls>
+		<particles_txt><![CDATA[Particles]]></particles_txt>
+		<pump_txt><![CDATA[Pump]]></pump_txt>
+		<out_txt><![CDATA[Out]]></out_txt>
+		<in_txt><![CDATA[In]]></in_txt>
+	</particleControls>
+	
+	
+	<questions>
+		<question id="1">
+			<updateChamber particleControlVisible="0" initialParticles="25" initialTemp="0" tempControlVisible="0" showChamberInfo="true" particleSpawnAreas="164,160,159,198" pressureViewVisible="0"/>
+			<title><![CDATA[<b>Question 1</b>]]></title>
+			<question id="s2_t5">
+				<![CDATA[What happens when air particles collide with each other?]]>
+			</question>
+			<options>
+				<option id="1">They explode.</option>
+				<option id="2">They change direction.</option>
+				<option id="3">They split in two.</option>
+				<option id="4">They stick to each other.</option>
+			</options>
+			<answers correct="2"></answers>
+			<submitButton><![CDATA[Submit]]></submitButton>
+			<feedback>
+				<correct id="s2_f5">
+					<display><![CDATA[Well done!<br><br>The particles bounce off each other and continue in a new direction.]]></display>
+					<buttonLabel><![CDATA[Next]]></buttonLabel>
+				</correct>
+				<incorrect id="s2_f5a">
+					<display><![CDATA[That's not correct.<br><br>Have another look at the model.]]></display>
+					<buttonLabel><![CDATA[Try again]]></buttonLabel>
+				</incorrect>
+				<incorrect id="s2_f5b">
+					<display><![CDATA[Still not correct.<br><br>Follow the path of one air particle in the chamber. Watch what happens to it when it hits another particle.]]></display>
+					<buttonLabel><![CDATA[Try again]]></buttonLabel>
+				</incorrect>
+				<incorrect id="s2_f5c">
+					<display><![CDATA[No, that's still not right.<br><br>The particles change direction.]]></display>
+					<buttonLabel><![CDATA[OK]]></buttonLabel>
+				</incorrect>
+			</feedback>
+		</question>
+		<question id="2">
+			<updateChamber particleControlVisible="0" initialParticles="25" initialTemp="0" tempControlVisible="0" pressureViewVisible="0" showChamberInfo="true" particleSpawnAreas="164,160,159,198" />
+			<title><![CDATA[<b>Question 2</b>]]></title>
+			<question id="s2_t6">
+				<![CDATA[Look closely at the direction of the particles after they collide with the wall. How do they move?]]>
+			</question>
+			<options>
+				<option id="1">They move back along the same track as before the collision.</option>
+				<option id="2">They move at the same angle to the wall, but in a different direction.</option>
+				<option id="3">They move at right angles to the wall.</option>
+				<option id="4">You can't predict it.</option>
+			</options>
+			<answers correct="2"></answers>
+			<submitButton><![CDATA[Submit]]></submitButton>
+			<feedback>
+				<correct id="s2_f6">
+					<display><![CDATA[Well done!<br><br>The particles bounce off at the same angle, they 'reflect'. The force of all the air particles hitting the walls <br>of the container is what causes <br>'air pressure'.]]></display>
+					<buttonLabel><![CDATA[Next]]></buttonLabel>
+				</correct>
+				<incorrect id="s2_f6a">
+					<display><![CDATA[That's not correct.<br><br>Have another look at the model.]]></display>
+					<buttonLabel><![CDATA[Try again]]></buttonLabel>
+				</incorrect>
+				<incorrect id="s2_f6b">
+					<display><![CDATA[Still not correct.<br><br>Follow the path of one particle. Watch what happens to it when it hits the wall of the chamber.]]></display>
+					<buttonLabel><![CDATA[Try again]]></buttonLabel>
+				</incorrect>
+				<incorrect id="s2_f6c">
+					<display><![CDATA[No, that's still not right.<br><br>The particles bounce off at the same angle, they 'reflect'. The force of all the air particles hitting the walls of <br>the container is what causes <br>'air pressure'.]]></display>
+					<buttonLabel><![CDATA[OK]]></buttonLabel>
+				</incorrect>
+			</feedback>
+		</question>
+		<question id="3">
+			<updateChamber particleControlVisible="0" initialParticles="25" initialTemp="0" tempControlVisible="0"  pressureViewVisible="0" showChamberInfo="true" particleSpawnAreas="164,160,159,198" />
+			<title><![CDATA[<b>Question 3</b>]]></title>
+			<question id="s2_t8">
+				<![CDATA[In this model of an air chamber, what do you think is between <br/>the particles?]]>
+			</question>
+			<options>
+				<option id="1">Nothing</option>
+				<option id="2">Smaller particles</option>
+				<option id="3">Liquid</option>
+				<option id="4">Something else</option>
+			</options>
+			<answers correct="1"></answers>
+			<submitButton><![CDATA[Submit]]></submitButton>
+			<feedback>
+				<correct id="s2_f8">
+					<display><![CDATA[Well done!<br><br>There is just empty space between the particles in a gas.]]></display>
+					<buttonLabel><![CDATA[Next]]></buttonLabel>
+				</correct>
+				<incorrect id="s2_f8a">
+					<display><![CDATA[That's not correct.<br><br>Have another look at the model.]]></display>
+					<buttonLabel><![CDATA[Try again]]></buttonLabel>
+				</incorrect>
+				<incorrect id="s2_f8b">
+					<display><![CDATA[Still not correct.<br><br>The model shows all the particles that are in the chamber.]]></display>
+					<buttonLabel><![CDATA[Try again]]></buttonLabel>
+				</incorrect>
+				<incorrect id="s2_f8c">
+					<display><![CDATA[No, that's still not right.<br><br>There is nothing between the air particles.]]></display>
+					<buttonLabel><![CDATA[OK]]></buttonLabel>
+				</incorrect>
+			</feedback>
+		</question>
+		<question id="4">
+			<updateChamber particleControlVisible="0" initialParticles="25" initialTemp="0" tempControlVisible="0" pressureViewVisible="0" showChamberInfo="true" particleSpawnAreas="164,160,159,198" />
+			<title><![CDATA[<b>Question 4</b>]]></title>
+			<question id="s7_4">
+				<![CDATA[The tiny air particles move around the whole space of the container, like all gas particles. Imagine the same particles stopped moving and were all packed closely together. <br><br>How much of the volume of the container would they take up?]]>
+			</question>
+			<options>
+				<option id="1">All of it</option>
+				<option id="2">Most of it</option>
+				<option id="3">About half of it</option>
+				<option id="4">Hardly any of it</option>
+			</options>
+			<answers correct="4"></answers>
+			<submitButton><![CDATA[Submit]]></submitButton>
+			<feedback>
+				<correct id="s2_f8">
+					<display><![CDATA[Well done!<br><br>The total volume of the particles is very small compared to the space they take up when moving around <br>as a gas.]]></display>
+					<buttonLabel><![CDATA[Next]]></buttonLabel>
+				</correct>
+				<incorrect id="s2_f8a">
+					<display><![CDATA[That's not correct.<br><br>Imagine these same particles are packed closely together.]]></display>
+					<buttonLabel><![CDATA[Try again]]></buttonLabel>
+				</incorrect>
+				<incorrect id="s2_f8b">
+					<display><![CDATA[Still not correct.<br><br>Look at the amount of space between the particles.]]></display>
+					<buttonLabel><![CDATA[Try again]]></buttonLabel>
+				</incorrect>
+				<incorrect id="s2_f8c">
+					<display><![CDATA[No, that's still not right.<br><br>The particles would take up hardly any of the space. Their total volume is very small compared to the space they take up when moving around as a gas.]]></display>
+					<buttonLabel><![CDATA[OK]]></buttonLabel>
+				</incorrect>
+			</feedback>
+		</question>
+		<question id="5">
+			<updateChamber particleControlVisible="0" initialParticles="15" pressureViewVisible="0" particleSpawnAreas="164,160,159,198" showChamberInfo="true" />
+			<title><![CDATA[<b>Question 5</b>]]></title>
+			<question id="s2_t1">
+				<![CDATA[Turn up the heat and raise the temperature in the chamber. <br>Watch the air particles.<br><br>How do they move?]]>
+			</question>
+			<options>
+				<option id="1">They stop moving.</option>
+				<option id="2">They move slower.</option>
+				<option id="3">They move faster.</option>
+				<option id="4">They continue to move in the same way.</option>
+			</options>
+			<answers correct="3"></answers>
+			<submitButton><![CDATA[Submit]]></submitButton>
+			<feedback>
+				<correct id="s2_f1">
+					<display><![CDATA[Well done!<br><br>The air particles move faster at <br>higher temperatures because <br>they gain energy.]]></display>
+					<buttonLabel><![CDATA[Next]]></buttonLabel>
+				</correct>
+				<incorrect id="s2_f1a">
+					<display><![CDATA[That's not correct.<br><br>Change the temperature of the <br>air chamber.]]></display>
+					<buttonLabel><![CDATA[Try again]]></buttonLabel>
+				</incorrect>
+				<incorrect id="s2_f1b">
+					<display><![CDATA[Still not correct.<br><br>Use the heating controls to raise <br>the temperature and watch the <br>air particles.]]></display>
+					<buttonLabel><![CDATA[Try again]]></buttonLabel>
+				</incorrect>
+				<incorrect id="s2_f1c">
+					<display><![CDATA[No, that's still not right.<br><br>The air particles move faster at <br>higher temperatures because <br>they gain energy.]]></display>
+					<buttonLabel><![CDATA[OK]]></buttonLabel>
+				</incorrect>
+			</feedback>
+		</question>
+		<question id="6">
+			<updateChamber particleControlVisible="0" initialParticles="15" pressureViewVisible="1" particleSpawnAreas="164,160,159,198" showChamberInfo="true" />
+			<title><![CDATA[<b>Question 6</b>]]></title>
+			<question id="s2_t1">
+				<![CDATA[Turn up the heat again and this time, watch the pressure gauge. What happens to air pressure in the chamber as the temperature rises?]]>
+			</question>
+			<options>
+				<option id="1">It stays the same.</option>
+				<option id="2">It increases.</option>
+				<option id="3">It decreases.</option>
+				<option id="4">It goes up, then down.</option>
+			</options>
+			<answers correct="2"></answers>
+			<submitButton><![CDATA[Submit]]></submitButton>
+			<feedback>
+				<correct id="s2_f1">
+					<display><![CDATA[Well done!<br><br>The air particles move faster at <br>higher temperatures and the <br>air pressure increases.]]></display>
+					<buttonLabel><![CDATA[Next]]></buttonLabel>
+				</correct>
+				<incorrect id="s2_f1a">
+					<display><![CDATA[That's not correct.<br><br>Change the temperature of the <br>air chamber.]]></display>
+					<buttonLabel><![CDATA[Try again]]></buttonLabel>
+				</incorrect>
+				<incorrect id="s2_f1b">
+					<display><![CDATA[Still not correct.<br><br>Use the heating controls to raise <br>the temperature and watch the <br>pressure gauge.]]></display>
+					<buttonLabel><![CDATA[Try again]]></buttonLabel>
+				</incorrect>
+				<incorrect id="s2_f1c">
+					<display><![CDATA[No, that's still not right.<br><br>The air particles move faster at <br>higher temperatures and the <br>air pressure increases.]]></display>
+					<buttonLabel><![CDATA[OK]]></buttonLabel>
+				</incorrect>
+			</feedback>
+		</question>
+		<question id="7">
+			<updateChamber particleControlVisible="0" initialParticles="15" initialTemp="10" pressureViewVisible="0" particleSpawnAreas="164,160,159,198" showChamberInfo="true" />
+			<title><![CDATA[<b>Question 7</b>]]></title>
+			<question id="s2_t1">
+				<![CDATA[Now cool down the air in the chamber and watch the air particles.<br/><br/>How do they move?]]>
+			</question>
+			<options>
+				<option id="1">They stop moving.</option>
+				<option id="2">They move slower.</option>
+				<option id="3">They move faster.</option>
+				<option id="4">They continue to move in the same way.</option>
+			</options>
+			<answers correct="2"></answers>
+			<submitButton><![CDATA[Submit]]></submitButton>
+			<feedback>
+				<correct id="s2_f1">
+					<display><![CDATA[Well done!<br><br>The air particles move slower at <br>lower temperatures because they <br>lose energy.]]></display>
+					<buttonLabel><![CDATA[Next]]></buttonLabel>
+				</correct>
+				<incorrect id="s2_f1a">
+					<display><![CDATA[That's not correct.<br><br>Change the temperature of the <br>air chamber.]]></display>
+					<buttonLabel><![CDATA[Try again]]></buttonLabel>
+				</incorrect>
+				<incorrect id="s2_f1b">
+					<display><![CDATA[Still not correct.<br><br>Use the temperature controls to <br>cool the chamber and watch the <br>air particles.]]></display>
+					<buttonLabel><![CDATA[Try again]]></buttonLabel>
+				</incorrect>
+				<incorrect id="s2_f1c">
+					<display><![CDATA[No, that's still not right.<br><br>The air particles move slower at <br>lower temperatures because they <br>lose energy.]]></display>
+					<buttonLabel><![CDATA[OK]]></buttonLabel>
+				</incorrect>
+			</feedback>
+		</question>
+		<question id="8">
+			<updateChamber particleControlVisible="0" initialParticles="15" initialTemp="10" pressureViewVisible="1" particleSpawnAreas="164,160,159,198" showChamberInfo="true" />
+			<title><![CDATA[<b>Question 8</b>]]></title>
+			<question id="s2_t1">
+				<![CDATA[Turn down the heat again and this time, watch the pressure gauge. What happens to air pressure in <br>the chamber as the temperature decreases?]]>
+			</question>
+			<options>
+				<option id="1">It stays the same.</option>
+				<option id="2">It increases.</option>
+				<option id="3">It decreases.</option>
+				<option id="4">It goes up, then down.</option>
+			</options>
+			<answers correct="3"></answers>
+			<submitButton><![CDATA[Submit]]></submitButton>
+			<feedback>
+				<correct id="s2_f1">
+					<display><![CDATA[Well done!<br><br>The air particles move slower at lower temperatures and the air pressure decreases.]]></display>
+					<buttonLabel><![CDATA[Next]]></buttonLabel>
+				</correct>
+				<incorrect id="s2_f1a">
+					<display><![CDATA[That's not correct.<br><br>Change the temperature of the <br>air chamber.]]></display>
+					<buttonLabel><![CDATA[Try again]]></buttonLabel>
+				</incorrect>
+				<incorrect id="s2_f1b">
+					<display><![CDATA[Still not correct.<br><br>Use the heating controls to cool the chamber and watch the pressure gauge.]]></display>
+					<buttonLabel><![CDATA[Try again]]></buttonLabel>
+				</incorrect>
+				<incorrect id="s2_f1c">
+					<display><![CDATA[No, that's still not right.<br><br>The air particles move slower at lower temperatures and the air pressure decreases.]]></display>
+					<buttonLabel><![CDATA[OK]]></buttonLabel>
+				</incorrect>
+			</feedback>
+		</question>
+	</questions>
+	<outros>
+		<outro_aggregate id="s2_f14">
+			<display><![CDATA[Good work!<br><br>Now you know a lot about how <br>air particles behave. They are very <br>tiny, and as a gas they move fast <br>and have lots of empty space <br>between them.<br><br>Air pressure comes from the force <br>of all the air particles hitting the <br>walls of the container. When the <br>temperature rises, the particles <br>gain energy and move faster. <br>This makes the collisions harder <br>and air pressure higher.]]></display>
+			<buttonLabel><![CDATA[Start again]]></buttonLabel>
+		</outro_aggregate>
+		<outro_aggregate2 id="s2_f14b">
+			<![CDATA[]]>
+		</outro_aggregate2>
+	</outros>
+</learningObject>

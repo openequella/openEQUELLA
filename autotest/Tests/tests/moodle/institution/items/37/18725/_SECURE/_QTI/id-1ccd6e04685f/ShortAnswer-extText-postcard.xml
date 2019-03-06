@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This example adapted from the PET Handbook, copyright University of Cambridge ESOL Examinations -->
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+	identifier="ShortAnswer-extText-postcard" title="Writing a Postcard - again" adaptive="false"
+	timeDependent="false">
+	<responseDeclaration identifier="RESPONSE" cardinality="single" baseType="string"/>
+	<outcomeDeclaration identifier="SCORE" cardinality="single" baseType="float"/>
+	<outcomeDeclaration identifier="FEEDBACK" cardinality="single" baseType="identifier"/>
+	<itemBody>
+		<p>Read this postcard from your English pen-friend, Sam.</p>
+		<div>
+			<blockquote class="postcard">
+				<p><br/>Here is a postcard of my town. Please send me<br/> a postcard from your
+					town. What size is your<br/> town? What is the nicest part of your town?<br/>
+					Where do you go in the evenings?<br/> Sam.</p>
+			</blockquote>
+		</div>
+		<extendedTextInteraction responseIdentifier="RESPONSE" expectedLength="200"
+			expectedLines="3">
+			<prompt><br/>Write Sam a postcard. Answer the questions. Write 25-35 words.</prompt>
+		</extendedTextInteraction>
+		<p><br/>Here is a sample response:</p>
+		<p><br/>"Ours is a small town. There are nice trees and some old buildings. Does it really
+			matter where I go in the evenings?"</p>
+	</itemBody>
+</assessmentItem>

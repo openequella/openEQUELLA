@@ -1,0 +1,132 @@
+<com.tle.beans.item.Item>
+  <id>40091</id>
+  <uuid>ae86785e-472f-4d1a-86a7-72a36d28f371</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-04-25 15:48:07.964</dateModified>
+  <dateCreated class="sql-timestamp">2012-04-25 15:48:07.97</dateCreated>
+  <dateForIndex class="sql-timestamp">2012-04-27 11:26:17.792</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>true</moderating>
+  <status>MODERATING</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="66a332d9-c92d-4a01-951a-2817840f4e71"/>
+  <collaborators/>
+  <badUrls/>
+  <moderation>
+    <id>40095</id>
+    <start class="sql-timestamp">2012-04-25 15:48:07.98</start>
+    <lastAction class="sql-timestamp">2012-04-25 15:48:07.964</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses>
+      <com.tle.common.workflow.WorkflowItemStatus>
+        <id>40097</id>
+        <node class="com.tle.common.workflow.node.WorkflowItem" workflow="a4963c1d-2a02-410e-a39c-e1d5c9ef12a1">93cf68a9-3391-4023-9250-0fae072b424f</node>
+        <status>i</status>
+        <comments/>
+        <started class="sql-timestamp">2012-04-25 15:48:07.964</started>
+        <overdue>false</overdue>
+        <assignedTo>5176db3a-edaa-489c-b0e6-d4d720947d6f</assignedTo>
+        <acceptedUsers/>
+        <cause>
+          <id>40096</id>
+          <node class="com.tle.common.workflow.node.SerialNode" workflow="a4963c1d-2a02-410e-a39c-e1d5c9ef12a1">0f3963c8-0ac9-491f-a9eb-d5341e4c8bf8</node>
+          <status>i</status>
+          <comments/>
+        </cause>
+      </com.tle.common.workflow.WorkflowItemStatus>
+      <com.tle.common.workflow.WorkflowNodeStatus reference="../com.tle.common.workflow.WorkflowItemStatus/cause"/>
+    </statuses>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>40100</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-04-25 15:48:07.964</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>40101</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-04-25 15:48:07.964</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>40102</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-04-25 15:48:07.964</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>40103</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-04-25 15:48:07.964</date>
+      <step>0f3963c8-0ac9-491f-a9eb-d5341e4c8bf8</step>
+      <stepName>Start</stepName>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>40127</id>
+      <user>5176db3a-edaa-489c-b0e6-d4d720947d6f</user>
+      <date class="sql-timestamp">2012-04-25 15:51:11.478</date>
+      <step>93cf68a9-3391-4023-9250-0fae072b424f</step>
+      <stepName>Mod1</stepName>
+      <applies>false</applies>
+      <type>assign</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>40098</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>40099</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>Item - Schema - A</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>40092</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>40093</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>Item - Schema - A Desc</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

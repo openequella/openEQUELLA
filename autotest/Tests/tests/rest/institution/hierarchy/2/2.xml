@@ -1,0 +1,33 @@
+<com.tle.beans.hierarchy.HierarchyTopic>
+  <id>117570</id>
+  <uuid>91a08805-d5f9-478d-aaaf-eff61a266667</uuid>
+  <listPosition>2</listPosition>
+  <keyResources/>
+  <showResults>true</showResults>
+  <inheritFreetext>false</inheritFreetext>
+  <addIdefs>
+    <com.tle.beans.ItemDefinitionScript>
+      <entity entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="4c147089-cddb-e67c-b5ab-189614eb1463"/>
+    </com.tle.beans.ItemDefinitionScript>
+  </addIdefs>
+  <addSchemas/>
+  <inhIdefs/>
+  <inhSchemas/>
+  <name>
+    <id>117571</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>117572</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Browse 4 book</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
+  <attributes/>
+</com.tle.beans.hierarchy.HierarchyTopic>

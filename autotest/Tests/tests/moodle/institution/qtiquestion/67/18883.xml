@@ -1,0 +1,24 @@
+<com.tle.common.qti.entity.QtiAssessmentItem>
+  <id>18883</id>
+  <uuid>cdfaa26e-6857-417d-aafe-4046721029f5</uuid>
+  <identifier>jumble-inlineChoice</identifier>
+  <title>Jumble: Legend - inlineChoice</title>
+  <lang>en</lang>
+  <itemBody>uk.ac.ed.ph.jqtiplus.node.content.ItemBody@514684af(
+    blocks =&gt; java.util.ArrayList[
+        0 =&gt; &lt;div&gt;@1823549144(xPath=/assessmentItem[@identifier=&quot;jumble-inlineChoice&quot;]/itemBody[1]/div[1],location=XmlSourceLocationInformation@626d66a7(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-377d71221b04/jumble-inlineChoice.xml,lineNumber=55,columnNumber=14))
+        1 =&gt; &lt;p&gt;@2087620716(xPath=/assessmentItem[@identifier=&quot;jumble-inlineChoice&quot;]/itemBody[1]/p[1],location=XmlSourceLocationInformation@3ecbe246(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-377d71221b04/jumble-inlineChoice.xml,lineNumber=89,columnNumber=12))
+    ]
+    id =&gt; null
+    classAttr =&gt; null
+    lang =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    label =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    parent =&gt; &lt;assessmentItem&gt;@997491167(xPath=/assessmentItem[@identifier=&quot;jumble-inlineChoice&quot;],location=XmlSourceLocationInformation@5dfa75f7(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-377d71221b04/jumble-inlineChoice.xml,lineNumber=9,columnNumber=115))(systemId=_SECURE/_QTI/id-377d71221b04/jumble-inlineChoice.xml)
+    attributes =&gt; uk.ac.ed.ph.jqtiplus.attribute.AttributeList@6656db54
+    sourceLocation =&gt; XmlSourceLocationInformation@50599c49(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-377d71221b04/jumble-inlineChoice.xml,lineNumber=54,columnNumber=15)
+    rootNode =&gt; &lt;assessmentItem&gt;@997491167(xPath=/assessmentItem[@identifier=&quot;jumble-inlineChoice&quot;],location=XmlSourceLocationInformation@5dfa75f7(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-377d71221b04/jumble-inlineChoice.xml,lineNumber=9,columnNumber=115))(systemId=_SECURE/_QTI/id-377d71221b04/jumble-inlineChoice.xml)
+    nodeGroups =&gt; uk.ac.ed.ph.jqtiplus.group.NodeGroupList@2b23a5d5
+    qtiClassName =&gt; itemBody
+)
+</itemBody>
+  <adaptive>false</adaptive>
+  <timeDependent>false</timeDependent>
+</com.tle.common.qti.entity.QtiAssessmentItem>

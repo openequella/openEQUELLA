@@ -1,0 +1,13 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>413674</id>
+  <institution>
+    <id>413481</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>wrl</string>
+    <string>vrml</string>
+  </extensions>
+  <type>x-world/x-vrml</type>
+  <attributes/>
+</com.tle.beans.mime.MimeEntry>

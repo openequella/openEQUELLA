@@ -1,0 +1,20 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>217307</id>
+  <institution>
+    <id>217136</id>
+    <uniqueId>0</uniqueId>
+    <quota>0.0</quota>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>texi</string>
+    <string>texinfo</string>
+  </extensions>
+  <type>application/x-texinfo</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

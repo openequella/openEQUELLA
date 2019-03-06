@@ -1,0 +1,365 @@
+<com.tle.beans.entity.itemdef.ItemDefinition>
+  <id>116146</id>
+  <uuid>4f1739d7-dadf-4d97-8259-e224b9459f18</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2012-11-13 11:49:26.994</dateModified>
+  <dateCreated class="sql-timestamp">2012-11-13 11:49:26.994</dateCreated>
+  <name>
+    <id>116147</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116148</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Attachment script object collection</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <schema entityclass="com.tle.beans.entity.Schema" uuid="d9aba963-4648-e497-d62b-fc1ddf2d0199"/>
+  <wizardcategory>Scripting Objects</wizardcategory>
+  <reviewperiod>-2147483648</reviewperiod>
+  <slow>
+    <id>116149</id>
+    <itemMetadataRules/>
+    <wizard>
+      <pages>
+        <com.dytech.edge.wizard.beans.DefaultWizardPage>
+          <title>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en</locale>
+                  <priority>1</priority>
+                  <text>Data</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </title>
+          <controls>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>true</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Name</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/name</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Description</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/description</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <targetnodes/>
+              <items/>
+              <classType>advancedscript</classType>
+              <attributes>
+                <entry>
+                  <string>StoreJs</string>
+                  <string>if (request.get(&apos;doit&apos;) == &apos;Create text file&apos;)
+{
+	var textFile = attachments.createTextFileAttachment(&apos;b.txt&apos;,&apos;autotest text file&apos;,&apos;Text file successfully created&apos;);
+	//coverage for fileHandle
+	var fileHandle = staging.getFileHandle(currentItem, &quot;b.txt&quot;);
+	attachments.add(textFile);
+	attributes.set(&apos;content&apos;, fileHandle.getName());
+}
+if(request.get(&apos;doit&apos;) == &apos;Edit text file&apos;)
+{
+	attachments.editTextFileAttachment(attachments.getByFilename(&apos;b.txt&apos;), &apos;text file succesfully edited&apos;);
+	attributes.set(&apos;content&apos;, staging.readTextFile(&apos;b.txt&apos;));
+}
+
+if (request.get(&apos;doit&apos;) == &apos;Create binary attachment&apos;)
+{
+	var response = utils.getConnection(&quot;https://github.com/equella/Equella/blob/cfd7f9027de68635d73b60958079196bab165ead/Installer/resources/images/logo.gif?raw=true&quot;).getResponse(true);
+	attachments.createBinaryFileAttachment(&quot;equellaLogo.gif &quot;,&quot;EQUELLA Logo&quot;,response.getAsBinaryData());
+	attachments.addExistingFileAsAttachment(&quot;equellaLogo.gif &quot;,&quot;EQUELLA Logo&quot;);
+	
+	attributes.set(&apos;content&apos;, &apos;Binary attachment created!&apos;);
+}
+if (request.get(&apos;doit&apos;) == &apos;Create html attachment&apos;)
+{
+	var htmlAttachment = attachments.createHtmlAttachment(&quot;htmlattach.html&quot;,&quot;html attachment&quot;,&quot;&lt;h3&gt;I am a&lt;/h3&gt;&lt;ul&gt;&lt;li&gt;html&lt;/li&gt;&lt;li&gt;attachment&lt;/li&gt;&lt;/ul&gt;&quot;);
+	var uuid = htmlAttachment.getUuid();
+	attachments.add(htmlAttachment);
+
+	attributes.set(&apos;content&apos;, attachments.readTextFileAttachment(attachments.getByUuid(uuid)));
+}
+
+if (request.get(&apos;doit&apos;) == &apos;Remove html attachment&apos;)
+{
+	attachments.remove(attachments.getByFilename(&quot;htmlattach.html&quot;));
+	attributes.set(&apos;content&apos;, &quot;html attachment deleted&quot;);
+}
+if (request.get(&apos;doit&apos;) == &apos;Create resource attachment&apos;)
+{
+	var resourceAttachment = attachments.createResourceAttachment(&quot;2e92707b-2850-4d56-8bd5-dc24c5280236&quot;, 1,&quot;&quot;,&quot;Equella resource&quot;);
+	attachments.add(resourceAttachment);
+	attributes.set(&apos;content&apos;, attachments.getAttachedItemResources().get(0).getName());
+}
+if (request.get(&apos;doit&apos;) == &apos;Create custom attachment&apos;)
+{
+	var att = attachments.createCustomAttachment(&quot;link&quot;,&quot;custom atachment&quot;);
+	att.setCustomIntegerProperty(&quot;int&quot;, 5);
+	att.setCustomProperty(&quot;prop&quot;,&quot;custom property here&quot;);
+	att.setUrl(&quot;www.google.com&quot;);
+	att.setDescription(&quot;overwrite&quot;);
+	attachments.add(att);
+	attributes.set(&apos;content&apos;, &quot;custom attachment added&quot;);
+}
+if(request.get(&apos;doit&apos;) == &apos;Get custom details&apos;)
+{
+	var custom = attachments.getByFilename(&quot;www.google.com&quot;);
+	var returnString = &quot;Size: &quot; + custom.getSize() + &quot;&lt;br/&gt;&quot;;
+	returnString += &quot;Thumbnail: &lt;img src=&apos;&quot; + custom.getThumbnail() + &quot;&apos;/&gt;&lt;br/&gt;&quot;;
+	returnString += &quot;Custom Type: &quot; + custom.getCustomType() + &quot;&lt;br/&gt;&quot;;
+	returnString += &quot;Custom Property: &quot; + custom.getCustomProperty(&quot;prop&quot;) + &quot;&lt;br/&gt;&quot;;
+	returnString += &quot;Type: &quot; + custom.getType() + &quot;&lt;br/&gt;&quot;;
+	returnString += &quot;URL: &quot; + custom.getUrl() + &quot;&lt;br/&gt;&quot;;
+	attributes.set(&apos;content&apos;, returnString);
+}
+if (request.get(&apos;doit&apos;) == &apos;Delete all attachments&apos;)
+{
+	attachments.clear();
+	attributes.set(&apos;content&apos;, &quot;all  attachments deleted&quot;);
+}
+if(request.get(&quot;doit&quot;) == &apos;Get Mime Details&apos;)
+{
+	var mimeType = mime.getMimeTypeForFilename(&quot;test.jpeg&quot;);
+	var fileExtensions = mimeType.getFileExtensions();
+	var mimeString = &quot;Type: &quot; + mimeType.getType() + &quot;&lt;br/&gt;&quot;;
+	mimeString += &quot;Description: &quot; + mimeType.getDescription() + &quot;&lt;br/&gt;File Extensions: &quot;;
+	for(var x = 0; x &lt; fileExtensions.size(); x++)
+	{
+		mimeString += fileExtensions.get(x) + &quot;&lt;br/&gt;&quot;;
+	}
+	attributes.set(&apos;content&apos;, mimeString);
+}
+if(request.get(&quot;doit&quot;) == &quot;Get Image Size&quot;)
+{
+	var dimensions = images.getDimensions(&quot;equellaLogo.gif &quot;);
+	attributes.set(&apos;content&apos;, &quot;Width: &quot; + dimensions.getWidth() + &quot; | Height: &quot; + dimensions.getHeight());
+}
+if(request.get(&quot;doit&quot;) == &quot;Resize Image&quot;)
+{
+	var dimensions = images.getDimensions(&quot;equellaLogo.gif &quot;);
+	images.resize(&quot;equellaLogo.gif &quot;, dimensions.getWidth() / 2, dimensions.getHeight()/2 ,&quot;equellaLogo.gif &quot;);
+	var dimensions = images.getDimensions(&quot;equellaLogo.gif &quot;);
+	attributes.set(&apos;content&apos;, &quot;Width: &quot; + dimensions.getWidth() + &quot; | Height: &quot; + dimensions.getHeight());
+}
+</string>
+                </entry>
+                <entry>
+                  <string>ReadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>JsLibs</string>
+                  <list/>
+                </entry>
+                <entry>
+                  <string>OnSubmitJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>MarkUp</string>
+                  <string>&lt;button name=&quot;${prefix}doit&quot; value=&apos;Create text file&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Create text file &lt;/button&gt;
+&lt;br/&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Edit text file&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Edit text file &lt;/button&gt;
+&lt;br/&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Create binary attachment&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Create binary attachment &lt;/button&gt;
+&lt;br/&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Get Image Size&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Get Image size &lt;/button&gt;
+&lt;br/&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Resize Image&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Resize Image&lt;/button&gt;
+&lt;br/&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Create html attachment&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Create html attachment &lt;/button&gt;
+&lt;br/&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Remove html attachment&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Remove html attachment &lt;/button&gt;
+&lt;br/&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Create resource attachment&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Create resource attachment &lt;/button&gt;
+&lt;br/&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Create custom attachment&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Create custom attachment &lt;/button&gt;
+&lt;br/&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Get custom details&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Get custom details &lt;/button&gt;
+&lt;br/&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Delete all attachments&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Delete all attachments &lt;/button&gt;
+&lt;br/&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Get Mime Details&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Get Mime Details&lt;/button&gt;
+&lt;br/&gt;
+&lt;br/&gt;
+Contents:
+&lt;div id=&quot;ascMessage&quot;&gt;
+	&lt;pre&gt;${attributes.get(&apos;content&apos;)}&lt;/pre&gt;
+&lt;/div&gt;
+&lt;br/&gt;
+&lt;div id=&quot;attachmentList&quot;&gt;
+	Attachments:
+	&lt;ul&gt;
+	&lt;#list attachments.listForItem(currentItem) as att&gt;
+		&lt;li&gt; ${att.getFilename()}  (${att.getDescription()}) &lt;/li&gt;
+	&lt;/#list&gt;
+	&lt;/ul&gt;
+&lt;/div&gt;</string>
+                </entry>
+                <entry>
+                  <string>OnLoadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>Notes</string>
+                  <string></string>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+          </controls>
+        </com.dytech.edge.wizard.beans.DefaultWizardPage>
+      </pages>
+      <redraftScript></redraftScript>
+      <saveScript></saveScript>
+      <allowNonSequentialNavigation>false</allowNonSequentialNavigation>
+      <showPageTitlesNextPrev>false</showPageTitlesNextPrev>
+    </wizard>
+    <metadataMapping>
+      <imsMapping class="list"/>
+      <htmlMapping class="list"/>
+      <literalMapping class="list"/>
+    </metadataMapping>
+    <itemSummarySections>
+      <configList>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>1e189ba5-6d5a-477e-b105-4ebf20cc7d2d</uuid>
+          <value>basicSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Basic Information</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>72ec1d1f-3813-4a12-bc3f-8e10f97ef372</uuid>
+          <value>attachmentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Links to resources</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>98460c5d-0caa-4c5f-9aae-3065fc0a04ab</uuid>
+          <value>commentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Add a comment</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+      </configList>
+      <hideOwner>false</hideOwner>
+      <hideCollaborators>false</hideCollaborators>
+    </itemSummarySections>
+  </slow>
+  <denyDirectContribution>false</denyDirectContribution>
+</com.tle.beans.entity.itemdef.ItemDefinition>

@@ -1,0 +1,16 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>3309801</id>
+  <institution>
+    <id>3309713</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list"/>
+  <type>equella/link</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/info.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

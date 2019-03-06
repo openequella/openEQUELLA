@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>116670</id>
+  <uuid>2b95ac37-04a1-42b8-be23-06fa389f4031</uuid>
+  <value>REST-TERM-1-1</value>
+  <valueHash>96d69557956a5febd5da20c90a1491da</valueHash>
+  <fullValue>REST-TAXONOMY-TYPES\REST-TERM-1\REST-TERM-1-1</fullValue>
+  <parent>
+    <id>116667</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

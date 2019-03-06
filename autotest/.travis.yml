@@ -1,0 +1,44 @@
+dist: trusty
+sudo: required
+language: scala
+jdk:
+- oraclejdk8
+services:
+- postgresql
+addons:
+  chrome: stable
+  apt:
+    packages:
+    - libav-tools
+    - imagemagick
+  postgresql: "9.4"
+cache:
+  directories:
+  - "$HOME/.ivy2"
+  - "$HOME/.npm"
+  - "$HOME/.sbt"
+before_install:
+- nvm install $NODE_JS_VERSION
+- node --version
+- npm install -g yarn
+install:
+- curl -OL https://s3.amazonaws.com/edalexdev/equella_artifacts/master/latest/equella-installer-2019.1.zip
+- curl -OL curl -OL https://chromedriver.storage.googleapis.com/2.45/chromedriver_linux64.zip
+- unzip chromedriver_linux64.zip
+- curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
+before_script:
+- psql -c "CREATE USER equellatests WITH PASSWORD 'password';" -U postgres
+- psql -c 'CREATE DATABASE equellatests WITH OWNER = equellatests;' -U postgres
+script:
+- sbt -Dconfig.file=travis.conf installEquella startEquella
+- sbt -Dconfig.file=travis.conf configureInstall setupForTests Tests/test Tests/Serial/test
+- sbt -Dconfig.file=travis.conf coverageReport
+after_script:
+- sbt -Dconfig.file=travis.conf collectArtifacts
+- artifacts upload --target-paths test_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/ target/test-artifacts.zip
+env:
+  global:
+  - ARTIFACTS_BUCKET="edalexdev"
+  - NODE_JS_VERSION=8.11.3
+  - secure: mTDY+lC6gq3Phdw0eO+2t6N4u0xVuo5VCryUGTM3goFfIcKhPr1RZAvKXtkWbUHjDgnlfV+LbZdemeRmjtUn+gehIXVwTMq0fpf/TKuLDpubbYggbaE/hCKZJdBlMddAI5fW1XwesXPRGxEym0ipGJeQkpBtlMXLDPpmSGfJmH4Krk3Y7kNfj0p6S2lvgs6GP9EYFNAnYCvzTniz0WNpvBYw8YAiqFmxke1pkeVxrxSCpHPhZhpUBFebBY3TkU10bhBfnIgOoUseOei/evuT5h+G8RVmwZXs7ef3sts4pARPmctnUJ1BzouLFImSM0bHSMdHYdYL9PJOQZl9+0pyI4/us+l7Y0u2jB6sZRa0lsCvYBYNeYEoxbZ7+e27y3Ot+beeLekZp7TIluALnkq6djtIZl+HSjCr+lWi5gSjW0OWMrqYjRSeB3FHeVRIBanAZZjlK+x3+kLITzv1fCx1XlSPyl3x9Jqc1EcQtNiERCyearu2Brv8b2ioM5mLvjvrvnAF9fnEhaJHWb5HT58RGZL1LUYONiJEUFSpRSvDIMcAGnxOOFpCVVtW0O9GlzXfY17XEgwVlDuDEecZ9FyrY5bbmjwDGKxg+GVbO6C300KJuQ1ChAPQAUAhQMMB6k8kfliRrTOTNqIt0seHw5bjUdyGmz69rGpvehCBGMes2Yc=
+  - secure: LzDLWiQu+CZGRhiW7treVBtmhH5jZTwXaCkZiKupTAZPLdusJn+AzhuYR6l+PldqJjnlSFRi8/9KiW6Q7i4DSTRvwDqfduui8986KkREbE8Cop4Tk3bd8K2bxH7H41CL8ECXL7O38i7XKq/BmsMONkoWrkjJo6aPmHySRGHFBGDU7g6wUZuWiC2aSkeWSwBtCQP+jDGUZBNUxiQBi9Az57C6u7BHHGsn0qKYerwdgZwC4Khz0fi2JFR1VWL5t1shGlgZG7xdQGLVmr8eFcC6AWkFFGJSAlT8UW9yBcPBetFaIjpHeDG0eCkSYDAHwDglpe1hr0zA4/ZNuuY+g9t3mVSECsZK15QnPDxS72EBS8gXTaA+4kx8VYD4X++2OIH1lzJOqBOYqaEL1e+FbriTSD9E4kZtggy9/nD6wbUGWbw/thx9EqrD1PRBhBUj3yZe72K7jf8oXhURTOh+vt04h4/8KK7wz7p4QaiJ7u6fAgg/mUEGWAmOdx3GOcLIvOaekdB7UI+5P3zuyRz9z68zwpHGP9YAoFyDuV8z2bHkGTGer199UqpX4D+iuEtB5snXy1Bm3nmZ3oDe7FqEguMMyGg1RX/L39KYv3tk/GNQVDPoIVGaPB4/7SclXzGJ35RB+SgfQQjefvTuH+dKq1bQjK+NMDR5wHagPuidetgfcsk=

@@ -1,0 +1,10 @@
+<com.tle.beans.user.TLEGroup>
+  <id>3309720</id>
+  <uuid>e248ca6a-5a3d-479c-8323-1dbb6eb8166b</uuid>
+  <name>Group - report 1</name>
+  <description></description>
+  <users>
+    <string>adfcaf58-241b-4eca-9740-6a26d1c3dd58</string>
+    <string>f076eb50-c61a-468b-8ff0-7658db604054</string>
+  </users>
+</com.tle.beans.user.TLEGroup>

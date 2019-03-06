@@ -1,0 +1,46 @@
+<com.tle.beans.entity.Schema>
+  <id>997</id>
+  <uuid>53c44192-c632-0f1e-99f6-59f111917e21</uuid>
+  <owner>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</owner>
+  <dateModified class="sql-timestamp">2009-03-05 15:42:31.483</dateModified>
+  <dateCreated class="sql-timestamp">2009-03-05 15:42:31.483</dateCreated>
+  <description>
+    <id>213517</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>213316</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Add as required</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>213518</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>213317</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Test Schema</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms/>
+  <impTransforms/>
+  <itemNamePath>/name</itemNamePath>
+  <itemDescriptionPath>/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;name field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;keywords field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;calendar field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;attachment field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;extra_element1 field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;extra_element2 type=&quot;text&quot;/&gt;&lt;extra_element3 search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>

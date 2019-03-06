@@ -1,0 +1,18 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>202714</id>
+  <institution>
+    <id>202538</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>mif</string>
+  </extensions>
+  <type>application/x-mif</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

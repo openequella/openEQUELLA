@@ -1,0 +1,18 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>116736</id>
+  <institution>
+    <id>116510</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>pub</string>
+  </extensions>
+  <type>application/x-mspublisher</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

@@ -1,0 +1,20 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>116257</id>
+  <institution>
+    <id>116095</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>asf</string>
+    <string>asx</string>
+  </extensions>
+  <type>video/x-ms-asf</type>
+  <description>Video</description>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/video.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

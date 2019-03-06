@@ -1,0 +1,71 @@
+<com.tle.beans.item.Item>
+  <id>117000</id>
+  <uuid>66c96d10-d9e3-4abc-933d-ac618595c9b9</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-09-18 14:40:15.263</dateModified>
+  <dateCreated class="sql-timestamp">2012-09-18 14:40:15.267</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.962</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>DRAFT</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="3d31ac33-261e-404c-a157-487e51716268"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>117002</id>
+    <start class="sql-timestamp">2012-09-18 15:51:37.103</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117005</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-09-18 14:40:15.263</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117006</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-09-18 14:40:15.263</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>117003</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>117004</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>MyResourcesApiTest - Draft</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

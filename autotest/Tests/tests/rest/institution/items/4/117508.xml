@@ -1,0 +1,548 @@
+<com.tle.beans.item.Item>
+  <id>117508</id>
+  <uuid>2f6e9be8-897d-45f1-98ea-7aa31b449c0e</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-03-05 11:03:24.77</dateModified>
+  <dateCreated class="sql-timestamp">2012-02-24 10:57:25.617</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.051</dateForIndex>
+  <rating>5.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>117513</id>
+      <uuid>63862d54-1b6d-4dce-9a79-44b3a8c9e107</uuid>
+      <url>avatar.png</url>
+      <description>avatar.png</description>
+      <value1>12627</value1>
+      <value2>false</value2>
+      <thumbnail>_THUMBS/avatar.png.jpeg</thumbnail>
+      <md5sum>5a4e69eeae86aa557c4a27d52257b757</md5sum>
+      <viewer>livNavTreeViewer</viewer>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>117514</id>
+      <uuid>32f45d7c-6df7-44d8-926a-3d6f841c2009</uuid>
+      <url></url>
+      <description>SearchStemming - Walking</description>
+      <value1>resource</value1>
+      <data>
+        <entry>
+          <string>type</string>
+          <string>p</string>
+        </entry>
+        <entry>
+          <string>uuid</string>
+          <string>072c40d8-c8a8-412d-8ad2-3ef188ea016d</string>
+        </entry>
+        <entry>
+          <string>version</string>
+          <int>1</int>
+        </entry>
+      </data>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.CustomAttachment>
+    <com.tle.beans.item.attachments.LinkAttachment>
+      <id>117515</id>
+      <uuid>32a79ea6-8b67-4b38-af85-341b2d512f09</uuid>
+      <url>http://google.com.au/</url>
+      <description>Google</description>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.LinkAttachment>
+    <com.tle.beans.item.attachments.HtmlAttachment>
+      <id>117516</id>
+      <uuid>78a2de74-96de-48de-8865-22856c22ae49</uuid>
+      <url></url>
+      <description>Web Page</description>
+      <value1>24</value1>
+      <value2>false</value2>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.HtmlAttachment>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>117517</id>
+      <uuid>b24aa5fa-de50-4021-b7c4-ac4d3a918129</uuid>
+      <url></url>
+      <description>Book!</description>
+      <value1>googlebook</value1>
+      <data>
+        <entry>
+          <string>formats</string>
+          <string>44</string>
+        </entry>
+        <entry>
+          <string>id</string>
+          <string>http://www.google.com/books/feeds/volumes/NBMDtWq1MnUC</string>
+        </entry>
+        <entry>
+          <string>published</string>
+          <string>2001-09-17</string>
+        </entry>
+        <entry>
+          <string>thumbUrl</string>
+          <string>http://bks6.books.google.com/books?id=NBMDtWq1MnUC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata</string>
+        </entry>
+        <entry>
+          <string>url</string>
+          <string>http://books.google.com/books?id=NBMDtWq1MnUC&amp;ie=ISO-8859-1&amp;source=gbs_gdata</string>
+        </entry>
+      </data>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.CustomAttachment>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>117518</id>
+      <uuid>dd26b4ac-9592-4062-bd15-cb9691bfe9a3</uuid>
+      <url></url>
+      <description>Test Your Awareness: Do The Test</description>
+      <value1>youtube</value1>
+      <data>
+        <entry>
+          <string>duration</string>
+          <long>69</long>
+        </entry>
+        <entry>
+          <string>uploader</string>
+          <string>dothetest</string>
+        </entry>
+        <entry>
+          <string>uploaded</string>
+          <long>1205170217000</long>
+        </entry>
+        <entry>
+          <string>videoId</string>
+          <string>Ahg6qcgoay4</string>
+        </entry>
+        <entry>
+          <string>title</string>
+          <string>Test Your Awareness: Do The Test</string>
+        </entry>
+        <entry>
+          <string>thumbUrl</string>
+          <string>http://i.ytimg.com/vi/Ahg6qcgoay4/default.jpg</string>
+        </entry>
+        <entry>
+          <string>tags</string>
+          <string>test, awareness, basketball, visual, do, the, attention, span, bike, ad, cycling, TFL, safety, moonwalking, bear</string>
+        </entry>
+        <entry>
+          <string>playUrl</string>
+          <string>http://www.youtube.com/v/Ahg6qcgoay4?version=3&amp;f=videos&amp;c=EQUELLA&amp;app=youtube_gdata</string>
+        </entry>
+      </data>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.CustomAttachment>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>117519</id>
+      <uuid>221b8a48-3a35-4d29-ad3a-0f04a1536b3b</uuid>
+      <url></url>
+      <description>Gold C64</description>
+      <value1>flickr</value1>
+      <data>
+        <entry>
+          <string>licencekey</string>
+          <string>0</string>
+        </entry>
+        <entry>
+          <string>mediumUrl</string>
+          <string>http://farm1.staticflickr.com/88/277527331_ab0fa4348e.jpg</string>
+        </entry>
+        <entry>
+          <string>licencename</string>
+          <string>All Rights Reserved</string>
+        </entry>
+        <entry>
+          <string>uploader</string>
+          <string>FRaNKy--</string>
+        </entry>
+        <entry>
+          <string>taken</string>
+          <date>2006-10-22 04:50:12.0 AEDT</date>
+        </entry>
+        <entry>
+          <string>uploaded</string>
+          <date>2006-10-24 21:46:16.0 AEDT</date>
+        </entry>
+        <entry>
+          <string>photoId</string>
+          <string>277527331</string>
+        </entry>
+        <entry>
+          <string>showUrl</string>
+          <string>http://flickr.com/photos/19017538@N00/277527331</string>
+        </entry>
+        <entry>
+          <string>thumbUrl</string>
+          <string>http://farm1.staticflickr.com/88/277527331_ab0fa4348e_t.jpg</string>
+        </entry>
+        <entry>
+          <string>licencecode</string>
+          <string>not-for-display</string>
+        </entry>
+      </data>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.CustomAttachment>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>117520</id>
+      <uuid>20196bbc-7f5f-44a4-980d-55dab4e6eec9</uuid>
+      <url></url>
+      <description>SGA Roundup 01-31-11</description>
+      <value1>itunesu</value1>
+      <data>
+        <entry>
+          <string>trackName</string>
+          <string>SGA Roundup 01-31-11</string>
+        </entry>
+        <entry>
+          <string>trackUrl</string>
+          <string>http://deimos.apple.com/WebObjects/Core.woa/Browsev2/utm.edu.6530144102</string>
+        </entry>
+      </data>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.CustomAttachment>
+    <com.tle.beans.item.attachments.IMSResourceAttachment>
+      <id>117521</id>
+      <uuid>bb4f8b1d-8760-4082-a4bc-c3cea9ad0ce7</uuid>
+      <url>The vile vendor go figure.zip/index.html</url>
+      <description>index.html</description>
+      <data/>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.IMSResourceAttachment>
+    <com.tle.beans.item.attachments.ImsAttachment>
+      <id>117522</id>
+      <uuid>034dfcb7-b66a-45bf-98c8-03da9011c74d</uuid>
+      <url>The vile vendor go figure.zip</url>
+      <description>The vile vendor: go figure</description>
+      <value1>21718</value1>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.ImsAttachment>
+    <com.tle.beans.item.attachments.IMSResourceAttachment>
+      <id>117523</id>
+      <uuid>6553c4bf-38f1-43f5-a58a-91ddfa4ff30f</uuid>
+      <url>The vile vendor go figure.zip/index.html</url>
+      <description>index.html</description>
+      <data>
+        <entry>
+          <string>$HIDE_RESOURCE$</string>
+          <boolean>true</boolean>
+        </entry>
+      </data>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.IMSResourceAttachment>
+    <com.tle.beans.item.attachments.ZipAttachment>
+      <id>117524</id>
+      <uuid>4398bcda-4127-41d7-ab42-d2f0f8b9b100</uuid>
+      <url>_zips/resttodo.zip</url>
+      <description>resttodo.zip</description>
+      <value1>false</value1>
+      <value2>true</value2>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.ZipAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c"/>
+  <collaborators>
+    <string>c4c9471b-d3e1-4157-9847-2e6d1e8b9b4e</string>
+  </collaborators>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>89037</id>
+      <url>http://google.com.au/</url>
+      <urlHash>f80ded1d6e96b73f3ce9c140faca40fc</urlHash>
+      <success>false</success>
+      <status>0</status>
+      <tries>0</tries>
+      <lastChecked class="sql-timestamp">1970-01-01 11:00:00.0</lastChecked>
+      <lastIndexed class="sql-timestamp">1970-01-01 11:00:00.0</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>117510</id>
+    <liveApprovalDate class="sql-timestamp">2012-02-24 10:57:25.613</liveApprovalDate>
+    <start class="sql-timestamp">2012-02-27 12:09:38.427</start>
+    <lastAction class="sql-timestamp">2012-02-24 10:57:25.613</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117525</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-02-24 10:57:25.613</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117526</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-02-24 10:57:25.613</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117527</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-02-24 10:57:25.613</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117528</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-02-24 10:58:48.58</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117529</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-02-24 16:25:50.627</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117530</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-02-24 16:27:53.107</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117531</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-03-05 11:03:24.77</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments>
+    <com.tle.beans.item.Comment>
+      <id>117554</id>
+      <uuid>5e7c910e-0da3-47d5-a79f-75c164a0c1e7</uuid>
+      <item reference="../../.."/>
+      <rating>3</rating>
+      <comment>I&apos;m adding a comment</comment>
+      <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+      <dateCreated class="sql-timestamp">2012-02-24 16:10:03.14</dateCreated>
+      <anonymous>false</anonymous>
+    </com.tle.beans.item.Comment>
+    <com.tle.beans.item.Comment>
+      <id>117555</id>
+      <uuid>ddd11c14-4c5d-4d7f-81e3-3de7f2730f10</uuid>
+      <item reference="../../.."/>
+      <rating>0</rating>
+      <comment>Anonymous comment</comment>
+      <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+      <dateCreated class="sql-timestamp">2012-02-24 16:11:49.823</dateCreated>
+      <anonymous>true</anonymous>
+    </com.tle.beans.item.Comment>
+    <com.tle.beans.item.Comment>
+      <id>117556</id>
+      <uuid>4ffdbed8-d286-4a10-a7b3-c771696005fb</uuid>
+      <item reference="../../.."/>
+      <rating>5</rating>
+      <comment>Average rating</comment>
+      <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+      <dateCreated class="sql-timestamp">2012-02-24 16:13:53.937</dateCreated>
+      <anonymous>false</anonymous>
+    </com.tle.beans.item.Comment>
+  </comments>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes>
+    <com.tle.beans.item.attachments.ItemNavigationNode>
+      <id>117542</id>
+      <uuid>529882e2-16ce-46c3-bd87-b66f4365c49f</uuid>
+      <name>SGA Roundup 01-31-11</name>
+      <parent>
+        <id>117534</id>
+        <uuid>4ef8419a-1d76-478e-b58c-80022fedf4ce</uuid>
+        <name>Test Your Awareness: Do The Test</name>
+        <parent>
+          <id>117547</id>
+          <uuid>f074109b-e0fa-4404-9296-848a12034ff5</uuid>
+          <name>SearchStemming - Walking</name>
+          <tabs>
+            <com.tle.beans.item.attachments.ItemNavigationTab>
+              <id>117548</id>
+              <name>Tab 1</name>
+              <attachment class="com.tle.beans.item.attachments.CustomAttachment" reference="../../../../../../../attachments/com.tle.beans.item.attachments.CustomAttachment"/>
+            </com.tle.beans.item.attachments.ItemNavigationTab>
+            <com.tle.beans.item.attachments.ItemNavigationTab>
+              <id>117549</id>
+              <name>Tab 2</name>
+              <attachment class="com.tle.beans.item.attachments.FileAttachment" reference="../../../../../../../attachments/com.tle.beans.item.attachments.FileAttachment"/>
+            </com.tle.beans.item.attachments.ItemNavigationTab>
+          </tabs>
+          <index>2</index>
+        </parent>
+        <tabs>
+          <com.tle.beans.item.attachments.ItemNavigationTab>
+            <id>117535</id>
+            <name>Tab 1</name>
+            <attachment class="com.tle.beans.item.attachments.CustomAttachment" reference="../../../../../../attachments/com.tle.beans.item.attachments.CustomAttachment[3]"/>
+          </com.tle.beans.item.attachments.ItemNavigationTab>
+        </tabs>
+        <index>0</index>
+      </parent>
+      <tabs>
+        <com.tle.beans.item.attachments.ItemNavigationTab>
+          <id>117543</id>
+          <name>Tab 1</name>
+          <attachment class="com.tle.beans.item.attachments.CustomAttachment" reference="../../../../../attachments/com.tle.beans.item.attachments.CustomAttachment[5]"/>
+        </com.tle.beans.item.attachments.ItemNavigationTab>
+      </tabs>
+      <index>0</index>
+    </com.tle.beans.item.attachments.ItemNavigationNode>
+    <com.tle.beans.item.attachments.ItemNavigationNode>
+      <id>117540</id>
+      <uuid>fadf767b-9715-4e33-80fb-ac49bce869ae</uuid>
+      <name>Web Page</name>
+      <parent>
+        <id>117538</id>
+        <uuid>44d6eaa6-1a1a-4cff-94d9-31e8bb871d73</uuid>
+        <name>Book!</name>
+        <parent>
+          <id>117544</id>
+          <uuid>49ffd9d1-cc47-4fce-ae49-897ca0a54024</uuid>
+          <name>avatar.png</name>
+          <tabs>
+            <com.tle.beans.item.attachments.ItemNavigationTab>
+              <id>117545</id>
+              <name>Tab 1</name>
+              <attachment class="com.tle.beans.item.attachments.FileAttachment" reference="../../../../../../../attachments/com.tle.beans.item.attachments.FileAttachment"/>
+            </com.tle.beans.item.attachments.ItemNavigationTab>
+          </tabs>
+          <index>0</index>
+        </parent>
+        <tabs>
+          <com.tle.beans.item.attachments.ItemNavigationTab>
+            <id>117539</id>
+            <name>Tab 1</name>
+            <attachment class="com.tle.beans.item.attachments.CustomAttachment" reference="../../../../../../attachments/com.tle.beans.item.attachments.CustomAttachment[2]"/>
+          </com.tle.beans.item.attachments.ItemNavigationTab>
+        </tabs>
+        <index>0</index>
+      </parent>
+      <tabs>
+        <com.tle.beans.item.attachments.ItemNavigationTab>
+          <id>117541</id>
+          <name>Tab 1</name>
+          <attachment class="com.tle.beans.item.attachments.HtmlAttachment" reference="../../../../../attachments/com.tle.beans.item.attachments.HtmlAttachment"/>
+        </com.tle.beans.item.attachments.ItemNavigationTab>
+      </tabs>
+      <index>0</index>
+    </com.tle.beans.item.attachments.ItemNavigationNode>
+    <com.tle.beans.item.attachments.ItemNavigationNode reference="../com.tle.beans.item.attachments.ItemNavigationNode[2]/parent"/>
+    <com.tle.beans.item.attachments.ItemNavigationNode>
+      <id>117536</id>
+      <uuid>6f5a50eb-3c28-4dcb-bf99-615b6715ea37</uuid>
+      <name>Start: The vile vendor: go figure</name>
+      <parent>
+        <id>117546</id>
+        <uuid>89b8bbd5-8d67-4ae5-a531-b4b8e2957cf2</uuid>
+        <name>The vile vendor: go figure</name>
+        <tabs/>
+        <index>3</index>
+      </parent>
+      <tabs>
+        <com.tle.beans.item.attachments.ItemNavigationTab>
+          <id>117537</id>
+          <name>Auto Created By IMS Viewer</name>
+          <attachment class="com.tle.beans.item.attachments.IMSResourceAttachment" reference="../../../../../attachments/com.tle.beans.item.attachments.IMSResourceAttachment[2]"/>
+        </com.tle.beans.item.attachments.ItemNavigationTab>
+      </tabs>
+      <identifier>O41860I0</identifier>
+      <index>0</index>
+    </com.tle.beans.item.attachments.ItemNavigationNode>
+    <com.tle.beans.item.attachments.ItemNavigationNode reference="../com.tle.beans.item.attachments.ItemNavigationNode/parent"/>
+    <com.tle.beans.item.attachments.ItemNavigationNode>
+      <id>117532</id>
+      <uuid>4961186a-7bb1-46ca-a0b9-a92ec7cd5777</uuid>
+      <name>Google</name>
+      <parent>
+        <id>117552</id>
+        <uuid>0cc07c84-fba7-491f-970b-2abb623ac962</uuid>
+        <name>Gold C64</name>
+        <tabs>
+          <com.tle.beans.item.attachments.ItemNavigationTab>
+            <id>117553</id>
+            <name>Tab 1</name>
+            <attachment class="com.tle.beans.item.attachments.CustomAttachment" reference="../../../../../../attachments/com.tle.beans.item.attachments.CustomAttachment[4]"/>
+          </com.tle.beans.item.attachments.ItemNavigationTab>
+        </tabs>
+        <index>1</index>
+      </parent>
+      <tabs>
+        <com.tle.beans.item.attachments.ItemNavigationTab>
+          <id>117533</id>
+          <name>Tab 1</name>
+          <attachment class="com.tle.beans.item.attachments.LinkAttachment" reference="../../../../../attachments/com.tle.beans.item.attachments.LinkAttachment"/>
+        </com.tle.beans.item.attachments.ItemNavigationTab>
+      </tabs>
+      <index>0</index>
+    </com.tle.beans.item.attachments.ItemNavigationNode>
+    <com.tle.beans.item.attachments.ItemNavigationNode reference="../com.tle.beans.item.attachments.ItemNavigationNode[6]/parent"/>
+    <com.tle.beans.item.attachments.ItemNavigationNode>
+      <id>117550</id>
+      <uuid>4441d5fe-9941-412f-9674-3f860a44fb5b</uuid>
+      <name>index.html</name>
+      <tabs>
+        <com.tle.beans.item.attachments.ItemNavigationTab>
+          <id>117551</id>
+          <name>Tab 1</name>
+          <attachment class="com.tle.beans.item.attachments.IMSResourceAttachment" reference="../../../../../attachments/com.tle.beans.item.attachments.IMSResourceAttachment"/>
+        </com.tle.beans.item.attachments.ItemNavigationTab>
+      </tabs>
+      <index>4</index>
+    </com.tle.beans.item.attachments.ItemNavigationNode>
+    <com.tle.beans.item.attachments.ItemNavigationNode reference="../com.tle.beans.item.attachments.ItemNavigationNode/parent/parent"/>
+    <com.tle.beans.item.attachments.ItemNavigationNode reference="../com.tle.beans.item.attachments.ItemNavigationNode[4]/parent"/>
+    <com.tle.beans.item.attachments.ItemNavigationNode reference="../com.tle.beans.item.attachments.ItemNavigationNode[2]/parent/parent"/>
+  </treeNodes>
+  <notifications/>
+  <name>
+    <id>117511</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>117512</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>ItemApiViewTest - All attachments</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

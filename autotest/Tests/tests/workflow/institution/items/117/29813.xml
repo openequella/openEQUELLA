@@ -1,0 +1,88 @@
+<com.tle.beans.item.Item>
+  <id>29813</id>
+  <uuid>a1137102-a5f1-ebf9-84ae-8db6e8e45253</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2003-03-06 17:00:41.0</dateModified>
+  <dateCreated class="sql-timestamp">2003-03-06 16:14:38.0</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.207</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <attachments/>
+  <searchDetails/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="e8f050dd-f6c0-4cec-559f-e54d7ef19836"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>1126</id>
+      <url>http://boorah/dev/workflow/item/image/8c2bbf92-26ff-3377-3141-6d54274986dc/1/lssthneq.gif</url>
+      <urlHash>76a54cffc0697337c101e6a994335028</urlHash>
+      <success>false</success>
+      <status>503</status>
+      <message>&lt;!DOCTYPE HTML PUBLIC &quot;-//IETF//DTD HTML 2.0//EN&quot;&gt;
+&lt;html&gt;&lt;head&gt;
+&lt;title&gt;503 Service Unavailable&lt;/title&gt;
+&lt;/head&gt;&lt;body&gt;
+&lt;h1&gt;Service Unavailable&lt;/h1&gt;
+&lt;p&gt;The server is temporarily unable to service your
+request due to maintenance downtime or capacity
+prob</message>
+      <tries>1</tries>
+      <lastChecked class="sql-timestamp">2014-08-14 13:08:59.832</lastChecked>
+      <lastIndexed class="sql-timestamp">1970-01-01 11:00:00.0</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>29824</id>
+    <start class="sql-timestamp">2011-09-20 10:58:39.067</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>29827</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>29829</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Less Than Or Equal</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>29815</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>29820</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Less than or equal to.</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

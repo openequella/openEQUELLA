@@ -1,0 +1,23 @@
+<com.tle.common.qti.entity.QtiAssessmentItem>
+  <id>18863</id>
+  <uuid>329bb8f0-4621-4df6-a535-ad30d001f627</uuid>
+  <identifier>Likert-choice-questionSet</identifier>
+  <title>Question set</title>
+  <itemBody>uk.ac.ed.ph.jqtiplus.node.content.ItemBody@2d618df7(
+    blocks =&gt; java.util.ArrayList[
+        0 =&gt; &lt;matchInteraction&gt;@1605331559(xPath=/assessmentItem[@identifier=&quot;Likert-choice-questionSet&quot;]/itemBody[1]/matchInteraction[1],location=XmlSourceLocationInformation@7572c144(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-2a2cfb9f4dde/Likert-match-questionSet.xml,lineNumber=20,columnNumber=90))
+        1 =&gt; &lt;p&gt;@1089377177(xPath=/assessmentItem[@identifier=&quot;Likert-choice-questionSet&quot;]/itemBody[1]/p[1],location=XmlSourceLocationInformation@6f1c431c(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-2a2cfb9f4dde/Likert-match-questionSet.xml,lineNumber=36,columnNumber=12))
+    ]
+    id =&gt; null
+    classAttr =&gt; null
+    lang =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    label =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    parent =&gt; &lt;assessmentItem&gt;@679091265(xPath=/assessmentItem[@identifier=&quot;Likert-choice-questionSet&quot;],location=XmlSourceLocationInformation@68d50429(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-2a2cfb9f4dde/Likert-match-questionSet.xml,lineNumber=5,columnNumber=101))(systemId=_SECURE/_QTI/id-2a2cfb9f4dde/Likert-match-questionSet.xml)
+    attributes =&gt; uk.ac.ed.ph.jqtiplus.attribute.AttributeList@79045583
+    sourceLocation =&gt; XmlSourceLocationInformation@b8a4987(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-2a2cfb9f4dde/Likert-match-questionSet.xml,lineNumber=16,columnNumber=15)
+    rootNode =&gt; &lt;assessmentItem&gt;@679091265(xPath=/assessmentItem[@identifier=&quot;Likert-choice-questionSet&quot;],location=XmlSourceLocationInformation@68d50429(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-2a2cfb9f4dde/Likert-match-questionSet.xml,lineNumber=5,columnNumber=101))(systemId=_SECURE/_QTI/id-2a2cfb9f4dde/Likert-match-questionSet.xml)
+    nodeGroups =&gt; uk.ac.ed.ph.jqtiplus.group.NodeGroupList@23e143fc
+    qtiClassName =&gt; itemBody
+)
+</itemBody>
+  <adaptive>false</adaptive>
+  <timeDependent>false</timeDependent>
+</com.tle.common.qti.entity.QtiAssessmentItem>

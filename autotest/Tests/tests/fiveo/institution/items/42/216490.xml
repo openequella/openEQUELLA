@@ -1,0 +1,147 @@
+<com.tle.beans.item.Item>
+  <id>216490</id>
+  <uuid>2d89d941-85b0-4c84-8c99-39e5f8f0dda3</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2011-09-26 09:09:20.551</dateModified>
+  <dateCreated class="sql-timestamp">2011-09-26 09:09:20.555</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.883</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>216502</id>
+      <uuid>8353cdfe-8211-4c69-bd94-7784956cebe9</uuid>
+      <url>cat2.png</url>
+      <description>cat2.png</description>
+      <value1>816932</value1>
+      <value2>false</value2>
+      <md5sum>4ca30f5bedfdc2c35b002c6ff0f407ff</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>216505</id>
+      <uuid>c72354f4-0c9f-44f1-93e2-8e7bf050ee5c</uuid>
+      <url>cat1.jpg</url>
+      <description>cat1.jpg</description>
+      <value1>444808</value1>
+      <value2>false</value2>
+      <md5sum>59f50abcb530678852a2e0df610343d4</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>216508</id>
+      <uuid>d0a65778-665e-4b92-8816-269f360faf0e</uuid>
+      <url>cat4.gif</url>
+      <description>cat4.gif</description>
+      <value1>45110</value1>
+      <value2>false</value2>
+      <md5sum>841873ad17802542d4b43602cda0402e</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="68a2e654-9b0f-43fe-88da-9feb50569791"/>
+  <collaborators/>
+  <referencedUrls/>
+  <drmSettings>
+    <id>216491</id>
+    <item reference="../.."/>
+    <drmPageUuid>8a1d54b7-3f82-42e5-b5ad-1895149fe1a3</drmPageUuid>
+    <hideLicencesFromOwner>false</hideLicencesFromOwner>
+    <showLicenceCount>false</showLicenceCount>
+    <allowSummary>true</allowSummary>
+    <ownerMustAccept>true</ownerMustAccept>
+    <studentsMustAcceptIfInCompilation>true</studentsMustAcceptIfInCompilation>
+    <previewAllowed>true</previewAllowed>
+    <restrictToSector>false</restrictToSector>
+    <attributionOfOwnership>false</attributionOfOwnership>
+    <enforceAttribution>false</enforceAttribution>
+    <currentUsageCount>0</currentUsageCount>
+    <maximumUsageCount>0</maximumUsageCount>
+    <contentOwners>
+      <com.tle.beans.item.DrmSettings_-Party>
+        <userID>adfcaf58-241b-4eca-9740-6a26d1c3dd58</userID>
+        <name>Auto Test [AutoTest]</name>
+        <email>auto@test.com</email>
+        <owner>true</owner>
+      </com.tle.beans.item.DrmSettings_-Party>
+    </contentOwners>
+    <usages>
+      <string>DISPLAY</string>
+      <string>EXECUTE</string>
+      <string>PLAY</string>
+      <string>PRINT</string>
+    </usages>
+    <termsOfAgreement>You must view this item with your eyes closed</termsOfAgreement>
+    <requireAcceptanceFrom>* </requireAcceptanceFrom>
+  </drmSettings>
+  <moderation>
+    <id>216493</id>
+    <liveApprovalDate class="sql-timestamp">2011-09-26 09:09:20.551</liveApprovalDate>
+    <start class="sql-timestamp">2011-09-26 13:44:40.502</start>
+    <lastAction class="sql-timestamp">2011-09-26 09:09:20.551</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216510</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-26 09:09:20.551</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216513</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-26 09:09:20.551</date>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216517</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-26 09:09:20.551</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>216494</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216495</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>DRM Image test</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

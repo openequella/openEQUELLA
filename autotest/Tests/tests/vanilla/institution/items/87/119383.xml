@@ -1,0 +1,80 @@
+<com.tle.beans.item.Item>
+  <id>119383</id>
+  <uuid>dff7b388-e585-1012-3d5b-6a9bd4a70efc</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2005-10-03 16:29:26.0</dateModified>
+  <dateCreated class="sql-timestamp">2003-03-05 15:56:49.0</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.823</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>116763</id>
+      <uuid>dded5973-3a49-427c-b38f-a410d0fdf300</uuid>
+      <url>parallel.gif</url>
+      <description>parallel.gif</description>
+      <value1>74</value1>
+      <value2>false</value2>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <searchDetails/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="01d4757e-b10e-788d-a713-176427d4f90c"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>119222</id>
+    <start class="sql-timestamp">2011-08-30 12:05:10.173</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>213791</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>213589</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>parallel</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>213790</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>213588</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>parallel</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>529</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

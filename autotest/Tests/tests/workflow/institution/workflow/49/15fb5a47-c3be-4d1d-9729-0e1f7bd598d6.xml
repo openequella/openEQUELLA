@@ -1,0 +1,114 @@
+<com.tle.common.workflow.Workflow>
+  <id>29308</id>
+  <uuid>15fb5a47-c3be-4d1d-9729-0e1f7bd598d6</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2009-08-28 12:58:23.75</dateModified>
+  <dateCreated class="sql-timestamp">2009-08-28 12:56:35.86</dateCreated>
+  <name>
+    <id>29309</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>29310</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Decision node scripting by Schema element</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <movelive>false</movelive>
+  <nodes>
+    <com.tle.common.workflow.node.DecisionNode>
+      <id>29311</id>
+      <uuid>1a725bb5-a99e-8336-3902-b92965d1fbda</uuid>
+      <name>
+        <id>29312</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>29313</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>Does this item require moderation?</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </name>
+      <rejectPoint>false</rejectPoint>
+      <parent class="com.tle.common.workflow.node.SerialNode">
+        <id>29314</id>
+        <uuid>fe9c9560-37f3-3f14-7385-59a5e98bc823</uuid>
+        <name>
+          <id>29315</id>
+          <strings>
+            <entry>
+              <string>en_GB</string>
+              <com.tle.beans.entity.LanguageString>
+                <id>29316</id>
+                <locale>en_GB</locale>
+                <priority>2</priority>
+                <text>Start</text>
+                <bundle reference="../../../.."/>
+              </com.tle.beans.entity.LanguageString>
+            </entry>
+          </strings>
+        </name>
+        <rejectPoint>false</rejectPoint>
+        <childIndex>0</childIndex>
+      </parent>
+      <childIndex>0</childIndex>
+      <script>var bRet = false; 
+if( xml.contains(&apos;/radio_button1&apos;, &apos;yes&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+    </com.tle.common.workflow.node.DecisionNode>
+    <com.tle.common.workflow.node.SerialNode reference="../com.tle.common.workflow.node.DecisionNode/parent"/>
+    <com.tle.common.workflow.node.WorkflowItem>
+      <id>29317</id>
+      <uuid>0bac2199-05c5-94ac-740d-060438672c43</uuid>
+      <name>
+        <id>29318</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>29319</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>Moderation Step 1</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </name>
+      <rejectPoint>true</rejectPoint>
+      <parent class="com.tle.common.workflow.node.DecisionNode" reference="../../com.tle.common.workflow.node.DecisionNode"/>
+      <childIndex>0</childIndex>
+      <users>
+        <string>d58b8087-7d64-2115-c187-20e5eb890743</string>
+      </users>
+      <groups/>
+      <roles/>
+      <unanimousacceptance>false</unanimousacceptance>
+      <escalate>false</escalate>
+      <escalationdays>0</escalationdays>
+      <allowEditing>false</allowEditing>
+      <movelive>false</movelive>
+      <moveliveAccept>false</moveliveAccept>
+      <priority>20</priority>
+      <actionDays>0</actionDays>
+      <autoAssigns/>
+    </com.tle.common.workflow.node.WorkflowItem>
+  </nodes>
+</com.tle.common.workflow.Workflow>

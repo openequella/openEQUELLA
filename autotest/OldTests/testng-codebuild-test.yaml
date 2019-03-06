@@ -1,0 +1,7 @@
+name: SingleSuite
+threadCount: 2
+
+tests:
+  - name: OneAfterAnother
+    classes:
+      - com.tle.webtests.test.searching.BrowsebyTest

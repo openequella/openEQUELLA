@@ -1,0 +1,125 @@
+<com.tle.beans.item.Item>
+  <id>13167</id>
+  <uuid>dc90bf84-c976-fe0e-4377-95d83efcc245</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2011-03-10 17:19:40.758</dateModified>
+  <dateCreated class="sql-timestamp">2011-03-10 17:00:22.251</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.976</dateForIndex>
+  <rating>5.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>13174</id>
+      <uuid>04c68ecb-2b32-4f2a-b874-56d74d2456f9</uuid>
+      <url>cat1.jpg</url>
+      <description>Cat number one</description>
+      <value1>444808</value1>
+      <value2>false</value2>
+      <md5sum>59f50abcb530678852a2e0df610343d4</md5sum>
+      <viewer></viewer>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="b28f1ffe-2008-4f5e-d559-83c8acd79316"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>13171</id>
+    <liveApprovalDate class="sql-timestamp">2011-03-17 17:00:22.061</liveApprovalDate>
+    <start class="sql-timestamp">2011-08-30 10:15:08.3</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>13175</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-03-17 17:00:22.061</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>13176</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-03-17 17:00:22.061</date>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>13177</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-03-17 17:00:22.061</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>13178</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-03-17 17:19:40.758</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments>
+    <com.tle.beans.item.Comment>
+      <id>13179</id>
+      <uuid>8a97973c-b521-4c60-bb42-ce6d6d1dadef</uuid>
+      <item reference="../../.."/>
+      <rating>5</rating>
+      <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+      <dateCreated class="sql-timestamp">2011-03-17 17:17:46.328</dateCreated>
+      <anonymous>false</anonymous>
+    </com.tle.beans.item.Comment>
+  </comments>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>13172</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>13173</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>SearchSettings - Image 1 - JPEG/JPG</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>13168</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>13169</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>First item for testing search settings</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

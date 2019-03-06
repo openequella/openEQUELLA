@@ -1,0 +1,89 @@
+<com.tle.beans.item.Item>
+  <id>18595</id>
+  <uuid>16c764a6-00e5-4ab7-aae7-27d1213f64d8</uuid>
+  <version>1</version>
+  <owner>aca3959f-8d0c-4046-b1c3-e9592635c4cc</owner>
+  <dateModified class="sql-timestamp">2013-12-11 15:05:34.549</dateModified>
+  <dateCreated class="sql-timestamp">2013-12-11 15:05:34.556</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.213</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="4c147089-cddb-e67c-b5ab-189614eb1463"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>18597</id>
+    <liveApprovalDate class="sql-timestamp">2013-12-11 15:05:34.549</liveApprovalDate>
+    <start class="sql-timestamp">2013-12-11 15:06:46.626</start>
+    <lastAction class="sql-timestamp">2013-12-11 15:05:34.549</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18600</id>
+      <user>aca3959f-8d0c-4046-b1c3-e9592635c4cc</user>
+      <date class="sql-timestamp">2013-12-11 15:05:28.664</date>
+      <applies>false</applies>
+      <type>clone</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18601</id>
+      <user>aca3959f-8d0c-4046-b1c3-e9592635c4cc</user>
+      <date class="sql-timestamp">2013-12-11 15:05:34.549</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18602</id>
+      <user>aca3959f-8d0c-4046-b1c3-e9592635c4cc</user>
+      <date class="sql-timestamp">2013-12-11 15:05:34.549</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18603</id>
+      <user>aca3959f-8d0c-4046-b1c3-e9592635c4cc</user>
+      <date class="sql-timestamp">2013-12-11 15:05:34.549</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>18598</id>
+    <strings>
+      <entry>
+        <string>en_GB</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>18599</id>
+          <locale>en_GB</locale>
+          <priority>2</priority>
+          <text>Testable CAL Book moodle26</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

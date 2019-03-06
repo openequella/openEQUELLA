@@ -1,0 +1,1418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.22" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 3.7.1.v20110905 Build &lt;3.7.1.v20110905-1820></property>
+    <property name="units">in</property>
+    <property name="theme">equella.defaultTheme</property>
+    <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="layoutPreference">fixed layout</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <property name="imageDPI">96</property>
+    <list-property name="libraries">
+        <structure>
+            <property name="fileName">equella.rptlibrary</property>
+            <property name="namespace">equella</property>
+        </structure>
+    </list-property>
+    <parameters>
+        <scalar-parameter name="Connector" id="382">
+            <text-property name="promptText">Please select a connector</text-property>
+            <property name="valueType">dynamic</property>
+            <property name="dataSetName">ConnectorsList</property>
+            <expression name="valueExpr" type="javascript">dataSetRow["uuid"]</expression>
+            <expression name="labelExpr" type="javascript">dataSetRow["name"]</expression>
+            <expression name="sortByColumn">dataSetRow["name"]</expression>
+            <property name="sortDirection">asc</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">list-box</property>
+            <property name="mustMatch">true</property>
+            <property name="fixedOrder">false</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="Unavailable" id="389">
+            <text-property name="promptText">Show unavailable content</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">boolean</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">False</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">check-box</property>
+            <structure name="format"/>
+        </scalar-parameter>
+    </parameters>
+    <data-sources>
+        <oda-data-source extensionID="com.tle.reporting.oda.datasource" name="EQUELLA" id="384"
+ extends="equella.EQUELLA"/>
+        <oda-data-source extensionID="com.tle.reporting.oda.connectors.datasource.connector" name="EQUELLA Connectors" id="385"
+ extends="equella.EQUELLA Connectors"/>
+    </data-sources>
+    <data-sets>
+        <oda-data-set extensionID="com.tle.reporting.oda.connectors.dataset.connectorlist" name="ConnectorsList" id="387"
+ extends="equella.ConnectorsList"/>
+        <oda-data-set extensionID="com.tle.reporting.oda.connectors.dataset.connector" name="ConnectorsContent" id="388"
+ extends="equella.ConnectorsContent">
+            <list-property name="parameters">
+                <structure>
+                    <property name="name">query</property>
+                    <property name="nativeName">query</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                    <property name="position">1</property>
+                    <expression name="defaultValue" type="constant">*</expression>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
+                </structure>
+                <structure>
+                    <property name="name">connectorId</property>
+                    <property name="paramName">Connector</property>
+                    <property name="nativeName">connectorId</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                    <property name="position">2</property>
+                    <expression name="defaultValue" type="constant">all</expression>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
+                </structure>
+                <structure>
+                    <property name="name">courseId</property>
+                    <property name="nativeName">courseId</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                    <property name="position">3</property>
+                    <expression name="defaultValue" type="constant">all</expression>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                </structure>
+                <structure>
+                    <property name="name">folderId</property>
+                    <property name="nativeName">folderId</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                    <property name="position">4</property>
+                    <expression name="defaultValue" type="constant">all</expression>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                </structure>
+                <structure>
+                    <property name="name">hidden</property>
+                    <property name="paramName">Unavailable</property>
+                    <property name="nativeName">hidden</property>
+                    <property name="dataType">boolean</property>
+                    <property name="nativeDataType">3</property>
+                    <property name="position">5</property>
+                    <expression name="defaultValue" type="constant">0</expression>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">uuid</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">version</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">attachmentUuid</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">attachmentUrl</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">equellaUrl</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">externalTitle</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">externalUrl</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">8</property>
+                        <property name="name">courseName</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">9</property>
+                        <property name="name">courseCode</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">10</property>
+                        <property name="name">folder</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">11</property>
+                        <property name="name">dateAdded</property>
+                        <property name="dataType">date-time</property>
+                    </structure>
+                    <structure>
+                        <property name="position">12</property>
+                        <property name="name">dateModified</property>
+                        <property name="dataType">date-time</property>
+                    </structure>
+                    <structure>
+                        <property name="position">13</property>
+                        <property name="name">fileType</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">14</property>
+                        <property name="name">fileSize</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">15</property>
+                        <property name="name">available</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">16</property>
+                        <property name="name">instructor</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">17</property>
+                        <property name="name">dateAccessed</property>
+                        <property name="dataType">date-time</property>
+                    </structure>
+                    <structure>
+                        <property name="position">18</property>
+                        <property name="name">enrollments</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">19</property>
+                        <property name="name">uuid</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">20</property>
+                        <property name="name">version</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">21</property>
+                        <property name="name">attachmentUuid</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">22</property>
+                        <property name="name">attachmentUrl</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">23</property>
+                        <property name="name">equellaUrl</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">24</property>
+                        <property name="name">externalTitle</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">25</property>
+                        <property name="name">externalUrl</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">26</property>
+                        <property name="name">courseName</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">27</property>
+                        <property name="name">courseCode</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">28</property>
+                        <property name="name">folder</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">29</property>
+                        <property name="name">dateAdded</property>
+                        <property name="dataType">date-time</property>
+                    </structure>
+                    <structure>
+                        <property name="position">30</property>
+                        <property name="name">dateModified</property>
+                        <property name="dataType">date-time</property>
+                    </structure>
+                    <structure>
+                        <property name="position">31</property>
+                        <property name="name">fileType</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">32</property>
+                        <property name="name">fileSize</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">33</property>
+                        <property name="name">available</property>
+                        <property name="dataType">boolean</property>
+                    </structure>
+                    <structure>
+                        <property name="position">34</property>
+                        <property name="name">instructor</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">35</property>
+                        <property name="name">dateAccessed</property>
+                        <property name="dataType">date-time</property>
+                    </structure>
+                    <structure>
+                        <property name="position">36</property>
+                        <property name="name">enrollments</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">uuid</property>
+                    <property name="nativeName">uuid</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">version</property>
+                    <property name="nativeName">version</property>
+                    <property name="dataType">integer</property>
+                    <property name="nativeDataType">3</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">attachmentUuid</property>
+                    <property name="nativeName">attachmentUuid</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">attachmentUrl</property>
+                    <property name="nativeName">attachmentUrl</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">equellaUrl</property>
+                    <property name="nativeName">equellaUrl</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">externalTitle</property>
+                    <property name="nativeName">externalTitle</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">externalUrl</property>
+                    <property name="nativeName">externalUrl</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">8</property>
+                    <property name="name">courseName</property>
+                    <property name="nativeName">courseName</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">9</property>
+                    <property name="name">courseCode</property>
+                    <property name="nativeName">courseCode</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">10</property>
+                    <property name="name">folder</property>
+                    <property name="nativeName">folder</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">11</property>
+                    <property name="name">dateAdded</property>
+                    <property name="nativeName">dateAdded</property>
+                    <property name="dataType">date-time</property>
+                    <property name="nativeDataType">4</property>
+                </structure>
+                <structure>
+                    <property name="position">12</property>
+                    <property name="name">dateModified</property>
+                    <property name="nativeName">dateModified</property>
+                    <property name="dataType">date-time</property>
+                    <property name="nativeDataType">4</property>
+                </structure>
+                <structure>
+                    <property name="position">13</property>
+                    <property name="name">fileType</property>
+                    <property name="nativeName">fileType</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">14</property>
+                    <property name="name">fileSize</property>
+                    <property name="nativeName">fileSize</property>
+                    <property name="dataType">integer</property>
+                    <property name="nativeDataType">3</property>
+                </structure>
+                <structure>
+                    <property name="position">15</property>
+                    <property name="name">available</property>
+                    <property name="nativeName">available</property>
+                    <property name="dataType">integer</property>
+                    <property name="nativeDataType">3</property>
+                </structure>
+                <structure>
+                    <property name="position">16</property>
+                    <property name="name">instructor</property>
+                    <property name="nativeName">instructor</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">17</property>
+                    <property name="name">dateAccessed</property>
+                    <property name="nativeName">dateAccessed</property>
+                    <property name="dataType">date-time</property>
+                    <property name="nativeDataType">4</property>
+                </structure>
+                <structure>
+                    <property name="position">18</property>
+                    <property name="name">enrollments</property>
+                    <property name="nativeName">enrollments</property>
+                    <property name="dataType">integer</property>
+                    <property name="nativeDataType">3</property>
+                </structure>
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">uuid</property>
+                    <property name="nativeName">uuid</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">version</property>
+                    <property name="nativeName">version</property>
+                    <property name="dataType">integer</property>
+                    <property name="nativeDataType">3</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">attachmentUuid</property>
+                    <property name="nativeName">attachmentUuid</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">attachmentUrl</property>
+                    <property name="nativeName">attachmentUrl</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">equellaUrl</property>
+                    <property name="nativeName">equellaUrl</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">externalTitle</property>
+                    <property name="nativeName">externalTitle</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">externalUrl</property>
+                    <property name="nativeName">externalUrl</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">8</property>
+                    <property name="name">courseName</property>
+                    <property name="nativeName">courseName</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">9</property>
+                    <property name="name">courseCode</property>
+                    <property name="nativeName">courseCode</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">10</property>
+                    <property name="name">folder</property>
+                    <property name="nativeName">folder</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">11</property>
+                    <property name="name">dateAdded</property>
+                    <property name="nativeName">dateAdded</property>
+                    <property name="dataType">date-time</property>
+                    <property name="nativeDataType">4</property>
+                </structure>
+                <structure>
+                    <property name="position">12</property>
+                    <property name="name">dateModified</property>
+                    <property name="nativeName">dateModified</property>
+                    <property name="dataType">date-time</property>
+                    <property name="nativeDataType">4</property>
+                </structure>
+                <structure>
+                    <property name="position">13</property>
+                    <property name="name">fileType</property>
+                    <property name="nativeName">fileType</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">14</property>
+                    <property name="name">fileSize</property>
+                    <property name="nativeName">fileSize</property>
+                    <property name="dataType">integer</property>
+                    <property name="nativeDataType">3</property>
+                </structure>
+                <structure>
+                    <property name="position">15</property>
+                    <property name="name">available</property>
+                    <property name="nativeName">available</property>
+                    <property name="dataType">boolean</property>
+                    <property name="nativeDataType">5</property>
+                </structure>
+                <structure>
+                    <property name="position">16</property>
+                    <property name="name">instructor</property>
+                    <property name="nativeName">instructor</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                </structure>
+                <structure>
+                    <property name="position">17</property>
+                    <property name="name">dateAccessed</property>
+                    <property name="nativeName">dateAccessed</property>
+                    <property name="dataType">date-time</property>
+                    <property name="nativeDataType">4</property>
+                </structure>
+                <structure>
+                    <property name="position">18</property>
+                    <property name="name">enrollments</property>
+                    <property name="nativeName">enrollments</property>
+                    <property name="dataType">integer</property>
+                    <property name="nativeDataType">3</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[query|connectorId|courseId|folderId|hidden]]></xml-property>
+            <xml-property name="designerValues"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<model:DesignValues xmlns:design="http://www.eclipse.org/datatools/connectivity/oda/design" xmlns:model="http://www.eclipse.org/birt/report/model/adapter/odaModel">
+  <Version>2.0</Version>
+  <DataSetParameters>
+    <parameter>
+      <design:ParameterDefinition>
+        <design:inOutMode>In</design:inOutMode>
+        <design:attributes>
+          <design:identifier>
+            <design:name>query</design:name>
+            <design:position>1</design:position>
+          </design:identifier>
+          <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+          <design:precision>0</design:precision>
+          <design:scale>0</design:scale>
+          <design:nullability>Unknown</design:nullability>
+        </design:attributes>
+        <design:inputAttributes>
+          <design:elementAttributes>
+            <design:defaultValues>
+              <design:values>*</design:values>
+            </design:defaultValues>
+          </design:elementAttributes>
+        </design:inputAttributes>
+      </design:ParameterDefinition>
+    </parameter>
+    <parameter>
+      <design:ParameterDefinition>
+        <design:inOutMode>In</design:inOutMode>
+        <design:attributes>
+          <design:identifier>
+            <design:name>connectorId</design:name>
+            <design:position>2</design:position>
+          </design:identifier>
+          <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+          <design:precision>0</design:precision>
+          <design:scale>0</design:scale>
+          <design:nullability>Unknown</design:nullability>
+        </design:attributes>
+        <design:inputAttributes>
+          <design:elementAttributes>
+            <design:defaultValues>
+              <design:values>all</design:values>
+            </design:defaultValues>
+          </design:elementAttributes>
+        </design:inputAttributes>
+      </design:ParameterDefinition>
+    </parameter>
+    <parameter>
+      <design:ParameterDefinition>
+        <design:inOutMode>In</design:inOutMode>
+        <design:attributes>
+          <design:identifier>
+            <design:name>courseId</design:name>
+            <design:position>3</design:position>
+          </design:identifier>
+          <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+          <design:precision>0</design:precision>
+          <design:scale>0</design:scale>
+          <design:nullability>Unknown</design:nullability>
+        </design:attributes>
+        <design:inputAttributes>
+          <design:elementAttributes>
+            <design:defaultValues>
+              <design:values>all</design:values>
+            </design:defaultValues>
+          </design:elementAttributes>
+        </design:inputAttributes>
+      </design:ParameterDefinition>
+    </parameter>
+    <parameter>
+      <design:ParameterDefinition>
+        <design:inOutMode>In</design:inOutMode>
+        <design:attributes>
+          <design:identifier>
+            <design:name>folderId</design:name>
+            <design:position>4</design:position>
+          </design:identifier>
+          <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+          <design:precision>0</design:precision>
+          <design:scale>0</design:scale>
+          <design:nullability>Unknown</design:nullability>
+        </design:attributes>
+        <design:inputAttributes>
+          <design:elementAttributes>
+            <design:defaultValues>
+              <design:values>all</design:values>
+            </design:defaultValues>
+          </design:elementAttributes>
+        </design:inputAttributes>
+      </design:ParameterDefinition>
+    </parameter>
+    <parameter>
+      <design:ParameterDefinition>
+        <design:inOutMode>In</design:inOutMode>
+        <design:attributes>
+          <design:identifier>
+            <design:name>hidden</design:name>
+            <design:position>5</design:position>
+          </design:identifier>
+          <design:nativeDataTypeCode>3</design:nativeDataTypeCode>
+          <design:precision>0</design:precision>
+          <design:scale>0</design:scale>
+          <design:nullability>Unknown</design:nullability>
+        </design:attributes>
+        <design:inputAttributes>
+          <design:elementAttributes>
+            <design:defaultValues>
+              <design:values>0</design:values>
+            </design:defaultValues>
+          </design:elementAttributes>
+        </design:inputAttributes>
+      </design:ParameterDefinition>
+    </parameter>
+  </DataSetParameters>
+  <design:ResultSets derivedMetaData="true">
+    <design:resultSetDefinitions>
+      <design:resultSetColumns>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>uuid</design:name>
+              <design:position>1</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>uuid</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>uuid</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>version</design:name>
+              <design:position>2</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>3</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>version</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>version</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>attachmentUuid</design:name>
+              <design:position>3</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>attachmentUuid</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>attachmentUuid</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>attachmentUrl</design:name>
+              <design:position>4</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>attachmentUrl</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>attachmentUrl</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>equellaUrl</design:name>
+              <design:position>5</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>equellaUrl</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>equellaUrl</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>externalTitle</design:name>
+              <design:position>6</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>externalTitle</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>externalTitle</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>externalUrl</design:name>
+              <design:position>7</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>externalUrl</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>externalUrl</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>courseName</design:name>
+              <design:position>8</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>courseName</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>courseName</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>courseCode</design:name>
+              <design:position>9</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>courseCode</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>courseCode</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>folder</design:name>
+              <design:position>10</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>folder</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>folder</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>dateAdded</design:name>
+              <design:position>11</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>4</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>dateAdded</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>dateAdded</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>dateModified</design:name>
+              <design:position>12</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>4</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>dateModified</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>dateModified</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>fileType</design:name>
+              <design:position>13</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>fileType</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>fileType</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>fileSize</design:name>
+              <design:position>14</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>3</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>fileSize</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>fileSize</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>available</design:name>
+              <design:position>15</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>3</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>available</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>available</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>instructor</design:name>
+              <design:position>16</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>instructor</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>instructor</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>dateAccessed</design:name>
+              <design:position>17</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>4</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>dateAccessed</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>dateAccessed</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>enrollments</design:name>
+              <design:position>18</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>3</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>enrollments</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>enrollments</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+      </design:resultSetColumns>
+      <design:criteria/>
+    </design:resultSetDefinitions>
+  </design:ResultSets>
+</model:DesignValues>]]></xml-property>
+        </oda-data-set>
+    </data-sets>
+    <styles>
+        <style name="report" id="4">
+            <property name="fontFamily">sans-serif</property>
+            <property name="fontSize">10pt</property>
+        </style>
+        <style name="crosstab-cell" id="5">
+            <property name="borderBottomColor">#CCCCCC</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1pt</property>
+            <property name="borderLeftColor">#CCCCCC</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1pt</property>
+            <property name="borderRightColor">#CCCCCC</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1pt</property>
+            <property name="borderTopColor">#CCCCCC</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1pt</property>
+        </style>
+        <style name="crosstab" id="6">
+            <property name="borderBottomColor">#CCCCCC</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1pt</property>
+            <property name="borderLeftColor">#CCCCCC</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1pt</property>
+            <property name="borderRightColor">#CCCCCC</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1pt</property>
+            <property name="borderTopColor">#CCCCCC</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1pt</property>
+        </style>
+    </styles>
+    <page-setup>
+        <simple-master-page name="Simple MasterPage" id="2">
+            <page-footer>
+                <text id="3">
+                    <property name="contentType">html</property>
+                    <text-property name="content"><![CDATA[<value-of>new Date()</value-of>]]></text-property>
+                </text>
+            </page-footer>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <grid id="58">
+            <property name="style">HeaderTable</property>
+            <property name="width">100%</property>
+            <column id="59">
+                <property name="width">1.3583333333333334in</property>
+            </column>
+            <column id="60">
+                <property name="width">5.141666666666667in</property>
+            </column>
+            <row id="66">
+                <cell id="67">
+                    <property name="height">1em</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">1pt</property>
+                    <property name="paddingBottom">1pt</property>
+                    <property name="paddingRight">1pt</property>
+                    <label id="160">
+                        <text-property name="text">Showing unavailable content</text-property>
+                    </label>
+                </cell>
+                <cell id="68">
+                    <property name="height">1em</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">1pt</property>
+                    <property name="paddingBottom">1pt</property>
+                    <property name="paddingRight">1pt</property>
+                    <text-data id="167">
+                        <expression name="valueExpr">params["Unavailable"].value</expression>
+                        <property name="contentType">html</property>
+                    </text-data>
+                </cell>
+            </row>
+        </grid>
+        <table id="234">
+            <property name="width">7.947916666666667in</property>
+            <property name="dataSet">ConnectorsContent</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">uuid</property>
+                    <text-property name="displayName">uuid</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["uuid"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">version</property>
+                    <text-property name="displayName">version</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["version"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">attachmentUuid</property>
+                    <text-property name="displayName">attachmentUuid</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["attachmentUuid"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">attachmentUrl</property>
+                    <text-property name="displayName">attachmentUrl</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["attachmentUrl"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">equellaUrl</property>
+                    <text-property name="displayName">equellaUrl</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["equellaUrl"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">externalTitle</property>
+                    <text-property name="displayName">externalTitle</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["externalTitle"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">externalUrl</property>
+                    <text-property name="displayName">externalUrl</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["externalUrl"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">courseName</property>
+                    <text-property name="displayName">Course Name</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["courseName"] + (dataSetRow["courseCode"] == null ? '' : '  (' + dataSetRow["courseCode"] + ')')</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">courseCode</property>
+                    <text-property name="displayName">courseCode</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["courseCode"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">folder</property>
+                    <text-property name="displayName">folder</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["folder"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">dateAdded</property>
+                    <text-property name="displayName">dateAdded</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["dateAdded"]</expression>
+                    <property name="dataType">date-time</property>
+                </structure>
+                <structure>
+                    <property name="name">dateModified</property>
+                    <text-property name="displayName">dateModified</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["dateModified"]</expression>
+                    <property name="dataType">date-time</property>
+                </structure>
+                <structure>
+                    <property name="name">fileType</property>
+                    <text-property name="displayName">fileType</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["fileType"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">fileSize</property>
+                    <text-property name="displayName">fileSize</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["fileSize"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">available</property>
+                    <text-property name="displayName">available</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["available"]</expression>
+                    <property name="dataType">boolean</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">instructor</property>
+                    <text-property name="displayName">instructor</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["instructor"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">dateAccessed</property>
+                    <text-property name="displayName">dateAccessed</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["dateAccessed"]</expression>
+                    <property name="dataType">date-time</property>
+                </structure>
+                <structure>
+                    <property name="name">enrollments</property>
+                    <text-property name="displayName">enrollments</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["enrollments"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">courseName_1</property>
+                    <text-property name="displayName">courseName</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["courseName"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">available_1</property>
+                    <text-property name="displayName">available</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["available"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+            </list-property>
+            <column id="333">
+                <property name="width">1.4479166666666667in</property>
+            </column>
+            <column id="335">
+                <property name="width">0.9166666666666666in</property>
+            </column>
+            <column id="337">
+                <property name="width">0.78125in</property>
+            </column>
+            <column id="343">
+                <property name="width">0.9166666666666666in</property>
+                <property name="repeat">1</property>
+            </column>
+            <column id="338">
+                <property name="width">0.7291666666666666in</property>
+            </column>
+            <column id="340">
+                <property name="width">0.7708333333333334in</property>
+            </column>
+            <column id="341">
+                <property name="width">0.7395833333333334in</property>
+            </column>
+            <column id="342">
+                <property name="width">0.46875in</property>
+            </column>
+            <header>
+                <row id="235">
+                    <property name="backgroundColor">#0202C7</property>
+                    <property name="color">white</property>
+                    <cell id="246">
+                        <label id="247">
+                            <text-property name="text">External Title</text-property>
+                        </label>
+                    </cell>
+                    <cell id="250">
+                        <label id="251">
+                            <text-property name="text">Course Name</text-property>
+                        </label>
+                    </cell>
+                    <cell id="254">
+                        <label id="255">
+                            <text-property name="text">Folder</text-property>
+                        </label>
+                    </cell>
+                    <cell id="266">
+                        <label id="267">
+                            <text-property name="text">Instructor</text-property>
+                        </label>
+                    </cell>
+                    <cell id="256">
+                        <label id="257">
+                            <text-property name="text">Date Added</text-property>
+                        </label>
+                    </cell>
+                    <cell id="260">
+                        <label id="261">
+                            <text-property name="text">File Type</text-property>
+                        </label>
+                    </cell>
+                    <cell id="262">
+                        <label id="263">
+                            <text-property name="text">File Size</text-property>
+                        </label>
+                    </cell>
+                    <cell id="264">
+                        <label id="265">
+                            <text-property name="text">Available</text-property>
+                        </label>
+                    </cell>
+                </row>
+            </header>
+            <detail>
+                <row id="272">
+                    <property name="fontSize">10pt</property>
+                    <cell id="283">
+                        <data id="284">
+                            <property name="resultSetColumn">externalTitle</property>
+                            <list-property name="action">
+                                <structure>
+                                    <property name="linkType">hyperlink</property>
+                                    <expression name="uri" type="javascript">row["equellaUrl"]</expression>
+                                    <property name="targetWindow">_blank</property>
+                                </structure>
+                            </list-property>
+                        </data>
+                    </cell>
+                    <cell id="287">
+                        <data id="288">
+                            <property name="resultSetColumn">courseName</property>
+                            <list-property name="action">
+                                <structure>
+                                    <property name="linkType">hyperlink</property>
+                                    <expression name="uri" type="javascript">row["externalUrl"]</expression>
+                                    <property name="targetWindow">_blank</property>
+                                </structure>
+                            </list-property>
+                        </data>
+                    </cell>
+                    <cell id="291">
+                        <data id="292">
+                            <property name="resultSetColumn">folder</property>
+                        </data>
+                    </cell>
+                    <cell id="303">
+                        <data id="304">
+                            <property name="whiteSpace">normal</property>
+                            <property name="resultSetColumn">instructor</property>
+                        </data>
+                    </cell>
+                    <cell id="293">
+                        <data id="294">
+                            <structure name="dateTimeFormat">
+                                <property name="category">Medium Date</property>
+                                <property name="pattern">Medium Date</property>
+                            </structure>
+                            <property name="resultSetColumn">dateAdded</property>
+                        </data>
+                    </cell>
+                    <cell id="297">
+                        <data id="298">
+                            <property name="resultSetColumn">fileType</property>
+                        </data>
+                    </cell>
+                    <cell id="299">
+                        <data id="300">
+                            <property name="resultSetColumn">fileSize</property>
+                        </data>
+                    </cell>
+                    <cell id="301">
+                        <data id="302">
+                            <structure name="numberFormat">
+                                <property name="category">Unformatted</property>
+                            </structure>
+                            <property name="resultSetColumn">available</property>
+                        </data>
+                    </cell>
+                </row>
+            </detail>
+            <footer>
+                <row id="309">
+                    <cell id="315"/>
+                    <cell id="317"/>
+                    <cell id="319"/>
+                    <cell id="325"/>
+                    <cell id="320"/>
+                    <cell id="322"/>
+                    <cell id="323"/>
+                    <cell id="324"/>
+                </row>
+            </footer>
+        </table>
+    </body>
+</report>

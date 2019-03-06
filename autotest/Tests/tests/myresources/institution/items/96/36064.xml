@@ -1,0 +1,79 @@
+<com.tle.beans.item.Item>
+  <id>36064</id>
+  <uuid>8de183e8-9696-34b0-caa9-cde5e25f46dc</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2005-10-03 16:29:40.0</dateModified>
+  <dateCreated class="sql-timestamp">2003-03-05 15:53:03.0</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.294</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>36074</id>
+      <uuid>b67000d2-f43d-4dfc-a296-ecfb0cfb48a8</uuid>
+      <url>angle.gif</url>
+      <description>angle.gif</description>
+      <value1>89</value1>
+      <value2>false</value2>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <searchDetails/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="01d4757e-b10e-788d-a713-176427d4f90c"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>36071</id>
+    <start class="sql-timestamp">2011-08-30 12:05:10.577</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>36072</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>36073</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>angle</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>36066</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>36068</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>angle</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>763</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>
