@@ -1,7 +1,7 @@
 module Uploads.UploadModel where 
 
 import Effect.Aff.Compat (EffectFnAff, fromEffectFnAff)
-import Prelude 
+import Prelude
 
 import Control.Alt ((<|>))
 import Control.Monad.Except (lift, throwError)
