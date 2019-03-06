@@ -37,7 +37,7 @@ public class NewVersionSection extends AbstractWizardViewItemActionSection {
   private static Label LABEL;
 
   @PlugKey("summary.sidebar.actions.newversion.moderationconflict")
-  private static Label NO_NEW_VERSION_LABEL;
+  private static Label VERSION_IN_MODERATION_ALERT;
 
   @Override
   protected Label getLinkLabel() {
@@ -68,7 +68,7 @@ public class NewVersionSection extends AbstractWizardViewItemActionSection {
       // Display a warning when creating a new version of this item because there is a current
       // version awaiting moderation.
       getComponent()
-          .setClickHandler(context, new OverrideHandler(Js.alert_s(NO_NEW_VERSION_LABEL)));
+          .setClickHandler(context, new OverrideHandler(Js.alert_s(VERSION_IN_MODERATION_ALERT)));
     }
     return super.renderHtml(context);
   }
