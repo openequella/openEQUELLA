@@ -222,7 +222,7 @@ class PreLoginNoticeConfigurator extends React.Component<
             control={<Radio id="scheduledRadioButton" />}
           />
           <FormControlLabel
-            value="OFF"
+            value={ScheduleTypeSelection[ScheduleTypeSelection.OFF]}
             label={strings.scheduling.disabled}
             control={<Radio id="offRadioButton" />}
           />
