@@ -35,7 +35,11 @@ export const strings = prepLangStrings("loginnoticepage", {
 });
 
 export function submitPreLoginNotice(notice: string): AxiosPromise {
-  return axios.put(PRE_LOGIN_NOTICE_API_URL, notice);
+  return axios.put(PRE_LOGIN_NOTICE_API_URL, notice, {
+    headers: {
+      "Content-Type": "text/html"
+    }
+  });
 }
 
 export function getPreLoginNotice(): AxiosPromise {

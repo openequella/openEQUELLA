@@ -30,6 +30,7 @@ public interface PreLoginNoticeResource {
   Response retrievePreLoginNotice();
 
   @PUT
+  @Consumes(MimeTypes.TEXT_HTML)
   Response setPreLoginNotice(String loginNotice);
 
   @DELETE
