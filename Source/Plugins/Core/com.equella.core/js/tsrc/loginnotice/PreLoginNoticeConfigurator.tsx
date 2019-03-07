@@ -36,8 +36,8 @@ interface PreLoginNoticeConfiguratorProps {
 }
 
 interface PreLoginNoticeConfiguratorState {
-  preNotice?: String; //what is currently in the textfield
-  dbPreNotice?: String; //what is currently in the database
+  preNotice?: string; //what is currently in the textfield
+  dbPreNotice?: string; //what is currently in the database
   clearStaged: boolean;
   checked: string;
   dbChecked: string;
@@ -306,7 +306,7 @@ class PreLoginNoticeConfigurator extends React.Component<
               inputProps={{ length: 12 }}
               placeholder={strings.prelogin.description}
               onChange={e => this.handlePreTextFieldChange(e.target)}
-              value={preNotice + ""}
+              value={preNotice}
             />
           </Grid>
           <Grid item>

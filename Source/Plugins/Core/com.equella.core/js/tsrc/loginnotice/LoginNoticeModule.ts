@@ -15,7 +15,7 @@ export enum ScheduleSettings {
   SCHEDULED = "SCHEDULED"
 }
 export interface PreLoginNotice {
-  notice?: String;
+  notice?: string;
   scheduleSettings: ScheduleSettings;
   startDate?: Date;
   endDate?: Date;
