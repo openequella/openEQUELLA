@@ -3,6 +3,8 @@ version: 0.2
 env:
   variables:
     KALTURA_BRANCH: master
+    AUTOTEST_CONFIG: "codebuild.conf"
+    EQ_EXIFTOOL_PATH: "/usr/bin/exiftool"
 phases:
   pre_build:
     commands:
@@ -10,9 +12,15 @@ phases:
       - yarn global add psc-package@0.3.2
       - psc-package --version
       - setupBuild
+  install:
+    commands:
+      - service postgresql start
   build:
     commands:
       - sbt -no-colors -Dconfig.file=${HOME}/build.conf test installerZip writeLanguagePack writeScriptingJavadoc
+      - cd autotest
+      - sbt -no-colors installEquella startEquella
+      - sbt -no-colors configureInstall setupForTests Tests/test Tests/Serial/test
   post_build:
     commands:
       - publishBuild
