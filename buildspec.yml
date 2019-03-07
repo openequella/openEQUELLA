@@ -19,15 +19,13 @@ phases:
     commands:
       - sbt -no-colors -Dconfig.file=${HOME}/build.conf test installerZip writeLanguagePack writeScriptingJavadoc
       - cd autotest
-      - sbt -no-colors installEquella startEquella
-      - sbt -no-colors configureInstall setupForTests Tests/test Tests/Serial/test
+      - (cd autotest; sbt -no-colors installEquella startEquella configureInstall setupForTests Tests/test Tests/Serial/test)
   post_build:
     commands:
       - publishBuild
       - echo "Finished"
 cache:
   paths:
-    - '/root/.ivy2/**/*'
-    - '/root/.npm/**/*'
-    - '/root/.sbt/**/*'
-    
+    - "/root/.ivy2/**/*"
+    - "/root/.npm/**/*"
+    - "/root/.sbt/**/*"
