@@ -183,7 +183,7 @@ class PreLoginNoticeConfigurator extends React.Component<
     );
   };
 
-  handleRadioButtons = (event: ChangeEvent, value: string) => {
+  handleScheduleTypeSelectionChange = (event: ChangeEvent, value: string) => {
     this.setState({ checked: ScheduleTypeSelection[value] });
   };
 
@@ -209,7 +209,7 @@ class PreLoginNoticeConfigurator extends React.Component<
         <RadioGroup
           row
           value={ScheduleTypeSelection[this.state.checked]}
-          onChange={this.handleRadioButtons}
+          onChange={this.handleScheduleTypeSelectionChange}
         >
           <FormControlLabel
             value={ScheduleTypeSelection[ScheduleTypeSelection.ON]}
