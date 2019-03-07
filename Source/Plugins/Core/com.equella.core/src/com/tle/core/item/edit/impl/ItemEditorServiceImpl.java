@@ -30,6 +30,7 @@ import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.core.item.dao.ItemDao;
 import com.tle.core.item.edit.ItemEditor;
 import com.tle.core.item.edit.ItemEditorService;
@@ -38,8 +39,6 @@ import com.tle.core.item.serializer.ItemDeserializerEditor;
 import com.tle.core.item.service.ItemLockingService;
 import com.tle.core.item.service.ItemService;
 import com.tle.core.security.impl.SecureOnCallSystem;
-import com.tle.web.sections.equella.annotation.PlugKey;
-import com.tle.web.sections.render.Label;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -57,9 +56,6 @@ public class ItemEditorServiceImpl implements ItemEditorService {
   @Inject private ItemDao itemDao;
   @Inject private ItemEditorFactory editorFactory;
   @Inject private ItemDefinitionService collectionService;
-
-  @PlugKey("summary.sidebar.actions.newversion.moderationconflict")
-  private static Label NO_NEW_VERSION_LABEL;
 
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
@@ -101,7 +97,8 @@ public class ItemEditorServiceImpl implements ItemEditorService {
     }
     boolean isItemInModeration = itemService.isItemInModeration(uuid);
     if (isItemInModeration) {
-      throw new ItemEditingException(NO_NEW_VERSION_LABEL.getText());
+      throw new ItemEditingException(
+          CoreStrings.text("summary.sidebar.actions.newversion.moderationconflict"));
     }
 
     List<Integer> existingVersions = itemDao.getAllVersionNumbers(uuid);
