@@ -9,14 +9,14 @@ export enum NotificationType {
   Clear,
   Revert
 }
-export enum ScheduleSettings {
+export enum ScheduleTypeSelection {
   OFF = "OFF",
   ON = "ON",
   SCHEDULED = "SCHEDULED"
 }
 export interface PreLoginNotice {
   notice?: string;
-  scheduleSettings: ScheduleSettings;
+  scheduleSettings: ScheduleTypeSelection;
   startDate?: Date;
   endDate?: Date;
 }

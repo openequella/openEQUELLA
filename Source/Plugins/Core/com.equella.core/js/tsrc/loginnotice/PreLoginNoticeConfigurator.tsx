@@ -23,7 +23,7 @@ import {
   getPreLoginNotice,
   NotificationType,
   PreLoginNotice,
-  ScheduleSettings,
+  ScheduleTypeSelection,
   strings,
   submitPreLoginNotice
 } from "./LoginNoticeModule";
@@ -39,8 +39,8 @@ interface PreLoginNoticeConfiguratorState {
   preNotice?: string; //what is currently in the textfield
   dbPreNotice?: string; //what is currently in the database
   clearStaged: boolean;
-  checked: string;
-  dbChecked: string;
+  checked: ScheduleTypeSelection;
+  dbChecked: ScheduleTypeSelection;
   startDate?: Date;
   dbStartDate?: Date;
   endDate?: Date;
@@ -57,8 +57,8 @@ class PreLoginNoticeConfigurator extends React.Component<
       preNotice: "",
       dbPreNotice: "",
       clearStaged: false,
-      checked: "ON",
-      dbChecked: "ON",
+      checked: ScheduleTypeSelection.ON,
+      dbChecked: ScheduleTypeSelection.ON,
       startDate: new Date(),
       dbStartDate: new Date(),
       endDate: new Date(),
@@ -68,22 +68,9 @@ class PreLoginNoticeConfigurator extends React.Component<
 
   handleSubmitPreNotice = () => {
     if (this.state.preNotice != undefined) {
-      let scheduleToSend: ScheduleSettings;
-      switch (this.state.checked) {
-        case "ON":
-          scheduleToSend = ScheduleSettings.ON;
-          break;
-        case "SCHEDULED":
-          scheduleToSend = ScheduleSettings.SCHEDULED;
-          break;
-        case "OFF":
-        default:
-          scheduleToSend = ScheduleSettings.OFF;
-          break;
-      }
       let noticeToSend: PreLoginNotice = {
         notice: this.state.preNotice,
-        scheduleSettings: scheduleToSend,
+        scheduleSettings: this.state.checked,
         startDate: this.state.startDate,
         endDate: this.state.endDate
       };
@@ -121,19 +108,6 @@ class PreLoginNoticeConfigurator extends React.Component<
     this.setState({ preNotice: e.value });
   };
 
-  mapScheduleSetting = (scheduleSetting: ScheduleSettings): string => {
-    switch (scheduleSetting) {
-      case ScheduleSettings.ON:
-        return "ON";
-      case ScheduleSettings.SCHEDULED:
-        return "SCHEDULED";
-      case ScheduleSettings.OFF:
-        return "OFF";
-      default:
-        return "ON";
-    }
-  };
-
   setValuesToDB = () => {
     this.setState({
       preNotice: this.state.dbPreNotice,
@@ -157,7 +131,7 @@ class PreLoginNoticeConfigurator extends React.Component<
       .then((response: AxiosResponse<PreLoginNotice>) => {
         this.setState({
           dbPreNotice: response.data.notice,
-          dbChecked: this.mapScheduleSetting(response.data.scheduleSettings),
+          dbChecked: response.data.scheduleSettings,
           dbStartDate: response.data.startDate,
           dbEndDate: response.data.endDate
         });
@@ -210,7 +184,7 @@ class PreLoginNoticeConfigurator extends React.Component<
   };
 
   handleRadioButtons = (event: ChangeEvent, value: string) => {
-    this.setState({ checked: value });
+    this.setState({ checked: ScheduleTypeSelection[value] });
   };
 
   handleStartDateChange = (value: Date) => {
@@ -234,16 +208,16 @@ class PreLoginNoticeConfigurator extends React.Component<
 
         <RadioGroup
           row
-          value={this.state.checked}
+          value={ScheduleTypeSelection[this.state.checked]}
           onChange={this.handleRadioButtons}
         >
           <FormControlLabel
-            value="ON"
+            value={ScheduleTypeSelection[ScheduleTypeSelection.ON]}
             label={strings.scheduling.alwayson}
             control={<Radio id="onRadioButton" />}
           />
           <FormControlLabel
-            value="SCHEDULED"
+            value={ScheduleTypeSelection[ScheduleTypeSelection.SCHEDULED]}
             label={strings.scheduling.scheduled}
             control={<Radio id="scheduledRadioButton" />}
           />
@@ -254,7 +228,7 @@ class PreLoginNoticeConfigurator extends React.Component<
           />
         </RadioGroup>
 
-        <div hidden={this.state.checked != "SCHEDULED"}>
+        <div hidden={this.state.checked != ScheduleTypeSelection.SCHEDULED}>
           <Typography color="textSecondary" variant="subheading">
             {strings.scheduling.start}
           </Typography>
