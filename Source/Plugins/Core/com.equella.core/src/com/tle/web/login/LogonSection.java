@@ -226,8 +226,9 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
     try {
       preLoginNotice = loginNoticeService.getPreLoginNotice();
     } catch (IOException e) {
-      e.printStackTrace();
+      model.setFailed(e.getMessage());
     }
+    ;
     if (preLoginNotice != null && loginNoticeService.isActive(preLoginNotice)) {
       model.setLoginNotice(preLoginNotice.getNotice());
     }
