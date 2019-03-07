@@ -39,8 +39,8 @@ interface PreLoginNoticeConfiguratorState {
   preNotice?: string; //what is currently in the textfield
   dbPreNotice?: string; //what is currently in the database
   clearStaged: boolean;
-  checked: ScheduleTypeSelection;
-  dbChecked: ScheduleTypeSelection;
+  scheduleType: ScheduleTypeSelection;
+  dbScheduleType: ScheduleTypeSelection;
   startDate?: Date;
   dbStartDate?: Date;
   endDate?: Date;
@@ -57,8 +57,8 @@ class PreLoginNoticeConfigurator extends React.Component<
       preNotice: "",
       dbPreNotice: "",
       clearStaged: false,
-      checked: ScheduleTypeSelection.ON,
-      dbChecked: ScheduleTypeSelection.ON,
+      scheduleType: ScheduleTypeSelection.ON,
+      dbScheduleType: ScheduleTypeSelection.ON,
       startDate: new Date(),
       dbStartDate: new Date(),
       endDate: new Date(),
@@ -70,7 +70,7 @@ class PreLoginNoticeConfigurator extends React.Component<
     if (this.state.preNotice != undefined) {
       let noticeToSend: PreLoginNotice = {
         notice: this.state.preNotice,
-        scheduleSettings: this.state.checked,
+        scheduleSettings: this.state.scheduleType,
         startDate: this.state.startDate,
         endDate: this.state.endDate
       };
@@ -111,7 +111,7 @@ class PreLoginNoticeConfigurator extends React.Component<
   setValuesToDB = () => {
     this.setState({
       preNotice: this.state.dbPreNotice,
-      checked: this.state.dbChecked,
+      scheduleType: this.state.dbScheduleType,
       startDate: this.state.dbStartDate,
       endDate: this.state.dbEndDate
     });
@@ -120,7 +120,7 @@ class PreLoginNoticeConfigurator extends React.Component<
   setDBToValues = () => {
     this.setState({
       dbPreNotice: this.state.preNotice,
-      dbChecked: this.state.checked,
+      dbScheduleType: this.state.scheduleType,
       dbStartDate: this.state.startDate,
       dbEndDate: this.state.endDate
     });
@@ -131,7 +131,7 @@ class PreLoginNoticeConfigurator extends React.Component<
       .then((response: AxiosResponse<PreLoginNotice>) => {
         this.setState({
           dbPreNotice: response.data.notice,
-          dbChecked: response.data.scheduleSettings,
+          dbScheduleType: response.data.scheduleSettings,
           dbStartDate: response.data.startDate,
           dbEndDate: response.data.endDate
         });
@@ -176,7 +176,7 @@ class PreLoginNoticeConfigurator extends React.Component<
   areButtonsEnabled = (): boolean => {
     //state matches database?
     return (
-      this.state.checked == this.state.dbChecked &&
+      this.state.scheduleType == this.state.dbScheduleType &&
       this.state.preNotice == this.state.dbPreNotice &&
       this.state.startDate == this.state.dbStartDate &&
       this.state.endDate == this.state.dbEndDate
@@ -184,7 +184,7 @@ class PreLoginNoticeConfigurator extends React.Component<
   };
 
   handleScheduleTypeSelectionChange = (event: ChangeEvent, value: string) => {
-    this.setState({ checked: ScheduleTypeSelection[value] });
+    this.setState({ scheduleType: ScheduleTypeSelection[value] });
   };
 
   handleStartDateChange = (value: Date) => {
@@ -208,7 +208,7 @@ class PreLoginNoticeConfigurator extends React.Component<
 
         <RadioGroup
           row
-          value={ScheduleTypeSelection[this.state.checked]}
+          value={ScheduleTypeSelection[this.state.scheduleType]}
           onChange={this.handleScheduleTypeSelectionChange}
         >
           <FormControlLabel
@@ -228,7 +228,9 @@ class PreLoginNoticeConfigurator extends React.Component<
           />
         </RadioGroup>
 
-        <div hidden={this.state.checked != ScheduleTypeSelection.SCHEDULED}>
+        <div
+          hidden={this.state.scheduleType != ScheduleTypeSelection.SCHEDULED}
+        >
           <Typography color="textSecondary" variant="subheading">
             {strings.scheduling.start}
           </Typography>
