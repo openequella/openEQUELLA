@@ -47,21 +47,13 @@ class RichTextEditor extends React.Component<
               break;
           }
         }
-        return (
-          '<imagealign style="display:flex; justify-content:' +
-          textAlign +
-          ';">' +
-          '<img src="' +
-          entity.data.src +
-          '"style="height: ' +
-          entity.data.height +
-          ";width: " +
-          entity.data.width +
-          ";float: " +
-          (entity.data.alignment || "none") +
-          '"/>' +
-          "</imagealign>"
-        );
+        return `<imagealign style="display: flex; justify-content: ${textAlign};">
+          <img src= "${entity.data.src}" alt="" style="height: ${
+          entity.data.height
+        }; width: ${entity.data.width}; float: ${
+          entity.data.alignment == undefined ? "none" : entity.data.alignment
+        };"/>
+          </imagealign>`;
       }
     }
     return null;
