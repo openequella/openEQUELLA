@@ -18,10 +18,10 @@ phases:
   build:
     commands:
       - sbt -no-colors -Dconfig.file=${HOME}/build.conf test installerZip writeLanguagePack writeScriptingJavadoc
-      - sbt -mem 2048 -no-colors installEquella startEquella configureInstall setupForTests Tests/test Tests/Serial/test OldTests/test coverageReport
+      - sbt -mem 2048 -no-colors installEquella startEquella configureInstall setupForTests Tests/test coverageReport
   post_build:
     commands:
-      - publishBuild
+      - publishBuildResults
       - echo "Finished"
 cache:
   paths:
