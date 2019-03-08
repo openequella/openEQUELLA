@@ -10,7 +10,7 @@ import Effect.Ref (Ref)
 import Effect.Ref as Ref
 import Effect.Uncurried (EffectFn1, EffectFn2, mkEffectFn1, mkEffectFn2)
 import ExtUI.MaterialUIPicker.MuiPickersUtilsProvider (luxonUtils, muiPickersUtilsProvider)
-import MaterialUI.CssBaseline (cssBaseline', cssBaseline_)
+import MaterialUI.CssBaseline (cssBaseline')
 import MaterialUI.Styles (createMuiTheme, muiThemeProvider)
 import MaterialUI.Theme (Theme)
 import Partial.Unsafe (unsafePartial)
@@ -56,6 +56,7 @@ ourTheme = createMuiTheme {
     }
   },
   typography: {
+    useNextVariants: true,
     fontSize: themeSettings.fontSize,
     subheading: {
       color: themeSettings.menuItemTextColor

@@ -27,7 +27,7 @@ import MaterialUI.DialogContent (dialogContent_)
 import MaterialUI.DialogTitle (dialogTitle_)
 import MaterialUI.Enums (md, primary, raised)
 import MaterialUI.Enums as E
-import MaterialUI.Paper (paper, paper_)
+import MaterialUI.Paper (paper)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.Table (table_)
 import MaterialUI.TableBody (tableBody_)

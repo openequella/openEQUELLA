@@ -5,8 +5,8 @@ import {
   Typography,
   Paper,
   List,
-  Button,
-  CircularProgress
+  CircularProgress,
+  Fab
 } from "@material-ui/core";
 import { StyleRules, withStyles } from "@material-ui/core/styles";
 import { ClickableLink } from "../api";
@@ -62,19 +62,18 @@ class EntityList extends React.Component<EntityListProps, {}> {
     return (
       <div className={classes.overall}>
         {createLink && (
-          <Button
-            variant="fab"
+          <Fab
             className={classes.fab}
             href={createLink.href}
             onClick={createLink.onClick}
             color="secondary"
           >
             <AddIcon />
-          </Button>
+          </Fab>
         )}
         <Paper className={classes.results}>
           <div className={classes.resultHeader}>
-            <Typography className={classes.resultText} variant="subheading">
+            <Typography className={classes.resultText} variant="subtitle1">
               {resultsText}
             </Typography>
             {resultsRight}

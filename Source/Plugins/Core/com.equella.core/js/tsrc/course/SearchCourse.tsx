@@ -11,6 +11,7 @@ import { courseService } from "../services";
 import { prepLangStrings, formatSize } from "../util/langstrings";
 import VisibilitySensor = require("react-visibility-sensor");
 import EntityList from "../components/EntityList";
+import { sprintf } from "sprintf-js";
 
 interface SearchCourseProps {
   bridge: Bridge;

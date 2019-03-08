@@ -15,6 +15,7 @@ import {
   TextField,
   Theme
 } from "@material-ui/core";
+import { sprintf } from "sprintf-js";
 import Select from "@material-ui/core/Select";
 import { StyleRules, WithStyles, withStyles } from "@material-ui/core/styles";
 //import SwipeableViews from 'react-swipeable-views';
@@ -371,7 +372,11 @@ class EditCourse extends React.Component<Props, EditCourseState> {
         backRoute={routes.CoursesPage}
         footer={saveOrCancel}
         tabs={
-          <Tabs value={activeTab} onChange={this.handleTabChange()} fullWidth>
+          <Tabs
+            value={activeTab}
+            onChange={this.handleTabChange()}
+            variant="fullWidth"
+          >
             <Tab label={strings.tab} />
             <Tab label={entityStrings.edit.tab.permissions} />
           </Tabs>

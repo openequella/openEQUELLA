@@ -2,7 +2,7 @@ module OEQ.Data.SearchResults where
 
 import Prelude
 
-import Data.Argonaut (class DecodeJson, Json, decodeJson, getField, (.?))
+import Data.Argonaut (class DecodeJson, Json, decodeJson, (.?))
 import Data.Either (Either)
 import Data.Newtype (class Newtype)
 import Data.Traversable (traverse)

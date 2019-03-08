@@ -7,14 +7,14 @@ import Data.Array (catMaybes, findMap, fromFoldable)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Dispatcher.React (propsRenderer)
 import Effect (Effect)
-import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
+import Effect.Uncurried (runEffectFn1)
 import ExtUI.TimeAgo (timeAgo)
 import MaterialUI.Button (button)
 import MaterialUI.Enums as TS
 import MaterialUI.List (list)
 import MaterialUI.ListItem (listItem)
 import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction_)
-import MaterialUI.ListItemText (listItemText, listItemText')
+import MaterialUI.ListItemText (listItemText')
 import MaterialUI.Styles (withStyles)
 import MaterialUI.Typography (typography)
 import OEQ.Environment (prepLangStrings)
@@ -22,7 +22,6 @@ import OEQ.UI.Common (ClickableHref)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (a, div, div', img, text)
 import React.DOM.Props as DP
-import React.SyntheticEvent (SyntheticEvent, SyntheticEvent_)
 
 newtype Attachment = Attachment {thumbnailHref::String}
 newtype DisplayField = DisplayField {name :: String, html::String}
@@ -99,7 +98,7 @@ itemResult = unsafeCreateLeafElement $ withStyles styles $ component "ItemResult
     render p@{classes, showDivider, onSelect, 
         result:item@(Result {name,description,displayFields,thumbnail,uuid,version,attachments,modifiedDate})} =
         let descMarkup descText = typography {} [ text descText ]
-            titleLink = typography {variant: TS.subheading, className: classes.titleLink} [ 
+            titleLink = typography {variant: TS.subtitle1, className: classes.titleLink} [ 
                                 a [DP.href p.clickable.href, DP.onClick $ runEffectFn1 $ p.clickable.onClick] [ text name ]
                             ]
             attachThumb (Attachment {thumbnailHref}) = Just $ img [

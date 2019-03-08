@@ -12,7 +12,7 @@ type MuiPickersUtilsProviderPropsExt r = (
 
 type MuiPickersUtilsProviderProps = MuiPickersUtilsProviderPropsExt (
 
-) 
+)
 
 foreign import luxonUtils :: Any
 

@@ -1,3 +1,5 @@
+import { sprintf } from "sprintf-js";
+
 declare var bundle: any;
 
 export interface Sizes {
