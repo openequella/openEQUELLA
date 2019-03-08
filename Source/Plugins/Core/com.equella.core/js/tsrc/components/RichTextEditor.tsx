@@ -5,7 +5,7 @@ import * as React from "react";
 let draftjsToHtml: Function = require("draftjs-to-html");
 let htmlToDraft: Function = require("html-to-draftjs").default;
 
-require("react-draft-wysiwyg/dist/react-draft-wysiwyg.css");
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 interface RichTextEditorProps {
   htmlInput: string;
