@@ -17,6 +17,7 @@ val legacyPaths = Seq(
   unmanagedSourceDirectories in Test := (javaSource in Test).value :: Nil
 )
 
+lazy val autotest = project in file("autotest")
 lazy val equellaserver =
   (project in file("Source/Server/equellaserver")).enablePlugins(JPFRunnerPlugin)
 

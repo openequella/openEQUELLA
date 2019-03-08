@@ -71,4 +71,4 @@ testOptions in Serial += sbt.Tests.Filter(serialFilter)
 
 parallelExecution in Serial := false
 
-parallelExecution in Test := buildConfig.value.getBoolean("tests.parallel")
+parallelExecution in Test := autotestBuildConfig.value.getBoolean("tests.parallel")

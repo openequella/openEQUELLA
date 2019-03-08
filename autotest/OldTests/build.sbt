@@ -12,10 +12,10 @@ enablePlugins(TestNGPlugin)
 
 testNGOutputDirectory := (target.value / "testng").absolutePath
 
-testNGParameters ++= Seq("-log", buildConfig.value.getInt("tests.verbose").toString)
+testNGParameters ++= Seq("-log", autotestBuildConfig.value.getInt("tests.verbose").toString)
 
 testNGSuites := {
-  val tc = buildConfig.value.getConfig("tests")
+  val tc = autotestBuildConfig.value.getConfig("tests")
   tc.getStringList("suitenames").asScala.map(n => (baseDirectory.value / n).absolutePath)
 }
 

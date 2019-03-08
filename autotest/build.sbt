@@ -14,9 +14,6 @@ name := "equella-autotests"
 
 libraryDependencies += "org.jacoco" % "org.jacoco.agent" % "0.7.9" classifier "runtime"
 
-scalaVersion in ThisBuild := "2.12.6"
-version in ThisBuild := "1.0"
-
 
 lazy val config = (project in file("config")).settings(resourceDirectory in Compile := baseDirectory.value / "resources")
 
@@ -27,19 +24,19 @@ lazy val Tests = project in file("Tests")
 lazy val OldTests = (project in file("OldTests")).dependsOn(Tests, config)
 
 
-buildConfig in ThisBuild := {
-  val defaultConfig = ConfigFactory.parseFile(file("project/build-defaults.conf"))
+autotestBuildConfig in ThisBuild := {
+  val defaultConfig = ConfigFactory.parseFile(file("autotest/autotest-defaults.conf"))
   val configFile = file(sys.props.getOrElse("config.file", {
     val envConfig = sys.env.get("AUTOTEST_CONFIG")
     envConfig.foreach { cf => sys.props.update("config.file", cf); ConfigFactory.invalidateCaches() }
-    envConfig.getOrElse("config/resources/application.conf")
+    envConfig.getOrElse("autotest/config/resources/application.conf")
   }))
   sLog.value.info(s"Loading config from: ${configFile.absolutePath}")
   ConfigFactory.load(ConfigFactory.parseFile(configFile).withFallback(defaultConfig))
 }
 
 lazy val installConfig = Def.setting[Config] {
-  buildConfig.value.getConfig("install")
+  autotestBuildConfig.value.getConfig("install")
 }
 
 installDir := optPath(installConfig.value, "basedir").getOrElse(baseDirectory.value / "equella-install")
@@ -59,12 +56,12 @@ installOptions := {
 
 def optPath(bc: Config, p: String) = if (bc.hasPath(p)) Some(file(bc.getString(p))) else None
 
-installerZip := {
-  val bc = buildConfig.value 
+autotestInstallerZip := {
+  val bc = autotestBuildConfig.value
   optPath(bc, "install.zip").orElse(optPath(bc, "install.dir").map(d => (d * "equella-installer-*.zip").get.head))
 }
 
-sourceZip := optPath(buildConfig.value, "install.sourcezip")
+sourceZip := optPath(autotestBuildConfig.value, "install.sourcezip")
 
 lazy val relevantClasses: Seq[String] => Boolean = {
   case Seq("com", "tle", "admin", _*) => false
@@ -92,7 +89,7 @@ dumpCoverage := {
 
 coverageLoader := {
   val log = sLog.value
-  val cc = buildConfig.value.getConfig("coverage")
+  val cc = autotestBuildConfig.value.getConfig("coverage")
   val l = new ExecFileLoader()
   optPath(cc, "file").filter(_.canRead).foreach { f =>
     log.info(s"Loading coverage data from ${f.absolutePath}")
@@ -116,7 +113,7 @@ val saxBuilder = {
 
 sourceDirectory in coverageReport := target.value / "all_srcs"
 target in coverageReport := {
-  val cc = buildConfig.value.getConfig("coverage")
+  val cc = autotestBuildConfig.value.getConfig("coverage")
   optPath(cc, "reportdir").getOrElse(target.value / "coverage-report")
 }
 
@@ -151,7 +148,7 @@ coverageReport := {
 
 installEquella := {
   val opts = installOptions.value
-  val zipFile = installerZip.value
+  val zipFile = autotestInstallerZip.value
   val log = sLog.value
   val installSettings = target.value / "installsettings.xml"
   zipFile.fold(sys.error("Must have install.zip set")) { z =>
@@ -208,7 +205,7 @@ collectArtifacts := {
 }
 
 concurrentRestrictions in Global := {
-  val testConfig = buildConfig.value.getConfig("tests")
+  val testConfig = autotestBuildConfig.value.getConfig("tests")
   if (testConfig.hasPath("maxthreads"))
   {
     Seq(
