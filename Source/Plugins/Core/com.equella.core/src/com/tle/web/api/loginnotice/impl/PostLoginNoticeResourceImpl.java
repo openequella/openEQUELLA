@@ -21,6 +21,8 @@ import com.tle.core.settings.loginnotice.LoginNoticeService;
 import com.tle.web.api.loginnotice.PostLoginNoticeResource;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 @Bind(PostLoginNoticeResource.class)
@@ -29,15 +31,17 @@ public class PostLoginNoticeResourceImpl implements PostLoginNoticeResource {
   @Inject LoginNoticeService noticeService;
 
   @Override
+  @Produces("text/plain")
   public Response retrievePostLoginNotice() {
     String loginNotice = noticeService.getPostLoginNotice();
     if (loginNotice != null) {
-      return Response.ok(loginNotice, "text/plain").build();
+      return Response.ok(loginNotice).build();
     }
-    return Response.status(Response.Status.NOT_FOUND).entity(null).build();
+    return Response.status(Response.Status.NOT_FOUND).type("text/plain").build();
   }
 
   @Override
+  @Consumes("text/plain")
   public Response setPostLoginNotice(String loginNotice) {
     noticeService.setPostLoginNotice(loginNotice);
     return Response.ok().build();

@@ -130,7 +130,7 @@ class PostLoginNoticeConfigurator extends React.Component<
     const Dialogs = this.Dialogs;
     return (
       <SettingsMenuContainer>
-        <Typography color="textSecondary" variant="subtitle1">
+        <Typography color="textSecondary" variant="subheading">
           {strings.postlogin.label}
         </Typography>
         <Grid id="postLoginConfig" container spacing={8} direction="column">

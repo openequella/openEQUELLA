@@ -12,11 +12,9 @@ import {
   Grid,
   Radio,
   RadioGroup,
-  TextField,
   Typography
 } from "@material-ui/core";
 import { DatePicker } from "material-ui-pickers";
-
 import { commonString } from "../util/commonstrings";
 import {
   clearPreLoginNotice,
@@ -37,6 +35,8 @@ interface PreLoginNoticeConfiguratorProps {
 }
 
 interface PreLoginNoticeConfiguratorState {
+  preNotice: string;
+  dbPreNotice: string;
   clearStaged: boolean;
   scheduleType: ScheduleTypeSelection;
   dbScheduleType: ScheduleTypeSelection;
@@ -81,10 +81,7 @@ class PreLoginNoticeConfigurator extends React.Component<
         .catch((error: AxiosError) => {
           this.props.handleError(error);
         });
-      })
-      .catch((error: AxiosError) => {
-        this.props.handleError(error);
-      });
+    }
   };
 
   handleClearPreNotice = () => {
@@ -109,7 +106,7 @@ class PreLoginNoticeConfigurator extends React.Component<
     this.props.notify(NotificationType.Revert);
   };
 
-    forceEditorRefresh = () => {
+  forceEditorRefresh = () => {
     this.setState(
       {
         //swap the states to force an update
@@ -118,13 +115,13 @@ class PreLoginNoticeConfigurator extends React.Component<
       },
       () => this.setState({ dbPreNotice: this.state.preNotice })
     ); //set the dbPreNotice back to it's original value to update the editor
-};
-  
-//   handlePreTextFieldChange = (
-//     e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-//   ) => {
-//     this.setState({ preNotice: e.value });
-//   };
+  };
+
+  //   handlePreTextFieldChange = (
+  //     e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  //   ) => {
+  //     this.setState({ preNotice: e.value });
+  //   };
 
   setValuesToDB = () => {
     this.setState({
@@ -147,16 +144,17 @@ class PreLoginNoticeConfigurator extends React.Component<
   componentDidMount = () => {
     getPreLoginNotice()
       .then((response: AxiosResponse<PreLoginNotice>) => {
-        this.setState({
-          dbPreNotice: response.data.notice,
-          dbScheduleType: response.data.scheduleSettings,
-          dbStartDate: response.data.startDate,
-          dbEndDate: response.data.endDate
-        });
-        this.setValuesToDB();
+        if (response.data.notice != undefined) {
+          this.setState({
+            dbPreNotice: response.data.notice,
+            dbScheduleType: response.data.scheduleSettings,
+            dbStartDate: response.data.startDate,
+            dbEndDate: response.data.endDate
+          });
+          this.setValuesToDB();
+        }
       })
       .catch((error: AxiosError) => {
-        console.log(error);
         this.props.handleError(error);
       });
   };
@@ -278,9 +276,10 @@ class PreLoginNoticeConfigurator extends React.Component<
         </div>
       </FormControl>
     );
+  };
+
   handleEditorChange = (preNotice: string) => {
     this.setState({ preNotice });
-
   };
 
   render() {
@@ -288,7 +287,7 @@ class PreLoginNoticeConfigurator extends React.Component<
     const ScheduleSettings = this.ScheduleSettings;
     return (
       <SettingsMenuContainer>
-        <Typography color="textSecondary" variant="subtitle1">
+        <Typography color="textSecondary" variant="subheading">
           {strings.prelogin.label}
         </Typography>
         <Grid id="preLoginConfig" container spacing={8} direction="column">

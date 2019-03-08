@@ -52,11 +52,12 @@ class LoginNoticeConfigPage extends React.Component<
           });
           break;
         default:
-          this.setState({ error: generateFromError(axiosError) });
+          this.setState({ error: generateFromError(error) });
           break;
       }
+    } else {
+      this.setState({ error: generateFromError(error) });
     }
-    this.setState({ error: generateFromError(error) });
   };
 
   handleChangeTab = (event: React.ChangeEvent<{}>, value: number) => {
@@ -124,7 +125,7 @@ class LoginNoticeConfigPage extends React.Component<
           <Tabs
             value={this.state.selectedTab}
             onChange={this.handleChangeTab}
-            variant="fullWidth"
+            fullWidth
           >
             <Tab id="preTab" label={strings.prelogin.label} />
             <Tab id="postTab" label={strings.postlogin.label} />

@@ -104,14 +104,6 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
 
   @Override
   public boolean isActive(PreLoginNotice preLoginNotice) {
-    Date now = new Date();
-
-    Date startDateMidnight = preLoginNotice.getStartDate(); // 12am at the start the first day
-    DateUtils.truncate(startDateMidnight, Calendar.DAY_OF_MONTH);
-
-    Date endDateMidnight = preLoginNotice.getEndDate(); // 12am at the end of the last day
-    DateUtils.truncate(endDateMidnight, Calendar.DAY_OF_MONTH);
-    endDateMidnight = DateUtils.addDays(endDateMidnight, 1);
 
     switch (preLoginNotice.getScheduleSettings()) {
       case OFF:
@@ -119,6 +111,13 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
       case ON:
         return true;
       case SCHEDULED:
+        Date now = new Date();
+        Date startDateMidnight = preLoginNotice.getStartDate(); // 12am at the start the first day
+        DateUtils.truncate(startDateMidnight, Calendar.DAY_OF_MONTH);
+
+        Date endDateMidnight = preLoginNotice.getEndDate(); // 12am at the end of the last day
+        DateUtils.truncate(endDateMidnight, Calendar.DAY_OF_MONTH);
+        endDateMidnight = DateUtils.addDays(endDateMidnight, 1);
         return !(now.before(startDateMidnight) || now.after(endDateMidnight));
       default:
         return false;

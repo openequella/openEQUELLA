@@ -21,7 +21,6 @@ import com.tle.core.settings.loginnotice.impl.PreLoginNotice;
 import io.swagger.annotations.Api;
 import java.io.IOException;
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /** @author Samantha Fisher */
