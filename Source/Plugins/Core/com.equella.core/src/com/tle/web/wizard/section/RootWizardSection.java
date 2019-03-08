@@ -158,6 +158,7 @@ public class RootWizardSection extends TwoColumnLayout<WizardForm>
     final WizardState state = wizardService.newItem(model.getItemdefUuid());
     initState(info, state);
     state.setEditable(true);
+    validateMandatoryFields(info, state);
     return state;
   }
 
@@ -189,6 +190,7 @@ public class RootWizardSection extends TwoColumnLayout<WizardForm>
     if (model.isNewversion()) {
       wizardService.newVersion(state);
     }
+    validateMandatoryFields(info, state);
     return initState(info, state);
   }
 
@@ -207,6 +209,7 @@ public class RootWizardSection extends TwoColumnLayout<WizardForm>
           wizardService.cloneItem(
               oldState, model.getItemdefUuid(), model.getTransform(), model.isCloneAttachments());
     }
+    validateMandatoryFields(info, newState);
 
     return initState(info, newState);
   }
@@ -293,5 +296,12 @@ public class RootWizardSection extends TwoColumnLayout<WizardForm>
       throw new Error("No WizardSectionInfo attribute in info");
     }
     return winfo;
+  }
+
+  void validateMandatoryFields(SectionInfo info, WizardState state) {
+    PagesSection ps = info.lookupSection(PagesSection.class);
+    wizardService
+        .getWizardPages(state)
+        .forEach(p -> wizardService.ensureInitialisedPage(info, p, ps.getReloadFunction(), true));
   }
 }

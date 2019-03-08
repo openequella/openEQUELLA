@@ -84,6 +84,7 @@ import com.tle.core.wizard.controls.HTMLControl;
 import com.tle.web.controls.universal.handlers.fileupload.FileUploadState;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
+import com.tle.web.sections.js.JSCallable;
 import com.tle.web.viewable.PreviewableItem;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.impl.ViewableItemFactory;
@@ -1331,5 +1332,24 @@ public class WizardServiceImpl
   @BindFactory
   public interface WizardOperationFactory {
     WizardStateOperation state(WizardState state);
+  }
+
+  @Override
+  public void ensureInitialisedPage(
+      SectionInfo info, WebWizardPage page, JSCallable reloadFunction, boolean load) {
+    boolean doLoad = load;
+    try {
+      if (!page.isLoaded()) {
+        page.setReloadFunction(reloadFunction);
+        page.createPage();
+        doLoad = true;
+      }
+      if (doLoad) {
+        page.loadFromDocument(info);
+        page.saveDefaults();
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }
