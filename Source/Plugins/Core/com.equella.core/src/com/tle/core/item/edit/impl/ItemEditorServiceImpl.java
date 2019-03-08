@@ -30,6 +30,7 @@ import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.core.item.dao.ItemDao;
 import com.tle.core.item.edit.ItemEditor;
 import com.tle.core.item.edit.ItemEditorService;
@@ -93,6 +94,11 @@ public class ItemEditorServiceImpl implements ItemEditorService {
       uuid = UUID.randomUUID().toString();
     } else {
       ItemEditorImpl.checkValidUuid(uuid);
+    }
+    boolean isItemInModeration = itemService.isItemInModeration(uuid);
+    if (isItemInModeration) {
+      throw new ItemEditingException(
+          CoreStrings.text("summary.sidebar.actions.newversion.moderationconflict"));
     }
 
     List<Integer> existingVersions = itemDao.getAllVersionNumbers(uuid);

@@ -2,11 +2,13 @@ import * as React from "react";
 import { Bridge } from "../api/bridge";
 import { AxiosError } from "axios";
 import MessageInfo from "../components/MessageInfo";
+
 import {
   ErrorResponse,
-  generateFromAxiosError,
+  generateFromError,
   generateNewErrorID
 } from "../api/errors";
+
 import PreLoginNoticeConfigurator from "./PreLoginNoticeConfigurator";
 import PostLoginNoticeConfigurator from "./PostLoginNoticeConfigurator";
 import { Tabs, Tab } from "@material-ui/core";
@@ -38,9 +40,9 @@ class LoginNoticeConfigPage extends React.Component<
     selectedTab: 0
   };
 
-  handleError = (axiosError: AxiosError) => {
-    if (axiosError.response != undefined) {
-      switch (axiosError.response.status) {
+  handleError = (error: AxiosError) => {
+    if (error.response != undefined) {
+      switch (error.response.status) {
         case 404:
           //do nothing, this simply means that there is no current login notice
           break;
@@ -50,10 +52,11 @@ class LoginNoticeConfigPage extends React.Component<
           });
           break;
         default:
-          this.setState({ error: generateFromAxiosError(axiosError) });
+          this.setState({ error: generateFromError(axiosError) });
           break;
       }
     }
+    this.setState({ error: generateFromError(error) });
   };
 
   handleChangeTab = (event: React.ChangeEvent<{}>, value: number) => {
@@ -121,7 +124,7 @@ class LoginNoticeConfigPage extends React.Component<
           <Tabs
             value={this.state.selectedTab}
             onChange={this.handleChangeTab}
-            fullWidth
+            variant="fullWidth"
           >
             <Tab id="preTab" label={strings.prelogin.label} />
             <Tab id="postTab" label={strings.postlogin.label} />

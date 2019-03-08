@@ -1,8 +1,8 @@
-exports.store = require("store").default;
-exports.searchCourses = require("course/SearchCourse").default;
-exports.editCourse = require("course/EditCourse").default;
-exports.appBarQueryClass = require("components/AppBarQuery").default;
-exports.courseSelectClass = require("components/CourseSelect").default;
-exports.themePageClass = require("theme/ThemePage").default;
-exports.loginNoticeConfigPageClass = require("loginnotice/LoginNoticeConfigPage").default;
-exports.searchConfigsClass = require("searchconfig/ListSearchConfigs").default;
+exports.store = require("~/../tsrc/store").default;
+exports.searchCourses = require("~/../tsrc/course/SearchCourse").default;
+exports.editCourse = require("~/../tsrc/course/EditCourse").default;
+exports.appBarQueryClass = require("~/../tsrc/components/AppBarQuery").default;
+exports.courseSelectClass = require("~/../tsrc/components/CourseSelect").default;
+exports.themePageClass = require("~/../tsrc/theme/ThemePage").default;
+exports.loginNoticeConfigPageClass = require("~/../tsrc/loginnotice/LoginNoticeConfigPage").default;
+exports.searchConfigsClass = require("~/../tsrc/searchconfig/ListSearchConfigs").default;

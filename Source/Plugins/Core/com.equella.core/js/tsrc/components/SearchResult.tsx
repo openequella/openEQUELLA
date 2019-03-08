@@ -54,7 +54,7 @@ class SearchResult extends React.Component<PropsWithStyles> {
     const link: any = (
       <Typography
         color="primary"
-        variant="subheading"
+        variant="subtitle1"
         component={p => (
           <a {...p} href={this.props.href} onClick={this.props.onClick}>
             {this.props.primaryText}

@@ -28,6 +28,7 @@ import {
   submitPreLoginNotice
 } from "./LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
+import RichTextEditor from "../components/RichTextEditor";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
 
 interface PreLoginNoticeConfiguratorProps {
@@ -36,8 +37,6 @@ interface PreLoginNoticeConfiguratorProps {
 }
 
 interface PreLoginNoticeConfiguratorState {
-  preNotice?: string; //what is currently in the textfield
-  dbPreNotice?: string; //what is currently in the database
   clearStaged: boolean;
   scheduleType: ScheduleTypeSelection;
   dbScheduleType: ScheduleTypeSelection;
@@ -82,14 +81,21 @@ class PreLoginNoticeConfigurator extends React.Component<
         .catch((error: AxiosError) => {
           this.props.handleError(error);
         });
-    }
+      })
+      .catch((error: AxiosError) => {
+        this.props.handleError(error);
+      });
   };
 
   handleClearPreNotice = () => {
-    this.setState({ preNotice: "" });
     clearPreLoginNotice()
       .then(() => {
-        this.setState({ dbPreNotice: "", clearStaged: false });
+        this.forceEditorRefresh();
+        this.setState({
+          clearStaged: false,
+          preNotice: "",
+          dbPreNotice: ""
+        });
         this.props.notify(NotificationType.Clear);
       })
       .catch((error: AxiosError) => {
@@ -99,14 +105,26 @@ class PreLoginNoticeConfigurator extends React.Component<
 
   handleUndoPreNotice = () => {
     this.setValuesToDB();
+    this.forceEditorRefresh();
     this.props.notify(NotificationType.Revert);
   };
 
-  handlePreTextFieldChange = (
-    e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-  ) => {
-    this.setState({ preNotice: e.value });
-  };
+    forceEditorRefresh = () => {
+    this.setState(
+      {
+        //swap the states to force an update
+        preNotice: this.state.dbPreNotice,
+        dbPreNotice: this.state.preNotice
+      },
+      () => this.setState({ dbPreNotice: this.state.preNotice })
+    ); //set the dbPreNotice back to it's original value to update the editor
+};
+  
+//   handlePreTextFieldChange = (
+//     e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+//   ) => {
+//     this.setState({ preNotice: e.value });
+//   };
 
   setValuesToDB = () => {
     this.setState({
@@ -138,6 +156,7 @@ class PreLoginNoticeConfigurator extends React.Component<
         this.setValuesToDB();
       })
       .catch((error: AxiosError) => {
+        console.log(error);
         this.props.handleError(error);
       });
   };
@@ -259,30 +278,24 @@ class PreLoginNoticeConfigurator extends React.Component<
         </div>
       </FormControl>
     );
+  handleEditorChange = (preNotice: string) => {
+    this.setState({ preNotice });
+
   };
 
   render() {
-    const { preNotice, dbPreNotice } = this.state;
     const Dialogs = this.Dialogs;
     const ScheduleSettings = this.ScheduleSettings;
     return (
       <SettingsMenuContainer>
-        <Typography color="textSecondary" variant="subheading">
+        <Typography color="textSecondary" variant="subtitle1">
           {strings.prelogin.label}
         </Typography>
         <Grid id="preLoginConfig" container spacing={8} direction="column">
           <Grid item>
-            <TextField
-              id="preNoticeField"
-              variant="outlined"
-              rows="12"
-              rowsMax="35"
-              multiline
-              fullWidth
-              inputProps={{ length: 12 }}
-              placeholder={strings.prelogin.description}
-              onChange={e => this.handlePreTextFieldChange(e.target)}
-              value={preNotice}
+            <RichTextEditor
+              htmlInput={this.state.dbPreNotice}
+              onStateChange={this.handleEditorChange}
             />
           </Grid>
           <Grid item>
@@ -302,7 +315,6 @@ class PreLoginNoticeConfigurator extends React.Component<
             <Grid item>
               <Button
                 id="preClearButton"
-                disabled={dbPreNotice == ""}
                 onClick={this.stageClear}
                 variant="text"
               >

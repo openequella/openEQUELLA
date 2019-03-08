@@ -18,11 +18,12 @@
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
-    "baseUrl": "http://boorah:3000"
+    "baseUrl": ".",
+    "paths": {
+      "~*": ["./entrybuild/*"]
+    }
   },
-  "include": [
-    "tsrc/**/*"
-  ],
+  "include": ["tsrc/**/*"],
   "exclude": [
     "node_modules",
     "build",

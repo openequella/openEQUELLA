@@ -8,7 +8,7 @@ import Data.Either (either)
 import Data.Foldable (fold)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (toNullable)
-import Data.Traversable (foldr, sequence, traverse)
+import Data.Traversable (foldr, sequence)
 import Data.Tuple (Tuple(..))
 import Debug.Trace (traceM)
 import Dispatcher (affAction)
@@ -67,6 +67,9 @@ searchPage = flip unsafeCreateLeafElement {} $ withStyles styles $ R.component "
   styles theme = {
   }
 
+searchStrings :: { refineTitle :: String
+, resultsAvailable :: String
+}
 searchStrings = prepLangStrings rawStrings
 
 rawStrings :: { prefix :: String

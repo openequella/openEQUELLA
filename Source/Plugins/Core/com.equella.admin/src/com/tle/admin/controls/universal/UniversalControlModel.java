@@ -100,6 +100,6 @@ public class UniversalControlModel extends CustomControlModel<UniversalControl> 
   }
 
   private String s(String postfix) {
-    return CurrentLocale.get("com.tle.admin.controls.universal." + postfix);
+    return CurrentLocale.get("com.equella.admin." + postfix);
   }
 }

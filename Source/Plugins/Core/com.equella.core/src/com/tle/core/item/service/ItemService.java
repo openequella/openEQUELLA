@@ -55,6 +55,8 @@ public interface ItemService
 
   Item getUnsecureIfExists(ItemKey itemId);
 
+  boolean isItemInModeration(String uuid);
+
   List<ItemId> getItemsWithUrl(String url, ItemDefinition itemDefinition, String excludedUuid);
 
   List<Item> getVersionDetails(String uuid);
