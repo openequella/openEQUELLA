@@ -18,8 +18,7 @@ phases:
   build:
     commands:
       - sbt -no-colors -Dconfig.file=${HOME}/build.conf test installerZip writeLanguagePack writeScriptingJavadoc
-      - cd autotest
-      - (cd autotest; sbt -no-colors installEquella startEquella configureInstall setupForTests Tests/test Tests/Serial/test)
+      - (cd autotest; sbt -no-colors installEquella startEquella configureInstall setupForTests Tests/test Tests/Serial/test OldTests/test)
   post_build:
     commands:
       - publishBuild
