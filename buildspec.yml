@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     KALTURA_BRANCH: master
-    AUTOTEST_CONFIG: "codebuild.conf"
+    AUTOTEST_CONFIG: "autotest/codebuild.conf"
     EQ_EXIFTOOL_PATH: "/usr/bin/exiftool"
 phases:
   pre_build:
