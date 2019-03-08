@@ -21,8 +21,8 @@ import com.tle.core.settings.loginnotice.LoginNoticeService;
 import com.tle.web.api.loginnotice.PreLoginNoticeResource;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.mortbay.jetty.MimeTypes;
 
 @Bind(PreLoginNoticeResource.class)
 @Singleton
@@ -33,7 +33,7 @@ public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
   public Response retrievePreLoginNotice() {
     String loginNotice = noticeService.getPreLoginNotice();
     if (loginNotice != null) {
-      return Response.ok(loginNotice, MimeTypes.TEXT_HTML).build();
+      return Response.ok(loginNotice, MediaType.TEXT_HTML).build();
     }
     return Response.status(Response.Status.NOT_FOUND).entity("{}").build();
   }
