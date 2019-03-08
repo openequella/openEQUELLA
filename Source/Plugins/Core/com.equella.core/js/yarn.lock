@@ -2590,26 +2590,6 @@ downshift@^2.2.2:
     compute-scroll-into-view "^1.0.2"
     prop-types "^15.6.0"
 
-draft-convert@^2.1.4:
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/draft-convert/-/draft-convert-2.1.4.tgz#b8817000eaf251e95583c987adda085d67254a0d"
-  integrity sha1-uIFwAOryUelVg8mHrdoIXWclSg0=
-  dependencies:
-    immutable "~3.7.4"
-    invariant "^2.2.1"
-
-draft-js-export-html@^1.3.0:
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/draft-js-export-html/-/draft-js-export-html-1.3.3.tgz#c1e8d86b4223324a082af225523a6686211197ad"
-  integrity sha512-gYf4CvZvLv519FRUfGwg/9tZ23Ms90IklOM4vhhKxkrNyFBq93A1wKI8ikqCKKkNpaJyPp7XUkEsvOBUo3THBQ==
-  dependencies:
-    draft-js-utils "^1.3.3"
-
-draft-js-utils@^1.3.3:
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/draft-js-utils/-/draft-js-utils-1.3.3.tgz#2330ab98218c835d58dc08eacdba6708b201eb27"
-  integrity sha512-ZIF3KE2+dRD6zEoqQyu9HzeG56NWtktfazRnDZFC9GD4NnHgJE5qI+TqGgmjRjSrKzuSQonl5rsx+D4N5m6yhQ==
-
 draft-js@^0.10.5:
   version "0.10.5"
   resolved "https://registry.yarnpkg.com/draft-js/-/draft-js-0.10.5.tgz#bfa9beb018fe0533dbb08d6675c371a6b08fa742"

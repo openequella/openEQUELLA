@@ -4,7 +4,7 @@ import Prelude
 
 import Data.TSCompat (OneOf, OptionRecord, StringConst)
 import Data.TSCompat.Class (class IsTSEq)
-import Effect (Effect) 
+import Effect (Effect)
 import React (ReactClass, ReactElement, unsafeCreateLeafElement)
 
 foreign import messageInfoClass :: forall a. ReactClass a
