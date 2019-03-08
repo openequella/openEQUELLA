@@ -1,8 +1,7 @@
 import com.typesafe.config.{Config, ConfigFactory}
-import org.jacoco.core.tools.{ExecDumpClient, ExecFileLoader}
+import org.jacoco.core.tools.ExecFileLoader
 import org.jdom2.input.SAXBuilder
 import org.jdom2.input.sax.XMLReaders
-import sbt.Keys.{scalaVersion, version}
 import sbt.complete.DefaultParsers.spaceDelimited
 
 import scala.sys.process._
