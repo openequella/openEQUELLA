@@ -1679,12 +1679,19 @@ Login Notice Formatting
 #loginNotice ins {
   text-decoration: underline;
 }
+
 #loginNotice code {
-  font-family: monospace;
-  background: rgb(200, 200, 200) none repeat scroll 0% 0%;
-  border-radius: 3px;
-  overflow-wrap: break-word;
-  padding: 1px 3px;
+  font-family: "Courier New", monospace;
+  line-height: 100%;
+  background-color: #d1d1d0;
+  word-break: normal;
+}
+
+#loginNotice pre {
+  background-color: #d1d1d0;
+  overflow: auto;
+  font-family: "Courier New", monospace;
+  padding: 1em 1em;
 }
 
 #loginNotice sup {
@@ -1714,6 +1721,7 @@ Login Notice Formatting
   font-size: 29px;
   font-weight: bold;
 }
+
 #loginNotice h3 {
   margin: initial;
   color: initial;
@@ -1721,6 +1729,7 @@ Login Notice Formatting
   font-size: 23px;
   font-weight: bold;
 }
+
 #loginNotice h4 {
   margin: initial;
   color: initial;
@@ -1728,6 +1737,7 @@ Login Notice Formatting
   font-size: 20px;
   font-weight: bold;
 }
+
 #loginNotice h5 {
   margin: initial;
   color: initial;
@@ -1735,6 +1745,7 @@ Login Notice Formatting
   font-size: 17px;
   font-weight: bold;
 }
+
 #loginNotice h6 {
   margin: initial;
   color: initial;
@@ -1751,6 +1762,7 @@ Login Notice Formatting
   font-style: italic;
   quotes: "\201C""\201D""\2018""\2019";
 }
+
 #loginNotice blockquote:before {
   color: #ccc;
   content: open-quote;
@@ -1759,6 +1771,7 @@ Login Notice Formatting
   margin-right: 0.25em;
   vertical-align: -0.4em;
 }
+
 #loginNotice blockquote p {
   display: inline;
 }
@@ -1781,6 +1794,7 @@ Login Notice Formatting
   font-size: 12px;
   line-height: 2;
 }
+
 #loginNotice ol li {
   margin: unset;
 }
