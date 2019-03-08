@@ -761,6 +761,14 @@
     "@parcel/utils" "^1.11.0"
     physical-cpu-count "^2.0.0"
 
+"@types/draft-js@*", "@types/draft-js@0.10.28":
+  version "0.10.28"
+  resolved "https://registry.yarnpkg.com/@types/draft-js/-/draft-js-0.10.28.tgz#14d68b496072689466e81887ac1e1c585157cc31"
+  integrity sha512-mShgWAYAduZ2Rwzpo52cToq+q8SIZ2O6Byl2F9wphB0QFjuNtUMyvAzGGg4kYGWPLZKELMWlEA/wv+AdPlkclw==
+  dependencies:
+    "@types/react" "*"
+    immutable "^3.8.1"
+
 "@types/jest@^22.1.3":
   version "22.2.3"
   resolved "http://registry.npmjs.org/@types/jest/-/jest-22.2.3.tgz#0157c0316dc3722c43a7b71de3fdf3acbccef10d"
@@ -831,6 +839,14 @@
   integrity sha512-vaq4vMaJOaNgFff1t3LnHYr6vRa09vRspMkmLdXtFZmO1fwDI2snP+dpOkwrtlU8UC8qsqemCu4RmVM2OLq/fA==
   dependencies:
     "@types/node" "*"
+    "@types/react" "*"
+
+"@types/react-draft-wysiwyg@1.12.2":
+  version "1.12.2"
+  resolved "https://registry.yarnpkg.com/@types/react-draft-wysiwyg/-/react-draft-wysiwyg-1.12.2.tgz#60e3e897b07892ea053a36dc15241bfc6c469721"
+  integrity sha512-AX9NJUp8SxaJlEJ28XexbNVQ+nZ0O1FZOrDmZTrYkoFCuTWCNZtZHmmPfcy1pv4iKw/WSnQSqHpciJaz/CYuow==
+  dependencies:
+    "@types/draft-js" "*"
     "@types/react" "*"
 
 "@types/react-redux@^5.0.7":
@@ -2625,6 +2641,45 @@ downshift@^2.2.2:
     compute-scroll-into-view "^1.0.2"
     prop-types "^15.6.0"
 
+draft-convert@2.1.4:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/draft-convert/-/draft-convert-2.1.4.tgz#b8817000eaf251e95583c987adda085d67254a0d"
+  integrity sha1-uIFwAOryUelVg8mHrdoIXWclSg0=
+  dependencies:
+    immutable "~3.7.4"
+    invariant "^2.2.1"
+
+draft-js-export-html@^1.3.0:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/draft-js-export-html/-/draft-js-export-html-1.3.3.tgz#c1e8d86b4223324a082af225523a6686211197ad"
+  integrity sha512-gYf4CvZvLv519FRUfGwg/9tZ23Ms90IklOM4vhhKxkrNyFBq93A1wKI8ikqCKKkNpaJyPp7XUkEsvOBUo3THBQ==
+  dependencies:
+    draft-js-utils "^1.3.3"
+
+draft-js-utils@^1.3.3:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/draft-js-utils/-/draft-js-utils-1.3.3.tgz#2330ab98218c835d58dc08eacdba6708b201eb27"
+  integrity sha512-ZIF3KE2+dRD6zEoqQyu9HzeG56NWtktfazRnDZFC9GD4NnHgJE5qI+TqGgmjRjSrKzuSQonl5rsx+D4N5m6yhQ==
+
+draft-js@0.10.5:
+  version "0.10.5"
+  resolved "https://registry.yarnpkg.com/draft-js/-/draft-js-0.10.5.tgz#bfa9beb018fe0533dbb08d6675c371a6b08fa742"
+  integrity sha512-LE6jSCV9nkPhfVX2ggcRLA4FKs6zWq9ceuO/88BpXdNCS7mjRTgs0NsV6piUCJX9YxMsB9An33wnkMmU2sD2Zg==
+  dependencies:
+    fbjs "^0.8.15"
+    immutable "~3.7.4"
+    object-assign "^4.1.0"
+
+draftjs-to-html@0.8.4:
+  version "0.8.4"
+  resolved "https://registry.yarnpkg.com/draftjs-to-html/-/draftjs-to-html-0.8.4.tgz#bda0adc00945db1f1baf0191b34b49b24191f1df"
+  integrity sha512-+4hekxc8dTJvKk6usiEsFX9O1uOD9vLZZOs9ZI3RhTe89yNmtazYII/ILDXfbMPfzNaYfX7Gf3zjRm6UUFxqyg==
+
+draftjs-utils@0.9.4, draftjs-utils@^0.9.3:
+  version "0.9.4"
+  resolved "https://registry.yarnpkg.com/draftjs-utils/-/draftjs-utils-0.9.4.tgz#976c61aa133dbbbfedd65ae1dd6627d7b98c6f08"
+  integrity sha512-KYjABSbGpJrwrwmxVj5UhfV37MF/p0QRxKIyL+/+QOaJ8J9z1FBKxkblThbpR0nJi9lxPQWGg+gh+v0dAsSCCg==
+
 duplexer2@^0.1.2, duplexer2@~0.1.0, duplexer2@~0.1.2, duplexer2@~0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/duplexer2/-/duplexer2-0.1.4.tgz#8b12dab878c0d69e3e7891051662a32fc6bddcc1"
@@ -2929,7 +2984,7 @@ fast-levenshtein@~2.0.4:
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc=
 
-fbjs@^0.8.1, fbjs@^0.8.4, fbjs@^0.8.9:
+fbjs@^0.8.1, fbjs@^0.8.15, fbjs@^0.8.4, fbjs@^0.8.9:
   version "0.8.17"
   resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.17.tgz#c4d598ead6949112653d6588b01a5cdcd9f90fdd"
   integrity sha1-xNWY6taUkRJlPWWIsBpc3Nn5D90=
@@ -3265,6 +3320,11 @@ html-comment-regex@^1.1.0:
   resolved "https://registry.yarnpkg.com/html-comment-regex/-/html-comment-regex-1.1.2.tgz#97d4688aeb5c81886a364faa0cad1dda14d433a7"
   integrity sha512-P+M65QY2JQ5Y0G9KKdlDpo0zK+/OHptU5AaBwUfAIDJZk1MYf32Frm84EcOytfJE0t5JvkAnKlmjsXDnWzCJmQ==
 
+html-to-draftjs@1.4.0, html-to-draftjs@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/html-to-draftjs/-/html-to-draftjs-1.4.0.tgz#8a3cbbba5b49d50be8ce85cc08b112d5bf00fc1d"
+  integrity sha1-ijy7ultJ1QvozoXMCLES1b8A/B0=
+
 htmlescape@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/htmlescape/-/htmlescape-1.1.1.tgz#3a03edc2214bca3b66424a3e7959349509cb0351"
@@ -3337,6 +3397,16 @@ ignore-walk@^3.0.1:
   integrity sha512-DTVlMx3IYPe0/JJcYP7Gxg7ttZZu3IInhuEhbchuqneY9wWe5Ojy2mXLBaQFUQmo0AW2r3qG7m1mg86js+gnlQ==
   dependencies:
     minimatch "^3.0.4"
+
+immutable@3.8.2, immutable@^3.8.1:
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.2.tgz#c2439951455bb39913daf281376f1530e104adf3"
+  integrity sha1-wkOZUUVbs5kT2vKBN28VMOEErfM=
+
+immutable@~3.7.4:
+  version "3.7.6"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.7.6.tgz#13b4d3cb12befa15482a26fe1b2ebae640071e4b"
+  integrity sha1-E7TTyxK++hVIKib+Gy665kAHHks=
 
 import-fresh@^2.0.0:
   version "2.0.0"
@@ -3981,6 +4051,13 @@ levn@~0.3.0:
   dependencies:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
+
+linkify-it@^2.0.3:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/linkify-it/-/linkify-it-2.1.0.tgz#c4caf38a6cd7ac2212ef3c7d2bde30a91561f9db"
+  integrity sha512-4REs8/062kV2DSHxNfq5183zrqXMl7WP0WzABH9IeJI+NLm429FgE1PDecltYfnOoFDFlZGh2T8PfZn0r+GTRg==
+  dependencies:
+    uc.micro "^1.0.1"
 
 load-from-cwd-or-npm@^2.2.1:
   version "2.2.2"
@@ -5810,6 +5887,17 @@ react-dom@^16.3.2:
     prop-types "^15.6.2"
     schedule "^0.4.0"
 
+react-draft-wysiwyg@1.13.2:
+  version "1.13.2"
+  resolved "https://registry.yarnpkg.com/react-draft-wysiwyg/-/react-draft-wysiwyg-1.13.2.tgz#1fc4130d057f0e731386bf831acca71108141899"
+  integrity sha512-qENNISR+bxO6G/ThTD6cai+LGrzkiGt6Fx9mqecJGPmyTIYVE5odsO7yEQVNBpZhgr5TvHAvwm3IoamcuFanDw==
+  dependencies:
+    classnames "^2.2.5"
+    draftjs-utils "^0.9.3"
+    html-to-draftjs "^1.4.0"
+    linkify-it "^2.0.3"
+    prop-types "^15.6.0"
+
 react-event-listener@^0.6.0, react-event-listener@^0.6.2:
   version "0.6.3"
   resolved "https://registry.yarnpkg.com/react-event-listener/-/react-event-listener-0.6.3.tgz#8eab88129a76e095ed8aa684c29679eded1e843d"
@@ -7229,6 +7317,11 @@ ua-parser-js@^0.7.18:
   version "0.7.18"
   resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.18.tgz#a7bfd92f56edfb117083b69e31d2aa8882d4b1ed"
   integrity sha512-LtzwHlVHwFGTptfNSgezHp7WUlwiqb0gA9AALRbKaERfxwJoiX0A73QbTToxteIAuIaFshhgIZfqK8s7clqgnA==
+
+uc.micro@^1.0.1:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/uc.micro/-/uc.micro-1.0.6.tgz#9c411a802a409a91fc6cf74081baba34b24499ac"
+  integrity sha512-8Y75pvTYkLJW2hWQHXxoqRgV7qb9B+9vFEtidML+7koHUFapnVJAZ6cKs+Qjz5Aw3aZWHMC6u0wJE3At+nSGwA==
 
 uglify-es@^3.0.15, uglify-es@^3.3.9:
   version "3.3.9"

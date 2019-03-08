@@ -1,10 +1,12 @@
 import * as React from "react";
 import {
   Button,
+  Dialog,
+  DialogActions,
   DialogContent,
   DialogContentText,
+  DialogTitle,
   Grid,
-  TextField,
   Typography
 } from "@material-ui/core";
 import { commonString } from "../util/commonstrings";
@@ -12,14 +14,12 @@ import {
   clearPreLoginNotice,
   getPreLoginNotice,
   NotificationType,
-  submitPreLoginNotice,
-  strings
+  strings,
+  submitPreLoginNotice
 } from "./LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
+import RichTextEditor from "../components/RichTextEditor";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
 
 interface PreLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
@@ -27,8 +27,8 @@ interface PreLoginNoticeConfiguratorProps {
 }
 
 interface PreLoginNoticeConfiguratorState {
-  preNotice?: string; //what is currently in the textfield
-  dbPreNotice?: string; //what is currently in the database
+  html: string;
+  dbHtml: string;
   clearStaged: boolean;
 }
 
@@ -39,30 +39,41 @@ class PreLoginNoticeConfigurator extends React.Component<
   constructor(props: PreLoginNoticeConfiguratorProps) {
     super(props);
     this.state = {
-      preNotice: "",
-      dbPreNotice: "",
+      html: "",
+      dbHtml: "",
       clearStaged: false
     };
   }
 
   handleSubmitPreNotice = () => {
-    if (this.state.preNotice != undefined) {
-      submitPreLoginNotice(this.state.preNotice)
-        .then(() => {
-          this.props.notify(NotificationType.Save);
-          this.setState({ dbPreNotice: this.state.preNotice });
-        })
-        .catch((error: AxiosError) => {
-          this.props.handleError(error);
+    submitPreLoginNotice(this.state.html)
+      .then(() => {
+        this.props.notify(NotificationType.Save);
+        this.setState({
+          dbHtml: this.state.html
         });
-    }
+      })
+      .catch((error: AxiosError) => {
+        this.props.handleError(error);
+      });
+  };
+
+  forceEditorRefresh = () => {
+    this.setState({
+      html: this.state.dbHtml,
+      dbHtml: this.state.html
+    });
   };
 
   handleClearPreNotice = () => {
-    this.setState({ preNotice: "" });
     clearPreLoginNotice()
       .then(() => {
-        this.setState({ dbPreNotice: "", clearStaged: false });
+        this.forceEditorRefresh();
+        this.setState({
+          clearStaged: false,
+          html: "",
+          dbHtml: ""
+        });
         this.props.notify(NotificationType.Clear);
       })
       .catch((error: AxiosError) => {
@@ -71,22 +82,27 @@ class PreLoginNoticeConfigurator extends React.Component<
   };
 
   handleUndoPreNotice = () => {
-    this.setState({ preNotice: this.state.dbPreNotice });
+    this.setState(
+      {
+        //swap the states to force an update
+        html: this.state.dbHtml,
+        dbHtml: this.state.html
+      },
+      () => this.setState({ dbHtml: this.state.html })
+    ); //set the dbHtml back to it's original value to update the editor
     this.props.notify(NotificationType.Revert);
-  };
-
-  handlePreTextFieldChange = (
-    e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-  ) => {
-    this.setState({ preNotice: e.value });
   };
 
   componentDidMount = () => {
     getPreLoginNotice()
       .then((response: AxiosResponse) => {
-        this.setState({ dbPreNotice: response.data, preNotice: response.data });
+        this.setState({
+          dbHtml: response.data,
+          html: response.data
+        });
       })
       .catch((error: AxiosError) => {
+        console.log(error);
         this.props.handleError(error);
       });
   };
@@ -122,8 +138,11 @@ class PreLoginNoticeConfigurator extends React.Component<
     );
   };
 
+  handleEditorChange = (html: string) => {
+    this.setState({ html: html });
+  };
+
   render() {
-    const { preNotice, dbPreNotice } = this.state;
     const Dialogs = this.Dialogs;
     return (
       <SettingsMenuContainer>
@@ -132,26 +151,18 @@ class PreLoginNoticeConfigurator extends React.Component<
         </Typography>
         <Grid id="preLoginConfig" container spacing={8} direction="column">
           <Grid item>
-            <TextField
-              id="preNoticeField"
-              variant="outlined"
-              rows="12"
-              rowsMax="35"
-              multiline
-              fullWidth
-              inputProps={{ length: 12 }}
-              placeholder={strings.prelogin.description}
-              onChange={e => this.handlePreTextFieldChange(e.target)}
-              value={preNotice}
+            <RichTextEditor
+              htmlInput={this.state.dbHtml}
+              onStateChange={this.handleEditorChange}
             />
           </Grid>
           <Grid item container spacing={8} direction="row-reverse">
             <Grid item>
               <Button
                 id="preApplyButton"
-                disabled={preNotice == dbPreNotice}
                 onClick={this.handleSubmitPreNotice}
                 variant="contained"
+                disabled={this.state.html == this.state.dbHtml}
               >
                 {commonString.action.save}
               </Button>
@@ -159,9 +170,9 @@ class PreLoginNoticeConfigurator extends React.Component<
             <Grid item>
               <Button
                 id="preClearButton"
-                disabled={dbPreNotice == ""}
                 onClick={this.stageClear}
                 variant="text"
+                disabled={this.state.html == ""}
               >
                 {commonString.action.clear}
               </Button>
@@ -169,9 +180,9 @@ class PreLoginNoticeConfigurator extends React.Component<
             <Grid item>
               <Button
                 id="preUndoButton"
-                disabled={dbPreNotice == preNotice}
                 onClick={this.handleUndoPreNotice}
                 variant="text"
+                disabled={this.state.html == this.state.dbHtml}
               >
                 {commonString.action.revertchanges}
               </Button>

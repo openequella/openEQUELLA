@@ -21,6 +21,7 @@ import com.tle.core.settings.loginnotice.LoginNoticeService;
 import com.tle.web.api.loginnotice.PreLoginNoticeResource;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Bind(PreLoginNoticeResource.class)
@@ -32,9 +33,9 @@ public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
   public Response retrievePreLoginNotice() {
     String loginNotice = noticeService.getPreLoginNotice();
     if (loginNotice != null) {
-      return Response.ok(loginNotice, "text/plain").build();
+      return Response.ok(loginNotice, MediaType.TEXT_HTML).build();
     }
-    return Response.status(Response.Status.NOT_FOUND).entity(null).build();
+    return Response.status(Response.Status.NOT_FOUND).entity("{}").build();
   }
 
   @Override

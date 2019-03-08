@@ -21,7 +21,7 @@ import axios, { AxiosError } from "axios";
 import { Config } from "../config";
 import { prepLangStrings } from "../util/langstrings";
 import { commonString } from "../util/commonstrings";
-import { generateFromAxiosError, generateNewErrorID } from "../api/errors";
+import { generateFromError, generateNewErrorID } from "../api/errors";
 
 interface IThemeSettings {
   primaryColor: string;
@@ -263,7 +263,7 @@ class ThemePage extends React.Component<
           });
           break;
         default:
-          this.setState({ error: generateFromAxiosError(error) });
+          this.setState({ error: generateFromError(error) });
           break;
       }
     }
