@@ -19,6 +19,7 @@ package com.tle.core.db
 import java.sql.Connection
 
 import cats.effect.IO
+import com.tle.common.i18n.CurrentLocale
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.hibernate.CurrentDataSource
@@ -44,14 +45,14 @@ object RunWithDB {
       sys.error("There is no hibernate session - make sure it's inside @Transactional")
     }
     val con = sessionHolder.getSession().connection()
-    val uc = UserContext(CurrentInstitution.get(),
-                         CurrentUser.getUserState,
-                         CurrentDataSource.get().getDataSource)
+    val uc  = UserContext.fromThreadLocals()
     jdbc.run(uc).runA(con).unsafeRunSync()
   }
 
   def executeTransaction[A](connection: Connection, jdbc: JDBCIO[A]): A = {
-    if (TransactionSynchronizationManager.isSynchronizationActive) {
+    if (TransactionSynchronizationManager
+          .getResource(getSessionFactory)
+          .asInstanceOf[SessionHolder] != null) {
       val msg =
         "Hibernate transaction is available on this thread - should be using executeWithHibernate"
       if (DebugSettings.isDebuggingMode) sys.error(msg)
@@ -68,16 +69,12 @@ object RunWithDB {
   }
 
   def execute[A](db: DB[A]): A = {
-    val uc = UserContext(CurrentInstitution.get(),
-                         CurrentUser.getUserState,
-                         CurrentDataSource.get().getDataSource)
+    val uc = UserContext.fromThreadLocals()
     executeTransaction(uc.ds.getConnection(), db.run(uc).map(a => IO.pure(a))).unsafeRunSync()
   }
 
   def executeWithPostCommit(db: DB[IO[Unit]]): Unit = {
-    val uc = UserContext(CurrentInstitution.get(),
-                         CurrentUser.getUserState,
-                         CurrentDataSource.get().getDataSource)
+    val uc = UserContext.fromThreadLocals()
     executeTransaction(uc.ds.getConnection(), db.run(uc)).unsafeRunSync()
   }
 

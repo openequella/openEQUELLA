@@ -43,6 +43,7 @@ import javax.inject.Singleton;
 @SuppressWarnings("nls")
 public class FilestoreConverter<T> extends AbstractConverter<T> {
   public static final String CONVERTER_ID = "FILES";
+  public static final String CLEANUP_ID = "CLEANUPFILES";
 
   @Override
   public void importIt(
@@ -50,7 +51,7 @@ public class FilestoreConverter<T> extends AbstractConverter<T> {
       throws IOException {
     if (cid.equals(CONVERTER_ID)) {
       doImport(staging, institution, params);
-    } else if (cid.equals("CLEANUPFILES")) {
+    } else if (cid.equals(CLEANUP_ID)) {
       doFileDelete(staging, params);
     }
   }
@@ -89,7 +90,7 @@ public class FilestoreConverter<T> extends AbstractConverter<T> {
       if (!doFileDelete(handle, params)) {
         throw new RuntimeApplicationException("Could not delete filestore for unknown reasons");
       }
-    } else if (cid.equals("CLEANUPFILES")) {
+    } else if (cid.equals(CLEANUP_ID)) {
       doFileDelete(staging, params);
     }
   }
@@ -100,7 +101,7 @@ public class FilestoreConverter<T> extends AbstractConverter<T> {
       tasks.addAfter(getStandardTask(CONVERTER_ID));
     } else {
       tasks.add(getStandardTask(CONVERTER_ID));
-      tasks.add(getStandardTask("CLEANUPFILES"));
+      tasks.add(getStandardTask(CLEANUP_ID));
     }
   }
 

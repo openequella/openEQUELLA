@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-package com.tle.core.db.migration
+package com.tle.core.db.tables
 
-import java.util
-import java.util.{Calendar, Date}
+import java.time.Instant
 
-import com.tle.core.i18n.ServerStrings
-import com.tle.core.migration.MigrationExt
+import com.tle.core.db.types._
+import io.circe.Json
 
-import scala.collection.JavaConverters._
-
-object Migrations {
-
-  def migrationList: util.Collection[MigrationExt] =
-    Iterable[MigrationExt](NewAuditLogColumn, NewViewCountTables, NewEntityTable).asJavaCollection
-}
+case class OEQEntity(
+    uuid: DbUUID,
+    inst_id: InstId,
+    typeid: String,
+    name: String,
+    name_strings: LocaleStrings,
+    description: Option[String],
+    description_strings: LocaleStrings,
+    owner: UserId,
+    created: Instant,
+    modified: Instant,
+    data: Json
+)

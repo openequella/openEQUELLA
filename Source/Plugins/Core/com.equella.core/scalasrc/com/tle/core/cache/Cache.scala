@@ -20,7 +20,7 @@ import java.sql.Connection
 import java.util.concurrent.ConcurrentHashMap
 
 import cats.data.{Kleisli, StateT}
-import cats.effect.IO
+import cats.effect.{Async, Effect, IO}
 import com.tle.core.db.{DB, RunWithDB, UserContext}
 import com.tle.core.events.ApplicationEvent
 import com.tle.core.events.ApplicationEvent.PostTo
@@ -71,8 +71,8 @@ object Cache extends CacheInvalidation {
           .computeIfAbsent(
             key,
             k =>
-              fs2.async
-                .once(
+              Async
+                .memoize(
                   RunWithDB.executeTransaction(uc.ds.getConnection(), c.query.run(uc).map(IO.pure)))
                 .unsafeRunSync())
           .asInstanceOf[IO[A]]

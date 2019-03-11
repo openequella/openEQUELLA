@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package com.tle.web.api.searches
+package com.tle.core.searches
 
-import java.util.UUID
+import java.time.Instant
+import java.util.{Date, UUID}
 
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type
-import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id
+import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonSubTypes, JsonTypeInfo}
+import com.tle.core.validation.OEQEntityEdits
 import io.circe.{Decoder, Encoder}
 
 @JsonTypeInfo(use = Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
@@ -31,7 +33,8 @@ import io.circe.{Decoder, Encoder}
     new Type(value = classOf[ModifiedWithinControl], name = "modifiedWithin"),
     new Type(value = classOf[FacetControl], name = "facet"),
     new Type(value = classOf[CollectionsControl], name = "collections")
-  ))
+  )
+)
 sealed trait SearchControl
 
 case class SortControl(default: String, editable: Boolean)           extends SearchControl
@@ -59,17 +62,28 @@ object SearchControl {
   implicit val sctrlDecoder: Decoder[SearchControl] = deriveDecoder
 }
 
-object SearchConfig {
+case class SearchConfig(
+    id: UUID,
+    index: String,
+    name: String,
+    nameStrings: Option[Map[String, String]],
+    description: Option[String],
+    descriptionStrings: Option[Map[String, String]],
+    created: Date,
+    modified: Date,
+    sections: Map[String, Iterable[SearchControl]]
+)
 
-  import io.circe.generic.semiauto._
-
-  implicit val scEncoder: Encoder[SearchConfig] = deriveEncoder
-  implicit val scDecoder: Decoder[SearchConfig] = deriveDecoder
-}
-
-case class SearchConfig(id: Option[UUID],
-                        index: String,
-                        sections: Map[String, Iterable[SearchControl]])
+@JsonIgnoreProperties(ignoreUnknown = true)
+case class SearchConfigEdit(
+    id: Option[UUID],
+    index: String,
+    name: String,
+    nameStrings: Option[Map[String, String]],
+    description: Option[String],
+    descriptionStrings: Option[Map[String, String]],
+    sections: Map[String, Iterable[SearchControl]]
+) extends OEQEntityEdits
 
 case class SearchPageConfig(configId: UUID)
 

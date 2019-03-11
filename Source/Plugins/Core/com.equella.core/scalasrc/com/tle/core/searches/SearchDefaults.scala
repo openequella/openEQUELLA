@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-package com.tle.web.api.searches
+package com.tle.core.searches
+import java.util.{Date, UUID}
 
 object SearchDefaults {
 
   val defaultMap: Map[String, SearchConfig] = Map(
     "search" -> SearchConfig(
-      None,
-      "item",
-      Map(
+      id = UUID.randomUUID(),
+      index = "item",
+      name = "Default search",
+      nameStrings = None,
+      description = None,
+      descriptionStrings = None,
+      created = new Date,
+      modified = new Date,
+      sections = Map(
         "resultsheader" -> Array(
           SortControl("relevance", true)
         ),

@@ -65,7 +65,7 @@ class ListSearchConfigs extends React.Component<
                 <SearchResult
                   href="PLACEHOLDER"
                   onClick={e => e}
-                  primaryText={sc.id}
+                  primaryText={sc.name}
                 />
               ))}
         </EntityList>

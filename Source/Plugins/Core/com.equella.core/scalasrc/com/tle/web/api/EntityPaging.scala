@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package com.tle.core.db.migration
+package com.tle.web.api
 
-import java.util
-import java.util.{Calendar, Date}
+case class EntityPaging[A](
+    start: Int,
+    length: Int,
+    available: Int,
+    results: Iterable[A],
+    resumptionToken: Option[String]
+)
 
-import com.tle.core.i18n.ServerStrings
-import com.tle.core.migration.MigrationExt
+object EntityPaging {
+  def allResults[A](allResults: Iterable[A]): EntityPaging[A] =
+    EntityPaging[A](0, allResults.size, allResults.size, allResults, None)
 
-import scala.collection.JavaConverters._
-
-object Migrations {
-
-  def migrationList: util.Collection[MigrationExt] =
-    Iterable[MigrationExt](NewAuditLogColumn, NewViewCountTables, NewEntityTable).asJavaCollection
 }

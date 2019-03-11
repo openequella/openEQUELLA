@@ -18,14 +18,14 @@ package com.tle.web.api.searches
 
 import java.util.UUID
 
-import cats.data.OptionT
-import com.tle.core.db.{DB, RunWithDB}
+import cats.syntax.functor._
+import com.tle.core.db.RunWithDB
+import com.tle.core.searches._
 import com.tle.core.settings.SettingsDB
-import com.tle.web.api.ApiHelper
+import com.tle.web.api.{ApiHelper, EntityPaging}
 import io.swagger.annotations.{Api, ApiOperation}
-import javax.ws.rs.core.Response
 import javax.ws.rs._
-import javax.ws.rs.core.Response.Status
+import javax.ws.rs.core.Response
 
 @Api("Search page configuration")
 @Path("searches")
@@ -34,10 +34,10 @@ class SearchConfigApi {
 
   @GET
   @Path("config")
-  @ApiOperation(value = "List all search configurations",
-                response = classOf[SearchConfig],
-                responseContainer = "List")
-  def listConfigs: Response = ApiHelper.runAndBuild {
+  @ApiOperation(
+    value = "List all search configurations"
+  )
+  def listConfigs: EntityPaging[SearchConfig] = RunWithDB.execute {
     SettingsDB.ensureEditSystem {
       ApiHelper.allEntities(SearchConfigDB.readAllConfigs)
     }
@@ -49,14 +49,22 @@ class SearchConfigApi {
   def getConfig(@PathParam("uuid") configId: UUID): Response = ApiHelper.runAndBuild {
     ApiHelper.entityOrNotFoundDB(SearchConfigDB.readConfig(configId))
   }
+  @DELETE
+  @Path("config/{uuid}")
+  @ApiOperation(value = "Delete a search configuration")
+  def deleteConfig(@PathParam("uuid") configId: UUID): Response = ApiHelper.runAndBuild {
+    SearchConfigDB.deleteConfig(configId).as(Response.noContent())
+  }
 
   @PUT
   @Path("config/{uuid}")
   @ApiOperation(value = "Edit search configuration")
-  def editConfig(@PathParam("uuid") configId: UUID, config: SearchConfig): Response = {
+  def editConfig(@PathParam("uuid") configId: UUID, config: SearchConfigEdit): Response = {
     ApiHelper.runAndBuild {
       SettingsDB.ensureEditSystem {
-        SearchConfigDB.writeConfig(configId, config).map(_ => Response.ok())
+        SearchConfigDB
+          .editConfig(configId, config)
+          .map(ApiHelper.validationOrOk)
       }
     }
   }
@@ -64,11 +72,13 @@ class SearchConfigApi {
   @POST
   @Path("config")
   @ApiOperation(value = "Create new search configuration")
-  def newConfig(config: SearchConfig): Response = {
+  def newConfig(config: SearchConfigEdit): Response = {
     val newID = UUID.randomUUID()
     ApiHelper.runAndBuild {
       SettingsDB.ensureEditSystem {
-        SearchConfigDB.writeConfig(newID, config).map(_ => Response.ok().header("X-UUID", newID))
+        SearchConfigDB
+          .createConfig(newID, config)
+          .map(r => ApiHelper.validationOr(r.as(Response.ok().header("X-UUID", newID))))
       }
     }
   }
@@ -105,7 +115,7 @@ class SearchConfigApi {
   def editPageConfig(@PathParam("pagename") pagename: String, config: SearchPageConfig): Response =
     ApiHelper.runAndBuild {
       SettingsDB.ensureEditSystem {
-        SearchConfigDB.writePageConfig(pagename, config).map(_ => Response.ok())
+        SearchConfigDB.writePageConfig(pagename, config).as(Response.ok())
       }
     }
 }

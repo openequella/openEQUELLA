@@ -17,7 +17,6 @@
 package com.tle.core.institution.convert.service;
 
 import com.tle.beans.Institution;
-import com.tle.common.NameValue;
 import com.tle.common.beans.progress.ListProgressCallback;
 import com.tle.common.filesystem.handle.ImportFile;
 import com.tle.core.institution.convert.InstitutionInfo;
@@ -66,15 +65,9 @@ public interface InstitutionImportService {
    */
   void cancelImport(ImportFile staging);
 
-  Collection<NameValue> getMatchingConversions(Collection<String> name);
-
-  Set<String> getMatchingIds(Collection<String> values);
-
   List<String> getConverterTasks(ConvertType type, InstitutionInfo info);
 
   InstitutionInfo getInfoForCurrentInstitution();
-
-  Set<String> getAllConversions();
 
   Set<String> convertToFlags(Set<String> conversions);
 
