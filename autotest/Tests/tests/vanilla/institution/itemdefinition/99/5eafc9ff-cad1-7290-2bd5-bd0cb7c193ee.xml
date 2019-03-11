@@ -1,0 +1,122 @@
+<com.tle.beans.entity.itemdef.ItemDefinition>
+  <id>1015</id>
+  <uuid>5eafc9ff-cad1-7290-2bd5-bd0cb7c193ee</uuid>
+  <owner></owner>
+  <dateModified class="sql-timestamp">2007-05-09 15:24:11.363</dateModified>
+  <dateCreated class="sql-timestamp">2007-05-09 15:24:11.363</dateCreated>
+  <description>
+    <id>213549</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>213348</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>213550</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>213349</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>SYSTEM: Templates</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <reviewperiod>1</reviewperiod>
+  <slow>
+    <id>465</id>
+    <wizard>
+      <pages/>
+      <allowNonSequentialNavigation>false</allowNonSequentialNavigation>
+      <showPageTitlesNextPrev>false</showPageTitlesNextPrev>
+    </wizard>
+    <searchDetails>
+      <disableThumbnail>false</disableThumbnail>
+      <standardOpen>false</standardOpen>
+      <integrationOpen>false</integrationOpen>
+    </searchDetails>
+    <metadataMapping>
+      <imsMapping class="list"/>
+      <htmlMapping class="list"/>
+      <literalMapping class="list"/>
+    </metadataMapping>
+    <itemSummarySections>
+      <configList>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>7adb8598-175a-49cb-8c40-70182733a018</uuid>
+          <value>basicSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Basic Information</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>9abd48bc-b149-415e-b182-d403b744dcdc</uuid>
+          <value>attachmentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Links to resources</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>e07424b2-b31e-4826-b69c-9fb99b36dc53</uuid>
+          <value>commentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Add a comment</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+      </configList>
+      <hideOwner>false</hideOwner>
+      <hideCollaborators>false</hideCollaborators>
+    </itemSummarySections>
+  </slow>
+  <denyDirectContribution>false</denyDirectContribution>
+</com.tle.beans.entity.itemdef.ItemDefinition>

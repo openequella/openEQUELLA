@@ -1,0 +1,59 @@
+<com.tle.beans.hierarchy.HierarchyTopic>
+  <id>216965</id>
+  <uuid>33ecf7c7-24a6-f01d-d83e-38e9782c3803</uuid>
+  <listPosition>4</listPosition>
+  <keyResources/>
+  <showResults>true</showResults>
+  <inheritFreetext>false</inheritFreetext>
+  <addIdefs/>
+  <addSchemas/>
+  <inhIdefs/>
+  <inhSchemas/>
+  <name>
+    <id>216966</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216967</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Some Children Hidden</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <subtopicsSectionName>
+    <id>216970</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216971</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>A name</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </subtopicsSectionName>
+  <resultsSectionName>
+    <id>216968</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216969</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Results</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </resultsSectionName>
+  <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
+  <attributes/>
+</com.tle.beans.hierarchy.HierarchyTopic>

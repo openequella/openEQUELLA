@@ -1,0 +1,1578 @@
+<com.tle.beans.entity.itemdef.ItemDefinition>
+  <id>116622</id>
+  <uuid>a77112e6-3370-fd02-6ac6-6bc5aec22001</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-04-04 13:01:57.027</dateModified>
+  <dateCreated class="sql-timestamp">2014-04-04 11:52:28.263</dateCreated>
+  <description>
+    <id>116623</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116624</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Trying to generate something activatable ...</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>116625</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116626</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>eReserve articles for Activations API</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>com.tle.cal-AgreementFile</key>
+      <value>cal/Your HTML copyright VB notice goes here.htm</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>com.tle.cal-Enabled</key>
+      <value>true</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>com.tle.cal-ActivationError</key>
+      <value>&lt;xml&gt;&lt;string language=&quot;en&quot;&gt;Activating this attachment would violate copyright rules. &lt;/string&gt;&lt;/xml&gt;</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>com.tle.cal-InActiveError</key>
+      <value>&lt;xml&gt;&lt;string language=&quot;en&quot;&gt;This item is currently not active. If you believe it should be, please activate &lt;/string&gt;&lt;/xml&gt;</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>com.tle.cal-HasAgreement</key>
+      <value>true</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <schema entityclass="com.tle.beans.entity.Schema" uuid="f028746b-0346-fe7e-a223-a2db1240140c"/>
+  <wizardcategory>Copyright Tests</wizardcategory>
+  <reviewperiod>-2147483648</reviewperiod>
+  <slow>
+    <id>116627</id>
+    <itemMetadataRules/>
+    <dynamicMetadataRules/>
+    <wizard>
+      <pages>
+        <com.dytech.edge.wizard.beans.DefaultWizardPage>
+          <title>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en</locale>
+                  <priority>1</priority>
+                  <text>Book chapter or journal article</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </title>
+          <controls>
+            <com.dytech.edge.wizard.beans.control.Repeater>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Available section</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/copyright/portions/portion/sections/section</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <controls>
+                <com.dytech.edge.wizard.beans.control.RadioGroup>
+                  <mandatory>false</mandatory>
+                  <reload>true</reload>
+                  <include>true</include>
+                  <size1>2</size1>
+                  <size2>50</size2>
+                  <targetnodes>
+                    <com.dytech.edge.wizard.TargetNode>
+                      <target>/type</target>
+                      <attribute></attribute>
+                    </com.dytech.edge.wizard.TargetNode>
+                  </targetnodes>
+                  <items>
+                    <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                      <name>
+                        <id>0</id>
+                        <strings>
+                          <entry>
+                            <string>en</string>
+                            <com.tle.beans.entity.LanguageString>
+                              <id>0</id>
+                              <locale>en</locale>
+                              <priority>1</priority>
+                              <text>File</text>
+                              <bundle reference="../../../.."/>
+                            </com.tle.beans.entity.LanguageString>
+                          </entry>
+                        </strings>
+                      </name>
+                      <value>file</value>
+                      <defaultValue>true</defaultValue>
+                    </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                    <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                      <name>
+                        <id>0</id>
+                        <strings>
+                          <entry>
+                            <string>en</string>
+                            <com.tle.beans.entity.LanguageString>
+                              <id>0</id>
+                              <locale>en</locale>
+                              <priority>1</priority>
+                              <text>URL</text>
+                              <bundle reference="../../../.."/>
+                            </com.tle.beans.entity.LanguageString>
+                          </entry>
+                        </strings>
+                      </name>
+                      <value>url</value>
+                      <defaultValue></defaultValue>
+                    </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  </items>
+                </com.dytech.edge.wizard.beans.control.RadioGroup>
+                <com.dytech.edge.wizard.beans.control.CustomControl>
+                  <mandatory>true</mandatory>
+                  <reload>false</reload>
+                  <include>true</include>
+                  <size1>0</size1>
+                  <size2>0</size2>
+                  <title>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Upload your file here (use &quot;Add additional section for more than 1 file&quot;)</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </title>
+                  <script>var bRet = false; 
+if( xml.get(&apos;/item/copyright/portions/portion/sections/section/type&apos;) != &apos;url&apos; ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+                  <targetnodes>
+                    <com.dytech.edge.wizard.TargetNode>
+                      <target>/attachment</target>
+                      <attribute></attribute>
+                    </com.dytech.edge.wizard.TargetNode>
+                  </targetnodes>
+                  <items/>
+                  <classType>universal</classType>
+                  <attributes>
+                    <entry>
+                      <string>FILE_NOUNZIP</string>
+                      <boolean>true</boolean>
+                    </entry>
+                    <entry>
+                      <string>AllowMultiple</string>
+                      <boolean>false</boolean>
+                    </entry>
+                    <entry>
+                      <string>FILE_PACKAGEONLY</string>
+                      <boolean>false</boolean>
+                    </entry>
+                    <entry>
+                      <string>AttachmentTypes</string>
+                      <java.util.Collections_-SingletonSet>
+                        <element class="string">fileHandler</element>
+                      </java.util.Collections_-SingletonSet>
+                    </entry>
+                  </attributes>
+                </com.dytech.edge.wizard.beans.control.CustomControl>
+                <com.dytech.edge.wizard.beans.control.CustomControl>
+                  <mandatory>true</mandatory>
+                  <reload>false</reload>
+                  <include>true</include>
+                  <size1>0</size1>
+                  <size2>0</size2>
+                  <title>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Enter Web Address (use &quot;Add additional section&quot; for more than 1 address)</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </title>
+                  <script>var bRet = false; 
+if( xml.contains(&apos;/item/copyright/portions/portion/sections/section/type&apos;, &apos;url&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+                  <targetnodes>
+                    <com.dytech.edge.wizard.TargetNode>
+                      <target>/attachment</target>
+                      <attribute></attribute>
+                    </com.dytech.edge.wizard.TargetNode>
+                  </targetnodes>
+                  <items/>
+                  <classType>universal</classType>
+                  <attributes>
+                    <entry>
+                      <string>AllowMultiple</string>
+                      <boolean>false</boolean>
+                    </entry>
+                    <entry>
+                      <string>AttachmentTypes</string>
+                      <java.util.Collections_-SingletonSet>
+                        <element class="string">urlHandler</element>
+                      </java.util.Collections_-SingletonSet>
+                    </entry>
+                  </attributes>
+                </com.dytech.edge.wizard.beans.control.CustomControl>
+                <com.dytech.edge.wizard.beans.control.Html>
+                  <mandatory>false</mandatory>
+                  <reload>false</reload>
+                  <include>true</include>
+                  <size1>0</size1>
+                  <size2>0</size2>
+                  <description>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>&lt;br&gt;</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </description>
+                  <script>var bRet = false; 
+if( xml.contains(&apos;/item/copyright/portions/portion/sections/section/type&apos;, &apos;url&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+                  <targetnodes/>
+                  <items/>
+                </com.dytech.edge.wizard.beans.control.Html>
+                <com.dytech.edge.wizard.beans.control.EditBox>
+                  <mandatory>true</mandatory>
+                  <reload>false</reload>
+                  <include>true</include>
+                  <size1>0</size1>
+                  <size2>1</size2>
+                  <title>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Page range e.g. 101-105; 107, 109-110</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </title>
+                  <targetnodes>
+                    <com.dytech.edge.wizard.TargetNode>
+                      <target>/pages</target>
+                      <attribute></attribute>
+                    </com.dytech.edge.wizard.TargetNode>
+                  </targetnodes>
+                  <items/>
+                  <links>false</links>
+                  <number>false</number>
+                  <forceUnique>false</forceUnique>
+                  <checkDuplication>false</checkDuplication>
+                  <allowMultiLang>false</allowMultiLang>
+                </com.dytech.edge.wizard.beans.control.EditBox>
+                <com.dytech.edge.wizard.beans.control.ListBox>
+                  <mandatory>false</mandatory>
+                  <reload>false</reload>
+                  <include>true</include>
+                  <size1>1</size1>
+                  <size2>300</size2>
+                  <title>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Copyright Status</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </title>
+                  <script>var bRet = false; 
+if( user.hasRole(&apos;ROLE_CONTENT_ADMINISTRATOR&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+                  <targetnodes>
+                    <com.dytech.edge.wizard.TargetNode>
+                      <target>/copyrightstatus</target>
+                      <attribute></attribute>
+                    </com.dytech.edge.wizard.TargetNode>
+                  </targetnodes>
+                  <items>
+                    <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                      <name>
+                        <id>0</id>
+                        <strings>
+                          <entry>
+                            <string>en</string>
+                            <com.tle.beans.entity.LanguageString>
+                              <id>0</id>
+                              <locale>en</locale>
+                              <priority>1</priority>
+                              <text>Copyright</text>
+                              <bundle reference="../../../.."/>
+                            </com.tle.beans.entity.LanguageString>
+                          </entry>
+                        </strings>
+                      </name>
+                      <value>copyright</value>
+                      <defaultValue>true</defaultValue>
+                    </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                    <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                      <name>
+                        <id>0</id>
+                        <strings>
+                          <entry>
+                            <string>en</string>
+                            <com.tle.beans.entity.LanguageString>
+                              <id>0</id>
+                              <locale>en</locale>
+                              <priority>1</priority>
+                              <text>Copyright Expired</text>
+                              <bundle reference="../../../.."/>
+                            </com.tle.beans.entity.LanguageString>
+                          </entry>
+                        </strings>
+                      </name>
+                      <value>notcopyright</value>
+                      <defaultValue>false</defaultValue>
+                    </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                    <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                      <name>
+                        <id>0</id>
+                        <strings>
+                          <entry>
+                            <string>en</string>
+                            <com.tle.beans.entity.LanguageString>
+                              <id>0</id>
+                              <locale>en</locale>
+                              <priority>1</priority>
+                              <text>Out of print and unavailable</text>
+                              <bundle reference="../../../.."/>
+                            </com.tle.beans.entity.LanguageString>
+                          </entry>
+                        </strings>
+                      </name>
+                      <value>outofprint</value>
+                      <defaultValue>false</defaultValue>
+                    </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                    <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                      <name>
+                        <id>0</id>
+                        <strings>
+                          <entry>
+                            <string>en</string>
+                            <com.tle.beans.entity.LanguageString>
+                              <id>0</id>
+                              <locale>en</locale>
+                              <priority>1</priority>
+                              <text>License</text>
+                              <bundle reference="../../../.."/>
+                            </com.tle.beans.entity.LanguageString>
+                          </entry>
+                        </strings>
+                      </name>
+                      <value>license</value>
+                      <defaultValue>false</defaultValue>
+                    </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                    <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                      <name>
+                        <id>0</id>
+                        <strings>
+                          <entry>
+                            <string>en</string>
+                            <com.tle.beans.entity.LanguageString>
+                              <id>0</id>
+                              <locale>en</locale>
+                              <priority>1</priority>
+                              <text>University Owned</text>
+                              <bundle reference="../../../.."/>
+                            </com.tle.beans.entity.LanguageString>
+                          </entry>
+                        </strings>
+                      </name>
+                      <value>universityowned</value>
+                      <defaultValue>false</defaultValue>
+                    </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                    <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                      <name>
+                        <id>0</id>
+                        <strings>
+                          <entry>
+                            <string>en</string>
+                            <com.tle.beans.entity.LanguageString>
+                              <id>0</id>
+                              <locale>en</locale>
+                              <priority>1</priority>
+                              <text>Permission Granted</text>
+                              <bundle reference="../../../.."/>
+                            </com.tle.beans.entity.LanguageString>
+                          </entry>
+                        </strings>
+                      </name>
+                      <value>permissiongranted</value>
+                      <defaultValue>false</defaultValue>
+                    </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                    <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                      <name>
+                        <id>0</id>
+                        <strings>
+                          <entry>
+                            <string>en</string>
+                            <com.tle.beans.entity.LanguageString>
+                              <id>0</id>
+                              <locale>en</locale>
+                              <priority>1</priority>
+                              <text>Preservation</text>
+                              <bundle reference="../../../.."/>
+                            </com.tle.beans.entity.LanguageString>
+                          </entry>
+                        </strings>
+                      </name>
+                      <value>preservation</value>
+                      <defaultValue>false</defaultValue>
+                    </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  </items>
+                </com.dytech.edge.wizard.beans.control.ListBox>
+                <com.dytech.edge.wizard.beans.control.Button>
+                  <mandatory>false</mandatory>
+                  <reload>false</reload>
+                  <include>true</include>
+                  <size1>0</size1>
+                  <size2>0</size2>
+                  <title>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Refresh</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </title>
+                  <script>var bRet = false; 
+if( user.hasRole(&apos;ea56f2db-aaa1-61ab-9922-7412bd97290c&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+                  <targetnodes/>
+                  <items/>
+                  <action>wizreload();</action>
+                </com.dytech.edge.wizard.beans.control.Button>
+                <com.dytech.edge.wizard.beans.control.RadioGroup>
+                  <mandatory>false</mandatory>
+                  <reload>true</reload>
+                  <include>true</include>
+                  <size1>2</size1>
+                  <size2>20</size2>
+                  <title>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>File or text</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </title>
+                  <script>var bRet = false; 
+if( xml.contains(&apos;/item/copyright/portions/portion/sections/section/copyrightstatus&apos;, &apos;permissiongranted&apos;) || xml.contains(&apos;/item/copyright/portions/portion/sections/section/copyrightstatus&apos;, &apos;outofprint&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+                  <targetnodes>
+                    <com.dytech.edge.wizard.TargetNode>
+                      <target>/permissiontype</target>
+                      <attribute></attribute>
+                    </com.dytech.edge.wizard.TargetNode>
+                  </targetnodes>
+                  <items>
+                    <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                      <name>
+                        <id>0</id>
+                        <strings>
+                          <entry>
+                            <string>en</string>
+                            <com.tle.beans.entity.LanguageString>
+                              <id>0</id>
+                              <locale>en</locale>
+                              <priority>1</priority>
+                              <text>File</text>
+                              <bundle reference="../../../.."/>
+                            </com.tle.beans.entity.LanguageString>
+                          </entry>
+                        </strings>
+                      </name>
+                      <value>file</value>
+                      <defaultValue>true</defaultValue>
+                    </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                    <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                      <name>
+                        <id>0</id>
+                        <strings>
+                          <entry>
+                            <string>en</string>
+                            <com.tle.beans.entity.LanguageString>
+                              <id>0</id>
+                              <locale>en</locale>
+                              <priority>1</priority>
+                              <text>Text</text>
+                              <bundle reference="../../../.."/>
+                            </com.tle.beans.entity.LanguageString>
+                          </entry>
+                        </strings>
+                      </name>
+                      <value>text</value>
+                      <defaultValue></defaultValue>
+                    </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  </items>
+                </com.dytech.edge.wizard.beans.control.RadioGroup>
+                <com.dytech.edge.wizard.beans.control.CustomControl>
+                  <mandatory>false</mandatory>
+                  <reload>false</reload>
+                  <include>true</include>
+                  <size1>0</size1>
+                  <size2>0</size2>
+                  <title>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>If copyright permission has been given, attach here</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </title>
+                  <script>var bRet = false; 
+if( xml.contains(&apos;/item/copyright/portions/portion/sections/section/permissiontype&apos;, &apos;file&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+                  <targetnodes>
+                    <com.dytech.edge.wizard.TargetNode>
+                      <target>/permission</target>
+                      <attribute></attribute>
+                    </com.dytech.edge.wizard.TargetNode>
+                  </targetnodes>
+                  <items/>
+                  <classType>universal</classType>
+                  <attributes>
+                    <entry>
+                      <string>FILE_NOUNZIP</string>
+                      <boolean>true</boolean>
+                    </entry>
+                    <entry>
+                      <string>AllowMultiple</string>
+                      <boolean>false</boolean>
+                    </entry>
+                    <entry>
+                      <string>FILE_PACKAGEONLY</string>
+                      <boolean>false</boolean>
+                    </entry>
+                    <entry>
+                      <string>AttachmentTypes</string>
+                      <java.util.Collections_-SingletonSet>
+                        <element class="string">fileHandler</element>
+                      </java.util.Collections_-SingletonSet>
+                    </entry>
+                  </attributes>
+                </com.dytech.edge.wizard.beans.control.CustomControl>
+                <com.dytech.edge.wizard.beans.control.EditBox>
+                  <mandatory>false</mandatory>
+                  <reload>false</reload>
+                  <include>true</include>
+                  <size1>65</size1>
+                  <size2>3</size2>
+                  <title>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Details of permission</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </title>
+                  <script>var bRet = false; 
+if( xml.contains(&apos;/item/copyright/portions/portion/sections/section/permissiontype&apos;, &apos;text&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+                  <targetnodes>
+                    <com.dytech.edge.wizard.TargetNode>
+                      <target>/permission</target>
+                      <attribute></attribute>
+                    </com.dytech.edge.wizard.TargetNode>
+                  </targetnodes>
+                  <items/>
+                  <links>false</links>
+                  <number>false</number>
+                  <forceUnique>false</forceUnique>
+                  <checkDuplication>false</checkDuplication>
+                  <allowMultiLang>false</allowMultiLang>
+                </com.dytech.edge.wizard.beans.control.EditBox>
+                <com.dytech.edge.wizard.beans.control.CheckBoxGroup>
+                  <mandatory>false</mandatory>
+                  <reload>false</reload>
+                  <include>true</include>
+                  <size1>1</size1>
+                  <size2>100</size2>
+                  <customName>Illustration</customName>
+                  <targetnodes>
+                    <com.dytech.edge.wizard.TargetNode>
+                      <target>/illustration</target>
+                      <attribute></attribute>
+                    </com.dytech.edge.wizard.TargetNode>
+                  </targetnodes>
+                  <items>
+                    <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                      <name>
+                        <id>0</id>
+                        <strings>
+                          <entry>
+                            <string>en</string>
+                            <com.tle.beans.entity.LanguageString>
+                              <id>0</id>
+                              <locale>en</locale>
+                              <priority>1</priority>
+                              <text>Does this have an Illustration/Table?</text>
+                              <bundle reference="../../../.."/>
+                            </com.tle.beans.entity.LanguageString>
+                          </entry>
+                        </strings>
+                      </name>
+                      <value>illustration</value>
+                      <defaultValue></defaultValue>
+                    </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  </items>
+                </com.dytech.edge.wizard.beans.control.CheckBoxGroup>
+              </controls>
+              <noun>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>additional section</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </noun>
+              <min>1</min>
+              <max>50</max>
+            </com.dytech.edge.wizard.beans.control.Repeater>
+            <com.dytech.edge.wizard.beans.control.ListBox>
+              <mandatory>true</mandatory>
+              <reload>true</reload>
+              <include>true</include>
+              <size1>1</size1>
+              <size2>155</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Type:</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <description>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Journal article or book chapter?</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </description>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/copyright/</target>
+                  <attribute>parenttype</attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Journal article</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>Journal</value>
+                  <defaultValue>false</defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Book extract</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>Book</value>
+                  <defaultValue>false</defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+              </items>
+            </com.dytech.edge.wizard.beans.control.ListBox>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>true</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Select Book</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/copyright/@parenttype&apos;, &apos;Book&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>item/temp_resourceHandler</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <classType>universal</classType>
+              <attributes>
+                <entry>
+                  <string>RestrictToPowerSearches</string>
+                  <set/>
+                </entry>
+                <entry>
+                  <string>AllowSelection</string>
+                  <string>ITEMS</string>
+                </entry>
+                <entry>
+                  <string>RestrictToCollections</string>
+                  <set>
+                    <string>4c147089-cddb-e67c-b5ab-189614eb1463</string>
+                  </set>
+                </entry>
+                <entry>
+                  <string>RestrictToFedSearches</string>
+                  <set>
+                    <string>97740df1-4430-a6f7-a1dc-e0ae1eb7fe13</string>
+                    <string>e1ed999e-2414-4ae6-bce1-557e335c637a</string>
+                  </set>
+                </entry>
+                <entry>
+                  <string>AttachmentTypes</string>
+                  <set>
+                    <string>resourceHandler</string>
+                  </set>
+                </entry>
+                <entry>
+                  <string>IsRestrictedContribution</string>
+                  <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>AllowPreviews</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>RestrictToContribution</string>
+                  <set/>
+                </entry>
+                <entry>
+                  <string>AllowMultiple</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>IsRestrictedCollections</string>
+                  <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>RelationType</string>
+                  <string>CAL_HOLDING</string>
+                </entry>
+                <entry>
+                  <string>RestrictToDynaCollection</string>
+                  <null/>
+                </entry>
+                <entry>
+                  <string>IsRestrictedDynaCollection</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>IsRestrictedFedSearches</string>
+                  <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>IsRestrictedPowerSearches</string>
+                  <boolean>true</boolean>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>true</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Select Journal Issue</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/copyright/@parenttype&apos;, &apos;Journal&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>item/temp_resourceHandler1</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <classType>universal</classType>
+              <attributes>
+                <entry>
+                  <string>IsRestrictedContribution</string>
+                  <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>RestrictToPowerSearches</string>
+                  <set>
+                    <string>752b2d47-9110-0788-60d2-b1f08a2628a6</string>
+                  </set>
+                </entry>
+                <entry>
+                  <string>AllowSelection</string>
+                  <string>ITEMS</string>
+                </entry>
+                <entry>
+                  <string>RestrictToCollections</string>
+                  <set>
+                    <string>1ae3203d-cf33-4160-88be-38ce36402502</string>
+                  </set>
+                </entry>
+                <entry>
+                  <string>RestrictToContribution</string>
+                  <set>
+                    <string>1ae3203d-cf33-4160-88be-38ce36402502</string>
+                  </set>
+                </entry>
+                <entry>
+                  <string>AllowMultiple</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>IsRestrictedCollections</string>
+                  <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>RelationType</string>
+                  <string>CAL_HOLDING</string>
+                </entry>
+                <entry>
+                  <string>RestrictToFedSearches</string>
+                  <set>
+                    <string>cd253d51-e246-4fe4-9945-9fe7d29d6971</string>
+                    <string>97740df1-4430-a6f7-a1dc-e0ae1eb7fe13</string>
+                  </set>
+                </entry>
+                <entry>
+                  <string>IsRestrictedFedSearches</string>
+                  <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>AttachmentTypes</string>
+                  <java.util.Collections_-SingletonSet>
+                    <element class="string">resourceHandler</element>
+                  </java.util.Collections_-SingletonSet>
+                </entry>
+                <entry>
+                  <string>IsRestrictedPowerSearches</string>
+                  <boolean>true</boolean>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Chapter Number</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/copyright/@parenttype&apos;, &apos;Book&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/copyright/portions/portion/number</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.ShuffleList>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>5</size1>
+              <size2>450</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Author</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <description>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Please enter the author(s) of this chapter or article (Surname, Given I.) then click &quot;Add&quot;</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </description>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/copyright/portions/portion/authors/author</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <controls/>
+              <tokenise>true</tokenise>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+            </com.dytech.edge.wizard.beans.control.ShuffleList>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Title</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <description>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Please enter the full title of this chapter or article</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </description>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/copyright/portions/portion/title</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/itembody/name</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>3</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Description</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <description>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Please enter a description or abstract for this chapter or article if required</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </description>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/copyright/portion/portiondesc</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/itembody/description</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.ShuffleList>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>5</size1>
+              <size2>450</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Theme, topic or subject matter</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <description>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Enter theme, topic or subject matter then click &quot;Add&quot;</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </description>
+              <script>var bRet = false; 
+if( xml.contains(&apos;/item/copyright/@parenttype&apos;, &apos;Journal&apos;) &amp;&amp; user.hasRole(&apos;ea56f2db-aaa1-61ab-9922-7412bd97290c&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/copyright/portions/portion/topics/topic</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <controls/>
+              <tokenise>true</tokenise>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+            </com.dytech.edge.wizard.beans.control.ShuffleList>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>50</size1>
+              <size2>2</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Internal notes</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <description>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Additional notes re item viewable only to content administrators</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </description>
+              <script>var bRet = false; 
+if( user.hasRole(&apos;ROLE_CONTENT_ADMINISTRATOR&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/copyright/portions/portion/internalnotes</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.RadioGroup>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>2</size1>
+              <size2>30</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>From where does this originate?</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/copyright/origin</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Print</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>print</value>
+                  <defaultValue>true</defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+                <com.dytech.edge.wizard.beans.control.WizardControlItem>
+                  <name>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Online</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </name>
+                  <value>online</value>
+                  <defaultValue></defaultValue>
+                </com.dytech.edge.wizard.beans.control.WizardControlItem>
+              </items>
+            </com.dytech.edge.wizard.beans.control.RadioGroup>
+          </controls>
+          <additionalCssClass></additionalCssClass>
+        </com.dytech.edge.wizard.beans.DefaultWizardPage>
+      </pages>
+      <redraftScript></redraftScript>
+      <saveScript>/* add save script to add status = copyright for any portion where status is blank 
+
+var prop = xml.getPropBagEx();
+*/
+var xmlTypeArray = xml.getAllSubtrees(&apos;/item/copyright/portions/portion/sections/section/&apos;);
+for(var i=0; i &lt; xmlTypeArray.length; i++)
+{
+    var xt = xmlTypeArray[i];
+    var thisStatus = xt.get(&apos;copyrightstatus&apos;);
+    if (thisStatus==&apos;&apos;)
+    {
+      xt.set(&apos;copyrightstatus&apos;,&apos;copyright&apos;);
+    }
+}</saveScript>
+      <allowNonSequentialNavigation>false</allowNonSequentialNavigation>
+      <showPageTitlesNextPrev>false</showPageTitlesNextPrev>
+    </wizard>
+    <searchDetails>
+      <displayNodes>
+        <com.tle.beans.entity.itemdef.DisplayNode>
+          <node>/item/itembody/name</node>
+          <splitter>, </splitter>
+          <type>text</type>
+          <title>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en</locale>
+                  <priority>1</priority>
+                  <text>Title</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </title>
+          <truncateLength>355</truncateLength>
+        </com.tle.beans.entity.itemdef.DisplayNode>
+      </displayNodes>
+      <attDisplay>STRUCTURED</attDisplay>
+      <disableThumbnail>false</disableThumbnail>
+      <standardOpen>false</standardOpen>
+      <integrationOpen>false</integrationOpen>
+    </searchDetails>
+    <metadataMapping>
+      <imsMapping class="list"/>
+      <htmlMapping class="list"/>
+      <literalMapping class="list"/>
+    </metadataMapping>
+    <itemSummarySections>
+      <configList>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>4e915dcb-fa9f-458a-84b3-835d4073dc86</uuid>
+          <value>basicSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Basic Information</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+          <configuration>&lt;map&gt;
+  &lt;entry&gt;
+    &lt;string&gt;owner&lt;/string&gt;
+    &lt;string&gt;true&lt;/string&gt;
+  &lt;/entry&gt;
+&lt;/map&gt;</configuration>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>6b8c6f58-e5fd-4cbe-8d30-387a5cd09eda</uuid>
+          <value>attachmentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Links to resources</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+          <configuration>&lt;xml&gt;&lt;SHOW_FULLSCREEN_LINK_KEY&gt;true&lt;/SHOW_FULLSCREEN_LINK_KEY&gt;&lt;SHOW_FULLSCREEN_LINK_NEW_WINDOW_KEY&gt;false&lt;/SHOW_FULLSCREEN_LINK_NEW_WINDOW_KEY&gt;&lt;displaymode&gt;structured&lt;/displaymode&gt;&lt;/xml&gt;</configuration>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>9cac4ed7-50e7-4adc-b670-1afac590abc9</uuid>
+          <value>citationSummarySection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Citation</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>66b6f92f-5db2-47be-92b0-4ee63f673bf6</uuid>
+          <value>commentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Add a comment</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+          <configuration>&lt;xml&gt;&lt;DISPLAY_IDENTITY_KEY&gt;true&lt;/DISPLAY_IDENTITY_KEY&gt;&lt;SUPPRESS_USERNAME_KEY&gt;true&lt;/SUPPRESS_USERNAME_KEY&gt;&lt;ANONYMOUSLY_COMMENTS_KEY&gt;true&lt;/ANONYMOUSLY_COMMENTS_KEY&gt;&lt;DISPLAY_NAME_KEY&gt;BOTH&lt;/DISPLAY_NAME_KEY&gt;&lt;/xml&gt;</configuration>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+      </configList>
+      <hideOwner>false</hideOwner>
+      <hideCollaborators>false</hideCollaborators>
+    </itemSummarySections>
+  </slow>
+  <denyDirectContribution>false</denyDirectContribution>
+</com.tle.beans.entity.itemdef.ItemDefinition>

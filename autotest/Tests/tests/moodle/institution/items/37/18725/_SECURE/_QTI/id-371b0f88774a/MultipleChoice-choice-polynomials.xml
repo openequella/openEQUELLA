@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Thie example adapted from the PET Handbook, copyright University of Cambridge ESOL Examinations -->
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+	identifier="MultipleChoice-choice-polynomials" title="Identifying polynomials" adaptive="false" timeDependent="false">
+	<responseDeclaration identifier="RESPONSE" cardinality="single" baseType="identifier">
+		<correctResponse>
+			<value>ChoiceA</value>
+		</correctResponse>
+	</responseDeclaration>
+    <outcomeDeclaration identifier="SCORE" cardinality="single" baseType="float" normalMaximum="2">
+		<defaultValue>
+			<value>0.0</value>
+		</defaultValue>
+	</outcomeDeclaration>
+    <outcomeDeclaration identifier="FEEDBACK" cardinality="single" baseType="identifier"/>
+    <itemBody>
+	    <p>Which of the following is not a polynomial?</p>
+		<choiceInteraction responseIdentifier="RESPONSE" shuffle="true" maxChoices="1">
+			<prompt> </prompt>
+			<simpleChoice identifier="ChoiceA">
+			    <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+			        <semantics>
+			            <mrow>
+			                <msup>
+			                    <mi>sec</mi>
+			                    <mn>2</mn>
+			                </msup>
+			                <mi>&#x398;</mi>
+			            </mrow>
+			            <annotation encoding="SnuggleTeX">\[ \sec^2{\theta} \]</annotation>
+			        </semantics>
+			    </math>
+			</simpleChoice>
+			<simpleChoice identifier="ChoiceB">
+			    <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+			        <semantics>
+			            <mrow>
+			                <mi>x</mi>
+			                <mo>+</mo>
+			                <mn>1001</mn>
+			                <mi>y</mi>
+			            </mrow>
+			            <annotation encoding="SnuggleTeX">\[ x+1001y \]</annotation>
+			        </semantics>
+			    </math>
+			</simpleChoice>
+		    <simpleChoice identifier="ChoiceC">
+		        <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+		            <semantics>
+		                <mrow>
+		                    <msup>
+		                        <mi>x</mi>
+		                        <mn>3</mn>
+		                    </msup>
+		                    <mo>-</mo>
+		                    <mn>5</mn>
+		                    <mi>x</mi>
+		                    <mo>+</mo>
+		                    <mn>87</mn>
+		                </mrow>
+		                <annotation encoding="SnuggleTeX">\[ x^3-5x+87 \]</annotation>
+		            </semantics>
+		        </math>
+		    </simpleChoice>
+		    <simpleChoice identifier="ChoiceD">
+		        <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+		            <semantics>
+		                <mrow>
+		                    <mn>1</mn>
+		                    <mo>-</mo>
+		                    <msup>
+		                        <mi>&#x03B6;</mi>
+		                        <mn>2</mn>
+		                    </msup>
+		                </mrow>
+		                <annotation encoding="SnuggleTeX">\[ 1-\zeta^2 \]</annotation>
+		            </semantics>
+		        </math>
+		    </simpleChoice>
+		</choiceInteraction>
+	    <p>
+	        <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="OK">
+	            Yes, that's correct.</feedbackInline>
+	        <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="No">
+	            No, that's not correct.</feedbackInline>
+	    </p>
+	</itemBody>
+    <responseProcessing>
+        <responseCondition>
+            <responseIf>
+                <isNull>
+                    <variable identifier="RESPONSE"/>
+                </isNull>
+                <setOutcomeValue identifier="SCORE">
+                    <baseValue baseType="float">0.0</baseValue>
+                </setOutcomeValue>
+            </responseIf>
+            <responseElse>
+                <responseCondition>
+                    <responseIf>
+                        <match>
+                            <variable identifier="RESPONSE"/>
+                            <correct identifier="RESPONSE"/>
+                        </match>
+                        <setOutcomeValue identifier="SCORE">
+                            <baseValue baseType="float">2.0</baseValue>
+                        </setOutcomeValue>
+                        <setOutcomeValue identifier="FEEDBACK">
+                            <baseValue baseType="identifier">OK</baseValue>
+                        </setOutcomeValue>
+                    </responseIf>
+                    <responseElse>
+                        <setOutcomeValue identifier="SCORE">
+                            <baseValue baseType="float">0.0</baseValue>
+                        </setOutcomeValue>
+                        <setOutcomeValue identifier="FEEDBACK">
+                            <baseValue baseType="identifier">No</baseValue>
+                        </setOutcomeValue>
+                    </responseElse>
+                </responseCondition>
+            </responseElse>
+        </responseCondition>
+    </responseProcessing>
+</assessmentItem>

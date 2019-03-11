@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="UTF–8"?>
+<learningObject title="Air Pressure">
+	<loadingText><![CDATA[Loading <i>Air pressure: particle model</i> ...]]></loadingText>
+	<loadingCompleteText><![CDATA[Air pressure: particle model]]></loadingCompleteText>
+	<lo_title><![CDATA[Air pressure: particle model]]></lo_title>
+	
+	<startButton><![CDATA[Start]]></startButton>
+	
+	<screens>
+		<s1>
+			<display id="s1_t1">
+				<![CDATA[Jim soon knows when his dog makes a bad smell!<br><br>How does the smell spread through the air?]]>
+			</display>
+			<nextButton><![CDATA[Check]]></nextButton>
+			<replayButton><![CDATA[Replay]]></replayButton>
+		</s1>
+		<s2>
+			<display id="s1_t2">
+				<![CDATA[Air is a gas made of tiny particles.<br><br>There are different types of particles in air, but for now we'll just show them all as small dots. The air particles move fast and spread far apart.<br/><br/>The wind that a dog passes is also a gas. It is made of different particles. These are shown as larger dots. The smelly particles spread out as they collide with air particles. They eventually reach your nose.]]>
+			</display>
+			<nextButton><![CDATA[Next]]></nextButton>
+			<replayButton><![CDATA[Replay]]></replayButton>
+		</s2>
+	</screens>
+	<warning>
+		<exitLevel id="w_1"><![CDATA[If you leave this activity, you will lose your work.<br><br>Are you sure you want to leave?]]></exitLevel>
+	</warning>
+	<feedback>
+		<finalfeedback id="s5_ff"><![CDATA[]]></finalfeedback>
+	</feedback>
+	<endashCode><![CDATA[&#8212;]]></endashCode>
+	</learningObject>

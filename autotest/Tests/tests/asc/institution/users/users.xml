@@ -1,0 +1,20 @@
+<list>
+  <com.tle.beans.user.TLEUser>
+    <id>116097</id>
+    <uuid>ad2c30da-2b1c-4427-b21c-45ef5bd09f11</uuid>
+    <username>ScriptTest</username>
+    <firstName>Script</firstName>
+    <lastName>Test</lastName>
+    <emailAddress></emailAddress>
+    <password>SHA256:cc9e37d975bb25b2fcecd8c20d9c77dbe7ce2649de0127b9a5ca76038f852da0</password>
+  </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>116096</id>
+    <uuid>adfcaf58-241b-4eca-9740-6a26d1c3dd58</uuid>
+    <username>AutoTest</username>
+    <firstName>Auto</firstName>
+    <lastName>Test</lastName>
+    <emailAddress>junk@autotest.com.au</emailAddress>
+    <password>MD5:a434f46aa79bfef92ecf227e9ee704a1</password>
+  </com.tle.beans.user.TLEUser>
+</list>

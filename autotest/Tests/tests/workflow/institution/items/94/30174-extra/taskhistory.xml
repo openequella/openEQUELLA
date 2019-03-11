@@ -1,0 +1,37 @@
+<list>
+  <com.tle.beans.TaskHistory>
+    <id>30211</id>
+    <task workflow="46392820-5bce-3d29-b4b3-61131cfe20a4">39730e60-fe34-66ae-0e97-7c2a2fe0e134</task>
+    <entryDate class="sql-timestamp">2008-03-28 14:14:16.377</entryDate>
+    <exitDate class="sql-timestamp">2008-03-28 14:14:39.063</exitDate>
+  </com.tle.beans.TaskHistory>
+  <com.tle.beans.TaskHistory>
+    <id>30212</id>
+    <task workflow="46392820-5bce-3d29-b4b3-61131cfe20a4">f971d8a4-5639-3e23-c32c-535fa93ced53</task>
+    <entryDate class="sql-timestamp">2008-03-28 14:14:39.063</entryDate>
+    <exitDate class="sql-timestamp">2008-03-28 14:15:01.213</exitDate>
+  </com.tle.beans.TaskHistory>
+  <com.tle.beans.TaskHistory>
+    <id>30213</id>
+    <task workflow="46392820-5bce-3d29-b4b3-61131cfe20a4">39730e60-fe34-66ae-0e97-7c2a2fe0e134</task>
+    <entryDate class="sql-timestamp">2008-03-28 14:15:28.423</entryDate>
+    <exitDate class="sql-timestamp">2012-03-29 14:53:44.09</exitDate>
+  </com.tle.beans.TaskHistory>
+  <com.tle.beans.TaskHistory>
+    <id>30214</id>
+    <task workflow="46392820-5bce-3d29-b4b3-61131cfe20a4">f971d8a4-5639-3e23-c32c-535fa93ced53</task>
+    <entryDate class="sql-timestamp">2012-03-29 14:53:44.09</entryDate>
+    <exitDate class="sql-timestamp">2012-03-29 14:54:02.073</exitDate>
+  </com.tle.beans.TaskHistory>
+  <com.tle.beans.TaskHistory>
+    <id>30215</id>
+    <task workflow="46392820-5bce-3d29-b4b3-61131cfe20a4">39730e60-fe34-66ae-0e97-7c2a2fe0e134</task>
+    <entryDate class="sql-timestamp">2012-03-29 14:54:19.803</entryDate>
+    <exitDate class="sql-timestamp">2012-10-11 17:29:23.387</exitDate>
+  </com.tle.beans.TaskHistory>
+  <com.tle.beans.TaskHistory>
+    <id>30216</id>
+    <task workflow="46392820-5bce-3d29-b4b3-61131cfe20a4">39730e60-fe34-66ae-0e97-7c2a2fe0e134</task>
+    <entryDate class="sql-timestamp">2012-10-11 17:30:06.307</entryDate>
+  </com.tle.beans.TaskHistory>
+</list>

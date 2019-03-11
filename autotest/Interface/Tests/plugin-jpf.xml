@@ -1,0 +1,33 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.webtests" version="1">
+	<requires>
+		<import plugin-id="org.apache.httpcomponents:httpclient" />
+		<import plugin-id="org.apache.httpcomponents:httpcore" />
+		<import plugin-id="com.fasterxml.jackson.core:jackson-databind" />
+		<import plugin-id="org.testng:testng" />
+		<import plugin-id="com.google.guava:guava" />
+		<import plugin-id="org.hamcrest:hamcrest-library" />
+		<import plugin-id="org.hamcrest:hamcrest-core" />
+		<import plugin-id="com.jayway.restassured:rest-assured" />
+		<import plugin-id="com.jayway.restassured:json-path" />
+		<import plugin-id="com.jayway.restassured:rest-assured-common" />
+		<import plugin-id="com.jayway.restassured:xml-path" />
+		<import plugin-id="commons-httpclient:commons-httpclient" />
+		<import plugin-id="com.tle.json" />
+		<import plugin-id="com.tle.platform.common" />
+		<import plugin-id="org.codehaus.groovy:groovy" />
+		<import plugin-id="org.codehaus.groovy:groovy-json" />
+		<import plugin-id="org.ow2.asm:asm" />
+		<import plugin-id="org.apache.commons:commons-lang3" />
+		<import plugin-id="org.apache.httpcomponents:httpmime" />
+		<import plugin-id="antlr:antlr" />
+		<import plugin-id="org.slf4j:slf4j-api" />
+		<import plugin-id="com.google.code.findbugs:jsr305" />
+		<import plugin-id="com.beust:jcommander" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="classes">
+			<export prefix="*" />
+		</library>
+	</runtime>
+</plugin>

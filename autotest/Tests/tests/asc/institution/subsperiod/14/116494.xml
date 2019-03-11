@@ -1,0 +1,27 @@
+<com.tle.common.payment.entity.SubscriptionPeriod>
+  <id>116494</id>
+  <uuid>fb61240d-453d-49ff-aa6d-ab907cc7440e</uuid>
+  <institution>
+    <id>116095</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <name>
+    <id>116495</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116496</id>
+          <locale>en</locale>
+          <priority>0</priority>
+          <text>Week</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <duration>1</duration>
+  <durationUnit>1</durationUnit>
+  <magnitude>604800000</magnitude>
+</com.tle.common.payment.entity.SubscriptionPeriod>

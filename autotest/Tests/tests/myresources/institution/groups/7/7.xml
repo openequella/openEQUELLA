@@ -1,0 +1,9 @@
+<com.tle.beans.user.TLEGroup>
+  <id>35091</id>
+  <uuid>bbd3caf4-7558-1847-e006-82a53746a94a</uuid>
+  <name>Users in Token Group</name>
+  <description></description>
+  <users>
+    <string>3b14a336-58f2-db86-9ee9-f4942b0abbba</string>
+  </users>
+</com.tle.beans.user.TLEGroup>

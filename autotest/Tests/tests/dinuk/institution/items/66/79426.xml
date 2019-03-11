@@ -1,0 +1,126 @@
+<com.tle.beans.item.Item>
+  <id>79426</id>
+  <uuid>df150eed-a4c7-415f-9232-e3299eb19352</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-05-29 15:20:03.547</dateModified>
+  <dateCreated class="sql-timestamp">2012-05-29 15:20:03.551</dateCreated>
+  <dateForIndex class="sql-timestamp">2012-05-29 15:22:53.617</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>REJECTED</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="66a332d9-c92d-4a01-951a-2817840f4e71"/>
+  <collaborators/>
+  <badUrls/>
+  <moderation>
+    <id>79430</id>
+    <start class="sql-timestamp">2012-05-29 15:20:03.563</start>
+    <lastAction class="sql-timestamp">2012-05-29 15:22:53.617</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <rejectedMessage>Rejected Item A Reason</rejectedMessage>
+    <rejectedBy>5176db3a-edaa-489c-b0e6-d4d720947d6f</rejectedBy>
+    <rejectedStep>93cf68a9-3391-4023-9250-0fae072b424f</rejectedStep>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>79435</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-05-29 15:20:03.547</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>79436</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-05-29 15:20:03.547</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>79437</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-05-29 15:20:03.547</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>79438</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-05-29 15:20:03.547</date>
+      <step>0f3963c8-0ac9-491f-a9eb-d5341e4c8bf8</step>
+      <stepName>Start</stepName>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>79473</id>
+      <user>5176db3a-edaa-489c-b0e6-d4d720947d6f</user>
+      <date class="sql-timestamp">2012-05-29 15:22:53.617</date>
+      <step>93cf68a9-3391-4023-9250-0fae072b424f</step>
+      <stepName>Mod1</stepName>
+      <comment>Rejected Item A Reason</comment>
+      <applies>false</applies>
+      <type>rejected</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>79474</id>
+      <user>5176db3a-edaa-489c-b0e6-d4d720947d6f</user>
+      <date class="sql-timestamp">2012-05-29 15:22:53.617</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>REJECTED</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>79433</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>79434</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>Rejected Item A</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>79427</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>79428</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>Rejected Item A Desc</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

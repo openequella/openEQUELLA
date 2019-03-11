@@ -1,0 +1,20 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Auto Test Suite Local with database" parallel="instances" data-provider-thread-count="4" thread-count="4" configfailurepolicy="continue">
+	<suite-files>
+		<!-- <suite-file path="./testng-database.xml"/> -->
+		<suite-file path="./testng-institution-sync.xml"/>
+		
+		<suite-file path="../Interface/Tests/testng-equella-scratch.xml"/>
+		<suite-file path="../Interface/Tests/testng-equella-tests.xml"/>
+		<suite-file path="./testng-local-services.xml"/>
+		<!--<suite-file path="./testng-local-ecommerce.xml"/>-->
+		<suite-file path="./testng-local-contribution.xml"/>
+		<suite-file path="./testng-local-workflow.xml"/>
+		<suite-file path="./testng-local-searching.xml"/>
+		<suite-file path="./testng-local-viewing.xml"/>
+		<suite-file path="./testng-local-admin.xml"/>
+		<suite-file path="./testng-local-cal.xml"/>
+		<suite-file path="./testng-local-misc.xml"/>
+	</suite-files>
+</suite>

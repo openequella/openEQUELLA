@@ -1,0 +1,22 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>2016903</id>
+  <institution>
+    <id>2016849</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>emf</string>
+    <string>wmf</string>
+  </extensions>
+  <type>windows/metafile</type>
+  <attributes>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&apos;toimg&apos;]</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/image.gif</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

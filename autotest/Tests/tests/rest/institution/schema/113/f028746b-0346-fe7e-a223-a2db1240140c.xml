@@ -1,0 +1,56 @@
+<com.tle.beans.entity.Schema>
+  <id>116578</id>
+  <uuid>f028746b-0346-fe7e-a223-a2db1240140c</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-04-04 12:56:52.87</dateModified>
+  <dateCreated class="sql-timestamp">2012-03-14 17:33:05.767</dateCreated>
+  <description>
+    <id>116579</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116580</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>testing the creation of a CAL schema as demonstrated by the CAL configuration guide</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>116581</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116582</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>CAL Guide Schema</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms/>
+  <impTransforms>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>MODS_z3950_to_book-20071212-1.xslt</filename>
+      <type>Z39.50 to Book</type>
+    </com.tle.beans.entity.SchemaTransform>
+  </impTransforms>
+  <itemNamePath>/item/itembody/name</itemNamePath>
+  <itemDescriptionPath>/item/itembody/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;copyright&gt;&lt;type attribute=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;parenttype attribute=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;title field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;abstract search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;isbn field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;authors&gt;&lt;author field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/authors&gt;&lt;editors&gt;&lt;editor field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/editors&gt;&lt;issn field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;issue&gt;&lt;type search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;value search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/issue&gt;&lt;volume search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;publisher type=&quot;text&quot;/&gt;&lt;publication&gt;&lt;year type=&quot;text&quot;/&gt;&lt;place field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/publication&gt;&lt;pages type=&quot;text&quot;/&gt;&lt;portions&gt;&lt;portion&gt;&lt;title field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;authors&gt;&lt;author field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/authors&gt;&lt;abstract search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;number type=&quot;text&quot;/&gt;&lt;topics&gt;&lt;topic search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/topics&gt;&lt;sections&gt;&lt;section&gt;&lt;pages type=&quot;text&quot;/&gt;&lt;attachment type=&quot;text&quot;/&gt;&lt;type type=&quot;text&quot;/&gt;&lt;copyrightstatus type=&quot;text&quot;/&gt;&lt;illustration type=&quot;text&quot;/&gt;&lt;/section&gt;&lt;/sections&gt;&lt;/portion&gt;&lt;/portions&gt;&lt;/copyright&gt;&lt;itembody&gt;&lt;name field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/itembody&gt;&lt;/item&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations>
+    <com.tle.beans.entity.schema.Citation>
+      <name>Harvard</name>
+      <transformation>harvard.xsl</transformation>
+    </com.tle.beans.entity.schema.Citation>
+  </citations>
+</com.tle.beans.entity.Schema>

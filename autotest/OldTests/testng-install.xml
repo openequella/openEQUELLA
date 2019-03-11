@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="EQUELLA install only" parallel="instances" data-provider-thread-count="1" thread-count="1" configfailurepolicy="continue">
+    <test name="Install only">
+        <classes>
+            <class name="com.tle.webtests.test.admin.InstallTest"/>
+        </classes>
+    </test>
+</suite>

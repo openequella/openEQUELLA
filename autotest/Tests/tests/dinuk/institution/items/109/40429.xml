@@ -1,0 +1,111 @@
+<com.tle.beans.item.Item>
+  <id>40429</id>
+  <uuid>08229b1f-6380-4e7b-b229-064021b27fc9</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-04-27 17:51:52.474</dateModified>
+  <dateCreated class="sql-timestamp">2012-04-27 12:31:41.766</dateCreated>
+  <dateForIndex class="sql-timestamp">2012-04-27 17:51:52.474</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="fc15d7f1-8e2b-4793-b024-61db2cb10886"/>
+  <collaborators/>
+  <badUrls/>
+  <moderation>
+    <id>40433</id>
+    <liveApprovalDate class="sql-timestamp">2012-04-27 12:31:41.766</liveApprovalDate>
+    <start>2012-06-01 16:12:24.320 IST</start>
+    <lastAction class="sql-timestamp">2012-04-27 12:31:41.766</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>40436</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-04-27 12:31:41.766</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>40437</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-04-27 12:31:41.766</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>40438</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-04-27 12:31:41.766</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>40441</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-04-27 12:35:56.074</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>40602</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-04-27 17:51:52.474</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>40434</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>40435</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>Contribution to Authors A</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>40430</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>40431</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>Contribution to Authors Desc</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

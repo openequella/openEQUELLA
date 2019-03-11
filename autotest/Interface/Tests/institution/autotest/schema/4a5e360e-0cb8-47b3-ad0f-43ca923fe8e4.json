@@ -1,0 +1,85 @@
+{
+  "uuid" : "4a5e360e-0cb8-47b3-ad0f-43ca923fe8e4",
+  "name" : "Facet schema",
+  "nameStrings" : {
+    "en" : "Facet schema"
+  },
+  "modifiedDate" : "2014-05-12T15:43:40.534+10:00",
+  "createdDate" : "2014-05-12T15:43:40.515+10:00",
+  "owner" : {
+    "id" : "system"
+  },
+  "security" : {
+    "rules" : [ ]
+  },
+  "namePath" : "/item/name",
+  "descriptionPath" : "/item/description",
+  "definition" : {
+    "xml" : {
+      "item" : {
+        "name" : {
+          "_field" : true,
+          "_type" : "text"
+        },
+        "description" : {
+          "_field" : true,
+          "_type" : "text"
+        },
+        "genre" : {
+          "_field" : true,
+          "_type" : "text"
+        },
+        "publish_history" : {
+          "written" : {
+            "_field" : true,
+            "_type" : "text"
+          }
+        },
+        "author" : {
+          "_nested" : true,
+          "full_name" : {
+            "_field" : true,
+            "_type" : "text"
+          },
+          "pets" : {
+            "pet" : {
+              "_nested" : true,
+              "name" : {
+                "_field" : true,
+                "_type" : "text"
+              },
+              "species" : {
+                "_field" : true,
+                "_type" : "text"
+              }
+            }
+          }
+        },
+        "info" : {
+          "book_class" : {
+            "_field" : true,
+            "_type" : "text"
+          }
+        },
+        "store" : {
+          "price" : {
+            "_field" : true,
+            "_type" : "text"
+          }
+        },
+        "tags" : {
+          "tag" : {
+            "_field" : true,
+            "_type" : "text"
+          }
+        }
+      }
+    }
+  },
+  "_export" : {
+    "exportVersion" : "1.0"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/schema/4a5e360e-0cb8-47b3-ad0f-43ca923fe8e4"
+  }
+}

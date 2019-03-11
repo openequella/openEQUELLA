@@ -1,0 +1,127 @@
+﻿<digital-rights xmlns="http://lex.thelearningfederation.edu.au/drel/2006/01">
+  <content>
+    <title>Zou ba! Visiting China: Is this your first visit?</title>
+    <version>1.0.0</version>
+    <date-published>2006-06-05</date-published>
+    <catalogue-entry>
+      <catalogue>TLF-LearningObject</catalogue>
+      <entry>4375</entry>
+    </catalogue-entry>
+    <ip-category>Non-TLF-Content</ip-category>
+    <licence-refs>OL145</licence-refs>
+  </content>
+  <ip-manifest>
+    <intellectual-property>
+      <title>LOTE 3 Zou ba! learning objects</title>
+      <content-type>Multimedia</content-type>
+      <catalogue-entry>
+        <catalogue>Non-TLF-Content</catalogue>
+        <entry>11508</entry>
+      </catalogue-entry>
+      <copyright-status>In copyright (Australia)</copyright-status>
+      <licence-refs>IL809</licence-refs>
+    </intellectual-property>
+  </ip-manifest>
+  <licence-manifest>
+    <licence>
+      <identifier>OL145</identifier>
+      <licensor>
+        <name>
+          <organisation-name>Curriculum Corporation</organisation-name>
+          <first-name />
+          <last-name />
+        </name>
+        <url>http://www.curriculum.edu.au</url>
+        <catalogue-entry>
+          <catalogue>TLF-Party</catalogue>
+          <entry>1</entry>
+        </catalogue-entry>
+        <organisation-type>Corporation</organisation-type>
+      </licensor>
+      <licensee>
+        <name>
+          <organisation-name>Department of Education and Children's Services SA</organisation-name>
+          <first-name />
+          <last-name />
+        </name>
+        <url />
+        <catalogue-entry>
+          <catalogue>TLF-Party</catalogue>
+          <entry>48</entry>
+        </catalogue-entry>
+        <organisation-type>Statutory body</organisation-type>
+      </licensee>
+      <expiry>
+        <expiry-rule>Perpetual</expiry-rule>
+      </expiry>
+      <start-date>2004-12-21</start-date>
+      <fee>
+        <amount>0.0</amount>
+      </fee>
+      <exclusivity>Non exclusive</exclusivity>
+      <warranty>Yes</warranty>
+      <revocability>Refer to Clause regarding Termination and Revocation before End of Licence Period</revocability>
+      <catalogue-entry>
+        <catalogue>TLF-Licence</catalogue>
+        <entry>145</entry>
+      </catalogue-entry>
+      <catalogue-entry>
+        <catalogue>TLF-ContentPackage</catalogue>
+        <entry>7</entry>
+      </catalogue-entry>
+      <rights-ref>R8</rights-ref>
+    </licence>
+    <licence>
+      <identifier>IL809</identifier>
+      <licensed-from>
+        <name>
+          <organisation-name>State of New South Wales, Department of Education and Training </organisation-name>
+          <first-name />
+          <last-name />
+        </name>
+        <url>https://www.det.nsw.edu.au/</url>
+        <catalogue-entry>
+          <catalogue>TLF-Party</catalogue>
+          <entry>10234</entry>
+        </catalogue-entry>
+        <organisation-type>Statutory body</organisation-type>
+      </licensed-from>
+      <expiry>
+        <expiry-rule>Perpetual</expiry-rule>
+      </expiry>
+      <catalogue-entry>
+        <catalogue>TLF-Licence</catalogue>
+        <entry>809</entry>
+      </catalogue-entry>
+      <rights-ref>R1227</rights-ref>
+    </licence>
+  </licence-manifest>
+  <rights-manifest>
+    <rights>
+      <identifier>R8</identifier>
+      <user-rights>
+        <market-and-purpose>Education sector and purposes</market-and-purpose>
+        <territory>AU; NZ</territory>
+      </user-rights>
+      <development-rights>
+        <special-conditions>The development rights for this item are described in each of it's individual elements</special-conditions>
+      </development-rights>
+    </rights>
+    <rights>
+      <identifier>R1227</identifier>
+      <user-rights>
+        <market-and-purpose>Education sector and purposes</market-and-purpose>
+        <territory>NZ; AU</territory>
+      </user-rights>
+      <development-rights>
+        <market-and-purpose>Education sector and purposes</market-and-purpose>
+        <supplementary-work>
+          <owner-of-new-copyright-in-foreground-ip>Licensee is owner of new copyright</owner-of-new-copyright-in-foreground-ip>
+        </supplementary-work>
+        <compilation>
+          <owner-of-new-copyright-in-foreground-ip>Licensee is owner of new copyright</owner-of-new-copyright-in-foreground-ip>
+        </compilation>
+      </development-rights>
+    </rights>
+  </rights-manifest>
+</digital-rights>

@@ -1,0 +1,24 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>3309921</id>
+  <institution>
+    <id>3309713</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list"/>
+  <type>equella/attachment-kaltura</type>
+  <attributes>
+    <entry>
+      <string>fileViewerDisabled</string>
+      <string>true</string>
+    </entry>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&quot;kalturaViewer&quot;]</string>
+    </entry>
+    <entry>
+      <string>defaultViewerId</string>
+      <string>kalturaViewer</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

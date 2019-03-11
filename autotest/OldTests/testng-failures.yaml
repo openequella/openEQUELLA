@@ -1,0 +1,16 @@
+name: Failures
+threadCount: 2
+
+tests:
+  - name: BrokenBits
+    classes:
+      - com.tle.webtests.test.contribute.WizardConfigTest
+      - com.tle.webtests.test.searching.PowerSearchTest
+      - com.tle.webtests.test.contribute.controls.attachments.FileAttachmentControlTest
+      - com.tle.webtests.test.reporting.RunReportTest
+      - com.tle.webtests.test.viewing.ItemSummaryTest
+      - com.tle.webtests.test.contribute.controls.GroupsAndDisabling
+      - com.tle.webtests.test.contribute.SelectionSessionTest
+      - com.tle.webtests.test.searching.SearchSettingsTest
+      - com.tle.webtests.test.searching.GuidedSearchingTest
+

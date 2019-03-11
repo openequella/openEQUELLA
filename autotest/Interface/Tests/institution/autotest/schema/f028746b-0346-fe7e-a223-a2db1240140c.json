@@ -1,0 +1,163 @@
+{
+  "uuid" : "f028746b-0346-fe7e-a223-a2db1240140c",
+  "name" : "CAL Guide Schema",
+  "nameStrings" : {
+    "en" : "CAL Guide Schema"
+  },
+  "description" : "testing the creation of a CAL schema as demonstrated by the CAL configuration guide",
+  "descriptionStrings" : {
+    "en" : "testing the creation of a CAL schema as demonstrated by the CAL configuration guide"
+  },
+  "modifiedDate" : "2014-05-12T15:43:40.536+10:00",
+  "createdDate" : "2014-05-12T15:43:40.525+10:00",
+  "owner" : {
+    "id" : "system"
+  },
+  "security" : {
+    "rules" : [ ]
+  },
+  "namePath" : "/item/itembody/name",
+  "descriptionPath" : "/item/itembody/description",
+  "definition" : {
+    "xml" : {
+      "item" : {
+        "copyright" : {
+          "@type" : {
+            "_type" : "text"
+          },
+          "@parenttype" : {
+            "_type" : "text"
+          },
+          "title" : {
+            "_indexed" : true,
+            "_field" : true,
+            "_type" : "text"
+          },
+          "abstract" : {
+            "_indexed" : true,
+            "_type" : "text"
+          },
+          "isbn" : {
+            "_indexed" : true,
+            "_field" : true,
+            "_type" : "text"
+          },
+          "authors" : {
+            "author" : {
+              "_indexed" : true,
+              "_field" : true,
+              "_type" : "text"
+            }
+          },
+          "editors" : {
+            "editor" : {
+              "_indexed" : true,
+              "_field" : true,
+              "_type" : "text"
+            }
+          },
+          "issn" : {
+            "_indexed" : true,
+            "_field" : true,
+            "_type" : "text"
+          },
+          "issue" : {
+            "type" : {
+              "_indexed" : true,
+              "_type" : "text"
+            },
+            "value" : {
+              "_indexed" : true,
+              "_type" : "text"
+            }
+          },
+          "volume" : {
+            "_indexed" : true,
+            "_type" : "text"
+          },
+          "publisher" : {
+            "_type" : "text"
+          },
+          "publication" : {
+            "year" : {
+              "_type" : "text"
+            },
+            "place" : {
+              "_indexed" : true,
+              "_field" : true,
+              "_type" : "text"
+            }
+          },
+          "pages" : {
+            "_type" : "text"
+          },
+          "portions" : {
+            "portion" : {
+              "title" : {
+                "_indexed" : true,
+                "_field" : true,
+                "_type" : "text"
+              },
+              "authors" : {
+                "author" : {
+                  "_indexed" : true,
+                  "_field" : true,
+                  "_type" : "text"
+                }
+              },
+              "abstract" : {
+                "_indexed" : true,
+                "_type" : "text"
+              },
+              "number" : {
+                "_type" : "text"
+              },
+              "topics" : {
+                "topic" : {
+                  "_indexed" : true,
+                  "_type" : "text"
+                }
+              },
+              "sections" : {
+                "section" : {
+                  "pages" : {
+                    "_type" : "text"
+                  },
+                  "attachment" : {
+                    "_type" : "text"
+                  },
+                  "type" : {
+                    "_type" : "text"
+                  },
+                  "copyrightstatus" : {
+                    "_type" : "text"
+                  },
+                  "illustration" : {
+                    "_type" : "text"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "itembody" : {
+          "name" : {
+            "_indexed" : true,
+            "_field" : true,
+            "_type" : "text"
+          },
+          "description" : {
+            "_indexed" : true,
+            "_type" : "text"
+          }
+        }
+      }
+    }
+  },
+  "_export" : {
+    "exportVersion" : "1.0"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/schema/f028746b-0346-fe7e-a223-a2db1240140c"
+  }
+}

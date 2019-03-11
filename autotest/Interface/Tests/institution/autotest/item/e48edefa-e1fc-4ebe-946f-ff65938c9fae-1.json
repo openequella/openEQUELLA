@@ -1,0 +1,78 @@
+{
+  "uuid" : "e48edefa-e1fc-4ebe-946f-ff65938c9fae",
+  "version" : 1,
+  "name" : "TaskApiTest - Low priority, long due date",
+  "nameStrings" : {
+    "en_AU" : "TaskApiTest - Low priority, long due date"
+  },
+  "metadata" : "<xml><item><name>TaskApiTest - Low priority, long due date</name><mod_date>2032-10-29</mod_date></item></xml>",
+  "status" : "moderating",
+  "createdDate" : "2014-05-12T15:43:48.089+10:00",
+  "modifiedDate" : "2014-05-12T15:43:52.187+10:00",
+  "owner" : {
+    "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  },
+  "collaborators" : [ ],
+  "collection" : {
+    "uuid" : "6bf51943-9d20-4934-a228-8edcec6691ae"
+  },
+  "rating" : -1.0,
+  "attachments" : [ ],
+  "navigation" : {
+    "hideUnreferencedAttachments" : false,
+    "showSplitOption" : false,
+    "nodes" : [ ]
+  },
+  "drm" : { },
+  "_export" : {
+    "exportVersion" : "1.0",
+    "history" : [ {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:48.089+10:00",
+      "type" : "edit",
+      "state" : "draft"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:48.343+10:00",
+      "type" : "statechange",
+      "state" : "moderating"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:48.343+10:00",
+      "step" : "3bedced8-2355-42e0-aaa6-3c44c34c33be",
+      "stepName" : "Start",
+      "type" : "resetworkflow",
+      "state" : "moderating"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:52.187+10:00",
+      "type" : "edit",
+      "state" : "moderating"
+    } ],
+    "statuses" : [ {
+      "uuid" : "3c4926a7-4b28-4ea2-88b8-42da1902a9ed",
+      "status" : "i",
+      "started" : "2014-05-12T15:43:48.343+10:00",
+      "due" : "2032-10-29T00:00:00.000+11:00",
+      "causeIndex" : 1,
+      "acceptedUsers" : [ ]
+    }, {
+      "uuid" : "3bedced8-2355-42e0-aaa6-3c44c34c33be",
+      "status" : "i"
+    } ],
+    "moderating" : true,
+    "start" : "2014-05-12T15:43:48.343+10:00",
+    "lastAction" : "2014-05-12T15:43:48.343+10:00"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/item/e48edefa-e1fc-4ebe-946f-ff65938c9fae/1"
+  }
+}

@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Auto Test Suite database">
+	<test name="Database tests">
+		<classes>
+			<class name="com.tle.webtests.test.admin.multidb.DbTest" />
+		</classes>
+	</test>
+</suite>

@@ -1,0 +1,137 @@
+<com.tle.beans.item.Item>
+  <id>18491</id>
+  <uuid>72643609-78e0-4a61-8d78-d5251ed82ff1</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-08-26 10:02:14.419</dateModified>
+  <dateCreated class="sql-timestamp">2014-08-26 10:02:14.423</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.167</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>18497</id>
+      <uuid>13e541f0-098f-4cd4-8e57-83e544027759</uuid>
+      <url>page.html</url>
+      <description>page.html</description>
+      <value1>68</value1>
+      <value2>false</value2>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>18498</id>
+      <uuid>ec86511d-2c16-4013-9a56-c50c2a7a1a34</uuid>
+      <url>page(2).html</url>
+      <description>page(2).html</description>
+      <value1>68</value1>
+      <value2>false</value2>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>18499</id>
+      <uuid>6179a1fe-3d84-4f18-860a-6f98a758f31b</uuid>
+      <url></url>
+      <description>Testable CAL Book moodle26</description>
+      <value1>resource</value1>
+      <data>
+        <entry>
+          <string>type</string>
+          <string>p</string>
+        </entry>
+        <entry>
+          <string>uuid</string>
+          <string>16c764a6-00e5-4ab7-aae7-27d1213f64d8</string>
+        </entry>
+        <entry>
+          <string>version</string>
+          <int>1</int>
+        </entry>
+      </data>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.CustomAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="bfad7ea0-983f-dd58-6b7d-ed5f346e24ab"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>18494</id>
+    <liveApprovalDate class="sql-timestamp">2014-08-26 10:02:14.419</liveApprovalDate>
+    <start class="sql-timestamp">2014-08-26 10:14:05.639</start>
+    <lastAction class="sql-timestamp">2014-08-26 10:02:14.419</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18500</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-08-26 10:01:56.949</date>
+      <applies>false</applies>
+      <type>clone</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18501</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-08-26 10:02:14.419</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18502</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-08-26 10:02:14.419</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18503</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-08-26 10:02:14.419</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>18495</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>18496</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>Testable CAL Book - Chapter 1 moodle26</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>18492</id>
+    <strings/>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>default</thumb>
+</com.tle.beans.item.Item>

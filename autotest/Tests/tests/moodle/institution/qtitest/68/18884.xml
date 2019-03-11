@@ -1,0 +1,191 @@
+<com.tle.common.qti.entity.QtiAssessmentTest>
+  <id>18884</id>
+  <uuid>f9d0d838-85f5-4338-9cdf-fbda6b42b161</uuid>
+  <identifier>SPECTATUS-GENERATED-TEST</identifier>
+  <item>
+    <id>18725</id>
+  </item>
+  <xmlPath>_SECURE/_QTI/assessment.xml</xmlPath>
+  <title>BBQs test package</title>
+  <questionRefs>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18885</id>
+      <uuid>dbcc9456-e343-4cae-9b78-09af71c1ba70</uuid>
+      <identifier>id-5c1b1e2d56bd</identifier>
+      <xmlPath>_SECURE/_QTI/id-5c1b1e2d56bd/either-or.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="ab2aa96a-cfb5-4e88-8a58-1a6bbe3c8a49"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18886</id>
+      <uuid>8c346ae2-5e24-48d0-8695-4a94aafb48a0</uuid>
+      <identifier>id-75bd778a3504</identifier>
+      <xmlPath>_SECURE/_QTI/id-75bd778a3504/essay-vacation.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="79f044f5-7b8d-4f61-82cd-ce6ed6239b73"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18887</id>
+      <uuid>925eb4dd-b1c5-4873-b42d-3e8026b6be99</uuid>
+      <identifier>id-992e8bd3c9ac</identifier>
+      <xmlPath>_SECURE/_QTI/id-992e8bd3c9ac/hotspot-maximum.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="eb019769-2020-4b4c-85f4-432aa2e4adcd"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18888</id>
+      <uuid>9199eca0-6186-49f2-82e6-349f3a8d744c</uuid>
+      <identifier>id-f8e13982226c</identifier>
+      <xmlPath>_SECURE/_QTI/id-f8e13982226c/jumble-gapMatch.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="9f6bc436-3362-4230-812a-309d380255b7"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18889</id>
+      <uuid>2271774d-7fc3-4cbe-ba28-85562809d7e2</uuid>
+      <identifier>id-377d71221b04</identifier>
+      <xmlPath>_SECURE/_QTI/id-377d71221b04/jumble-inlineChoice.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="cdfaa26e-6857-417d-aafe-4046721029f5"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18890</id>
+      <uuid>7754fe50-4690-499b-b455-2efe47541f1a</uuid>
+      <identifier>id-7e4520cd463f</identifier>
+      <xmlPath>_SECURE/_QTI/id-7e4520cd463f/Likert-choice-questionSet.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="79267090-a0ba-4ad8-98cc-1e8baa2e5e82"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18891</id>
+      <uuid>94e8c62a-45d8-42cb-a83e-b447e16ef887</uuid>
+      <identifier>id-2a2cfb9f4dde</identifier>
+      <xmlPath>_SECURE/_QTI/id-2a2cfb9f4dde/Likert-match-questionSet.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="329bb8f0-4621-4df6-a535-ad30d001f627"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18892</id>
+      <uuid>162de12a-9554-4e4a-b982-8f8905745dda</uuid>
+      <identifier>id-200e2c3f7d76</identifier>
+      <xmlPath>_SECURE/_QTI/id-200e2c3f7d76/matching-associate-trigDeriv.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="39d33c1e-c9b6-4ebb-a28b-34a8ab5b7a55"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18893</id>
+      <uuid>1e9f649c-7637-4576-b375-89d90893fd55</uuid>
+      <identifier>id-7f35b6c393d5</identifier>
+      <xmlPath>_SECURE/_QTI/id-7f35b6c393d5/matching-match-trigDeriv.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="972d6f00-df9a-40bd-a0d9-ef6435fbf43e"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18894</id>
+      <uuid>7db2994c-ec1c-4615-b37c-a7c9a0baacd5</uuid>
+      <identifier>id-3cd82285401e</identifier>
+      <xmlPath>_SECURE/_QTI/id-3cd82285401e/MultipleAnswer-choice-materials.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="d5386da3-e088-4e4a-bf59-b8ea60455d32"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18895</id>
+      <uuid>259da1b2-1cad-4c05-8693-506fdcbbcd5e</uuid>
+      <identifier>id-371b0f88774a</identifier>
+      <xmlPath>_SECURE/_QTI/id-371b0f88774a/MultipleChoice-choice-polynomials.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="cdef2df1-f10c-4bd9-bca4-7f17f9c0cd6e"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18896</id>
+      <uuid>9d34fa69-4693-47bd-a28b-af4fa3e1e4f0</uuid>
+      <identifier>id-90b59b73c8e4</identifier>
+      <xmlPath>_SECURE/_QTI/id-90b59b73c8e4/upload-file.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="0a13cc02-6a35-4bc8-a6bc-841d01a50f0c"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18897</id>
+      <uuid>9454aa5f-8af9-417d-9bae-12ddbbe78394</uuid>
+      <identifier>id-e475c3c922f6</identifier>
+      <xmlPath>_SECURE/_QTI/id-e475c3c922f6/order-maths.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="1bca605f-de3d-4481-ac4b-22b493d77fe0"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18898</id>
+      <uuid>972cf41a-d7fd-4178-9f25-2acb6bb8193c</uuid>
+      <identifier>id-be3cd3bdd3d4</identifier>
+      <xmlPath>_SECURE/_QTI/id-be3cd3bdd3d4/order-mountains.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="f7fcccf2-fc81-4546-bac2-e85286c4d6d9"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18899</id>
+      <uuid>002e0afc-7eda-4895-b18b-50b0865e82a0</uuid>
+      <identifier>id-8167235c360b</identifier>
+      <xmlPath>_SECURE/_QTI/id-8167235c360b/QuizBowl-multi-geometry.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="32221bbb-dde3-4f5e-b25f-9d387a98a990"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18900</id>
+      <uuid>563cd124-90a6-4cd4-848b-7f8c1a4d6dfa</uuid>
+      <identifier>id-1ccd6e04685f</identifier>
+      <xmlPath>_SECURE/_QTI/id-1ccd6e04685f/ShortAnswer-extText-postcard.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="ef610201-6bed-413c-90c8-db2276d229e3"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18901</id>
+      <uuid>98caa940-e81a-41f2-97e1-fab4411be3c5</uuid>
+      <identifier>id-bd44a757f562</identifier>
+      <xmlPath>_SECURE/_QTI/id-bd44a757f562/SineRule-001.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="0522f3a0-6d4d-4d37-a3ea-8a04856d8f94"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18902</id>
+      <uuid>eace41bd-83dc-450e-8347-e313409b6f9a</uuid>
+      <identifier>id-13b92f311fc0</identifier>
+      <xmlPath>_SECURE/_QTI/id-13b92f311fc0/SineRule-002-maths.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="18530435-fe5b-4464-ae31-d0eac4adeb5e"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18903</id>
+      <uuid>12c4b92f-1f7d-436b-be2e-5162059d4a4c</uuid>
+      <identifier>id-c0bdd9a130c7</identifier>
+      <xmlPath>_SECURE/_QTI/id-c0bdd9a130c7/text_entry-calculus.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="3f4a3103-b980-4eeb-8c13-c80193f0685b"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18904</id>
+      <uuid>c7684389-962d-4fdf-b100-26da7eafa2e6</uuid>
+      <identifier>id-d565dbe89933</identifier>
+      <xmlPath>_SECURE/_QTI/id-d565dbe89933/text_entry-Lycidas.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="c9fccc7a-90b5-4e2e-b989-fd8f0bf64abb"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18905</id>
+      <uuid>91fed019-07dd-4b8f-b99c-a190609da531</uuid>
+      <identifier>id-83210b60ed8f</identifier>
+      <xmlPath>_SECURE/_QTI/id-83210b60ed8f/TF-choice.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="c430e494-75e4-4929-aeff-8ba326f2afd6"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+    <com.tle.common.qti.entity.QtiAssessmentItemRef>
+      <id>18906</id>
+      <uuid>ac981a55-c67c-476f-bbe9-a9878038411f</uuid>
+      <identifier>id-f9f3153e2ba4</identifier>
+      <xmlPath>_SECURE/_QTI/id-f9f3153e2ba4/TheAnswer-001.xml</xmlPath>
+      <test reference="../../.."/>
+      <question uuid="b0a179a6-74df-424c-a6c0-7a602b3bc862"/>
+    </com.tle.common.qti.entity.QtiAssessmentItemRef>
+  </questionRefs>
+  <testPartIdentifier>TP</testPartIdentifier>
+  <navigationMode>0</navigationMode>
+  <submissionMode>0</submissionMode>
+</com.tle.common.qti.entity.QtiAssessmentTest>

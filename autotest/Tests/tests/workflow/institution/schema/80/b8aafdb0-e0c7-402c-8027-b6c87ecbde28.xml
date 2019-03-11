@@ -1,0 +1,51 @@
+<com.tle.beans.entity.Schema>
+  <id>29408</id>
+  <uuid>b8aafdb0-e0c7-402c-8027-b6c87ecbde28</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2012-10-15 11:19:55.203</dateModified>
+  <dateCreated class="sql-timestamp">2009-03-27 11:50:15.03</dateCreated>
+  <description>
+    <id>29409</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>29410</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>The Different Schema, with a date field so as to provide a deliberate &apos;past&apos; date to guarantee late moderations</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>29411</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>29412</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Different Schema with a date field</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms/>
+  <impTransforms>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>standard.xslt</filename>
+      <type>Standard Schema</type>
+    </com.tle.beans.entity.SchemaTransform>
+  </impTransforms>
+  <itemNamePath>/item/name2</itemNamePath>
+  <itemDescriptionPath>/item/description2</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;name2 field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description2 field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;moderation_deadline field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;moderation_second_dealine field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/item&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>

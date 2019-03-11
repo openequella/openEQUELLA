@@ -1,0 +1,20 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>131508</id>
+  <institution>
+    <id>131414</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>mpga</string>
+    <string>mp2</string>
+  </extensions>
+  <type>audio/mpeg</type>
+  <description>Audio</description>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/sound.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

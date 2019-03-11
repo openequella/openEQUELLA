@@ -1,0 +1,23 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>202808</id>
+  <institution>
+    <id>202538</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>xls</string>
+  </extensions>
+  <type>application/vnd.ms-excel</type>
+  <description>MS Excel</description>
+  <attributes>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&apos;tohtml&apos;]</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

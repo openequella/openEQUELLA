@@ -1,0 +1,31 @@
+<com.tle.common.taxonomy.Taxonomy>
+  <id>116663</id>
+  <uuid>a8475ae1-0382-a258-71c3-673e4597c3d2</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-04-28 14:47:21.973</dateModified>
+  <dateCreated class="sql-timestamp">2014-04-28 14:47:21.973</dateCreated>
+  <name>
+    <id>116664</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116665</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>REST-TAXONOMY</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>TERM_ALLOW_ADDITION</key>
+      <value>false</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <dataSourcePluginId>internalTaxonomyDataSource</dataSourcePluginId>
+</com.tle.common.taxonomy.Taxonomy>

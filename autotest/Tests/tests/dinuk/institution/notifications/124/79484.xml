@@ -1,0 +1,10 @@
+<com.tle.core.notification.beans.Notification>
+  <id>79484</id>
+  <itemid>7dec58ae-3660-4ccc-bbe5-95c4e0d2479c/1</itemid>
+  <itemidOnly>7dec58ae-3660-4ccc-bbe5-95c4e0d2479c/1</itemidOnly>
+  <reason>rejected</reason>
+  <userTo>adfcaf58-241b-4eca-9740-6a26d1c3dd58</userTo>
+  <date class="sql-timestamp">2012-05-29 15:23:37.153</date>
+  <processed>true</processed>
+  <batched>false</batched>
+</com.tle.core.notification.beans.Notification>

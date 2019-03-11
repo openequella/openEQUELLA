@@ -1,0 +1,14 @@
+<com.tle.beans.user.TLEGroup>
+  <id>29180</id>
+  <uuid>e91205b0-684e-51e2-a1be-3ab646aa98dd</uuid>
+  <name>Users with Administrator Role</name>
+  <description>Users with Administrator Role</description>
+  <users>
+    <string>83bb1131-e54c-6f1e-e063-9d00597c8d97</string>
+    <string>d25d496e-5dc6-a1a8-ae2b-52ba9b6d4193</string>
+    <string>0203b997-afa7-fb34-3793-57be9ee04524</string>
+    <string>d58b8087-7d64-2115-c187-20e5eb890743</string>
+    <string>287f0490-f633-477b-9c90-751d83d02afa</string>
+    <string>e6f2f2b3-635e-3674-a044-ce97cb2dc563</string>
+  </users>
+</com.tle.beans.user.TLEGroup>

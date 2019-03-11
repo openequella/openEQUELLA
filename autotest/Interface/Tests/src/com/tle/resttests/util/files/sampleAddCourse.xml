@@ -1,0 +1,45 @@
+<com.tle.beans.item.cal.request.CourseInfo>
+  <students>0</students>
+  <from class="sql-timestamp">2009-04-08 00:00:00.0</from>
+  <until class="sql-timestamp">2010-05-08 00:00:00.0</until>
+  <citation>Harvard</citation>
+  <departmentName>Department of Test Courses using - has been added</departmentName>
+  <courseType>i</courseType>
+  <code>9999</code>
+  <uuid>6f9aebc4-80fb-e9e7-992c-b3eaef57b38d</uuid>
+  <institution>
+    <id>89265</id>
+    <enabled>true</enabled>
+  </institution>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2009-04-23 14:50:37.035</dateModified>
+  <dateCreated class="sql-timestamp">2009-04-23 14:50:37.035</dateCreated>
+  <description>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>XYZ Example Test Course</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>XYZ Example Test Course</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+</com.tle.beans.item.cal.request.CourseInfo>

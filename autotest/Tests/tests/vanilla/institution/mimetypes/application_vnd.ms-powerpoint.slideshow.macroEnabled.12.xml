@@ -1,0 +1,19 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>5965</id>
+  <institution>
+    <id>41</id>
+    <uniqueId>0</uniqueId>
+    <quota>0.0</quota>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>ppsm</string>
+  </extensions>
+  <type>application/vnd.ms-powerpoint.slideshow.macroEnabled.12</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

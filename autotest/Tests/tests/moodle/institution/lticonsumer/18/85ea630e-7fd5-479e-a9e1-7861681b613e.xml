@@ -1,0 +1,33 @@
+<com.tle.common.lti.consumers.entity.LtiConsumer>
+  <id>18308</id>
+  <uuid>85ea630e-7fd5-479e-a9e1-7861681b613e</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-12-04 11:11:04.055</dateModified>
+  <dateCreated class="sql-timestamp">2014-12-04 11:11:04.055</dateCreated>
+  <name>
+    <id>18309</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>18310</id>
+          <locale>en</locale>
+          <priority>0</priority>
+          <text>QTI moodle 25</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <consumerKey>QTI_25</consumerKey>
+  <consumerSecret>ea71c193-4251-4121-a0a3-5170b874ba1c</consumerSecret>
+  <allowedExpression>*</allowedExpression>
+  <instructorRoles/>
+  <otherRoles/>
+  <customRoles/>
+  <unknownUser>0</unknownUser>
+  <unknownGroups/>
+</com.tle.common.lti.consumers.entity.LtiConsumer>

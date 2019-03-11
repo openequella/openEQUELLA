@@ -1,0 +1,23 @@
+<com.tle.common.qti.entity.QtiAssessmentItem>
+  <id>18879</id>
+  <uuid>ab2aa96a-cfb5-4e88-8a58-1a6bbe3c8a49</uuid>
+  <identifier>either-or-choice-root2</identifier>
+  <title>Either/Or question about root 2</title>
+  <itemBody>uk.ac.ed.ph.jqtiplus.node.content.ItemBody@37993403(
+    blocks =&gt; java.util.ArrayList[
+        0 =&gt; &lt;div&gt;@505320323(xPath=/assessmentItem[@identifier=&quot;either-or-choice-root2&quot;]/itemBody[1]/div[1],location=XmlSourceLocationInformation@69668ce7(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-5c1b1e2d56bd/either-or.xml,lineNumber=19,columnNumber=8))
+        1 =&gt; &lt;choiceInteraction&gt;@1269614528(xPath=/assessmentItem[@identifier=&quot;either-or-choice-root2&quot;]/itemBody[1]/choiceInteraction[1],location=XmlSourceLocationInformation@3c6e3510(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-5c1b1e2d56bd/either-or.xml,lineNumber=33,columnNumber=83))
+    ]
+    id =&gt; null
+    classAttr =&gt; null
+    lang =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    label =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    parent =&gt; &lt;assessmentItem&gt;@1734200430(xPath=/assessmentItem[@identifier=&quot;either-or-choice-root2&quot;],location=XmlSourceLocationInformation@3f187ec6(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-5c1b1e2d56bd/either-or.xml,lineNumber=6,columnNumber=117))(systemId=_SECURE/_QTI/id-5c1b1e2d56bd/either-or.xml)
+    attributes =&gt; uk.ac.ed.ph.jqtiplus.attribute.AttributeList@612b1986
+    sourceLocation =&gt; XmlSourceLocationInformation@5498de40(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-5c1b1e2d56bd/either-or.xml,lineNumber=18,columnNumber=15)
+    rootNode =&gt; &lt;assessmentItem&gt;@1734200430(xPath=/assessmentItem[@identifier=&quot;either-or-choice-root2&quot;],location=XmlSourceLocationInformation@3f187ec6(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-5c1b1e2d56bd/either-or.xml,lineNumber=6,columnNumber=117))(systemId=_SECURE/_QTI/id-5c1b1e2d56bd/either-or.xml)
+    nodeGroups =&gt; uk.ac.ed.ph.jqtiplus.group.NodeGroupList@276724
+    qtiClassName =&gt; itemBody
+)
+</itemBody>
+  <adaptive>false</adaptive>
+  <timeDependent>false</timeDependent>
+</com.tle.common.qti.entity.QtiAssessmentItem>

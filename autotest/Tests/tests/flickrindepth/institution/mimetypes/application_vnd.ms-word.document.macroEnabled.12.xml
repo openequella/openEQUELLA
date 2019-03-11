@@ -1,0 +1,17 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>413784</id>
+  <institution>
+    <id>413481</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>docm</string>
+  </extensions>
+  <type>application/vnd.ms-word.document.macroEnabled.12</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

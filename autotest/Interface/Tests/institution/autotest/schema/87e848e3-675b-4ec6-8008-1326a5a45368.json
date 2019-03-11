@@ -1,0 +1,56 @@
+{
+  "uuid" : "87e848e3-675b-4ec6-8008-1326a5a45368",
+  "name" : "Attachment Schema",
+  "nameStrings" : {
+    "en" : "Attachment Schema"
+  },
+  "modifiedDate" : "2014-05-12T15:43:40.536+10:00",
+  "createdDate" : "2014-05-12T15:43:40.515+10:00",
+  "owner" : {
+    "id" : "system"
+  },
+  "security" : {
+    "rules" : [ ]
+  },
+  "namePath" : "/item/name",
+  "descriptionPath" : "/item/description",
+  "definition" : {
+    "xml" : {
+      "item" : {
+        "name" : {
+          "_indexed" : true,
+          "_field" : true,
+          "_type" : "text"
+        },
+        "description" : {
+          "_indexed" : true,
+          "_field" : true,
+          "_type" : "text"
+        },
+        "attachments" : {
+          "attachment1" : {
+            "_type" : "text"
+          },
+          "attachment2" : {
+            "_type" : "text"
+          },
+          "attachment3" : {
+            "_type" : "text"
+          },
+          "attachment4" : {
+            "_type" : "text"
+          },
+          "attachment5" : {
+            "_type" : "text"
+          }
+        }
+      }
+    }
+  },
+  "_export" : {
+    "exportVersion" : "1.0"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/schema/87e848e3-675b-4ec6-8008-1326a5a45368"
+  }
+}

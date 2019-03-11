@@ -1,0 +1,58 @@
+<com.tle.beans.item.Item>
+  <id>117063</id>
+  <uuid>8b5a00d7-9b66-48a4-8d0d-79167e85ea0a</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-03-28 15:50:16.78</dateModified>
+  <dateCreated class="sql-timestamp">2014-03-28 15:50:16.78</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.637</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>117081</id>
+    <liveApprovalDate class="sql-timestamp">2014-03-28 15:50:16.8</liveApprovalDate>
+    <start class="sql-timestamp">2014-04-11 16:15:52.92</start>
+    <lastAction class="sql-timestamp">2014-03-28 15:50:16.8</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117083</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-28 15:50:16.78</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117090</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-28 15:50:16.8</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

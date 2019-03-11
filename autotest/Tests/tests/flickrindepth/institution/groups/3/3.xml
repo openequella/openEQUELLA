@@ -1,0 +1,9 @@
+<com.tle.beans.user.TLEGroup>
+  <id>413494</id>
+  <uuid>e91205b0-684e-51e2-a1be-3ab646aa98dd</uuid>
+  <name>Users with Administrator Role</name>
+  <users>
+    <string>ba83e201-b30e-2a44-c258-ad73fb2d1bad</string>
+    <string>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</string>
+  </users>
+</com.tle.beans.user.TLEGroup>

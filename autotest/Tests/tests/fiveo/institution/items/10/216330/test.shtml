@@ -1,0 +1,8 @@
+<html>
+<body>
+<!--#config timefmt="%A %B %d, %Y" -->
+This file last modified <!--#flastmod file="test.shtml" --> 
+
+<!--#include file="footer.html" --> 
+</body>
+</html>

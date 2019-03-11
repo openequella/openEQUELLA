@@ -1,0 +1,25 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>5954</id>
+  <institution>
+    <id>41</id>
+    <uniqueId>0</uniqueId>
+    <quota>0.0</quota>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>a</string>
+    <string>class</string>
+    <string>exe</string>
+    <string>lzh</string>
+    <string>lha</string>
+    <string>dms</string>
+    <string>bin</string>
+  </extensions>
+  <type>application/octet-stream</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

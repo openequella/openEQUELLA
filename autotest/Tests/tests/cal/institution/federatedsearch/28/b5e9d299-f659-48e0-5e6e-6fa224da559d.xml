@@ -1,0 +1,79 @@
+<com.tle.beans.entity.FederatedSearch>
+  <id>63529</id>
+  <uuid>b5e9d299-f659-48e0-5e6e-6fa224da559d</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2009-05-06 16:33:13.64</dateModified>
+  <dateCreated class="sql-timestamp">2007-05-09 15:24:11.363</dateCreated>
+  <name>
+    <id>63530</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>63531</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>ANU Library</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>group</key>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>collectionUuid</key>
+      <value>4c147089-cddb-e67c-b5ab-189614eb1463</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>advanced</key>
+      <value>true</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>displayRecordSchema</key>
+      <value>http://www.loc.gov/mods/</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>xslt</key>
+      <value>federated_search_metadata.xslt</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>default</key>
+      <value>false</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>username</key>
+      <value>guest</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>importRecordSchema</key>
+      <value>http://www.loc.gov/mods/</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>database</key>
+      <value>innopac</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>schemaInputTransform</key>
+      <value>Z39.50 to Book</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>password</key>
+      <value></value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>host</key>
+      <value>library.anu.edu.au</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>port</key>
+      <value>210</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <type>Z3950SearchEngine</type>
+  <timeout>30</timeout>
+</com.tle.beans.entity.FederatedSearch>

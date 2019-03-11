@@ -1,0 +1,42 @@
+<list>
+  <com.tle.beans.security.AccessExpression>
+    <id>2921</id>
+    <dynamic>false</dynamic>
+    <expression>U:adfcaf58-241b-4eca-9740-6a26d1c3dd58</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>90446</id>
+    <dynamic>false</dynamic>
+    <expression>G:d72eb802-0ea6-4384-907a-341ee60628c0 </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>2923</id>
+    <dynamic>false</dynamic>
+    <expression>R:TLE_LOGGED_IN_USER_ROLE </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>21368</id>
+    <dynamic>true</dynamic>
+    <expression>$OWNER </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>90458</id>
+    <dynamic>false</dynamic>
+    <expression>U:c4c9471b-d3e1-4157-9847-2e6d1e8b9b4e </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>90445</id>
+    <dynamic>false</dynamic>
+    <expression>U:3477e962-d9b4-4944-9da4-fe0dcd13a21c </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>90441</id>
+    <dynamic>false</dynamic>
+    <expression>U:49a04e57-561f-45b6-8187-e0b893ac739c</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>474</id>
+    <dynamic>false</dynamic>
+    <expression>*</expression>
+  </com.tle.beans.security.AccessExpression>
+</list>

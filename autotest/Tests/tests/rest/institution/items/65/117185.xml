@@ -1,0 +1,120 @@
+<com.tle.beans.item.Item>
+  <id>117185</id>
+  <uuid>4de9dc1e-9740-4d6a-b848-cf5712882ce6</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-02-27 12:43:13.787</dateModified>
+  <dateCreated class="sql-timestamp">2012-02-27 12:43:13.79</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.927</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>ARCHIVED</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="9a961a09-0c6a-b24f-b05b-eb21a696528b"/>
+  <collaborators/>
+  <referencedUrls/>
+  <drmSettings>
+    <id>117187</id>
+    <item reference="../.."/>
+    <drmPageUuid>8a1d54b7-3f82-42e5-b5ad-1895149fe1a3</drmPageUuid>
+    <hideLicencesFromOwner>false</hideLicencesFromOwner>
+    <showLicenceCount>false</showLicenceCount>
+    <allowSummary>false</allowSummary>
+    <ownerMustAccept>false</ownerMustAccept>
+    <studentsMustAcceptIfInCompilation>true</studentsMustAcceptIfInCompilation>
+    <previewAllowed>false</previewAllowed>
+    <restrictToSector>false</restrictToSector>
+    <attributionOfOwnership>false</attributionOfOwnership>
+    <enforceAttribution>true</enforceAttribution>
+    <currentUsageCount>0</currentUsageCount>
+    <maximumUsageCount>0</maximumUsageCount>
+    <contentOwners>
+      <com.tle.beans.item.DrmSettings_-Party>
+        <userID>adfcaf58-241b-4eca-9740-6a26d1c3dd58</userID>
+        <name>Auto Test [AutoTest]</name>
+        <email>auto@test.com</email>
+        <owner>true</owner>
+      </com.tle.beans.item.DrmSettings_-Party>
+    </contentOwners>
+    <usages>
+      <string>DISPLAY</string>
+      <string>EXECUTE</string>
+      <string>PLAY</string>
+      <string>PRINT</string>
+    </usages>
+    <requireAcceptanceFrom>* </requireAcceptanceFrom>
+  </drmSettings>
+  <moderation>
+    <id>117194</id>
+    <liveApprovalDate class="sql-timestamp">2012-02-27 12:43:13.787</liveApprovalDate>
+    <start class="sql-timestamp">2012-02-27 13:11:57.663</start>
+    <lastAction class="sql-timestamp">2012-02-27 12:43:13.787</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117205</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-02-27 12:43:13.787</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117207</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-02-27 12:43:13.787</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117209</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-02-27 12:43:13.787</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117212</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-02-27 12:43:58.127</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>ARCHIVED</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>117197</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>117199</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>ItemApiViewTest - DRM and versioning</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

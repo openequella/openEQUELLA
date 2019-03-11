@@ -1,0 +1,31 @@
+<com.tle.common.kaltura.entity.KalturaServer>
+  <id>216089</id>
+  <uuid>98089153-774f-4e3a-b1c5-419875302f43</uuid>
+  <dateModified class="sql-timestamp">2012-05-29 13:13:12.713</dateModified>
+  <dateCreated class="sql-timestamp">2012-05-29 13:13:12.713</dateCreated>
+  <name>
+    <id>216090</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216091</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Kaltura.com SaaS</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <enabled>true</enabled>
+  <endPoint>http://www.kaltura.com</endPoint>
+  <partnerId>794862</partnerId>
+  <subPartnerId>0</subPartnerId>
+  <adminSecret>3ed91bc51898104f0facd07684ff2ccc</adminSecret>
+  <userSecret>541b9c75a8e366c09aeb8f83cb943897</userSecret>
+  <kdpUiConfId>1913582</kdpUiConfId>
+</com.tle.common.kaltura.entity.KalturaServer>

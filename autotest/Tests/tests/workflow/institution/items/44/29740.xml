@@ -1,0 +1,129 @@
+<com.tle.beans.item.Item>
+  <id>29740</id>
+  <uuid>09074135-8d98-4e5a-a67e-bb92662c80ba</uuid>
+  <version>1</version>
+  <owner>83bb1131-e54c-6f1e-e063-9d00597c8d97</owner>
+  <dateModified class="sql-timestamp">2008-03-28 13:22:40.23</dateModified>
+  <dateCreated class="sql-timestamp">2008-03-28 13:22:40.233</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.774</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>REJECTED</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="51925f8b-86f9-4078-844f-3f1b3089f16b"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>29742</id>
+    <start class="sql-timestamp">2008-03-28 13:22:40.237</start>
+    <lastAction class="sql-timestamp">2012-03-28 14:06:02.667</lastAction>
+    <deletedStatus2>REJECTED</deletedStatus2>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <rejectedMessage>Reject</rejectedMessage>
+    <rejectedBy>83bb1131-e54c-6f1e-e063-9d00597c8d97</rejectedBy>
+    <rejectedStep>8593ea21-fcc8-4860-b9ed-903209c5fdf0</rejectedStep>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>29745</id>
+      <user>83bb1131-e54c-6f1e-e063-9d00597c8d97</user>
+      <date class="sql-timestamp">2008-03-28 13:22:40.23</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>29746</id>
+      <user>83bb1131-e54c-6f1e-e063-9d00597c8d97</user>
+      <date class="sql-timestamp">2008-03-28 13:22:40.23</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>29747</id>
+      <user>83bb1131-e54c-6f1e-e063-9d00597c8d97</user>
+      <date class="sql-timestamp">2008-03-28 13:22:40.23</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>29748</id>
+      <user>83bb1131-e54c-6f1e-e063-9d00597c8d97</user>
+      <date class="sql-timestamp">2008-03-28 13:22:40.23</date>
+      <step>7c57f98b-8320-4933-856e-b5f0d0c0fe6c</step>
+      <stepName>Start</stepName>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>29749</id>
+      <user>83bb1131-e54c-6f1e-e063-9d00597c8d97</user>
+      <date class="sql-timestamp">2012-03-28 14:06:02.667</date>
+      <step>8593ea21-fcc8-4860-b9ed-903209c5fdf0</step>
+      <stepName>Step 1</stepName>
+      <comment>Reject</comment>
+      <applies>false</applies>
+      <type>rejected</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>29750</id>
+      <user>83bb1131-e54c-6f1e-e063-9d00597c8d97</user>
+      <date class="sql-timestamp">2012-03-28 14:06:02.667</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>REJECTED</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>29751</id>
+      <user>d58b8087-7d64-2115-c187-20e5eb890743</user>
+      <date class="sql-timestamp">2012-10-11 17:29:23.387</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>DELETED</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>29752</id>
+      <user>d58b8087-7d64-2115-c187-20e5eb890743</user>
+      <date class="sql-timestamp">2012-10-11 17:30:05.887</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>REJECTED</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>29743</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>29744</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>WorkFlowSortingAndFilteringTest - 3 Step - Sort Of Old</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

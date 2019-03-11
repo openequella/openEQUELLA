@@ -1,0 +1,23 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>202715</id>
+  <institution>
+    <id>202538</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>svg</string>
+  </extensions>
+  <type>image/svg+xml</type>
+  <description>Scalable Vector Graphics</description>
+  <attributes>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&quot;googledocviewer&quot;]</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/image.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

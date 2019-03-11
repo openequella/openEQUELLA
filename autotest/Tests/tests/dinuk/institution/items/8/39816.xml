@@ -1,0 +1,95 @@
+<com.tle.beans.item.Item>
+  <id>39816</id>
+  <uuid>839c9666-4d8f-45d5-be73-d3ca38520114</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-04-25 15:09:33.779</dateModified>
+  <dateCreated class="sql-timestamp">2012-04-25 15:09:33.784</dateCreated>
+  <dateForIndex class="sql-timestamp">2012-04-27 11:26:17.792</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="30fbaf77-c2a0-4b5d-a211-0e99cb2d8674"/>
+  <collaborators/>
+  <badUrls/>
+  <moderation>
+    <id>39820</id>
+    <liveApprovalDate class="sql-timestamp">2012-04-25 15:09:33.779</liveApprovalDate>
+    <start>2012-06-01 16:12:23.632 IST</start>
+    <lastAction class="sql-timestamp">2012-04-25 15:09:33.779</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>39823</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-04-25 15:09:33.779</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>39824</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-04-25 15:09:33.779</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>39825</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-04-25 15:09:33.779</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>39821</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>39822</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>Workuser - 2</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>39817</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>39818</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>Workuser - 2 Desc</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

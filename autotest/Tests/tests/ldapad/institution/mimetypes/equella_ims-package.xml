@@ -1,0 +1,20 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>769520</id>
+  <institution>
+    <id>769423</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list"/>
+  <type>equella/ims-package</type>
+  <attributes>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&apos;downloadIms&apos;]</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/ims.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

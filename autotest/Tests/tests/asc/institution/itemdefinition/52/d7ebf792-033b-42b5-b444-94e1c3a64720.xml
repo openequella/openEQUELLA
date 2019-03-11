@@ -1,0 +1,371 @@
+<com.tle.beans.entity.itemdef.ItemDefinition>
+  <id>116114</id>
+  <uuid>d7ebf792-033b-42b5-b444-94e1c3a64720</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2012-11-08 13:20:22.098</dateModified>
+  <dateCreated class="sql-timestamp">2012-11-07 11:32:09.266</dateCreated>
+  <name>
+    <id>116115</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116116</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>DRM script object collection</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <schema entityclass="com.tle.beans.entity.Schema" uuid="d9aba963-4648-e497-d62b-fc1ddf2d0199"/>
+  <wizardcategory>Scripting Objects</wizardcategory>
+  <reviewperiod>-2147483648</reviewperiod>
+  <slow>
+    <id>116117</id>
+    <itemMetadataRules/>
+    <wizard>
+      <pages>
+        <com.dytech.edge.wizard.beans.DefaultWizardPage>
+          <title>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en</locale>
+                  <priority>1</priority>
+                  <text>Item</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </title>
+          <controls>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>true</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Name</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/name</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Description</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/description</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <targetnodes/>
+              <items/>
+              <classType>advancedscript</classType>
+              <attributes>
+                <entry>
+                  <string>StoreJs</string>
+                  <string>var settings = drm.getSettings();
+settings.setAllowSummary(request.get(&quot;allowSummary&quot;) == &quot;on&quot;);
+settings.setAttributionOfOwnership(request.get(&quot;attribution&quot;) == &quot;on&quot;);
+settings.setEnforceAttribution(request.get(&quot;enforceAttribution&quot;) == &quot;on&quot;);
+settings.setHideLicencesFromOwner(request.get(&quot;hideLicences&quot;) == &quot;on&quot;);
+settings.setMaximumUsageCount(request.get(&quot;maxUsage&quot;));
+settings.setOwnerMustAccept(request.get(&quot;ownerAccept&quot;) == &quot;on&quot;);
+settings.setPreviewAllowed(request.get(&quot;previewAllowed&quot;) == &quot;on&quot;);
+settings.setRestrictToSector(request.get(&quot;sectorRestrict&quot;) == &quot;on&quot;);
+settings.setShowLicenceCount(request.get(&quot;licenceCount&quot;) == &quot;on&quot;);
+settings.setStudentsMustAcceptIfInCompilation(request.get(&quot;compilationAccept&quot;)==&quot;on&quot;);
+settings.setTermsOfAgreement(request.get(&quot;ToA&quot;));
+
+var contentOwners = settings.getContentOwners(); 
+settings.setContentOwners(contentOwners);
+settings.addUsage(&quot;DISPLAY&quot;);
+settings.removeUsage(&quot;DISPLAY&quot;);
+settings.setRequireAcceptanceFrom(&quot;*&quot;);
+
+//var collections = [&quot;DISPLAY&quot;, &quot;PRINT&quot;, &quot;PLAY&quot;, &quot;EXECUTE&quot;, &quot;AGGREGATE&quot;, &quot;MODIFY&quot;, &quot;EXCERPT&quot;, &quot;ANNOTATE&quot;];
+//settings.setUsages(collections);</string>
+                </entry>
+                <entry>
+                  <string>ReadJs</string>
+                  <string>var party1 = drm.createPartyFromUserId(&quot;ad2c30da-2b1c-4427-b21c-45ef5bd09f11&quot;, true);
+var party2 = drm.createPartyFromUserId(&quot;ad2c30da-2b1c-4427-b21c-45ef5bd09f11&quot;, false);
+drm.createParty(&quot;Blah&quot;,&quot;junk@email.com.au&quot;,false);
+party2.setEmail(&quot;junk@email.com.au&quot;);
+party2.setName(&quot;Not Owner&quot;);
+party2.setOwner(false);
+party2.setUserID(&quot;red&quot;);
+attributes.set(&quot;ownerDetails&quot;, party2.getEmail() + &quot;&lt;br/&gt;&quot; + party2.getName()  + &quot;&lt;br/&gt;&quot; + party2.isOwner()  + &quot;&lt;br/&gt;&quot; + party2.getUserID() );
+drm.getSettings().addContentOwner(party2);
+//coverage
+drm.getSettings().getRequireAcceptanceFrom();
+drm.getSettings().getRestrictedToRecipients();
+drm.getSettings().getUsages();
+
+</string>
+                </entry>
+                <entry>
+                  <string>JsLibs</string>
+                  <list/>
+                </entry>
+                <entry>
+                  <string>OnSubmitJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>MarkUp</string>
+                  <string>&lt;div class=&quot;control&quot;&gt;
+	&lt;h3&gt;DRM Settings:&lt;/h3&gt;
+	&lt;label for=&quot;allowSummary&quot;&gt;Allow Summary: &lt;/label&gt;
+	&lt;input id=&quot;allowSummary&quot; name=&quot;${prefix}allowSummary&quot; type=&quot;checkbox&quot; /&gt;&lt;br/&gt;
+	&lt;label for=&quot;attribution&quot;&gt;Attribution of Ownership: &lt;/label&gt;
+	&lt;input id=&quot;attribution&quot; name=&quot;${prefix}attribution&quot; type=&quot;checkbox&quot; /&gt;&lt;br/&gt;
+	&lt;label for=&quot;enforceAttribution&quot;&gt;Enforce Attribution: &lt;/label&gt;
+	&lt;input id=&quot;enforceAttribution&quot; name=&quot;${prefix}enforceAttribution&quot; type=&quot;checkbox&quot; /&gt;&lt;br/&gt;
+	&lt;label for=&quot;hideLicences&quot;&gt;Hide Licences from Owner: &lt;/label&gt;
+	&lt;input id=&quot;hideLicences&quot; name=&quot;${prefix}hideLicences&quot; type=&quot;checkbox&quot; /&gt;&lt;br/&gt;
+	&lt;label for=&quot;maxUsage&quot;&gt;Max Number of Usage Count &lt;/label&gt;
+	&lt;input id=&quot;maxUsage&quot; name=&quot;${prefix}maxUsage&quot; type=&quot;number&quot; /&gt;&lt;br/&gt;
+	&lt;label for=&quot;ownerAccept&quot;&gt;Owner must accept: &lt;/label&gt;
+	&lt;input id=&quot;ownerAccept&quot; name=&quot;${prefix}ownerAccept&quot; type=&quot;checkbox&quot; /&gt;&lt;br/&gt;
+	&lt;label for=&quot;previewAllowed&quot;&gt;Preview Allowed: &lt;/label&gt;
+	&lt;input id=&quot;previewAllowed&quot; name=&quot;${prefix}previewAllowed&quot; type=&quot;checkbox&quot; /&gt;&lt;br/&gt;
+	&lt;label for=&quot;sectorRestrict&quot;&gt;Restrict to Sector: &lt;/label&gt;
+	&lt;input id=&quot;sectorRestrict&quot; name=&quot;${prefix}sectorRestrict&quot; type=&quot;checkbox&quot; /&gt;&lt;br/&gt;	
+	&lt;label for=&quot;licenceCount&quot;&gt;Show Licence Count: &lt;/label&gt;
+	&lt;input id=&quot;licenceCount&quot; name=&quot;${prefix}licenceCount&quot; type=&quot;checkbox&quot; /&gt;&lt;br/&gt;	
+	&lt;label for=&quot;compilationAccept&quot;&gt;Students Must Accept if in Complilation: &lt;/label&gt;
+	&lt;input id=&quot;compilationAccept&quot; name=&quot;${prefix}compilationAccept&quot; type=&quot;checkbox&quot; /&gt;&lt;br/&gt;	
+	&lt;label for=&quot;ToA&quot;&gt;Terms of Agreement: &lt;/label&gt;&lt;br/&gt;
+	&lt;textarea id=&quot;ToA&quot; name=&quot;${prefix}ToA&quot; style=&quot;width: 500px;&quot; rows=6/&gt;&lt;/textarea&gt;
+&lt;/div&gt;
+&lt;div id=&quot;ownerDetails&quot;&gt;
+	${attributes.get(&quot;ownerDetails&quot;)}
+	
+&lt;/div&gt;
+</string>
+                </entry>
+                <entry>
+                  <string>OnLoadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>Notes</string>
+                  <string></string>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+          </controls>
+          <additionalCssClass></additionalCssClass>
+        </com.dytech.edge.wizard.beans.DefaultWizardPage>
+      </pages>
+      <redraftScript></redraftScript>
+      <saveScript></saveScript>
+      <allowNonSequentialNavigation>false</allowNonSequentialNavigation>
+      <showPageTitlesNextPrev>false</showPageTitlesNextPrev>
+    </wizard>
+    <metadataMapping>
+      <imsMapping class="list"/>
+      <htmlMapping class="list"/>
+      <literalMapping class="list"/>
+    </metadataMapping>
+    <itemSummarySections>
+      <configList>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>3f7f297e-d811-4123-b580-10411362b014</uuid>
+          <value>basicSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Basic Information</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+          <configuration>&lt;map&gt;
+  &lt;entry&gt;
+    &lt;string&gt;owner&lt;/string&gt;
+    &lt;string&gt;true&lt;/string&gt;
+  &lt;/entry&gt;
+&lt;/map&gt;</configuration>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>cff74e98-0aeb-40dc-be2e-245ffcce0215</uuid>
+          <value>freemarkerSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Scripted section</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+          <configuration>&lt;xml&gt;&lt;markup&gt;&amp;lt;div id=&amp;quot;allowSummary&amp;quot;&amp;gt;
+Allow Summary: ${attributes.get(&amp;quot;allowSummary&amp;quot;)}&amp;lt;br/&amp;gt;
+&amp;lt;/div&amp;gt;
+&amp;lt;div id=&amp;quot;attribution&amp;quot;&amp;gt;
+Owner Attribution: ${attributes.get(&amp;quot;attribution&amp;quot;)} &amp;lt;br/&amp;gt;
+&amp;lt;/div&amp;gt;
+&amp;lt;div id=&amp;quot;enforce&amp;quot;&amp;gt;
+Enforce Attribution: ${attributes.get(&amp;quot;enforce&amp;quot;)} &amp;lt;br/&amp;gt;
+&amp;lt;/div&amp;gt;
+&amp;lt;div id=&amp;quot;hide&amp;quot;&amp;gt;
+Hide Licence From Owner: ${attributes.get(&amp;quot;hide&amp;quot;)} &amp;lt;br/&amp;gt;
+&amp;lt;/div&amp;gt;
+&amp;lt;div id=&amp;quot;maxUser&amp;quot;&amp;gt;
+Maximum Number of Users: ${attributes.get(&amp;quot;maxUser&amp;quot;)} &amp;lt;br/&amp;gt;
+&amp;lt;/div&amp;gt;
+&amp;lt;div id=&amp;quot;ownerAccept&amp;quot;&amp;gt;
+Owner Must Accept: ${attributes.get(&amp;quot;ownerAccept&amp;quot;)} &amp;lt;br/&amp;gt;
+&amp;lt;/div&amp;gt;
+&amp;lt;div id=&amp;quot;preview&amp;quot;&amp;gt;
+Preview Allowed: ${attributes.get(&amp;quot;preview&amp;quot;)} &amp;lt;br/&amp;gt;
+&amp;lt;/div&amp;gt;
+&amp;lt;div id=&amp;quot;sector&amp;quot;&amp;gt;
+Restrict to Sector: ${attributes.get(&amp;quot;sector&amp;quot;)} &amp;lt;br/&amp;gt;
+&amp;lt;/div&amp;gt;
+&amp;lt;div id=&amp;quot;licence&amp;quot;&amp;gt;
+Show Licence Count: ${attributes.get(&amp;quot;licence&amp;quot;)} &amp;lt;br/&amp;gt;
+&amp;lt;/div&amp;gt;
+&amp;lt;div id=&amp;quot;compilation&amp;quot;&amp;gt;
+Studend Must bla: ${attributes.get(&amp;quot;compilation&amp;quot;)} &amp;lt;br/&amp;gt;
+&amp;lt;/div&amp;gt;
+&amp;lt;div id=&amp;quot;ToA&amp;quot;&amp;gt;
+ToA: ${attributes.get(&amp;quot;ToA&amp;quot;)} &amp;lt;br/&amp;gt;
+&amp;lt;/div&amp;gt;&lt;/markup&gt;&lt;script&gt;var settings = drm.getSettings();
+
+attributes.set(&amp;quot;allowSummary&amp;quot;, settings.isAllowSummary());
+attributes.set(&amp;quot;attribution&amp;quot;, settings.isAttributionOfOwnership());
+attributes.set(&amp;quot;enforce&amp;quot;, settings.isEnforceAttribution());
+attributes.set(&amp;quot;hide&amp;quot;, settings.isHideLicencesFromOwner());
+attributes.set(&amp;quot;maxUser&amp;quot;, settings.getMaximumUsageCount());
+attributes.set(&amp;quot;ownerAccept&amp;quot;, settings.isOwnerMustAccept());
+attributes.set(&amp;quot;preview&amp;quot;, settings.isPreviewAllowed());
+attributes.set(&amp;quot;sector&amp;quot;, settings.isRestrictToSector());
+attributes.set(&amp;quot;licence&amp;quot;, settings.isShowLicenceCount());
+attributes.set(&amp;quot;compilation&amp;quot;, settings.isStudentsMustAcceptIfInCompilation());
+attributes.set(&amp;quot;ToA&amp;quot;, settings.getTermsOfAgreement());&lt;/script&gt;&lt;/xml&gt;</configuration>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>ad86657b-7d1a-427e-b50a-bf2b08f9592d</uuid>
+          <value>attachmentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Links to resources</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+          <configuration>&lt;xml&gt;&lt;SHOW_FULLSCREEN_LINK_KEY&gt;true&lt;/SHOW_FULLSCREEN_LINK_KEY&gt;&lt;SHOW_FULLSCREEN_LINK_NEW_WINDOW_KEY&gt;false&lt;/SHOW_FULLSCREEN_LINK_NEW_WINDOW_KEY&gt;&lt;/xml&gt;</configuration>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>7f39bde5-6983-4ffd-b000-4de162e421ed</uuid>
+          <value>commentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Add a comment</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+      </configList>
+      <hideOwner>false</hideOwner>
+      <hideCollaborators>false</hideCollaborators>
+    </itemSummarySections>
+  </slow>
+  <denyDirectContribution>false</denyDirectContribution>
+</com.tle.beans.entity.itemdef.ItemDefinition>

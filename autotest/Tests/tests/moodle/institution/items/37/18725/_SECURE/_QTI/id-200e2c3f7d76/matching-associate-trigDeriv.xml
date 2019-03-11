@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+	identifier="matching-associate-trigDeriv"
+	title="Associate derivatives of trigonometric functions" adaptive="false" timeDependent="false">
+	<responseDeclaration identifier="RESPONSE" cardinality="multiple" baseType="pair">
+		<correctResponse>
+			<value>A D</value>
+			<value>B E</value>
+			<value>C F</value>
+		</correctResponse>
+		<mapping defaultValue="0">
+			<mapEntry mapKey="A D" mappedValue="1"/>
+			<mapEntry mapKey="B E" mappedValue="1"/>
+			<mapEntry mapKey="C F" mappedValue="2"/>
+		</mapping>
+	</responseDeclaration>
+	<outcomeDeclaration identifier="SCORE" cardinality="single" baseType="float"/>
+	<outcomeDeclaration identifier="FEEDBACK" cardinality="single" baseType="identifier"/>
+	<itemBody>
+		<p>Which expressions in the table below are equivalent?</p>
+		<associateInteraction responseIdentifier="RESPONSE" shuffle="true" maxAssociations="3">
+			<prompt>Match the expressions: </prompt>
+			<simpleAssociableChoice identifier="A" matchMax="1">
+				<math xmlns="http://www.w3.org/1998/Math/MathML">
+					<semantics>
+						<mrow>
+							<mfrac>
+								<mi>d</mi>
+								<mrow>
+									<mi>d</mi>
+									<mi>&#x398;</mi>
+								</mrow>
+							</mfrac>
+							<mfenced close=")" open="(">
+								<mrow>
+									<mi>sin</mi>
+									<mi>&#x398;</mi>
+								</mrow>
+							</mfenced>
+						</mrow>
+						<annotation encoding="SnuggleTeX">\[ \frac{d}{d\theta}(\sin{\theta})
+							\]</annotation>
+					</semantics>
+				</math>
+			</simpleAssociableChoice>
+			<simpleAssociableChoice identifier="B" matchMax="1">
+				<math xmlns="http://www.w3.org/1998/Math/MathML">
+					<semantics>
+						<mrow>
+							<mfrac>
+								<mi>d</mi>
+								<mrow>
+									<mi>d</mi>
+									<mi>&#x398;</mi>
+								</mrow>
+							</mfrac>
+							<mfenced close=")" open="(">
+								<mrow>
+									<mi>cos</mi>
+									<mi>&#x398;</mi>
+								</mrow>
+							</mfenced>
+						</mrow>
+						<annotation encoding="SnuggleTeX">\[ \frac{d}{d\theta}(\cos{\theta})
+							\]</annotation>
+					</semantics>
+				</math>
+			</simpleAssociableChoice>
+			<simpleAssociableChoice identifier="C" matchMax="1">
+				<math xmlns="http://www.w3.org/1998/Math/MathML">
+					<semantics>
+						<mrow>
+							<mfrac>
+								<mi>d</mi>
+								<mrow>
+									<mi>d</mi>
+									<mi>&#x398;</mi>
+								</mrow>
+							</mfrac>
+							<mfenced close=")" open="(">
+								<mrow>
+									<mi>tan</mi>
+									<mi>&#x398;</mi>
+								</mrow>
+							</mfenced>
+						</mrow>
+						<annotation encoding="SnuggleTeX">\[ \frac{d}{d\theta}(\tan{\theta})
+							\]</annotation>
+					</semantics>
+				</math>
+			</simpleAssociableChoice>
+			<simpleAssociableChoice identifier="D" matchMax="1">
+				<math xmlns="http://www.w3.org/1998/Math/MathML">
+					<semantics>
+						<mrow>
+							<mi>cos</mi>
+							<mi>&#x398;</mi>
+						</mrow>
+						<annotation encoding="SnuggleTeX">\[ \cos{\theta} \]</annotation>
+					</semantics>
+				</math>
+			</simpleAssociableChoice>
+			<simpleAssociableChoice identifier="E" matchMax="1">
+				<math xmlns="http://www.w3.org/1998/Math/MathML">
+					<semantics>
+						<mrow>
+							<mo>-</mo>
+							<mi>sin</mi>
+							<mi>&#x398;</mi>
+						</mrow>
+						<annotation encoding="SnuggleTeX">\[ -\sin{\theta} \]</annotation>
+					</semantics>
+				</math>
+			</simpleAssociableChoice>
+			<simpleAssociableChoice identifier="F" matchMax="1">
+				<math xmlns="http://www.w3.org/1998/Math/MathML">
+					<semantics>
+						<mrow>
+							<msup>
+								<mi>sec</mi>
+								<mn>2</mn>
+							</msup>
+							<mi>&#x398;</mi>
+						</mrow>
+						<annotation encoding="SnuggleTeX">\[ \sec^2{\theta} \]</annotation>
+					</semantics>
+				</math>
+			</simpleAssociableChoice>
+		</associateInteraction>
+		<p>
+			<feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="OK"> Yes,
+				that's correct.</feedbackInline>
+			<feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="No"> No, that's
+				not correct.</feedbackInline>
+		</p>
+	</itemBody>
+	<responseProcessing>
+		<responseCondition>
+			<responseIf>
+				<isNull>
+					<variable identifier="RESPONSE"/>
+				</isNull>
+				<setOutcomeValue identifier="SCORE">
+					<baseValue baseType="float">0.0</baseValue>
+				</setOutcomeValue>
+			</responseIf>
+			<responseElse>
+				<setOutcomeValue identifier="SCORE">
+					<mapResponse identifier="RESPONSE"/>
+				</setOutcomeValue>
+				<responseCondition>
+					<responseIf>
+						<equal toleranceMode="exact">
+							<variable identifier="SCORE"/>
+							<baseValue baseType="float">4.0</baseValue>
+						</equal>
+						<setOutcomeValue identifier="FEEDBACK">
+							<baseValue baseType="identifier">OK</baseValue>
+						</setOutcomeValue>
+					</responseIf>
+					<responseElse>
+						<setOutcomeValue identifier="FEEDBACK">
+							<baseValue baseType="identifier">No</baseValue>
+						</setOutcomeValue>
+					</responseElse>
+				</responseCondition>
+			</responseElse>
+		</responseCondition>
+	</responseProcessing>
+</assessmentItem>

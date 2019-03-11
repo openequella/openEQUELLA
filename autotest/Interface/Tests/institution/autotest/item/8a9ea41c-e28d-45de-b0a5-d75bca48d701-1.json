@@ -1,0 +1,64 @@
+{
+  "uuid" : "8a9ea41c-e28d-45de-b0a5-d75bca48d701",
+  "version" : 1,
+  "name" : "SearchApiTest - Edits",
+  "nameStrings" : {
+    "en_AU" : "SearchApiTest - Edits"
+  },
+  "description" : "Description 5",
+  "descriptionStrings" : {
+    "en_AU" : "Description 5"
+  },
+  "metadata" : "<xml><item><name>SearchApiTest - Edits</name><description>Description 5</description></item></xml>",
+  "status" : "live",
+  "createdDate" : "2014-05-12T15:43:45.263+10:00",
+  "modifiedDate" : "2014-05-12T15:43:58.300+10:00",
+  "owner" : {
+    "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  },
+  "collaborators" : [ ],
+  "collection" : {
+    "uuid" : "b28f1ffe-2008-4f5e-d559-83c8acd79316"
+  },
+  "rating" : -1.0,
+  "attachments" : [ ],
+  "navigation" : {
+    "hideUnreferencedAttachments" : false,
+    "showSplitOption" : false,
+    "nodes" : [ ]
+  },
+  "drm" : { },
+  "_export" : {
+    "exportVersion" : "1.0",
+    "history" : [ {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:45.264+10:00",
+      "type" : "edit",
+      "state" : "draft"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:45.308+10:00",
+      "type" : "statechange",
+      "state" : "live"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:50.506+10:00",
+      "type" : "edit",
+      "state" : "live"
+    } ],
+    "statuses" : [ ],
+    "moderating" : false,
+    "liveApprovalDate" : "2014-05-12T15:43:45.308+10:00",
+    "start" : "2014-05-12T15:45:23.537+10:00",
+    "lastAction" : "2014-05-12T15:43:45.308+10:00"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/item/8a9ea41c-e28d-45de-b0a5-d75bca48d701/1"
+  }
+}

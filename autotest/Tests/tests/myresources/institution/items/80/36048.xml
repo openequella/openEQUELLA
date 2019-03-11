@@ -1,0 +1,87 @@
+<com.tle.beans.item.Item>
+  <id>36048</id>
+  <uuid>dd26b7f9-3364-e375-aa8c-04d01eca690f</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2003-03-06 16:03:53.0</dateModified>
+  <dateCreated class="sql-timestamp">2003-03-06 15:48:14.0</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.321</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <attachments/>
+  <searchDetails/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="e8f050dd-f6c0-4cec-559f-e54d7ef19836"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>16882</id>
+      <url>http://boorah/dev/vanilla/item/image/92aaf4b2-499d-07f4-e437-e6d457a9e146/1/cardinal.gif</url>
+      <urlHash>6db37aad0dd828193909fc9f218a604d</urlHash>
+      <success>false</success>
+      <status>404</status>
+      <message>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en-AU&quot;  &gt;
+	&lt;head&gt;
+	&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html;charset=UTF-8&quot;&gt;
+	&lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot; &gt;
+	&lt;base href=&quot;http://boorah/&quot;&gt;
+	 
+	&lt;link rel=&quot;apple-touch-icon&quot; href=&quot;p/r/1.0.643</message>
+      <tries>2</tries>
+      <lastChecked class="sql-timestamp">2014-03-27 23:14:57.83</lastChecked>
+      <lastIndexed class="sql-timestamp">1970-01-01 11:00:00.0</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>36056</id>
+    <start class="sql-timestamp">2011-08-30 12:05:08.723</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>36057</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>36058</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Cardinal</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>36050</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>36052</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>The cardinal symbol.</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

@@ -1,0 +1,94 @@
+<com.tle.beans.item.Item>
+  <id>119373</id>
+  <uuid>fb93b6f7-fc2c-cb13-8c06-af2890f3daa6</uuid>
+  <version>1</version>
+  <owner>92405e17-f4a9-9da7-21f5-a8fed3afb770</owner>
+  <dateModified class="sql-timestamp">2003-07-15 10:21:42.0</dateModified>
+  <dateCreated class="sql-timestamp">2003-07-15 10:20:58.0</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.413</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>DRAFT</status>
+  <attachments>
+    <com.tle.beans.item.attachments.HtmlAttachment>
+      <id>116759</id>
+      <uuid>51977dab-aa92-4996-8aba-46d859e54e2e</uuid>
+      <url></url>
+      <description>Start Titration</description>
+      <value1>7816</value1>
+      <value2>false</value2>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.HtmlAttachment>
+  </attachments>
+  <searchDetails/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="2869da6f-e43a-586d-2ad9-ff055e32cb33"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>119211</id>
+    <start class="sql-timestamp">2011-08-30 12:05:10.077</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes>
+    <com.tle.beans.item.attachments.ItemNavigationNode>
+      <id>187</id>
+      <uuid>752416ac-0774-448e-b2cd-9ddf18b3a907</uuid>
+      <name>Start Titration</name>
+      <tabs>
+        <com.tle.beans.item.attachments.ItemNavigationTab>
+          <id>208</id>
+          <name>Default</name>
+          <attachment class="com.tle.beans.item.attachments.HtmlAttachment" reference="../../../../../attachments/com.tle.beans.item.attachments.HtmlAttachment"/>
+        </com.tle.beans.item.attachments.ItemNavigationTab>
+      </tabs>
+      <index>0</index>
+    </com.tle.beans.item.attachments.ItemNavigationNode>
+  </treeNodes>
+  <notifications/>
+  <name>
+    <id>213772</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>213570</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Titration</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>213768</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>213566</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Titration</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>7367</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

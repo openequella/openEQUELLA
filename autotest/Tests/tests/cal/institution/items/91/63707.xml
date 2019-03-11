@@ -1,0 +1,122 @@
+<com.tle.beans.item.Item>
+  <id>63707</id>
+  <uuid>2af490d1-bd43-2240-c717-17356cde5e1e</uuid>
+  <version>1</version>
+  <owner>445a6d62-825c-c9c1-8fcc-d738f6330bd6</owner>
+  <dateModified class="sql-timestamp">2009-04-08 15:59:10.313</dateModified>
+  <dateCreated class="sql-timestamp">2009-04-08 15:59:10.313</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.514</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>63720</id>
+      <uuid>20e627e0-b7c1-4896-b0a5-1ba0ffddab83</uuid>
+      <url></url>
+      <description>Basic Book for CAL Functionality Testing</description>
+      <value1>resource</value1>
+      <data>
+        <entry>
+          <string>type</string>
+          <string>path</string>
+        </entry>
+        <entry>
+          <string>uuid</string>
+          <string>a0db6f3a-69b8-2bc5-ee54-eb1abdb75d53</string>
+        </entry>
+        <entry>
+          <string>version</string>
+          <int>1</int>
+        </entry>
+      </data>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.CustomAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>63722</id>
+      <uuid>d443bc6d-e280-490e-a5fd-4ca2885a4bd7</uuid>
+      <url>Issues_List.doc</url>
+      <description>Issues_List.doc</description>
+      <value1>50176</value1>
+      <value2>false</value2>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="bfad7ea0-983f-dd58-6b7d-ed5f346e24ab"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>63713</id>
+    <liveApprovalDate class="sql-timestamp">2009-04-08 15:59:10.313</liveApprovalDate>
+    <start class="sql-timestamp">2013-05-10 14:25:03.777</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>63726</id>
+      <user>445a6d62-825c-c9c1-8fcc-d738f6330bd6</user>
+      <date class="sql-timestamp">2009-04-08 15:59:10.313</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>63728</id>
+      <user>445a6d62-825c-c9c1-8fcc-d738f6330bd6</user>
+      <date class="sql-timestamp">2009-04-08 15:59:10.313</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>63730</id>
+      <user>445a6d62-825c-c9c1-8fcc-d738f6330bd6</user>
+      <date class="sql-timestamp">2009-04-08 15:59:10.313</date>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>63734</id>
+      <user>445a6d62-825c-c9c1-8fcc-d738f6330bd6</user>
+      <date class="sql-timestamp">2009-04-08 15:59:10.313</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>63714</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>63716</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Part One</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>50176</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

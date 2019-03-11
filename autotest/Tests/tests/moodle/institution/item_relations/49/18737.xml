@@ -1,0 +1,11 @@
+<com.tle.beans.item.Relation>
+  <id>18737</id>
+  <firstItem>
+    <id>18582</id>
+  </firstItem>
+  <secondItem>
+    <id>18634</id>
+  </secondItem>
+  <firstResource>6179a1fe-3d84-4f18-860a-6f98a758f31b</firstResource>
+  <relationType>CAL_HOLDING</relationType>
+</com.tle.beans.item.Relation>

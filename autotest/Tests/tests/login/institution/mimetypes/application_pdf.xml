@@ -1,0 +1,18 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>2016908</id>
+  <institution>
+    <id>2016849</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>pdf</string>
+  </extensions>
+  <type>application/pdf</type>
+  <description>PDF Document</description>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/pdf.gif</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

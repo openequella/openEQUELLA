@@ -1,0 +1,64 @@
+html, body {
+	height: 100%;
+	color: black;
+	background: #ffffff;
+	font-size: 1em;
+	padding-bottom: 17px;
+	margin-top: 1px;
+}
+
+#divcenter {
+	height: 95%;
+	text-align: center;
+}
+
+#conditions {
+	font-family: Arial Unicode MS, Helvetica, Lucida Sans Unicode, sans-serif;
+	font-size: 8pt;
+	color: #000000;
+	display: block;
+}
+
+#copyright {
+	font-family: Arial Unicode MS, Helvetica, Lucida Sans Unicode, sans-serif;
+	font-size: 8pt;
+	color: #000000;
+}
+
+ 
+.logo {
+	width: 20%; float: left;
+}
+
+#logo {
+	width: 108px; height: 49px; float: left;
+}
+
+.partnerlogo {
+	width: 20%; float: right;
+}
+
+  
+.copyright-conditions {
+	float: left; width: 59.5%;height: 48px; vertical-align: text-bottom;
+}
+
+ 
+#conditions a,#conditions a:link {
+	color: #0000ff;
+}
+
+ 
+#conditions a:visited {
+	color: #990099;
+}
+
+ 
+#conditions a:active {
+	color: #aaffaa;
+}
+
+ #conditions a:hover, #conditions a:focus {
+	color: #ff0000;
+	outline: #000000 solid 1px;
+}

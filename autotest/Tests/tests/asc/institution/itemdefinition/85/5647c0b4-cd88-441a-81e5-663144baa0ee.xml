@@ -1,0 +1,372 @@
+<com.tle.beans.entity.itemdef.ItemDefinition>
+  <id>116160</id>
+  <uuid>5647c0b4-cd88-441a-81e5-663144baa0ee</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-11-13 14:26:56.344</dateModified>
+  <dateCreated class="sql-timestamp">2012-10-26 10:20:25.607</dateCreated>
+  <description>
+    <id>116161</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116162</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Collection for testing the util scripting object</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>116163</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116164</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Utils script object collection</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <schema entityclass="com.tle.beans.entity.Schema" uuid="d9aba963-4648-e497-d62b-fc1ddf2d0199"/>
+  <wizardcategory>Scripting Objects</wizardcategory>
+  <reviewperiod>-2147483648</reviewperiod>
+  <slow>
+    <id>116165</id>
+    <itemMetadataRules/>
+    <wizard>
+      <pages>
+        <com.dytech.edge.wizard.beans.DefaultWizardPage>
+          <title>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en</locale>
+                  <priority>1</priority>
+                  <text>Data</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </title>
+          <controls>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>true</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Name</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/name</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Description</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/description</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <targetnodes/>
+              <items/>
+              <classType>advancedscript</classType>
+              <attributes>
+                <entry>
+                  <string>StoreJs</string>
+                  <string>if (request.get(&apos;doit&apos;) == &apos;Parse Date&apos;)
+{
+	attributes.set(&apos;date&apos;, utils.getDate(request.get(&apos;date&apos;),&quot;dd/MM/yy&quot;));
+}
+if (request.get(&apos;doit&apos;) == &apos;Facet Count&apos;)
+{
+	attributes.set(&apos;facet&apos;, &quot;true&quot;);
+	attributes.set(&apos;query&apos;, request.get(&apos;facetquery&apos;));
+}
+if( request.get(&apos;doit&apos;) == &apos;Query Count&apos;)
+{
+	var collections = [&quot;b1c3ff7c-0d3e-40ab-99af-e061f39859b4&quot;,&quot;4ff92bf0-5dd6-4b7e-85ec-7e1d22763786&quot;];
+	var count = utils.queryCount(collections, &quot;/xml/facet_xpath like &apos;&quot; + request.get(&apos;querycount&apos;) + &quot;&apos;&quot;);
+	attributes.set(&quot;queryCount&quot;,count);
+}
+if (request.get(&apos;doit&apos;) == &apos;Get URL&apos;)
+{
+	var searchResults = utils.search(request.get(&apos;item&apos;),0,1).getResults();
+	var firstResult = searchResults.get(0);
+	var returnURL = utils.getItemUrl(firstResult);
+	attributes.set(&apos;itemURL&apos;,returnURL);	
+
+	var responseScriptType = utils.getConnection(returnURL).getResponse(true);
+	attributes.set(&apos;responseCode&apos;,responseScriptType.getCode());
+	attributes.set(&apos;isResponseError&apos;,responseScriptType.isError());
+	attributes.set(&apos;responseContentType&apos;,responseScriptType.getContentType());
+}
+if(request.get(&apos;doit&apos;) == &apos;Get collection details&apos;)
+{
+	//roundabout but ... never fails
+	var collection = utils.getCollectionFromUuid(currentItem.getCollection().getUuid());
+	attributes.set(&apos;collectionDetails&apos;, &quot;Name: &quot; + collection.getName() + &quot;&lt;br/&gt;Description: &quot; + collection.getDescription());
+}
+if(request.get(&apos;doit&apos;) == &apos;Xml from string&apos;)
+{
+	var xmlString = request.get(&apos;xmlstring&apos;);
+	if(utils.isEmpty(xmlString))
+	{
+		attributes.set(&apos;xml&apos;, &quot;Text field empty&quot;);
+		utils.newXmlDocument();
+	}else
+	{
+		utils.newXmlDocumentFromString(xmlString);
+		attributes.set(&apos;xml&apos;, &quot;Xml document created from &quot; + xmlString);	
+	}
+}
+</string>
+                </entry>
+                <entry>
+                  <string>ReadJs</string>
+                  <string>//coverage
+lang.getString(&quot;redirectionservlet.error.notloggedin&quot;);
+lang.getLocale();
+lang.getTimeZone();</string>
+                </entry>
+                <entry>
+                  <string>JsLibs</string>
+                  <list/>
+                </entry>
+                <entry>
+                  <string>OnSubmitJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>MarkUp</string>
+                  <string>&lt;div class=&quot;control&quot;&gt;
+	&lt;h3&gt;Date Parsing (dd/MM/yy) &lt;/h3&gt;
+	&lt;input type=&quot;text&quot; name=&quot;${prefix}date&quot; /&gt; 
+	&lt;button name=&quot;${prefix}doit&quot; value=&apos;Parse Date&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Parse Date&lt;/button&gt;
+	&lt;br/&gt;&lt;br/&gt;
+	&lt;div id=&quot;dateResult&quot;&gt;
+		${attributes.get(&apos;date&apos;)}
+	&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;control&quot;&gt;
+	&lt;h3&gt;Facet Count&lt;/h3&gt;
+	&lt;label for=&quot;facetquery&quot;&gt;Facet Count Query:&lt;/label&gt;&lt;br/&gt;
+	&lt;input type=&quot;text&quot; name=&quot;${prefix}facetquery&quot; id=&quot;facetquery&quot;/&gt; 
+	&lt;button name=&quot;${prefix}doit&quot; value=&apos;Facet Count&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Facet Count&lt;/button&gt;
+	&lt;br/&gt;&lt;br/&gt;
+	&lt;div id=&quot;facetResults&quot;&gt;
+	&lt;#if attributes.get(&apos;facet&apos;) == &apos;true&apos; &gt;
+	&lt;#assign collections = [&quot;b1c3ff7c-0d3e-40ab-99af-e061f39859b4&quot;,&quot;4ff92bf0-5dd6-4b7e-85ec-7e1d22763786&quot;]&gt;
+	&lt;#assign facetReturn = utils.facetCount(attributes.get(&apos;query&apos;),collections,&quot;/xml/include like &apos;1&apos;&quot;,&quot;/xml/facet_xpath&quot;)&gt;
+	&lt;#list facetReturn as result&gt;
+		${result.getTerm()} : ${result.getCount()} &lt;br/&gt;
+	&lt;/#list&gt;
+	&lt;/#if&gt;
+	&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class=&quot;control&quot;&gt;
+	&lt;h3&gt;Query Count&lt;/h3&gt;
+	&lt;label for=&quot;querycount&quot;&gt;Query Count where /xml/facet_path like:&lt;/label&gt;&lt;br/&gt;
+	&lt;input type=&quot;text&quot; name=&quot;${prefix}querycount&quot; id=&quot;querycount&quot;/&gt; 
+	&lt;button name=&quot;${prefix}doit&quot; value=&apos;Query Count&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Query Count&lt;/button&gt;
+	&lt;br/&gt;&lt;br/&gt;
+	&lt;div id=&quot;queryCountResult&quot;&gt;
+		${attributes.get(&apos;queryCount&apos;)}
+	&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;control&quot;&gt;
+	&lt;h3&gt;Get URL for item&lt;/h3&gt;
+	&lt;label for=&quot;item&quot;&gt;Item name:&lt;/label&gt;&lt;br/&gt;
+	&lt;input type=&quot;text&quot; name=&quot;${prefix}item&quot; id=&quot;item&quot;/&gt; 
+	&lt;button name=&quot;${prefix}doit&quot; value=&apos;Get URL&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Get URL&lt;/button&gt;
+	&lt;br/&gt;&lt;br/&gt;
+	&lt;div id=&quot;itemURLResult&quot;&gt;
+		${attributes.get(&apos;itemURL&apos;)}
+	&lt;/div&gt;
+	&lt;div id=&quot;responseCode&quot;&gt;
+		${attributes.get(&apos;responseCode&apos;)}
+	&lt;/div&gt;	
+	&lt;div id=&quot;isResponseError&quot;&gt;
+		${attributes.get(&apos;isResponseError&apos;)}
+	&lt;/div&gt;	
+	&lt;div id=&quot;responseContentType&quot;&gt;
+		${attributes.get(&apos;responseContentType&apos;)}
+	&lt;/div&gt;	
+&lt;/div&gt;
+&lt;div class=&quot;control&quot;&gt;
+	&lt;h3&gt;Get this collections details&lt;/h3&gt;
+	&lt;button name=&quot;${prefix}doit&quot; value=&apos;Get collection details&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Get Collection details&lt;/button&gt;
+	&lt;br/&gt;&lt;br/&gt;
+	&lt;div id=&quot;collectionDetails&quot;&gt;
+		${attributes.get(&apos;collectionDetails&apos;)}
+	&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;control&quot;&gt;
+	&lt;h3&gt;Create XML Doc from string&lt;/h3&gt;
+	&lt;label for=&quot;item&quot;&gt;XML String:&lt;/label&gt;&lt;br/&gt;
+	&lt;input type=&quot;text&quot; name=&quot;${prefix}xmlstring&quot; id=&quot;xmlstring&quot;/&gt; 
+	&lt;button name=&quot;${prefix}doit&quot; value=&apos;Xml from string&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Xml from string&lt;/button&gt;
+	&lt;br/&gt;&lt;br/&gt;
+	&lt;div id=&quot;xml&quot;&gt;
+		${attributes.get(&apos;xml&apos;)}
+	&lt;/div&gt;
+&lt;/div&gt;</string>
+                </entry>
+                <entry>
+                  <string>OnLoadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>Notes</string>
+                  <string></string>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+          </controls>
+        </com.dytech.edge.wizard.beans.DefaultWizardPage>
+      </pages>
+      <redraftScript></redraftScript>
+      <saveScript></saveScript>
+      <allowNonSequentialNavigation>false</allowNonSequentialNavigation>
+      <showPageTitlesNextPrev>false</showPageTitlesNextPrev>
+    </wizard>
+    <metadataMapping>
+      <imsMapping class="list"/>
+      <htmlMapping class="list"/>
+      <literalMapping class="list"/>
+    </metadataMapping>
+    <itemSummarySections>
+      <configList>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>10ed1dcb-1ed3-41c2-a9dd-ec7ab3197e69</uuid>
+          <value>basicSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Basic Information</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>0d28d0c2-b34e-4b5f-a5d0-466aee18ae51</uuid>
+          <value>attachmentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Links to resources</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>7c589d76-80f3-4864-876f-82a12ca4b4cb</uuid>
+          <value>commentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Add a comment</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+      </configList>
+      <hideOwner>false</hideOwner>
+      <hideCollaborators>false</hideCollaborators>
+    </itemSummarySections>
+  </slow>
+  <denyDirectContribution>false</denyDirectContribution>
+</com.tle.beans.entity.itemdef.ItemDefinition>

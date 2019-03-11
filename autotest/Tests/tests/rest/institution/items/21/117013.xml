@@ -1,0 +1,62 @@
+<com.tle.beans.item.Item>
+  <id>117013</id>
+  <uuid>95c92f26-c08e-40a0-8fc4-45251977aade</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-02-28 11:39:27.32</dateModified>
+  <dateCreated class="sql-timestamp">2012-02-28 11:39:27.32</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.549</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>DRAFT</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c"/>
+  <collaborators/>
+  <referencedUrls/>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117023</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-02-28 11:39:27.32</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117025</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-02-28 11:39:27.32</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>117017</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>117019</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>SearchApiTest - Other collection draft</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

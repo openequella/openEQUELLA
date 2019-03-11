@@ -1,0 +1,12 @@
+<com.tle.core.notification.beans.Notification>
+  <id>117715</id>
+  <itemid>d7f554ee-d50f-4567-a85e-5e62578d10ed.806c8b72-d53b-49e1-8cf1-60b474d0f0ec/1</itemid>
+  <itemidOnly>d7f554ee-d50f-4567-a85e-5e62578d10ed/1</itemidOnly>
+  <reason>overdue</reason>
+  <userTo>49a04e57-561f-45b6-8187-e0b893ac739c</userTo>
+  <date class="sql-timestamp">2012-10-31 12:06:43.793</date>
+  <processed>true</processed>
+  <batched>true</batched>
+  <lastAttempt class="sql-timestamp">2014-03-17 23:11:19.613</lastAttempt>
+  <attemptId>0f987c79-41f1-4a73-bdfd-cfb57af2e3f1</attemptId>
+</com.tle.core.notification.beans.Notification>

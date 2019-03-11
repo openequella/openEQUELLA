@@ -1,0 +1,138 @@
+<com.tle.beans.item.Item>
+  <id>116845</id>
+  <uuid>ebe45eb1-7dff-4618-9f8f-069417586b34</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-03-31 13:43:38.377</dateModified>
+  <dateCreated class="sql-timestamp">2014-03-31 13:36:02.977</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.524</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <searchDetails>
+    <com.tle.common.Pair>
+      <first class="com.tle.beans.entity.LanguageBundle">
+        <id>0</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>0</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>abstract</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </first>
+      <second class="com.tle.beans.entity.LanguageBundle">
+        <id>0</id>
+        <strings>
+          <entry>
+            <string>en_us</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>0</id>
+              <locale>en_us</locale>
+              <priority>1</priority>
+              <text>no one knows</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </second>
+    </com.tle.common.Pair>
+  </searchDetails>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="802fc4ca-ba19-49d1-a59b-05c917400808"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>116862</id>
+    <liveApprovalDate class="sql-timestamp">2014-03-31 13:36:02.977</liveApprovalDate>
+    <start class="sql-timestamp">2014-04-11 16:15:53.02</start>
+    <lastAction class="sql-timestamp">2014-03-31 13:36:02.977</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116871</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-31 13:36:02.977</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116875</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-31 13:36:02.977</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116878</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-31 13:36:02.977</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116909</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-31 13:43:38.377</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>116864</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116866</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>cockroach 1 of 12 creeps under a Meat Loaf</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>116847</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116854</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>my description contains HierarchyApiTest, not necessarily at start</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

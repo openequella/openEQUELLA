@@ -1,0 +1,19 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>769494</id>
+  <institution>
+    <id>769423</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>tar</string>
+  </extensions>
+  <type>application/x-tar</type>
+  <description>Archive</description>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/zip.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

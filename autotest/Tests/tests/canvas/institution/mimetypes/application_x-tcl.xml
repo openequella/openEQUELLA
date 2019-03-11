@@ -1,0 +1,18 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>120415</id>
+  <institution>
+    <id>120267</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>tcl</string>
+  </extensions>
+  <type>application/x-tcl</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

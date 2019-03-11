@@ -1,0 +1,497 @@
+<com.tle.beans.entity.itemdef.ItemDefinition>
+  <id>116156</id>
+  <uuid>ff5e218d-d0ae-402e-86bf-e4a358d638df</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2014-03-24 14:31:54.28</dateModified>
+  <dateCreated class="sql-timestamp">2014-01-31 09:38:28.135</dateCreated>
+  <name>
+    <id>116157</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116158</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Metadata script object collection</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <schema entityclass="com.tle.beans.entity.Schema" uuid="0f9c78be-5881-47a2-adb8-a521dc37cf83"/>
+  <wizardcategory>Scripting Objects</wizardcategory>
+  <reviewperiod>-2147483648</reviewperiod>
+  <slow>
+    <id>116159</id>
+    <itemMetadataRules/>
+    <dynamicMetadataRules/>
+    <wizard>
+      <pages>
+        <com.dytech.edge.wizard.beans.DefaultWizardPage>
+          <title>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en</locale>
+                  <priority>1</priority>
+                  <text>Data</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </title>
+          <controls>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>true</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Name</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/name</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Description</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/description</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Image attachments</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/attachments</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <classType>universal</classType>
+              <attributes>
+                <entry>
+                  <string>AllowPreviews</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>FILE_NOUNZIP</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>AllowMultiple</string>
+                  <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>FILE_QTI_PACKAGE</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>FILE_PACKAGEONLY</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>AttachmentTypes</string>
+                  <set>
+                    <string>fileHandler</string>
+                  </set>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.CustomControl>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <targetnodes/>
+              <items/>
+              <classType>advancedscript</classType>
+              <attributes>
+                <entry>
+                  <string>StoreJs</string>
+                  <string>//if (request.get(&apos;doit&apos;) == &apos;Create image attachment&apos;)
+//{
+//	var response = utils.getConnection(&quot;http://tle-autotest/_12R1550.dng&quot;).getResponse(false);
+//	attachments.createBinaryFileAttachment(&quot;fireworks.dng&quot;,&quot;Fireworks&quot;, response.getAsBinaryData());
+//	attachments.addExistingFileAsAttachment(&quot;fireworks.dng&quot;,&quot;Fireworks&quot;);
+//}
+
+if (request.get(&apos;doit&apos;) == &apos;Get metadata for attachment&apos;)
+{
+	var mtdt = metadata.getMetadata(attachments.list().get(0));
+	if(mtdt != null)
+	{
+		attributes.set(&apos;content&apos;, &apos;Successfully retrieved Metadata for attachment&apos;);
+	}
+}
+if (request.get(&apos;doit&apos;) == &apos;Get metadata for file&apos;)
+{
+	var mtdt = metadata.getMetadata(staging.getFileHandle(attachments.list().get(0).getFilename()));
+	if(mtdt != null)
+	{
+		attributes.set(&apos;content&apos;, &apos;Successfully retrieved Metadata for file&apos;);
+	}
+}
+if (request.get(&apos;doit&apos;) == &apos;Get types available&apos;)
+{
+	var mtdt = metadata.getMetadata(attachments.list().get(0));
+	attributes.set(&apos;content&apos;, mtdt.getTypesAvailable());
+}
+if(request.get(&apos;doit&apos;) == &apos;Get all for type&apos;)
+{
+	attributes.set(&apos;content&apos;, &apos;&apos;);
+	var mtdt = metadata.getMetadata(attachments.list().get(0));
+	var all = mtdt.getAllForType(request.get(&apos;alltype&apos;));
+
+	// Awkward loop to cover code 
+	if(!all.isEmpty())
+	{
+		var kl = all.listKeys();
+		for(i=0;i&lt;kl.size();i++)
+		{
+			var key = kl.get(i);
+			if(key == &apos;Artist&apos;)
+			{
+				attributes.set(&apos;content&apos;, kl.size() + &apos;, &apos; + key +&apos;: &apos; + all.get(key));
+			}
+		}
+	}
+}
+if (request.get(&apos;doit&apos;) == &apos;Get first for key&apos;)
+{
+	var mtdt = metadata.getMetadata(attachments.list().get(0));
+	var key = request.get(&apos;firstkey&apos;);
+	attributes.set(&apos;content&apos;, key + &apos;: &apos; + mtdt.get(key));
+}
+if(request.get(&quot;doit&quot;) == &apos;Get specific key&apos;)
+{
+	var mtdt = metadata.getMetadata(attachments.list().get(0));
+	var type = request.get(&apos;spectype&apos;);
+	var key = request.get(&apos;speckey&apos;);
+	var info = mtdt.get(type, key);
+	attributes.set(&apos;content&apos; , type + &apos;:&apos; + key + &apos;: &apos; + info );
+}
+</string>
+                </entry>
+                <entry>
+                  <string>ReadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>JsLibs</string>
+                  <list/>
+                </entry>
+                <entry>
+                  <string>OnSubmitJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>MarkUp</string>
+                  <string>&lt;button name=&quot;${prefix}doit&quot; value=&apos;Get metadata for attachment&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Get metadata for attachment&lt;/button&gt;
+&lt;br/&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Get metadata for file&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Get metadata for file&lt;/button&gt;
+&lt;br/&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Get types available&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Get types available&lt;/button&gt;
+&lt;br/&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Get all for type&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Get all for type&lt;/button&gt;
+&lt;label for=&quot;alltype&quot;&gt;Type: &lt;/label&gt;&lt;input id=&quot;alltype&quot; type=&quot;text&quot; name=&quot;${prefix}alltype&quot; /&gt;
+&lt;br/&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Get first for key&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Get first for key&lt;/button&gt;
+&lt;label for=&quot;firstkey&quot;&gt;Key:&lt;/label&gt;&lt;input id=&quot;firstkey&quot; type=&quot;text&quot; name=&quot;${prefix}firstkey&quot; /&gt;
+&lt;br/&gt;
+&lt;button name=&quot;${prefix}doit&quot; value=&apos;Get specific key&apos; class=&quot;btn&quot; onclick=&quot;${submitJavascript}&quot; &gt;Get specific key&lt;/button&gt;
+&lt;label for=&quot;spectype&quot;&gt;Type: &lt;/label&gt;&lt;input id=&quot;spectype&quot; type=&quot;text&quot; name=&quot;${prefix}spectype&quot; /&gt;
+&lt;label for=&quot;speckey&quot;&gt;Key: &lt;/label&gt;&lt;input id=&quot;speckey&quot; type=&quot;text&quot; name=&quot;${prefix}speckey&quot; /&gt;
+&lt;br/&gt;
+&lt;br/&gt;
+Contents:
+&lt;div id=&quot;ascMessage&quot;&gt;
+	&lt;pre&gt;${attributes.get(&apos;content&apos;)}&lt;/pre&gt;
+&lt;/div&gt;
+&lt;br/&gt;
+&lt;div id=&quot;attachmentList&quot;&gt;
+	Attachments:
+	&lt;ul&gt;
+	&lt;#list attachments.listForItem(currentItem) as att&gt;
+		&lt;li&gt; ${att.getFilename()}  (${att.getDescription()}) &lt;/li&gt;
+	&lt;/#list&gt;
+	&lt;/ul&gt;
+&lt;/div&gt;</string>
+                </entry>
+                <entry>
+                  <string>OnLoadJs</string>
+                  <string></string>
+                </entry>
+                <entry>
+                  <string>Notes</string>
+                  <string></string>
+                </entry>
+              </attributes>
+            </com.dytech.edge.wizard.beans.control.CustomControl>
+          </controls>
+        </com.dytech.edge.wizard.beans.DefaultWizardPage>
+      </pages>
+      <redraftScript></redraftScript>
+      <saveScript>if(staging.isAvailable())
+{
+	var att = attachments.list().get(0);
+	var mtdt = metadata.getMetadata(att);
+	xml.set(&apos;/item/description&apos;, mtdt.get(&apos;XMP&apos;, &apos;Description&apos;));
+	xml.set(&apos;/item/tags/&apos;, mtdt.get(&apos;XMP&apos;, &apos;Subject&apos;));
+	att.setCustomDisplayProperty(&apos;Author&apos;, mtdt.get(&apos;Artist&apos;));
+	att.setCustomDisplayProperty(&apos;Camera&apos;, mtdt.get(&apos;EXIF&apos;, &apos;Model&apos;));
+	att.setCustomDisplayProperty(&apos;Camera Lens&apos;, mtdt.get(&apos;EXIF&apos;, &apos;LensInfo&apos;));
+	xml.set(&apos;/item/text1&apos;, att.getCustomDisplayProperty(&apos;Camera&apos;));
+	xml.set(&apos;/item/text2&apos;, att.getAllCustomDisplayProperties());
+}
+</saveScript>
+      <allowNonSequentialNavigation>false</allowNonSequentialNavigation>
+      <showPageTitlesNextPrev>false</showPageTitlesNextPrev>
+    </wizard>
+    <searchDetails>
+      <attDisplay>STRUCTURED</attDisplay>
+      <disableThumbnail>false</disableThumbnail>
+      <standardOpen>false</standardOpen>
+      <integrationOpen>false</integrationOpen>
+    </searchDetails>
+    <metadataMapping>
+      <imsMapping class="list"/>
+      <htmlMapping class="list"/>
+      <literalMapping class="list"/>
+    </metadataMapping>
+    <itemSummarySections>
+      <configList>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>579db3b3-2a79-4536-9986-4a63b8f03be3</uuid>
+          <value>basicSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Basic Information</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+          <configuration>&lt;map&gt;
+  &lt;entry&gt;
+    &lt;string&gt;owner&lt;/string&gt;
+    &lt;string&gt;true&lt;/string&gt;
+  &lt;/entry&gt;
+&lt;/map&gt;</configuration>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>1098e1c5-ca11-41c6-a451-9867ae29c3f7</uuid>
+          <value>displayNodes</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Extra Metadata</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+          <configuration>&lt;list&gt;
+  &lt;com.tle.beans.entity.itemdef.DisplayNode&gt;
+    &lt;mode&gt;single&lt;/mode&gt;
+    &lt;node&gt;/item/tags&lt;/node&gt;
+    &lt;splitter&gt; &lt;/splitter&gt;
+    &lt;type&gt;text&lt;/type&gt;
+    &lt;title&gt;
+      &lt;id&gt;0&lt;/id&gt;
+      &lt;strings&gt;
+        &lt;entry&gt;
+          &lt;string&gt;en&lt;/string&gt;
+          &lt;com.tle.beans.entity.LanguageString&gt;
+            &lt;id&gt;0&lt;/id&gt;
+            &lt;locale&gt;en&lt;/locale&gt;
+            &lt;priority&gt;1&lt;/priority&gt;
+            &lt;text&gt;Tags&lt;/text&gt;
+            &lt;bundle reference=&quot;../../../..&quot;/&gt;
+          &lt;/com.tle.beans.entity.LanguageString&gt;
+        &lt;/entry&gt;
+      &lt;/strings&gt;
+    &lt;/title&gt;
+    &lt;truncateLength&gt;355&lt;/truncateLength&gt;
+  &lt;/com.tle.beans.entity.itemdef.DisplayNode&gt;
+  &lt;com.tle.beans.entity.itemdef.DisplayNode&gt;
+    &lt;mode&gt;double&lt;/mode&gt;
+    &lt;node&gt;/item/text1&lt;/node&gt;
+    &lt;splitter&gt;, &lt;/splitter&gt;
+    &lt;type&gt;text&lt;/type&gt;
+    &lt;title&gt;
+      &lt;id&gt;0&lt;/id&gt;
+      &lt;strings&gt;
+        &lt;entry&gt;
+          &lt;string&gt;en&lt;/string&gt;
+          &lt;com.tle.beans.entity.LanguageString&gt;
+            &lt;id&gt;0&lt;/id&gt;
+            &lt;locale&gt;en&lt;/locale&gt;
+            &lt;priority&gt;1&lt;/priority&gt;
+            &lt;text&gt;Camera&lt;/text&gt;
+            &lt;bundle reference=&quot;../../../..&quot;/&gt;
+          &lt;/com.tle.beans.entity.LanguageString&gt;
+        &lt;/entry&gt;
+      &lt;/strings&gt;
+    &lt;/title&gt;
+    &lt;truncateLength&gt;355&lt;/truncateLength&gt;
+  &lt;/com.tle.beans.entity.itemdef.DisplayNode&gt;
+  &lt;com.tle.beans.entity.itemdef.DisplayNode&gt;
+    &lt;mode&gt;double&lt;/mode&gt;
+    &lt;node&gt;/item/text2&lt;/node&gt;
+    &lt;splitter&gt;, &lt;/splitter&gt;
+    &lt;type&gt;text&lt;/type&gt;
+    &lt;title&gt;
+      &lt;id&gt;0&lt;/id&gt;
+      &lt;strings&gt;
+        &lt;entry&gt;
+          &lt;string&gt;en&lt;/string&gt;
+          &lt;com.tle.beans.entity.LanguageString&gt;
+            &lt;id&gt;0&lt;/id&gt;
+            &lt;locale&gt;en&lt;/locale&gt;
+            &lt;priority&gt;1&lt;/priority&gt;
+            &lt;text&gt;Custom&lt;/text&gt;
+            &lt;bundle reference=&quot;../../../..&quot;/&gt;
+          &lt;/com.tle.beans.entity.LanguageString&gt;
+        &lt;/entry&gt;
+      &lt;/strings&gt;
+    &lt;/title&gt;
+    &lt;truncateLength&gt;355&lt;/truncateLength&gt;
+  &lt;/com.tle.beans.entity.itemdef.DisplayNode&gt;
+&lt;/list&gt;</configuration>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>373e9dbb-0c80-4715-9c27-192fe1cd05e0</uuid>
+          <value>attachmentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Links to resources</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>fad7230d-5901-4a4b-9a84-958b1f6ec550</uuid>
+          <value>commentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Add a comment</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+      </configList>
+      <hideOwner>false</hideOwner>
+      <hideCollaborators>false</hideCollaborators>
+    </itemSummarySections>
+  </slow>
+  <denyDirectContribution>false</denyDirectContribution>
+</com.tle.beans.entity.itemdef.ItemDefinition>

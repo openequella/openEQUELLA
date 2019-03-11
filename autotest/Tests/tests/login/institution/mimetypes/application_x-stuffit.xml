@@ -1,0 +1,17 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>2016915</id>
+  <institution>
+    <id>2016849</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>sit</string>
+  </extensions>
+  <type>application/x-stuffit</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.gif</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

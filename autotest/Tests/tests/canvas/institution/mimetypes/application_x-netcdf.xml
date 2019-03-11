@@ -1,0 +1,19 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>120400</id>
+  <institution>
+    <id>120267</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>cdf</string>
+    <string>nc</string>
+  </extensions>
+  <type>application/x-netcdf</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

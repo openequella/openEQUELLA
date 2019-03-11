@@ -1,0 +1,121 @@
+<com.tle.common.workflow.Workflow>
+  <id>29269</id>
+  <uuid>9ec94e24-8a16-4789-9293-4606c5d5cb57</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2012-03-30 14:28:27.867</dateModified>
+  <dateCreated class="sql-timestamp">2012-03-30 11:57:56.62</dateCreated>
+  <name>
+    <id>29270</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>29271</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>2 Step with auto assign</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <movelive>false</movelive>
+  <nodes>
+    <com.tle.common.workflow.node.WorkflowItem>
+      <id>29278</id>
+      <uuid>fc2265f2-52b1-4a03-b181-24581190b131</uuid>
+      <name>
+        <id>29279</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>29280</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>Step 2</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </name>
+      <rejectPoint>false</rejectPoint>
+      <parent class="com.tle.common.workflow.node.SerialNode">
+        <id>29272</id>
+        <uuid>45f37ec5-29c1-41b9-8ecc-fe5d96e4590b</uuid>
+        <name>
+          <id>29273</id>
+          <strings>
+            <entry>
+              <string>en_AU</string>
+              <com.tle.beans.entity.LanguageString>
+                <id>29274</id>
+                <locale>en_AU</locale>
+                <priority>2</priority>
+                <text>Start</text>
+                <bundle reference="../../../.."/>
+              </com.tle.beans.entity.LanguageString>
+            </entry>
+          </strings>
+        </name>
+        <rejectPoint>false</rejectPoint>
+        <childIndex>0</childIndex>
+      </parent>
+      <childIndex>1</childIndex>
+      <users>
+        <string>83bb1131-e54c-6f1e-e063-9d00597c8d97</string>
+      </users>
+      <groups/>
+      <roles/>
+      <unanimousacceptance>false</unanimousacceptance>
+      <escalate>false</escalate>
+      <escalationdays>1</escalationdays>
+      <allowEditing>false</allowEditing>
+      <movelive>false</movelive>
+      <moveliveAccept>false</moveliveAccept>
+      <priority>20</priority>
+      <actionDays>1</actionDays>
+      <autoAssigns/>
+    </com.tle.common.workflow.node.WorkflowItem>
+    <com.tle.common.workflow.node.WorkflowItem>
+      <id>29275</id>
+      <uuid>42b376b1-27ee-44ba-b7f6-9c891301dbdd</uuid>
+      <name>
+        <id>29276</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>29277</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>Step 1</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </name>
+      <rejectPoint>false</rejectPoint>
+      <parent class="com.tle.common.workflow.node.SerialNode" reference="../../com.tle.common.workflow.node.WorkflowItem/parent"/>
+      <childIndex>0</childIndex>
+      <users/>
+      <groups/>
+      <roles/>
+      <unanimousacceptance>false</unanimousacceptance>
+      <escalate>false</escalate>
+      <escalationdays>1</escalationdays>
+      <allowEditing>true</allowEditing>
+      <movelive>false</movelive>
+      <moveliveAccept>false</moveliveAccept>
+      <priority>20</priority>
+      <actionDays>1</actionDays>
+      <autoAssigns/>
+      <userPath>/item/autoassignuser</userPath>
+      <userSchemaUuid>b778aa09-c7ce-b342-af46-1bb96eb24226</userSchemaUuid>
+    </com.tle.common.workflow.node.WorkflowItem>
+    <com.tle.common.workflow.node.SerialNode reference="../com.tle.common.workflow.node.WorkflowItem/parent"/>
+  </nodes>
+</com.tle.common.workflow.Workflow>

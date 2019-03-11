@@ -1,0 +1,7 @@
+<com.tle.beans.user.TLEGroup>
+  <id>63386</id>
+  <uuid>384c0066-6a01-3b12-c8fc-8713b4ea6a1a</uuid>
+  <name>Users with Basic Search Role</name>
+  <description>Users with Basic Search Role</description>
+  <users/>
+</com.tle.beans.user.TLEGroup>

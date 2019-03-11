@@ -1,0 +1,27 @@
+In localserver.properties:
+moodlebase.url = http://host:port/context
+This is just the base url, with so the moodle installations are at http://host:port/context/moodle19, http://host:port/context/moodle20 etc
+
+If you want to use the lms-autotest database backup you have to:
+In moodle's config.php:
+$CFG->passwordsaltmain = 'qK!,n>3U=c,-3}9?q`S+,EYm{rN';
+
+
+Manual Setup:
+Users:
+admin/admin
+tokenuser/``````
+
+
+Courses:
+Name: Test Course 1, Code: CS101
+Name: Archived Course, Code: AC101 *Must be set to hidden*
+
+
+Shared secret:
+token/token
+
+
+Place module.php at the base moodle url.
+Create a git checkout of https://github.com/equella/moodle-module.git in the correct location for each moodle version
+(eg moodle/mod/equella) and checkout the right branch.

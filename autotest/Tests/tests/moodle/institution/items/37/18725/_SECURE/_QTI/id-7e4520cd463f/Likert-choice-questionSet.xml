@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Thie example adapted from the PET Handbook, copyright University of Cambridge ESOL Examinations -->
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+	identifier="Likert-choice-questionSet" title="Question set" adaptive="false" timeDependent="false">
+	<responseDeclaration identifier="RESPONSE" cardinality="single" baseType="identifier">
+		<correctResponse>
+			<value>ChoiceA</value>
+		</correctResponse>
+	</responseDeclaration>
+    <outcomeDeclaration identifier="SCORE" cardinality="single" baseType="float" normalMaximum="2">
+		<defaultValue>
+			<value>0.0</value>
+		</defaultValue>
+	</outcomeDeclaration>
+    <outcomeDeclaration identifier="FEEDBACK" cardinality="single" baseType="identifier"/>
+    <itemBody>
+        <p>This set of questions covers the capabilities of the main LMSs.</p>
+		<choiceInteraction responseIdentifier="RESPONSE" shuffle="false" maxChoices="1">
+			<prompt> </prompt>
+			<simpleChoice identifier="ChoiceA">Strongly Agree</simpleChoice>
+			<simpleChoice identifier="ChoiceB">Agree</simpleChoice>
+		    <simpleChoice identifier="ChoiceC">Neither Agree nor Disagree</simpleChoice>
+		    <simpleChoice identifier="ChoiceD">Disagree</simpleChoice>
+		    <simpleChoice identifier="ChoiceE">Strongly Disagree</simpleChoice>
+		    <simpleChoice identifier="ChoiceF">Not Applicable</simpleChoice>
+		</choiceInteraction>
+	    <p>
+	        <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="OK">
+	            Yes, that's the intention :)</feedbackInline>
+	        <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="No">
+	            Oh, that's a pity, we hoped you would Strongly Agree :(</feedbackInline>
+	    </p>
+	</itemBody>
+    <responseProcessing>
+        <responseCondition>
+            <responseIf>
+                <isNull>
+                    <variable identifier="RESPONSE"/>
+                </isNull>
+                <setOutcomeValue identifier="SCORE">
+                    <baseValue baseType="float">0.0</baseValue>
+                </setOutcomeValue>
+            </responseIf>
+            <responseElse>
+                <responseCondition>
+                    <responseIf>
+                        <match>
+                            <variable identifier="RESPONSE"/>
+                            <correct identifier="RESPONSE"/>
+                        </match>
+                        <setOutcomeValue identifier="SCORE">
+                            <baseValue baseType="float">2.0</baseValue>
+                        </setOutcomeValue>
+                        <setOutcomeValue identifier="FEEDBACK">
+                            <baseValue baseType="identifier">OK</baseValue>
+                        </setOutcomeValue>
+                    </responseIf>
+                    <responseElse>
+                        <setOutcomeValue identifier="SCORE">
+                            <baseValue baseType="float">0.0</baseValue>
+                        </setOutcomeValue>
+                        <setOutcomeValue identifier="FEEDBACK">
+                            <baseValue baseType="identifier">No</baseValue>
+                        </setOutcomeValue>
+                    </responseElse>
+                </responseCondition>
+            </responseElse>
+        </responseCondition>
+    </responseProcessing>
+</assessmentItem>

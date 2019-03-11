@@ -1,0 +1,7 @@
+<list>
+  <com.tle.beans.security.AccessExpression>
+    <id>1921356</id>
+    <dynamic>false</dynamic>
+    <expression>R:TLE_LOGGED_IN_USER_ROLE </expression>
+  </com.tle.beans.security.AccessExpression>
+</list>

@@ -1,0 +1,446 @@
+<com.tle.beans.entity.itemdef.ItemDefinition>
+  <id>116206</id>
+  <uuid>63430860-e2a3-4036-96fc-4882cda3e245</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-11-06 10:15:17.532</dateModified>
+  <dateCreated class="sql-timestamp">2012-11-05 14:52:33.182</dateCreated>
+  <name>
+    <id>116207</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116208</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>PropBagExTestCollection</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <schema entityclass="com.tle.beans.entity.Schema" uuid="08c26585-6655-4ccd-be48-97d0269e3c10"/>
+  <wizardcategory>Scripting Objects</wizardcategory>
+  <reviewperiod>-2147483648</reviewperiod>
+  <slow>
+    <id>116209</id>
+    <itemMetadataRules/>
+    <wizard>
+      <pages>
+        <com.dytech.edge.wizard.beans.DefaultWizardPage>
+          <title>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en</locale>
+                  <priority>1</priority>
+                  <text>page</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </title>
+          <controls>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Title</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/name</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+          </controls>
+          <additionalCssClass></additionalCssClass>
+        </com.dytech.edge.wizard.beans.DefaultWizardPage>
+      </pages>
+      <redraftScript></redraftScript>
+      <saveScript>xml.clear();
+xml.set(&apos;item/name/&apos;,&apos;PropBagExTest&apos;);
+
+xml.add(&apos;item/new/node1/&apos;,&apos;value1&apos;);
+xml.set(&apos;item/isNewValueSet&apos;,xml.exists(&apos;item/new/node1/&apos;));
+xml.copy(&apos;item/new/node1/&apos;, &apos;item/copiedValue/&apos;);
+
+xml.add(&apos;item/new/node2/&apos;,&apos;value2&apos;);
+var valueFromNode2 = xml.getAll(&apos;item/new/node2/&apos;);
+xml.set(&apos;item/getAllValueFromNode2&apos;,valueFromNode2[0]);
+
+var listValueFromNode2 = xml.list(&apos;item/new/node2/&apos;).get(0);
+xml.set(&apos;item/listValueFromNode2&apos;,listValueFromNode2);
+
+xml.set(&apos;item/countSubNodes&apos;,xml.count(&apos;item/new/node1&apos;));
+
+
+var newCreatedNode = xml.getOrCreateSubtree(&apos;item/new/node3/&apos;);
+xml.append(&apos;item/append/&apos;,newCreatedNode);
+xml.set(&apos;item/isAppendWork&apos;,xml.exists(&apos;item/append/node3&apos;));
+
+var subTree = xml.getSubtree(&apos;item/new/node2/&apos;);
+xml.appendChildren(&apos;item/new/node4&apos;,subTree);
+xml.set(&apos;item/appendedValue&apos;,xml.get(&apos;item/new/node4&apos;));
+
+
+
+var newCreateXml = xml.getOrCreateSubtree(&apos;item/new/node5/&apos;);
+xml.set(&apos;item/isSubtreeCreated&apos;,xml.exists(&apos;item/new/node5/&apos;));
+xml.deleteAll(&apos;item/new/node5/&apos;);
+xml.set(&apos;item/isSubtreeDeleted&apos;,!xml.exists(&apos;item/new/node5/&apos;));
+
+xml.set(&apos;item/nodeWithAttribute/@id&apos;,&apos;attribute&apos;);
+xml.set(&apos;item/nodeWithAttribute/node6&apos;,&apos;value6&apos;);
+var sub = xml.findForId(&apos;attribute&apos;);
+xml.append(&apos;item/foundNode&apos;,sub);
+xml.set(&apos;item/isFoundById&apos;, xml.exists(&apos;item/foundNode/nodeWithAttribute/node6&apos;));</saveScript>
+      <allowNonSequentialNavigation>false</allowNonSequentialNavigation>
+      <showPageTitlesNextPrev>false</showPageTitlesNextPrev>
+    </wizard>
+    <metadataMapping>
+      <imsMapping class="list"/>
+      <htmlMapping class="list"/>
+      <literalMapping class="list"/>
+    </metadataMapping>
+    <itemSummarySections>
+      <configList>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>f418426a-7635-4451-8483-640e9b011aa0</uuid>
+          <value>basicSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Basic Information</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+          <configuration>&lt;map&gt;
+  &lt;entry&gt;
+    &lt;string&gt;owner&lt;/string&gt;
+    &lt;string&gt;true&lt;/string&gt;
+  &lt;/entry&gt;
+&lt;/map&gt;</configuration>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>ad816200-d129-4202-bfcc-5c8fee7a3bf5</uuid>
+          <value>attachmentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Links to resources</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>a65ce574-9bd6-4b32-a1a1-9f81b10336f6</uuid>
+          <value>commentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Add a comment</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>08ce5eb0-2dc6-4166-b49f-7653501d198c</uuid>
+          <value>displayNodes</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Extra Metadata</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+          <configuration>&lt;list&gt;
+  &lt;com.tle.beans.entity.itemdef.DisplayNode&gt;
+    &lt;mode&gt;single&lt;/mode&gt;
+    &lt;node&gt;/item/isNewValueSet&lt;/node&gt;
+    &lt;splitter&gt;, &lt;/splitter&gt;
+    &lt;type&gt;html&lt;/type&gt;
+    &lt;title&gt;
+      &lt;id&gt;0&lt;/id&gt;
+      &lt;strings&gt;
+        &lt;entry&gt;
+          &lt;string&gt;en&lt;/string&gt;
+          &lt;com.tle.beans.entity.LanguageString&gt;
+            &lt;id&gt;0&lt;/id&gt;
+            &lt;locale&gt;en&lt;/locale&gt;
+            &lt;priority&gt;1&lt;/priority&gt;
+            &lt;text&gt;IsNewValueSet&lt;/text&gt;
+            &lt;bundle reference=&quot;../../../..&quot;/&gt;
+          &lt;/com.tle.beans.entity.LanguageString&gt;
+        &lt;/entry&gt;
+      &lt;/strings&gt;
+    &lt;/title&gt;
+    &lt;truncateLength&gt;355&lt;/truncateLength&gt;
+  &lt;/com.tle.beans.entity.itemdef.DisplayNode&gt;
+  &lt;com.tle.beans.entity.itemdef.DisplayNode&gt;
+    &lt;mode&gt;single&lt;/mode&gt;
+    &lt;node&gt;/item/copiedValue&lt;/node&gt;
+    &lt;splitter&gt;, &lt;/splitter&gt;
+    &lt;type&gt;html&lt;/type&gt;
+    &lt;title&gt;
+      &lt;id&gt;0&lt;/id&gt;
+      &lt;strings&gt;
+        &lt;entry&gt;
+          &lt;string&gt;en&lt;/string&gt;
+          &lt;com.tle.beans.entity.LanguageString&gt;
+            &lt;id&gt;0&lt;/id&gt;
+            &lt;locale&gt;en&lt;/locale&gt;
+            &lt;priority&gt;1&lt;/priority&gt;
+            &lt;text&gt;CopiedValue&lt;/text&gt;
+            &lt;bundle reference=&quot;../../../..&quot;/&gt;
+          &lt;/com.tle.beans.entity.LanguageString&gt;
+        &lt;/entry&gt;
+      &lt;/strings&gt;
+    &lt;/title&gt;
+    &lt;truncateLength&gt;355&lt;/truncateLength&gt;
+  &lt;/com.tle.beans.entity.itemdef.DisplayNode&gt;
+  &lt;com.tle.beans.entity.itemdef.DisplayNode&gt;
+    &lt;mode&gt;single&lt;/mode&gt;
+    &lt;node&gt;/item/getAllValueFromNode2&lt;/node&gt;
+    &lt;splitter&gt;, &lt;/splitter&gt;
+    &lt;type&gt;html&lt;/type&gt;
+    &lt;title&gt;
+      &lt;id&gt;0&lt;/id&gt;
+      &lt;strings&gt;
+        &lt;entry&gt;
+          &lt;string&gt;en&lt;/string&gt;
+          &lt;com.tle.beans.entity.LanguageString&gt;
+            &lt;id&gt;0&lt;/id&gt;
+            &lt;locale&gt;en&lt;/locale&gt;
+            &lt;priority&gt;1&lt;/priority&gt;
+            &lt;text&gt;GetAllValueFromNode2&lt;/text&gt;
+            &lt;bundle reference=&quot;../../../..&quot;/&gt;
+          &lt;/com.tle.beans.entity.LanguageString&gt;
+        &lt;/entry&gt;
+      &lt;/strings&gt;
+    &lt;/title&gt;
+    &lt;truncateLength&gt;355&lt;/truncateLength&gt;
+  &lt;/com.tle.beans.entity.itemdef.DisplayNode&gt;
+  &lt;com.tle.beans.entity.itemdef.DisplayNode&gt;
+    &lt;mode&gt;single&lt;/mode&gt;
+    &lt;node&gt;/item/listValueFromNode2&lt;/node&gt;
+    &lt;splitter&gt;, &lt;/splitter&gt;
+    &lt;type&gt;html&lt;/type&gt;
+    &lt;title&gt;
+      &lt;id&gt;0&lt;/id&gt;
+      &lt;strings&gt;
+        &lt;entry&gt;
+          &lt;string&gt;en&lt;/string&gt;
+          &lt;com.tle.beans.entity.LanguageString&gt;
+            &lt;id&gt;0&lt;/id&gt;
+            &lt;locale&gt;en&lt;/locale&gt;
+            &lt;priority&gt;1&lt;/priority&gt;
+            &lt;text&gt;ListValueFromNode2&lt;/text&gt;
+            &lt;bundle reference=&quot;../../../..&quot;/&gt;
+          &lt;/com.tle.beans.entity.LanguageString&gt;
+        &lt;/entry&gt;
+      &lt;/strings&gt;
+    &lt;/title&gt;
+    &lt;truncateLength&gt;355&lt;/truncateLength&gt;
+  &lt;/com.tle.beans.entity.itemdef.DisplayNode&gt;
+  &lt;com.tle.beans.entity.itemdef.DisplayNode&gt;
+    &lt;mode&gt;single&lt;/mode&gt;
+    &lt;node&gt;/item/countSubNodes&lt;/node&gt;
+    &lt;splitter&gt;, &lt;/splitter&gt;
+    &lt;type&gt;html&lt;/type&gt;
+    &lt;title&gt;
+      &lt;id&gt;0&lt;/id&gt;
+      &lt;strings&gt;
+        &lt;entry&gt;
+          &lt;string&gt;en&lt;/string&gt;
+          &lt;com.tle.beans.entity.LanguageString&gt;
+            &lt;id&gt;0&lt;/id&gt;
+            &lt;locale&gt;en&lt;/locale&gt;
+            &lt;priority&gt;1&lt;/priority&gt;
+            &lt;text&gt;CountSubNodes&lt;/text&gt;
+            &lt;bundle reference=&quot;../../../..&quot;/&gt;
+          &lt;/com.tle.beans.entity.LanguageString&gt;
+        &lt;/entry&gt;
+      &lt;/strings&gt;
+    &lt;/title&gt;
+    &lt;truncateLength&gt;355&lt;/truncateLength&gt;
+  &lt;/com.tle.beans.entity.itemdef.DisplayNode&gt;
+  &lt;com.tle.beans.entity.itemdef.DisplayNode&gt;
+    &lt;mode&gt;single&lt;/mode&gt;
+    &lt;node&gt;/item/isAppendWork&lt;/node&gt;
+    &lt;splitter&gt;, &lt;/splitter&gt;
+    &lt;type&gt;html&lt;/type&gt;
+    &lt;title&gt;
+      &lt;id&gt;0&lt;/id&gt;
+      &lt;strings&gt;
+        &lt;entry&gt;
+          &lt;string&gt;en&lt;/string&gt;
+          &lt;com.tle.beans.entity.LanguageString&gt;
+            &lt;id&gt;0&lt;/id&gt;
+            &lt;locale&gt;en&lt;/locale&gt;
+            &lt;priority&gt;1&lt;/priority&gt;
+            &lt;text&gt;IsAppendWork&lt;/text&gt;
+            &lt;bundle reference=&quot;../../../..&quot;/&gt;
+          &lt;/com.tle.beans.entity.LanguageString&gt;
+        &lt;/entry&gt;
+      &lt;/strings&gt;
+    &lt;/title&gt;
+    &lt;truncateLength&gt;355&lt;/truncateLength&gt;
+  &lt;/com.tle.beans.entity.itemdef.DisplayNode&gt;
+  &lt;com.tle.beans.entity.itemdef.DisplayNode&gt;
+    &lt;mode&gt;single&lt;/mode&gt;
+    &lt;node&gt;/item/appendedValue&lt;/node&gt;
+    &lt;splitter&gt;, &lt;/splitter&gt;
+    &lt;type&gt;html&lt;/type&gt;
+    &lt;title&gt;
+      &lt;id&gt;0&lt;/id&gt;
+      &lt;strings&gt;
+        &lt;entry&gt;
+          &lt;string&gt;en&lt;/string&gt;
+          &lt;com.tle.beans.entity.LanguageString&gt;
+            &lt;id&gt;0&lt;/id&gt;
+            &lt;locale&gt;en&lt;/locale&gt;
+            &lt;priority&gt;1&lt;/priority&gt;
+            &lt;text&gt;AppendedValue&lt;/text&gt;
+            &lt;bundle reference=&quot;../../../..&quot;/&gt;
+          &lt;/com.tle.beans.entity.LanguageString&gt;
+        &lt;/entry&gt;
+      &lt;/strings&gt;
+    &lt;/title&gt;
+    &lt;truncateLength&gt;355&lt;/truncateLength&gt;
+  &lt;/com.tle.beans.entity.itemdef.DisplayNode&gt;
+  &lt;com.tle.beans.entity.itemdef.DisplayNode&gt;
+    &lt;mode&gt;single&lt;/mode&gt;
+    &lt;node&gt;/item/isSubtreeCreated&lt;/node&gt;
+    &lt;splitter&gt;, &lt;/splitter&gt;
+    &lt;type&gt;html&lt;/type&gt;
+    &lt;title&gt;
+      &lt;id&gt;0&lt;/id&gt;
+      &lt;strings&gt;
+        &lt;entry&gt;
+          &lt;string&gt;en&lt;/string&gt;
+          &lt;com.tle.beans.entity.LanguageString&gt;
+            &lt;id&gt;0&lt;/id&gt;
+            &lt;locale&gt;en&lt;/locale&gt;
+            &lt;priority&gt;1&lt;/priority&gt;
+            &lt;text&gt;IsSubtreeCreated&lt;/text&gt;
+            &lt;bundle reference=&quot;../../../..&quot;/&gt;
+          &lt;/com.tle.beans.entity.LanguageString&gt;
+        &lt;/entry&gt;
+      &lt;/strings&gt;
+    &lt;/title&gt;
+    &lt;truncateLength&gt;355&lt;/truncateLength&gt;
+  &lt;/com.tle.beans.entity.itemdef.DisplayNode&gt;
+  &lt;com.tle.beans.entity.itemdef.DisplayNode&gt;
+    &lt;mode&gt;single&lt;/mode&gt;
+    &lt;node&gt;/item/isSubtreeDeleted&lt;/node&gt;
+    &lt;splitter&gt;, &lt;/splitter&gt;
+    &lt;type&gt;html&lt;/type&gt;
+    &lt;title&gt;
+      &lt;id&gt;0&lt;/id&gt;
+      &lt;strings&gt;
+        &lt;entry&gt;
+          &lt;string&gt;en&lt;/string&gt;
+          &lt;com.tle.beans.entity.LanguageString&gt;
+            &lt;id&gt;0&lt;/id&gt;
+            &lt;locale&gt;en&lt;/locale&gt;
+            &lt;priority&gt;1&lt;/priority&gt;
+            &lt;text&gt;IsSubtreeDeleted&lt;/text&gt;
+            &lt;bundle reference=&quot;../../../..&quot;/&gt;
+          &lt;/com.tle.beans.entity.LanguageString&gt;
+        &lt;/entry&gt;
+      &lt;/strings&gt;
+    &lt;/title&gt;
+    &lt;truncateLength&gt;355&lt;/truncateLength&gt;
+  &lt;/com.tle.beans.entity.itemdef.DisplayNode&gt;
+  &lt;com.tle.beans.entity.itemdef.DisplayNode&gt;
+    &lt;mode&gt;single&lt;/mode&gt;
+    &lt;node&gt;/item/isFoundById&lt;/node&gt;
+    &lt;splitter&gt;, &lt;/splitter&gt;
+    &lt;type&gt;html&lt;/type&gt;
+    &lt;title&gt;
+      &lt;id&gt;0&lt;/id&gt;
+      &lt;strings&gt;
+        &lt;entry&gt;
+          &lt;string&gt;en&lt;/string&gt;
+          &lt;com.tle.beans.entity.LanguageString&gt;
+            &lt;id&gt;0&lt;/id&gt;
+            &lt;locale&gt;en&lt;/locale&gt;
+            &lt;priority&gt;1&lt;/priority&gt;
+            &lt;text&gt;IsFoundById&lt;/text&gt;
+            &lt;bundle reference=&quot;../../../..&quot;/&gt;
+          &lt;/com.tle.beans.entity.LanguageString&gt;
+        &lt;/entry&gt;
+      &lt;/strings&gt;
+    &lt;/title&gt;
+    &lt;truncateLength&gt;355&lt;/truncateLength&gt;
+  &lt;/com.tle.beans.entity.itemdef.DisplayNode&gt;
+&lt;/list&gt;</configuration>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+      </configList>
+      <hideOwner>false</hideOwner>
+      <hideCollaborators>false</hideCollaborators>
+    </itemSummarySections>
+  </slow>
+  <denyDirectContribution>false</denyDirectContribution>
+</com.tle.beans.entity.itemdef.ItemDefinition>

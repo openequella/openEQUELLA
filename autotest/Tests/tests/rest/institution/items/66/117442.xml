@@ -1,0 +1,74 @@
+<com.tle.beans.item.Item>
+  <id>117442</id>
+  <uuid>0b537a3a-8db2-4de4-97ce-2424c2a2dfac</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-03-28 15:49:16.807</dateModified>
+  <dateCreated class="sql-timestamp">2014-03-28 15:49:16.807</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.904</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>117445</id>
+    <liveApprovalDate class="sql-timestamp">2014-03-28 15:49:17.333</liveApprovalDate>
+    <start class="sql-timestamp">2014-04-11 16:15:52.867</start>
+    <lastAction class="sql-timestamp">2014-03-28 15:49:17.333</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117457</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-28 15:49:16.807</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117461</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-28 15:49:17.333</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117465</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-28 15:49:17.6</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>ARCHIVED</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117468</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-28 15:49:17.747</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

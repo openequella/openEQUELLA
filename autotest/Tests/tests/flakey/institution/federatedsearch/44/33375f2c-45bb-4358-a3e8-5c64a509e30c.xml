@@ -1,0 +1,60 @@
+<com.tle.beans.entity.FederatedSearch>
+  <id>12896</id>
+  <uuid>33375f2c-45bb-4358-a3e8-5c64a509e30c</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-01-17 10:46:07.551</dateModified>
+  <dateCreated class="sql-timestamp">2012-01-17 10:45:45.997</dateCreated>
+  <description>
+    <id>12897</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>12898</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>This is an SRU Remote Repository</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>12899</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>12900</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>SRU</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>schema</key>
+      <value>dc</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>xslt</key>
+      <value></value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>schemaInputTransform</key>
+      <value>SRW_DC</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>url</key>
+      <value>http://lx2.loc.gov:210/LCDB</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <type>SRUSearchEngine</type>
+  <timeout>30</timeout>
+  <collectionUuid>b28f1ffe-2008-4f5e-d559-83c8acd79316</collectionUuid>
+</com.tle.beans.entity.FederatedSearch>

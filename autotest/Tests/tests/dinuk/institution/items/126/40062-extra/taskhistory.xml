@@ -1,0 +1,8 @@
+<list>
+  <com.tle.beans.TaskHistory>
+    <id>40075</id>
+    <task workflow="a045d91c-1251-4381-8b5e-01624fc9f10e">93cf68a9-3391-4023-9250-0fae072b424f</task>
+    <entryDate class="sql-timestamp">2012-04-25 15:35:25.377</entryDate>
+    <exitDate class="sql-timestamp">2012-04-25 15:46:50.949</exitDate>
+  </com.tle.beans.TaskHistory>
+</list>

@@ -1,0 +1,19 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.json" version="1">
+	<requires>
+		<import plugin-id="com.fasterxml.jackson.core:jackson-annotations" />
+		<import plugin-id="com.fasterxml.jackson.core:jackson-databind" />
+		<import plugin-id="com.fasterxml.jackson.core:jackson-core" />
+		<import plugin-id="com.tle.platform.common" />
+		<import plugin-id="com.jayway.restassured:rest-assured" />
+		<import plugin-id="org.hamcrest:hamcrest-library" />
+		<import plugin-id="org.hamcrest:hamcrest-core" />
+		<import plugin-id="org.testng:testng" />
+		<import plugin-id="com.jayway.restassured:json-path" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+</plugin>

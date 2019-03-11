@@ -1,0 +1,11 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>116224</id>
+  <institution>
+    <id>116095</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list"/>
+  <type>equella/attachment-youtube</type>
+  <attributes/>
+</com.tle.beans.mime.MimeEntry>

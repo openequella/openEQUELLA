@@ -1,0 +1,23 @@
+<com.tle.common.qti.entity.QtiAssessmentItem>
+  <id>18866</id>
+  <uuid>d5386da3-e088-4e4a-bf59-b8ea60455d32</uuid>
+  <identifier>MultipleAnswer-choice-materials</identifier>
+  <title>Applications of materials</title>
+  <itemBody>uk.ac.ed.ph.jqtiplus.node.content.ItemBody@3dd6db21(
+    blocks =&gt; java.util.ArrayList[
+        0 =&gt; &lt;choiceInteraction&gt;@1691120446(xPath=/assessmentItem[@identifier=&quot;MultipleAnswer-choice-materials&quot;]/itemBody[1]/choiceInteraction[1],location=XmlSourceLocationInformation@2aa21f25(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-3cd82285401e/MultipleAnswer-choice-materials.xml,lineNumber=19,columnNumber=88))
+        1 =&gt; &lt;p&gt;@2041236480(xPath=/assessmentItem[@identifier=&quot;MultipleAnswer-choice-materials&quot;]/itemBody[1]/p[1],location=XmlSourceLocationInformation@3c375267(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-3cd82285401e/MultipleAnswer-choice-materials.xml,lineNumber=26,columnNumber=12))
+    ]
+    id =&gt; null
+    classAttr =&gt; null
+    lang =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    label =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    parent =&gt; &lt;assessmentItem&gt;@1409484563(xPath=/assessmentItem[@identifier=&quot;MultipleAnswer-choice-materials&quot;],location=XmlSourceLocationInformation@12c59b7c(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-3cd82285401e/MultipleAnswer-choice-materials.xml,lineNumber=5,columnNumber=123))(systemId=_SECURE/_QTI/id-3cd82285401e/MultipleAnswer-choice-materials.xml)
+    attributes =&gt; uk.ac.ed.ph.jqtiplus.attribute.AttributeList@6b62f384
+    sourceLocation =&gt; XmlSourceLocationInformation@2d619630(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-3cd82285401e/MultipleAnswer-choice-materials.xml,lineNumber=18,columnNumber=15)
+    rootNode =&gt; &lt;assessmentItem&gt;@1409484563(xPath=/assessmentItem[@identifier=&quot;MultipleAnswer-choice-materials&quot;],location=XmlSourceLocationInformation@12c59b7c(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-3cd82285401e/MultipleAnswer-choice-materials.xml,lineNumber=5,columnNumber=123))(systemId=_SECURE/_QTI/id-3cd82285401e/MultipleAnswer-choice-materials.xml)
+    nodeGroups =&gt; uk.ac.ed.ph.jqtiplus.group.NodeGroupList@61cb4096
+    qtiClassName =&gt; itemBody
+)
+</itemBody>
+  <adaptive>false</adaptive>
+  <timeDependent>false</timeDependent>
+</com.tle.common.qti.entity.QtiAssessmentItem>

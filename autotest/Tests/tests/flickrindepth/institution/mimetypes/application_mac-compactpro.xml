@@ -1,0 +1,17 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>413692</id>
+  <institution>
+    <id>413481</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>cpt</string>
+  </extensions>
+  <type>application/mac-compactpro</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

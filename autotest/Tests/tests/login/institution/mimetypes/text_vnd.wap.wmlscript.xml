@@ -1,0 +1,17 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>2016965</id>
+  <institution>
+    <id>2016849</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>wmls</string>
+  </extensions>
+  <type>text/vnd.wap.wmlscript</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/doc.gif</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

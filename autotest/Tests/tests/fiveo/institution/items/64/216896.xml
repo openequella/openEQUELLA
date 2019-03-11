@@ -1,0 +1,131 @@
+<com.tle.beans.item.Item>
+  <id>216896</id>
+  <uuid>2239bad6-b398-43b2-9ffd-ebe73da82bd6</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-03-27 12:33:54.61</dateModified>
+  <dateCreated class="sql-timestamp">2012-03-26 14:59:21.709</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.643</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.IMSResourceAttachment>
+      <id>216904</id>
+      <uuid>af079c10-c56d-4d66-8d35-2b833134e11a</uuid>
+      <url>IMS - Air pressure particle model.zip/index.html</url>
+      <description>index.html</description>
+      <data/>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.IMSResourceAttachment>
+    <com.tle.beans.item.attachments.ImsAttachment>
+      <id>216905</id>
+      <uuid>cea92d93-15d5-4df5-96d3-51d06ce25b82</uuid>
+      <url>IMS - Air pressure particle model.zip</url>
+      <description>Air pressure: particle model</description>
+      <value1>219587</value1>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.ImsAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>216901</id>
+    <liveApprovalDate class="sql-timestamp">2012-03-26 14:59:21.707</liveApprovalDate>
+    <start class="sql-timestamp">2012-03-26 14:59:34.758</start>
+    <lastAction class="sql-timestamp">2012-03-26 14:59:21.707</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216906</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-03-26 14:59:21.707</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216907</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-03-26 14:59:21.707</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216908</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-03-26 14:59:21.707</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216909</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-03-27 12:33:54.61</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes>
+    <com.tle.beans.item.attachments.ItemNavigationNode>
+      <id>216910</id>
+      <uuid>23284c2a-0cee-4b3f-8d1a-4b26bcd5ec7d</uuid>
+      <name>Start: Air pressure: particle model</name>
+      <parent>
+        <id>216912</id>
+        <uuid>f5af862d-e282-4b5e-9679-e3ca4700dde5</uuid>
+        <name>Air pressure: particle model</name>
+        <tabs/>
+        <index>0</index>
+      </parent>
+      <tabs>
+        <com.tle.beans.item.attachments.ItemNavigationTab>
+          <id>216911</id>
+          <name>Auto Created By IMS Viewer</name>
+          <attachment class="com.tle.beans.item.attachments.IMSResourceAttachment" reference="../../../../../attachments/com.tle.beans.item.attachments.IMSResourceAttachment"/>
+        </com.tle.beans.item.attachments.ItemNavigationTab>
+      </tabs>
+      <identifier>O135279I0</identifier>
+      <index>0</index>
+    </com.tle.beans.item.attachments.ItemNavigationNode>
+    <com.tle.beans.item.attachments.ItemNavigationNode reference="../com.tle.beans.item.attachments.ItemNavigationNode/parent"/>
+  </treeNodes>
+  <notifications/>
+  <name>
+    <id>216902</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216903</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>IMS Package for Exporting</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

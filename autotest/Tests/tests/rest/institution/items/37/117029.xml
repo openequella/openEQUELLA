@@ -1,0 +1,130 @@
+<com.tle.beans.item.Item>
+  <id>117029</id>
+  <uuid>ad0b96a7-c825-4f2e-bcc3-598d7d476e95</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-03-31 13:40:19.82</dateModified>
+  <dateCreated class="sql-timestamp">2014-03-31 13:40:19.823</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.899</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <searchDetails>
+    <com.tle.common.Pair>
+      <first class="com.tle.beans.entity.LanguageBundle">
+        <id>0</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>0</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>abstract</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </first>
+      <second class="com.tle.beans.entity.LanguageBundle">
+        <id>0</id>
+        <strings>
+          <entry>
+            <string>en_us</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>0</id>
+              <locale>en_us</locale>
+              <priority>1</priority>
+              <text>no one thinks about it</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </second>
+    </com.tle.common.Pair>
+  </searchDetails>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="802fc4ca-ba19-49d1-a59b-05c917400808"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>117033</id>
+    <liveApprovalDate class="sql-timestamp">2014-03-31 13:40:19.82</liveApprovalDate>
+    <start class="sql-timestamp">2014-04-11 16:15:53.183</start>
+    <lastAction class="sql-timestamp">2014-03-31 13:40:19.82</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117036</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-31 13:40:19.82</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117037</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-31 13:40:19.82</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117038</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-31 13:40:19.82</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>117034</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>117035</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>Earwig 1 of 12</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>117030</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>117031</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>HierarchyApiTest ? Who, me?</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

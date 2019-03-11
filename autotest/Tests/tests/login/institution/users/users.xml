@@ -1,0 +1,11 @@
+<list>
+  <com.tle.beans.user.TLEUser>
+    <id>2016850</id>
+    <uuid>adfcaf58-241b-4eca-9740-6a26d1c3dd58</uuid>
+    <username>AutoTest</username>
+    <firstName>Auto</firstName>
+    <lastName>Test</lastName>
+    <emailAddress></emailAddress>
+    <password>MD5:a434f46aa79bfef92ecf227e9ee704a1</password>
+  </com.tle.beans.user.TLEUser>
+</list>

@@ -1,0 +1,106 @@
+<com.tle.beans.item.Item>
+  <id>117446</id>
+  <uuid>4c22b43b-bb36-4158-9dc4-8e9aac584ea6</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-02-27 15:55:46.053</dateModified>
+  <dateCreated class="sql-timestamp">2012-02-27 15:55:46.057</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.899</dateForIndex>
+  <rating>2.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="b28f1ffe-2008-4f5e-d559-83c8acd79316"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>117458</id>
+    <liveApprovalDate class="sql-timestamp">2012-02-27 15:55:46.053</liveApprovalDate>
+    <start class="sql-timestamp">2012-02-27 15:56:42.787</start>
+    <lastAction class="sql-timestamp">2012-02-27 15:55:46.053</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117469</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-02-27 15:55:46.053</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117472</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-02-27 15:55:46.053</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117475</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-02-27 15:55:46.053</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments>
+    <com.tle.beans.item.Comment>
+      <id>117479</id>
+      <uuid>c3b1eece-b7ab-4e12-b571-9eebded2e831</uuid>
+      <item reference="../../.."/>
+      <rating>2</rating>
+      <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+      <dateCreated class="sql-timestamp">2012-02-28 11:40:58.07</dateCreated>
+      <anonymous>false</anonymous>
+    </com.tle.beans.item.Comment>
+  </comments>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>117463</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>117467</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>SearchApiTest - Crabs</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>117449</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>117451</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Description 3</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

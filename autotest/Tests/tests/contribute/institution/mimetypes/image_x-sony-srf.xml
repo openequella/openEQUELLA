@@ -1,0 +1,24 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>217250</id>
+  <institution>
+    <id>217136</id>
+    <uniqueId>0</uniqueId>
+    <quota>0.0</quota>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>srf</string>
+  </extensions>
+  <type>image/x-sony-srf</type>
+  <description>Image</description>
+  <attributes>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&apos;livNavTreeViewer&apos;, &apos;toimg&apos;]</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/image.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

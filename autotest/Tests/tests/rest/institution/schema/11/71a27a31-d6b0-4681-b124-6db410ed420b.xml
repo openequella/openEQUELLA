@@ -1,0 +1,72 @@
+<com.tle.beans.entity.Schema>
+  <id>116573</id>
+  <uuid>71a27a31-d6b0-4681-b124-6db410ed420b</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2014-02-27 10:58:10.773</dateModified>
+  <dateCreated class="sql-timestamp">2014-02-27 10:54:56.31</dateCreated>
+  <description>
+    <id>116574</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116575</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>scaled down generic</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>116576</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116577</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Simple schema</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms/>
+  <impTransforms>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>mods_to_book_2012 Good.xslt</filename>
+      <type>MODS to Book</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>MODS_z3950_to_journal-20071212-1.xslt</filename>
+      <type>MODS to Journal</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>marcxml_to_journal-20080812-1.xslt</filename>
+      <type>MARCXML to Journal</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>marcxml_to_book-20080812-1.xslt</filename>
+      <type>MARCXML to Book</type>
+    </com.tle.beans.entity.SchemaTransform>
+  </impTransforms>
+  <itemNamePath>/item/itembody/name</itemNamePath>
+  <itemDescriptionPath>/item/itembody/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;itembody&gt;&lt;name field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;abstract field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;miscellanea field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/itembody&gt;&lt;/item&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations>
+    <com.tle.beans.entity.schema.Citation>
+      <name>Generic</name>
+      <transformation>generic_citation_200800811-1.xsl</transformation>
+    </com.tle.beans.entity.schema.Citation>
+    <com.tle.beans.entity.schema.Citation>
+      <name>Harvard</name>
+      <transformation>gibberish.xsl</transformation>
+    </com.tle.beans.entity.schema.Citation>
+  </citations>
+</com.tle.beans.entity.Schema>

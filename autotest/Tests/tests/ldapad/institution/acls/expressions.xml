@@ -1,0 +1,57 @@
+<list>
+  <com.tle.beans.security.AccessExpression>
+    <id>756239</id>
+    <dynamic>false</dynamic>
+    <expression>R:0096aa87-3da2-47e2-9ef3-983d2e38acb8 </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>756637</id>
+    <dynamic>false</dynamic>
+    <expression>G:cool </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>756634</id>
+    <dynamic>false</dynamic>
+    <expression>R:4b1f3713-3f0e-44eb-bc87-eab44d09c3d2 </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>756632</id>
+    <dynamic>false</dynamic>
+    <expression>R:3a140db6-4aea-4c22-beb2-7d41028e24d3 </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>756636</id>
+    <dynamic>false</dynamic>
+    <expression>G:administrators </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>491</id>
+    <dynamic>false</dynamic>
+    <expression>R:TLE_LOGGED_IN_USER_ROLE </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>562854</id>
+    <dynamic>false</dynamic>
+    <expression>* </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>756635</id>
+    <dynamic>false</dynamic>
+    <expression>G:groupception </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>172</id>
+    <dynamic>true</dynamic>
+    <expression>$OWNER </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>756633</id>
+    <dynamic>false</dynamic>
+    <expression>G:uncool </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>756638</id>
+    <dynamic>false</dynamic>
+    <expression>G:allthepeople </expression>
+  </com.tle.beans.security.AccessExpression>
+</list>

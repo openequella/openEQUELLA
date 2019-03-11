@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Auto Test Suite searching" parallel="instances" data-provider-thread-count="4" thread-count="4" configfailurepolicy="continue">
+	<test name="Searching Tests">
+		<packages>	
+			<package name="com.tle.webtests.test.searching" />
+			<package name="com.tle.webtests.test.searching.hierarchy" />
+			<package name="com.tle.webtests.test.searching.indexing" />
+			<package name="com.tle.webtests.test.searching.manage" />
+		</packages>
+	</test>
+</suite>
