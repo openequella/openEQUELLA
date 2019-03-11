@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Target(ElementType.TYPE)
-public @interface TestInstitution
-{
-	String value();
+public @interface TestInstitution {
+  String value();
 }

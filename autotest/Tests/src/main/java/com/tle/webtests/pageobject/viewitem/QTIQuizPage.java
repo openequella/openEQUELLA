@@ -1,5 +1,11 @@
 package com.tle.webtests.pageobject.viewitem;
 
+import com.tle.webtests.framework.PageContext;
+import com.tle.webtests.pageobject.AbstractPage;
+import com.tle.webtests.pageobject.ExpectedConditions2;
+import com.tle.webtests.pageobject.PageObject;
+import com.tle.webtests.pageobject.WaitingPageObject;
+import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
@@ -7,233 +13,211 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import com.tle.webtests.framework.PageContext;
-import com.tle.webtests.pageobject.AbstractPage;
-import com.tle.webtests.pageobject.ExpectedConditions2;
-import com.tle.webtests.pageobject.PageObject;
-import com.tle.webtests.pageobject.WaitingPageObject;
-import com.tle.webtests.pageobject.generic.component.EquellaSelect;
+public class QTIQuizPage extends AbstractPage<QTIQuizPage> {
 
-public class QTIQuizPage extends AbstractPage<QTIQuizPage>
-{
+  @FindBy(id = "qpv_startButton")
+  private WebElement startTestButton;
 
-	@FindBy(id = "qpv_startButton")
-	private WebElement startTestButton;
-	@FindBy(id = "qpv_nextButton")
-	private WebElement nextQuestionButton;
-	@FindBy(id = "qpv_previousButton")
-	private WebElement prevQuestionButton;
-	@FindBy(id = "qpv_submitButton")
-	private WebElement submitQuizButton;
-	@FindBy(id = "qpv_title")
-	private WebElement quizTitleLink;
-	@FindBy(id = "qpv_viewResultButton")
-	private WebElement viewResultsButton;
-	@FindBy(id = "qpv_returnLink")
-	private WebElement returnLink;
+  @FindBy(id = "qpv_nextButton")
+  private WebElement nextQuestionButton;
 
-	@FindBy(id = "question-body-container")
-	private WebElement ajaxQuestionBody;
-	@FindBy(id = "question-title")
-	private WebElement ajaxQuestionTitle;
-	@FindBy(id = "test-questions-container")
-	private WebElement ajaxQuestionList;
+  @FindBy(id = "qpv_previousButton")
+  private WebElement prevQuestionButton;
 
-	public QTIQuizPage(PageContext context)
-	{
-		super(context, By.xpath("//div[@class = 'qti']"));
-	}
+  @FindBy(id = "qpv_submitButton")
+  private WebElement submitQuizButton;
 
-	public String getCurrentQuestionTitle()
-	{
-		return driver.findElement(By.xpath("//div[@id='question-title']/h2")).getText();
-	}
+  @FindBy(id = "qpv_title")
+  private WebElement quizTitleLink;
 
-	public boolean coverPagePresent()
-	{
-		return isPresent(By.xpath("//div[@class = 'summary-box']/h2[text() = 'Test summary']"));
-	}
+  @FindBy(id = "qpv_viewResultButton")
+  private WebElement viewResultsButton;
 
-	public int getNumberOfQuestions()
-	{
-		return driver.findElements(By.className("question")).size();
-	}
+  @FindBy(id = "qpv_returnLink")
+  private WebElement returnLink;
 
-	public int getNumberOfSections()
-	{
-		return driver.findElements(By.xpath("//h3[contains(text(),'Section')]")).size();
-	}
+  @FindBy(id = "question-body-container")
+  private WebElement ajaxQuestionBody;
 
-	// TODO: subclass or something
-	public QTIQuizPage startQuiz()
-	{
-		ExpectedCondition<Boolean> quizStarted = ExpectedConditions2.stalenessOrNonPresenceOf(startTestButton);
-		startTestButton.click();
-		getWaiter().until(quizStarted);
-		return new QTIQuizPage(context).get();
-	}
+  @FindBy(id = "question-title")
+  private WebElement ajaxQuestionTitle;
 
-	public int coverPageGetNumberOfQuestions()
-	{
-		return Integer.parseInt(driver.findElement(
-			By.xpath("//label[text() = 'Number of questions:']/../../div[2]/div")).getText());
-	}
+  @FindBy(id = "test-questions-container")
+  private WebElement ajaxQuestionList;
 
-	public int coverPageGetNumberOfSections()
-	{
-		return Integer.parseInt(driver
-			.findElement(By.xpath("//label[text() = 'Number of sections:']/../../div[2]/div")).getText());
-	}
+  public QTIQuizPage(PageContext context) {
+    super(context, By.xpath("//div[@class = 'qti']"));
+  }
 
-	// *************************
+  public String getCurrentQuestionTitle() {
+    return driver.findElement(By.xpath("//div[@id='question-title']/h2")).getText();
+  }
 
-	public String getQuestionTitle(int section, int question)
-	{
-		return findQuestion(section, question).getText();
-	}
+  public boolean coverPagePresent() {
+    return isPresent(By.xpath("//div[@class = 'summary-box']/h2[text() = 'Test summary']"));
+  }
 
-	public void nextQuestion()
-	{
-		ExpectedCondition<?> titleWaiter = ExpectedConditions2.ajaxUpdate(ajaxQuestionTitle);
-		nextQuestionButton.click();
-		getWaiter().until(titleWaiter);
-	}
+  public int getNumberOfQuestions() {
+    return driver.findElements(By.className("question")).size();
+  }
 
-	public void prevQuestion()
-	{
-		ExpectedCondition<?> titleWaiter = ExpectedConditions2.ajaxUpdate(ajaxQuestionTitle);
-		prevQuestionButton.click();
-		getWaiter().until(titleWaiter);
-	}
+  public int getNumberOfSections() {
+    return driver.findElements(By.xpath("//h3[contains(text(),'Section')]")).size();
+  }
 
-	public void selectQuestion(int section, int question)
-	{
-		ExpectedCondition<?> bodyWaiter = ExpectedConditions2.ajaxUpdate(ajaxQuestionBody);
-		try
-		{
-			findQuestion(section, question).click();
-		}
-		catch( StaleElementReferenceException e )
-		{
-			// question list can be stale (there's ~3 ajax sections on the page)
-			selectQuestion(section, question);
-		}
-		getWaiter().until(bodyWaiter);
-	}
+  // TODO: subclass or something
+  public QTIQuizPage startQuiz() {
+    ExpectedCondition<Boolean> quizStarted =
+        ExpectedConditions2.stalenessOrNonPresenceOf(startTestButton);
+    startTestButton.click();
+    getWaiter().until(quizStarted);
+    return new QTIQuizPage(context).get();
+  }
 
-	private WebElement findQuestion(int section, int question)
-	{
-		waitForElement(ajaxQuestionList);
-		return ajaxQuestionList.findElement(By
-			.xpath("//ul[@class='questions'][" + section + "]/li[" + question + "]/a"));
-	}
+  public int coverPageGetNumberOfQuestions() {
+    return Integer.parseInt(
+        driver
+            .findElement(By.xpath("//label[text() = 'Number of questions:']/../../div[2]/div"))
+            .getText());
+  }
 
-	public void answerMultiChoiceQuestion(int section, int question, int answer)
-	{
-		selectQuestion(section, question);
+  public int coverPageGetNumberOfSections() {
+    return Integer.parseInt(
+        driver
+            .findElement(By.xpath("//label[text() = 'Number of sections:']/../../div[2]/div"))
+            .getText());
+  }
 
-		ExpectedCondition<?> ajaxUpdate = ExpectedConditions2.ajaxUpdate(ajaxQuestionBody);
-		getMultiChoiceInput(answer).click();
-		getWaiter().until(ajaxUpdate);
-	}
+  // *************************
 
-	public boolean multiChoiceAnswerRemembered(int section, int question, int expectedAnswer)
-	{
-		selectQuestion(section, question);
-		return getMultiChoiceInput(expectedAnswer).isSelected();
-	}
+  public String getQuestionTitle(int section, int question) {
+    return findQuestion(section, question).getText();
+  }
 
-	private WebElement getMultiChoiceInput(int input)
-	{
-		return ajaxQuestionBody.findElement(By.xpath("//ul[@class='choiceInteraction']/li[" + input + "]/div/input"));
-	}
+  public void nextQuestion() {
+    ExpectedCondition<?> titleWaiter = ExpectedConditions2.ajaxUpdate(ajaxQuestionTitle);
+    nextQuestionButton.click();
+    getWaiter().until(titleWaiter);
+  }
 
-	public void answerInlineChoiceQuestion(int section, int question, String[] answers)
-	{
-		selectQuestion(section, question);
-		int index = 0;
-		for( String selection : answers )
-		{
-			WebElement currentSelect = ajaxQuestionBody.findElement(By.id("i" + index));
-			ExpectedCondition<?> ajaxUpdate = ExpectedConditions2.ajaxUpdate(ajaxQuestionBody);
-			new EquellaSelect(context, currentSelect).selectByVisibleText(selection);
-			getWaiter().until(ajaxUpdate);
+  public void prevQuestion() {
+    ExpectedCondition<?> titleWaiter = ExpectedConditions2.ajaxUpdate(ajaxQuestionTitle);
+    prevQuestionButton.click();
+    getWaiter().until(titleWaiter);
+  }
 
-			index++;
-		}
-	}
+  public void selectQuestion(int section, int question) {
+    ExpectedCondition<?> bodyWaiter = ExpectedConditions2.ajaxUpdate(ajaxQuestionBody);
+    try {
+      findQuestion(section, question).click();
+    } catch (StaleElementReferenceException e) {
+      // question list can be stale (there's ~3 ajax sections on the page)
+      selectQuestion(section, question);
+    }
+    getWaiter().until(bodyWaiter);
+  }
 
-	public boolean inlineChoiceAnswerRemembered(int section, int question, String[] expectedAnswers)
-	{
-		waitForElement(ajaxQuestionList);
-		selectQuestion(section, question);
-		boolean correctAnswers = true;
-		int index = 0;
-		for( String selection : expectedAnswers )
-		{
-			WebElement currentSelect = ajaxQuestionBody.findElement(By.id("i" + index));
-			correctAnswers |= new EquellaSelect(context, currentSelect).getSelectedText().equals(selection);
-			index++;
-		}
-		return correctAnswers;
-	}
+  private WebElement findQuestion(int section, int question) {
+    waitForElement(ajaxQuestionList);
+    return ajaxQuestionList.findElement(
+        By.xpath("//ul[@class='questions'][" + section + "]/li[" + question + "]/a"));
+  }
 
-	public void submit()
-	{
-		submitQuizButton.click();
-		ExpectedCondition<WebElement> resultsFound = ExpectedConditions2.presenceOfElement(viewResultsButton);
-		getWaiter().until(ExpectedConditions.alertIsPresent()).accept();
-		getWaiter().until(resultsFound);
-		this.get();
-	}
+  public void answerMultiChoiceQuestion(int section, int question, int answer) {
+    selectQuestion(section, question);
 
-	public boolean resultsPagePresent()
-	{
-		return getCurrentQuestionTitle().equals("Results");
-	}
+    ExpectedCondition<?> ajaxUpdate = ExpectedConditions2.ajaxUpdate(ajaxQuestionBody);
+    getMultiChoiceInput(answer).click();
+    getWaiter().until(ajaxUpdate);
+  }
 
-	public boolean checkSectionScore(int section, float expectedScore)
-	{
-		String scoreText = ajaxQuestionBody.findElement(
-			By.xpath("//div[contains(text(),'Section " + section + " score')]")).getText();
-		scoreText = scoreText.substring(scoreText.indexOf(": ") + 2, scoreText.indexOf(" ("));
-		return expectedScore == (Float.parseFloat(scoreText));
-	}
+  public boolean multiChoiceAnswerRemembered(int section, int question, int expectedAnswer) {
+    selectQuestion(section, question);
+    return getMultiChoiceInput(expectedAnswer).isSelected();
+  }
 
-	public boolean checkTotalScore(float expectedScore)
-	{
-		String scoreText = ajaxQuestionBody.findElement(By.xpath("//div[contains(text(),'Total score:')]")).getText();
-		scoreText = scoreText.substring(scoreText.indexOf(": ") + 2, scoreText.indexOf(" ("));
-		return expectedScore == (Float.parseFloat(scoreText));
-	}
+  private WebElement getMultiChoiceInput(int input) {
+    return ajaxQuestionBody.findElement(
+        By.xpath("//ul[@class='choiceInteraction']/li[" + input + "]/div/input"));
+  }
 
-	public boolean positiveFeedbackPresent(int section, int question)
-	{
-		selectQuestion(section, question);
-		return isPresent(By.xpath("//span[@class='feedback'][@identifier='OK']"));
-	}
+  public void answerInlineChoiceQuestion(int section, int question, String[] answers) {
+    selectQuestion(section, question);
+    int index = 0;
+    for (String selection : answers) {
+      WebElement currentSelect = ajaxQuestionBody.findElement(By.id("i" + index));
+      ExpectedCondition<?> ajaxUpdate = ExpectedConditions2.ajaxUpdate(ajaxQuestionBody);
+      new EquellaSelect(context, currentSelect).selectByVisibleText(selection);
+      getWaiter().until(ajaxUpdate);
 
-	public boolean negativeFeedbackPresent(int section, int question)
-	{
-		selectQuestion(section, question);
-		return isPresent(By.xpath("//span[@class='feedback'][@identifier!='OK']"));
-	}
+      index++;
+    }
+  }
 
-	public <T extends PageObject> T exitQuiz(WaitingPageObject<T> targetPage)
-	{
-		quizTitleLink.click();
-		return targetPage.get();
-	}
+  public boolean inlineChoiceAnswerRemembered(int section, int question, String[] expectedAnswers) {
+    waitForElement(ajaxQuestionList);
+    selectQuestion(section, question);
+    boolean correctAnswers = true;
+    int index = 0;
+    for (String selection : expectedAnswers) {
+      WebElement currentSelect = ajaxQuestionBody.findElement(By.id("i" + index));
+      correctAnswers |=
+          new EquellaSelect(context, currentSelect).getSelectedText().equals(selection);
+      index++;
+    }
+    return correctAnswers;
+  }
 
-	public void viewResults()
-	{
-		viewResultsButton.click();
-	}
+  public void submit() {
+    submitQuizButton.click();
+    ExpectedCondition<WebElement> resultsFound =
+        ExpectedConditions2.presenceOfElement(viewResultsButton);
+    getWaiter().until(ExpectedConditions.alertIsPresent()).accept();
+    getWaiter().until(resultsFound);
+    this.get();
+  }
 
-	public <T extends PageObject> T returnToCourse(WaitingPageObject<T> returnTo)
-	{
-		returnLink.click();
-		return returnTo.get();
-	}
+  public boolean resultsPagePresent() {
+    return getCurrentQuestionTitle().equals("Results");
+  }
 
+  public boolean checkSectionScore(int section, float expectedScore) {
+    String scoreText =
+        ajaxQuestionBody
+            .findElement(By.xpath("//div[contains(text(),'Section " + section + " score')]"))
+            .getText();
+    scoreText = scoreText.substring(scoreText.indexOf(": ") + 2, scoreText.indexOf(" ("));
+    return expectedScore == (Float.parseFloat(scoreText));
+  }
+
+  public boolean checkTotalScore(float expectedScore) {
+    String scoreText =
+        ajaxQuestionBody.findElement(By.xpath("//div[contains(text(),'Total score:')]")).getText();
+    scoreText = scoreText.substring(scoreText.indexOf(": ") + 2, scoreText.indexOf(" ("));
+    return expectedScore == (Float.parseFloat(scoreText));
+  }
+
+  public boolean positiveFeedbackPresent(int section, int question) {
+    selectQuestion(section, question);
+    return isPresent(By.xpath("//span[@class='feedback'][@identifier='OK']"));
+  }
+
+  public boolean negativeFeedbackPresent(int section, int question) {
+    selectQuestion(section, question);
+    return isPresent(By.xpath("//span[@class='feedback'][@identifier!='OK']"));
+  }
+
+  public <T extends PageObject> T exitQuiz(WaitingPageObject<T> targetPage) {
+    quizTitleLink.click();
+    return targetPage.get();
+  }
+
+  public void viewResults() {
+    viewResultsButton.click();
+  }
+
+  public <T extends PageObject> T returnToCourse(WaitingPageObject<T> returnTo) {
+    returnLink.click();
+    return returnTo.get();
+  }
 }

@@ -1,29 +1,24 @@
 package com.tle.webtests.pageobject.wizard.controls;
 
-import org.openqa.selenium.WebElement;
-
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.generic.component.MultiLingualEditbox;
 import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
+import org.openqa.selenium.WebElement;
 
-public class MultiEditboxControl extends AbstractWizardControl<MultiEditboxControl>
-{
-	private final MultiLingualEditbox editbox;
+public class MultiEditboxControl extends AbstractWizardControl<MultiEditboxControl> {
+  private final MultiLingualEditbox editbox;
 
-	public MultiEditboxControl(PageContext context, int ctrlnum, AbstractWizardControlPage<?> page)
-	{
-		super(context, ctrlnum, page);
-		editbox = new MultiLingualEditbox(context, page.getControlId(ctrlnum) + "_multiEdit");
-	}
+  public MultiEditboxControl(PageContext context, int ctrlnum, AbstractWizardControlPage<?> page) {
+    super(context, ctrlnum, page);
+    editbox = new MultiLingualEditbox(context, page.getControlId(ctrlnum) + "_multiEdit");
+  }
 
-	@Override
-	protected WebElement findLoadedElement()
-	{
-		return editbox.findLoadedElement();
-	}
+  @Override
+  protected WebElement findLoadedElement() {
+    return editbox.findLoadedElement();
+  }
 
-	public MultiLingualEditbox getEditbox()
-	{
-		return editbox;
-	}
+  public MultiLingualEditbox getEditbox() {
+    return editbox;
+  }
 }

@@ -12,28 +12,30 @@ object LoginNoticeMenuPropertiesSerial extends ShotProperties("Login Notice Menu
 
   property("pre login notice creation") = forAll { w1: RandomWord =>
     withLogon(autoTestLogon) { context =>
-      val page = LoginNoticePage(context).load()
+      val page   = LoginNoticePage(context).load()
       val notice = s"${w1.word}"
       page.setPreLoginNotice(notice)
       page.load()
-      Prop(page.getPreNoticeFieldContents == notice).label("Notice: " + notice + ", NoticeField: " + page.getPreNoticeFieldContents)
+      Prop(page.getPreNoticeFieldContents == notice)
+        .label("Notice: " + notice + ", NoticeField: " + page.getPreNoticeFieldContents)
     }
   }
 
   property("post login notice creation") = forAll { w1: RandomWord =>
     withLogon(autoTestLogon) { context =>
-      val page = LoginNoticePage(context).load()
+      val page   = LoginNoticePage(context).load()
       val notice = s"${w1.word}"
       page.setPostLoginNotice(notice)
       page.load()
       page.gotoPostNoticeTab()
-      Prop(page.getPostNoticeFieldContents == notice).label("Notice: " + notice + ", NoticeField: " + page.getPostNoticeFieldContents)
+      Prop(page.getPostNoticeFieldContents == notice)
+        .label("Notice: " + notice + ", NoticeField: " + page.getPostNoticeFieldContents)
     }
   }
 
   property("pre login notice clear") = forAll { w1: RandomWord =>
     withLogon(autoTestLogon) { context =>
-      val page = LoginNoticePage(context).load()
+      val page   = LoginNoticePage(context).load()
       val notice = s"${w1.word}"
       page.setPreLoginNotice(notice)
       page.clearPreLoginNotice()
@@ -44,7 +46,7 @@ object LoginNoticeMenuPropertiesSerial extends ShotProperties("Login Notice Menu
 
   property("post login notice clear") = forAll { w1: RandomWord =>
     withLogon(autoTestLogon) { context =>
-      val page = LoginNoticePage(context).load()
+      val page   = LoginNoticePage(context).load()
       val notice = s"${w1.word}"
       page.setPostLoginNotice(notice)
       page.load()
@@ -57,7 +59,7 @@ object LoginNoticeMenuPropertiesSerial extends ShotProperties("Login Notice Menu
 
   property("prove existence on login page after creation") = forAll { w1: RandomWord =>
     withLogon(autoTestLogon) { context =>
-      val page = LoginNoticePage(context).load()
+      val page   = LoginNoticePage(context).load()
       val notice = s"${w1.word}"
       page.setPreLoginNotice(notice)
       page.load()
@@ -68,7 +70,7 @@ object LoginNoticeMenuPropertiesSerial extends ShotProperties("Login Notice Menu
 
   property("prove non-existence on login page after clear") = forAll { w1: RandomWord =>
     withLogon(autoTestLogon) { context =>
-      val page = LoginNoticePage(context).load()
+      val page   = LoginNoticePage(context).load()
       val notice = s"${w1.word}"
       page.setPreLoginNotice(notice)
       page.load()

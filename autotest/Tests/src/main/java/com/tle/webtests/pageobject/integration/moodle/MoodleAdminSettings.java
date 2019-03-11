@@ -1,214 +1,187 @@
 package com.tle.webtests.pageobject.integration.moodle;
 
+import com.tle.webtests.framework.PageContext;
+import com.tle.webtests.pageobject.AbstractPage;
+import com.tle.webtests.pageobject.WaitingPageObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.Select;
 
-import com.tle.webtests.framework.PageContext;
-import com.tle.webtests.pageobject.AbstractPage;
-import com.tle.webtests.pageobject.WaitingPageObject;
+public class MoodleAdminSettings extends AbstractPage<MoodleAdminSettings> {
+  @FindBy(xpath = "//input[@value='Save changes']")
+  private WebElement save;
 
-public class MoodleAdminSettings extends AbstractPage<MoodleAdminSettings>
-{
-	@FindBy(xpath = "//input[@value='Save changes']")
-	private WebElement save;
+  public MoodleAdminSettings(PageContext context) {
+    super(context, By.id("maincontent"));
+  }
 
-	public MoodleAdminSettings(PageContext context)
-	{
-		super(context, By.id("maincontent"));
-	}
+  @Override
+  protected void loadUrl() {
+    driver.get(context.getIntegUrl() + "/admin/search.php");
+  }
 
-	@Override
-	protected void loadUrl()
-	{
-		driver.get(context.getIntegUrl() + "/admin/search.php");
-	}
+  public void enableWebServiceAccessForUser(String user) {
+    ExternalServiceUsersPage users = new ExternalServicesPage(context).load().editUsers();
+    users.selectUser(user);
+  }
 
-	public void enableWebServiceAccessForUser(String user)
-	{
-		ExternalServiceUsersPage users = new ExternalServicesPage(context).load().editUsers();
-		users.selectUser(user);
-	}
+  public void enableWebServices() {
+    driver.get(context.getIntegUrl() + "/admin/search.php?query=enablewebservices");
 
-	public void enableWebServices()
-	{
-		driver.get(context.getIntegUrl() + "/admin/search.php?query=enablewebservices");
+    WebElement check = waitForElement(By.id("id_s__enablewebservices"));
+    if (!check.isSelected()) {
+      check.click();
+      save.click();
+      waitForElement(By.className("notifysuccess"));
+    }
+  }
 
-		WebElement check = waitForElement(By.id("id_s__enablewebservices"));
-		if( !check.isSelected() )
-		{
-			check.click();
-			save.click();
-			waitForElement(By.className("notifysuccess"));
-		}
-	}
+  public void enableRest() {
+    driver.get(context.getIntegUrl() + "/admin/settings.php?section=webserviceprotocols");
+    WebElement check = waitForElement(By.xpath("//span[text()='REST protocol']/../../td/a/img"));
+    if (check.getAttribute("alt").equals("Enable")) {
+      clickAndRemove(check);
+    }
+  }
 
-	public void enableRest()
-	{
-		driver.get(context.getIntegUrl() + "/admin/settings.php?section=webserviceprotocols");
-		WebElement check = waitForElement(By.xpath("//span[text()='REST protocol']/../../td/a/img"));
-		if( check.getAttribute("alt").equals("Enable") )
-		{
-			clickAndRemove(check);
-		}
-	}
+  public String addToken(String fullUser) {
+    TokenListPage tokenConfig = new TokenListPage(context).load();
 
-	public String addToken(String fullUser)
-	{
-		TokenListPage tokenConfig = new TokenListPage(context).load();
+    if (!tokenConfig.isTokenPresent()) {
+      tokenConfig.addToken(fullUser);
+    }
+    return tokenConfig.getToken();
+  }
 
-		if( !tokenConfig.isTokenPresent() )
-		{
-			tokenConfig.addToken(fullUser);
-		}
-		return tokenConfig.getToken();
-	}
+  private static class TokenListPage extends AbstractPage<TokenListPage> {
+    @FindBy(xpath = "//h2[text()='Manage tokens']")
+    private WebElement title;
 
-	private static class TokenListPage extends AbstractPage<TokenListPage>
-	{
-		@FindBy(xpath = "//h2[text()='Manage tokens']")
-		private WebElement title;
-		@FindBy(xpath = "//tr[td[3]/text()='equellaservice']")
-		private WebElement serviceRow;
-		@FindBy(linkText = "Add")
-		private WebElement addButton;
+    @FindBy(xpath = "//tr[td[3]/text()='equellaservice']")
+    private WebElement serviceRow;
 
-		public TokenListPage(PageContext context)
-		{
-			super(context);
-		}
+    @FindBy(linkText = "Add")
+    private WebElement addButton;
 
-		public TokenListPage addToken(String fullUser)
-		{
-			addButton.click();
-			CreateTokenPage createPage = new CreateTokenPage(this).get();
-			createPage.selectUser(fullUser);
-			createPage.selectService("equellaservice");
-			return createPage.save();
-		}
+    public TokenListPage(PageContext context) {
+      super(context);
+    }
 
-		public boolean isTokenPresent()
-		{
-			return isPresent(serviceRow);
-		}
+    public TokenListPage addToken(String fullUser) {
+      addButton.click();
+      CreateTokenPage createPage = new CreateTokenPage(this).get();
+      createPage.selectUser(fullUser);
+      createPage.selectService("equellaservice");
+      return createPage.save();
+    }
 
-		public String getToken()
-		{
-			return serviceRow.findElement(By.xpath("td[1]")).getText();
-		}
+    public boolean isTokenPresent() {
+      return isPresent(serviceRow);
+    }
 
-		@Override
-		protected void loadUrl()
-		{
-			driver.get(context.getIntegUrl() + "/admin/settings.php?section=webservicetokens");
-		}
+    public String getToken() {
+      return serviceRow.findElement(By.xpath("td[1]")).getText();
+    }
 
-		@Override
-		protected WebElement findLoadedElement()
-		{
-			return title;
-		}
-	}
+    @Override
+    protected void loadUrl() {
+      driver.get(context.getIntegUrl() + "/admin/settings.php?section=webservicetokens");
+    }
 
-	private static class CreateTokenPage extends AbstractPage<CreateTokenPage>
-	{
-		@FindBy(id = "id_user")
-		private WebElement userSelectElem;
-		@FindBy(id = "id_service")
-		private WebElement serviceSelectElem;
-		@FindBy(xpath = "//input[@value='Save changes']")
-		private WebElement save;
-		private TokenListPage tokenList;
+    @Override
+    protected WebElement findLoadedElement() {
+      return title;
+    }
+  }
 
-		public CreateTokenPage(TokenListPage tokenList)
-		{
-			super(tokenList);
-			this.tokenList = tokenList;
-		}
+  private static class CreateTokenPage extends AbstractPage<CreateTokenPage> {
+    @FindBy(id = "id_user")
+    private WebElement userSelectElem;
 
-		@Override
-		protected WebElement findLoadedElement()
-		{
-			return userSelectElem;
-		}
+    @FindBy(id = "id_service")
+    private WebElement serviceSelectElem;
 
-		public void selectService(String string)
-		{
-			new Select(serviceSelectElem).selectByVisibleText("equellaservice");
-		}
+    @FindBy(xpath = "//input[@value='Save changes']")
+    private WebElement save;
 
-		public void selectUser(String fullUser)
-		{
-			new Select(userSelectElem).selectByVisibleText(fullUser);
-		}
+    private TokenListPage tokenList;
 
-		public TokenListPage save()
-		{
-			save.click();
-			return tokenList.get();
-		}
-	}
+    public CreateTokenPage(TokenListPage tokenList) {
+      super(tokenList);
+      this.tokenList = tokenList;
+    }
 
-	private static class ExternalServicesPage extends AbstractPage<ExternalServicesPage>
-	{
-		@FindBy(xpath = "//h2[text()='External services']")
-		private WebElement title;
-		@FindBy(xpath = "//tr[td[1]/span/text() = 'equellaservice']")
-		private WebElement serviceRow;
+    @Override
+    protected WebElement findLoadedElement() {
+      return userSelectElem;
+    }
 
-		public ExternalServicesPage(PageContext context)
-		{
-			super(context);
-		}
+    public void selectService(String string) {
+      new Select(serviceSelectElem).selectByVisibleText("equellaservice");
+    }
 
-		public ExternalServiceUsersPage editUsers()
-		{
-			serviceRow.findElement(By.linkText("Authorised users")).click();
-			return new ExternalServiceUsersPage(this).get();
-		}
+    public void selectUser(String fullUser) {
+      new Select(userSelectElem).selectByVisibleText(fullUser);
+    }
 
-		@Override
-		protected WebElement findLoadedElement()
-		{
-			return title;
-		}
+    public TokenListPage save() {
+      save.click();
+      return tokenList.get();
+    }
+  }
 
-		@Override
-		protected void loadUrl()
-		{
-			driver.get(context.getIntegUrl() + "/admin/settings.php?section=externalservices");
-		}
-	}
+  private static class ExternalServicesPage extends AbstractPage<ExternalServicesPage> {
+    @FindBy(xpath = "//h2[text()='External services']")
+    private WebElement title;
 
-	private static class ExternalServiceUsersPage extends AbstractPage<ExternalServiceUsersPage>
-	{
-		@FindBy(id = "addselect")
-		private WebElement addSelectElem;
-		@FindBy(id = "add")
-		private WebElement addButton;
+    @FindBy(xpath = "//tr[td[1]/span/text() = 'equellaservice']")
+    private WebElement serviceRow;
 
-		public ExternalServiceUsersPage(ExternalServicesPage servicesPage)
-		{
-			super(servicesPage);
-		}
+    public ExternalServicesPage(PageContext context) {
+      super(context);
+    }
 
-		@Override
-		protected WebElement findLoadedElement()
-		{
-			return addSelectElem;
-		}
+    public ExternalServiceUsersPage editUsers() {
+      serviceRow.findElement(By.linkText("Authorised users")).click();
+      return new ExternalServiceUsersPage(this).get();
+    }
 
-		public void selectUser(String user)
-		{
-			By option = By.xpath(".//option[contains(text(), " + quoteXPath(user) + ")]");
-			if( isPresent(addSelectElem, option) )
-			{
-				addSelectElem.findElement(option).click();
-				WaitingPageObject<ExternalServiceUsersPage> waiter = updateWaiter();
-				addButton.click();
-				waiter.get();
-			}
-		}
-	}
+    @Override
+    protected WebElement findLoadedElement() {
+      return title;
+    }
+
+    @Override
+    protected void loadUrl() {
+      driver.get(context.getIntegUrl() + "/admin/settings.php?section=externalservices");
+    }
+  }
+
+  private static class ExternalServiceUsersPage extends AbstractPage<ExternalServiceUsersPage> {
+    @FindBy(id = "addselect")
+    private WebElement addSelectElem;
+
+    @FindBy(id = "add")
+    private WebElement addButton;
+
+    public ExternalServiceUsersPage(ExternalServicesPage servicesPage) {
+      super(servicesPage);
+    }
+
+    @Override
+    protected WebElement findLoadedElement() {
+      return addSelectElem;
+    }
+
+    public void selectUser(String user) {
+      By option = By.xpath(".//option[contains(text(), " + quoteXPath(user) + ")]");
+      if (isPresent(addSelectElem, option)) {
+        addSelectElem.findElement(option).click();
+        WaitingPageObject<ExternalServiceUsersPage> waiter = updateWaiter();
+        addButton.click();
+        waiter.get();
+      }
+    }
+  }
 }

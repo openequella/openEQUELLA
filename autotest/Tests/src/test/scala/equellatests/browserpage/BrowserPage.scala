@@ -9,7 +9,8 @@ import scala.util.Try
 object BrowserPage {
   def quoteXPath(input: String): String = {
     val txt = input
-    if (txt.indexOf("'") > -1 && txt.indexOf("\"") > -1) "concat('" + txt.replace("'", "', \"'\", '") + "')"
+    if (txt.indexOf("'") > -1 && txt.indexOf("\"") > -1)
+      "concat('" + txt.replace("'", "', \"'\", '") + "')"
     else if (txt.indexOf("\"") > -1) "'" + txt + "'"
     else "\"" + txt + "\""
   }
@@ -17,15 +18,16 @@ object BrowserPage {
 
 trait BrowserPage {
   def ctx: PageContext
-  def driver : WebDriver = ctx.getDriver
-  def findElement(by: By): WebElement = driver.findElement(by)
-  def findElementById(id: String): WebElement = findElement(By.id(id))
+  def driver: WebDriver                        = ctx.getDriver
+  def findElement(by: By): WebElement          = driver.findElement(by)
+  def findElementById(id: String): WebElement  = findElement(By.id(id))
   def findElementO(by: By): Option[WebElement] = Try(driver.findElement(by)).toOption
-  val waiter = new WebDriverWait(driver, 10, 50L)
-  def waitFor[A](c: ExpectedCondition[A]) : A = waiter.until(c)
+  val waiter                                   = new WebDriverWait(driver, 10, 50L)
+  def waitFor[A](c: ExpectedCondition[A]): A   = waiter.until(c)
 
-  def updatedBy(by: By): ExpectedCondition[_] = ExpectedConditions.and(ExpectedConditions.stalenessOf(findElement(by)),
-    ExpectedConditions.visibilityOfElementLocated(by))
+  def updatedBy(by: By): ExpectedCondition[_] =
+    ExpectedConditions.and(ExpectedConditions.stalenessOf(findElement(by)),
+                           ExpectedConditions.visibilityOfElementLocated(by))
 
-  def quoteXPath(i: String) : String = BrowserPage.quoteXPath(i)
+  def quoteXPath(i: String): String = BrowserPage.quoteXPath(i)
 }

@@ -10,8 +10,11 @@ object GlobalConfig {
 
   val testConfig = new TestConfig(TestConfig.getBaseFolder, true)
 
-  def baseFolderForInst(testInst: TestInst) = new File(testConfig.getTestFolder, testInst.baseFolderName)
+  def baseFolderForInst(testInst: TestInst) =
+    new File(testConfig.getTestFolder, testInst.baseFolderName)
 
-  def createTestInst(shortName: String) = TestInst(URI.create(testConfig.getInstitutionUrl(shortName)),
-    testConfig.getAdminPassword, shortName)
+  def createTestInst(shortName: String) =
+    TestInst(URI.create(testConfig.getInstitutionUrl(shortName)),
+             testConfig.getAdminPassword,
+             shortName)
 }

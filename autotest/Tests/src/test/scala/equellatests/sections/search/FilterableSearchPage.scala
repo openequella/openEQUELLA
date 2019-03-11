@@ -9,15 +9,15 @@ trait FilterableSearchPage extends ResultsUpdatable {
 
   protected def filterPage: Filters
 
-  def openFilters() : Filters = {
+  def openFilters(): Filters = {
     val page = filterPage.pageExpectation
     findElement(By.xpath("id('actionbuttons')/button[normalize-space(text()) = 'Filter']")).click()
     waitFor(page)
   }
 
-  def closeFilters() : Unit = ???
+  def closeFilters(): Unit = ???
 
-  def clearFiltersIfSet() : Unit = {
+  def clearFiltersIfSet(): Unit = {
     findElementO(By.id("rf_resetButton")).foreach { b =>
       val up = resultsUpdateExpectation
       b.click()

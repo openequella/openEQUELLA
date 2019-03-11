@@ -2,17 +2,14 @@ package com.dytech.common.legacyio;
 
 import java.util.regex.Pattern;
 
-class ZipFilter
-{
-	private Pattern p;
+class ZipFilter {
+  private Pattern p;
 
-	public ZipFilter(String regex)
-	{
-		p = Pattern.compile(regex);
-	}
+  public ZipFilter(String regex) {
+    p = Pattern.compile(regex);
+  }
 
-	public boolean accept(String filename)
-	{
-		return p.matcher(filename).matches();
-	}
+  public boolean accept(String filename) {
+    return p.matcher(filename).matches();
+  }
 }

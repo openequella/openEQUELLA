@@ -7,10 +7,9 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Moodles
-{
-	String[] value() default {};
+public @interface Moodles {
+  String[] value() default {};
 
-	// lower order is run first
-	int order() default 1000;
+  // lower order is run first
+  int order() default 1000;
 }

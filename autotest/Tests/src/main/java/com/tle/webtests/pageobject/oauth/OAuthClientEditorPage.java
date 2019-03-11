@@ -1,225 +1,199 @@
 package com.tle.webtests.pageobject.oauth;
 
-import java.util.List;
-
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import com.tle.webtests.pageobject.generic.component.SelectUserDialog;
+import java.util.List;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
-/**
- * @author Aaron
- */
-public class OAuthClientEditorPage extends AbstractPage<OAuthClientEditorPage>
-{
-	@FindBy(xpath = "id('oace_n')/div/input")
-	private WebElement nameField;
-	@FindBy(id = "oace_i")
-	private WebElement clientIdField;
-	@FindBy(id = "oace_cs")
-	private WebElement clientSecretField;
-	@FindBy(id = "oace_sf")
-	private WebElement selectFlow;
-	@FindBy(id = "oace_r")
-	private WebElement redirectUrlField;
-	@FindBy(id = "oace_su")
-	private WebElement selectUserButton;
-	@FindBy(id = "oace_sv")
-	private WebElement saveButton;
-	@FindBy(id = "oace_cl")
-	private WebElement cancelButton;
-	@FindBy(id = "userAjaxDiv")
-	private WebElement userAjaxDiv;
-	@FindBy(id = "flowAjaxDiv")
-	private WebElement flowAjaxDiv;
-	@FindBy(id = "oace_rs")
-	private WebElement regenButton;
-	@FindBy(className = "ctrlinvalidmessage")
-	private WebElement invalidMessage;
+/** @author Aaron */
+public class OAuthClientEditorPage extends AbstractPage<OAuthClientEditorPage> {
+  @FindBy(xpath = "id('oace_n')/div/input")
+  private WebElement nameField;
 
-	@FindBy(id = "oace_cu2_0")
-	private WebElement defaultUrlBox;
+  @FindBy(id = "oace_i")
+  private WebElement clientIdField;
 
-	@FindBy(id = "clientSecretDiv")
-	private WebElement clientSecretDiv;
+  @FindBy(id = "oace_cs")
+  private WebElement clientSecretField;
 
-	public OAuthClientEditorPage(PageContext context)
-	{
-		super(context, By.xpath("//h2[contains(text(), 'OAuth client')]"));
-	}
+  @FindBy(id = "oace_sf")
+  private WebElement selectFlow;
 
-	/**
-	 * Options are: acg, ig, ccg
-	 */
-	public OAuthClientEditorPage setFlow(String flow)
-	{
-		WaitingPageObject<OAuthClientEditorPage> ajaxUpdate = ajaxUpdate(flowAjaxDiv);
-		new EquellaSelect(context, selectFlow).selectByValue(flow);
-		return ajaxUpdate.get();
-	}
+  @FindBy(id = "oace_r")
+  private WebElement redirectUrlField;
 
-	public String getSelectedFlow()
-	{
-		return new EquellaSelect(context, selectFlow).getSelectedValue();
-	}
+  @FindBy(id = "oace_su")
+  private WebElement selectUserButton;
 
-	public OAuthClientEditorPage setName(String name)
-	{
-		nameField.clear();
-		nameField.sendKeys(name);
-		return this;
-	}
+  @FindBy(id = "oace_sv")
+  private WebElement saveButton;
 
-	public String getName()
-	{
-		return nameField.getAttribute("value");
-	}
+  @FindBy(id = "oace_cl")
+  private WebElement cancelButton;
 
-	public OAuthClientEditorPage setClientId(String clientId)
-	{
-		clientIdField.clear();
-		clientIdField.sendKeys(clientId);
-		return this;
-	}
+  @FindBy(id = "userAjaxDiv")
+  private WebElement userAjaxDiv;
 
-	public String getClientId()
-	{
-		return clientIdField.getAttribute("value");
-	}
+  @FindBy(id = "flowAjaxDiv")
+  private WebElement flowAjaxDiv;
 
-	public OAuthClientEditorPage setRedirectUrl(String redirectUrl)
-	{
-		redirectUrlField.clear();
-		redirectUrlField.sendKeys(redirectUrl);
-		return this;
-	}
+  @FindBy(id = "oace_rs")
+  private WebElement regenButton;
 
-	public OAuthClientEditorPage setUser(String username)
-	{
-		WaitingPageObject<OAuthClientEditorPage> ajaxUpdate = ajaxUpdate(userAjaxDiv);
-		selectUserButton.click();
-		SelectUserDialog dialog = new SelectUserDialog(context, "oace_sud").get();
-		return dialog.search(username).selectAndFinish(username, ajaxUpdate);
-	}
+  @FindBy(className = "ctrlinvalidmessage")
+  private WebElement invalidMessage;
 
-	public OAuthSettingsPage save()
-	{
-		saveButton.click();
-		return new OAuthSettingsPage(context).get();
-	}
+  @FindBy(id = "oace_cu2_0")
+  private WebElement defaultUrlBox;
 
-	public OAuthClientEditorPage saveWithErrors()
-	{
-		saveButton.click();
-		return visibilityWaiter(invalidMessage).get();
-	}
+  @FindBy(id = "clientSecretDiv")
+  private WebElement clientSecretDiv;
 
-	public OAuthSettingsPage cancel()
-	{
-		cancelButton.click();
-		return new OAuthSettingsPage(context).get();
-	}
+  public OAuthClientEditorPage(PageContext context) {
+    super(context, By.xpath("//h2[contains(text(), 'OAuth client')]"));
+  }
 
-	public String getSecret()
-	{
-		return clientSecretField.getText();
-	}
+  /** Options are: acg, ig, ccg */
+  public OAuthClientEditorPage setFlow(String flow) {
+    WaitingPageObject<OAuthClientEditorPage> ajaxUpdate = ajaxUpdate(flowAjaxDiv);
+    new EquellaSelect(context, selectFlow).selectByValue(flow);
+    return ajaxUpdate.get();
+  }
 
-	public OAuthClientEditorPage regenerateSecret()
-	{
-		WaitingPageObject<OAuthClientEditorPage> ajaxUpdateExpect = ajaxUpdateExpect(clientSecretDiv, clientSecretField);
-		regenButton.click();
-		acceptConfirmation();
-		return ajaxUpdateExpect.get();
-	}
+  public String getSelectedFlow() {
+    return new EquellaSelect(context, selectFlow).getSelectedValue();
+  }
 
-	public boolean canSetChooseUrl()
-	{
-		return isPresent(defaultUrlBox);
-	}
+  public OAuthClientEditorPage setName(String name) {
+    nameField.clear();
+    nameField.sendKeys(name);
+    return this;
+  }
 
-	public boolean canSetUrl()
-	{
-		return isPresent(redirectUrlField);
-	}
+  public String getName() {
+    return nameField.getAttribute("value");
+  }
 
-	public boolean canSetUser()
-	{
-		return isPresent(selectUserButton);
-	}
+  public OAuthClientEditorPage setClientId(String clientId) {
+    clientIdField.clear();
+    clientIdField.sendKeys(clientId);
+    return this;
+  }
 
-	public boolean isDefaultUrl()
-	{
-		return !isPresent(redirectUrlField);
-	}
+  public String getClientId() {
+    return clientIdField.getAttribute("value");
+  }
 
-	private boolean isControlInvalid(WebElement we)
-	{
-		return isControlInvalid(we, null);
-	}
+  public OAuthClientEditorPage setRedirectUrl(String redirectUrl) {
+    redirectUrlField.clear();
+    redirectUrlField.sendKeys(redirectUrl);
+    return this;
+  }
 
-	private boolean isControlInvalid(WebElement we, String selector)
-	{
-		List<WebElement> invalidControls = driver.findElements(By.xpath("//div[@class='control ctrlinvalid']"));
+  public OAuthClientEditorPage setUser(String username) {
+    WaitingPageObject<OAuthClientEditorPage> ajaxUpdate = ajaxUpdate(userAjaxDiv);
+    selectUserButton.click();
+    SelectUserDialog dialog = new SelectUserDialog(context, "oace_sud").get();
+    return dialog.search(username).selectAndFinish(username, ajaxUpdate);
+  }
 
-		for( WebElement control : invalidControls )
-		{
-			if( isPresent(control, By.id(we.getAttribute("id"))) )
-			{
-				return true;
-			}
-			if( selector != null && isPresent(control, By.xpath(selector)) )
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+  public OAuthSettingsPage save() {
+    saveButton.click();
+    return new OAuthSettingsPage(context).get();
+  }
 
-	public boolean isNameError()
-	{
-		return isControlInvalid(nameField, ".//div[@id = 'oace_n']/div/input");
-	}
+  public OAuthClientEditorPage saveWithErrors() {
+    saveButton.click();
+    return visibilityWaiter(invalidMessage).get();
+  }
 
-	public boolean isFlowError()
-	{
-		return isControlInvalid(selectFlow);
-	}
+  public OAuthSettingsPage cancel() {
+    cancelButton.click();
+    return new OAuthSettingsPage(context).get();
+  }
 
-	public boolean isUrlError()
-	{
-		return isControlInvalid(redirectUrlField);
-	}
+  public String getSecret() {
+    return clientSecretField.getText();
+  }
 
-	public boolean isClientIdError()
-	{
-		return isControlInvalid(clientIdField);
-	}
+  public OAuthClientEditorPage regenerateSecret() {
+    WaitingPageObject<OAuthClientEditorPage> ajaxUpdateExpect =
+        ajaxUpdateExpect(clientSecretDiv, clientSecretField);
+    regenButton.click();
+    acceptConfirmation();
+    return ajaxUpdateExpect.get();
+  }
 
-	public boolean isUserError()
-	{
-		return isControlInvalid(selectUserButton);
-	}
+  public boolean canSetChooseUrl() {
+    return isPresent(defaultUrlBox);
+  }
 
-	public String getUser()
-	{
-		return selectUserButton.findElement(By.xpath("preceding-sibling::span")).getAttribute("title");
-	}
+  public boolean canSetUrl() {
+    return isPresent(redirectUrlField);
+  }
 
-	public OAuthClientEditorPage setDefaultUrl()
-	{
-		if( !defaultUrlBox.isSelected() )
-		{
-			WaitingPageObject<OAuthClientEditorPage> removalWaiter = removalWaiter(redirectUrlField);
-			defaultUrlBox.click();
-			return removalWaiter.get();
-		}
-		return this;
+  public boolean canSetUser() {
+    return isPresent(selectUserButton);
+  }
 
-	}
+  public boolean isDefaultUrl() {
+    return !isPresent(redirectUrlField);
+  }
+
+  private boolean isControlInvalid(WebElement we) {
+    return isControlInvalid(we, null);
+  }
+
+  private boolean isControlInvalid(WebElement we, String selector) {
+    List<WebElement> invalidControls =
+        driver.findElements(By.xpath("//div[@class='control ctrlinvalid']"));
+
+    for (WebElement control : invalidControls) {
+      if (isPresent(control, By.id(we.getAttribute("id")))) {
+        return true;
+      }
+      if (selector != null && isPresent(control, By.xpath(selector))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean isNameError() {
+    return isControlInvalid(nameField, ".//div[@id = 'oace_n']/div/input");
+  }
+
+  public boolean isFlowError() {
+    return isControlInvalid(selectFlow);
+  }
+
+  public boolean isUrlError() {
+    return isControlInvalid(redirectUrlField);
+  }
+
+  public boolean isClientIdError() {
+    return isControlInvalid(clientIdField);
+  }
+
+  public boolean isUserError() {
+    return isControlInvalid(selectUserButton);
+  }
+
+  public String getUser() {
+    return selectUserButton.findElement(By.xpath("preceding-sibling::span")).getAttribute("title");
+  }
+
+  public OAuthClientEditorPage setDefaultUrl() {
+    if (!defaultUrlBox.isSelected()) {
+      WaitingPageObject<OAuthClientEditorPage> removalWaiter = removalWaiter(redirectUrlField);
+      defaultUrlBox.click();
+      return removalWaiter.get();
+    }
+    return this;
+  }
 }

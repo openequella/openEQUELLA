@@ -30,21 +30,26 @@ sealed trait AttachmentEditPage extends WaitingBrowserPage {
 
   def restricted: Option[Boolean] = restrictedField.map(_.isSelected)
 
-  def restricted_=(b: Boolean): Unit = if (!restricted.contains(b)) restrictedField.foreach(_.click())
+  def restricted_=(b: Boolean): Unit =
+    if (!restricted.contains(b)) restrictedField.foreach(_.click())
 
   def suppressThumbField: Option[WebElement]
 
   def suppressThumb: Option[Boolean] = suppressThumbField.map(_.isSelected)
 
-  def suppressThumb_=(b: Boolean) = if (!suppressThumb.contains(b)) suppressThumbField.foreach(_.click())
+  def suppressThumb_=(b: Boolean) =
+    if (!suppressThumb.contains(b)) suppressThumbField.foreach(_.click())
 
-  def viewerSelect : Option[EquellaSelect] = findElementO(byForId("_viewers")).map(new EquellaSelect(ctx, _))
+  def viewerSelect: Option[EquellaSelect] =
+    findElementO(byForId("_viewers")).map(new EquellaSelect(ctx, _))
 
-  def viewerOptions: Option[Set[String]] = viewerSelect.map(_.getOptionElements.asScala.map(_.getAttribute("value")).toSet-"")
+  def viewerOptions: Option[Set[String]] =
+    viewerSelect.map(_.getOptionElements.asScala.map(_.getAttribute("value")).toSet - "")
 
-  def viewer : Option[String] = viewerSelect.map(_.getSelectedValue)
+  def viewer: Option[String] = viewerSelect.map(_.getSelectedValue)
 
-  def viewer_=(viewer: Option[String]) = viewerSelect.foreach(vs => vs.selectByValue(viewer.getOrElse("")))
+  def viewer_=(viewer: Option[String]) =
+    viewerSelect.foreach(vs => vs.selectByValue(viewer.getOrElse("")))
 
   def description: String = descriptionField.getAttribute("value")
 
@@ -53,9 +58,10 @@ sealed trait AttachmentEditPage extends WaitingBrowserPage {
     descriptionField.sendKeys(name)
   }
 
-  def details(): Iterable[(String, String)] = uc.elemForId("_dialog_fuh_d").findElements(By.tagName("tr")).asScala.map { tr =>
-    (tr.findElement(By.xpath("td[1]")).getText, tr.findElement(By.xpath("td[2]")).getText)
-  }
+  def details(): Iterable[(String, String)] =
+    uc.elemForId("_dialog_fuh_d").findElements(By.tagName("tr")).asScala.map { tr =>
+      (tr.findElement(By.xpath("td[1]")).getText, tr.findElement(By.xpath("td[2]")).getText)
+    }
 
   def close(): WizardPageTab = {
     val closeButton = driver.findElement(By.xpath("//img[@class='modal_close']"))
@@ -66,7 +72,10 @@ sealed trait AttachmentEditPage extends WaitingBrowserPage {
 
   def save(): WizardPageTab = {
     val expected = uc.updatedExpectation()
-    val saveButton = uc.elemForId("_dialog").findElement(By.xpath("//div[@class='modal-footer-inner']/button[normalize-space(text())='Save']"))
+    val saveButton = uc
+      .elemForId("_dialog")
+      .findElement(
+        By.xpath("//div[@class='modal-footer-inner']/button[normalize-space(text())='Save']"))
     saveButton.click()
     waitFor(expected)
     uc.page.get()

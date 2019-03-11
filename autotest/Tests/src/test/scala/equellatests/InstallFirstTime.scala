@@ -11,7 +11,8 @@ object InstallFirstTime extends App {
 
   import java.util.function.{Function => JavaFunction}
 
-  implicit def scalaFunctionToJavaFunction[From, To](function: (From) => To): JavaFunction[From, To] = {
+  implicit def scalaFunctionToJavaFunction[From, To](
+      function: (From) => To): JavaFunction[From, To] = {
     new java.util.function.Function[From, To] {
       override def apply(input: From): To = function(input)
     }
@@ -19,8 +20,8 @@ object InstallFirstTime extends App {
 
   TestChecker.withBrowserDriver(testConfig) { driver =>
     val tried = Try {
-      val context = new PageContext(driver, testConfig, testConfig.getAdminUrl)
-      val emails = "noreply@equella.com;test@equella.com"
+      val context     = new PageContext(driver, testConfig, testConfig.getAdminUrl)
+      val emails      = "noreply@equella.com;test@equella.com"
       var installPage = new InstallPage(context).load
       installPage.setPassword("")
       installPage.setPasswordConfirm("")
@@ -48,12 +49,13 @@ object InstallFirstTime extends App {
       val dbRow = dbPage.getDatabaseRow(DEFAULT_SCHEMA)
       dbRow.initialise()
       dbRow.waitForMigrate()
-    }.transform(Success.apply, {
-      t =>
-        ScreenshotTaker.takeScreenshot(driver, testConfig.getScreenshotFolder, "install", testConfig.isChromeDriverSet)
-        Failure(t)
-    }
-    )
+    }.transform(Success.apply, { t =>
+      ScreenshotTaker.takeScreenshot(driver,
+                                     testConfig.getScreenshotFolder,
+                                     "install",
+                                     testConfig.isChromeDriverSet)
+      Failure(t)
+    })
     driver.quit()
     tried.get
   }

@@ -1,14 +1,12 @@
 package com.tle.webtests.pageobject;
 
+import com.tle.webtests.framework.PageContext;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.tle.webtests.framework.PageContext;
+public interface WaitingPageObject<T extends PageObject> {
+  T get();
 
-public interface WaitingPageObject<T extends PageObject>
-{
-	T get();
+  WebDriverWait getWaiter();
 
-	WebDriverWait getWaiter();
-
-	PageContext getContext();
+  PageContext getContext();
 }

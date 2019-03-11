@@ -1,125 +1,103 @@
 package com.tle.web.api.item.interfaces.beans;
 
-import java.util.Date;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
 import com.tle.web.api.interfaces.beans.UserBean;
-
+import java.util.Date;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class HistoryEventBean extends AbstractExtendableBean
-{
-	private UserBean user;
-	private Date date;
-	private String step;
-	private String toStep;
-	private String stepName;
-	private String toStepName;
-	private String comment;
-	// WTF is this?
-	// private boolean applies;
-	private String type;
-	private String state;
+public class HistoryEventBean extends AbstractExtendableBean {
+  private UserBean user;
+  private Date date;
+  private String step;
+  private String toStep;
+  private String stepName;
+  private String toStepName;
+  private String comment;
+  // WTF is this?
+  // private boolean applies;
+  private String type;
+  private String state;
 
-	public UserBean getUser()
-	{
-		return user;
-	}
+  public UserBean getUser() {
+    return user;
+  }
 
-	public void setUser(UserBean user)
-	{
-		this.user = user;
-	}
+  public void setUser(UserBean user) {
+    this.user = user;
+  }
 
-	public Date getDate()
-	{
-		return date;
-	}
+  public Date getDate() {
+    return date;
+  }
 
-	public void setDate(Date date)
-	{
-		this.date = date;
-	}
+  public void setDate(Date date) {
+    this.date = date;
+  }
 
-	public String getStep()
-	{
-		return step;
-	}
+  public String getStep() {
+    return step;
+  }
 
-	public void setStep(String step)
-	{
-		this.step = step;
-	}
+  public void setStep(String step) {
+    this.step = step;
+  }
 
-	public String getToStep()
-	{
-		return toStep;
-	}
+  public String getToStep() {
+    return toStep;
+  }
 
-	public void setToStep(String toStep)
-	{
-		this.toStep = toStep;
-	}
+  public void setToStep(String toStep) {
+    this.toStep = toStep;
+  }
 
-	public String getStepName()
-	{
-		return stepName;
-	}
+  public String getStepName() {
+    return stepName;
+  }
 
-	public void setStepName(String stepName)
-	{
-		this.stepName = stepName;
-	}
+  public void setStepName(String stepName) {
+    this.stepName = stepName;
+  }
 
-	public String getToStepName()
-	{
-		return toStepName;
-	}
+  public String getToStepName() {
+    return toStepName;
+  }
 
-	public void setToStepName(String toStepName)
-	{
-		this.toStepName = toStepName;
-	}
+  public void setToStepName(String toStepName) {
+    this.toStepName = toStepName;
+  }
 
-	public String getComment()
-	{
-		return comment;
-	}
+  public String getComment() {
+    return comment;
+  }
 
-	public void setComment(String comment)
-	{
-		this.comment = comment;
-	}
+  public void setComment(String comment) {
+    this.comment = comment;
+  }
 
-	// public boolean isApplies()
-	// {
-	// return applies;
-	// }
-	//
-	// public void setApplies(boolean applies)
-	// {
-	// this.applies = applies;
-	// }
+  // public boolean isApplies()
+  // {
+  // return applies;
+  // }
+  //
+  // public void setApplies(boolean applies)
+  // {
+  // this.applies = applies;
+  // }
 
-	public String getType()
-	{
-		return type;
-	}
+  public String getType() {
+    return type;
+  }
 
-	public void setType(String type)
-	{
-		this.type = type;
-	}
+  public void setType(String type) {
+    this.type = type;
+  }
 
-	public String getState()
-	{
-		return state;
-	}
+  public String getState() {
+    return state;
+  }
 
-	public void setState(String state)
-	{
-		this.state = state;
-	}
+  public void setState(String state) {
+    this.state = state;
+  }
 }

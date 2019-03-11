@@ -1,31 +1,24 @@
 package com.tle.web.api.interfaces.beans;
 
+public class BaseEntityExportBean {
+  @SuppressWarnings("nls")
+  private String exportVersion = "1.0";
 
-public class BaseEntityExportBean
-{
-	@SuppressWarnings("nls")
-	private String exportVersion = "1.0";
+  private EntityLockBean lock;
 
-	private EntityLockBean lock;
+  public String getExportVersion() {
+    return exportVersion;
+  }
 
-	public String getExportVersion()
-	{
-		return exportVersion;
-	}
+  public void setExportVersion(String exportVersion) {
+    this.exportVersion = exportVersion;
+  }
 
-	public void setExportVersion(String exportVersion)
-	{
-		this.exportVersion = exportVersion;
-	}
+  public EntityLockBean getLock() {
+    return lock;
+  }
 
-	public EntityLockBean getLock()
-	{
-		return lock;
-	}
-
-	public void setLock(EntityLockBean lock)
-	{
-		this.lock = lock;
-	}
-
+  public void setLock(EntityLockBean lock) {
+    this.lock = lock;
+  }
 }

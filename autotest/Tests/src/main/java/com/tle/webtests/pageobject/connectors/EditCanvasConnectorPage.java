@@ -1,96 +1,85 @@
 package com.tle.webtests.pageobject.connectors;
 
+import com.tle.webtests.pageobject.PrefixedName;
+import com.tle.webtests.pageobject.WaitingPageObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-import com.tle.webtests.pageobject.PrefixedName;
-import com.tle.webtests.pageobject.WaitingPageObject;
+public class EditCanvasConnectorPage extends AbstractConnectorEditPage<EditCanvasConnectorPage> {
+  @FindBy(id = "cce_u")
+  private WebElement urlField;
 
-public class EditCanvasConnectorPage extends AbstractConnectorEditPage<EditCanvasConnectorPage>
-{
-	@FindBy(id = "cce_u")
-	private WebElement urlField;
-	@FindBy(id = "cce_testUrlButton")
-	private WebElement testUrlButton;
-	@FindBy(id = "cce_manualTokenEntry")
-	private WebElement accessTokenField;
-	@FindBy(id = "cce_testTokenButton")
-	private WebElement testTokenButton;
+  @FindBy(id = "cce_testUrlButton")
+  private WebElement testUrlButton;
 
-	public EditCanvasConnectorPage(ShowConnectorsPage connectorsPage)
-	{
-		super(connectorsPage);
-	}
+  @FindBy(id = "cce_manualTokenEntry")
+  private WebElement accessTokenField;
 
-	public void createConnector(PrefixedName name, String token)
-	{
-		setName(name);
-		urlField.sendKeys(context.getIntegUrl());
-		WaitingPageObject<EditCanvasConnectorPage> updateWaiter = updateWaiter(testUrlButton);
-		testUrlButton.click();
-		updateWaiter.get();
+  @FindBy(id = "cce_testTokenButton")
+  private WebElement testTokenButton;
 
-		setAccessToken(token);
-		updateWaiter = updateWaiter(testTokenButton);
-		testTokenButton.click();
-		updateWaiter.get();
-	}
+  public EditCanvasConnectorPage(ShowConnectorsPage connectorsPage) {
+    super(connectorsPage);
+  }
 
-	public void setAccessToken(String token)
-	{
-		accessTokenField.clear();
-		accessTokenField.sendKeys(token);
-	}
+  public void createConnector(PrefixedName name, String token) {
+    setName(name);
+    urlField.sendKeys(context.getIntegUrl());
+    WaitingPageObject<EditCanvasConnectorPage> updateWaiter = updateWaiter(testUrlButton);
+    testUrlButton.click();
+    updateWaiter.get();
 
-	public boolean testAccessToken()
-	{
-		WaitingPageObject<EditCanvasConnectorPage> updateWaiter = updateWaiter(testTokenButton);
-		testTokenButton.click();
-		updateWaiter.get();
-		if( isPresent(By.xpath("//span[normalize-space(text()) = 'Access token OK']")) )
-		{
-			return true;
-		}
-		else if( isPresent(By
-			.xpath("//span[normalize-space(text()) = 'Unauthorised, check token and server URL and try again']")) )
-		{
-			return false;
-		}
-		return false;
-	}
+    setAccessToken(token);
+    updateWaiter = updateWaiter(testTokenButton);
+    testTokenButton.click();
+    updateWaiter.get();
+  }
 
-	@Override
-	public WebElement getUsernameField()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+  public void setAccessToken(String token) {
+    accessTokenField.clear();
+    accessTokenField.sendKeys(token);
+  }
 
-	@Override
-	public WebElement getTestButton()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+  public boolean testAccessToken() {
+    WaitingPageObject<EditCanvasConnectorPage> updateWaiter = updateWaiter(testTokenButton);
+    testTokenButton.click();
+    updateWaiter.get();
+    if (isPresent(By.xpath("//span[normalize-space(text()) = 'Access token OK']"))) {
+      return true;
+    } else if (isPresent(
+        By.xpath(
+            "//span[normalize-space(text()) = 'Unauthorised, check token and server URL and try again']"))) {
+      return false;
+    }
+    return false;
+  }
 
-	@Override
-	public String getId()
-	{
-		return "cce";
-	}
+  @Override
+  public WebElement getUsernameField() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-	@Override
-	public WebElement getAllowSummaryCheckbox()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+  @Override
+  public WebElement getTestButton() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-	@Override
-	protected String getEditorSectionId()
-	{
-		return "cce";
-	}
+  @Override
+  public String getId() {
+    return "cce";
+  }
 
+  @Override
+  public WebElement getAllowSummaryCheckbox() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  protected String getEditorSectionId() {
+    return "cce";
+  }
 }

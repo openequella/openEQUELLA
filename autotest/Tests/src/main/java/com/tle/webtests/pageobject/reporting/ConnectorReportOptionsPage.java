@@ -1,52 +1,46 @@
 package com.tle.webtests.pageobject.reporting;
 
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-
 import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.PrefixedName;
 import com.tle.webtests.pageobject.generic.component.EquellaSelect;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
-public class ConnectorReportOptionsPage extends AbstractReportWindow<ConnectorReportPage, ConnectorReportOptionsPage>
-{
+public class ConnectorReportOptionsPage
+    extends AbstractReportWindow<ConnectorReportPage, ConnectorReportOptionsPage> {
 
-	@FindBy(id = "c1")
-	private WebElement connectorDropDown;
-	@FindBy(id = "c2_0")
-	private WebElement showArchived;
+  @FindBy(id = "c1")
+  private WebElement connectorDropDown;
 
-	private EquellaSelect connectors;
+  @FindBy(id = "c2_0")
+  private WebElement showArchived;
 
-	public ConnectorReportOptionsPage(PageContext context)
-	{
-		super(context, new ConnectorReportPage(context));
-	}
+  private EquellaSelect connectors;
 
-	@Override
-	public void checkLoaded() throws Error
-	{
-		super.checkLoaded();
-		connectors = new EquellaSelect(context, connectorDropDown);
-	}
+  public ConnectorReportOptionsPage(PageContext context) {
+    super(context, new ConnectorReportPage(context));
+  }
 
-	public ConnectorReportOptionsPage selectConnector(PrefixedName connector)
-	{
-		return selectConnector(connector.toString());
-	}
+  @Override
+  public void checkLoaded() throws Error {
+    super.checkLoaded();
+    connectors = new EquellaSelect(context, connectorDropDown);
+  }
 
-	public ConnectorReportOptionsPage selectConnector(String connector)
-	{
-		connectors.selectByVisibleText(connector);
-		return get();
-	}
+  public ConnectorReportOptionsPage selectConnector(PrefixedName connector) {
+    return selectConnector(connector.toString());
+  }
 
-	public ConnectorReportOptionsPage showArchived(boolean on)
-	{
-		if( on == Check.isEmpty(showArchived.getAttribute("checked")) )
-		{
-			showArchived.click();
-		}
-		return get();
-	}
+  public ConnectorReportOptionsPage selectConnector(String connector) {
+    connectors.selectByVisibleText(connector);
+    return get();
+  }
+
+  public ConnectorReportOptionsPage showArchived(boolean on) {
+    if (on == Check.isEmpty(showArchived.getAttribute("checked"))) {
+      showArchived.click();
+    }
+    return get();
+  }
 }

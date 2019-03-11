@@ -4,8 +4,6 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-import org.testng.annotations.Test;
-
 import com.tle.common.Check;
 import com.tle.webtests.framework.Name;
 import com.tle.webtests.framework.TestInstitution;
@@ -26,160 +24,155 @@ import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 import com.tle.webtests.pageobject.wizard.controls.universal.ResourceUniversalControlType;
 import com.tle.webtests.remotetest.integration.ConnectorHelper;
 import com.tle.webtests.test.AbstractCleanupTest;
+import org.testng.annotations.Test;
 
 @TestInstitution("contribute")
-public class EquellaConnectorTest extends AbstractCleanupTest
-{
-	@Name("Local resources")
-	private static PrefixedName CONNECTOR;
-	private ConnectorHelper connectorHelper;
+public class EquellaConnectorTest extends AbstractCleanupTest {
+  @Name("Local resources")
+  private static PrefixedName CONNECTOR;
 
-	@Override
-	protected void customisePageContext()
-	{
-		super.customisePageContext();
-		connectorHelper = new ConnectorHelper(context, CONNECTOR);
-	}
+  private ConnectorHelper connectorHelper;
 
-	@Test
-	public void setupConnector()
-	{
-		logon("TLE_ADMINISTRATOR", "tle010");
+  @Override
+  protected void customisePageContext() {
+    super.customisePageContext();
+    connectorHelper = new ConnectorHelper(context, CONNECTOR);
+  }
 
-		ShowConnectorsPage connectors = new ShowConnectorsPage(context).load();
-		ShowEquellaConnectorsPage.addEquellaConnection(connectors, CONNECTOR);
-	}
+  @Test
+  public void setupConnector() {
+    logon("TLE_ADMINISTRATOR", "tle010");
 
-	@Test(dependsOnMethods = "setupConnector")
-	public void equellaConnector()
-	{
-		logon("AutoTest", "automated");
+    ShowConnectorsPage connectors = new ShowConnectorsPage(context).load();
+    ShowEquellaConnectorsPage.addEquellaConnection(connectors, CONNECTOR);
+  }
 
-		String linkToMe = context.getFullName("link to me");
-		String linkToMeDraft = context.getFullName("link to me draft");
-		String fullname = context.getFullName("main");
-		String fullnameDraft = context.getFullName("main draft");
+  @Test(dependsOnMethods = "setupConnector")
+  public void equellaConnector() {
+    logon("AutoTest", "automated");
 
-		WizardPageTab wizard = new ContributePage(context).load().openWizard("Basic Attachments");
-		wizard.editbox(1, linkToMe);
-		wizard.save().publish();
+    String linkToMe = context.getFullName("link to me");
+    String linkToMeDraft = context.getFullName("link to me draft");
+    String fullname = context.getFullName("main");
+    String fullnameDraft = context.getFullName("main draft");
 
-		wizard = new ContributePage(context).load().openWizard("Basic Attachments");
-		wizard.editbox(1, linkToMeDraft);
-		wizard.save().draft();
+    WizardPageTab wizard = new ContributePage(context).load().openWizard("Basic Attachments");
+    wizard.editbox(1, linkToMe);
+    wizard.save().publish();
 
-		wizard = new ContributePage(context).load().openWizard("Basic Attachments");
-		wizard.editbox(1, fullname);
+    wizard = new ContributePage(context).load().openWizard("Basic Attachments");
+    wizard.editbox(1, linkToMeDraft);
+    wizard.save().draft();
 
-		UniversalControl universalControl = wizard.universalControl(3);
-		ResourceUniversalControlType resource = universalControl.addResource(new ResourceUniversalControlType(
-			universalControl));
-		SelectionSession session = resource.getSelectionSession();
-		ItemListPage search = session.homeExactSearch(linkToMe);
-		SearchScreenOptions sso = new SearchScreenOptions(search).open();
-		sso.setNonLiveOption(true);
+    wizard = new ContributePage(context).load().openWizard("Basic Attachments");
+    wizard.editbox(1, fullname);
 
-		search.setSelectionChecked(linkToMe, true);
-		search.setSelectionChecked(linkToMeDraft, true);
-		wizard = session.finishedSelecting(wizard);
+    UniversalControl universalControl = wizard.universalControl(3);
+    ResourceUniversalControlType resource =
+        universalControl.addResource(new ResourceUniversalControlType(universalControl));
+    SelectionSession session = resource.getSelectionSession();
+    ItemListPage search = session.homeExactSearch(linkToMe);
+    SearchScreenOptions sso = new SearchScreenOptions(search).open();
+    sso.setNonLiveOption(true);
 
-		wizard.waitForSelectedItem(linkToMe);
-		wizard.save().publish();
+    search.setSelectionChecked(linkToMe, true);
+    search.setSelectionChecked(linkToMeDraft, true);
+    wizard = session.finishedSelecting(wizard);
 
-		wizard = new ContributePage(context).load().openWizard("Basic Attachments");
-		wizard.editbox(1, fullnameDraft);
+    wizard.waitForSelectedItem(linkToMe);
+    wizard.save().publish();
 
-		resource = wizard.universalControl(3).addResource(resource);
-		session = resource.getSelectionSession();
-		search = session.homeExactSearch(linkToMe);
-		sso = new SearchScreenOptions(search).open();
-		sso.setNonLiveOption(true);
+    wizard = new ContributePage(context).load().openWizard("Basic Attachments");
+    wizard.editbox(1, fullnameDraft);
 
-		search.setSelectionChecked(linkToMe, true);
-		search.setSelectionChecked(linkToMeDraft, true);
-		wizard = session.finishedSelecting(wizard);
-		wizard.waitForSelectedItem(linkToMe);
-		wizard.save().draft();
+    resource = wizard.universalControl(3).addResource(resource);
+    session = resource.getSelectionSession();
+    search = session.homeExactSearch(linkToMe);
+    sso = new SearchScreenOptions(search).open();
+    sso.setNonLiveOption(true);
 
-		SummaryPage summary = SearchPage.searchAndView(context, linkToMe);
-		FindUsesPage uses = summary.findUsesPage();
-		uses = connectorHelper.selectConnector(uses);
-		uses = uses.showArchived(false);
+    search.setSelectionChecked(linkToMe, true);
+    search.setSelectionChecked(linkToMeDraft, true);
+    wizard = session.finishedSelecting(wizard);
+    wizard.waitForSelectedItem(linkToMe);
+    wizard.save().draft();
 
-		assertTrue(uses.hasEntry(fullname, linkToMe));
-		assertFalse(uses.hasEntry(fullnameDraft, linkToMe));
+    SummaryPage summary = SearchPage.searchAndView(context, linkToMe);
+    FindUsesPage uses = summary.findUsesPage();
+    uses = connectorHelper.selectConnector(uses);
+    uses = uses.showArchived(false);
 
-		uses = uses.showArchived(true);
+    assertTrue(uses.hasEntry(fullname, linkToMe));
+    assertFalse(uses.hasEntry(fullnameDraft, linkToMe));
 
-		assertTrue(uses.hasEntry(fullname, linkToMe));
-		assertTrue(uses.hasEntry(fullnameDraft, linkToMe));
+    uses = uses.showArchived(true);
 
-		ItemListPage listPage = SearchPage.searchExact(context, linkToMeDraft);
-		sso = new SearchScreenOptions(listPage).open();
-		sso.setNonLiveOption(true);
+    assertTrue(uses.hasEntry(fullname, linkToMe));
+    assertTrue(uses.hasEntry(fullnameDraft, linkToMe));
 
-		summary = listPage.viewFromTitle(linkToMeDraft);
+    ItemListPage listPage = SearchPage.searchExact(context, linkToMeDraft);
+    sso = new SearchScreenOptions(listPage).open();
+    sso.setNonLiveOption(true);
 
-		uses = summary.findUsesPage();
-		uses = connectorHelper.selectConnector(uses);
-		uses = uses.showArchived(false);
+    summary = listPage.viewFromTitle(linkToMeDraft);
 
-		assertTrue(uses.hasEntry(fullname, linkToMeDraft));
-		assertFalse(uses.hasEntry(fullnameDraft, linkToMeDraft));
+    uses = summary.findUsesPage();
+    uses = connectorHelper.selectConnector(uses);
+    uses = uses.showArchived(false);
 
-		uses = uses.showArchived(true);
+    assertTrue(uses.hasEntry(fullname, linkToMeDraft));
+    assertFalse(uses.hasEntry(fullnameDraft, linkToMeDraft));
 
-		assertTrue(uses.hasEntry(fullname, linkToMeDraft));
-		assertTrue(uses.hasEntry(fullnameDraft, linkToMeDraft));
+    uses = uses.showArchived(true);
 
-		ManageExternalResourcePage external = new ManageExternalResourcePage(context).load();
-		assertFalse(external.hasResults());
-		connectorHelper.selectConnector(external);
-		assertTrue(external.hasResults());
+    assertTrue(uses.hasEntry(fullname, linkToMeDraft));
+    assertTrue(uses.hasEntry(fullnameDraft, linkToMeDraft));
 
-		external.search(linkToMe);
-		assertEquals(external.results().getResults().size(), 4);
-		external.showArchived(false);
-		assertEquals(external.results().getResults().size(), 2);
+    ManageExternalResourcePage external = new ManageExternalResourcePage(context).load();
+    assertFalse(external.hasResults());
+    connectorHelper.selectConnector(external);
+    assertTrue(external.hasResults());
 
-		external.setSort("name");
-		external.setSortRevese(false);
+    external.search(linkToMe);
+    assertEquals(external.results().getResults().size(), 4);
+    external.showArchived(false);
+    assertEquals(external.results().getResults().size(), 2);
 
-		ItemSearchResult result = external.results().getResults().get(0);
-		assertEquals(result.getDetailText("openEQUELLA resource"), linkToMe);
-		assertEquals(result.getDetailText("Linking resource"), fullname);
+    external.setSort("name");
+    external.setSortRevese(false);
 
-		external.setSortRevese(true);
-		result = external.results().getResults().get(0);
-		assertEquals(result.getDetailText("openEQUELLA resource"), linkToMeDraft);
-		assertEquals(result.getDetailText("Linking resource"), fullname);
+    ItemSearchResult result = external.results().getResults().get(0);
+    assertEquals(result.getDetailText("openEQUELLA resource"), linkToMe);
+    assertEquals(result.getDetailText("Linking resource"), fullname);
 
-		external.showArchived(true);
-		external.search(linkToMeDraft);
+    external.setSortRevese(true);
+    result = external.results().getResults().get(0);
+    assertEquals(result.getDetailText("openEQUELLA resource"), linkToMeDraft);
+    assertEquals(result.getDetailText("Linking resource"), fullname);
 
-		external.setSort("date_added");
-		external.setSortRevese(false);
-		assertEquals(external.results().getResults().size(), 2);
+    external.showArchived(true);
+    external.search(linkToMeDraft);
 
-		result = external.results().getResults().get(0);
-		assertEquals(result.getDetailText("openEQUELLA resource"), linkToMeDraft);
-		assertEquals(result.getDetailText("Linking resource"), fullnameDraft);
+    external.setSort("date_added");
+    external.setSortRevese(false);
+    assertEquals(external.results().getResults().size(), 2);
 
-		result = external.results().getResults().get(1);
-		assertEquals(result.getDetailText("openEQUELLA resource"), linkToMeDraft);
-		assertEquals(result.getDetailText("Linking resource"), fullname);
+    result = external.results().getResults().get(0);
+    assertEquals(result.getDetailText("openEQUELLA resource"), linkToMeDraft);
+    assertEquals(result.getDetailText("Linking resource"), fullnameDraft);
 
-	}
+    result = external.results().getResults().get(1);
+    assertEquals(result.getDetailText("openEQUELLA resource"), linkToMeDraft);
+    assertEquals(result.getDetailText("Linking resource"), fullname);
+  }
 
-	@Override
-	protected void cleanupAfterClass() throws Exception
-	{
-		super.cleanupAfterClass();
-		if( !Check.isEmpty(testConfig.getIntegrationUrl("moodle")) )
-		{
-			logon("TLE_ADMINISTRATOR", "tle010");
-			ShowConnectorsPage page = new ShowConnectorsPage(context).load();
-			page.deleteAllNamed(CONNECTOR);
-		}
-	}
+  @Override
+  protected void cleanupAfterClass() throws Exception {
+    super.cleanupAfterClass();
+    if (!Check.isEmpty(testConfig.getIntegrationUrl("moodle"))) {
+      logon("TLE_ADMINISTRATOR", "tle010");
+      ShowConnectorsPage page = new ShowConnectorsPage(context).load();
+      page.deleteAllNamed(CONNECTOR);
+    }
+  }
 }

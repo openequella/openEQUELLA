@@ -5,6 +5,6 @@ import org.openqa.selenium.support.ui.ExpectedCondition
 
 trait ResultsUpdatable extends BrowserPage {
 
-  def resultsUpdateExpectation : ExpectedCondition[_]
+  def resultsUpdateExpectation: ExpectedCondition[_]
 
 }

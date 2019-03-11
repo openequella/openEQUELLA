@@ -1,166 +1,148 @@
 package com.tle.webtests.pageobject.integration.moodle;
 
+import com.tle.webtests.framework.PageContext;
+import com.tle.webtests.pageobject.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-import com.tle.webtests.framework.PageContext;
-import com.tle.webtests.pageobject.AbstractPage;
+public class MoodleEquellaRepoList extends AbstractPage<MoodleEquellaRepoList> {
+  @FindBy(id = "id_enablecourseinstances")
+  private WebElement courseCheck;
 
-public class MoodleEquellaRepoList extends AbstractPage<MoodleEquellaRepoList>
-{
-	@FindBy(id = "id_enablecourseinstances")
-	private WebElement courseCheck;
-	@FindBy(id = "id_enableuserinstances")
-	private WebElement userCheck;
-	@FindBy(className = "generaltable")
-	private WebElement table;
-	@FindBy(id = "id_submitbutton")
-	private WebElement save;
+  @FindBy(id = "id_enableuserinstances")
+  private WebElement userCheck;
 
-	@FindBy(xpath = "//input[@value='Create a repository instance']")
-	private WebElement addButton;
+  @FindBy(className = "generaltable")
+  private WebElement table;
 
-	public MoodleEquellaRepoList(PageContext context)
-	{
-		super(context);
-	}
+  @FindBy(id = "id_submitbutton")
+  private WebElement save;
 
-	@Override
-	protected WebElement findLoadedElement()
-	{
-		return userCheck;
-	}
+  @FindBy(xpath = "//input[@value='Create a repository instance']")
+  private WebElement addButton;
 
-	public void setCourse(boolean on)
-	{
-		if( courseCheck.isSelected() != on )
-		{
-			courseCheck.click();
-		}
-	}
+  public MoodleEquellaRepoList(PageContext context) {
+    super(context);
+  }
 
-	public void setUser(boolean on)
-	{
-		if( userCheck.isSelected() != on )
-		{
-			userCheck.click();
-		}
-	}
+  @Override
+  protected WebElement findLoadedElement() {
+    return userCheck;
+  }
 
-	public MoodleManageRepoPage save()
-	{
-		save.click();
-		return new MoodleManageRepoPage(context).get();
-	}
+  public void setCourse(boolean on) {
+    if (courseCheck.isSelected() != on) {
+      courseCheck.click();
+    }
+  }
 
-	public boolean hasRepo(String title)
-	{
-		return !table.findElements(getByForRowName(title)).isEmpty();
-	}
+  public void setUser(boolean on) {
+    if (userCheck.isSelected() != on) {
+      userCheck.click();
+    }
+  }
 
-	public void editRepo(String title, String url, String id, String secret)
-	{
-		RepoRow repoRow = new RepoRow(table, title).get();
-		MoodleEquellaRepoSettings settings = repoRow.settings();
-		settings.setFields(title, url, id, secret);
-		settings.save();
-	}
+  public MoodleManageRepoPage save() {
+    save.click();
+    return new MoodleManageRepoPage(context).get();
+  }
 
-	public void addRepo(String title, String url, String id, String secret)
-	{
-		addButton.click();
-		MoodleEquellaRepoSettings settings = new MoodleEquellaRepoSettings(context).get();
-		settings.setFields(title, url, id, secret);
-		settings.save();
-	}
+  public boolean hasRepo(String title) {
+    return !table.findElements(getByForRowName(title)).isEmpty();
+  }
 
-	private static By getByForRowName(String title)
-	{
-		return By.xpath("tbody/tr/td[1][text()=" + quoteXPath(title) + "]/..");
-	}
+  public void editRepo(String title, String url, String id, String secret) {
+    RepoRow repoRow = new RepoRow(table, title).get();
+    MoodleEquellaRepoSettings settings = repoRow.settings();
+    settings.setFields(title, url, id, secret);
+    settings.save();
+  }
 
-	public class RepoRow extends AbstractPage<RepoRow>
-	{
-		@FindBy(linkText = "Settings")
-		private WebElement settingsLink;
+  public void addRepo(String title, String url, String id, String secret) {
+    addButton.click();
+    MoodleEquellaRepoSettings settings = new MoodleEquellaRepoSettings(context).get();
+    settings.setFields(title, url, id, secret);
+    settings.save();
+  }
 
-		public RepoRow(SearchContext searchContext, String title)
-		{
-			super(MoodleEquellaRepoList.this.context, searchContext, getByForRowName(title));
-		}
+  private static By getByForRowName(String title) {
+    return By.xpath("tbody/tr/td[1][text()=" + quoteXPath(title) + "]/..");
+  }
 
-		public MoodleEquellaRepoSettings settings()
-		{
-			settingsLink.click();
-			return new MoodleEquellaRepoSettings(context).get();
-		}
+  public class RepoRow extends AbstractPage<RepoRow> {
+    @FindBy(linkText = "Settings")
+    private WebElement settingsLink;
 
-		@Override
-		public SearchContext getSearchContext()
-		{
-			return loadedElement;
-		}
+    public RepoRow(SearchContext searchContext, String title) {
+      super(MoodleEquellaRepoList.this.context, searchContext, getByForRowName(title));
+    }
 
-	}
+    public MoodleEquellaRepoSettings settings() {
+      settingsLink.click();
+      return new MoodleEquellaRepoSettings(context).get();
+    }
 
-	public class MoodleEquellaRepoSettings extends AbstractPage<MoodleEquellaRepoSettings>
-	{
-		@FindBy(id = "id_name")
-		private WebElement name;
-		@FindBy(id = "id_equella_url")
-		private WebElement url;
-		@FindBy(id = "id_equella_shareid")
-		private WebElement sharedId;
-		@FindBy(id = "id_equella_sharedsecret")
-		private WebElement sharedSecret;
+    @Override
+    public SearchContext getSearchContext() {
+      return loadedElement;
+    }
+  }
 
-		@FindBy(id = "id_equella_manager_shareid")
-		private WebElement managerSharedId;
+  public class MoodleEquellaRepoSettings extends AbstractPage<MoodleEquellaRepoSettings> {
+    @FindBy(id = "id_name")
+    private WebElement name;
 
-		@FindBy(id = "id_submitbutton")
-		private WebElement save;
+    @FindBy(id = "id_equella_url")
+    private WebElement url;
 
-		public MoodleEquellaRepoSettings(PageContext context)
-		{
-			super(context);
-		}
+    @FindBy(id = "id_equella_shareid")
+    private WebElement sharedId;
 
-		@Override
-		protected WebElement findLoadedElement()
-		{
-			return name;
-		}
+    @FindBy(id = "id_equella_sharedsecret")
+    private WebElement sharedSecret;
 
-		public void setFields(String newName, String newUrl, String newId, String newSecret)
-		{
-			name.clear();
-			name.sendKeys(newName);
+    @FindBy(id = "id_equella_manager_shareid")
+    private WebElement managerSharedId;
 
-			url.clear();
-			url.sendKeys(newUrl);
+    @FindBy(id = "id_submitbutton")
+    private WebElement save;
 
-			sharedId.clear();
-			sharedId.sendKeys(newId);
+    public MoodleEquellaRepoSettings(PageContext context) {
+      super(context);
+    }
 
-			sharedSecret.clear();
-			sharedSecret.sendKeys(newSecret);
+    @Override
+    protected WebElement findLoadedElement() {
+      return name;
+    }
 
-			managerSharedId.click();
-// FIXME
-// 			import com.thoughtworks.selenium.webdriven.JavascriptLibrary;			
-//			JavascriptLibrary javascript = new JavascriptLibrary();
-//			javascript.callEmbeddedSelenium(driver, "triggerEvent", name, "blur");
-			
-			waitForElement(save);
-		}
+    public void setFields(String newName, String newUrl, String newId, String newSecret) {
+      name.clear();
+      name.sendKeys(newName);
 
-		public MoodleEquellaRepoList save()
-		{
-			save.click();
-			return new MoodleEquellaRepoList(context).get();
-		}
-	}
+      url.clear();
+      url.sendKeys(newUrl);
 
+      sharedId.clear();
+      sharedId.sendKeys(newId);
+
+      sharedSecret.clear();
+      sharedSecret.sendKeys(newSecret);
+
+      managerSharedId.click();
+      // FIXME
+      // 			import com.thoughtworks.selenium.webdriven.JavascriptLibrary;
+      //			JavascriptLibrary javascript = new JavascriptLibrary();
+      //			javascript.callEmbeddedSelenium(driver, "triggerEvent", name, "blur");
+
+      waitForElement(save);
+    }
+
+    public MoodleEquellaRepoList save() {
+      save.click();
+      return new MoodleEquellaRepoList(context).get();
+    }
+  }
 }

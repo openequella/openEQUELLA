@@ -1,7 +1,6 @@
 /**
   * Created by jolz on 26/04/17.
   */
-
 package integtester
 
 import cats.effect.IO
@@ -23,8 +22,7 @@ object IntegTester extends StreamApp[IO] with Http4sDsl[IO] {
   def appHtml(request: Request[IO], dir: String = ""): IO[Response[IO]] = request.decode[UrlForm] {
     form =>
       val formJson = (form.values ++ request.uri.query.multiParams).asJson.noSpaces
-      Ok(
-        s"""<html>
+      Ok(s"""<html>
           <head>
               <link rel="stylesheet" href="${dir}styles.css" type="text/css">
               <title>Integration Tester</title>
@@ -37,10 +35,9 @@ object IntegTester extends StreamApp[IO] with Http4sDsl[IO] {
         </html>""").withType(MediaType.`text/html`)
   }
 
-  def echoServer(request: Request[IO]) : IO[Response[IO]] = {
+  def echoServer(request: Request[IO]): IO[Response[IO]] = {
     val echo = request.uri.query.params.get("echo")
-    Ok(
-      s"""<html>
+    Ok(s"""<html>
       <head>
         <link rel="stylesheet" href="styles.css" type="text/css">
           <title>Echo Server</title>
@@ -65,10 +62,9 @@ object IntegTester extends StreamApp[IO] with Http4sDsl[IO] {
       </html>""").withType(MediaType.`text/html`)
   }
 
-
   val appService = HttpService[IO] {
-    case request@(GET | POST) -> Root / "index.html" => appHtml(request)
-    case request@(GET | POST) -> Root / "echo" / "index.do" => echoServer(request)
+    case request @ (GET | POST) -> Root / "index.html"        => appHtml(request)
+    case request @ (GET | POST) -> Root / "echo" / "index.do" => echoServer(request)
   }
 
   val filePath = sys.props.get("files")
@@ -83,19 +79,18 @@ object IntegTester extends StreamApp[IO] with Http4sDsl[IO] {
       })
       .serve
 
-  lazy val embeddedRunning : Boolean = {
+  lazy val embeddedRunning: Boolean = {
     stream(List.empty, IO.pure()).compile.drain.unsafeRunAsync(_ => ())
     true
   }
 
-  def integTesterUrl : String = {
+  def integTesterUrl: String = {
     embeddedRunning
     "http://localhost:8083/index.html"
   }
 
-  def echoServerUrl : String = {
+  def echoServerUrl: String = {
     embeddedRunning
     "http://localhost:8083/echo"
   }
 }
-

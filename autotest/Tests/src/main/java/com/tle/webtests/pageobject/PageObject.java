@@ -1,20 +1,18 @@
 package com.tle.webtests.pageobject;
 
+import com.tle.webtests.framework.PageContext;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.tle.webtests.framework.PageContext;
+public interface PageObject {
+  void checkLoaded() throws NotFoundException;
 
-public interface PageObject
-{
-	void checkLoaded() throws NotFoundException;
+  PageContext getContext();
 
-	PageContext getContext();
+  SearchContext getSearchContext();
 
-	SearchContext getSearchContext();
+  long getRefreshTime();
 
-	long getRefreshTime();
-
-	WebDriverWait getWaiter();
+  WebDriverWait getWaiter();
 }

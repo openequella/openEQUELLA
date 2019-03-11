@@ -9,7 +9,4 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Target(ElementType.TYPE)
-public @interface LocalWebDriver
-{
-
-}
+public @interface LocalWebDriver {}

@@ -7,7 +7,7 @@ import org.openqa.selenium.By
 case class BulkAssignUserPage(ctx: PageContext) extends WaitingBrowserPage {
 
   def search(userQuery: String): Unit = {
-    val expect = updatedExpectation()
+    val expect    = updatedExpectation()
     val queryElem = findElementById("bwrto_q")
     queryElem.clear()
     queryElem.sendKeys(userQuery)

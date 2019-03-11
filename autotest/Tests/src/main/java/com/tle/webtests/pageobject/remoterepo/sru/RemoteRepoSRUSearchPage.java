@@ -1,59 +1,54 @@
 package com.tle.webtests.pageobject.remoterepo.sru;
 
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.remoterepo.AbstractRemoteRepoSearchPage;
 import com.tle.webtests.pageobject.remoterepo.RemoteRepoListPage;
 import com.tle.webtests.pageobject.remoterepo.RemoteRepoSearchResult;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class RemoteRepoSRUSearchPage
-	extends
-		AbstractRemoteRepoSearchPage<RemoteRepoSRUSearchPage, RemoteRepoListPage, RemoteRepoSearchResult>
-{
-	@FindBy(id = "searchform-search")
-	private WebElement searchButton;
-	@FindBy(className = "searchError")
-	private WebElement errorDiv;
-	@FindBy(id = "searchresults")
-	private WebElement resultsAjaxDiv;
+    extends AbstractRemoteRepoSearchPage<
+        RemoteRepoSRUSearchPage, RemoteRepoListPage, RemoteRepoSearchResult> {
+  @FindBy(id = "searchform-search")
+  private WebElement searchButton;
 
-	@FindBy(xpath = "id('searchform')/h2[text()='Searching SRU']")
-	private WebElement mainElem;
+  @FindBy(className = "searchError")
+  private WebElement errorDiv;
 
-	public RemoteRepoSRUSearchPage(PageContext context)
-	{
-		super(context);
-		this.waiter = new WebDriverWait(context.getDriver(), 60, 50);
-	}
+  @FindBy(id = "searchresults")
+  private WebElement resultsAjaxDiv;
 
-	@Override
-	protected WebElement findLoadedElement()
-	{
-		return mainElem;
-	}
+  @FindBy(xpath = "id('searchform')/h2[text()='Searching SRU']")
+  private WebElement mainElem;
 
-	@Override
-	public RemoteRepoListPage resultsPageObject()
-	{
-		return new RemoteRepoListPage(context);
-	}
+  public RemoteRepoSRUSearchPage(PageContext context) {
+    super(context);
+    this.waiter = new WebDriverWait(context.getDriver(), 60, 50);
+  }
 
-	public void searchErrorOnPage()
-	{
-		WaitingPageObject<RemoteRepoSRUSearchPage> waiter = ajaxUpdateExpect(resultsAjaxDiv, errorDiv);
-		searchButton.click();
-		waiter.get();
-	}
+  @Override
+  protected WebElement findLoadedElement() {
+    return mainElem;
+  }
 
-	public RemoteRepoSRUSearchPage blankQuery()
-	{
-		setQuery("");
-		searchButton.click();
-		driver.switchTo().alert().accept();
-		return this;
-	}
+  @Override
+  public RemoteRepoListPage resultsPageObject() {
+    return new RemoteRepoListPage(context);
+  }
+
+  public void searchErrorOnPage() {
+    WaitingPageObject<RemoteRepoSRUSearchPage> waiter = ajaxUpdateExpect(resultsAjaxDiv, errorDiv);
+    searchButton.click();
+    waiter.get();
+  }
+
+  public RemoteRepoSRUSearchPage blankQuery() {
+    setQuery("");
+    searchButton.click();
+    driver.switchTo().alert().accept();
+    return this;
+  }
 }

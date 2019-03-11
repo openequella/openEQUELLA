@@ -1,82 +1,69 @@
 package com.tle.webtests.pageobject.institution;
 
-import com.tle.webtests.pageobject.ExpectedConditions2;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.WaitingPageObject;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class StatusPage<T extends InstitutionTabInterface> extends AbstractPage<StatusPage<T>>
-{
-	private By returnLinkBy = By.id("returnLink");
+public class StatusPage<T extends InstitutionTabInterface> extends AbstractPage<StatusPage<T>> {
+  private By returnLinkBy = By.id("returnLink");
 
-	private WebElement getReturnLink()
-	{
-		return driver.findElement(returnLinkBy);
-	}
+  private WebElement getReturnLink() {
+    return driver.findElement(returnLinkBy);
+  }
 
-	@FindBy(id = "error-div")
-	private WebElement errorText;
-	@FindBy(id = "error-list")
-	private WebElement errorContent;
-	@FindBy(id = "downloadLink")
-	private WebElement downloadLink;
-	private final WaitingPageObject<T> tab;
+  @FindBy(id = "error-div")
+  private WebElement errorText;
 
-	public StatusPage(PageContext context, WaitingPageObject<T> tab)
-	{
-		this(context, tab, 500);
-	}
+  @FindBy(id = "error-list")
+  private WebElement errorContent;
 
-	public StatusPage(PageContext context, WaitingPageObject<T> tab, long timeout)
-	{
-		super(context, new WebDriverWait(context.getDriver(), timeout));
-		mustBeVisible = false;
-		this.tab = tab;
-	}
+  @FindBy(id = "downloadLink")
+  private WebElement downloadLink;
 
-	@Override
-	protected WebElement findLoadedElement()
-	{
-		return getReturnLink();
-	}
+  private final WaitingPageObject<T> tab;
 
-	public boolean waitForFinish()
-	{
-		waiter.until(ExpectedConditions.or(
-			ExpectedConditions.elementToBeClickable(returnLinkBy),
-			ExpectedConditions.visibilityOfElementLocated(By.id("error-div"))
-		));
-		return !driver.findElements(returnLinkBy).isEmpty();
-	}
+  public StatusPage(PageContext context, WaitingPageObject<T> tab) {
+    this(context, tab, 500);
+  }
 
-	public T back()
-	{
-		getReturnLink().click();
-		return tab.get();
-	}
+  public StatusPage(PageContext context, WaitingPageObject<T> tab, long timeout) {
+    super(context, new WebDriverWait(context.getDriver(), timeout));
+    mustBeVisible = false;
+    this.tab = tab;
+  }
 
-	public String getDownloadLink()
-	{
-		return downloadLink.getAttribute("href");
-	}
+  @Override
+  protected WebElement findLoadedElement() {
+    return getReturnLink();
+  }
 
-	public String getErrorText()
-	{
-		try
-		{
-			return errorContent.getText();
-		}
-		catch( Exception e )
-		{
-			return "An error occurred, check the resource center logs";
-		}
-	}
+  public boolean waitForFinish() {
+    waiter.until(
+        ExpectedConditions.or(
+            ExpectedConditions.elementToBeClickable(returnLinkBy),
+            ExpectedConditions.visibilityOfElementLocated(By.id("error-div"))));
+    return !driver.findElements(returnLinkBy).isEmpty();
+  }
+
+  public T back() {
+    getReturnLink().click();
+    return tab.get();
+  }
+
+  public String getDownloadLink() {
+    return downloadLink.getAttribute("href");
+  }
+
+  public String getErrorText() {
+    try {
+      return errorContent.getText();
+    } catch (Exception e) {
+      return "An error occurred, check the resource center logs";
+    }
+  }
 }

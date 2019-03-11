@@ -10,7 +10,9 @@ case class LoginPage(ctx: PageContext) extends LoadablePage {
   def login(username: String, password: String): HomePage =
     loginWithRedirect(username, password, new HomePage(ctx).pageExpectation)
 
-  def loginWithRedirect[A](username: String, password: String, expected: ExpectedCondition[A]): A = {
+  def loginWithRedirect[A](username: String,
+                           password: String,
+                           expected: ExpectedCondition[A]): A = {
     val user = driver.findElement(By.id("username"))
     user.clear()
     user.sendKeys(username)
@@ -28,9 +30,9 @@ case class LoginPage(ctx: PageContext) extends LoadablePage {
 
   def pageBy = By.id("_logonButton")
 
-  private def loginNotice:WebElement = findElementById("loginNotice")
+  private def loginNotice: WebElement = findElementById("loginNotice")
 
-  def loginNoticeExists:Boolean = {
+  def loginNoticeExists: Boolean = {
     loginNotice.isDisplayed
   }
 }

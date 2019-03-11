@@ -2,9 +2,9 @@ package com.tle.webtests.framework;
 
 public interface HasTestConfig {
 
-    TestConfig getTestConfig();
+  TestConfig getTestConfig();
 
-    PageContext getContext();
+  PageContext getContext();
 
-    void invalidateSession();
+  void invalidateSession();
 }

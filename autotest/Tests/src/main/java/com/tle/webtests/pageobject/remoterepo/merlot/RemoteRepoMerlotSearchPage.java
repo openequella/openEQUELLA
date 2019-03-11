@@ -1,140 +1,131 @@
 package com.tle.webtests.pageobject.remoterepo.merlot;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import com.tle.webtests.pageobject.remoterepo.AbstractRemoteRepoSearchPage;
 import com.tle.webtests.pageobject.remoterepo.RemoteRepoListPage;
 import com.tle.webtests.pageobject.remoterepo.RemoteRepoSearchResult;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 public class RemoteRepoMerlotSearchPage
-	extends
-		AbstractRemoteRepoSearchPage<RemoteRepoMerlotSearchPage, RemoteRepoListPage, RemoteRepoSearchResult>
-{
+    extends AbstractRemoteRepoSearchPage<
+        RemoteRepoMerlotSearchPage, RemoteRepoListPage, RemoteRepoSearchResult> {
 
-	@FindBy(xpath = "id('searchform')/h2[text()='Searching MERLOT']")
-	private WebElement mainElem;
-	@FindBy(id = "mq_cm")
-	private WebElement communityFilter;
-	@FindBy(id = "mq_m")
-	private WebElement materialFilter;
-	@FindBy(id = "mq_c")
-	private WebElement categoryFilter;
-	@FindBy(id = "mq_s")
-	private WebElement subcatFilter;
+  @FindBy(xpath = "id('searchform')/h2[text()='Searching MERLOT']")
+  private WebElement mainElem;
 
-	@FindBy(id = "mfkt_kc")
-	private WebElement keywordConstraint;
-	@FindBy(id = "mfo_c")
-	private WebElement freeCheckbox;
-	@FindBy(id = "mfo_cc")
-	private WebElement creativeCommonsCheckBox;
-	@FindBy(id = "mfo_l")
-	private WebElement languageFilter;
-	@FindBy(id = "mfo_t")
-	private WebElement formatFilter;
-	@FindBy(id = "mfo_a")
-	private WebElement audienceFilter;
+  @FindBy(id = "mq_cm")
+  private WebElement communityFilter;
 
-	@FindBy(id = "searchresults")
-	private WebElement resultsAjaxDiv;
-	@FindBy(id = "searchresults-available")
-	private WebElement resultsFoundDiv;
+  @FindBy(id = "mq_m")
+  private WebElement materialFilter;
 
-	WaitingPageObject<RemoteRepoMerlotSearchPage> filterWaiter;
+  @FindBy(id = "mq_c")
+  private WebElement categoryFilter;
 
-	public RemoteRepoMerlotSearchPage(PageContext context)
-	{
-		super(context);
-	}
+  @FindBy(id = "mq_s")
+  private WebElement subcatFilter;
 
-	@Override
-	protected WebElement findLoadedElement()
-	{
-		return mainElem;
-	}
+  @FindBy(id = "mfkt_kc")
+  private WebElement keywordConstraint;
 
-	@Override
-	public RemoteRepoListPage resultsPageObject()
-	{
-		return new RemoteRepoListPage(context);
-	}
+  @FindBy(id = "mfo_c")
+  private WebElement freeCheckbox;
 
-	private WaitingPageObject<RemoteRepoMerlotSearchPage> getResultsWaiter()
-	{
-		return ajaxUpdateExpect(resultsAjaxDiv, resultsFoundDiv);
-	}
+  @FindBy(id = "mfo_cc")
+  private WebElement creativeCommonsCheckBox;
 
-	public void setCommunityFilter(String community)
-	{
-		filterWaiter = getResultsWaiter();
-		new EquellaSelect(context, communityFilter).selectByVisibleText(community);
-		filterWaiter.get();
-	}
+  @FindBy(id = "mfo_l")
+  private WebElement languageFilter;
 
-	public void setMaterialFilter(String type)
-	{
-		filterWaiter = getResultsWaiter();
-		new EquellaSelect(context, materialFilter).selectByVisibleText(type);
-		filterWaiter.get();
-	}
+  @FindBy(id = "mfo_t")
+  private WebElement formatFilter;
 
-	public void setCategoryFilter(String category)
-	{
-		filterWaiter = getResultsWaiter();
-		new EquellaSelect(context, categoryFilter).selectByVisibleText(category);
-		filterWaiter.get();
-	}
+  @FindBy(id = "mfo_a")
+  private WebElement audienceFilter;
 
-	public void setSubcategoryFilter(String subcategory)
-	{
-		filterWaiter = getResultsWaiter();
-		new EquellaSelect(context, subcatFilter).selectByVisibleText(subcategory);
-		filterWaiter.get();
-	}
+  @FindBy(id = "searchresults")
+  private WebElement resultsAjaxDiv;
 
-	public void setKeywordConstraintFilter(String constraint)
-	{
-		new EquellaSelect(context, keywordConstraint).selectByVisibleText(constraint);
-	}
+  @FindBy(id = "searchresults-available")
+  private WebElement resultsFoundDiv;
 
-	public void setLicenceFilters(boolean free, boolean creativeCommons)
-	{
-		if( free != freeCheckbox.isSelected() )
-		{
-			freeCheckbox.click();
-		}
-		if( creativeCommons != creativeCommonsCheckBox.isSelected() )
-		{
-			creativeCommonsCheckBox.click();
-		}
-	}
+  WaitingPageObject<RemoteRepoMerlotSearchPage> filterWaiter;
 
-	public void setLanguageFilter(String language)
-	{
-		new EquellaSelect(context, languageFilter).selectByVisibleText(language);
-	}
+  public RemoteRepoMerlotSearchPage(PageContext context) {
+    super(context);
+  }
 
-	public void setFormatFilter(String format)
-	{
-		new EquellaSelect(context, formatFilter).selectByVisibleText(format);
-	}
+  @Override
+  protected WebElement findLoadedElement() {
+    return mainElem;
+  }
 
-	public void setAudienceFilter(String audience)
-	{
-		new EquellaSelect(context, audienceFilter).selectByVisibleText(audience);
-	}
+  @Override
+  public RemoteRepoListPage resultsPageObject() {
+    return new RemoteRepoListPage(context);
+  }
 
-	public int totalItemFound()
-	{
-		String searchResults = driver.findElement(By.id("searchresults-stats")).getText();
-		String totalFound = searchResults.split("\\s+")[5];
-		totalFound = totalFound.replace(",", "");
-		return Integer.parseInt(totalFound);
-	}
+  private WaitingPageObject<RemoteRepoMerlotSearchPage> getResultsWaiter() {
+    return ajaxUpdateExpect(resultsAjaxDiv, resultsFoundDiv);
+  }
 
+  public void setCommunityFilter(String community) {
+    filterWaiter = getResultsWaiter();
+    new EquellaSelect(context, communityFilter).selectByVisibleText(community);
+    filterWaiter.get();
+  }
+
+  public void setMaterialFilter(String type) {
+    filterWaiter = getResultsWaiter();
+    new EquellaSelect(context, materialFilter).selectByVisibleText(type);
+    filterWaiter.get();
+  }
+
+  public void setCategoryFilter(String category) {
+    filterWaiter = getResultsWaiter();
+    new EquellaSelect(context, categoryFilter).selectByVisibleText(category);
+    filterWaiter.get();
+  }
+
+  public void setSubcategoryFilter(String subcategory) {
+    filterWaiter = getResultsWaiter();
+    new EquellaSelect(context, subcatFilter).selectByVisibleText(subcategory);
+    filterWaiter.get();
+  }
+
+  public void setKeywordConstraintFilter(String constraint) {
+    new EquellaSelect(context, keywordConstraint).selectByVisibleText(constraint);
+  }
+
+  public void setLicenceFilters(boolean free, boolean creativeCommons) {
+    if (free != freeCheckbox.isSelected()) {
+      freeCheckbox.click();
+    }
+    if (creativeCommons != creativeCommonsCheckBox.isSelected()) {
+      creativeCommonsCheckBox.click();
+    }
+  }
+
+  public void setLanguageFilter(String language) {
+    new EquellaSelect(context, languageFilter).selectByVisibleText(language);
+  }
+
+  public void setFormatFilter(String format) {
+    new EquellaSelect(context, formatFilter).selectByVisibleText(format);
+  }
+
+  public void setAudienceFilter(String audience) {
+    new EquellaSelect(context, audienceFilter).selectByVisibleText(audience);
+  }
+
+  public int totalItemFound() {
+    String searchResults = driver.findElement(By.id("searchresults-stats")).getText();
+    String totalFound = searchResults.split("\\s+")[5];
+    totalFound = totalFound.replace(",", "");
+    return Integer.parseInt(totalFound);
+  }
 }

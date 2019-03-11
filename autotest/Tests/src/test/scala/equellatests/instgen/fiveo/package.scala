@@ -12,7 +12,7 @@ import org.scalacheck.{Arbitrary, Gen}
 
 package object fiveo {
 
-  val fiveoInst : TestInst = GlobalConfig.createTestInst("fiveo")
+  val fiveoInst: TestInst = GlobalConfig.createTestInst("fiveo")
 
   val autoTestLogon = TestLogon("AutoTest", "automated", fiveoInst)
 

@@ -1,194 +1,195 @@
 package com.tle.webtests.pageobject.viewitem;
 
+import com.tle.webtests.framework.PageContext;
+import com.tle.webtests.pageobject.ExpectedConditions2;
+import com.tle.webtests.pageobject.PrefixedName;
+import com.tle.webtests.pageobject.WaitingPageObject;
+import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import java.util.List;
 import java.util.NoSuchElementException;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
-import com.tle.webtests.framework.PageContext;
-import com.tle.webtests.pageobject.ExpectedConditions2;
-import com.tle.webtests.pageobject.PrefixedName;
-import com.tle.webtests.pageobject.WaitingPageObject;
-import com.tle.webtests.pageobject.generic.component.EquellaSelect;
+public class FindUsesPage extends ItemPage<FindUsesPage> {
+  @FindBy(id = "fuc_cl")
+  private WebElement connector;
 
-public class FindUsesPage extends ItemPage<FindUsesPage>
-{
-	@FindBy(id = "fuc_cl")
-	private WebElement connector;
-	@FindBy(id = "fuc_usefil")
-	private WebElement filterBox;
-	@FindBy(id = "fuc_use")
-	private WebElement usesTable;
-	@FindBy(id = "lms-table-ajax")
-	private WebElement ajaxDiv;
-	@FindBy(xpath = "id('lms-table-ajax')//h3[text()='Where this resource is used']")
-	private WebElement updateTitle;
-	@FindBy(xpath = "//h2[text()='Find uses']")
-	private WebElement findUsesTitle;
+  @FindBy(id = "fuc_usefil")
+  private WebElement filterBox;
 
-	private FindUsesTable findUsesTable;
+  @FindBy(id = "fuc_use")
+  private WebElement usesTable;
 
-	public FindUsesPage(PageContext context)
-	{
-		super(context);
-		findUsesTable = new FindUsesTable(this);
-	}
+  @FindBy(id = "lms-table-ajax")
+  private WebElement ajaxDiv;
 
-	@Override
-	protected WebElement findLoadedElement()
-	{
-		return findUsesTitle;
-	}
+  @FindBy(xpath = "id('lms-table-ajax')//h3[text()='Where this resource is used']")
+  private WebElement updateTitle;
 
-	public WaitingPageObject<FindUsesPage> updateTable()
-	{
-		return ajaxUpdateExpect(ajaxDiv, updateTitle);
-	}
+  @FindBy(xpath = "//h2[text()='Find uses']")
+  private WebElement findUsesTitle;
 
-	public boolean singleConnector()
-	{
-		return !isPresent(By.id("fuc_cl"));
-	}
+  private FindUsesTable findUsesTable;
 
-	public FindUsesPage selectConnector(PrefixedName name)
-	{
-		new EquellaSelect(context, connector).selectByVisibleText(name.toString());
-		findUsesTable.get();
-		return this;
-	}
+  public FindUsesPage(PageContext context) {
+    super(context);
+    findUsesTable = new FindUsesTable(this);
+  }
 
-	public boolean hasFilterBox()
-	{
-		return isVisible(filterBox);
-	}
+  @Override
+  protected WebElement findLoadedElement() {
+    return findUsesTitle;
+  }
 
-	public FindUsesPage filterUses(String query, String course, String change, boolean appear)
-	{
-		ExpectedCondition<?> cond;
-		By xpath = entryXPath(course, change);
-		if( appear )
-		{
-			cond = ExpectedConditions2.visibilityOfElementLocated(usesTable, xpath);
-		}
-		else
-		{
-			cond = ExpectedConditions2.invisibilityOfElementLocated(usesTable, xpath);
-		}
-		filterBox.clear();
-		filterBox.sendKeys(query);
-		filterBox.sendKeys(Keys.ENTER);
-		waiter.until(cond);
-		return this;
-	}
+  public WaitingPageObject<FindUsesPage> updateTable() {
+    return ajaxUpdateExpect(ajaxDiv, updateTitle);
+  }
 
-	public boolean hasEntry(String course, String location)
-	{
-		return isVisible(entryXPath(course, location));
-	}
+  public boolean singleConnector() {
+    return !isPresent(By.id("fuc_cl"));
+  }
 
-	private By entryXPath(String course, String location)
-	{
-		return By.xpath("id('fuc_use')//td/a[text()=" + quoteXPath(course)
-			+ "]/../../td[normalize-space(descendant::text())=" + quoteXPath(location) + "]");
-	}
+  public FindUsesPage selectConnector(PrefixedName name) {
+    new EquellaSelect(context, connector).selectByVisibleText(name.toString());
+    findUsesTable.get();
+    return this;
+  }
 
-	/**
-	 * @param position 1 based
-	 * @param course
-	 * @param location
-	 * @return
-	 */
-	public boolean hasEntryAt(int position, String course, String location)
-	{
-		return isVisible(By.xpath("id('fuc_use')//tbody/tr[not(contains(@class, 'rowHidden'))][" + position
-			+ "]/td/a[text()=" + quoteXPath(course) + "]/../../td[normalize-space(descendant::text())="
-			+ quoteXPath(location) + "]"));
-	}
+  public boolean hasFilterBox() {
+    return isVisible(filterBox);
+  }
 
-	// public boolean hasAttachment(String course, String location, String
-	// attachmentName)
-	// {
-	// return isVisible(By
-	// .xpath("id('detailsTable')//td/a[text()="
-	// + quoteXPath(course)
-	// + "]/../../td[text()="
-	// + quoteXPath(location)
-	// +
-	// "]/../td//b[normalize-space(text())='Attachment:'][normalize-space(following-sibling::text())="
-	// + quoteXPath(attachmentName) + "]"));
-	// }
+  public FindUsesPage filterUses(String query, String course, String change, boolean appear) {
+    ExpectedCondition<?> cond;
+    By xpath = entryXPath(course, change);
+    if (appear) {
+      cond = ExpectedConditions2.visibilityOfElementLocated(usesTable, xpath);
+    } else {
+      cond = ExpectedConditions2.invisibilityOfElementLocated(usesTable, xpath);
+    }
+    filterBox.clear();
+    filterBox.sendKeys(query);
+    filterBox.sendKeys(Keys.ENTER);
+    waiter.until(cond);
+    return this;
+  }
 
-	public boolean hasAttachment(String course, String location, String attachmentName)
-	{
-		return hasDetail(course, location, "Attachment:", attachmentName);
-	}
+  public boolean hasEntry(String course, String location) {
+    return isVisible(entryXPath(course, location));
+  }
 
-	public boolean hasDetail(String course, String location, String key, String value)
-	{
-		return hasDetail(course, location, 1, key, value);
-	}
+  private By entryXPath(String course, String location) {
+    return By.xpath(
+        "id('fuc_use')//td/a[text()="
+            + quoteXPath(course)
+            + "]/../../td[normalize-space(descendant::text())="
+            + quoteXPath(location)
+            + "]");
+  }
 
-	public boolean hasDetail(String course, String location, int index, String key, String value)
-	{
-		List<WebElement> elements = driver.findElements(By.xpath("id('fuc_use')//td/a[text()=" + quoteXPath(course)
-			+ "]/../../td[descendant::text()=" + quoteXPath(location) + "]"));
+  /**
+   * @param position 1 based
+   * @param course
+   * @param location
+   * @return
+   */
+  public boolean hasEntryAt(int position, String course, String location) {
+    return isVisible(
+        By.xpath(
+            "id('fuc_use')//tbody/tr[not(contains(@class, 'rowHidden'))]["
+                + position
+                + "]/td/a[text()="
+                + quoteXPath(course)
+                + "]/../../td[normalize-space(descendant::text())="
+                + quoteXPath(location)
+                + "]"));
+  }
 
-		if( elements.size() < index )
-		{
-			throw new NoSuchElementException();
-		}
-		elements.get(index - 1).click();
-		waitForElement(elements.get(index - 1).findElement(By.xpath("..//div[@class='itemDetails']")));
+  // public boolean hasAttachment(String course, String location, String
+  // attachmentName)
+  // {
+  // return isVisible(By
+  // .xpath("id('detailsTable')//td/a[text()="
+  // + quoteXPath(course)
+  // + "]/../../td[text()="
+  // + quoteXPath(location)
+  // +
+  // "]/../td//b[normalize-space(text())='Attachment:'][normalize-space(following-sibling::text())="
+  // + quoteXPath(attachmentName) + "]"));
+  // }
 
-		By xpath = By.xpath("//div[@class='itemDetails']/div[normalize-space(text())=" + quoteXPath(value)
-			+ "]/b[normalize-space(text())=" + quoteXPath(key) + "]");
-		return isVisible(xpath);
-	}
+  public boolean hasAttachment(String course, String location, String attachmentName) {
+    return hasDetail(course, location, "Attachment:", attachmentName);
+  }
 
-	public FindUsesPage showAllVersions(boolean on)
-	{
-		return findUsesTable.get().showAllVersions(on);
-	}
+  public boolean hasDetail(String course, String location, String key, String value) {
+    return hasDetail(course, location, 1, key, value);
+  }
 
-	public String getSort()
-	{
-		return usesTable.findElement(By.xpath(".//th[not(contains(@class, 'unsorted'))]")).getText();
-	}
+  public boolean hasDetail(String course, String location, int index, String key, String value) {
+    List<WebElement> elements =
+        driver.findElements(
+            By.xpath(
+                "id('fuc_use')//td/a[text()="
+                    + quoteXPath(course)
+                    + "]/../../td[descendant::text()="
+                    + quoteXPath(location)
+                    + "]"));
 
-	public boolean isAscendingSort()
-	{
-		return usesTable.findElement(By.xpath(".//th[not(contains(@class, 'unsorted'))]")).getAttribute("class")
-			.contains("sortedasc");
-	}
+    if (elements.size() < index) {
+      throw new NoSuchElementException();
+    }
+    elements.get(index - 1).click();
+    waitForElement(elements.get(index - 1).findElement(By.xpath("..//div[@class='itemDetails']")));
 
-	public void sortBy(String column)
-	{
-		usesTable.findElement(By.xpath(".//th[normalize-space(text())=" + quoteXPath(column) + "]")).click();
-	}
+    By xpath =
+        By.xpath(
+            "//div[@class='itemDetails']/div[normalize-space(text())="
+                + quoteXPath(value)
+                + "]/b[normalize-space(text())="
+                + quoteXPath(key)
+                + "]");
+    return isVisible(xpath);
+  }
 
-	public void sortBy(String column, boolean asc)
-	{
-		if( !getSort().equals(column) )
-		{
-			sortBy(column);
-		}
-		if( isAscendingSort() != asc )
-		{
-			sortBy(column);
-		}
-	}
+  public FindUsesPage showAllVersions(boolean on) {
+    return findUsesTable.get().showAllVersions(on);
+  }
 
-	public FindUsesPage showArchived(boolean on)
-	{
-		return findUsesTable.get().showArchived(on);
-	}
+  public String getSort() {
+    return usesTable.findElement(By.xpath(".//th[not(contains(@class, 'unsorted'))]")).getText();
+  }
 
-	public WebElement getTableAjaxElement()
-	{
-		return ajaxDiv;
-	}
+  public boolean isAscendingSort() {
+    return usesTable
+        .findElement(By.xpath(".//th[not(contains(@class, 'unsorted'))]"))
+        .getAttribute("class")
+        .contains("sortedasc");
+  }
+
+  public void sortBy(String column) {
+    usesTable
+        .findElement(By.xpath(".//th[normalize-space(text())=" + quoteXPath(column) + "]"))
+        .click();
+  }
+
+  public void sortBy(String column, boolean asc) {
+    if (!getSort().equals(column)) {
+      sortBy(column);
+    }
+    if (isAscendingSort() != asc) {
+      sortBy(column);
+    }
+  }
+
+  public FindUsesPage showArchived(boolean on) {
+    return findUsesTable.get().showArchived(on);
+  }
+
+  public WebElement getTableAjaxElement() {
+    return ajaxDiv;
+  }
 }

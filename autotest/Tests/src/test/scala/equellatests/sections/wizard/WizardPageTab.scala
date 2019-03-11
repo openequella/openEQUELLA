@@ -10,9 +10,12 @@ class WizardPageTab(val ctx: PageContext, val pageNum: Int) extends WaitingBrows
   def universalControl(ctrlNum: Int) = new UniversalControl(this, ctrlNum)
 
   private def clickSave() =
-    driver.findElement(By.xpath("//input[contains(@class, 'action-button') and normalize-space(@value)='Save']")).click()
+    driver
+      .findElement(
+        By.xpath("//input[contains(@class, 'action-button') and normalize-space(@value)='Save']"))
+      .click()
 
-  def save() : WizardSaveConfirmation = {
+  def save(): WizardSaveConfirmation = {
     clickSave()
     new WizardSaveConfirmation(ctx).get()
   }
@@ -24,7 +27,8 @@ class WizardPageTab(val ctx: PageContext, val pageNum: Int) extends WaitingBrows
 
   val pageBy = By.xpath(s"//input[@name='pages.pg' and @value=${quoteXPath(pageNum.toString)}]")
 
-  override def mainExpectation: ExpectedCondition[_] = ExpectedConditions.presenceOfElementLocated(pageBy)
+  override def mainExpectation: ExpectedCondition[_] =
+    ExpectedConditions.presenceOfElementLocated(pageBy)
 
   def ctrl[WC <: WizardControl](f: (WizardPageTab, Int) => WC, num: Int): WC = f(this, num).get()
 }

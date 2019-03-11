@@ -17,4 +17,3 @@ object ItemId {
   implicit val itemIdDec = deriveDecoder[ItemId]
 
 }
-

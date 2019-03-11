@@ -1,67 +1,61 @@
 package com.tle.webtests.pageobject.searching;
 
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.generic.component.EquellaSelect;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
-public class BulkActionDialog extends AbstractPage<BulkActionDialog>
-{
-	@FindBy(id = "bss_bulkDialog_operationList")
-	private WebElement operationList;
-	@FindBy(id = "bss_bulkDialog_okButton")
-	private WebElement executeButton;
-	@FindBy(id = "bss_bulkDialog_nextButton")
-	private WebElement nextButton;
-	@FindBy(id = "bss_bulkDialog_previewButton")
-	private WebElement previewButton;
-	@FindBy(id = "bss_bulkDialogfooter")
-	private WebElement footer;
+public class BulkActionDialog extends AbstractPage<BulkActionDialog> {
+  @FindBy(id = "bss_bulkDialog_operationList")
+  private WebElement operationList;
 
-	public BulkActionDialog(PageContext context)
-	{
-		super(context);
-	}
+  @FindBy(id = "bss_bulkDialog_okButton")
+  private WebElement executeButton;
 
-	@Override
-	protected WebElement findLoadedElement()
-	{
-		return footer;
-	}
+  @FindBy(id = "bss_bulkDialog_nextButton")
+  private WebElement nextButton;
 
-	public BulkActionDialog selectOp(String op)
-	{
-		EquellaSelect opSelect = new EquellaSelect(context, operationList);
-		if (!opSelect.getSelectedValue().equals(op))
-		{
-			WaitingPageObject<BulkActionDialog> updater = ajaxUpdate(footer);
-			opSelect.selectByValue(op);
-			return updater.get();
-		}
-		return this;
-	}
+  @FindBy(id = "bss_bulkDialog_previewButton")
+  private WebElement previewButton;
 
-	public BulkResultsPage execute()
-	{
-		visibilityWaiter(executeButton).get();
-		executeButton.click();
-		acceptConfirmation();
-		return new BulkResultsPage(context).get();
-	}
+  @FindBy(id = "bss_bulkDialogfooter")
+  private WebElement footer;
 
-	public BulkPreviewPage preview()
-	{
-		visibilityWaiter(previewButton).get();
-		previewButton.click();
-		return new BulkPreviewPage(context).get();
+  public BulkActionDialog(PageContext context) {
+    super(context);
+  }
 
-	}
+  @Override
+  protected WebElement findLoadedElement() {
+    return footer;
+  }
 
-	public void next()
-	{
-		waitForElement(nextButton).click();
-	}
+  public BulkActionDialog selectOp(String op) {
+    EquellaSelect opSelect = new EquellaSelect(context, operationList);
+    if (!opSelect.getSelectedValue().equals(op)) {
+      WaitingPageObject<BulkActionDialog> updater = ajaxUpdate(footer);
+      opSelect.selectByValue(op);
+      return updater.get();
+    }
+    return this;
+  }
+
+  public BulkResultsPage execute() {
+    visibilityWaiter(executeButton).get();
+    executeButton.click();
+    acceptConfirmation();
+    return new BulkResultsPage(context).get();
+  }
+
+  public BulkPreviewPage preview() {
+    visibilityWaiter(previewButton).get();
+    previewButton.click();
+    return new BulkPreviewPage(context).get();
+  }
+
+  public void next() {
+    waitForElement(nextButton).click();
+  }
 }

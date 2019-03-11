@@ -19,8 +19,8 @@ object BulkItemProperties extends StatefulProperties("BulkItemOps") with SimpleT
   object BulkItemOp extends Enumeration {
     type BulkItemOp = Value
     val removeWorkflow, resetToTask = Value
-    implicit val encJson = Encoder.enumEncoder(BulkItemOp)
-    implicit val decJson = Decoder.enumDecoder(BulkItemOp)
+    implicit val encJson            = Encoder.enumEncoder(BulkItemOp)
+    implicit val decJson            = Decoder.enumDecoder(BulkItemOp)
   }
 
   sealed trait BulkOp {
@@ -38,7 +38,7 @@ object BulkItemProperties extends StatefulProperties("BulkItemOps") with SimpleT
   case class BulkItemState(ops: BulkItemOp.ValueSet = BulkItemOp.ValueSet.empty)
 
   override type Command = RunBulkOp
-  override type State = BulkItemState
+  override type State   = BulkItemState
 
   override implicit val testCaseDecoder: Decoder[RunBulkOp] = deriveDecoder
   override implicit val testCaseEncoder: Encoder[RunBulkOp] = deriveEncoder
@@ -61,85 +61,96 @@ object BulkItemProperties extends StatefulProperties("BulkItemOps") with SimpleT
 
   def opName(op: BulkItemOp.Value): String = op match {
     case BulkItemOp.removeWorkflow => "Remove from workflow..."
-    case BulkItemOp.resetToTask => "Reset to workflow task..."
+    case BulkItemOp.resetToTask    => "Reset to workflow task..."
   }
 
   def checkProp(op: BulkOp, itemIds: Vector[ItemId]): ERest[Prop] = op match {
-    case NoParamOp(o) => o match {
-      case BulkItemOp.removeWorkflow => for {
-        items <- itemIds.traverse(RItems.get)
-      } yield all(items.map(i => i.status ?= RStatus.live): _*)
-    }
-    case ResetToTask(task, msg) => for {
-      items <- itemIds.traverse(i => RItems.getModeration(i).product(RItems.getHistory(i)))
-    } yield all(
-      items.map {
-        case (mod, history) => all(mod.firstIncompleteTask.map(_.name ?= task)
-          .getOrElse(Prop.falsified.label(s"Meant to be at task $task")),
-          history.collectFirst {
-            case he: RHistoryEvent if he.`type` == RHistoryEventType.taskMove &&
-              he.comment.isDefined && he.toStepName.contains(task) => he.comment.get
-          } ?= Some(msg)
-        )
-      }: _*)
-
-  }
-
-  override def runCommandInBrowser(c: RunBulkOp, s: BulkItemState, b: SimpleSeleniumBrowser): Prop = b.verify {
-    b.resetUnique()
-    val ctx = b.page.ctx
-    val opType = c.op.typ
-    val itemIds = ERest.run(ctx) {
-      c.names.toVector.traverse[ERest, ItemId] { n =>
-        val item = RCreateItem(RCollectionRef(workflow.threeStepWMUuid),
-          workflow.simpleMetadata(b.uniquePrefix(n)))
-        RItems.create(item)
+    case NoParamOp(o) =>
+      o match {
+        case BulkItemOp.removeWorkflow =>
+          for {
+            items <- itemIds.traverse(RItems.get)
+          } yield all(items.map(i => i.status ?= RStatus.live): _*)
       }
-    }
+    case ResetToTask(task, msg) =>
+      for {
+        items <- itemIds.traverse(i => RItems.getModeration(i).product(RItems.getHistory(i)))
+      } yield
+        all(items.map {
+          case (mod, history) =>
+            all(
+              mod.firstIncompleteTask
+                .map(_.name ?= task)
+                .getOrElse(Prop.falsified.label(s"Meant to be at task $task")),
+              history.collectFirst {
+                case he: RHistoryEvent
+                    if he.`type` == RHistoryEventType.taskMove &&
+                      he.comment.isDefined && he.toStepName.contains(task) =>
+                  he.comment.get
+              } ?= Some(msg)
+            )
+        }: _*)
 
-    val mrp = ManageResourcesPage(ctx).load()
-    mrp.query = b.allUniqueQuery
-    mrp.search()
-    c.op match {
-      case ResetToTask(_, _) =>
-        val filters = mrp.openFilters()
-        filters.onlyModeration(true)
-        filters.filterByWorkflow(Some("3 Step with multiple users"))
-      case NoParamOp(_) => mrp.clearFiltersIfSet()
-    }
-    c.names.foreach { n =>
-      mrp.resultForName(b.uniquePrefix(n)).select()
-    }
-
-    val bog = mrp.performOperation()
-    bog.selectAction(opName(opType))
-    configOp(bog, c.op)
-    bog.execute()
-    mrp -> ERest.run(ctx)(checkProp(c.op, itemIds))
   }
 
+  override def runCommandInBrowser(c: RunBulkOp, s: BulkItemState, b: SimpleSeleniumBrowser): Prop =
+    b.verify {
+      b.resetUnique()
+      val ctx    = b.page.ctx
+      val opType = c.op.typ
+      val itemIds = ERest.run(ctx) {
+        c.names.toVector.traverse[ERest, ItemId] { n =>
+          val item = RCreateItem(RCollectionRef(workflow.threeStepWMUuid),
+                                 workflow.simpleMetadata(b.uniquePrefix(n)))
+          RItems.create(item)
+        }
+      }
+
+      val mrp = ManageResourcesPage(ctx).load()
+      mrp.query = b.allUniqueQuery
+      mrp.search()
+      c.op match {
+        case ResetToTask(_, _) =>
+          val filters = mrp.openFilters()
+          filters.onlyModeration(true)
+          filters.filterByWorkflow(Some("3 Step with multiple users"))
+        case NoParamOp(_) => mrp.clearFiltersIfSet()
+      }
+      c.names.foreach { n =>
+        mrp.resultForName(b.uniquePrefix(n)).select()
+      }
+
+      val bog = mrp.performOperation()
+      bog.selectAction(opName(opType))
+      configOp(bog, c.op)
+      bog.execute()
+      mrp -> ERest.run(ctx)(checkProp(c.op, itemIds))
+    }
 
   override def logon: TestLogon = workflow.adminLogon
 
   statefulProp("run bulk ops") {
-    generateCommands {
-      s =>
-        val remainingOps = BulkItemOp.values -- s.ops
-        if (remainingOps.isEmpty) List() else {
-          for {
-            opEnum <- Gen.oneOf(remainingOps.toSeq)
-            numItems <- Gen.chooseNum(3, 10)
-            names <- Gen.listOfN(numItems, Arbitrary.arbitrary[RandomWords])
-              .map(Uniqueify.uniqueSeq(RandomWords.withNumberAfter)).map(_.map(_.asString))
-            op <- opEnum match {
-              case BulkItemOp.resetToTask => for {
+    generateCommands { s =>
+      val remainingOps = BulkItemOp.values -- s.ops
+      if (remainingOps.isEmpty) List()
+      else {
+        for {
+          opEnum   <- Gen.oneOf(remainingOps.toSeq)
+          numItems <- Gen.chooseNum(3, 10)
+          names <- Gen
+            .listOfN(numItems, Arbitrary.arbitrary[RandomWords])
+            .map(Uniqueify.uniqueSeq(RandomWords.withNumberAfter))
+            .map(_.map(_.asString))
+          op <- opEnum match {
+            case BulkItemOp.resetToTask =>
+              for {
                 task <- Gen.oneOf(workflow.workflow3StepTasks)
-                msg <- Arbitrary.arbitrary[RandomWords]
+                msg  <- Arbitrary.arbitrary[RandomWords]
               } yield ResetToTask(task, msg.asString)
-              case o => Gen.const(NoParamOp(o))
-            }
-          } yield List(RunBulkOp(names, op))
-        }
+            case o => Gen.const(NoParamOp(o))
+          }
+        } yield List(RunBulkOp(names, op))
+      }
     }
   }
 }

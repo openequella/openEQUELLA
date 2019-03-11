@@ -19,10 +19,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 sealed trait ERestA[A]
 
-case class ERequest[A](method: Method, uri: Uri, params: Map[String, Seq[String]], body: Option[Json],
-                       f: Response[IO] => IO[A]) extends ERestA[A]
+case class ERequest[A](method: Method,
+                       uri: Uri,
+                       params: Map[String, Seq[String]],
+                       body: Option[Json],
+                       f: Response[IO] => IO[A])
+    extends ERestA[A]
 case class ERelativeUri(fullUri: Uri, base: Uri) extends ERestA[Option[Uri]]
-
 
 object ERest {
   val configBuilder = new DefaultAsyncHttpClientConfig.Builder(AsyncHttpClient.defaultConfig)
@@ -43,37 +46,57 @@ object ERest {
   val pureCompiler: ERestA ~> PageIO = new (ERestA ~> PageIO) {
     def apply[A](fa: ERestA[A]): PageIO[A] =
       fa match {
-        case ERequest(method, uri, params, body, f) => pageIO { ctx =>
-          val reqUri = ctx.base.resolve(uri).setQueryParams(params)
-          val _req = Request[IO](method, reqUri).withHeaders(Headers(headers.Cookie(ctx.cookies)))
-          val req = body.map(j => _req.withBody(j)).getOrElse(IO.pure(_req))
-          client.fetch(req)(resp => f(resp))
-        }
-        case ERelativeUri(uri, base) => pageIO { ctx => IO.pure {
-            val basePath = ctx.base.resolve(base).path
-            val fullPath = uri.path
-            if (fullPath.startsWith(basePath)) {
-              Some(Uri.unsafeFromString(fullPath.substring(basePath.length)))
-            } else None
+        case ERequest(method, uri, params, body, f) =>
+          pageIO { ctx =>
+            val reqUri = ctx.base.resolve(uri).setQueryParams(params)
+            val _req   = Request[IO](method, reqUri).withHeaders(Headers(headers.Cookie(ctx.cookies)))
+            val req    = body.map(j => _req.withBody(j)).getOrElse(IO.pure(_req))
+            client.fetch(req)(resp => f(resp))
           }
-        }
+        case ERelativeUri(uri, base) =>
+          pageIO { ctx =>
+            IO.pure {
+              val basePath = ctx.base.resolve(base).path
+              val fullPath = uri.path
+              if (fullPath.startsWith(basePath)) {
+                Some(Uri.unsafeFromString(fullPath.substring(basePath.length)))
+              } else None
+            }
+          }
       }
   }
 
   def run[A](ctx: PageContext)(er: ERest[A]): A = {
-    val cookies = NonEmptyList.fromListUnsafe(ctx.getDriver.manage().getCookies.asScala.map(c => Cookie(c.getName, c.getValue)).toList)
+    val cookies = NonEmptyList.fromListUnsafe(
+      ctx.getDriver.manage().getCookies.asScala.map(c => Cookie(c.getName, c.getValue)).toList)
     val reqctx = ReqContext(Uri.unsafeFromString(ctx.getBaseUrl), cookies)
     er.foldMap(pureCompiler).run(reqctx).unsafeRunSync()
   }
 
-  def get[A: Decoder](uri: Uri, params: Map[String, Seq[String]] = Map.empty): ERest[A] = Free.liftF {
-    ERequest(Method.GET, uri, params, None, resp =>
-      jsonDecoder[IO].decode(resp, false).flatMapF(j => IO.pure(j.as[A])).fold(throw _, identity))
-  }
+  def get[A: Decoder](uri: Uri, params: Map[String, Seq[String]] = Map.empty): ERest[A] =
+    Free.liftF {
+      ERequest(Method.GET,
+               uri,
+               params,
+               None,
+               resp =>
+                 jsonDecoder[IO]
+                   .decode(resp, false)
+                   .flatMapF(j => IO.pure(j.as[A]))
+                   .fold(throw _, identity))
+    }
 
-  def relative(fullUri: Uri, base: Uri): ERest[Option[Uri]] = Free.liftF(ERelativeUri(fullUri, base))
+  def relative(fullUri: Uri, base: Uri): ERest[Option[Uri]] =
+    Free.liftF(ERelativeUri(fullUri, base))
 
-  def postCheckHeaders[A: Encoder](uri: Uri, a: A, params: Map[String, Seq[String]] = Map.empty) : ERest[(Status, Headers)] = Free.liftF {
-    ERequest(Method.POST, uri, params, Some(a.asJson), resp => resp.body.drain.run.map(_ => (resp.status, resp.headers)))
+  def postCheckHeaders[A: Encoder](
+      uri: Uri,
+      a: A,
+      params: Map[String, Seq[String]] = Map.empty): ERest[(Status, Headers)] = Free.liftF {
+    ERequest(Method.POST,
+             uri,
+             params,
+             Some(a.asJson),
+             resp => resp.body.drain.run.map(_ => (resp.status, resp.headers)))
   }
 }

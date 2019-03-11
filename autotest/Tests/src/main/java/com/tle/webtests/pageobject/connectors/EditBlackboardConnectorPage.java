@@ -1,118 +1,117 @@
 package com.tle.webtests.pageobject.connectors;
 
+import com.tle.webtests.pageobject.WaitingPageObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.tle.webtests.pageobject.WaitingPageObject;
+public class EditBlackboardConnectorPage
+    extends AbstractConnectorEditPage<EditBlackboardConnectorPage> {
+  @FindBy(id = "bce_u")
+  private WebElement urlField;
 
-public class EditBlackboardConnectorPage extends AbstractConnectorEditPage<EditBlackboardConnectorPage>
-{
-	@FindBy(id = "bce_u")
-	private WebElement urlField;
-	@FindBy(id = "bce_twsu")
-	private WebElement userField;
-	@FindBy(id = "bce_testUrlButton")
-	private WebElement testUrlButton;
-	@FindBy(id = "bce_registerButton")
-	private WebElement registerButton;
-	@FindBy(id = "bce_us")
-	private WebElement usernameField;
-	@FindBy(id = "bce_testWebServiceButton")
-	private WebElement testButton;
-	@FindBy(id = "bce_pts")
-	private WebElement passField;
-	@FindBy(id = "bce_es")
-	private WebElement allowSummary;
-	@FindBy(id = "registerdiv")
-	private WebElement registerDiv;
-	@FindBy(id = "blackboardsetup")
-	private WebElement blackboardSetupDiv;
+  @FindBy(id = "bce_twsu")
+  private WebElement userField;
 
-	private WebDriverWait bbWaiter;
+  @FindBy(id = "bce_testUrlButton")
+  private WebElement testUrlButton;
 
-	@Override
-	public WebDriverWait getWaiter()
-	{
-		return bbWaiter;
-	}
+  @FindBy(id = "bce_registerButton")
+  private WebElement registerButton;
 
-	public EditBlackboardConnectorPage(ShowConnectorsPage connectorsPage)
-	{
-		super(connectorsPage);
-		this.bbWaiter = new WebDriverWait(context.getDriver(), 60, 50);
-	}
+  @FindBy(id = "bce_us")
+  private WebElement usernameField;
 
-	public EditBlackboardConnectorPage setUrl(String url, String user, String password)
-	{
-		urlField.clear();
-		urlField.sendKeys(url);
-		WaitingPageObject<EditBlackboardConnectorPage> updateWaiter = updateWaiter(testUrlButton);
-		testUrlButton.click();
-		updateWaiter.get();
+  @FindBy(id = "bce_testWebServiceButton")
+  private WebElement testButton;
 
-		setPassword(password);
-		updateWaiter = updateWaiter(registerButton);
-		registerButton.click();
-		updateWaiter.get();
+  @FindBy(id = "bce_pts")
+  private WebElement passField;
 
-		setPassword(password);
-		userField.clear();
-		userField.sendKeys(user);
-		testButton.click();
-		waitForElement(By.xpath("//span[text()='EQUELLA Blackboard web service contacted successfully']"));
+  @FindBy(id = "bce_es")
+  private WebElement allowSummary;
 
-		return this;
-	}
+  @FindBy(id = "registerdiv")
+  private WebElement registerDiv;
 
-	@Override
-	public String getEditorSectionId()
-	{
-		return "bce";
-	}
+  @FindBy(id = "blackboardsetup")
+  private WebElement blackboardSetupDiv;
 
-	public EditBlackboardConnectorPage registerProxy(String url)
-	{
-		urlField.clear();
-		urlField.sendKeys(url);
-		WaitingPageObject<EditBlackboardConnectorPage> ajaxUpdateExpect = ajaxUpdateExpect(blackboardSetupDiv,
-			registerButton);
-		testUrlButton.click();
-		ajaxUpdateExpect.get();
+  private WebDriverWait bbWaiter;
 
-		ajaxUpdateExpect = ajaxUpdateExpect(registerDiv, registerButton);
-		registerButton.click();
-		return ajaxUpdateExpect.get();
-	}
+  @Override
+  public WebDriverWait getWaiter() {
+    return bbWaiter;
+  }
 
-	public void setPassword(String password)
-	{
-		passField.clear();
-		passField.sendKeys(password);
-	}
+  public EditBlackboardConnectorPage(ShowConnectorsPage connectorsPage) {
+    super(connectorsPage);
+    this.bbWaiter = new WebDriverWait(context.getDriver(), 60, 50);
+  }
 
-	@Override
-	public WebElement getUsernameField()
-	{
-		return usernameField;
-	}
+  public EditBlackboardConnectorPage setUrl(String url, String user, String password) {
+    urlField.clear();
+    urlField.sendKeys(url);
+    WaitingPageObject<EditBlackboardConnectorPage> updateWaiter = updateWaiter(testUrlButton);
+    testUrlButton.click();
+    updateWaiter.get();
 
-	@Override
-	public WebElement getTestButton()
-	{
-		return testButton;
-	}
+    setPassword(password);
+    updateWaiter = updateWaiter(registerButton);
+    registerButton.click();
+    updateWaiter.get();
 
-	@Override
-	public String getId()
-	{
-		return "bce";
-	}
+    setPassword(password);
+    userField.clear();
+    userField.sendKeys(user);
+    testButton.click();
+    waitForElement(
+        By.xpath("//span[text()='EQUELLA Blackboard web service contacted successfully']"));
 
-	@Override
-	public WebElement getAllowSummaryCheckbox()
-	{
-		return allowSummary;
-	}
+    return this;
+  }
+
+  @Override
+  public String getEditorSectionId() {
+    return "bce";
+  }
+
+  public EditBlackboardConnectorPage registerProxy(String url) {
+    urlField.clear();
+    urlField.sendKeys(url);
+    WaitingPageObject<EditBlackboardConnectorPage> ajaxUpdateExpect =
+        ajaxUpdateExpect(blackboardSetupDiv, registerButton);
+    testUrlButton.click();
+    ajaxUpdateExpect.get();
+
+    ajaxUpdateExpect = ajaxUpdateExpect(registerDiv, registerButton);
+    registerButton.click();
+    return ajaxUpdateExpect.get();
+  }
+
+  public void setPassword(String password) {
+    passField.clear();
+    passField.sendKeys(password);
+  }
+
+  @Override
+  public WebElement getUsernameField() {
+    return usernameField;
+  }
+
+  @Override
+  public WebElement getTestButton() {
+    return testButton;
+  }
+
+  @Override
+  public String getId() {
+    return "bce";
+  }
+
+  @Override
+  public WebElement getAllowSummaryCheckbox() {
+    return allowSummary;
+  }
 }

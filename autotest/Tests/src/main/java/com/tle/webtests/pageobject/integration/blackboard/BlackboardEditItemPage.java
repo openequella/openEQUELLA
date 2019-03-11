@@ -1,60 +1,54 @@
 package com.tle.webtests.pageobject.integration.blackboard;
 
+import com.tle.webtests.framework.PageContext;
+import com.tle.webtests.framework.URLUtils;
+import com.tle.webtests.pageobject.AbstractPage;
 import java.util.Map;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-import com.tle.webtests.framework.PageContext;
-import com.tle.webtests.framework.URLUtils;
-import com.tle.webtests.pageobject.AbstractPage;
+public class BlackboardEditItemPage extends AbstractPage<BlackboardEditItemPage> {
+  @FindBy(name = "name")
+  private WebElement nameField;
 
-public class BlackboardEditItemPage extends AbstractPage<BlackboardEditItemPage>
-{
-	@FindBy(name = "name")
-	private WebElement nameField;
-	@FindBy(name = "description")
-	private WebElement descriptionField;
-	@FindBy(name = "bottom_Submit")
-	private WebElement submitButton;
+  @FindBy(name = "description")
+  private WebElement descriptionField;
 
-	@FindBy(className = "info")
-	private WebElement link;
+  @FindBy(name = "bottom_Submit")
+  private WebElement submitButton;
 
-	private final BlackboardContentPage content;
+  @FindBy(className = "info")
+  private WebElement link;
 
-	@FindBy(className = "backLink")
-	private WebElement backLinkDiv;
+  private final BlackboardContentPage content;
 
-	public BlackboardEditItemPage(PageContext context, BlackboardContentPage content)
-	{
-		super(context, BlackboardPageUtils.pageTitleBy("Modify Resource Content Object"));
-		this.content = content;
-	}
+  @FindBy(className = "backLink")
+  private WebElement backLinkDiv;
 
-	public String getName()
-	{
-		return nameField.getAttribute("value");
-	}
+  public BlackboardEditItemPage(PageContext context, BlackboardContentPage content) {
+    super(context, BlackboardPageUtils.pageTitleBy("Modify Resource Content Object"));
+    this.content = content;
+  }
 
-	public String getDescription()
-	{
-		return descriptionField.getAttribute("value");
-	}
+  public String getName() {
+    return nameField.getAttribute("value");
+  }
 
-	public String getUrl()
-	{
-		Map<String, String[]> params = URLUtils.parseParamUrl(link.getAttribute("href"), context.getIntegUrl());
-		return params.get("page")[0];
-	}
+  public String getDescription() {
+    return descriptionField.getAttribute("value");
+  }
 
-	public BlackboardContentPage submit()
-	{
-		submitButton.click();
-		waitForElement(backLinkDiv);
-		backLinkDiv.findElement(By.xpath("./a")).click();
-		return content.get();
-	}
+  public String getUrl() {
+    Map<String, String[]> params =
+        URLUtils.parseParamUrl(link.getAttribute("href"), context.getIntegUrl());
+    return params.get("page")[0];
+  }
 
+  public BlackboardContentPage submit() {
+    submitButton.click();
+    waitForElement(backLinkDiv);
+    backLinkDiv.findElement(By.xpath("./a")).click();
+    return content.get();
+  }
 }

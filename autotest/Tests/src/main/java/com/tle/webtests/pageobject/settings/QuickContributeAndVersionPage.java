@@ -1,47 +1,42 @@
 package com.tle.webtests.pageobject.settings;
 
+import com.tle.webtests.framework.PageContext;
+import com.tle.webtests.pageobject.AbstractPage;
+import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-import com.tle.webtests.framework.PageContext;
-import com.tle.webtests.pageobject.AbstractPage;
-import com.tle.webtests.pageobject.generic.component.EquellaSelect;
-public class QuickContributeAndVersionPage extends AbstractPage<QuickContributeAndVersionPage>
-{
+public class QuickContributeAndVersionPage extends AbstractPage<QuickContributeAndVersionPage> {
 
-	@FindBy(id = "_fins")
-	private WebElement collectionSelect;
-	@FindBy(id = "_saveButton")
-	private WebElement saveButton;
+  @FindBy(id = "_fins")
+  private WebElement collectionSelect;
 
-	public QuickContributeAndVersionPage(PageContext context)
-	{
-		super(context, By.xpath("//h2[contains(text(), 'Quick contribute')]"));
-	}
+  @FindBy(id = "_saveButton")
+  private WebElement saveButton;
 
-	@Override
-	protected void loadUrl()
-	{
-		driver.get(context.getBaseUrl() + "access/quickcontributeandversionsettings.do");
-	}
+  public QuickContributeAndVersionPage(PageContext context) {
+    super(context, By.xpath("//h2[contains(text(), 'Quick contribute')]"));
+  }
 
-	public QuickContributeAndVersionPage selectCollection(String collectionName)
-	{
-		EquellaSelect dropdown = new EquellaSelect(context, collectionSelect);
-		dropdown.selectByVisibleText(collectionName);
-		return this;
-	}
+  @Override
+  protected void loadUrl() {
+    driver.get(context.getBaseUrl() + "access/quickcontributeandversionsettings.do");
+  }
 
-	public String getCollection()
-	{
-		EquellaSelect dropdown = new EquellaSelect(context, collectionSelect);
-		return dropdown.getSelectedText();
-	}
+  public QuickContributeAndVersionPage selectCollection(String collectionName) {
+    EquellaSelect dropdown = new EquellaSelect(context, collectionSelect);
+    dropdown.selectByVisibleText(collectionName);
+    return this;
+  }
 
-	public boolean save()
-	{
-		saveButton.click();
-		return true;
-	}
+  public String getCollection() {
+    EquellaSelect dropdown = new EquellaSelect(context, collectionSelect);
+    return dropdown.getSelectedText();
+  }
+
+  public boolean save() {
+    saveButton.click();
+    return true;
+  }
 }

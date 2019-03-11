@@ -17,21 +17,26 @@ abstract class ShotProperties(name: String) extends Properties(name) {
 
       def quitDriver(shot: Boolean) = {
         if (shot)
-          Try(ScreenshotTaker.takeScreenshot(driver, context.getTestConfig.getScreenshotFolder, name, context.getTestConfig.isChromeDriverSet))
+          Try(
+            ScreenshotTaker.takeScreenshot(driver,
+                                           context.getTestConfig.getScreenshotFolder,
+                                           name,
+                                           context.getTestConfig.isChromeDriverSet))
         Try(driver.quit())
       }
       Try {
         new LoginPage(context).load().login(logon.username, logon.password)
         f(context)
       }.transform({ p =>
-        Success(p.map { r =>
-          quitDriver(r.failure)
-          r
+          Success(p.map { r =>
+            quitDriver(r.failure)
+            r
+          })
+        }, { failure =>
+          quitDriver(true)
+          throw failure
         })
-      }, { failure =>
-        quitDriver(true)
-        throw failure
-      }).get
+        .get
     }
   }
 }

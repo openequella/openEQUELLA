@@ -1,18 +1,16 @@
 package com.tle.webtests.pageobject.portal;
 
+import com.tle.webtests.framework.PageContext;
 import org.openqa.selenium.By;
 
-import com.tle.webtests.framework.PageContext;
+public class BrowsePortalSection extends AbstractPortalSection<BrowsePortalSection> {
+  public BrowsePortalSection(PageContext context, String title) {
+    super(context, title);
+  }
 
-public class BrowsePortalSection extends AbstractPortalSection<BrowsePortalSection>
-{
-	public BrowsePortalSection(PageContext context, String title)
-	{
-		super(context, title);
-	}
-
-	public boolean topicExists(String topic)
-	{
-		return isPresent(getBoxContent(), By.xpath(".//ul[@class='topics']/li/a[starts-with(., " + quoteXPath(topic) + ")]"));
-	}
+  public boolean topicExists(String topic) {
+    return isPresent(
+        getBoxContent(),
+        By.xpath(".//ul[@class='topics']/li/a[starts-with(., " + quoteXPath(topic) + ")]"));
+  }
 }

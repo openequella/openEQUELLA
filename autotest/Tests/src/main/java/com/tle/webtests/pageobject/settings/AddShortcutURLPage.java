@@ -1,95 +1,84 @@
 package com.tle.webtests.pageobject.settings;
 
+import com.tle.webtests.pageobject.AbstractPage;
+import com.tle.webtests.pageobject.WaitingPageObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-import com.tle.webtests.pageobject.AbstractPage;
-import com.tle.webtests.pageobject.WaitingPageObject;
+/** @author larry */
+public class AddShortcutURLPage extends AbstractPage<AddShortcutURLPage> {
+  public static final String ADD_SHORTCUT_HEADER = "Add shortcut URL"; // original
+  // property
+  // key:
+  // shortcuturls.dialog.title
 
-/**
- * @author larry
- */
-public class AddShortcutURLPage extends AbstractPage<AddShortcutURLPage>
-{
-	public static final String ADD_SHORTCUT_HEADER = "Add shortcut URL"; // original
-																			// property
-																			// key:
-																			// shortcuturls.dialog.title
+  public static final String SHORTCUT_TEXT_ID = "_addShortcutUrlDialog_shortcutText";
+  public static final String URL_TEXT_ID = "_addShortcutUrlDialog_urlText";
 
-	public static final String SHORTCUT_TEXT_ID = "_addShortcutUrlDialog_shortcutText";
-	public static final String URL_TEXT_ID = "_addShortcutUrlDialog_urlText";
+  @FindBy(id = SHORTCUT_TEXT_ID)
+  private WebElement shortcutTextBox;
 
-	@FindBy(id = SHORTCUT_TEXT_ID)
-	private WebElement shortcutTextBox;
-	@FindBy(id = URL_TEXT_ID)
-	private WebElement urlTextBox;
+  @FindBy(id = URL_TEXT_ID)
+  private WebElement urlTextBox;
 
-	@FindBy(id = "_addShortcutUrlDialog_ok")
-	private WebElement okButton;
-	@FindBy(id = "_addShortcutUrlDialog_close")
-	private WebElement closeButton;
-	@FindBy(id = "_addShortcutUrlDialogfooter")
-	private WebElement footer;
+  @FindBy(id = "_addShortcutUrlDialog_ok")
+  private WebElement okButton;
 
-	private final ShortcutURLsSettingsPage page;
+  @FindBy(id = "_addShortcutUrlDialog_close")
+  private WebElement closeButton;
 
-	public AddShortcutURLPage(ShortcutURLsSettingsPage page)
-	{
-		super(page.getContext());
-		this.page = page;
-	}
+  @FindBy(id = "_addShortcutUrlDialogfooter")
+  private WebElement footer;
 
-	@Override
-	protected WebElement findLoadedElement()
-	{
-		return footer;
-	}
+  private final ShortcutURLsSettingsPage page;
 
-	public AddShortcutURLPage setShortcutText(String shortcutText)
-	{
-		shortcutTextBox.clear();
-		shortcutTextBox.sendKeys(shortcutText);
-		return this;
-	}
+  public AddShortcutURLPage(ShortcutURLsSettingsPage page) {
+    super(page.getContext());
+    this.page = page;
+  }
 
-	public AddShortcutURLPage setUrlText(String urlText)
-	{
-		urlTextBox.clear();
-		urlTextBox.sendKeys(urlText);
-		return this;
-	}
+  @Override
+  protected WebElement findLoadedElement() {
+    return footer;
+  }
 
-	public ShortcutURLsSettingsPage ok(WaitingPageObject<ShortcutURLsSettingsPage> returnTo)
-	{
-		okButton.click();
-		return returnTo.get();
-	}
+  public AddShortcutURLPage setShortcutText(String shortcutText) {
+    shortcutTextBox.clear();
+    shortcutTextBox.sendKeys(shortcutText);
+    return this;
+  }
 
-	public AddShortcutURLPage okFailure(WaitingPageObject<AddShortcutURLPage> returnTo)
-	{
-		okButton.click();
-		return returnTo.get();
-	}
+  public AddShortcutURLPage setUrlText(String urlText) {
+    urlTextBox.clear();
+    urlTextBox.sendKeys(urlText);
+    return this;
+  }
 
-	public ShortcutURLsSettingsPage close()
-	{
-		closeButton.click();
-		return page.get();
-	}
+  public ShortcutURLsSettingsPage ok(WaitingPageObject<ShortcutURLsSettingsPage> returnTo) {
+    okButton.click();
+    return returnTo.get();
+  }
 
-	private By errorBy(String errorText)
-	{
-		return By.xpath("../p[@class = 'ctrlinvalidmessage' and text()=" + quoteXPath(errorText) + "]");
-	}
+  public AddShortcutURLPage okFailure(WaitingPageObject<AddShortcutURLPage> returnTo) {
+    okButton.click();
+    return returnTo.get();
+  }
 
-	public WaitingPageObject<AddShortcutURLPage> fieldError(boolean urls, String text)
-	{
-		WebElement fieldElem = shortcutTextBox;
-		if( urls )
-		{
-			fieldElem = urlTextBox;
-		}
-		return visibilityWaiter(fieldElem, errorBy(text));
-	}
+  public ShortcutURLsSettingsPage close() {
+    closeButton.click();
+    return page.get();
+  }
+
+  private By errorBy(String errorText) {
+    return By.xpath("../p[@class = 'ctrlinvalidmessage' and text()=" + quoteXPath(errorText) + "]");
+  }
+
+  public WaitingPageObject<AddShortcutURLPage> fieldError(boolean urls, String text) {
+    WebElement fieldElem = shortcutTextBox;
+    if (urls) {
+      fieldElem = urlTextBox;
+    }
+    return visibilityWaiter(fieldElem, errorBy(text));
+  }
 }

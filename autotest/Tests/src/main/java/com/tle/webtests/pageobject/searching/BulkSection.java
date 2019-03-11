@@ -1,112 +1,96 @@
 package com.tle.webtests.pageobject.searching;
 
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.scripting.BulkExecuteScriptDialog;
 import com.tle.webtests.pageobject.viewitem.MoveCloneDialog;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
-public class BulkSection extends AbstractPage<BulkSection>
-{
-	@FindBy(id = "bss_selectAllButton")
-	private WebElement allLink;
-	@FindBy(id = "bss_executeButton")
-	private WebElement executeButton;
+public class BulkSection extends AbstractPage<BulkSection> {
+  @FindBy(id = "bss_selectAllButton")
+  private WebElement allLink;
 
-	private AbstractBulkResultsPage<?, ?, ?> results;
+  @FindBy(id = "bss_executeButton")
+  private WebElement executeButton;
 
-	public BulkSection(AbstractBulkResultsPage<?, ?, ?> results)
-	{
-		super(results.getContext());
-		this.results = results;
-	}
+  private AbstractBulkResultsPage<?, ?, ?> results;
 
-	@Override
-	protected WebElement findLoadedElement()
-	{
-		return executeButton;
-	}
+  public BulkSection(AbstractBulkResultsPage<?, ?, ?> results) {
+    super(results.getContext());
+    this.results = results;
+  }
 
-	public boolean deleteAll()
-	{
-		return commandAll("delete");
-	}
+  @Override
+  protected WebElement findLoadedElement() {
+    return executeButton;
+  }
 
-	public BulkSection selectAll()
-	{
-		WaitingPageObject<?> waiter = results.getResultsUpdateWaiter();
-		allLink.click();
-		waiter.get();
-		return get();
-	}
+  public boolean deleteAll() {
+    return commandAll("delete");
+  }
 
-	public boolean purgeAll()
-	{
-		return commandAll("purge");
-	}
+  public BulkSection selectAll() {
+    WaitingPageObject<?> waiter = results.getResultsUpdateWaiter();
+    allLink.click();
+    waiter.get();
+    return get();
+  }
 
-	public boolean commandAll(String command)
-	{
-		selectAll();
-		return executeCommand(command);
-	}
+  public boolean purgeAll() {
+    return commandAll("purge");
+  }
 
-	private BulkActionDialog performAction()
-	{
-		executeButton.click();
-		return new BulkActionDialog(context).get();
-	}
+  public boolean commandAll(String command) {
+    selectAll();
+    return executeCommand(command);
+  }
 
-	public boolean executeCommand(String command)
-	{
-		BulkActionDialog dialog = performAction();
-		dialog.selectOp(command);
-		BulkResultsPage resultsPage = dialog.execute().waitForAll();
-		boolean noErrors = resultsPage.noErrors();
-		resultsPage.close(results.getResultsUpdateWaiter());
-		return noErrors;
-	}
+  private BulkActionDialog performAction() {
+    executeButton.click();
+    return new BulkActionDialog(context).get();
+  }
 
-	public BulkActionDialog executeCommandPage(String command)
-	{
-		BulkActionDialog dialog = performAction();
-		dialog.selectOp(command);
-		dialog.next();
-		return dialog;
-	}
+  public boolean executeCommand(String command) {
+    BulkActionDialog dialog = performAction();
+    dialog.selectOp(command);
+    BulkResultsPage resultsPage = dialog.execute().waitForAll();
+    boolean noErrors = resultsPage.noErrors();
+    resultsPage.close(results.getResultsUpdateWaiter());
+    return noErrors;
+  }
 
-	public BulkResultsPage executeCommandFailure(String command)
-	{
-		BulkActionDialog dialog = performAction();
-		dialog.selectOp(command);
-		return dialog.execute();
-	}
+  public BulkActionDialog executeCommandPage(String command) {
+    BulkActionDialog dialog = performAction();
+    dialog.selectOp(command);
+    dialog.next();
+    return dialog;
+  }
 
-	@Override
-	public MoveCloneDialog clone()
-	{
-		BulkActionDialog dialog = executeCommandPage("clone");
-		return new MoveCloneDialog(dialog).get();
-	}
+  public BulkResultsPage executeCommandFailure(String command) {
+    BulkActionDialog dialog = performAction();
+    dialog.selectOp(command);
+    return dialog.execute();
+  }
 
-	public MoveCloneDialog move()
-	{
-		BulkActionDialog dialog = executeCommandPage("move");
-		return new MoveCloneDialog(dialog).get();
-	}
+  @Override
+  public MoveCloneDialog clone() {
+    BulkActionDialog dialog = executeCommandPage("clone");
+    return new MoveCloneDialog(dialog).get();
+  }
 
-	public BulkExecuteScriptDialog exectueScript()
-	{
-		BulkActionDialog dialog = executeCommandPage("executescript");
-		return new BulkExecuteScriptDialog(dialog).get();
-	}
+  public MoveCloneDialog move() {
+    BulkActionDialog dialog = executeCommandPage("move");
+    return new MoveCloneDialog(dialog).get();
+  }
 
-	public EditMetadataDialog editMetadata()
-	{
-		BulkActionDialog dialog = executeCommandPage("editmetadata");
-		return new EditMetadataDialog(dialog).get();
-	}
+  public BulkExecuteScriptDialog exectueScript() {
+    BulkActionDialog dialog = executeCommandPage("executescript");
+    return new BulkExecuteScriptDialog(dialog).get();
+  }
 
+  public EditMetadataDialog editMetadata() {
+    BulkActionDialog dialog = executeCommandPage("editmetadata");
+    return new EditMetadataDialog(dialog).get();
+  }
 }

@@ -1,25 +1,24 @@
 package com.tle.webtests.pageobject.integration.canvas.course;
 
+import com.tle.webtests.framework.PageContext;
 import org.openqa.selenium.By;
 
-import com.tle.webtests.framework.PageContext;
+public class CanvasCoursePage extends AbstractCanvasCoursePage<CanvasCoursePage> {
+  public CanvasCoursePage(PageContext context, String courseName) {
+    super(
+        context,
+        By.xpath(
+            "id('section-tabs-header')[normalize-space(text())="
+                + quoteXPath(truncCourseName(courseName))
+                + "]"));
+  }
 
-public class CanvasCoursePage extends AbstractCanvasCoursePage<CanvasCoursePage>
-{
-	public CanvasCoursePage(PageContext context, String courseName)
-	{
-		super(context, By.xpath("id('section-tabs-header')[normalize-space(text())="
-			+ quoteXPath(truncCourseName(courseName)) + "]"));
-	}
+  private static String truncCourseName(String courseName) {
+    return courseName.split("\\s")[0];
+  }
 
-	private static String truncCourseName(String courseName)
-	{
-		return courseName.split("\\s")[0];
-	}
-
-	@Override
-	protected void loadUrl()
-	{
-		driver.get(context.getIntegUrl() + "courses/1");
-	}
+  @Override
+  protected void loadUrl() {
+    driver.get(context.getIntegUrl() + "courses/1");
+  }
 }

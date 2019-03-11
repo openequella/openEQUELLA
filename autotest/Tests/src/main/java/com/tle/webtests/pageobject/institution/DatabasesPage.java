@@ -1,64 +1,54 @@
 package com.tle.webtests.pageobject.institution;
 
+import com.tle.webtests.framework.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-import com.tle.webtests.framework.PageContext;
+public class DatabasesPage extends InstitutionTab<DatabasesPage> {
+  @FindBy(id = "isdt_add")
+  private WebElement addButton;
 
-public class DatabasesPage extends InstitutionTab<DatabasesPage>
-{
-	@FindBy(id = "isdt_add")
-	private WebElement addButton;
-	@FindBy(id = "isdt_migrateSelectedButton")
-	private WebElement migrateSelectedButton;
-	@FindBy(id = "isdt_table")
-	private WebElement tableElement;
+  @FindBy(id = "isdt_migrateSelectedButton")
+  private WebElement migrateSelectedButton;
 
-	public DatabasesPage(PageContext context)
-	{
-		super(context, "Databases", "Databases");
-	}
+  @FindBy(id = "isdt_table")
+  private WebElement tableElement;
 
-	@Override
-	protected WebElement findLoadedElement()
-	{
-		return tableElement;
-	}
+  public DatabasesPage(PageContext context) {
+    super(context, "Databases", "Databases");
+  }
 
-	@Override
-	protected void loadUrl()
-	{
-		get("institutions.do", "is.admin", "true", "istabs.tab", "isdt");
-	}
+  @Override
+  protected WebElement findLoadedElement() {
+    return tableElement;
+  }
 
-	public boolean containsDatabase(String databaseName)
-	{
-		return isPresent(getRowSelector(databaseName));
-	}
+  @Override
+  protected void loadUrl() {
+    get("institutions.do", "is.admin", "true", "istabs.tab", "isdt");
+  }
 
-	private By getRowSelector(String databaseName)
-	{
-		return By.xpath(".//tr[./td[1]/span[text()=" + quoteXPath(databaseName) + "]]");
-	}
+  public boolean containsDatabase(String databaseName) {
+    return isPresent(getRowSelector(databaseName));
+  }
 
-	public DatabaseEditDialog addSchema()
-	{
-		addButton.click();
-		return new DatabaseEditDialog(this).get();
-	}
+  private By getRowSelector(String databaseName) {
+    return By.xpath(".//tr[./td[1]/span[text()=" + quoteXPath(databaseName) + "]]");
+  }
 
-	public DatabaseRow getDatabaseRow(String name)
-	{
-		return new DatabaseRow(context, tableElement.findElement(getRowSelector(name)));
-	}
+  public DatabaseEditDialog addSchema() {
+    addButton.click();
+    return new DatabaseEditDialog(this).get();
+  }
 
-	public void migrateAll()
-	{
-		migrateSelectedButton.click();
-		acceptConfirmation();
-		get();
-	}
+  public DatabaseRow getDatabaseRow(String name) {
+    return new DatabaseRow(context, tableElement.findElement(getRowSelector(name)));
+  }
 
-
+  public void migrateAll() {
+    migrateSelectedButton.click();
+    acceptConfirmation();
+    get();
+  }
 }

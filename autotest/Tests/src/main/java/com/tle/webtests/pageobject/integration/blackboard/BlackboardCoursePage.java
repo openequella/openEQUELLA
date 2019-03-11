@@ -1,58 +1,53 @@
 package com.tle.webtests.pageobject.integration.blackboard;
 
+import com.tle.webtests.framework.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-import com.tle.webtests.framework.PageContext;
+public class BlackboardCoursePage extends AbstractBlackboardCoursePage<BlackboardCoursePage> {
+  @FindBy(xpath = "//span[@title='Content']")
+  private WebElement content;
 
-public class BlackboardCoursePage extends AbstractBlackboardCoursePage<BlackboardCoursePage>
-{
-	@FindBy(xpath = "//span[@title='Content']")
-	private WebElement content;
-	@FindBy(xpath = "//span[@title='Information']")
-	private WebElement information;
-	private final String courseName;
+  @FindBy(xpath = "//span[@title='Information']")
+  private WebElement information;
 
-	public BlackboardCoursePage(PageContext context, String courseName)
-	{
-		super(context, courseName, "Home Page");
-		this.courseName = courseName;
-	}
+  private final String courseName;
 
-	public BlackboardContentPage content()
-	{
-		content.click();
-		return new BlackboardContentPage(context, courseName, "Content").get();
-	}
+  public BlackboardCoursePage(PageContext context, String courseName) {
+    super(context, courseName, "Home Page");
+    this.courseName = courseName;
+  }
 
-	public BlackboardContentPage information()
-	{
-		information.click();
-		return new BlackboardContentPage(context, courseName, "Information").get();
-	}
+  public BlackboardContentPage content() {
+    content.click();
+    return new BlackboardContentPage(context, courseName, "Content").get();
+  }
 
-	public void bulkDelete()
-	{
-		By section = By.id("controlpanel.packages.and.utilities_groupExpanderLink");
+  public BlackboardContentPage information() {
+    information.click();
+    return new BlackboardContentPage(context, courseName, "Information").get();
+  }
 
-		waitForElement(section);
-		driver.findElement(By.xpath("//img[@alt='Packages & Utilities Overview Page']")).click();
+  public void bulkDelete() {
+    By section = By.id("controlpanel.packages.and.utilities_groupExpanderLink");
 
-		waitForElement(By.linkText("Bulk Delete"));
-		driver.findElement(By.linkText("Bulk Delete")).click();
-		new BlackboardBulkDeletePage(context, courseName).get().delete();
-	}
+    waitForElement(section);
+    driver.findElement(By.xpath("//img[@alt='Packages & Utilities Overview Page']")).click();
 
-	public void setAvailible()
-	{
-		By section = By.id("controlpanel.customization_groupExpanderLink");
+    waitForElement(By.linkText("Bulk Delete"));
+    driver.findElement(By.linkText("Bulk Delete")).click();
+    new BlackboardBulkDeletePage(context, courseName).get().delete();
+  }
 
-		waitForElement(section);
-		driver.findElement(By.xpath("//img[@alt='Customization Overview Page']")).click();
+  public void setAvailible() {
+    By section = By.id("controlpanel.customization_groupExpanderLink");
 
-		waitForElement(By.linkText("Tool Availability"));
-		driver.findElement(By.linkText("Tool Availability")).click();
-		new BlackboardToolAvailabilityPage(context, courseName).get().availible();
-	}
+    waitForElement(section);
+    driver.findElement(By.xpath("//img[@alt='Customization Overview Page']")).click();
+
+    waitForElement(By.linkText("Tool Availability"));
+    driver.findElement(By.linkText("Tool Availability")).click();
+    new BlackboardToolAvailabilityPage(context, courseName).get().availible();
+  }
 }

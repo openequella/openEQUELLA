@@ -7,15 +7,14 @@ import equellatests.domain.TestLogon
 
 package object workflow {
   val workflowInst = GlobalConfig.createTestInst("workflow")
-  val adminLogon = TestLogon("admin", "``````", workflowInst, "ad", "min")
+  val adminLogon   = TestLogon("admin", "``````", workflowInst, "ad", "min")
 
-  val workflow3StepTasks = Seq("Step 1", "Step 2", "Step 3")
+  val workflow3StepTasks                = Seq("Step 1", "Step 2", "Step 3")
   def workflow3StepBefore(task: String) = workflow3StepTasks.take(workflow3StepTasks.indexOf(task))
-
 
   def simpleMetadata(name: String) = <xml><name>{name}</name></xml>.toString
 
-  def nextTask3Step(current: String) : Option[String] = {
+  def nextTask3Step(current: String): Option[String] = {
     current match {
       case "Step 1" => Some("Step 2")
       case "Step 2" => Some("Step 3")
@@ -29,13 +28,13 @@ package object workflow {
     case "Step 3" => Seq("Step 2", "Step 1")
   }
 
-  def nameToUsername(name: String) : String = name match {
+  def nameToUsername(name: String): String = name match {
     case "Simple Moderator" => "SimpleModerator"
-    case "ad min" => "admin"
+    case "ad min"           => "admin"
   }
 
   def usernameToId(username: String): String = username match {
-    case "admin" => "83bb1131-e54c-6f1e-e063-9d00597c8d97"
+    case "admin"           => "83bb1131-e54c-6f1e-e063-9d00597c8d97"
     case "SimpleModerator" => "d58b8087-7d64-2115-c187-20e5eb890743"
   }
 

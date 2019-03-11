@@ -12,25 +12,27 @@ trait BulkOperationDialog extends WaitingBrowserPage {
 
   type Parent <: WaitingBrowserPage
 
-  def parent : Parent
+  def parent: Parent
 
-  def execute() : Unit = {
+  def execute(): Unit = {
     val exBy = CommonXPath.buttonWithText("Execute")
     waitFor(ExpectedConditions.visibilityOfNestedElementsLocatedBy(pageBy, exBy))
     pageElement.findElement(exBy).click()
-    waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("id('bss_bulkDialog')//p[text() = 'Operations finished']")))
+    waitFor(
+      ExpectedConditions.visibilityOfElementLocated(
+        By.xpath("id('bss_bulkDialog')//p[text() = 'Operations finished']")))
   }
 
-  def cancel() : Parent = {
+  def cancel(): Parent = {
     val expect = parent.updatedExpectation()
     findElementById("bss_bulkDialog_close").click()
     waitFor(expect)
     parent
   }
 
-  def selectAction(name: String) : Unit = {
+  def selectAction(name: String): Unit = {
     val waitUp = updatedBy(By.xpath("id('bss_bulkDialogfooter')/*[1]"))
-    val sel = new EquellaSelect(ctx, findElementById("bss_bulkDialog_operationList"))
+    val sel    = new EquellaSelect(ctx, findElementById("bss_bulkDialog_operationList"))
     if (sel.getSelectedText != name) {
       sel.selectByVisibleText(name)
       waitFor(waitUp)

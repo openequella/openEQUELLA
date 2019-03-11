@@ -7,9 +7,8 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface Name
-{
-	String value();
+public @interface Name {
+  String value();
 
-	String group() default "";
+  String group() default "";
 }

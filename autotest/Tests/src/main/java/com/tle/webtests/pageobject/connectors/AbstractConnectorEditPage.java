@@ -1,120 +1,124 @@
 package com.tle.webtests.pageobject.connectors;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-
 import com.tle.common.Check;
 import com.tle.webtests.pageobject.ExpectWaiter;
 import com.tle.webtests.pageobject.ExpectedConditions2;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import com.tle.webtests.pageobject.generic.entities.AbstractEditEntityPage;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 public abstract class AbstractConnectorEditPage<THIS extends AbstractConnectorEditPage<THIS>>
-	extends
-		AbstractEditEntityPage<THIS, ShowConnectorsPage>
-{
-	private WebElement getLmsType()
-	{
-		return findWithId(getContributeSectionId(), "_ct");
-	}
-	@FindBy(id = "testdiv")
-	private WebElement testAjaxDiv;
-	@FindBy(xpath = "id('testdiv')//span[contains(@class, 'status')]")
-	private WebElement testStatus;
+    extends AbstractEditEntityPage<THIS, ShowConnectorsPage> {
+  private WebElement getLmsType() {
+    return findWithId(getContributeSectionId(), "_ct");
+  }
 
-	private WebElement getViewExpressionInput()
-	{
-		return driver.findElement(By.name(getId()+"_viewableSelector_es.e"));
-	}
-	private WebElement getExportExpressionInput()
-	{
-		return driver.findElement(By.name(getId()+"_exportableSelector_es.e"));
-	}
+  @FindBy(id = "testdiv")
+  private WebElement testAjaxDiv;
 
-	protected AbstractConnectorEditPage(ShowConnectorsPage connectorsPage)
-	{
-		super(connectorsPage);
-	}
+  @FindBy(xpath = "id('testdiv')//span[contains(@class, 'status')]")
+  private WebElement testStatus;
 
-	@Override
-	public String getContributeSectionId()
-	{
-		return "cc";
-	}
+  private WebElement getViewExpressionInput() {
+    return driver.findElement(By.name(getId() + "_viewableSelector_es.e"));
+  }
 
-	public THIS setType(String type)
-	{
-		new EquellaSelect(context, getLmsType()).selectByVisibleText(type);
-		waitForElement(getSaveButtonBy());
-		return get();
-	}
+  private WebElement getExportExpressionInput() {
+    return driver.findElement(By.name(getId() + "_exportableSelector_es.e"));
+  }
 
-	public THIS setUsername(String username)
-	{
-		getUsernameField().clear();
-		getUsernameField().sendKeys(username);
-		return get();
-	}
+  protected AbstractConnectorEditPage(ShowConnectorsPage connectorsPage) {
+    super(connectorsPage);
+  }
 
-	public THIS setAllowSummary(boolean allow)
-	{
-		if( allow == Check.isEmpty(getAllowSummaryCheckbox().getAttribute("checked")) )
-		{
-			getAllowSummaryCheckbox().click();
-		}
-		return get();
-	}
+  @Override
+  public String getContributeSectionId() {
+    return "cc";
+  }
 
-	public boolean testConnection()
-	{
-		WaitingPageObject<THIS> waiter = ajaxUpdateExpect(testAjaxDiv, testStatus);
-		getTestButton().click();
-		waiter.get();
-		return testStatus.getAttribute("class").contains("ok");
-	}
+  public THIS setType(String type) {
+    new EquellaSelect(context, getLmsType()).selectByVisibleText(type);
+    waitForElement(getSaveButtonBy());
+    return get();
+  }
 
-	abstract public WebElement getUsernameField();
+  public THIS setUsername(String username) {
+    getUsernameField().clear();
+    getUsernameField().sendKeys(username);
+    return get();
+  }
 
-	abstract public WebElement getTestButton();
+  public THIS setAllowSummary(boolean allow) {
+    if (allow == Check.isEmpty(getAllowSummaryCheckbox().getAttribute("checked"))) {
+      getAllowSummaryCheckbox().click();
+    }
+    return get();
+  }
 
-	abstract public String getId();
+  public boolean testConnection() {
+    WaitingPageObject<THIS> waiter = ajaxUpdateExpect(testAjaxDiv, testStatus);
+    getTestButton().click();
+    waiter.get();
+    return testStatus.getAttribute("class").contains("ok");
+  }
 
-	abstract public WebElement getAllowSummaryCheckbox();
+  public abstract WebElement getUsernameField();
 
-	public THIS viewableForAll()
-	{
-		return viewableForExpression("* ");
-	}
+  public abstract WebElement getTestButton();
 
-	public THIS viewableForExpression(final String expression)
-	{
-		((JavascriptExecutor) driver).executeScript("_subev('" + getId() + ".expression', '" + getId()
-			+ "_viewableSelector', '" + expression + "');");
+  public abstract String getId();
 
-		return ExpectWaiter.waiter(ExpectedConditions2.elementAttributeToBe(getViewExpressionInput(), "value", expression),
-			this).get();
-	}
+  public abstract WebElement getAllowSummaryCheckbox();
 
-	public THIS exportableForAll()
-	{
-		return exportableForExpression("* ");
-	}
+  public THIS viewableForAll() {
+    return viewableForExpression("* ");
+  }
 
-	public THIS exportableForExpression(String expression)
-	{
-		((JavascriptExecutor) driver).executeScript("_subev('" + getId() + ".expression', '" + getId()
-			+ "_exportableSelector', '" + expression + "');");
+  public THIS viewableForExpression(final String expression) {
+    ((JavascriptExecutor) driver)
+        .executeScript(
+            "_subev('"
+                + getId()
+                + ".expression', '"
+                + getId()
+                + "_viewableSelector', '"
+                + expression
+                + "');");
 
-		return ExpectWaiter.waiter(
-			ExpectedConditions2.elementAttributeToBe(getExportExpressionInput(), "value", expression), this).get();
-	}
+    return ExpectWaiter.waiter(
+            ExpectedConditions2.elementAttributeToBe(getViewExpressionInput(), "value", expression),
+            this)
+        .get();
+  }
 
-	@Override
-	protected String getEntityName()
-	{
-		return "connector";
-	}
+  public THIS exportableForAll() {
+    return exportableForExpression("* ");
+  }
+
+  public THIS exportableForExpression(String expression) {
+    ((JavascriptExecutor) driver)
+        .executeScript(
+            "_subev('"
+                + getId()
+                + ".expression', '"
+                + getId()
+                + "_exportableSelector', '"
+                + expression
+                + "');");
+
+    return ExpectWaiter.waiter(
+            ExpectedConditions2.elementAttributeToBe(
+                getExportExpressionInput(), "value", expression),
+            this)
+        .get();
+  }
+
+  @Override
+  protected String getEntityName() {
+    return "connector";
+  }
 }

@@ -1,233 +1,220 @@
 package com.tle.webtests.pageobject.myresources;
 
-import java.net.URL;
-
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.SearchContext;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.pagefactory.ByChained;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.ExpectWaiter;
 import com.tle.webtests.pageobject.ExpectedConditions2;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.selection.SelectionCheckoutPage;
+import java.net.URL;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
-public abstract class AbstractAuthorWebPage<T extends AbstractAuthorWebPage<T>> extends AbstractPage<T>
-{
-	private static final By XPATH_ALLROWS = By.xpath("tbody/tr[td/@class='name']");
-	@FindBy(xpath = "//h3[text()='Pages']")
-	protected WebElement titleElem;
-	@FindBy(xpath = "//legend[text()='Edit page']")
-	protected WebElement editPageElem;
+public abstract class AbstractAuthorWebPage<T extends AbstractAuthorWebPage<T>>
+    extends AbstractPage<T> {
+  private static final By XPATH_ALLROWS = By.xpath("tbody/tr[td/@class='name']");
 
-	protected WebElement getDescriptionField()
-	{
-		return findByBaseId("mypttl_titleField");
-	}
+  @FindBy(xpath = "//h3[text()='Pages']")
+  protected WebElement titleElem;
 
-	protected WebElement getTitleField()
-	{
-		return findByBaseId("mpe_pageNameField");
-	}
+  @FindBy(xpath = "//legend[text()='Edit page']")
+  protected WebElement editPageElem;
 
-	protected WebElement getAddButton()
-	{
-		return findByBaseId("mpa_a");
-	}
+  protected WebElement getDescriptionField() {
+    return findByBaseId("mypttl_titleField");
+  }
 
-	protected WebElement getTable()
-	{
-		return findByBaseId("mpa_p");
-	}
-	@FindBy(xpath = "//body[@id='tinymce']")
-	protected WebElement editorBody;
+  protected WebElement getTitleField() {
+    return findByBaseId("mpe_pageNameField");
+  }
 
-	@FindBy(xpath = "//table[@id='mpctinyedit_html_toolbar3']//img[@class = 'mceIcon'][contains(@src, 'paperclip.gif')]")
-	private WebElement attachmentButton;
-	@FindBy(id = "_fileName")
-	private WebElement fileName;
-	@FindBy(id = "_fileUpload")
-	private WebElement fileUpload;
+  protected WebElement getAddButton() {
+    return findByBaseId("mpa_a");
+  }
 
-	private WebElement getHtmliFrame()
-	{
-		return findByBaseId(IFRAME_ID_PREFIX);
-	}
+  protected WebElement getTable() {
+    return findByBaseId("mpa_p");
+  }
 
-	public static final String IFRAME_ID_PREFIX = "tinyedit_html_ifr";
+  @FindBy(xpath = "//body[@id='tinymce']")
+  protected WebElement editorBody;
 
-	private final String baseId;
-	private final boolean edit;
+  @FindBy(
+      xpath =
+          "//table[@id='mpctinyedit_html_toolbar3']//img[@class = 'mceIcon'][contains(@src, 'paperclip.gif')]")
+  private WebElement attachmentButton;
 
-	public AbstractAuthorWebPage(PageContext context, String baseId)
-	{
-		this(context, baseId, false);
-	}
+  @FindBy(id = "_fileName")
+  private WebElement fileName;
 
-	public AbstractAuthorWebPage(PageContext context, String baseId, boolean edit)
-	{
-		super(context);
-		this.baseId = baseId;
-		this.edit = edit;
-	}
+  @FindBy(id = "_fileUpload")
+  private WebElement fileUpload;
 
-	private WebElement findByBaseId(String postfix)
-	{
-		return driver.findElement(By.id(getBaseId()+postfix));
-	}
+  private WebElement getHtmliFrame() {
+    return findByBaseId(IFRAME_ID_PREFIX);
+  }
 
-	@Override
-	protected WebElement findLoadedElement()
-	{
-		return edit ? editPageElem : titleElem;
-	}
+  public static final String IFRAME_ID_PREFIX = "tinyedit_html_ifr";
 
-	public T editPage(String name)
-	{
-		return new PageRow(getPageRowByName(name)).edit();
-	}
+  private final String baseId;
+  private final boolean edit;
 
-	public void setDescription(String description)
-	{
-		getDescriptionField().clear();
-		getDescriptionField().sendKeys(description);
-	}
+  public AbstractAuthorWebPage(PageContext context, String baseId) {
+    this(context, baseId, false);
+  }
 
-	private By getPageRowByName(String name)
-	{
-		return By.xpath("tbody/tr[td[@class='name']/a/text() = " + quoteXPath(name) + "]");
-	}
+  public AbstractAuthorWebPage(PageContext context, String baseId, boolean edit) {
+    super(context);
+    this.baseId = baseId;
+    this.edit = edit;
+  }
 
-	public int getPageCount()
-	{
-		return getTable().findElements(XPATH_ALLROWS).size();
-	}
+  private WebElement findByBaseId(String postfix) {
+    return driver.findElement(By.id(getBaseId() + postfix));
+  }
 
-	public T deletePage(String name)
-	{
-		return new PageRow(getPageRowByName(name)).delete();
-	}
+  @Override
+  protected WebElement findLoadedElement() {
+    return edit ? editPageElem : titleElem;
+  }
 
-	public void setTitle(String pageTitle)
-	{
-		getTitleField().clear();
-		getTitleField().sendKeys(pageTitle);
-	}
+  public T editPage(String name) {
+    return new PageRow(getPageRowByName(name)).edit();
+  }
 
-	public void addPage(String pageTitle, String pageBody)
-	{
-		if( !edit )
-		{
-			ExpectedCondition<?> addCondition = getAddCondition();
-			getAddButton().click();
-			waiter.until(addCondition);
-		}
-		setTitle(pageTitle);
-		setBodyHtml(pageBody);
-	}
+  public void setDescription(String description) {
+    getDescriptionField().clear();
+    getDescriptionField().sendKeys(description);
+  }
 
-	public String getBodyText()
-	{
-		waiter.until(ExpectedConditions2.frameToBeAvailableAndSwitchToIt(driver, By.id(baseId + IFRAME_ID_PREFIX)));
-		String editorText = editorBody.getText();
-		driver.switchTo().defaultContent();
-		return editorText;
-	}
+  private By getPageRowByName(String name) {
+    return By.xpath("tbody/tr[td[@class='name']/a/text() = " + quoteXPath(name) + "]");
+  }
 
-	public String getBodyHtml()
-	{
-		waiter.until(ExpectedConditions2.frameToBeAvailableAndSwitchToIt(driver, By.id(baseId + IFRAME_ID_PREFIX)));
-		String editorHtml = (String) ((JavascriptExecutor) driver).executeScript("return arguments[0].innerHTML;",
-			editorBody);
-		driver.switchTo().defaultContent();
-		return editorHtml;
-	}
+  public int getPageCount() {
+    return getTable().findElements(XPATH_ALLROWS).size();
+  }
 
-	public void appendBodyHtml(String htmlText)
-	{
-		setBodyHtml(getBodyHtml() + htmlText);
-	}
+  public T deletePage(String name) {
+    return new PageRow(getPageRowByName(name)).delete();
+  }
 
-	public void setBodyHtml(String pageBody)
-	{
-		waiter.until(ExpectedConditions2.frameToBeAvailableAndSwitchToIt(driver, By.id(baseId + IFRAME_ID_PREFIX)));
-		driver.switchTo().activeElement();
-		((JavascriptExecutor) driver).executeScript("document.body.innerHTML = " + quoteXPath(pageBody));
-		driver.switchTo().defaultContent();
-	}
+  public void setTitle(String pageTitle) {
+    getTitleField().clear();
+    getTitleField().sendKeys(pageTitle);
+  }
 
-	protected abstract ExpectedCondition<?> getAddCondition();
+  public void addPage(String pageTitle, String pageBody) {
+    if (!edit) {
+      ExpectedCondition<?> addCondition = getAddCondition();
+      getAddButton().click();
+      waiter.until(addCondition);
+    }
+    setTitle(pageTitle);
+    setBodyHtml(pageBody);
+  }
 
-	public String getBaseId()
-	{
-		return baseId;
-	}
+  public String getBodyText() {
+    waiter.until(
+        ExpectedConditions2.frameToBeAvailableAndSwitchToIt(
+            driver, By.id(baseId + IFRAME_ID_PREFIX)));
+    String editorText = editorBody.getText();
+    driver.switchTo().defaultContent();
+    return editorText;
+  }
 
-	public void equellaFileUploader(URL file, String description)
-	{
-		attachmentButton.click();
-		waiter.until(ExpectedConditions2.frameToBeAvailableAndSwitchToIt(driver,
-			By.xpath("//iframe[contains(@id,'_ifr') and contains(@id,'mce_')]")));
+  public String getBodyHtml() {
+    waiter.until(
+        ExpectedConditions2.frameToBeAvailableAndSwitchToIt(
+            driver, By.id(baseId + IFRAME_ID_PREFIX)));
+    String editorHtml =
+        (String)
+            ((JavascriptExecutor) driver)
+                .executeScript("return arguments[0].innerHTML;", editorBody);
+    driver.switchTo().defaultContent();
+    return editorHtml;
+  }
 
-		fileName.clear();
-		fileName.sendKeys(description);
-		waitForHiddenElement(fileUpload);
-		fileUpload.sendKeys(getPathFromUrl(file));
-		new SelectionCheckoutPage(context).get().returnSelection(
-			ExpectWaiter.waiter(ExpectedConditions.invisibilityOfElementLocated(By
-				.xpath("//iframe[contains(@id,'_ifr') and contains(@id,'mce_')]")), this));
-		driver.switchTo().frame(getHtmliFrame());
-		waiter.until(ExpectedConditions2.textToBePresentInElement(editorBody, description));
-		driver.switchTo().defaultContent();
-	}
+  public void appendBodyHtml(String htmlText) {
+    setBodyHtml(getBodyHtml() + htmlText);
+  }
 
-	private class PageRow
-	{
-		private By pageBy;
+  public void setBodyHtml(String pageBody) {
+    waiter.until(
+        ExpectedConditions2.frameToBeAvailableAndSwitchToIt(
+            driver, By.id(baseId + IFRAME_ID_PREFIX)));
+    driver.switchTo().activeElement();
+    ((JavascriptExecutor) driver)
+        .executeScript("document.body.innerHTML = " + quoteXPath(pageBody));
+    driver.switchTo().defaultContent();
+  }
 
-		private WebElement getPageRow()
-		{
-			return getTable().findElement(pageBy);
-		}
+  protected abstract ExpectedCondition<?> getAddCondition();
 
-		private WebElement getRowElem(String xpath)
-		{
-			return getPageRow().findElement(By.xpath(xpath));
-		}
-		private WebElement getDeleteButton()
-		{
-			return getRowElem("td/a[@title='Delete']");
-		}
-		private WebElement getEditButton()
-		{
-			return getRowElem("td[@class='name']/a");
-		}
+  public String getBaseId() {
+    return baseId;
+  }
 
-		public PageRow(By by)
-		{
-			this.pageBy = by;
-		}
+  public void equellaFileUploader(URL file, String description) {
+    attachmentButton.click();
+    waiter.until(
+        ExpectedConditions2.frameToBeAvailableAndSwitchToIt(
+            driver, By.xpath("//iframe[contains(@id,'_ifr') and contains(@id,'mce_')]")));
 
-		public T edit()
-		{
-			WaitingPageObject<T> waiter = AbstractAuthorWebPage.this.updateWaiter();
-			getEditButton().click();
-			return waiter.get();
-		}
+    fileName.clear();
+    fileName.sendKeys(description);
+    waitForHiddenElement(fileUpload);
+    fileUpload.sendKeys(getPathFromUrl(file));
+    new SelectionCheckoutPage(context)
+        .get()
+        .returnSelection(
+            ExpectWaiter.waiter(
+                ExpectedConditions.invisibilityOfElementLocated(
+                    By.xpath("//iframe[contains(@id,'_ifr') and contains(@id,'mce_')]")),
+                this));
+    driver.switchTo().frame(getHtmliFrame());
+    waiter.until(ExpectedConditions2.textToBePresentInElement(editorBody, description));
+    driver.switchTo().defaultContent();
+  }
 
-		public T delete()
-		{
-			WaitingPageObject<T> waiter = AbstractAuthorWebPage.this.updateWaiter();
-			getDeleteButton().click();
-			acceptConfirmation();
-			return waiter.get();
-		}
+  private class PageRow {
+    private By pageBy;
 
-	}
+    private WebElement getPageRow() {
+      return getTable().findElement(pageBy);
+    }
+
+    private WebElement getRowElem(String xpath) {
+      return getPageRow().findElement(By.xpath(xpath));
+    }
+
+    private WebElement getDeleteButton() {
+      return getRowElem("td/a[@title='Delete']");
+    }
+
+    private WebElement getEditButton() {
+      return getRowElem("td[@class='name']/a");
+    }
+
+    public PageRow(By by) {
+      this.pageBy = by;
+    }
+
+    public T edit() {
+      WaitingPageObject<T> waiter = AbstractAuthorWebPage.this.updateWaiter();
+      getEditButton().click();
+      return waiter.get();
+    }
+
+    public T delete() {
+      WaitingPageObject<T> waiter = AbstractAuthorWebPage.this.updateWaiter();
+      getDeleteButton().click();
+      acceptConfirmation();
+      return waiter.get();
+    }
+  }
 }

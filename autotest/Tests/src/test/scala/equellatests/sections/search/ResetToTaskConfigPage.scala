@@ -11,9 +11,9 @@ case class ResetToTaskConfigPage(ctx: PageContext) extends WaitingBrowserPage {
     sel.selectByVisibleText(task)
   }
 
-  def comment : String = commentField.getText
+  def comment: String = commentField.getText
 
-  def comment_=(msg: String) : Unit = {
+  def comment_=(msg: String): Unit = {
     val field = commentField
     field.clear()
     field.sendKeys(msg)
