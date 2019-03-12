@@ -50,9 +50,7 @@ object RunWithDB {
   }
 
   def executeTransaction[A](connection: Connection, jdbc: JDBCIO[A]): A = {
-    if (TransactionSynchronizationManager
-          .getResource(getSessionFactory)
-          .asInstanceOf[SessionHolder] != null) {
+    if (TransactionSynchronizationManager.isSynchronizationActive) {
       val msg =
         "Hibernate transaction is available on this thread - should be using executeWithHibernate"
       if (DebugSettings.isDebuggingMode) sys.error(msg)

@@ -146,7 +146,7 @@ class PreLoginNoticeConfigurator extends React.Component<
     const Dialogs = this.Dialogs;
     return (
       <SettingsMenuContainer>
-        <Typography color="textSecondary" variant="subheading">
+        <Typography color="textSecondary" variant="subtitle1">
           {strings.prelogin.label}
         </Typography>
         <Grid id="preLoginConfig" container spacing={8} direction="column">
