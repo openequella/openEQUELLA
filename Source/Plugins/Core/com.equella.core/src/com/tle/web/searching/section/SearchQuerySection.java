@@ -661,10 +661,13 @@ public class SearchQuerySection
 
   @NonNullByDefault(false)
   public class SearchQueryModel extends AbstractResetFiltersQuerySection.AbstractQuerySectionModel {
-    @Bookmarked(name = "sw")
+    @Bookmarked(name = "sw", stateful = false)
     private boolean submitWizard;
 
-    @Bookmarked(name = "editquery", parameter = "editquery", supported = true)
+    @Bookmarked(
+        name = "editquery",
+        parameter = "editquery",
+        supported = true) // , contexts = BookmarkEvent.CONTEXT_SESSION)
     private boolean editQuery;
 
     @Bookmarked(parameter = "doc", rendered = true, supported = true)
@@ -768,6 +771,7 @@ public class SearchQuerySection
                 powerPage.saveToDocument(info2);
                 PropBagEx newXml = powerPage.getDocBag();
                 setXml(newXml.toString());
+                // setSubmitWizard(false);
               }
             });
       }
