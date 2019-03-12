@@ -15,31 +15,72 @@
  */
 
 package com.tle.web.api.cloudprovider
+
 import com.tle.core.cloudproviders.{
   CloudProviderDB,
   CloudProviderRegistration,
   CloudProviderRegistrationResponse
 }
+import com.tle.core.db.RunWithDB
+import com.tle.core.settings.SettingsDB
 import com.tle.web.api.ApiHelper
+import io.lemonlabs.uri.{Uri, Url}
+import io.lemonlabs.uri.parsing.{UriParser, UrlParser}
 import io.swagger.annotations.{Api, ApiOperation}
-import javax.ws.rs.core.Response
-import javax.ws.rs.{POST, Path, PathParam, QueryParam}
+import javax.ws.rs.core.{Context, Response, UriInfo}
+import javax.ws.rs._
+
+case class CloudProviderCallback(returnUrl: String)
 
 @Api("Cloud Providers")
 @Path("cloudprovider")
 class CloudProviderApi {
 
+  import CloudProviderApi._
+
   @POST
-  @Path("register/{regtoken}")
+  @Path("register")
   @ApiOperation(value = "Register a cloud provider",
                 response = classOf[CloudProviderRegistrationResponse])
-  def register(@PathParam("regtoken") regtoken: String,
+  def register(@QueryParam(TokenParam) @DefaultValue("") regtoken: String,
                registration: CloudProviderRegistration): Response = {
     ApiHelper.runAndBuild {
-      CloudProviderDB.register(registration).map { validatedInstance =>
+      CloudProviderDB.register(regtoken, registration).map { validatedInstance =>
         ApiHelper.validationOrEntity(
           validatedInstance.map(inst => CloudProviderRegistrationResponse(inst, "http://")))
       }
     }
   }
+
+  @POST
+  @Path("register/init")
+  @ApiOperation(value = "Prepare openEQUELLA for a cloud provider registration")
+  def prepareRegistration(@QueryParam("url") @DefaultValue("") providerUrl: String,
+                          @Context uriInfo: UriInfo): CloudProviderCallback = {
+    UrlParser.parseUrl(providerUrl) match {
+      case u: Url =>
+        RunWithDB.execute {
+          SettingsDB.ensureEditSystem {
+            for {
+              token <- CloudProviderDB.createRegistrationToken
+            } yield {
+              val returnUrl = uriInfo.getBaseUriBuilder
+                .path(classOf[CloudProviderApi])
+                .path("register")
+                .queryParam(TokenParam, token)
+                .build()
+                .toString
+              CloudProviderCallback(u.addParam(RegistrationParam, returnUrl).toString)
+            }
+          }
+        }
+      case _ => throw new BadRequestException("Invalid provider registration url")
+    }
+
+  }
+}
+
+object CloudProviderApi {
+  final val TokenParam        = "token"
+  final val RegistrationParam = "registration"
 }

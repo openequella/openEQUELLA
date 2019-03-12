@@ -16,13 +16,20 @@
 
 package com.tle.core.cloudproviders
 
+import java.util.concurrent.TimeUnit
 import java.util.{Locale, UUID}
 
+import cats.data.Validated.{Invalid, Valid}
 import cats.data.ValidatedNec
+import cats.effect.{IO, LiftIO}
+import cats.syntax.validated._
+import cats.syntax.apply._
+import cats.syntax.applicative._
 import com.tle.core.db._
 import com.tle.core.db.dao.{EntityDB, EntityDBExt}
 import com.tle.core.db.tables.OEQEntity
 import com.tle.core.validation.EntityValidation
+import com.tle.legacy.LegacyGuice
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.doolse.simpledba.Iso
 import io.doolse.simpledba.circe.circeJsonUnsafe
@@ -35,7 +42,9 @@ case class CloudProviderData(baseUrl: String,
                              viewers: Map[String, Map[String, Viewer]])
 
 object CloudProviderData {
+
   import io.circe.generic.auto._
+
   implicit val decoder = deriveDecoder[CloudProviderData]
   implicit val encoder = deriveEncoder[CloudProviderData]
 }
@@ -43,6 +52,9 @@ object CloudProviderData {
 case class CloudProviderDB(entity: OEQEntity, data: CloudProviderData)
 
 object CloudProviderDB {
+
+  val tokenCache =
+    LegacyGuice.replicatedCacheService.getCache[String]("cloudRegTokens", 100, 1, TimeUnit.MINUTES)
 
   type CloudProviderVal[A] = ValidatedNec[EntityValidation, A]
 
@@ -91,16 +103,39 @@ object CloudProviderDB {
     }
   }
 
-  def register(
-      registration: CloudProviderRegistration): DB[CloudProviderVal[CloudProviderInstance]] =
-    for {
-      oeq    <- EntityDB.newEntity(UUID.randomUUID())
-      locale <- getContext.map(_.locale)
-      validated = validateRegistrationFields(oeq,
-                                             registration,
-                                             CloudOAuthCredentials.random(),
-                                             locale)
-      _ <- validated.traverse(cdb => flushDB(EntityDB.create(cdb)))
-    } yield validated.map(toInstance)
+  def validToken(regToken: String): DB[CloudProviderVal[Unit]] = {
+    LiftIO[DB].liftIO(IO {
+      if (!tokenCache.get(regToken).isPresent)
+        EntityValidation("token", "invalid").invalidNec
+      else {
+        tokenCache.invalidate(regToken)
+        ().validNec
+      }
+    })
+  }
 
+  def register(
+      regToken: String,
+      registration: CloudProviderRegistration): DB[CloudProviderVal[CloudProviderInstance]] =
+    validToken(regToken).flatMap {
+      case Valid(_) =>
+        for {
+          oeq    <- EntityDB.newEntity(UUID.randomUUID())
+          locale <- getContext.map(_.locale)
+          validated = validateRegistrationFields(oeq,
+                                                 registration,
+                                                 CloudOAuthCredentials.random(),
+                                                 locale)
+          _ <- validated.traverse(cdb => flushDB(EntityDB.create(cdb)))
+        } yield validated.map(toInstance)
+      case Invalid(e) => e.invalid[CloudProviderInstance].pure[DB]
+    }
+
+  def createRegistrationToken: DB[String] = {
+    LiftIO[DB].liftIO(IO {
+      val newToken = UUID.randomUUID().toString
+      tokenCache.put(newToken, newToken)
+      newToken
+    })
+  }
 }
