@@ -664,10 +664,7 @@ public class SearchQuerySection
     @Bookmarked(name = "sw", stateful = false)
     private boolean submitWizard;
 
-    @Bookmarked(
-        name = "editquery",
-        parameter = "editquery",
-        supported = true) // , contexts = BookmarkEvent.CONTEXT_SESSION)
+    @Bookmarked(name = "editquery", parameter = "editquery", supported = true)
     private boolean editQuery;
 
     @Bookmarked(parameter = "doc", rendered = true, supported = true)
