@@ -1,11 +1,11 @@
 # React JS based front ends
 
-Rather than a mix of server side components / javascript plumbing / jQuery, the new architecture takes
-the much cleaner approach of creating the UI completely in Javascript based languages which
+Rather than a mix of server side components / JavaScript plumbing / jQuery, the new architecture takes
+the much cleaner approach of creating the UI completely in JavaScript based languages which
 create [React](https://reactjs.org/) components to interact with the browser DOM.
 
 To catch as many problems as early as possible, two typed languages are used to
-compile to Javascript, rather than raw dynamically type Javascript.
+compile to JavaScript, rather than raw dynamically typed JavaScript.
 
 - [Purescript](http://www.purescript.org/)
 - [Typescript](https://www.typescriptlang.org/)
@@ -16,12 +16,12 @@ using a compatible subset (plain functions and plain records/objects).
 To achieve a modern look and feel based on Google's [Material Design](https://material.io/), a
 React component library called [Material UI](https://material-ui.com/) is used.
 
-To produce the smallest javascript deployment files a combination of `Browserify` + `Uglify` is used
-to shrink the javascript to as small as possible.
+To produce the smallest JavaScript deployment files, [ParcelJS](https://parceljs.org/) is used
+to shrink and bundle the JavaScript to be as concise as possible.
 
 ## Code layout
 
-All the Javascript based code is located in `Source/Plugins/Core/com.equella.core/js/`.
+All the JavaScript based code is located in `Source/Plugins/Core/com.equella.core/js/`.
 Inside that it contains the following layout:
 
 - `src/` - Purescript source code
@@ -29,7 +29,7 @@ Inside that it contains the following layout:
 - `target/` - Output files which SBT task `buildJS` will use to copy into openEQUELLA server as web accessible resources
 - `package-json` - NPM/Yarn dependencies + build tasks
 - `psc-package.json` - Purescript dependencies for psc-package
-- `build-bundle.js` - NodeJS script for running build tools
+- `.cache` - Parcel cache folder
 
 Currently there are two JS bundles created by the NPM tasks, one for the "Single page app"
 and the other is for the file upload control.
@@ -49,24 +49,28 @@ based router selects a root React component.
 - First install deps:
 
 ```
-yarn run install
+yarn install
 ```
 
-Compile Typescript in one terminal:
+- Compile just TypeScript and JavaScript:
 
 ```
-tsc -w
+yarn run dev
 ```
 
-Run `dev:index` task in another:
+- Compile just PureScript:
 
 ```
-yarn run dev:index
+pulp build
 ```
 
-Changes to both the Purescript and Typescript will automatically compile and build the javascript
-bundle straight into the resources folder of a running openEQUELLA dev server. Refreshing in the
-browser should load the new changes.
+- Compile all at once:
+
+```
+yarn run dev:build
+```
+
+Refreshing in the browser after compiling should load the new changes in a running openEQUELLA server.
 
 ---
 
@@ -143,7 +147,7 @@ foreign import helloWorldClass :: forall a. ReactClass a
 
 **TSComponents.js**
 
-```javascript
+```JavaScript
 exports.helloWorldClass = require("HelloWorld").default;
 ```
 
