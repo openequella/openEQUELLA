@@ -768,7 +768,6 @@ public class SearchQuerySection
                 powerPage.saveToDocument(info2);
                 PropBagEx newXml = powerPage.getDocBag();
                 setXml(newXml.toString());
-                // setSubmitWizard(false);
               }
             });
       }
