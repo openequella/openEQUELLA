@@ -80,4 +80,14 @@ object LoginNoticeMenuPropertiesSerial extends ShotProperties("Login Notice Menu
       Prop(page2.findElementO(By.id("loginNotice")).isEmpty)
     }
   }
+
+  property("pre login notice creation with image, check login screen for image") =
+    withLogon(autoTestLogon) { context =>
+      val page                   = LoginNoticePage(context).load()
+      val equellaGithubAvatarURL = "https://avatars3.githubusercontent.com/u/1464467?s=200&v=4"
+      page.setPreLoginNoticeWithImageURL(equellaGithubAvatarURL)
+
+      val page2 = LoginPage(context).load()
+      Prop(page2.loginNoticeHasImageWithSrc(equellaGithubAvatarURL))
+    }
 }
