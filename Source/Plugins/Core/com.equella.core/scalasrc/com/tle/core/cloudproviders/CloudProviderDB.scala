@@ -15,9 +15,11 @@
  */
 
 package com.tle.core.cloudproviders
-import java.util.UUID
+
+import java.util.{Locale, UUID}
 
 import cats.data.ValidatedNec
+import com.tle.core.cloudproviders.CloudProviderDB.toInstance
 import com.tle.core.db._
 import com.tle.core.db.dao.{EntityDB, EntityDBExt}
 import com.tle.core.db.tables.OEQEntity
@@ -25,12 +27,6 @@ import com.tle.core.validation.EntityValidation
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.doolse.simpledba.Iso
 import io.doolse.simpledba.circe.circeJsonUnsafe
-
-case class CloudOAuthCredentials(clientId: String, clientSecret: String)
-
-case class Viewer(name: String, serviceId: String)
-
-case class ServiceUri(authenticated: Boolean, uri: String)
 
 case class CloudProviderData(baseUrl: String,
                              iconUrl: Option[String],
@@ -61,4 +57,51 @@ object CloudProviderDB {
 
       override def typeId: String = "cloudprovider"
     }
+
+  def toInstance(db: CloudProviderDB): CloudProviderInstance = {
+    val oeq  = db.entity
+    val data = db.data
+    CloudProviderInstance(
+      id = oeq.uuid.id,
+      name = oeq.name,
+      description = oeq.description,
+      baseUrl = data.baseUrl,
+      iconUrl = data.iconUrl,
+      providerAuth = data.providerAuth,
+      oeqAuth = data.oeqAuth,
+      serviceUris = data.serviceUris,
+      viewers = data.viewers
+    )
+  }
+
+  def validateRegistrationFields(oeq: OEQEntity,
+                                 reg: CloudProviderRegistration,
+                                 oeqAuth: CloudOAuthCredentials,
+                                 locale: Locale): CloudProviderVal[CloudProviderDB] = {
+    EntityValidation.nonBlank("name", reg.name, locale).map { name =>
+      val newOeq = oeq.copy(name = name._1, name_strings = name._2)
+      val data = CloudProviderData(
+        baseUrl = reg.baseUrl,
+        iconUrl = reg.iconUrl,
+        providerAuth = reg.providerAuth,
+        oeqAuth = oeqAuth,
+        serviceUris = reg.serviceUris,
+        viewers = reg.viewers
+      )
+      CloudProviderDB(newOeq, data)
+    }
+  }
+
+  def register(
+      registration: CloudProviderRegistration): DB[CloudProviderVal[CloudProviderInstance]] =
+    for {
+      oeq    <- EntityDB.newEntity(UUID.randomUUID())
+      locale <- getContext.map(_.locale)
+      validated = validateRegistrationFields(oeq,
+                                             registration,
+                                             CloudOAuthCredentials.random(),
+                                             locale)
+      _ <- validated.traverse(cdb => flushDB(EntityDB.create(cdb)))
+    } yield validated.map(toInstance)
+
 }
