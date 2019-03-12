@@ -146,7 +146,7 @@ class PreLoginNoticeConfigurator extends React.Component<
     const Dialogs = this.Dialogs;
     return (
       <SettingsMenuContainer>
-        <Typography color="textSecondary" variant="subtitle1">
+        <Typography color="textSecondary" variant="subheading">
           {strings.prelogin.label}
         </Typography>
         <Grid id="preLoginConfig" container spacing={8} direction="column">
@@ -162,7 +162,6 @@ class PreLoginNoticeConfigurator extends React.Component<
                 id="preApplyButton"
                 onClick={this.handleSubmitPreNotice}
                 variant="contained"
-                disabled={this.state.html == this.state.dbHtml}
               >
                 {commonString.action.save}
               </Button>

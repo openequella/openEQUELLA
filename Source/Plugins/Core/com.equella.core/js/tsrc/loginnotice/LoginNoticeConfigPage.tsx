@@ -111,7 +111,7 @@ class LoginNoticeConfigPage extends React.Component<
           <Tabs
             value={this.state.selectedTab}
             onChange={this.handleChangeTab}
-            variant="fullWidth"
+            fullWidth
           >
             <Tab id="preTab" label={strings.prelogin.label} />
             <Tab id="postTab" label={strings.postlogin.label} />
