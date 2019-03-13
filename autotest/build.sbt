@@ -200,18 +200,22 @@ val TestPrj = LocalProject("Tests")
 setupForTests := {
   val run = (runner in (TestPrj, Test)).value
   val log = sLog.value
-  run.run("equellatests.SetupForTests",
-          (fullClasspath in (TestPrj, Test)).value.files,
-          spaceDelimited("<arg>").parsed,
-          log).get
+  run
+    .run("equellatests.SetupForTests",
+         (fullClasspath in (TestPrj, Test)).value.files,
+         spaceDelimited("<arg>").parsed,
+         log)
+    .get
 }
 
 configureInstall := {
   val run = (runner in (TestPrj, Test)).value
-  run.run("equellatests.InstallFirstTime",
-          (fullClasspath in (TestPrj, Test)).value.files,
-          Seq(),
-          sLog.value).get
+  run
+    .run("equellatests.InstallFirstTime",
+         (fullClasspath in (TestPrj, Test)).value.files,
+         Seq(),
+         sLog.value)
+    .get
 }
 
 aggregate in test := false
