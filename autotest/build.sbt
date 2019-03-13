@@ -203,7 +203,7 @@ setupForTests := {
   run.run("equellatests.SetupForTests",
           (fullClasspath in (TestPrj, Test)).value.files,
           spaceDelimited("<arg>").parsed,
-          log)
+          log).get
 }
 
 configureInstall := {
@@ -211,7 +211,7 @@ configureInstall := {
   run.run("equellatests.InstallFirstTime",
           (fullClasspath in (TestPrj, Test)).value.files,
           Seq(),
-          sLog.value)
+          sLog.value).get
 }
 
 aggregate in test := false

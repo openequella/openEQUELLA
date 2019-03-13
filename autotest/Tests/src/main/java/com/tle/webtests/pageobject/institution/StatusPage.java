@@ -3,6 +3,7 @@ package com.tle.webtests.pageobject.institution;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.WaitingPageObject;
+import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -47,7 +48,8 @@ public class StatusPage<T extends InstitutionTabInterface> extends AbstractPage<
         ExpectedConditions.or(
             ExpectedConditions.elementToBeClickable(returnLinkBy),
             ExpectedConditions.visibilityOfElementLocated(By.id("error-div"))));
-    return !driver.findElements(returnLinkBy).isEmpty();
+    List<WebElement> errors = driver.findElements(By.xpath("id('error-list')/li"));
+    return errors.isEmpty();
   }
 
   public T back() {
