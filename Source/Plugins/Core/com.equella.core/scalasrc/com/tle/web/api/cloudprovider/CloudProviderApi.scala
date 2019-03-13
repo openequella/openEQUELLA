@@ -16,24 +16,23 @@
 
 package com.tle.web.api.cloudprovider
 
-import com.tle.core.cloudproviders.{
-  CloudProviderDB,
-  CloudProviderRegistration,
-  CloudProviderRegistrationResponse
-}
+import java.util.UUID
+
+import com.tle.core.cloudproviders._
 import com.tle.core.db.RunWithDB
 import com.tle.core.settings.SettingsDB
-import com.tle.web.api.ApiHelper
+import com.tle.web.api.{ApiHelper, EntityPaging}
 import io.lemonlabs.uri.{Uri, Url}
 import io.lemonlabs.uri.parsing.{UriParser, UrlParser}
 import io.swagger.annotations.{Api, ApiOperation}
-import javax.ws.rs.core.{Context, Response, UriInfo}
+import javax.ws.rs.core.{Context, MediaType, Response, UriInfo}
 import javax.ws.rs._
 
 case class CloudProviderCallback(returnUrl: String)
 
 @Api("Cloud Providers")
 @Path("cloudprovider")
+@Produces(value = Array(MediaType.APPLICATION_JSON))
 class CloudProviderApi {
 
   import CloudProviderApi._
@@ -77,6 +76,28 @@ class CloudProviderApi {
       case _ => throw new BadRequestException("Invalid provider registration url")
     }
 
+  }
+
+  @GET
+  @Path("")
+  @ApiOperation("List current cloud providers")
+  def list(): EntityPaging[CloudProviderDetails] = {
+    EntityPaging.allResults(
+      Iterable(
+        CloudProviderDetails(
+          UUID.randomUUID(),
+          "Edalex",
+          Some("The Edalex cloud provider"),
+          Some(
+            "https://static.wixstatic.com/media/ed3f73_4a88d00cc545486eb879e2752339390e~mv2.png/v1/fill/w_454,h_331,al_c,usm_0.66_1.00_0.01/edalexcloud_edited.png")
+        ),
+        CloudProviderDetails(UUID.randomUUID(),
+                             "Penghai solutions",
+                             Some("Penghai provides clouds"),
+                             None),
+        CloudProviderDetails(UUID.randomUUID(), "Doolsoft", None, None),
+      )
+    )
   }
 }
 

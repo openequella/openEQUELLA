@@ -50,4 +50,8 @@ package object cloudproviders {
                                    serviceUris: Map[String, ServiceUri],
                                    viewers: Map[String, Map[String, Viewer]])
 
+  case class CloudProviderDetails(id: UUID,
+                                  name: String,
+                                  description: Option[String],
+                                  iconUrl: Option[String])
 }
