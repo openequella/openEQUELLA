@@ -19,14 +19,10 @@ package com.tle.core.db
 import java.sql.Connection
 
 import cats.effect.IO
-import com.tle.common.i18n.CurrentLocale
 import com.tle.common.institution.CurrentInstitution
-import com.tle.common.usermanagement.user.CurrentUser
-import com.tle.core.hibernate.CurrentDataSource
 import com.tle.core.hibernate.impl.HibernateServiceImpl
 import com.tle.web.DebugSettings
 import io.doolse.simpledba.jdbc._
-import org.hibernate.jdbc.Work
 import org.slf4j.LoggerFactory
 import org.springframework.orm.hibernate3.SessionHolder
 import org.springframework.transaction.support.TransactionSynchronizationManager
@@ -38,9 +34,12 @@ object RunWithDB {
   lazy val getSessionFactory =
     HibernateServiceImpl.getInstance().getTransactionAwareSessionFactory("main", false)
 
+  def getSessionHolder() = {
+    TransactionSynchronizationManager.getResource(getSessionFactory).asInstanceOf[SessionHolder]
+  }
+
   def executeWithHibernate[A](jdbc: DB[A]): A = {
-    val sessionHolder =
-      TransactionSynchronizationManager.getResource(getSessionFactory).asInstanceOf[SessionHolder]
+    val sessionHolder = getSessionHolder()
     if (sessionHolder == null) {
       sys.error("There is no hibernate session - make sure it's inside @Transactional")
     }
@@ -50,9 +49,8 @@ object RunWithDB {
   }
 
   def executeTransaction[A](connection: Connection, jdbc: JDBCIO[A]): A = {
-    if (TransactionSynchronizationManager
-          .getResource(getSessionFactory)
-          .asInstanceOf[SessionHolder] != null) {
+    val sessionHolder = getSessionHolder()
+    if (sessionHolder != null && Option(sessionHolder.getTransaction).exists(_.isActive)) {
       val msg =
         "Hibernate transaction is available on this thread - should be using executeWithHibernate"
       if (DebugSettings.isDebuggingMode) sys.error(msg)

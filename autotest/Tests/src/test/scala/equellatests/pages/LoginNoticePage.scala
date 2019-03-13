@@ -13,7 +13,16 @@ case class LoginNoticePage(ctx: PageContext)
 
   private def preNoticeClearButton: WebElement = findElementById("preClearButton")
 
-  private def preNoticeField: WebElement = findElementById("preNoticeField")
+  private def preNoticeField: WebElement = findElement(By.className("public-DraftEditor-content"))
+
+  private def preNoticeAddImageButton: WebElement = findElement(By.className("rdw-image-wrapper"))
+
+  private def preNoticeAddImagePopup: WebElement = findElement(By.className("rdw-image-modal"))
+
+  private def preNoticeAddImageField: WebElement = findElement(By.name("imgSrc"))
+
+  private def preNoticeAddImageOK: WebElement =
+    preNoticeAddImagePopup.findElement(By.xpath("//button[text()='Add']"))
 
   private def postNoticeApplyButton: WebElement = findElementById("postApplyButton")
 
@@ -43,6 +52,19 @@ case class LoginNoticePage(ctx: PageContext)
 
   def setPreLoginNotice(notice: String): Unit = {
     populatePreNoticeField(notice)
+    preNoticeApplyButton.click()
+    waitForSnackBar("Login notice saved successfully.")
+  }
+
+  def setPreLoginNoticeWithImageURL(imgURL: String): Unit = {
+    populatePreNoticeField("Image:")
+    preNoticeAddImageButton.click()
+    waitFor(ExpectedConditions.visibilityOf(preNoticeAddImagePopup))
+    preNoticeAddImageField.click()
+    preNoticeAddImageField.sendKeys(imgURL)
+    waitFor(ExpectedConditions.elementToBeClickable(preNoticeAddImageOK))
+    preNoticeAddImageOK.click()
+    waitFor(ExpectedConditions.elementToBeClickable(preNoticeApplyButton))
     preNoticeApplyButton.click()
     waitForSnackBar("Login notice saved successfully.")
   }

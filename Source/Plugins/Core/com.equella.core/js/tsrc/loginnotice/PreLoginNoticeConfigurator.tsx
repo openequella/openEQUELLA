@@ -162,7 +162,6 @@ class PreLoginNoticeConfigurator extends React.Component<
                 id="preApplyButton"
                 onClick={this.handleSubmitPreNotice}
                 variant="contained"
-                disabled={this.state.html == this.state.dbHtml}
               >
                 {commonString.action.save}
               </Button>

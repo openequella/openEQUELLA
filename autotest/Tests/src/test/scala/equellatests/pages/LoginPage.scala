@@ -3,7 +3,7 @@ package equellatests.pages
 import com.tle.webtests.framework.PageContext
 import equellatests.browserpage.LoadablePage
 import org.openqa.selenium.{By, WebElement}
-import org.openqa.selenium.support.ui.ExpectedCondition
+import org.openqa.selenium.support.ui.{ExpectedCondition, ExpectedConditions}
 
 case class LoginPage(ctx: PageContext) extends LoadablePage {
 
@@ -32,7 +32,14 @@ case class LoginPage(ctx: PageContext) extends LoadablePage {
 
   private def loginNotice: WebElement = findElementById("loginNotice")
 
+  private def loginNoticeImage: WebElement = loginNotice.findElement(By.tagName("img"))
+
   def loginNoticeExists: Boolean = {
     loginNotice.isDisplayed
+  }
+
+  def loginNoticeHasImageWithSrc(src: String): Boolean = {
+    waitFor(ExpectedConditions.visibilityOf(loginNoticeImage))
+    loginNoticeImage.isDisplayed && loginNoticeImage.getAttribute("src") == src
   }
 }
