@@ -19,7 +19,6 @@ package com.tle.core.cloudproviders
 import java.util.{Locale, UUID}
 
 import cats.data.ValidatedNec
-import com.tle.core.cloudproviders.CloudProviderDB.toInstance
 import com.tle.core.db._
 import com.tle.core.db.dao.{EntityDB, EntityDBExt}
 import com.tle.core.db.tables.OEQEntity
