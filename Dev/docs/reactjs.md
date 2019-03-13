@@ -52,25 +52,23 @@ based router selects a root React component.
 yarn install
 ```
 
-- Compile just TypeScript and JavaScript:
+- Compile just the development bundles (leave it open as it watches for changes and autocompiles):
 
 ```
 yarn run dev
 ```
 
-- Compile just PureScript:
-
-```
-pulp build
-```
-
-- Compile all at once:
+- Compile production bundles:
 
 ```
 yarn run dev:build
 ```
 
 Refreshing in the browser after compiling should load the new changes in a running openEQUELLA server.
+
+**TROUBLESHOOTING**
+
+Parcel aggressively caches its bundles, and this can cause issues if it doesn't invalidate properly. Delete the `.cache` folder to force a cache rebuild.
 
 ---
 
