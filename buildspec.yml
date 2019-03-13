@@ -9,8 +9,6 @@ phases:
   pre_build:
     commands:
       - env
-      - yarn global add psc-package@0.3.2
-      - psc-package --version
       - setupBuild
   install:
     commands:
@@ -22,9 +20,9 @@ phases:
   post_build:
     commands:
       - publishBuildResults
-      - echo "Finished"
 cache:
   paths:
     - "/root/.ivy2/**/*"
     - "/root/.npm/**/*"
     - "/root/.sbt/**/*"
+    - "/root/.cache/yarn/**/*"
