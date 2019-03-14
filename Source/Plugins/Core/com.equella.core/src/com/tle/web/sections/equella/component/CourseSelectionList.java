@@ -58,9 +58,6 @@ public class CourseSelectionList extends SingleSelectionList<CourseInfo> {
   @PlugKey("component.courseselectionlist.selectedcourse")
   private static String SELECTED_COURSE;
 
-  @PlugKey("component.courseselectionlist.selectedcoursenocode")
-  private static String SELECTED_COURSE_NO_CODE;
-
   @Inject private InstitutionService institutionService;
   @Inject private CourseInfoService courseInfoService;
 
@@ -72,10 +69,10 @@ public class CourseSelectionList extends SingleSelectionList<CourseInfo> {
     setRenderOptions(new CourseSelectionListAutocompleteDropdownRenderOptions(institutionService));
   }
 
-  protected static Option<CourseInfo> convertToOption(final CourseInfo course) {
+  protected static Option<CourseInfo> convertToOption(CourseInfo course) {
     final String name;
     if (course.getCode() == null) {
-      name = CurrentLocale.get(SELECTED_COURSE_NO_CODE, CurrentLocale.get(course.getName()));
+      name = CurrentLocale.get(course.getName());
     } else {
       name =
           CurrentLocale.get(SELECTED_COURSE, course.getCode(), CurrentLocale.get(course.getName()));
@@ -85,7 +82,7 @@ public class CourseSelectionList extends SingleSelectionList<CourseInfo> {
   }
 
   @Override
-  protected void extraHtmlRender(final SectionInfo info) {
+  protected void extraHtmlRender(SectionInfo info) {
     super.extraHtmlRender(info);
 
     final HtmlListState listState = getModel(info);
@@ -103,7 +100,7 @@ public class CourseSelectionList extends SingleSelectionList<CourseInfo> {
     return (renderOptions == null ? false : renderOptions.isShowArchived());
   }
 
-  public void setShowArchived(final boolean isShowArchived) {
+  public void setShowArchived(boolean isShowArchived) {
     if (renderOptions != null) {
       ensureBuildingTree();
       renderOptions.setShowArchived(isShowArchived);
@@ -114,8 +111,7 @@ public class CourseSelectionList extends SingleSelectionList<CourseInfo> {
     return renderOptions;
   }
 
-  public void setRenderOptions(
-      final CourseSelectionListAutocompleteDropdownRenderOptions renderOptions) {
+  public void setRenderOptions(CourseSelectionListAutocompleteDropdownRenderOptions renderOptions) {
     ensureBuildingTree();
     this.renderOptions = renderOptions;
   }
@@ -127,17 +123,17 @@ public class CourseSelectionList extends SingleSelectionList<CourseInfo> {
     protected boolean isShowArchived;
 
     public CourseSelectionListAutocompleteDropdownRenderOptions(
-        final InstitutionService institutionService) {
+        InstitutionService institutionService) {
       this.institutionService = institutionService;
     }
 
     @Override
-    public JSCallAndReference getExtension(final PreRenderContext info) {
+    public JSCallAndReference getExtension(PreRenderContext info) {
       return EXTENSION;
     }
 
     @Override
-    public Map<String, Object> getParameters(final PreRenderContext info) {
+    public Map<String, Object> getParameters(PreRenderContext info) {
       final Map<String, Object> params = new HashMap<>();
       params.put("ajaxurl", institutionService.institutionalise("api/course"));
       params.put("ajaxurlparam", "q");
@@ -151,7 +147,7 @@ public class CourseSelectionList extends SingleSelectionList<CourseInfo> {
       return isShowArchived;
     }
 
-    public void setShowArchived(final boolean isShowArchived) {
+    public void setShowArchived(boolean isShowArchived) {
       this.isShowArchived = isShowArchived;
     }
   }
@@ -160,17 +156,17 @@ public class CourseSelectionList extends SingleSelectionList<CourseInfo> {
 
     private final CourseInfoService courseInfoService;
 
-    public CourseSelectionListModel(final CourseInfoService courseInfoService) {
+    public CourseSelectionListModel(CourseInfoService courseInfoService) {
       this.courseInfoService = courseInfoService;
     }
 
     @Override
-    protected Option<CourseInfo> convertToOption(final CourseInfo course) {
+    protected Option<CourseInfo> convertToOption(CourseInfo course) {
       return CourseSelectionList.convertToOption(course);
     }
 
     @Override
-    public CourseInfo getValue(final SectionInfo info, final String value) {
+    public CourseInfo getValue(SectionInfo info, String value) {
       if (value != null) {
         return courseInfoService.getByUuid(value);
       }
