@@ -144,12 +144,12 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
 
     @Inject
     public RolloverActivationExecutor(
-        @Assisted final long courseId,
-        @Assisted("from") final Date from,
-        @Assisted("until") final Date until,
-        @Assisted("cancel") final boolean cancel,
-        @Assisted("sameCourse") final boolean sameCourse,
-        @Assisted("rolloverDates") final boolean rolloverDates) {
+        @Assisted long courseId,
+        @Assisted("from") Date from,
+        @Assisted("until") Date until,
+        @Assisted("cancel") boolean cancel,
+        @Assisted("sameCourse") boolean sameCourse,
+        @Assisted("rolloverDates") boolean rolloverDates) {
       this.courseId = courseId;
       this.from = from;
       this.until = until;
@@ -160,7 +160,7 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
 
     @Override
     public WorkflowOperation[] getOperations() {
-      final RolloverOperation rollover = operationFactory.createRollover(courseId, from, until);
+      RolloverOperation rollover = operationFactory.createRollover(courseId, from, until);
       rollover.setUseSameCourse(sameCourse);
       rollover.setRolloverDates(rolloverDates);
       rollover.setCancel(cancel);
@@ -174,16 +174,15 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
   }
 
   @Override
-  public BeanLocator<BulkOperationExecutor> getExecutor(
-      final SectionInfo info, final String operationId) {
-    final CourseInfo course = getSelectedCourse(info);
-    final boolean sameCourse = (course == null);
-    final long courseId = sameCourse ? 0 : course.getId();
-    final boolean cancel = cancelExisting.isChecked(info);
-    final boolean rolloverDates = rolloverActivationDates.isChecked(info);
+  public BeanLocator<BulkOperationExecutor> getExecutor(SectionInfo info, String operationId) {
+    CourseInfo course = getSelectedCourse(info);
+    boolean sameCourse = (course == null);
+    long courseId = sameCourse ? 0 : course.getId();
+    boolean cancel = cancelExisting.isChecked(info);
+    boolean rolloverDates = rolloverActivationDates.isChecked(info);
 
-    final Date from = toDate(fromDate.getDate(info), new Date());
-    final Date until = toDate(toDate.getDate(info), new Date());
+    Date from = toDate(fromDate.getDate(info), new Date());
+    Date until = toDate(toDate.getDate(info), new Date());
 
     return new FactoryMethodLocator<BulkOperationExecutor>(
         RolloverExecutorFactory.class,
@@ -196,7 +195,7 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
         rolloverDates);
   }
 
-  private CourseInfo getSelectedCourse(final SectionInfo info) {
+  private CourseInfo getSelectedCourse(SectionInfo info) {
     final CourseInfo course = courses.getSelectedValue(info);
     if (course != null && course.getCode().equals("existing")) {
       return null;
@@ -205,7 +204,7 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
   }
 
   @Nullable
-  private Date toDate(@Nullable final TleDate date, final Date defaultDate) {
+  private Date toDate(@Nullable TleDate date, Date defaultDate) {
     if (date == null) {
       return defaultDate;
     }
@@ -224,19 +223,19 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
   }
 
   @Override
-  public void addOptions(final SectionInfo info, final List<Option<OperationInfo>> opsList) {
+  public void addOptions(SectionInfo info, List<Option<OperationInfo>> opsList) {
     opsList.add(
         new KeyOption<OperationInfo>(
             KEY_NAME + BULK_VALUE, BULK_VALUE, new OperationInfo(this, BULK_VALUE)));
   }
 
   @Override
-  public Label getStatusTitleLabel(final SectionInfo info, final String operationId) {
+  public Label getStatusTitleLabel(SectionInfo info, String operationId) {
     return new KeyLabel(KEY_STATUS, new KeyLabel(KEY_NAME + operationId + ".title"));
   }
 
   @Override
-  public void registered(final String id, final SectionTree tree) {
+  public void registered(String id, SectionTree tree) {
     super.registered(id, tree);
     courses.setEventHandler(
         JSHandler.EVENT_CHANGE, events.getNamedHandler("updateDatesFromCourse"));
@@ -262,35 +261,35 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
   }
 
   @Override
-  public void register(final SectionTree tree, final String parentId) {
+  public void register(SectionTree tree, String parentId) {
     tree.registerInnerSection(this, parentId);
   }
 
   @EventHandlerMethod
-  public void useExistingDates(final SectionInfo info) {
+  public void useExistingDates(SectionInfo info) {
     fromDate.setDisabled(info, rolloverActivationDates.isChecked(info));
     toDate.setDisabled(info, rolloverActivationDates.isChecked(info));
   }
 
   @Override
-  public boolean validateOptions(final SectionInfo info, final String operationId) {
+  public boolean validateOptions(SectionInfo info, String operationId) {
     return (rolloverActivationDates.isChecked(info))
         || (fromDate.getDate(info) != null && toDate.getDate(info) != null);
   }
 
   @Override
-  public boolean areOptionsFinished(final SectionInfo info, final String operationId) {
+  public boolean areOptionsFinished(SectionInfo info, String operationId) {
     return validateOptions(info, operationId)
         && activationResultsDialog.getModel(info).isShowOptions();
   }
 
   @Override
-  public boolean hasExtraOptions(final SectionInfo info, final String operationId) {
+  public boolean hasExtraOptions(SectionInfo info, String operationId) {
     return true;
   }
 
   @Override
-  public SectionRenderable renderOptions(final RenderContext context, final String operationId) {
+  public SectionRenderable renderOptions(RenderContext context, String operationId) {
     return viewFactory.createResult("rolloveractivations.ftl", this);
   }
 
@@ -315,42 +314,41 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
   }
 
   @Override
-  public void prepareDefaultOptions(final SectionInfo info, final String operationId) {
+  public void prepareDefaultOptions(SectionInfo info, String operationId) {
     updateDatesFromCourse(info);
   }
 
   @EventHandlerMethod
-  public void updateDatesFromCourse(final SectionInfo info) {
-    final CourseInfo course = courses.getSelectedValue(info);
-    final UtcDate[] dates = activationService.getDefaultCourseDates(course);
+  public void updateDatesFromCourse(SectionInfo info) {
+    CourseInfo course = courses.getSelectedValue(info);
+    UtcDate[] dates = activationService.getDefaultCourseDates(course);
     // set the default control values
     fromDate.setDate(info, dates[0]);
     toDate.setDate(info, dates[1]);
   }
 
   @Override
-  public boolean hasExtraNavigation(final SectionInfo info, final String operationId) {
+  public boolean hasExtraNavigation(SectionInfo info, String operationId) {
     return false;
   }
 
   @Override
-  public Collection<Button> getExtraNavigation(final SectionInfo info, final String operationId) {
+  public Collection<Button> getExtraNavigation(SectionInfo info, String operationId) {
     return null;
   }
 
   @Override
-  public boolean hasPreview(final SectionInfo info, final String operationId) {
+  public boolean hasPreview(SectionInfo info, String operationId) {
     return false;
   }
 
   @Override
-  public ItemPack runPreview(
-      final SectionInfo info, final String operationId, final long itemUuid) {
+  public ItemPack runPreview(SectionInfo info, String operationId, long itemUuid) {
     return null;
   }
 
   @Override
-  public boolean showPreviousButton(final SectionInfo info, final String opererationId) {
+  public boolean showPreviousButton(SectionInfo info, String opererationId) {
     return true;
   }
 
@@ -360,12 +358,12 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
     }
 
     @Override
-    public String getDefaultValue(final SectionInfo info) {
+    public String getDefaultValue(SectionInfo info) {
       return EXISTING_COURSE_ID;
     }
 
     @Override
-    public CourseInfo getValue(final SectionInfo info, final String value) {
+    public CourseInfo getValue(SectionInfo info, String value) {
       if (value.equals(EXISTING_COURSE_ID)) {
         final CourseInfo course = new CourseInfo();
         course.setUuid(EXISTING_COURSE_ID);
