@@ -17,6 +17,8 @@
 package com.tle.web.api.loginnotice;
 
 import io.swagger.annotations.Api;
+import java.io.File;
+import java.io.IOException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -31,7 +33,16 @@ public interface PreLoginNoticeResource {
 
   @PUT
   @Consumes(MediaType.TEXT_HTML)
-  Response setPreLoginNotice(String loginNotice);
+  Response setPreLoginNotice(String loginNotice) throws IOException;
+
+  @GET
+  @Path("image/{name}")
+  @PathParam("name")
+  Response getPreLoginNoticeImage(@PathParam("name") String name) throws IOException;
+
+  @PUT
+  @Path("image")
+  Response uploadPreLoginNoticeImage(File imageFile) throws IOException;
 
   @DELETE
   Response deletePreLoginNotice();

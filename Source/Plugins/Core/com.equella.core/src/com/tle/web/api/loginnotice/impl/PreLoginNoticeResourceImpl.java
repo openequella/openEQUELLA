@@ -16,9 +16,14 @@
 
 package com.tle.web.api.loginnotice.impl;
 
+import com.google.gson.JsonObject;
 import com.tle.core.guice.Bind;
 import com.tle.core.settings.loginnotice.LoginNoticeService;
 import com.tle.web.api.loginnotice.PreLoginNoticeResource;
+import com.tle.web.resources.PluginResourceHelper;
+import com.tle.web.resources.ResourcesService;
+import java.io.File;
+import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
@@ -28,6 +33,10 @@ import javax.ws.rs.core.Response;
 @Singleton
 public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
   @Inject LoginNoticeService noticeService;
+
+  @Inject
+  private static PluginResourceHelper helper =
+      ResourcesService.getResourceHelper(PreLoginNoticeResourceImpl.class);
 
   @Override
   public Response retrievePreLoginNotice() {
@@ -39,7 +48,7 @@ public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
   }
 
   @Override
-  public Response setPreLoginNotice(String loginNotice) {
+  public Response setPreLoginNotice(String loginNotice) throws IOException {
     noticeService.setPreLoginNotice(loginNotice);
     return Response.ok().build();
   }
@@ -48,5 +57,20 @@ public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
   public Response deletePreLoginNotice() {
     noticeService.deletePreLoginNotice();
     return Response.ok().build();
+  }
+
+  @Override
+  public Response getPreLoginNoticeImage(String name) throws IOException {
+    return Response.ok(noticeService.getPreLoginNoticeImage(name), "image/png").build();
+  }
+
+  @Override
+  public Response uploadPreLoginNoticeImage(File imageFile) throws IOException {
+    JsonObject returnLink = new JsonObject();
+    returnLink.addProperty(
+        "link",
+        helper.instUrl(
+            "api/preloginnotice/image/" + noticeService.uploadPreLoginNoticeImage(imageFile)));
+    return Response.ok(returnLink.toString(), "application/json").build();
   }
 }
