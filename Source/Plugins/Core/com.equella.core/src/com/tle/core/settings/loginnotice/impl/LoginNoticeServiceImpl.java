@@ -82,6 +82,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
 
   @Override
   public String uploadPreLoginNoticeImage(File imageFile) throws IOException {
+    checkPermissions();
     CustomisationFile customisationFile = new CustomisationFile();
     String testName = (imageFile.getName() + ".png");
 
@@ -131,7 +132,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     configurationService.deleteProperty(POST_LOGIN_NOTICE_KEY);
   }
 
-  private void checkPermissions() {
+  public void checkPermissions() {
     if (tleAclManager
         .filterNonGrantedPrivileges(Collections.singleton(PERMISSION_KEY), false)
         .isEmpty()) {

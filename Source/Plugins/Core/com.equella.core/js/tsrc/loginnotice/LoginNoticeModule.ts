@@ -32,6 +32,9 @@ export const strings = prepLangStrings("loginnoticepage", {
     saved: "Login notice saved successfully.",
     cleared: "Login notice cleared successfully.",
     reverted: "Reverted changes to login notice."
+  },
+  errors: {
+    permissions: "You do not have permission to edit these settings."
   }
 });
 

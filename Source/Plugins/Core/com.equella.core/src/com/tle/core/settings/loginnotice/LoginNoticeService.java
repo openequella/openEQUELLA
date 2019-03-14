@@ -37,4 +37,6 @@ public interface LoginNoticeService {
   void setPostLoginNotice(String notice);
 
   void deletePostLoginNotice();
+
+  void checkPermissions();
 }

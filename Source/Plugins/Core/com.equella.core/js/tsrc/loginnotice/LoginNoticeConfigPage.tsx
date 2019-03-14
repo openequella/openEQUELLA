@@ -2,7 +2,11 @@ import * as React from "react";
 import { Bridge } from "../api/bridge";
 import { AxiosError } from "axios";
 import MessageInfo from "../components/MessageInfo";
-import { ErrorResponse, generateFromError } from "../api/errors";
+import {
+  ErrorResponse,
+  generateFromError,
+  generateNewErrorID
+} from "../api/errors";
 import PreLoginNoticeConfigurator from "./PreLoginNoticeConfigurator";
 import PostLoginNoticeConfigurator from "./PostLoginNoticeConfigurator";
 import { Tabs } from "@material-ui/core";
@@ -38,6 +42,11 @@ class LoginNoticeConfigPage extends React.Component<
   handleError = (error: AxiosError) => {
     if (error.response != undefined) {
       switch (error.response.status) {
+        case 403:
+          this.setState({
+            error: generateNewErrorID(strings.errors.permissions)
+          });
+          return;
         case 404:
           //do nothing, this simply means that there is no current login notice
           return;

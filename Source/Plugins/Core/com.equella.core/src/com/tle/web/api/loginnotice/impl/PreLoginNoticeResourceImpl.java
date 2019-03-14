@@ -66,6 +66,7 @@ public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
 
   @Override
   public Response uploadPreLoginNoticeImage(File imageFile) throws IOException {
+    noticeService.checkPermissions();
     JsonObject returnLink = new JsonObject();
     returnLink.addProperty(
         "link",
