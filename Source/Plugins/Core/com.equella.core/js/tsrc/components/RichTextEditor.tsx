@@ -1,6 +1,7 @@
 import { Editor } from "react-draft-wysiwyg";
 import { ContentState, convertToRaw, EditorState } from "draft-js";
 import * as React from "react";
+import { AxiosPromise } from "axios";
 
 let draftjsToHtml: Function = require("draftjs-to-html");
 let htmlToDraft: Function = require("html-to-draftjs").default;
@@ -10,6 +11,7 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 interface RichTextEditorProps {
   htmlInput: string;
   onStateChange(html: string): void;
+  imageUploadCallBack?(file: object): AxiosPromise;
 }
 
 interface RichTextEditorState {
@@ -112,6 +114,7 @@ class RichTextEditor extends React.Component<
       <Editor
         editorState={this.state.editorState}
         onEditorStateChange={this.handleEditorChange}
+        uploadCallback={this.props.imageUploadCallBack}
       />
     );
   }
