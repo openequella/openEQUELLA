@@ -21,6 +21,9 @@ case class LoginNoticePage(ctx: PageContext)
 
   private def preNoticeAddImageField: WebElement = findElement(By.name("imgSrc"))
 
+  private def preNoticeAddImageURLButton: WebElement =
+    preNoticeAddImagePopup.findElement(By.xpath("//span[text()='URL']"))
+
   private def preNoticeAddImageOK: WebElement =
     preNoticeAddImagePopup.findElement(By.xpath("//button[text()='Add']"))
 
@@ -60,6 +63,8 @@ case class LoginNoticePage(ctx: PageContext)
     populatePreNoticeField("Image:")
     preNoticeAddImageButton.click()
     waitFor(ExpectedConditions.visibilityOf(preNoticeAddImagePopup))
+    preNoticeAddImageURLButton.click()
+    waitFor(ExpectedConditions.visibilityOf(preNoticeAddImageField))
     preNoticeAddImageField.click()
     preNoticeAddImageField.sendKeys(imgURL)
     waitFor(ExpectedConditions.elementToBeClickable(preNoticeAddImageOK))
