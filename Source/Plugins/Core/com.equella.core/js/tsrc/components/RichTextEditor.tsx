@@ -112,6 +112,7 @@ class RichTextEditor extends React.Component<
   render() {
     return (
       <Editor
+        toolbarStyle={{ "font-family": "Roboto" }}
         editorState={this.state.editorState}
         onEditorStateChange={this.handleEditorChange}
         uploadCallback={this.props.imageUploadCallBack}
