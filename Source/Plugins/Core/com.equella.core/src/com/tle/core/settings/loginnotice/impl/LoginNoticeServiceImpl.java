@@ -30,6 +30,7 @@ import java.util.Collections;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 @Singleton
@@ -81,10 +82,9 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
   }
 
   @Override
-  public String uploadPreLoginNoticeImage(File imageFile) throws IOException {
+  public String uploadPreLoginNoticeImage(File imageFile, String name) throws IOException {
     checkPermissions();
     CustomisationFile customisationFile = new CustomisationFile();
-    String testName = (imageFile.getName() + ".png");
 
     // read in image file
     BufferedImage bImage = null;
@@ -95,11 +95,29 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     ImageIO.write(bImage, "png", os);
     InputStream fis = new ByteArrayInputStream(os.toByteArray());
+    String nameToUse = iterateImageNameIfDuplicateExists(name);
+
     fileSystemService.write(
-        customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + testName, fis, false);
+        customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameToUse, fis, false);
     os.close();
     fis.close();
-    return testName;
+    return nameToUse;
+  }
+
+  private String iterateImageNameIfDuplicateExists(String name) {
+    CustomisationFile customisationFile = new CustomisationFile();
+    if (fileSystemService.fileExists(customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + name)) {
+      String nameWithoutExtension = FilenameUtils.removeExtension(name);
+      int i = 1;
+      String fileExtension = FilenameUtils.getExtension(name);
+      while (fileSystemService.fileExists(
+          customisationFile,
+          LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameWithoutExtension + '_' + i + '.' + fileExtension)) {
+        i++;
+      }
+      return nameWithoutExtension + '_' + i + '.' + fileExtension;
+    }
+    return name;
   }
 
   @Override

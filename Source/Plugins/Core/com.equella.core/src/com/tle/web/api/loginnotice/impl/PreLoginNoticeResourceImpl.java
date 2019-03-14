@@ -65,13 +65,14 @@ public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
   }
 
   @Override
-  public Response uploadPreLoginNoticeImage(File imageFile) throws IOException {
+  public Response uploadPreLoginNoticeImage(File imageFile, String imageName) throws IOException {
     noticeService.checkPermissions();
     JsonObject returnLink = new JsonObject();
     returnLink.addProperty(
         "link",
         helper.instUrl(
-            "api/preloginnotice/image/" + noticeService.uploadPreLoginNoticeImage(imageFile)));
+            "api/preloginnotice/image/"
+                + noticeService.uploadPreLoginNoticeImage(imageFile, imageName)));
     return Response.ok(returnLink.toString(), "application/json").build();
   }
 }

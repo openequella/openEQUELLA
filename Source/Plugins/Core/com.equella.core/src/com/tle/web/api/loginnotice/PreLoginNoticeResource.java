@@ -41,8 +41,10 @@ public interface PreLoginNoticeResource {
   Response getPreLoginNoticeImage(@PathParam("name") String name) throws IOException;
 
   @PUT
-  @Path("image")
-  Response uploadPreLoginNoticeImage(File imageFile) throws IOException;
+  @Path("image/{name}")
+  @PathParam("name")
+  Response uploadPreLoginNoticeImage(File imageFile, @PathParam("name") String name)
+      throws IOException;
 
   @DELETE
   Response deletePreLoginNotice();

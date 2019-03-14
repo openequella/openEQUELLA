@@ -28,7 +28,7 @@ public interface LoginNoticeService {
 
   void deletePreLoginNotice();
 
-  String uploadPreLoginNoticeImage(File imageFile) throws IOException;
+  String uploadPreLoginNoticeImage(File imageFile, String name) throws IOException;
 
   InputStream getPreLoginNoticeImage(String name) throws IOException;
 

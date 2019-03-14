@@ -4,7 +4,7 @@ import { prepLangStrings } from "../util/langstrings";
 
 export const PRE_LOGIN_NOTICE_API_URL = `${Config.baseUrl}api/preloginnotice`;
 export const POST_LOGIN_NOTICE_API_URL = `${Config.baseUrl}api/postloginnotice`;
-export const PRE_LOGIN_NOTICE_IMAGE_API_URL = `${PRE_LOGIN_NOTICE_API_URL}/image`;
+export const PRE_LOGIN_NOTICE_IMAGE_API_URL = `${PRE_LOGIN_NOTICE_API_URL}/image/`;
 export enum NotificationType {
   Save,
   Clear,
@@ -66,6 +66,6 @@ export function clearPostLoginNotice(): AxiosPromise {
   return axios.delete(POST_LOGIN_NOTICE_API_URL);
 }
 
-export function uploadPreLoginNoticeImage(file: object): AxiosPromise {
-  return axios.put(PRE_LOGIN_NOTICE_IMAGE_API_URL, file);
+export function uploadPreLoginNoticeImage(file: any): AxiosPromise {
+  return axios.put(PRE_LOGIN_NOTICE_IMAGE_API_URL + file.name, file);
 }
