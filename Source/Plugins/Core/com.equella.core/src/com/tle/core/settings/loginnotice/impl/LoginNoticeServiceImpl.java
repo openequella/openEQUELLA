@@ -16,6 +16,7 @@
 
 package com.tle.core.settings.loginnotice.impl;
 
+import com.tle.common.filesystem.FileEntry;
 import com.tle.core.filesystem.CustomisationFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.TLEAclManager;
@@ -55,6 +56,19 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
       configurationService.deleteProperty(PRE_LOGIN_NOTICE_KEY);
     } else {
       configurationService.setProperty(PRE_LOGIN_NOTICE_KEY, notice);
+    }
+    cleanUpUnusedImages(notice);
+  }
+
+  private void cleanUpUnusedImages(String notice) throws IOException {
+    CustomisationFile customisationFile = new CustomisationFile();
+    FileEntry[] fileNameList =
+        fileSystemService.enumerate(customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME, null);
+    for (FileEntry imageFile : fileNameList) {
+      if (!notice.contains(imageFile.getName())) {
+        fileSystemService.removeFile(
+            customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + imageFile.getName());
+      }
     }
   }
 
