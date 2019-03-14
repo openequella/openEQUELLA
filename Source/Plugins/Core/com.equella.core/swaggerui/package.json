@@ -1,12 +1,13 @@
 {
   "scripts": {
-    "browserify": "yarn install && browserify index.js -o target/bundle.js"
+    "browserify": "browserify index.js -o target/bundle.js"
   },
   "dependencies": {
     "swagger-ui": "^3.19.3"
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "npm-run-all": "^4.1.5",
     "babel-core": "^6.26.0",
     "babelify": "^8.0.0",
     "browserify": "^16.1.0"
