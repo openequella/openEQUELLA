@@ -24,7 +24,7 @@ import io.circe.Json
 case class OEQEntity(
     uuid: DbUUID,
     inst_id: InstId,
-    typeid: String,
+    typeid: String20,
     name: String,
     name_strings: LocaleStrings,
     description: Option[String],
