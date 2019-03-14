@@ -16,12 +16,17 @@
 
 package com.tle.core.settings.loginnotice.impl;
 
+import com.tle.core.filesystem.CustomisationFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.TLEAclManager;
+import com.tle.core.services.FileSystemService;
 import com.tle.core.settings.loginnotice.LoginNoticeService;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.exceptions.PrivilegeRequiredException;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.Collections;
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.commons.lang.StringUtils;
@@ -31,10 +36,12 @@ import org.apache.commons.lang.StringUtils;
 public class LoginNoticeServiceImpl implements LoginNoticeService {
   @Inject TLEAclManager tleAclManager;
   @Inject ConfigurationService configurationService;
+  @Inject FileSystemService fileSystemService;
 
   private static final String PERMISSION_KEY = "EDIT_SYSTEM_SETTINGS";
   private static final String PRE_LOGIN_NOTICE_KEY = "pre.login.notice";
   private static final String POST_LOGIN_NOTICE_KEY = "post.login.notice";
+  private static final String LOGIN_NOTICE_IMAGE_FOLDER_NAME = "loginnoticeimages/";
 
   @Override
   public String getPreLoginNotice() {
@@ -42,7 +49,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
   }
 
   @Override
-  public void setPreLoginNotice(String notice) {
+  public void setPreLoginNotice(String notice) throws IOException {
     checkPermissions();
     if (StringUtils.isBlank(notice)) {
       configurationService.deleteProperty(PRE_LOGIN_NOTICE_KEY);
@@ -54,7 +61,39 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
   @Override
   public void deletePreLoginNotice() {
     checkPermissions();
+    CustomisationFile customisationFile = new CustomisationFile();
+    fileSystemService.removeFile(customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME);
     configurationService.deleteProperty(PRE_LOGIN_NOTICE_KEY);
+  }
+
+  @Override
+  public String uploadPreLoginNoticeImage(File imageFile) throws IOException {
+    CustomisationFile customisationFile = new CustomisationFile();
+    String testName = (imageFile.getName() + ".png");
+
+    // read in image file
+    BufferedImage bImage = null;
+    bImage = ImageIO.read(imageFile);
+    if (bImage == null) {
+      throw new IllegalArgumentException("Invalid image file");
+    }
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    ImageIO.write(bImage, "png", os);
+    InputStream fis = new ByteArrayInputStream(os.toByteArray());
+    fileSystemService.write(
+        customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + testName, fis, false);
+    os.close();
+    fis.close();
+    return testName;
+  }
+
+  @Override
+  public InputStream getPreLoginNoticeImage(String name) throws IOException {
+    CustomisationFile customisationFile = new CustomisationFile();
+    if (fileSystemService.fileExists(customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + name)) {
+      return fileSystemService.read(customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + name);
+    }
+    return null;
   }
 
   @Override
