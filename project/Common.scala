@@ -65,7 +65,7 @@ object Common {
       case x if x contains "windows" => Seq("cmd", "/C")
       case _                         => Seq.empty
     }
-    if (Process(precmd ++ Seq("yarn", "--mutex", "network", "run", script), dir).! > 0)
+    if (Process(precmd ++ Seq("yarn", "run", script), dir).! > 0)
       sys.error(s"Running yarn script '$script' in dir ${dir.absolutePath} failed")
   }
 }
