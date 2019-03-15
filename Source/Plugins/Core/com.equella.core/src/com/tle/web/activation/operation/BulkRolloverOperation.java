@@ -123,8 +123,8 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
   public interface RolloverExecutorFactory {
     RolloverActivationExecutor create(
         long courseId,
-        @Assisted("from") Date from,
-        @Assisted("until") Date until,
+        @Nullable @Assisted("from") Date from,
+        @Nullable @Assisted("until") Date until,
         @Assisted("cancel") boolean cancel,
         @Assisted("sameCourse") boolean sameCourse,
         @Assisted("rolloverDates") boolean rolloverDates);
@@ -181,8 +181,8 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
     boolean cancel = cancelExisting.isChecked(info);
     boolean rolloverDates = rolloverActivationDates.isChecked(info);
 
-    Date from = toDate(fromDate.getDate(info), new Date());
-    Date until = toDate(toDate.getDate(info), new Date());
+    Date from = toDate(fromDate.getDate(info), new Date(0));
+    Date until = toDate(toDate.getDate(info), new Date(0));
 
     return new FactoryMethodLocator<BulkOperationExecutor>(
         RolloverExecutorFactory.class,
@@ -197,13 +197,12 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
 
   private CourseInfo getSelectedCourse(SectionInfo info) {
     final CourseInfo course = courses.getSelectedValue(info);
-    if (course != null && course.getCode().equals("existing")) {
+    if (course != null && course.getUuid().equals(EXISTING_COURSE_ID)) {
       return null;
     }
     return course;
   }
 
-  @Nullable
   private Date toDate(@Nullable TleDate date, Date defaultDate) {
     if (date == null) {
       return defaultDate;

@@ -1,7 +1,10 @@
 var select2helper = {};
 
 /**
-params: {
+
+The structure of the params object is:
+
+{
   ajaxurl?: "",
   topOption?: {
     id: "",
@@ -9,6 +12,9 @@ params: {
   },
   placeholderText?: ""
 }
+
+It may also include arbitrary fields for any extensions.
+
 */
 
 (function() {
