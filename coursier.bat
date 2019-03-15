@@ -5,7 +5,7 @@
 
 SET ERROR_CODE=0
 
-SET LAUNCHER_PATH=%~dp0/coursier
+SET LAUNCHER_PATH=target/coursier
 
 IF NOT EXIST %LAUNCHER_PATH% (
   bitsadmin /transfer "DownloadCoursierLauncher" https://github.com/coursier/coursier/raw/master/coursier %LAUNCHER_PATH%

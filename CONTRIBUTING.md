@@ -145,7 +145,7 @@ you have modified before commiting. To set it up you must run the installer once
 (from the root dir):
 
 ```bash
-yarn install
+npm install
 ```
 
 #### Create dev configuration settings
@@ -220,7 +220,7 @@ of separate JS bundles which are generated using Parcel. You can use parcel watc
 have changes automatically bundled up and reloaded in the browser:
 
 ```sh
-~/Source/Plugins/Core/com.equella.core/js$ yarn run dev
+~/Source/Plugins/Core/com.equella.core/js$ npm run dev
 ```
 
 This will build the javascript bundles to the correct location for running a dev openEQUELLA and will

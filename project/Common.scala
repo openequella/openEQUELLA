@@ -59,13 +59,23 @@ object Common {
     rt
   }
 
-  def runYarn(script: String, dir: File): Unit = {
+  def nodeScript(script: String, dir: File): Unit = {
     val os = sys.props("os.name").toLowerCase
     val precmd = os match {
       case x if x contains "windows" => Seq("cmd", "/C")
       case _                         => Seq.empty
     }
-    if (Process(precmd ++ Seq("yarn", "--mutex", "network", "run", script), dir).! > 0)
-      sys.error(s"Running yarn script '$script' in dir ${dir.absolutePath} failed")
+    if (Process(precmd ++ Seq("npm", "run", script), dir).! > 0)
+      sys.error(s"Running node script '$script' in dir ${dir.absolutePath} failed")
+  }
+
+  def nodeInstall(dir: File): Unit = {
+    val os = sys.props("os.name").toLowerCase
+    val precmd = os match {
+      case x if x contains "windows" => Seq("cmd", "/C")
+      case _                         => Seq.empty
+    }
+    if (Process(precmd ++ Seq("npm", "install"), dir).! > 0)
+      sys.error(s"Running node install in dir ${dir.absolutePath} failed")
   }
 }
