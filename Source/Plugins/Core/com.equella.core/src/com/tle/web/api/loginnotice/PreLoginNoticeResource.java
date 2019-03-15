@@ -20,8 +20,10 @@ import io.swagger.annotations.Api;
 import java.io.File;
 import java.io.IOException;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 /** @author Samantha Fisher */
 @Path("preloginnotice/")
@@ -43,8 +45,8 @@ public interface PreLoginNoticeResource {
   @PUT
   @Path("image/{name}")
   @PathParam("name")
-  Response uploadPreLoginNoticeImage(File imageFile, @PathParam("name") String name)
-      throws IOException;
+  Response uploadPreLoginNoticeImage(
+      File imageFile, @PathParam("name") String name, @Context UriInfo info) throws IOException;
 
   @DELETE
   Response deletePreLoginNotice();

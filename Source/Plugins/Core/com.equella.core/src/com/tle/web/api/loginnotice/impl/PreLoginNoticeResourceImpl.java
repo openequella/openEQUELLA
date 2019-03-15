@@ -26,8 +26,10 @@ import java.io.File;
 import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 @Bind(PreLoginNoticeResource.class)
 @Singleton
@@ -65,14 +67,17 @@ public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
   }
 
   @Override
-  public Response uploadPreLoginNoticeImage(File imageFile, String imageName) throws IOException {
+  public Response uploadPreLoginNoticeImage(File imageFile, String imageName, @Context UriInfo info)
+      throws IOException {
     noticeService.checkPermissions();
     JsonObject returnLink = new JsonObject();
-    returnLink.addProperty(
-        "link",
-        helper.instUrl(
-            "api/preloginnotice/image/"
-                + noticeService.uploadPreLoginNoticeImage(imageFile, imageName)));
+    String getImageAPIURL =
+        info.getBaseUriBuilder()
+            .path(PreLoginNoticeResource.class)
+            .path(PreLoginNoticeResource.class, "getPreLoginNoticeImage")
+            .build(noticeService.uploadPreLoginNoticeImage(imageFile, imageName))
+            .toASCIIString();
+    returnLink.addProperty("link", getImageAPIURL);
     return Response.ok(returnLink.toString(), "application/json").build();
   }
 }
