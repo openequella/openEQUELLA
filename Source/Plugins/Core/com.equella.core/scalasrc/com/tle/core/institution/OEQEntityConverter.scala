@@ -128,7 +128,7 @@ class OEQEntityConverter extends Converter {
       params: ConverterParams,
       task: String
   ): Unit = {
-    RunWithDB.executeWithHibernate {
+    RunWithDB.execute {
       exportDB(staging, CurrentInstitution.get()) *>
         importDB(staging, newInstitution)
     }
@@ -167,6 +167,6 @@ class OEQEntityConverter extends Converter {
       params: ConverterParams,
       cid: String
   ): Unit = {
-    RunWithDB.executeWithHibernate { importDB(staging, newInstitution) }
+    RunWithDB.execute { importDB(staging, newInstitution) }
   }
 }

@@ -10,7 +10,7 @@
   "scripts": {
     "install": "cross-env-shell \"psc-package install && mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang}\"",
     "clean": "rm -rf target/ output/ node_modules/ bower_components/ && yarn install",
-    "dev": "cross-env-shell parcel watch --no-autoinstall --public-url=./reactjs/ --out-dir=${npm_package_config_devjs} entrydev/*.html",
+    "dev": "pulp build && cross-env-shell parcel watch --no-autoinstall --public-url=./reactjs/ --out-dir=${npm_package_config_devjs} entrydev/*.html",
     "dev:build": "yarn run bundleps && cross-env-shell parcel build --public-url=./reactjs/ --out-dir=${npm_package_config_devjs} entrybuild/*.html entrybuild/uploadlist.js",
     "dev:uploadlist": "cross-env-shell parcel build --out-dir=${npm_package_config_devjs} entrybuild/uploadlist.js",
     "build": "yarn install && npm-run-all build:*",
