@@ -28,7 +28,7 @@ import io.swagger.annotations.{Api, ApiOperation}
 import javax.ws.rs.core.{Context, MediaType, Response, UriInfo}
 import javax.ws.rs._
 
-case class CloudProviderCallback(returnUrl: String)
+case class CloudProviderForward(url: String)
 
 @Api("Cloud Providers")
 @Path("cloudprovider")
@@ -53,9 +53,13 @@ class CloudProviderApi {
 
   @POST
   @Path("register/init")
-  @ApiOperation(value = "Prepare openEQUELLA for a cloud provider registration")
+  @ApiOperation(
+    value = "Generate a cloud provider registration URL",
+    notes = "Given a URL to a cloud provider, generate a response with that URL and an extra parameter ('registration') containing " +
+      "a valid Cloud Provider callback URL"
+  )
   def prepareRegistration(@QueryParam("url") @DefaultValue("") providerUrl: String,
-                          @Context uriInfo: UriInfo): CloudProviderCallback = {
+                          @Context uriInfo: UriInfo): CloudProviderForward = {
     UrlParser.parseUrl(providerUrl) match {
       case u: Url =>
         RunWithDB.execute {
@@ -69,7 +73,7 @@ class CloudProviderApi {
                 .queryParam(TokenParam, token)
                 .build()
                 .toString
-              CloudProviderCallback(u.addParam(RegistrationParam, returnUrl).toString)
+              CloudProviderForward(u.addParam(RegistrationParam, returnUrl).toString)
             }
           }
         }
