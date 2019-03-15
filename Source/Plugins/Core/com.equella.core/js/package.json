@@ -1,4 +1,5 @@
 {
+  "name": "openequella-web",
   "private": true,
   "config": {
     "buildlang": "target/resources/lang",

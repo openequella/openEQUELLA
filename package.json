@@ -1,4 +1,6 @@
 {
+  "name": "openequella",
+  "private": true,
   "scripts": {
     "install": "./coursier bootstrap com.geirsson:scalafmt-cli_2.12:1.5.1 -f -o node_modules/.bin/scalafmt && ./coursier bootstrap com.google.googlejavaformat:google-java-format:1.7 -f -o node_modules/.bin/google-java-format",
     "format-commit:scala": "git-format-staged -f \"scalafmt --stdin --assume-filename \\\"{}\\\"\" \"*.scala\" \"*.sbt\"",
@@ -21,7 +23,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged && yarn run format-commit:scala && yarn run format-commit:java"
+      "pre-commit": "pretty-quick --staged && npm run format-commit:scala && npm run format-commit:java"
     }
   }
 }
