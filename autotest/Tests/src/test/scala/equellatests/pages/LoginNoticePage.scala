@@ -19,11 +19,15 @@ case class LoginNoticePage(ctx: PageContext)
 
   private def preNoticeAddImagePopup: WebElement = findElement(By.className("rdw-image-modal"))
 
-  private def preNoticeAddImageField: WebElement = findElement(By.name("imgSrc"))
+  private def preNoticeAddImageField: WebElement =
+    findElement(By.className("rdw-image-modal-url-input"))
 
   private def preNoticeAddImageURLButton: WebElement =
-    preNoticeAddImagePopup.findElement(By.xpath("//span[text()='URL']"))
+    preNoticeAddImagePopup.findElement(
+      By.xpath("//span[contains(@class, 'rdw-image-modal-header-option') and contains(.,'URL')]"))
 
+  private def preNoticeAddImageURLSection: WebElement =
+    findElement(By.className("rdw-image-modal-url-section"))
   private def preNoticeAddImageOK: WebElement =
     preNoticeAddImagePopup.findElement(By.xpath("//button[text()='Add']"))
 
@@ -40,9 +44,14 @@ case class LoginNoticePage(ctx: PageContext)
   private def clearOkButton: WebElement = findElementById("okToClear")
 
   private def populatePreNoticeField(notice: String): Unit = {
+    preNoticeField.sendKeys(notice)
+    waitFor(ExpectedConditions.textToBePresentInElement(preNoticeField, notice))
+  }
+  private def clearandPopulatePreNoticeField(notice: String): Unit = {
     preNoticeField.sendKeys(Keys.chord(Keys.CONTROL, "a"))
     preNoticeField.sendKeys(Keys.DELETE)
     preNoticeField.sendKeys(notice)
+    waitFor(ExpectedConditions.textToBePresentInElement(preNoticeField, notice))
   }
 
   private def waitForSnackBar(content: String): Unit = {
@@ -54,22 +63,22 @@ case class LoginNoticePage(ctx: PageContext)
   }
 
   def setPreLoginNotice(notice: String): Unit = {
-    populatePreNoticeField(notice)
+    clearandPopulatePreNoticeField(notice)
     preNoticeApplyButton.click()
     waitForSnackBar("Login notice saved successfully.")
   }
 
   def setPreLoginNoticeWithImageURL(imgURL: String): Unit = {
-    populatePreNoticeField("Image:")
     preNoticeAddImageButton.click()
     waitFor(ExpectedConditions.visibilityOf(preNoticeAddImagePopup))
+    waitFor(ExpectedConditions.elementToBeClickable(preNoticeAddImageURLButton))
     preNoticeAddImageURLButton.click()
     waitFor(ExpectedConditions.visibilityOf(preNoticeAddImageField))
     preNoticeAddImageField.click()
     preNoticeAddImageField.sendKeys(imgURL)
     waitFor(ExpectedConditions.elementToBeClickable(preNoticeAddImageOK))
     preNoticeAddImageOK.click()
-    waitFor(ExpectedConditions.elementToBeClickable(preNoticeApplyButton))
+    populatePreNoticeField("Image:")
     preNoticeApplyButton.click()
     waitForSnackBar("Login notice saved successfully.")
   }
