@@ -27,4 +27,3 @@ cache:
     - "/root/.ivy2/**/*"
     - "/root/.npm/**/*"
     - "/root/.sbt/**/*"
-    - "/root/.cache/yarn/**/*"
