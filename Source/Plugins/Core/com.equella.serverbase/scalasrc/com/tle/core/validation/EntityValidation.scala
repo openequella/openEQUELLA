@@ -34,7 +34,7 @@ trait OEQEntityEdits {
 }
 
 object EntityValidation {
-  def nonBlank(
+  def nonBlankStrings(
       field: String,
       string: String,
       strings: Option[Map[String, String]],
@@ -46,13 +46,18 @@ object EntityValidation {
       .getOrElse(EntityValidation(field, "blank").invalidNec)
   }
 
+  def nonBlank(field: String,
+               string: String,
+               locale: Locale): ValidatedNec[EntityValidation, (String, LocaleStrings)] =
+    nonBlankStrings(field, string, None, locale)
+
   def standardValidation(
       edits: OEQEntityEdits,
       oeq: OEQEntity,
       locale: Locale
   ): ValidatedNec[EntityValidation, OEQEntity] = {
     EntityValidation
-      .nonBlank("name", edits.name, edits.nameStrings, locale)
+      .nonBlankStrings("name", edits.name, edits.nameStrings, locale)
       .map { n =>
         val desc = LocaleStrings.fromStrings(
           edits.description.getOrElse(""),

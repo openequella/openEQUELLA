@@ -42,4 +42,7 @@ object ApiHelper {
     validated.valueOr(
       errs => Response.status(Response.Status.BAD_REQUEST).entity(errs.toNonEmptyVector.toVector)
     )
+
+  def validationOrEntity[A, B](validated: Validated[NonEmptyChain[A], B]): ResponseBuilder =
+    validationOr(validated.map(Response.ok))
 }
