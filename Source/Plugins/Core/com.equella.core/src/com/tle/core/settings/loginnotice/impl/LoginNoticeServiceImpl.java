@@ -95,7 +95,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     ImageIO.write(bImage, "png", os);
     InputStream fis = new ByteArrayInputStream(os.toByteArray());
-    String nameToUse = iterateImageNameIfDuplicateExists(name);
+    String nameToUse = iterateImageNameIfDuplicateExists(name, ".png");
 
     fileSystemService.write(
         customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameToUse, fis, false);
@@ -104,20 +104,21 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     return nameToUse;
   }
 
-  private String iterateImageNameIfDuplicateExists(String name) {
+  private String iterateImageNameIfDuplicateExists(String name, String newFileExtension) {
     CustomisationFile customisationFile = new CustomisationFile();
-    if (fileSystemService.fileExists(customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + name)) {
-      String nameWithoutExtension = FilenameUtils.removeExtension(name);
+    String nameWithoutExtension = FilenameUtils.removeExtension(name);
+    if (fileSystemService.fileExists(
+        customisationFile,
+        LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameWithoutExtension + newFileExtension)) {
       int i = 1;
-      String fileExtension = FilenameUtils.getExtension(name);
       while (fileSystemService.fileExists(
           customisationFile,
-          LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameWithoutExtension + '_' + i + '.' + fileExtension)) {
+          LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameWithoutExtension + '_' + i + newFileExtension)) {
         i++;
       }
-      return nameWithoutExtension + '_' + i + '.' + fileExtension;
+      return nameWithoutExtension + '_' + i + newFileExtension;
     }
-    return name;
+    return nameWithoutExtension + newFileExtension;
   }
 
   @Override
