@@ -39,7 +39,6 @@ interface CloudProviderListPageProps extends WithStyles<typeof styles> {
 interface CloudProviderListPageState {
   cloudProviders: CloudProviderEntity[];
   error?: ErrorResponse;
-  defaultIcon: boolean;
 }
 
 class CloudProviderListPage extends React.Component<
@@ -49,9 +48,7 @@ class CloudProviderListPage extends React.Component<
   constructor(props: CloudProviderListPageProps) {
     super(props);
     this.state = {
-      cloudProviders: [],
-      error: undefined,
-      defaultIcon: false
+      cloudProviders: []
     };
   }
 
@@ -68,13 +65,6 @@ class CloudProviderListPage extends React.Component<
         });
       });
   }
-
-  handleImageLoadingError = (cp: CloudProviderEntity) => {
-    this.setState({
-      defaultIcon: true
-    });
-    cp.iconUrl = undefined;
-  };
 
   render() {
     const { Template } = this.props.bridge;
