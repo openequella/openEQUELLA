@@ -6,3 +6,4 @@ exports.courseSelectClass = require("~/../tsrc/components/CourseSelect").default
 exports.themePageClass = require("~/../tsrc/theme/ThemePage").default;
 exports.loginNoticeConfigPageClass = require("~/../tsrc/loginnotice/LoginNoticeConfigPage").default;
 exports.searchConfigsClass = require("~/../tsrc/searchconfig/ListSearchConfigs").default;
+exports.cloudProviderListPageClass = require("~/../tsrc/cloudprovider/CloudProviderListPage").default;

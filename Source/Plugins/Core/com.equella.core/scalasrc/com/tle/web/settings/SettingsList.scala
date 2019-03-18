@@ -89,6 +89,15 @@ object SettingsList {
     () => !aclManager.filterNonGrantedPrivileges("EDIT_SYSTEM_SETTINGS").isEmpty
   )
 
+  val cloudProviderSettings = CoreSettingsPage(
+    "cloudprovider",
+    General,
+    "cloudprovider.settings.title",
+    "cloudprovider.settings.description",
+    "page/cloudprovider",
+    () => !aclManager.filterNonGrantedPrivileges("EDIT_SYSTEM_SETTINGS").isEmpty
+  )
+
   val echoSettings = CoreSettingsPage(
     "echo",
     Integration,
@@ -180,6 +189,7 @@ object SettingsList {
     externalToolsSettings,
     uiSettings,
     loginNoticeSettings,
+    cloudProviderSettings,
     CoreSettingsPage("shortcuts",
                      General,
                      "shortcuts.settings.title",
