@@ -111,17 +111,16 @@ class CloudProviderListPage extends React.Component<
             return (
               <ListItem button divider key={cloudProvider.id}>
                 <ListItemAvatar>
-                  <Avatar
-                    src={cloudProvider.iconUrl}
-                    alt={cloudProvider.description}
-                    onError={() => this.handleImageLoadingError(cloudProvider)}
-                  >
-                    {((this.state.defaultIcon &&
-                      cloudProvider.iconUrl == undefined) ||
-                      cloudProvider.iconUrl == undefined) && (
-                      <CloudIcon className={this.props.classes.cloudIcon} />
-                    )}
-                  </Avatar>
+                  {
+                    <Avatar
+                      src={cloudProvider.iconUrl}
+                      alt={cloudProvider.description}
+                    >
+                      {!cloudProvider.iconUrl && (
+                        <CloudIcon className={this.props.classes.cloudIcon} />
+                      )}
+                    </Avatar>
+                  }
                 </ListItemAvatar>
                 <ListItemText
                   disableTypography={true}
