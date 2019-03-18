@@ -19,7 +19,7 @@ package com.tle.core.db
 import java.time.Instant
 
 import com.tle.core.db.tables._
-import com.tle.core.db.types.{DbUUID, InstId, UserId}
+import com.tle.core.db.types.{DbUUID, InstId, String20, UserId}
 import fs2.Stream
 import io.doolse.simpledba.{WriteOp, WriteQueries}
 import io.doolse.simpledba.jdbc.{JDBCColumn, JDBCIO, JDBCSQLConfig}
@@ -60,7 +60,7 @@ case class SettingsQueries(
 
 case class EntityQueries(
     write: WriteQueries[JDBCIO, OEQEntity],
-    allByType: ((InstId, String)) => Stream[JDBCIO, OEQEntity],
+    allByType: ((InstId, String20)) => Stream[JDBCIO, OEQEntity],
     byId: ((InstId, DbUUID)) => Stream[JDBCIO, OEQEntity],
     allByInst: InstId => Stream[JDBCIO, OEQEntity]
 )

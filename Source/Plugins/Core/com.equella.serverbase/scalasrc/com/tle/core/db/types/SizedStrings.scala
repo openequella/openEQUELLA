@@ -30,6 +30,7 @@ object String255 {
 object String20 {
   implicit def string20Iso: SizedIso[String20, String] = SizedIso(20, _.value, String20.apply)
   implicit def fromString(s: String): String20         = String20(s)
+  implicit def toString(s20: String20): String         = s20.value
 }
 object String40 {
   implicit def string20Iso: SizedIso[String40, String] = SizedIso(40, _.value, String40.apply)

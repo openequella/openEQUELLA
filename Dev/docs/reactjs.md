@@ -49,19 +49,19 @@ based router selects a root React component.
 - First install deps:
 
 ```
-yarn install
+npm install
 ```
 
 - Compile just the development bundles (leave it open as it watches for changes and autocompiles):
 
 ```
-yarn run dev
+npm run dev
 ```
 
 - Compile production bundles:
 
 ```
-yarn run dev:build
+npm run dev:build
 ```
 
 Refreshing in the browser after compiling should load the new changes in a running openEQUELLA server.

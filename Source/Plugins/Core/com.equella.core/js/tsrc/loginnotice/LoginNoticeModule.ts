@@ -4,6 +4,7 @@ import { prepLangStrings } from "../util/langstrings";
 
 export const PRE_LOGIN_NOTICE_API_URL = `${Config.baseUrl}api/preloginnotice`;
 export const POST_LOGIN_NOTICE_API_URL = `${Config.baseUrl}api/postloginnotice`;
+export const PRE_LOGIN_NOTICE_IMAGE_API_URL = `${PRE_LOGIN_NOTICE_API_URL}/image/`;
 export enum NotificationType {
   Save,
   Clear,
@@ -31,6 +32,9 @@ export const strings = prepLangStrings("loginnoticepage", {
     saved: "Login notice saved successfully.",
     cleared: "Login notice cleared successfully.",
     reverted: "Reverted changes to login notice."
+  },
+  errors: {
+    permissions: "You do not have permission to edit these settings."
   }
 });
 
@@ -60,4 +64,8 @@ export function getPostLoginNotice(): AxiosPromise {
 
 export function clearPostLoginNotice(): AxiosPromise {
   return axios.delete(POST_LOGIN_NOTICE_API_URL);
+}
+
+export function uploadPreLoginNoticeImage(file: any): AxiosPromise {
+  return axios.put(PRE_LOGIN_NOTICE_IMAGE_API_URL + file.name, file);
 }

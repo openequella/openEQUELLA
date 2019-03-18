@@ -1,4 +1,5 @@
 {
+  "name": "openequella-web",
   "private": true,
   "config": {
     "buildlang": "target/resources/lang",
@@ -9,12 +10,12 @@
   },
   "scripts": {
     "install": "cross-env-shell \"psc-package install && mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang}\"",
-    "clean": "rm -rf target/ output/ node_modules/ bower_components/ && yarn install",
+    "clean": "rm -rf target/ output/ node_modules/ bower_components/",
     "dev": "pulp build && cross-env-shell parcel watch --no-autoinstall --public-url=./reactjs/ --out-dir=${npm_package_config_devjs} entrydev/*.html",
-    "dev:build": "yarn run bundleps && cross-env-shell parcel build --public-url=./reactjs/ --out-dir=${npm_package_config_devjs} entrybuild/*.html entrybuild/uploadlist.js",
+    "dev:build": "run-s bundleps && cross-env-shell parcel build --public-url=./reactjs/ --out-dir=${npm_package_config_devjs} entrybuild/*.html entrybuild/uploadlist.js",
     "dev:uploadlist": "cross-env-shell parcel build --out-dir=${npm_package_config_devjs} entrybuild/uploadlist.js",
-    "build": "yarn install && npm-run-all build:*",
-    "build:bundles": "yarn run bundleps && cross-env-shell parcel build --public-url=./reactjs/ --out-dir=${npm_package_config_dist} entrybuild/*.html entrybuild/uploadlist.js",
+    "build": "npm-run-all build:*",
+    "build:bundles": "run-s bundleps && cross-env-shell parcel build --public-url=./reactjs/ --out-dir=${npm_package_config_dist} entrybuild/*.html entrybuild/uploadlist.js",
     "build:langbundle": "cross-env-shell parcel build entrybuild/genlang.js --no-minify --no-source-maps --target node --out-dir=target && cross-env-shell \"node target/genlang.js > ${npm_package_config_buildlang}/jsbundle.json\"",
     "compileps": "pulp build",
     "bundleps": "npm-run-all compileps && npm-run-all --parallel bundleps:*",
