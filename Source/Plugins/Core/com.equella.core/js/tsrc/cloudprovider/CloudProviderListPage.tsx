@@ -14,6 +14,7 @@ import {
   WithStyles
 } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
+import CloudIcon from "@material-ui/icons/CloudCircleRounded";
 import { CloudProviderEntity } from "./CloudProviderEntity";
 import { getCloudProviders, langStrings } from "./CloudProviderModule";
 import { AxiosError } from "axios";
@@ -25,6 +26,10 @@ const styles = (theme: Theme) =>
   createStyles({
     searchResultContent: {
       marginTop: theme.spacing.unit
+    },
+    cloudIcon: {
+      width: 40,
+      height: 40
     }
   });
 
@@ -34,6 +39,7 @@ interface CloudProviderListPageProps extends WithStyles<typeof styles> {
 interface CloudProviderListPageState {
   cloudProviders: CloudProviderEntity[];
   error?: ErrorResponse;
+  defaultIcon: boolean;
 }
 
 class CloudProviderListPage extends React.Component<
@@ -44,7 +50,8 @@ class CloudProviderListPage extends React.Component<
     super(props);
     this.state = {
       cloudProviders: [],
-      error: undefined
+      error: undefined,
+      defaultIcon: false
     };
   }
 
@@ -62,10 +69,20 @@ class CloudProviderListPage extends React.Component<
       });
   }
 
+  handleImageLoadingError = (cp: CloudProviderEntity) => {
+    this.setState({
+      defaultIcon: true
+    });
+    cp.iconUrl = undefined;
+  };
+
   render() {
     const { Template } = this.props.bridge;
-    const { cloudProviders, error } = this.state;
-    const createLink = { href: "", onClick: () => {} };
+    const { error, cloudProviders } = this.state;
+    const createLink = {
+      href: "",
+      onClick: () => {}
+    };
     return (
       <Template title={langStrings.title} errorResponse={error}>
         <EntityList
@@ -90,13 +107,21 @@ class CloudProviderListPage extends React.Component<
                 {cloudProvider.description}
               </Typography>
             );
+
             return (
               <ListItem button divider key={cloudProvider.id}>
                 <ListItemAvatar>
                   <Avatar
-                    alt={cloudProvider.description}
                     src={cloudProvider.iconUrl}
-                  />
+                    alt={cloudProvider.description}
+                    onError={() => this.handleImageLoadingError(cloudProvider)}
+                  >
+                    {((this.state.defaultIcon &&
+                      cloudProvider.iconUrl == undefined) ||
+                      cloudProvider.iconUrl == undefined) && (
+                      <CloudIcon className={this.props.classes.cloudIcon} />
+                    )}
+                  </Avatar>
                 </ListItemAvatar>
                 <ListItemText
                   disableTypography={true}
