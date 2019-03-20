@@ -13,7 +13,7 @@ import createStyles from "@material-ui/core/es/styles/createStyles";
 import { ErrorResponse, generateFromError } from "../api/errors";
 import { langStrings, registerCloudProviderInit } from "./CloudProviderModule";
 import { commonString } from "../util/commonstrings";
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosError } from "axios";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -48,10 +48,6 @@ interface NewCloudProviderProps extends WithStyles<typeof styles> {
 interface NewCloudProviderState {
   error?: ErrorResponse;
   cloudProviderUrl: string;
-  canRegister: boolean;
-}
-interface registerCloudProviderInitRes {
-  url: string;
 }
 
 class NewCloudProvider extends React.Component<
@@ -62,18 +58,15 @@ class NewCloudProvider extends React.Component<
     super(props);
     this.state = {
       error: undefined,
-      canRegister: true,
       cloudProviderUrl: ""
     };
   }
 
   handleSave = () => {
-    let params = {
-      url: this.state.cloudProviderUrl
-    };
-    registerCloudProviderInit(params)
-      .then((result: AxiosResponse<registerCloudProviderInitRes>) => {
-        window.location.href = result.data.url;
+    let cloudProviderUrl = this.state.cloudProviderUrl;
+    registerCloudProviderInit(cloudProviderUrl)
+      .then(result => {
+        window.location.href = result.url;
       })
       .catch((error: AxiosError) => {
         this.setState({
@@ -84,15 +77,14 @@ class NewCloudProvider extends React.Component<
 
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      cloudProviderUrl: e.target.value,
-      canRegister: e.target.value == ""
+      cloudProviderUrl: e.target.value
     });
   };
 
   render() {
     const { router, routes, Template } = this.props.bridge;
     const { classes } = this.props;
-    const { error, canRegister, cloudProviderUrl } = this.state;
+    const { error, cloudProviderUrl } = this.state;
     const saveOrCancel = (
       <Paper className={classes.footerActions}>
         <Button
@@ -104,7 +96,7 @@ class NewCloudProvider extends React.Component<
         <Button
           onClick={this.handleSave}
           color="primary"
-          disabled={canRegister}
+          disabled={!cloudProviderUrl}
         >
           {commonString.action.register}
         </Button>

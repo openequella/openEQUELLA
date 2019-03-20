@@ -22,6 +22,9 @@ export const langStrings = prepLangStrings("cp", {
     help: "Cloud provider URL, e.g. www.equella.com/upload"
   }
 });
+interface CloudProviderInitResponse {
+  url: string;
+}
 
 export function getCloudProviders(): Promise<
   PagingResults<CloudProviderEntity>
@@ -31,8 +34,17 @@ export function getCloudProviders(): Promise<
   ).then(res => res.data);
 }
 
-export function registerCloudProviderInit(params: object) {
-  return Axios.post(POST_CLOUD_PROVIDER_REGISTER_INIT_URL, null, {
-    params: params
-  });
+export function registerCloudProviderInit(
+  cloudProviderUrl: string
+): Promise<CloudProviderInitResponse> {
+  let params = {
+    url: cloudProviderUrl
+  };
+  return Axios.post<CloudProviderInitResponse>(
+    POST_CLOUD_PROVIDER_REGISTER_INIT_URL,
+    null,
+    {
+      params: params
+    }
+  ).then(res => res.data);
 }
