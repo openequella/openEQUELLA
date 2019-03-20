@@ -6,8 +6,9 @@ import equellatests.GlobalConfig
 import equellatests.domain.TestLogon
 
 package object workflow {
-  val workflowInst = GlobalConfig.createTestInst("workflow")
-  val adminLogon   = TestLogon("admin", "``````", workflowInst, "ad", "min")
+  val workflowInst  = GlobalConfig.createTestInst("workflow")
+  val adminLogon    = TestLogon("admin", "``````", workflowInst, "ad", "min")
+  val tleAdminLogon = TestLogon("TLE_ADMINISTRATOR", "tle010", workflowInst, "ad", "min")
 
   val workflow3StepTasks                = Seq("Step 1", "Step 2", "Step 3")
   def workflow3StepBefore(task: String) = workflow3StepTasks.take(workflow3StepTasks.indexOf(task))

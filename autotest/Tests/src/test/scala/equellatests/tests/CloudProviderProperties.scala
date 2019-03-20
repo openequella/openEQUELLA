@@ -1,7 +1,7 @@
 package equellatests.tests
 
 import equellatests.domain.{RandomWord, RandomWords, TestLogon}
-import equellatests.instgen.workflow.workflowInst
+import equellatests.instgen.workflow._
 import equellatests.pages.cloudprovider.{TestCloudProviderDetails, TestCloudProviderPage}
 import equellatests.restapi.ERest
 import equellatests.restapi.cloudprovider.{RCloudProviderForward, RCloudProviders}
@@ -33,7 +33,7 @@ object CloudProviderProperties extends StatefulProperties("Cloud Providers") wit
                              Some(desc.map(_.word).mkString(" ")).filter(_.nonEmpty),
                              None)
 
-  override def logon = TestLogon("TLE_ADMINISTRATOR", workflowInst.systemPassword, workflowInst)
+  override def logon = tleAdminLogon
 
   def genTestCommands(s: ProviderTestState): Gen[List[RegisterProvider]] = {
     if (s.registered.isEmpty) for {
