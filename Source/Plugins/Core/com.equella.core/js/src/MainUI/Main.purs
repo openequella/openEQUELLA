@@ -24,7 +24,7 @@ import OEQ.Utils.Polyfills (polyfill)
 import React (component, unsafeCreateLeafElement)
 import React.DOM (div')
 import Routing.PushState (matchesWith)
-import TSComponents (courseEdit, coursesPage, searchConfigsClass, loginNoticeConfigPageClass, themePageClass, cloudProviderListPageClass)
+import TSComponents (courseEdit, coursesPage, searchConfigsClass, loginNoticeConfigPageClass, themePageClass, cloudProviderListPageClass, newCloudProviderClass)
 import Web.HTML (window)
 import Web.HTML.Location (pathname)
 import Web.HTML.Window (location)
@@ -62,6 +62,7 @@ main = do
           ThemePage -> unsafeCreateLeafElement themePageClass {bridge:tsBridge}
           LoginNoticeConfigPage -> unsafeCreateLeafElement loginNoticeConfigPageClass {bridge:tsBridge}
           CloudProviderListPage -> unsafeCreateLeafElement cloudProviderListPageClass {bridge:tsBridge}
+          NewCloudProvider -> unsafeCreateLeafElement newCloudProviderClass {bridge:tsBridge}
           CourseEdit cid -> courseEdit $ Just cid
           ViewItemPage (ItemRef uuid version) -> viewItemPage {uuid,version}
           SearchConfigsPage -> unsafeCreateLeafElement searchConfigsClass {bridge:tsBridge}

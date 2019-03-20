@@ -17,7 +17,8 @@ export const commonString = prepLangStrings("common", {
     browse: "Browse...",
     apply: "Apply",
     resettodefault: "Reset to Default",
-    revertchanges: "Revert Changes"
+    revertchanges: "Revert Changes",
+    register: "Register"
   },
   users: "Users",
   groups: "Groups",
