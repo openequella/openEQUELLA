@@ -29,6 +29,7 @@ data Route =
     SearchConfigsPage |
     ThemePage |
     NewCourse |
+    NewCloudProvider |
     LoginNoticeConfigPage |
     CloudProviderListPage
 
@@ -60,6 +61,7 @@ routeMatch =
         CoursesPage <$ (lit "course") <|>
         ThemePage <$ (lit "themeconfiguration") <|>
         LoginNoticeConfigPage <$ (lit "loginconfiguration") <|>
+        NewCloudProvider <$ (lit "cloudprovider" *> lit "new") <|>
         CloudProviderListPage <$ (lit "cloudprovider") <|>
         SearchConfigsPage <$ (lit "searchconfigs"))
         <|> (LegacyPage <$> legacyRoute) 
@@ -108,6 +110,7 @@ routeURI r = (case r of
     CourseEdit cid -> "page/course/" <> cid <> "/edit"
     ViewItemPage (ItemRef uuid version) -> "integ/gen/" <> uuid <> "/" <> show version
     SearchConfigsPage -> "page/searchconfigs"
+    NewCloudProvider -> "page/cloudprovider/new"
     CloudProviderListPage -> "page/cloudprovider"
     LegacyPage leg -> legacyURIToString leg
   )

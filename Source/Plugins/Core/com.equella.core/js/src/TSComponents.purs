@@ -25,6 +25,7 @@ foreign import searchConfigsClass :: forall a. ReactClass a
 
 foreign import loginNoticeConfigPageClass :: forall a. ReactClass a
 foreign import cloudProviderListPageClass :: forall a. ReactClass a
+foreign import newCloudProviderClass :: forall a. ReactClass a
 coursesPage :: ReactElement
 coursesPage = unsafeCreateLeafElement searchCourses {store:store, bridge: tsBridge}
 

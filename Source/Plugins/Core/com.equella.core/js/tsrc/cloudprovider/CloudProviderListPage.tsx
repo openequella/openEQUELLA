@@ -67,12 +67,8 @@ class CloudProviderListPage extends React.Component<
   }
 
   render() {
-    const { Template } = this.props.bridge;
+    const { Template, routes, router } = this.props.bridge;
     const { error, cloudProviders } = this.state;
-    const createLink = {
-      href: "",
-      onClick: () => {}
-    };
     return (
       <Template title={langStrings.title} errorResponse={error}>
         <EntityList
@@ -81,7 +77,7 @@ class CloudProviderListPage extends React.Component<
             langStrings.cloudProviderAvailable
           )}
           progress={false}
-          createLink={createLink}
+          createLink={router(routes.NewCloudProvider)}
         >
           {cloudProviders.map(cloudProvider => {
             let primaryText = (
