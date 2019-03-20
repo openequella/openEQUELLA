@@ -25,8 +25,11 @@ import com.tle.web.wizard.WebWizardPage;
 import com.tle.web.wizard.WizardService;
 import com.tle.web.wizard.WizardState;
 import com.tle.web.wizard.impl.WizardCommand;
+import com.tle.web.wizard.section.PagesSection;
 import com.tle.web.wizard.section.WizardSectionInfo;
 import com.tle.web.workflow.tasks.ModerationService;
+import java.util.ArrayList;
+import java.util.List;
 import javax.inject.Inject;
 
 public class SaveAndContinue extends WizardCommand {
@@ -54,12 +57,19 @@ public class SaveAndContinue extends WizardCommand {
     WizardState state = winfo.getWizardState();
     wizardService.doSave(state, false);
     receiptService.setReceipt(SUCCESS_CONTINUE_RECEIPT_LABEL);
+    List<WebWizardPage> pageList = new ArrayList<>();
+    PagesSection ps = info.lookupSection(PagesSection.class);
     if (state.getPages() != null) {
       for (WebWizardPage page : state.getPages()) {
         page.removeTrees(info);
+        pageList.add(page);
       }
     }
     wizardService.reloadSaveAndContinue(state);
+    // validate mandatory fields after reloading
+    for (WebWizardPage page : pageList) {
+      wizardService.ensureInitialisedPage(info, page, ps.getReloadFunction(), true);
+    }
     moderationService.setEditing(info, true);
   }
 
