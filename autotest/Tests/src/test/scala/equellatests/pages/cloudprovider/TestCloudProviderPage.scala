@@ -14,13 +14,14 @@ case class TestCloudProviderPage(ctx: PageContext,
   private def returnButtonBy = By.id("returnButton")
   private def registerButton = findElement(By.id("registerButton"))
 
-  def registerProvider() = {
+  def registerProvider(): Unit = {
     registerButton.click()
     waitFor(ExpectedConditions.presenceOfElementLocated(returnButtonBy))
   }
 
-  def returnToEQUELLA() = {
+  def returnToEQUELLA(): CloudProviderListPage = {
     findElement(returnButtonBy).click()
+    CloudProviderListPage(ctx).get()
   }
 
   override def load(): this.type = {

@@ -17,15 +17,16 @@
 package com.tle.web.api.cloudprovider
 
 import com.tle.core.cloudproviders._
-import com.tle.core.db.RunWithDB
+import com.tle.core.db._
 import com.tle.core.settings.SettingsDB
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.{ApiHelper, EntityPaging}
+import com.tle.web.settings.SettingsList
 import io.lemonlabs.uri.Url
 import io.lemonlabs.uri.parsing.UrlParser
 import io.swagger.annotations.{Api, ApiOperation}
 import javax.ws.rs._
-import javax.ws.rs.core.{Context, MediaType, Response, UriInfo}
+import javax.ws.rs.core.{Context, MediaType, Response, UriBuilder, UriInfo}
 
 case class CloudProviderForward(url: String)
 
@@ -43,9 +44,18 @@ class CloudProviderApi {
   def register(@QueryParam(TokenParam) @DefaultValue("") regtoken: String,
                registration: CloudProviderRegistration): Response = {
     ApiHelper.runAndBuild {
-      CloudProviderDB.register(regtoken, registration).map { validatedInstance =>
-        ApiHelper.validationOrEntity(
-          validatedInstance.map(inst => CloudProviderRegistrationResponse(inst, "http://")))
+      for {
+        uc                <- getContext
+        validatedInstance <- CloudProviderDB.register(regtoken, registration)
+      } yield {
+        val forwardUrl = UriBuilder
+          .fromUri(uc.inst.getUrlAsUri)
+          .path(SettingsList.CloudProviderListPage)
+          .build()
+          .toString
+        ApiHelper.validationOrEntity(validatedInstance.map { inst =>
+          CloudProviderRegistrationResponse(inst, forwardUrl)
+        })
       }
     }
   }

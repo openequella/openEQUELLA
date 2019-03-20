@@ -10,6 +10,7 @@ import integtester.IntegTester
 import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder}
 import org.scalacheck.{Gen, Prop}
+import Prop._
 
 object CloudProviderProperties extends StatefulProperties("Cloud Providers") with SimpleTestCase {
 
@@ -24,16 +25,24 @@ object CloudProviderProperties extends StatefulProperties("Cloud Providers") wit
   implicit val testCaseDecoder: Decoder[RegisterProvider] = deriveDecoder
 
   val genCloudProvider = for {
-    name <- RandomWords.someWords
-    desc <- Gen.listOf(RandomWord.arbWord)
-  } yield TestCloudProviderDetails(name.asString, Some(desc.mkString(" ")).filter(_.nonEmpty), None)
+    name     <- RandomWords.someWords
+    descSize <- Gen.choose(0, 10)
+    desc     <- Gen.listOfN(descSize, RandomWord.word)
+  } yield
+    TestCloudProviderDetails(name.asString,
+                             Some(desc.map(_.word).mkString(" ")).filter(_.nonEmpty),
+                             None)
 
   override def logon = TestLogon("TLE_ADMINISTRATOR", workflowInst.systemPassword, workflowInst)
 
   def genTestCommands(s: ProviderTestState): Gen[List[RegisterProvider]] = {
     if (s.registered.isEmpty) for {
-      provider <- genCloudProvider
-    } yield List(RegisterProvider(provider))
+      nProviders <- Gen.choose(1, 5)
+      providers <- Gen.listOfN(nProviders, for {
+        sz <- Gen.choose(0, 10)
+        p  <- Gen.resize(sz, genCloudProvider)
+      } yield p)
+    } yield providers.map(RegisterProvider)
     else Gen.const(List())
   }
 
@@ -54,11 +63,15 @@ object CloudProviderProperties extends StatefulProperties("Cloud Providers") wit
       ERest.run(b.page.ctx) {
         RCloudProviders.initCallback(IntegTester.providerRegistrationUrl).map {
           case RCloudProviderForward(url) =>
-            val cpp = TestCloudProviderPage(b.page.ctx, url, provider)
+            val actualProvider = provider.copy(name = s"${b.unique} ${provider.name}")
+            val cpp            = TestCloudProviderPage(b.page.ctx, url, actualProvider)
             cpp.load()
             cpp.registerProvider()
-            cpp.returnToEQUELLA()
-            Prop(true)
+            val cplp = cpp.returnToEQUELLA()
+            cplp.waitForResults()
+            val result      = cplp.resultForName(actualProvider.name)
+            val description = Some(result.description()).filter(_.nonEmpty)
+            Prop.?=(description, actualProvider.description).label("Description should match")
         }
       }
   }

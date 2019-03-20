@@ -72,6 +72,7 @@ class CloudProviderListPage extends React.Component<
     return (
       <Template title={langStrings.title} errorResponse={error}>
         <EntityList
+          id="cloudProviderList"
           resultsText={formatSize(
             cloudProviders.length,
             langStrings.cloudProviderAvailable

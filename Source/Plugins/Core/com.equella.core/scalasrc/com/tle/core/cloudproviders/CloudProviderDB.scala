@@ -29,7 +29,7 @@ import cats.syntax.applicative._
 import com.tle.core.db._
 import com.tle.core.db.dao.{EntityDB, EntityDBExt}
 import com.tle.core.db.tables.OEQEntity
-import com.tle.core.validation.EntityValidation
+import com.tle.core.validation.{EntityValidation, OEQEntityEdits}
 import com.tle.legacy.LegacyGuice
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.doolse.simpledba.Iso
@@ -86,12 +86,18 @@ object CloudProviderDB {
     )
   }
 
+  case class ProviderStdEdits(reg: CloudProviderRegistration) extends OEQEntityEdits {
+    override def name               = reg.name
+    override def nameStrings        = None
+    override def description        = reg.description
+    override def descriptionStrings = None
+  }
+
   def validateRegistrationFields(oeq: OEQEntity,
                                  reg: CloudProviderRegistration,
                                  oeqAuth: CloudOAuthCredentials,
                                  locale: Locale): CloudProviderVal[CloudProviderDB] = {
-    EntityValidation.nonBlank("name", reg.name, locale).map { name =>
-      val newOeq = oeq.copy(name = name._1, name_strings = name._2)
+    EntityValidation.standardValidation(ProviderStdEdits(reg), oeq, locale).map { newOeq =>
       val data = CloudProviderData(
         baseUrl = reg.baseUrl,
         iconUrl = reg.iconUrl,

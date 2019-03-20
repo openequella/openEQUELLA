@@ -47,11 +47,13 @@ interface EntityListProps extends WithStyles<typeof styles> {
   children: React.ReactNode;
   createLink?: ClickableLink;
   progress: Boolean;
+  id?: string;
 }
 
 class EntityList extends React.Component<EntityListProps, {}> {
   render() {
     const {
+      id,
       classes,
       progress,
       resultsText,
@@ -60,7 +62,7 @@ class EntityList extends React.Component<EntityListProps, {}> {
       createLink
     } = this.props;
     return (
-      <div className={classes.overall}>
+      <div id={id} className={classes.overall}>
         {createLink && (
           <Fab
             className={classes.fab}
