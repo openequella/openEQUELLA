@@ -19,6 +19,7 @@ package com.tle.core.cloudproviders
 import java.util.concurrent.TimeUnit
 import java.util.{Locale, UUID}
 
+import fs2._
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.ValidatedNec
 import cats.effect.{IO, LiftIO}
@@ -54,7 +55,7 @@ case class CloudProviderDB(entity: OEQEntity, data: CloudProviderData)
 object CloudProviderDB {
 
   val tokenCache =
-    LegacyGuice.replicatedCacheService.getCache[String]("cloudRegTokens", 100, 1, TimeUnit.MINUTES)
+    LegacyGuice.replicatedCacheService.getCache[String]("cloudRegTokens", 100, 1, TimeUnit.HOURS)
 
   type CloudProviderVal[A] = ValidatedNec[EntityValidation, A]
 
@@ -131,11 +132,21 @@ object CloudProviderDB {
       case Invalid(e) => e.invalid[CloudProviderInstance].pure[DB]
     }
 
-  def createRegistrationToken: DB[String] = {
+  val createRegistrationToken: DB[String] = {
     LiftIO[DB].liftIO(IO {
       val newToken = UUID.randomUUID().toString
       tokenCache.put(newToken, newToken)
       newToken
     })
+  }
+
+  val allProviders: Stream[DB, CloudProviderDetails] = {
+    EntityDB.readAll[CloudProviderDB].map { cp =>
+      val oeq = cp.entity
+      CloudProviderDetails(id = oeq.uuid.id,
+                           name = oeq.name,
+                           description = oeq.description,
+                           cp.data.iconUrl)
+    }
   }
 }

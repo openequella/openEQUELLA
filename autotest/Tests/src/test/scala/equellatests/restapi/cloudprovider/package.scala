@@ -1,0 +1,44 @@
+package equellatests.restapi
+
+import java.util.UUID
+
+import org.http4s.Uri
+
+package object cloudprovider {
+
+  val baseUri = Uri.uri("api/cloudprovider")
+
+  case class RCloudOAuthCredentials(clientId: String, clientSecret: String)
+
+  object RCloudOAuthCredentials {
+    def random() = RCloudOAuthCredentials(UUID.randomUUID().toString, UUID.randomUUID().toString)
+  }
+
+  case class RViewer(name: String, serviceId: String)
+
+  case class RServiceUri(authenticated: Boolean, uri: String)
+
+  case class RCloudProviderRegistration(name: String,
+                                        description: Option[String],
+                                        baseUrl: String,
+                                        iconUrl: Option[String],
+                                        providerAuth: RCloudOAuthCredentials,
+                                        serviceUris: Map[String, RServiceUri],
+                                        viewers: Map[String, Map[String, RViewer]])
+
+  case class RCloudProviderRegistrationResponse(instance: RCloudProviderInstance,
+                                                forwardUrl: String)
+
+  case class RCloudProviderInstance(id: UUID,
+                                    name: String,
+                                    description: Option[String],
+                                    baseUrl: String,
+                                    iconUrl: Option[String],
+                                    providerAuth: RCloudOAuthCredentials,
+                                    oeqAuth: RCloudOAuthCredentials,
+                                    serviceUris: Map[String, RServiceUri],
+                                    viewers: Map[String, Map[String, RViewer]])
+
+  case class RCloudProviderForward(url: String)
+
+}

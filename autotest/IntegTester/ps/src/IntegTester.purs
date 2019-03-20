@@ -78,7 +78,7 @@ textBox n l {state,change} = input [ name n, className "formcontrol",
      _type "text", value (view l state), changeStr change l ]
 
 textArea :: String -> Lens' State String -> FormContext -> ReactElement
-textArea n l {state,change} = textarea [ name n, className "itemXml", changeStr change l ] [ text (view l state)]
+textArea n l {state,change} = textarea [ value (view l state), name n, className "itemXml", changeStr change l ] []
 
 checkBox :: String -> Lens' State Boolean -> FormContext -> ReactElement
 checkBox n l {state,change} = input [ name n, _type "checkbox",
