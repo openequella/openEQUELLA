@@ -128,6 +128,24 @@ public interface AttachmentScriptType extends Serializable {
   void setCustomIntegerProperty(String propertyName, int propertyValue);
 
   /**
+   * For attachments of type CUSTOM, set the value of the given property. If the attachment is not
+   * of type CUSTOM an exception will be thrown.
+   *
+   * @param propertyName The name of the custom property.
+   * @param propertyValue The new long (whole number) value of the custom property, e.g. 6666666666
+   */
+  void setCustomLongProperty(String propertyName, long propertyValue);
+
+  /**
+   * For attachments of type CUSTOM, set the value of the given property. If the attachment is not
+   * of type CUSTOM an exception will be thrown.
+   *
+   * @param propertyName The name of the custom property.
+   * @param propertyValue The new double value of the custom property, e.g. 66.66
+   */
+  void setCustomDoubleProperty(String propertyName, double propertyValue);
+
+  /**
    * Used to display custom metadata on the attachments dropdown. All display properties will be
    * ordered as they are inserted during scripting. If value is null the custom field will be
    * removed. The key makes up the label that will be displayed in the user interface so it should
