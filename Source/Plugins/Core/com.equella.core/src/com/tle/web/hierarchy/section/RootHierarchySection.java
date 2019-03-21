@@ -109,8 +109,6 @@ public class RootHierarchySection extends ContextableSearchSection<ContextableSe
    * previously held values fails resulting in the 'reverse order' "rs" boolean checkbox becoming
    * stuck on true/checked once set. The best that can be said about this workaround is that it's
    * harmless where not required.
-   *
-   * @param context
    */
   @Override
   protected boolean hasContextBeenSpecified(SectionInfo info) {
@@ -131,5 +129,10 @@ public class RootHierarchySection extends ContextableSearchSection<ContextableSe
     return selectionService.getCurrentSession(info) != null
         ? super.getDefaultLayout(info)
         : ContentLayout.ONE_COLUMN;
+  }
+
+  @Override
+  protected String getPageName() {
+    return HIERARCHYURL;
   }
 }

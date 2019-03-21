@@ -589,7 +589,7 @@ public class TopicDisplaySection
       implements FreetextSearchResults<T> {
     private static final long serialVersionUID = 1L;
 
-    private final FreetextSearchResults<? extends FreetextResult> wrapped;
+    private final FreetextSearchResults<T> wrapped;
     private final List<Item> keyResources;
     private final int keyResourcesSize;
     private final int count;
@@ -597,7 +597,7 @@ public class TopicDisplaySection
     private final int mixedEnd;
 
     public KeyResourceAddedResults(
-        FreetextSearchResults<? extends FreetextResult> results,
+        FreetextSearchResults<T> results,
         List<Item> keyResources,
         FreetextSearchEvent searchEvent) {
       this.wrapped = results;
@@ -615,7 +615,7 @@ public class TopicDisplaySection
 
     @Override
     public T getResultData(int index) {
-      return null;
+      return wrapped.getResultData(index);
     }
 
     @Override

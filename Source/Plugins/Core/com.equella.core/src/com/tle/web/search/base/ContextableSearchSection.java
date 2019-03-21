@@ -128,7 +128,15 @@ public abstract class ContextableSearchSection<M extends ContextableSearchSectio
     return bookmarkEvent.getBookmarkState();
   }
 
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.setAttribute(SEARCHPAGE_ATTR, getPageName());
+  }
+
   protected abstract String getSessionKey();
+
+  protected abstract String getPageName();
 
   @Override
   public Object instantiateModel(SectionInfo info) {

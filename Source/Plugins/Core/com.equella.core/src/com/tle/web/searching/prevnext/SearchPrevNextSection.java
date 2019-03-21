@@ -23,7 +23,6 @@ import com.tle.core.services.item.FreetextResult;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.search.base.AbstractFreetextResultsSection;
 import com.tle.web.searching.SearchIndexModifier;
-import com.tle.web.searching.section.SearchResultsSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
@@ -76,7 +75,8 @@ public class SearchPrevNextSection
     SearchPrevNextModel model = getModel(info);
     int nextIndex = model.getIndex() + direction;
     SectionInfo searchInfo = info.createForward(model.getSearchPage());
-    SearchResultsSection srs = searchInfo.lookupSection(AbstractFreetextResultsSection.class);
+    AbstractFreetextResultsSection srs =
+        searchInfo.lookupSection(AbstractFreetextResultsSection.class);
     FreetextResult ftr = srs.getResultForIndex(searchInfo, nextIndex);
     if (ftr != null) {
       ViewItemUrl vurl = urlFactory.createItemUrl(info, ItemId.fromKey(ftr.getItemIdKey()));

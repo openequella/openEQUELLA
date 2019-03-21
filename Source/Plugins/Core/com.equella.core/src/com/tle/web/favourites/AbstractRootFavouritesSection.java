@@ -137,4 +137,9 @@ public abstract class AbstractRootFavouritesSection
   public SingleSelectionList<Void> getFavouriteType() {
     return favouriteType;
   }
+
+  @Override
+  protected String getPageName() {
+    return "/access/favourites.do";
+  }
 }

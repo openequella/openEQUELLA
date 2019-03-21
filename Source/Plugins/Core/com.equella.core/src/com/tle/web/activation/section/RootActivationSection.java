@@ -61,4 +61,9 @@ public class RootActivationSection
   protected ContentLayout getDefaultLayout(SectionInfo info) {
     return ContentLayout.TWO_COLUMN;
   }
+
+  @Override
+  protected String getPageName() {
+    return ACTIVATIONURL;
+  }
 }

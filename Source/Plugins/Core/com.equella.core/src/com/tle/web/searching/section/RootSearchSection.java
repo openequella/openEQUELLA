@@ -29,7 +29,6 @@ import com.tle.web.resources.ResourcesService;
 import com.tle.web.search.base.ContextableSearchSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
-import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.layout.ContentLayout;
 import com.tle.web.sections.events.RenderContext;
@@ -82,12 +81,6 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
     return super.renderHtml(context);
   }
 
-  @Override
-  public void registered(String id, SectionTree tree) {
-    super.registered(id, tree);
-    tree.setAttribute(SEARCHPAGE_ATTR, SEARCHURL);
-  }
-
   public static SectionInfo createForward(SectionInfo from) {
     return from.createForward(SEARCHURL);
   }
@@ -102,5 +95,10 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
     return selectionService.getCurrentSession(info) != null
         ? super.getDefaultLayout(info)
         : ContentLayout.ONE_COLUMN;
+  }
+
+  @Override
+  protected String getPageName() {
+    return SEARCHURL;
   }
 }
