@@ -79,7 +79,7 @@ public class CloudSearchItemListSection
 
   @Override
   protected CloudSearchListEntry createItemListEntry(
-      SectionInfo info, CloudItem item, FreetextResult result) {
+      SectionInfo info, CloudItem item, FreetextResult result, int index) {
     return entryFactory.createListEntry(info, item);
   }
 

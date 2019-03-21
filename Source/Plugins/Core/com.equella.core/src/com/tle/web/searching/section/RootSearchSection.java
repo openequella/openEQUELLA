@@ -29,6 +29,7 @@ import com.tle.web.resources.ResourcesService;
 import com.tle.web.search.base.ContextableSearchSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
+import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.layout.ContentLayout;
 import com.tle.web.sections.events.RenderContext;
@@ -79,6 +80,12 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
           urlHelper.getString("missingprivileges", WebConstants.SEARCH_PAGE_PRIVILEGE));
     }
     return super.renderHtml(context);
+  }
+
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.setAttribute(SEARCHPAGE_ATTR, SEARCHURL);
   }
 
   public static SectionInfo createForward(SectionInfo from) {

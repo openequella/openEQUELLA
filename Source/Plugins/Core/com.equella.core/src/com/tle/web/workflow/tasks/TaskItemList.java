@@ -110,7 +110,7 @@ public class TaskItemList extends AbstractItemList<TaskItemListEntry, TaskItemLi
 
   @Override
   protected TaskItemListEntry createItemListEntry(
-      SectionInfo info, Item item, FreetextResult result) {
+      SectionInfo info, Item item, FreetextResult result, int index) {
     TaskItemListEntry entry = entryFactory.get();
     Model model = getModel(info);
     entry.setItem(item);

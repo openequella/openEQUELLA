@@ -42,7 +42,7 @@ public abstract class ContextableSearchSection<M extends ContextableSearchSectio
     extends AbstractRootSearchSection<M>
     implements PublicBookmarkFactory, AfterParametersListener, ReadyToRespondListener {
   public static final String HISTORYURL_CONTEXT = "css-historyUrl"; // $NON-NLS-1$
-
+  public static final String SEARCHPAGE_ATTR = "SEARCH_PAGE";
   @Inject private UserSessionService userSessionService;
   @Inject protected SelectionService selectionService;
 

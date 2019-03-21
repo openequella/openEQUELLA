@@ -35,7 +35,7 @@ public abstract class AbstractItemlikeList<
   protected abstract Set<String> getExtensionTypes();
 
   protected abstract LE createItemListEntry(
-      SectionInfo info, I item, @Nullable FreetextResult result);
+      SectionInfo info, I item, @Nullable FreetextResult result, int index);
 
   @Override
   protected void customiseListEntries(RenderContext context, List<LE> entries) {
@@ -43,8 +43,8 @@ public abstract class AbstractItemlikeList<
   }
 
   @Override
-  public LE addItem(SectionInfo info, I item, @Nullable FreetextResult result) {
-    LE entry = createItemListEntry(info, item, result);
+  public LE addItem(SectionInfo info, I item, @Nullable FreetextResult result, int index) {
+    LE entry = createItemListEntry(info, item, result, index);
     entry.setAttribute(FreetextResult.class, result);
     addListItem(info, entry);
     return entry;

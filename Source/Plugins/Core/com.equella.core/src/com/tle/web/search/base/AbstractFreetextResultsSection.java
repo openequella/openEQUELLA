@@ -103,7 +103,7 @@ public abstract class AbstractFreetextResultsSection<
     for (int i = 0; i < count; i++) {
       Item item = results.getItem(i);
       if (item != null) {
-        itemList.addItem(info, item, results.getResultData(i));
+        itemList.addItem(info, item, results.getResultData(i), i + results.getOffset());
       } else {
         flagListAsNullItemsRemoved = true;
       }
@@ -168,5 +168,18 @@ public abstract class AbstractFreetextResultsSection<
       LOGGER.error("Error searching", t); // $NON-NLS-1$
       return new FreetextSearchResultEvent(t, searchEvent);
     }
+  }
+
+  public FreetextResult getResultForIndex(SectionInfo info, int index) {
+    FreetextSearchEvent searchEvent = createSearchEvent(info);
+    info.processEvent(searchEvent);
+    searchEvent.setOffset(index);
+    searchEvent.setCount(1);
+    FreetextSearchResults<? extends FreetextResult> results =
+        createResultsEvent(info, searchEvent).getResults();
+    if (results.getCount() > 0) {
+      return results.getResultData(0);
+    }
+    return null;
   }
 }

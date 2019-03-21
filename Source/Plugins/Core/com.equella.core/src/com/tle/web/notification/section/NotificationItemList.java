@@ -177,7 +177,7 @@ public class NotificationItemList
 
   @Override
   protected NotificationItemListEntry createItemListEntry(
-      SectionInfo info, Item item, FreetextResult result) {
+      SectionInfo info, Item item, FreetextResult result, int index) {
     NotificationItemListEntry notificationItemListItem = entryFactory.get();
     notificationItemListItem.setInfo(info);
     notificationItemListItem.setItem(item);
@@ -186,10 +186,11 @@ public class NotificationItemList
 
   @SuppressWarnings("nls")
   @Override
-  public NotificationItemListEntry addItem(SectionInfo info, Item item, FreetextResult resultData) {
+  public NotificationItemListEntry addItem(
+      SectionInfo info, Item item, FreetextResult resultData, int index) {
     if (resultData instanceof NotificationResult) {
       NotificationResult result = (NotificationResult) resultData;
-      NotificationItemListEntry entry = createItemListEntry(info, item, resultData);
+      NotificationItemListEntry entry = createItemListEntry(info, item, resultData, index);
       entry.setNotificationId(result.getNotificationId());
       addListItem(info, entry);
       return entry;

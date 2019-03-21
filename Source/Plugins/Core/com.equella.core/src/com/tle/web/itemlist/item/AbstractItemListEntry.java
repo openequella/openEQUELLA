@@ -30,6 +30,7 @@ import com.tle.core.services.item.FreetextResult;
 import com.tle.web.htmleditor.service.HtmlEditorService;
 import com.tle.web.itemlist.StdMetadataEntry;
 import com.tle.web.sections.Bookmark;
+import com.tle.web.sections.BookmarkModifier;
 import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.equella.ItemStatusKeys;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -43,8 +44,10 @@ import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.sections.standard.renderers.SpanRenderer;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.impl.ViewableItemFactory;
+import com.tle.web.viewurl.ViewItemUrl;
 import com.tle.web.viewurl.ViewItemUrlFactory;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -80,14 +83,21 @@ public abstract class AbstractItemListEntry extends AbstractItemlikeListEntry<It
   @Inject private ViewableItemFactory viewableItemFactory;
   @Inject private HtmlEditorService htmlEditorService;
   @Inject private ItemService itemService;
+  private List<BookmarkModifier> itemUrlModifiers = new ArrayList<>();
 
   @Override
   protected Bookmark getTitleLink() {
     final Item item = getItem();
     if (item != null) {
-      return itemUrls.createItemUrl(info, item.getItemId());
+      ViewItemUrl vurl = itemUrls.createItemUrl(info, item.getItemId());
+      itemUrlModifiers.forEach(vurl::add);
+      return vurl;
     }
     return new SimpleBookmark("#");
+  }
+
+  public void addModifier(BookmarkModifier modifier) {
+    itemUrlModifiers.add(modifier);
   }
 
   @Override

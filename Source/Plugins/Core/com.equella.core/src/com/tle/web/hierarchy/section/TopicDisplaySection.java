@@ -543,7 +543,8 @@ public class TopicDisplaySection
     for (int i = 0; i < count; i++) {
       Item item = results.getItem(i);
 
-      StandardItemListEntry itemEntry = itemList.addItem(info, item, results.getResultData(i));
+      StandardItemListEntry itemEntry =
+          itemList.addItem(info, item, results.getResultData(i), i + results.getOffset());
       if ((i + offset) < keySize) {
         itemEntry.setHilighted(true);
       }

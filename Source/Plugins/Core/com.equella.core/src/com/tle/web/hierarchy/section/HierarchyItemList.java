@@ -41,7 +41,7 @@ public class HierarchyItemList
 
   @Override
   protected StandardItemListEntry createItemListEntry(
-      SectionInfo info, Item item, FreetextResult result) {
-    return factory.createItemListItem(info, item, result);
+      SectionInfo info, Item item, FreetextResult result, int index) {
+    return factory.createItemListItem(info, item, result, index);
   }
 }

@@ -16,12 +16,18 @@
 
 package com.tle.web.searching.prevnext;
 
+import com.tle.beans.item.ItemId;
 import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
+import com.tle.core.services.item.FreetextResult;
 import com.tle.core.services.user.UserSessionService;
+import com.tle.web.search.base.AbstractFreetextResultsSection;
+import com.tle.web.searching.SearchIndexModifier;
+import com.tle.web.searching.section.SearchResultsSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
+import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -31,6 +37,7 @@ import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.viewable.impl.ViewableItemFactory;
 import com.tle.web.viewitem.section.AbstractParentViewItemSection;
+import com.tle.web.viewurl.ViewItemUrl;
 import com.tle.web.viewurl.ViewItemUrlFactory;
 import javax.inject.Inject;
 
@@ -65,17 +72,31 @@ public class SearchPrevNextSection
   }
 
   @EventHandlerMethod
-  public void nav(SectionInfo info, int direction) {}
+  public void nav(SectionInfo info, int direction) {
+    SearchPrevNextModel model = getModel(info);
+    int nextIndex = model.getIndex() + direction;
+    SectionInfo searchInfo = info.createForward(model.getSearchPage());
+    SearchResultsSection srs = searchInfo.lookupSection(AbstractFreetextResultsSection.class);
+    FreetextResult ftr = srs.getResultForIndex(searchInfo, nextIndex);
+    if (ftr != null) {
+      ViewItemUrl vurl = urlFactory.createItemUrl(info, ItemId.fromKey(ftr.getItemIdKey()));
+      vurl.add(new SearchIndexModifier(model.getSearchPage(), nextIndex));
+      vurl.forward(info);
+    }
+  }
 
   @Override
   public boolean canView(SectionInfo info) {
-    return true;
+    return getModel(info).getSearchPage() != null;
   }
 
   @Override
   public SectionResult renderHtml(RenderEventContext context) throws Exception {
     if (canView(context)) {
       SearchPrevNextModel model = getModel(context);
+      if (model.getIndex() == 0) {
+        prevButton.disable(context);
+      }
       return viewFactory.createNamedResult("section_comments", "search_prev_next.ftl", this);
     }
     return null;
@@ -99,5 +120,27 @@ public class SearchPrevNextSection
     return SearchPrevNextModel.class;
   }
 
-  public static class SearchPrevNextModel {}
+  public static class SearchPrevNextModel {
+    @Bookmarked(parameter = "search")
+    private String searchPage;
+
+    @Bookmarked(parameter = "index")
+    private int index;
+
+    public int getIndex() {
+      return index;
+    }
+
+    public void setIndex(int index) {
+      this.index = index;
+    }
+
+    public void setSearchPage(String searchPage) {
+      this.searchPage = searchPage;
+    }
+
+    public String getSearchPage() {
+      return searchPage;
+    }
+  }
 }
