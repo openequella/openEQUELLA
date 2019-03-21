@@ -16,11 +16,17 @@ import {
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloudIcon from "@material-ui/icons/CloudCircleRounded";
 import { CloudProviderEntity } from "./CloudProviderEntity";
-import { getCloudProviders, langStrings } from "./CloudProviderModule";
+import {
+  deleteCloudProvider,
+  getCloudProviders,
+  langStrings
+} from "./CloudProviderModule";
 import { AxiosError } from "axios";
 import { ErrorResponse, generateFromError } from "../api/errors";
 import EntityList from "../components/EntityList";
 import { formatSize } from "../util/langstrings";
+import { sprintf } from "sprintf-js";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -39,6 +45,8 @@ interface CloudProviderListPageProps extends WithStyles<typeof styles> {
 interface CloudProviderListPageState {
   cloudProviders: CloudProviderEntity[];
   error?: ErrorResponse;
+  confirmOpen: boolean;
+  deleteDetails?: CloudProviderEntity;
 }
 
 class CloudProviderListPage extends React.Component<
@@ -48,11 +56,16 @@ class CloudProviderListPage extends React.Component<
   constructor(props: CloudProviderListPageProps) {
     super(props);
     this.state = {
-      cloudProviders: []
+      cloudProviders: [],
+      confirmOpen: false
     };
   }
 
   componentDidMount(): void {
+    this.getCloudProviderList();
+  }
+
+  getCloudProviderList = () => {
     getCloudProviders()
       .then(result => {
         this.setState(prevState => ({
@@ -60,17 +73,66 @@ class CloudProviderListPage extends React.Component<
         }));
       })
       .catch((error: AxiosError) => {
-        this.setState({
-          error: generateFromError(error)
-        });
+        this.handleError(error);
       });
-  }
+  };
+
+  handleError = (error: Error) => {
+    this.setState({
+      error: generateFromError(error)
+    });
+  };
+
+  handleDelete = (cloudProvider: CloudProviderEntity) => {
+    this.setState({
+      confirmOpen: true,
+      deleteDetails: cloudProvider
+    });
+  };
+
+  handleCancel = () => {
+    this.setState({
+      confirmOpen: false
+    });
+  };
+
+  deleteCloudProvider = () => {
+    if (this.state.deleteDetails) {
+      let id = this.state.deleteDetails.id;
+      this.handleCancel();
+      deleteCloudProvider(id)
+        .then(() => {
+          this.getCloudProviderList();
+        })
+        .catch((error: AxiosError) => {
+          this.handleError(error);
+        });
+    }
+  };
 
   render() {
     const { Template, routes, router } = this.props.bridge;
-    const { error, cloudProviders } = this.state;
+    const { error, cloudProviders, confirmOpen } = this.state;
     return (
       <Template title={langStrings.title} errorResponse={error}>
+        {this.state.deleteDetails && (
+          <ConfirmDialog
+            open={confirmOpen}
+            title={sprintf(
+              langStrings.deleteCloudProviderTitle,
+              this.state.deleteDetails.name
+            )}
+            onConfirm={() => {
+              this.deleteCloudProvider();
+            }}
+            onCancel={() => {
+              this.handleCancel();
+            }}
+          >
+            {langStrings.deleteCloudProviderMsg}
+          </ConfirmDialog>
+        )}
+
         <EntityList
           id="cloudProviderList"
           resultsText={formatSize(
@@ -94,7 +156,6 @@ class CloudProviderListPage extends React.Component<
                 {cloudProvider.description}
               </Typography>
             );
-
             return (
               <ListItem button divider key={cloudProvider.id}>
                 <ListItemAvatar>
@@ -115,7 +176,11 @@ class CloudProviderListPage extends React.Component<
                   secondary={secondaryText}
                 />
                 <ListItemSecondaryAction>
-                  <IconButton>
+                  <IconButton
+                    onClick={() => {
+                      this.handleDelete(cloudProvider);
+                    }}
+                  >
                     <DeleteIcon />
                   </IconButton>
                 </ListItemSecondaryAction>
