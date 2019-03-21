@@ -155,4 +155,7 @@ object CloudProviderDB {
                            cp.data.iconUrl)
     }
   }
+
+  def deleteRegistration(id: UUID): DB[Unit] =
+    EntityDB.delete(id).compile.drain
 }

@@ -62,7 +62,7 @@ class NewCloudProvider extends React.Component<
     };
   }
 
-  handleSave = () => {
+  handleRegisterCloudProvider = () => {
     let cloudProviderUrl = this.state.cloudProviderUrl;
     registerCloudProviderInit(cloudProviderUrl)
       .then(result => {
@@ -75,7 +75,7 @@ class NewCloudProvider extends React.Component<
       });
   };
 
-  handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       cloudProviderUrl: e.target.value
     });
@@ -94,7 +94,7 @@ class NewCloudProvider extends React.Component<
           {commonString.action.cancel}
         </Button>
         <Button
-          onClick={this.handleSave}
+          onClick={this.handleRegisterCloudProvider}
           color="primary"
           disabled={!cloudProviderUrl}
         >
@@ -121,7 +121,7 @@ class NewCloudProvider extends React.Component<
               value={cloudProviderUrl}
               className={classes.formControl2}
               required
-              onChange={this.handleChange}
+              onChange={this.handleTextChange}
             />
           </div>
         </Grid>

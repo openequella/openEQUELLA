@@ -16,7 +16,11 @@ import {
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloudIcon from "@material-ui/icons/CloudCircleRounded";
 import { CloudProviderEntity } from "./CloudProviderEntity";
-import { getCloudProviders, langStrings } from "./CloudProviderModule";
+import {
+  deleteCloudProvider,
+  getCloudProviders,
+  langStrings
+} from "./CloudProviderModule";
 import { AxiosError } from "axios";
 import { ErrorResponse, generateFromError } from "../api/errors";
 import EntityList from "../components/EntityList";
@@ -53,6 +57,10 @@ class CloudProviderListPage extends React.Component<
   }
 
   componentDidMount(): void {
+    this.getCloudProviderList();
+  }
+
+  getCloudProviderList = () => {
     getCloudProviders()
       .then(result => {
         this.setState(prevState => ({
@@ -60,11 +68,25 @@ class CloudProviderListPage extends React.Component<
         }));
       })
       .catch((error: AxiosError) => {
-        this.setState({
-          error: generateFromError(error)
-        });
+        this.handleError(error);
       });
-  }
+  };
+
+  handleError = (error: AxiosError) => {
+    this.setState({
+      error: generateFromError(error)
+    });
+  };
+
+  onDeleteCloudProvider = (id: string) => {
+    deleteCloudProvider(id)
+      .then(() => {
+        this.getCloudProviderList();
+      })
+      .catch((error: AxiosError) => {
+        this.handleError(error);
+      });
+  };
 
   render() {
     const { Template, routes, router } = this.props.bridge;
@@ -115,7 +137,11 @@ class CloudProviderListPage extends React.Component<
                   secondary={secondaryText}
                 />
                 <ListItemSecondaryAction>
-                  <IconButton>
+                  <IconButton
+                    onClick={() => {
+                      this.onDeleteCloudProvider(cloudProvider.id);
+                    }}
+                  >
                     <DeleteIcon />
                   </IconButton>
                 </ListItemSecondaryAction>

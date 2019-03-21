@@ -16,6 +16,8 @@
 
 package com.tle.web.api.cloudprovider
 
+import java.util.UUID
+import cats.syntax.functor._
 import com.tle.core.cloudproviders._
 import com.tle.core.db._
 import com.tle.core.settings.SettingsDB
@@ -94,6 +96,13 @@ class CloudProviderApi {
       case _ => throw new BadRequestException("Invalid provider registration url")
     }
 
+  }
+
+  @DELETE
+  @Path("provider/{uuid}")
+  @ApiOperation(value = "Delete a cloud provider")
+  def deleteRegistration(@PathParam("uuid") uuid: UUID): Response = ApiHelper.runAndBuild {
+    CloudProviderDB.deleteRegistration(uuid).as(Response.noContent())
   }
 
   @GET
