@@ -30,13 +30,14 @@ It may also include arbitrary fields for any extensions.
           return params.ajaxurl;
         },
         data: function(ajaxParams) {
-          var start = ajaxParams.page
-            ? (ajaxParams.page - 1) * perpage
-            : undefined;
+          var resumptionToken =
+            (ajaxParams.page || 1) === 1
+              ? undefined
+              : $elem.data("resumption-token");
           var queryParams = {
             q: ajaxParams.term,
             length: perpage,
-            resumption: start ? start + ":" + (start + perpage) : undefined
+            resumption: resumptionToken
           };
           if (extension && extension.processParameters) {
             queryParams = extension.processParameters(
@@ -48,10 +49,12 @@ It may also include arbitrary fields for any extensions.
           return queryParams;
         },
         processResults: function(data) {
+          var resumptionToken = data.resumptionToken;
+          $elem.data("resumption-token", resumptionToken);
           var res = {
             results: data.results,
             pagination: {
-              more: data.resumptionToken ? true : false
+              more: resumptionToken ? true : false
             }
           };
           if (extension && extension.processResultsExt) {
