@@ -25,6 +25,8 @@ import { AxiosError } from "axios";
 import { ErrorResponse, generateFromError } from "../api/errors";
 import EntityList from "../components/EntityList";
 import { formatSize } from "../util/langstrings";
+import { sprintf } from "sprintf-js";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -43,6 +45,8 @@ interface CloudProviderListPageProps extends WithStyles<typeof styles> {
 interface CloudProviderListPageState {
   cloudProviders: CloudProviderEntity[];
   error?: ErrorResponse;
+  confirmOpen: boolean;
+  deleteDetails?: CloudProviderEntity;
 }
 
 class CloudProviderListPage extends React.Component<
@@ -52,7 +56,8 @@ class CloudProviderListPage extends React.Component<
   constructor(props: CloudProviderListPageProps) {
     super(props);
     this.state = {
-      cloudProviders: []
+      cloudProviders: [],
+      confirmOpen: false
     };
   }
 
@@ -72,27 +77,69 @@ class CloudProviderListPage extends React.Component<
       });
   };
 
-  handleError = (error: AxiosError) => {
+  handleError = (error: Error) => {
     this.setState({
       error: generateFromError(error)
     });
   };
 
-  onDeleteCloudProvider = (id: string) => {
-    deleteCloudProvider(id)
-      .then(() => {
-        this.getCloudProviderList();
-      })
-      .catch((error: AxiosError) => {
-        this.handleError(error);
-      });
+  handleDelete = (id: string, name: string) => {
+    this.setState({
+      confirmOpen: true,
+      deleteDetails: {
+        id: id,
+        name: name
+      }
+    });
+  };
+
+  handleCancel = () => {
+    this.setState({
+      confirmOpen: false,
+      deleteDetails: {
+        id: "",
+        name: ""
+      }
+    });
+  };
+
+  deleteCloudProvider = () => {
+    if (this.state.deleteDetails) {
+      let id = this.state.deleteDetails.id;
+      this.handleCancel();
+      deleteCloudProvider(id)
+        .then(() => {
+          this.getCloudProviderList();
+        })
+        .catch((error: AxiosError) => {
+          this.handleError(error);
+        });
+    }
   };
 
   render() {
     const { Template, routes, router } = this.props.bridge;
-    const { error, cloudProviders } = this.state;
+    const { error, cloudProviders, confirmOpen } = this.state;
     return (
       <Template title={langStrings.title} errorResponse={error}>
+        {this.state.deleteDetails && (
+          <ConfirmDialog
+            open={confirmOpen}
+            title={sprintf(
+              langStrings.deleteCloudProviderTitle,
+              this.state.deleteDetails.name
+            )}
+            onConfirm={() => {
+              this.deleteCloudProvider();
+            }}
+            onCancel={() => {
+              this.handleCancel();
+            }}
+          >
+            {langStrings.deleteCloudProviderMsg}
+          </ConfirmDialog>
+        )}
+
         <EntityList
           id="cloudProviderList"
           resultsText={formatSize(
@@ -116,7 +163,6 @@ class CloudProviderListPage extends React.Component<
                 {cloudProvider.description}
               </Typography>
             );
-
             return (
               <ListItem button divider key={cloudProvider.id}>
                 <ListItemAvatar>
@@ -139,7 +185,7 @@ class CloudProviderListPage extends React.Component<
                 <ListItemSecondaryAction>
                   <IconButton
                     onClick={() => {
-                      this.onDeleteCloudProvider(cloudProvider.id);
+                      this.handleDelete(cloudProvider.id, cloudProvider.name);
                     }}
                   >
                     <DeleteIcon />

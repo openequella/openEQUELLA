@@ -23,7 +23,10 @@ export const langStrings = prepLangStrings("cp", {
     id: "new_cloud_provider_url",
     label: "URL",
     help: "Cloud provider URL, e.g. www.equella.com/upload"
-  }
+  },
+  deleteCloudProviderTitle:
+    "Are you sure you want to delete cloud provider - '%s'?",
+  deleteCloudProviderMsg: "It will be permanently deleted."
 });
 interface CloudProviderInitResponse {
   url: string;
