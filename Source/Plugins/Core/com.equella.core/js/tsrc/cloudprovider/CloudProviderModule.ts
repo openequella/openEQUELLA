@@ -1,5 +1,5 @@
 import { PagingResults } from "../api";
-import Axios from "axios";
+import Axios, { AxiosPromise } from "axios";
 import { Config } from "../config";
 import { CloudProviderEntity } from "./CloudProviderEntity";
 import { prepLangStrings } from "../util/langstrings";
@@ -31,9 +31,6 @@ export const langStrings = prepLangStrings("cp", {
 interface CloudProviderInitResponse {
   url: string;
 }
-interface CloudProviderDeleteResponse {
-  msg: string;
-}
 
 export function getCloudProviders(): Promise<
   PagingResults<CloudProviderEntity>
@@ -43,13 +40,8 @@ export function getCloudProviders(): Promise<
   ).then(res => res.data);
 }
 
-export function deleteCloudProvider(
-  cloudProviderId: string
-): Promise<CloudProviderDeleteResponse> {
-  //let params = {cloudProviderId : cloudProviderId}
-  return Axios.delete(DELETE_CLOUD_PROVIDER_URL + "/" + cloudProviderId).then(
-    res => res.data
-  );
+export function deleteCloudProvider(cloudProviderId: string): AxiosPromise {
+  return Axios.delete(DELETE_CLOUD_PROVIDER_URL + "/" + cloudProviderId);
 }
 
 export function registerCloudProviderInit(

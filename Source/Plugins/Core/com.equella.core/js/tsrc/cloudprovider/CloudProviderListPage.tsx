@@ -83,23 +83,16 @@ class CloudProviderListPage extends React.Component<
     });
   };
 
-  handleDelete = (id: string, name: string) => {
+  handleDelete = (cloudProvider: CloudProviderEntity) => {
     this.setState({
       confirmOpen: true,
-      deleteDetails: {
-        id: id,
-        name: name
-      }
+      deleteDetails: cloudProvider
     });
   };
 
   handleCancel = () => {
     this.setState({
-      confirmOpen: false,
-      deleteDetails: {
-        id: "",
-        name: ""
-      }
+      confirmOpen: false
     });
   };
 
@@ -185,7 +178,7 @@ class CloudProviderListPage extends React.Component<
                 <ListItemSecondaryAction>
                   <IconButton
                     onClick={() => {
-                      this.handleDelete(cloudProvider.id, cloudProvider.name);
+                      this.handleDelete(cloudProvider);
                     }}
                   >
                     <DeleteIcon />
