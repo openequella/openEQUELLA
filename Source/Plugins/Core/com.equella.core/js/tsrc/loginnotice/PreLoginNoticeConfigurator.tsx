@@ -155,11 +155,7 @@ class PreLoginNoticeConfigurator extends React.Component<
             <RichTextEditor
               htmlInput={this.state.dbHtml}
               onStateChange={this.handleEditorChange}
-              imageUploadCallBack={(file: object) =>
-                uploadPreLoginNoticeImage(file).catch((error: AxiosError) =>
-                  this.props.handleError(error)
-                )
-              }
+              imageUploadCallBack={uploadPreLoginNoticeImage}
             />
           </Grid>
           <Grid item container spacing={8} direction="row-reverse">
