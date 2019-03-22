@@ -46,7 +46,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import org.java.plugin.registry.Extension;
 
 public class WizardTab extends AbstractItemdefTab
     implements ActionListener, TreeSelectionListener, ComponentListener {
@@ -202,12 +201,7 @@ public class WizardTab extends AbstractItemdefTab
             if (control != null) {
               // Get the class
               ControlDefinition definition = control.getDefinition();
-              Extension extension = definition.getExtension();
-              EditorFactory editorFactory =
-                  (EditorFactory)
-                      pluginService.getBean(
-                          extension.getDeclaringPluginDescriptor(),
-                          definition.getEditorFactoryClass());
+              EditorFactory editorFactory = definition.editorFactory();
 
               currentEditor = editorFactory.getEditor(control, wizardType, schema, pluginService);
 
