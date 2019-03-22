@@ -11,6 +11,7 @@ import {
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
 import * as React from "react";
+import { ReactNode } from "react";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -41,6 +42,7 @@ export interface SearchResultProps {
   onDelete?: () => void;
   primaryText: string;
   secondaryText?: string;
+  avatar?: ReactNode;
   //extraDetails?: SearchResultExtraDetail[];
   //indicators?: string[];
 }
@@ -50,7 +52,7 @@ type PropsWithStyles = SearchResultProps &
 
 class SearchResult extends React.Component<PropsWithStyles> {
   render() {
-    const { onDelete } = this.props;
+    const { onDelete, avatar } = this.props;
     const link: any = (
       <Typography
         color="primary"
@@ -93,6 +95,7 @@ class SearchResult extends React.Component<PropsWithStyles> {
 
     return (
       <ListItem button onClick={this.props.onClick} divider>
+        {avatar}
         <ListItemText disableTypography primary={link} secondary={content} />
         <ListItemSecondaryAction>
           {onDelete && (
