@@ -21,7 +21,9 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.ItemPack;
 import com.tle.beans.item.cal.request.CourseInfo;
+import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.CurrentTimeZone;
+import com.tle.common.i18n.LangUtils;
 import com.tle.common.util.LocalDate;
 import com.tle.common.util.TleDate;
 import com.tle.common.util.UtcDate;
@@ -29,11 +31,10 @@ import com.tle.core.activation.service.ActivationService;
 import com.tle.core.activation.service.CourseInfoService;
 import com.tle.core.activation.workflow.OperationFactory;
 import com.tle.core.activation.workflow.RolloverOperation;
-import com.tle.core.entity.EnumerateOptions;
 import com.tle.core.guice.Bind;
 import com.tle.core.guice.BindFactory;
 import com.tle.core.i18n.BundleCache;
-import com.tle.core.i18n.BundleNameValue;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.plugins.BeanLocator;
@@ -51,11 +52,13 @@ import com.tle.web.sections.annotations.TreeLookup;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.component.CourseSelectionList;
 import com.tle.web.sections.equella.utils.KeyOption;
+import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.events.js.JSHandler;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.js.generic.ReloadHandler;
+import com.tle.web.sections.js.generic.expression.ObjectExpression;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.result.util.KeyLabel;
@@ -64,12 +67,11 @@ import com.tle.web.sections.standard.Calendar;
 import com.tle.web.sections.standard.Checkbox;
 import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.annotations.Component;
-import com.tle.web.sections.standard.model.DynamicHtmlListModel;
-import com.tle.web.sections.standard.model.NameValueOption;
 import com.tle.web.sections.standard.model.Option;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 
 @SuppressWarnings("nls")
@@ -78,6 +80,7 @@ import javax.inject.Inject;
 public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
     implements BulkOperationExtension {
   private static final String BULK_VALUE = "rollover";
+  private static final String EXISTING_COURSE_ID = "existing";
 
   @PlugKey("operation.rollover.current")
   private static String KEY_CURRENT;
@@ -96,6 +99,7 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
 
   @Inject private CourseInfoService courseInfoService;
   @Inject private BundleCache bundleCache;
+  @Inject private InstitutionService institutionService;
 
   @EventFactory private EventGenerator events;
 
@@ -119,8 +123,8 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
   public interface RolloverExecutorFactory {
     RolloverActivationExecutor create(
         long courseId,
-        @Assisted("from") Date from,
-        @Assisted("until") Date until,
+        @Nullable @Assisted("from") Date from,
+        @Nullable @Assisted("until") Date until,
         @Assisted("cancel") boolean cancel,
         @Assisted("sameCourse") boolean sameCourse,
         @Assisted("rolloverDates") boolean rolloverDates);
@@ -136,6 +140,7 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
 
     @Inject private OperationFactory operationFactory;
     @Inject private ItemOperationFactory workflowFactory;
+    @Inject private InstitutionService institutionService;
 
     @Inject
     public RolloverActivationExecutor(
@@ -170,16 +175,14 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
 
   @Override
   public BeanLocator<BulkOperationExecutor> getExecutor(SectionInfo info, String operationId) {
-    CourseInfo course = courses.getSelectedValue(info);
-    boolean sameCourse = course == null;
+    CourseInfo course = getSelectedCourse(info);
+    boolean sameCourse = (course == null);
     long courseId = sameCourse ? 0 : course.getId();
     boolean cancel = cancelExisting.isChecked(info);
     boolean rolloverDates = rolloverActivationDates.isChecked(info);
 
-    Date from = toDate(fromDate.getDate(info));
-    Date until = toDate(toDate.getDate(info));
-    from = from == null ? new Date() : from;
-    until = until == null ? new Date() : until;
+    Date from = toDate(fromDate.getDate(info), new Date(0));
+    Date until = toDate(toDate.getDate(info), new Date(0));
 
     return new FactoryMethodLocator<BulkOperationExecutor>(
         RolloverExecutorFactory.class,
@@ -192,10 +195,17 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
         rolloverDates);
   }
 
-  @Nullable
-  private Date toDate(@Nullable TleDate date) {
-    if (date == null) {
+  private CourseInfo getSelectedCourse(SectionInfo info) {
+    final CourseInfo course = courses.getSelectedValue(info);
+    if (course != null && course.getUuid().equals(EXISTING_COURSE_ID)) {
       return null;
+    }
+    return course;
+  }
+
+  private Date toDate(@Nullable TleDate date, Date defaultDate) {
+    if (date == null) {
+      return defaultDate;
     }
     // treat user's midnight 'today' as right now
     final LocalDate nowLocal = new LocalDate(new UtcDate(), CurrentTimeZone.get());
@@ -226,11 +236,24 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
   @Override
   public void registered(String id, SectionTree tree) {
     super.registered(id, tree);
-    CourseListModel courseListModel = new CourseListModel();
-    courseListModel.setSort(true);
     courses.setEventHandler(
         JSHandler.EVENT_CHANGE, events.getNamedHandler("updateDatesFromCourse"));
-
+    courses.setAlwaysSelect(true);
+    courses.setListModel(new BulkRolloverCourseListModel());
+    // This ensures that "Use activation's current course" appear at the top of the REST result set
+    courses.setRenderOptions(
+        new CourseSelectionList.CourseSelectionListAutocompleteDropdownRenderOptions(
+            institutionService) {
+          @Override
+          public Map<String, Object> getParameters(final PreRenderContext info) {
+            final Map<String, Object> params = super.getParameters(info);
+            params.put(
+                "topOption",
+                new ObjectExpression(
+                    "id", EXISTING_COURSE_ID, "text", CurrentLocale.get(KEY_CURRENT)));
+            return params;
+          }
+        });
     fromDate.setEventHandler(JSHandler.EVENT_CHANGE, new ReloadHandler());
     toDate.setEventHandler(JSHandler.EVENT_CHANGE, new ReloadHandler());
     rolloverActivationDates.setClickHandler(events.getNamedHandler("useExistingDates"));
@@ -267,36 +290,6 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
   @Override
   public SectionRenderable renderOptions(RenderContext context, String operationId) {
     return viewFactory.createResult("rolloveractivations.ftl", this);
-  }
-
-  @Nullable
-  protected List<CourseInfo> listCourses(SectionInfo info) {
-    List<CourseInfo> courseList =
-        courseInfoService.query(new EnumerateOptions().setIncludeDisabled(true));
-    if (courseList.isEmpty()) {
-      return null; // fatalError(context, null,
-      // "activatecal.error.nocourses");
-    }
-    return courseList;
-  }
-
-  public class CourseListModel extends DynamicHtmlListModel<CourseInfo> {
-    @Nullable
-    @Override
-    protected Iterable<CourseInfo> populateModel(SectionInfo info) {
-      return listCourses(info);
-    }
-
-    @Override
-    protected Option<CourseInfo> getTopOption() {
-      return new KeyOption<CourseInfo>(KEY_CURRENT, "", null);
-    }
-
-    @Override
-    protected Option<CourseInfo> convertToOption(SectionInfo info, CourseInfo course) {
-      return new NameValueOption<CourseInfo>(
-          new BundleNameValue(course.getName(), course.getUuid(), bundleCache), course);
-    }
   }
 
   public SingleSelectionList<CourseInfo> getCourses() {
@@ -356,5 +349,27 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object>
   @Override
   public boolean showPreviousButton(SectionInfo info, String opererationId) {
     return true;
+  }
+
+  protected class BulkRolloverCourseListModel extends CourseSelectionList.CourseSelectionListModel {
+    public BulkRolloverCourseListModel() {
+      super(courseInfoService);
+    }
+
+    @Override
+    public String getDefaultValue(SectionInfo info) {
+      return EXISTING_COURSE_ID;
+    }
+
+    @Override
+    public CourseInfo getValue(SectionInfo info, String value) {
+      if (value.equals(EXISTING_COURSE_ID)) {
+        final CourseInfo course = new CourseInfo();
+        course.setUuid(EXISTING_COURSE_ID);
+        course.setName(LangUtils.createTempLangugageBundle(KEY_CURRENT));
+        return course;
+      }
+      return super.getValue(info, value);
+    }
   }
 }
