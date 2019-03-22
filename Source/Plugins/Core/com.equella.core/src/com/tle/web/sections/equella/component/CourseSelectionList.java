@@ -42,6 +42,7 @@ import com.tle.web.sections.standard.model.Option;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 @Bind
@@ -60,33 +61,23 @@ public class CourseSelectionList extends SingleSelectionList<CourseInfo> {
   @Inject private InstitutionService institutionService;
   @Inject private CourseInfoService courseInfoService;
 
-  private boolean showArchived;
+  private CourseSelectionListAutocompleteDropdownRenderOptions renderOptions;
 
-  public CourseSelectionList() {
-    super();
-    setListModel(
-        new AnythingHtmlListModel<CourseInfo>() {
-          @Override
-          protected Option<CourseInfo> convertToOption(CourseInfo course) {
-            return CourseSelectionList.this.convertToOption(course);
-          }
-
-          @Override
-          public CourseInfo getValue(SectionInfo info, String value) {
-            if (value != null) {
-              return courseInfoService.getByUuid(value);
-            }
-            return null;
-          }
-        });
+  @PostConstruct
+  public void setup() {
+    setListModel(new CourseSelectionListModel(courseInfoService));
+    setRenderOptions(new CourseSelectionListAutocompleteDropdownRenderOptions(institutionService));
   }
 
-  protected Option<CourseInfo> convertToOption(CourseInfo course) {
-    final NameValue nv =
-        new NameValue(
-            CurrentLocale.get(
-                SELECTED_COURSE, course.getCode(), CurrentLocale.get(course.getName())),
-            course.getUuid());
+  protected static Option<CourseInfo> convertToOption(CourseInfo course) {
+    final String name;
+    if (course.getCode() == null) {
+      name = CurrentLocale.get(course.getName());
+    } else {
+      name =
+          CurrentLocale.get(SELECTED_COURSE, course.getCode(), CurrentLocale.get(course.getName()));
+    }
+    final NameValue nv = new NameValue(name, course.getUuid());
     return new NameValueOption(nv, course);
   }
 
@@ -97,24 +88,7 @@ public class CourseSelectionList extends SingleSelectionList<CourseInfo> {
     final HtmlListState listState = getModel(info);
     listState.setRendererType(AUTOCOMPLETE_RENDERER);
     listState.setAttribute(
-        AutocompleteDropdownRenderer.AutocompleteDropdownRenderOptions.class,
-        new AutocompleteDropdownRenderer.AutocompleteDropdownRenderOptions() {
-          @Override
-          public JSCallAndReference getExtension(PreRenderContext info) {
-            return EXTENSION;
-          }
-
-          @Override
-          public Map<String, Object> getParameters(PreRenderContext info) {
-            final Map<String, Object> params = new HashMap<>();
-            params.put("ajaxurl", institutionService.institutionalise("api/course"));
-            params.put("ajaxurlparam", "q");
-            if (showArchived) {
-              params.put("showArchived", true);
-            }
-            return params;
-          }
-        });
+        AutocompleteDropdownRenderer.AutocompleteDropdownRenderOptions.class, renderOptions);
 
     final CourseInfo course = getSelectedValue(info);
     if (course != null) {
@@ -123,11 +97,80 @@ public class CourseSelectionList extends SingleSelectionList<CourseInfo> {
   }
 
   public boolean isShowArchived() {
-    return showArchived;
+    return (renderOptions == null ? false : renderOptions.isShowArchived());
   }
 
-  public void setShowArchived(boolean showArchived) {
+  public void setShowArchived(boolean isShowArchived) {
+    if (renderOptions != null) {
+      ensureBuildingTree();
+      renderOptions.setShowArchived(isShowArchived);
+    }
+  }
+
+  public CourseSelectionListAutocompleteDropdownRenderOptions getRenderOptions() {
+    return renderOptions;
+  }
+
+  public void setRenderOptions(CourseSelectionListAutocompleteDropdownRenderOptions renderOptions) {
     ensureBuildingTree();
-    this.showArchived = showArchived;
+    this.renderOptions = renderOptions;
+  }
+
+  public static class CourseSelectionListAutocompleteDropdownRenderOptions
+      implements AutocompleteDropdownRenderer.AutocompleteDropdownRenderOptions {
+
+    protected final InstitutionService institutionService;
+    protected boolean isShowArchived;
+
+    public CourseSelectionListAutocompleteDropdownRenderOptions(
+        InstitutionService institutionService) {
+      this.institutionService = institutionService;
+    }
+
+    @Override
+    public JSCallAndReference getExtension(PreRenderContext info) {
+      return EXTENSION;
+    }
+
+    @Override
+    public Map<String, Object> getParameters(PreRenderContext info) {
+      final Map<String, Object> params = new HashMap<>();
+      params.put("ajaxurl", institutionService.institutionalise("api/course"));
+      params.put("ajaxurlparam", "q");
+      if (isShowArchived) {
+        params.put("showArchived", true);
+      }
+      return params;
+    }
+
+    public boolean isShowArchived() {
+      return isShowArchived;
+    }
+
+    public void setShowArchived(boolean isShowArchived) {
+      this.isShowArchived = isShowArchived;
+    }
+  }
+
+  public static class CourseSelectionListModel extends AnythingHtmlListModel<CourseInfo> {
+
+    private final CourseInfoService courseInfoService;
+
+    public CourseSelectionListModel(CourseInfoService courseInfoService) {
+      this.courseInfoService = courseInfoService;
+    }
+
+    @Override
+    protected Option<CourseInfo> convertToOption(CourseInfo course) {
+      return CourseSelectionList.convertToOption(course);
+    }
+
+    @Override
+    public CourseInfo getValue(SectionInfo info, String value) {
+      if (value != null) {
+        return courseInfoService.getByUuid(value);
+      }
+      return null;
+    }
   }
 }
