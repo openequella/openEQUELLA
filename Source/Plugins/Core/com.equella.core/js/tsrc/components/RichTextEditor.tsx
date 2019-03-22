@@ -46,10 +46,10 @@ require("tinymce/plugins/wordcount");
 interface RichTextEditorProps {
   htmlInput: string;
   onStateChange(html: string): void;
-  imageUploadCallBack?(file: any): AxiosPromise<imageReturnType>;
+  imageUploadCallBack?(file: Blob): AxiosPromise<ImageReturnType>;
 }
 
-interface imageReturnType {
+interface ImageReturnType {
   link: string;
 }
 
@@ -66,7 +66,7 @@ class RichTextEditor extends React.Component<RichTextEditorProps> {
     if (this.props.imageUploadCallBack) {
       this.props
         .imageUploadCallBack(blobInfo.blob())
-        .then((response: AxiosResponse<imageReturnType>) =>
+        .then((response: AxiosResponse<ImageReturnType>) =>
           success(response.data.link)
         )
         .catch((error: Error) => failure(error.name + error.message));
