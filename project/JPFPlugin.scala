@@ -38,7 +38,7 @@ object JPFPlugin extends AutoPlugin {
     javaSource in Test := baseDirectory.value / "test/java",
     resourceDirectory in Test := baseDirectory.value / "test/resources",
     scalaSource in Compile := baseDirectory.value / "scalasrc",
-    updateOptions := updateOptions.value.withCachedResolution(true),
+    updateOptions := updateOptions.value.withCachedResolution(true).withLatestSnapshots(false),
     jpfWriteDevJars := {
       val outBase = target.value / "jpflibs"
       IO.delete(outBase)

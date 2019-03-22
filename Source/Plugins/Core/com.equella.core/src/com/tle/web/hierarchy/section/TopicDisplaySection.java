@@ -544,7 +544,12 @@ public class TopicDisplaySection
       Item item = results.getItem(i);
 
       StandardItemListEntry itemEntry =
-          itemList.addItem(info, item, results.getResultData(i), i + results.getOffset());
+          itemList.addItem(
+              info,
+              item,
+              results.getResultData(i),
+              i + results.getOffset(),
+              results.getAvailable());
       if ((i + offset) < keySize) {
         itemEntry.setHilighted(true);
       }

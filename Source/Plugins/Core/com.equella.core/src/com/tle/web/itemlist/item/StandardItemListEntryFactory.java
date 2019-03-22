@@ -44,7 +44,7 @@ public class StandardItemListEntryFactory {
   @Inject private Provider<StandardItemListEntry> entryFactory;
 
   public StandardItemListEntry createItemListItem(
-      SectionInfo info, Item item, FreetextResult result, int index) {
+      SectionInfo info, Item item, FreetextResult result, int index, int available) {
     StandardItemListEntry itemListItem = null;
     List<ItemListEntryFactoryExtension> extensions = factoryTracker.getBeanList();
     for (ItemListEntryFactoryExtension extension : extensions) {
@@ -59,7 +59,7 @@ public class StandardItemListEntryFactory {
     }
     String spage = info.getTreeAttribute(ContextableSearchSection.SEARCHPAGE_ATTR);
     if (spage != null) {
-      itemListItem.addModifier(new SearchIndexModifier(spage, index));
+      itemListItem.addModifier(new SearchIndexModifier(spage, index, available));
     }
     itemListItem.setInfo(info);
     itemListItem.setItem(item);

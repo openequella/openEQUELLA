@@ -126,7 +126,7 @@ public class ModerationQueueItemList
 
   @Override
   protected ModerationQueueEntry createItemListEntry(
-      SectionInfo info, Item item, FreetextResult result, int index) {
+      SectionInfo info, Item item, FreetextResult result, int index, int available) {
     final ModerationQueueEntry entry = factory.get();
     entry.setItem(item);
     entry.setInfo(info);

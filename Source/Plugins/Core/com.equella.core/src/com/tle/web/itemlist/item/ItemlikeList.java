@@ -28,7 +28,7 @@ import java.util.List;
 @NonNullByDefault
 public interface ItemlikeList<I extends IItem<?>, LE extends ItemlikeListEntry<I>>
     extends ListEntriesSection<LE> {
-  LE addItem(SectionInfo info, I item, @Nullable FreetextResult result, int index);
+  LE addItem(SectionInfo info, I item, @Nullable FreetextResult result, int index, int available);
 
   void setNullItemsRemovedOnModel(SectionInfo info, boolean nullItemsRemoved);
 

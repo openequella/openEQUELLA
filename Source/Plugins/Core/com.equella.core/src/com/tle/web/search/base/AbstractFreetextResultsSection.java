@@ -103,7 +103,8 @@ public abstract class AbstractFreetextResultsSection<
     for (int i = 0; i < count; i++) {
       Item item = results.getItem(i);
       if (item != null) {
-        itemList.addItem(info, item, results.getResultData(i), i + results.getOffset());
+        itemList.addItem(
+            info, item, results.getResultData(i), i + results.getOffset(), results.getAvailable());
       } else {
         flagListAsNullItemsRemoved = true;
       }

@@ -45,6 +45,7 @@ import javax.inject.Inject;
 @SuppressWarnings("nls")
 public class SearchPrevNextSection
     extends AbstractParentViewItemSection<SearchPrevNextSection.SearchPrevNextModel> {
+
   private static final int ONE_STEP_BACKWARDS = -1;
   private static final int ONE_STEP_FORWARDS = 1;
 
@@ -80,7 +81,7 @@ public class SearchPrevNextSection
     FreetextResult ftr = srs.getResultForIndex(searchInfo, nextIndex);
     if (ftr != null) {
       ViewItemUrl vurl = urlFactory.createItemUrl(info, ItemId.fromKey(ftr.getItemIdKey()));
-      vurl.add(new SearchIndexModifier(model.getSearchPage(), nextIndex));
+      vurl.add(new SearchIndexModifier(model.getSearchPage(), nextIndex, model.getAvailable()));
       vurl.forward(info);
     }
   }
@@ -94,8 +95,12 @@ public class SearchPrevNextSection
   public SectionResult renderHtml(RenderEventContext context) throws Exception {
     if (canView(context)) {
       SearchPrevNextModel model = getModel(context);
-      if (model.getIndex() == 0) {
+      int entryIndex = model.getIndex();
+      if (entryIndex == 0) {
         prevButton.disable(context);
+      }
+      if (model.getAvailable() - 1 <= entryIndex) {
+        nextButton.disable(context);
       }
       return viewFactory.createNamedResult("section_comments", "search_prev_next.ftl", this);
     }
@@ -121,11 +126,15 @@ public class SearchPrevNextSection
   }
 
   public static class SearchPrevNextModel {
+
     @Bookmarked(parameter = "search")
     private String searchPage;
 
     @Bookmarked(parameter = "index")
     private int index;
+
+    @Bookmarked(parameter = "available")
+    private int available;
 
     public int getIndex() {
       return index;
@@ -141,6 +150,14 @@ public class SearchPrevNextSection
 
     public String getSearchPage() {
       return searchPage;
+    }
+
+    public int getAvailable() {
+      return available;
+    }
+
+    public void setAvailable(int available) {
+      this.available = available;
     }
   }
 }

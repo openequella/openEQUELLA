@@ -109,7 +109,7 @@ public class TaskManagementItemList
 
   @Override
   protected TaskManagementListEntry createItemListEntry(
-      SectionInfo info, Item item, FreetextResult result, int index) {
+      SectionInfo info, Item item, FreetextResult result, int index, int available) {
     TaskManagementListEntry entry = entryProvider.get();
     entry.setItem(item);
     entry.setInfo(info);

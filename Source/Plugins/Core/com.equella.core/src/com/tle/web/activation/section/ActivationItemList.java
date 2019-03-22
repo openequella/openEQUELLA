@@ -234,10 +234,10 @@ public class ActivationItemList
 
   @Override
   public ActivationItemListEntry addItem(
-      SectionInfo info, Item item, FreetextResult resultData, int index) {
+      SectionInfo info, Item item, FreetextResult resultData, int index, int available) {
     if (resultData instanceof ActivationResult) {
       ActivationResult result = (ActivationResult) resultData;
-      ActivationItemListEntry entry = createItemListEntry(info, item, resultData, index);
+      ActivationItemListEntry entry = createItemListEntry(info, item, resultData, index, available);
       entry.setActivationId(result.getActivationId());
       addListItem(info, entry);
       return entry;
@@ -254,7 +254,7 @@ public class ActivationItemList
 
   @Override
   protected ActivationItemListEntry createItemListEntry(
-      SectionInfo info, Item item, FreetextResult result, int index) {
+      SectionInfo info, Item item, FreetextResult result, int index, int available) {
     ActivationItemListEntry activationItemListItem = entryFactory.get();
     activationItemListItem.setInfo(info);
     activationItemListItem.setItem(item);
