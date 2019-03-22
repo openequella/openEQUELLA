@@ -11,9 +11,7 @@ case class LoginNoticePage(ctx: PageContext)
 
   private def preNoticeApplyButton: WebElement = findElementById("preApplyButton")
 
-  private def preNoticeClearButton: WebElement = findElementById("preClearButton")
-
-  private def preNoticeField: WebElement = findElement(By.className("mce-content-body"))
+  private def preNoticeField: WebElement = findElementById("tinymce")
 
   private def preNoticeIFrame: WebElement = findElement(By.className("tox-edit-area__iframe"))
 
@@ -37,16 +35,9 @@ case class LoginNoticePage(ctx: PageContext)
 
   private def postNoticeField: WebElement = findElementById("postNoticeField")
 
-  private def preTab: WebElement = findElementById("preTab")
-
   private def postTab: WebElement = findElementById("postTab")
 
   private def clearOkButton: WebElement = findElementById("okToClear")
-
-  private def populatePreNoticeField(notice: String): Unit = {
-    preNoticeField.sendKeys(notice)
-    waitFor(ExpectedConditions.textToBePresentInElement(preNoticeField, notice))
-  }
 
   private def switchToTinyMCEIFrame(): Unit = {
     driver.switchTo().frame(preNoticeIFrame)
@@ -105,7 +96,8 @@ case class LoginNoticePage(ctx: PageContext)
     switchToTinyMCEIFrame()
     val text = preNoticeField.getText
     switchFromTinyMCEIFrame()
-    return text
+
+    text
   }
 
   def setPostLoginNotice(notice: String): Unit = {
