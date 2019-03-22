@@ -176,7 +176,7 @@ class PostLoginNoticeConfigurator extends React.Component<
                 onClick={this.handleUndoPostNotice}
                 variant="text"
               >
-                {commonString.action.revertchanges}
+                {commonString.action.cancel}
               </Button>
             </Grid>
           </Grid>

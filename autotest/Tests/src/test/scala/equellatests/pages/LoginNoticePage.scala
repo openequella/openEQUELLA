@@ -95,9 +95,9 @@ case class LoginNoticePage(ctx: PageContext)
   }
 
   def clearPreLoginNotice(): Unit = {
-    preNoticeClearButton.click()
-    waitFor(ExpectedConditions2.presenceOfElement(clearOkButton))
-    clearOkButton.click()
+    clearandPopulatePreNoticeField("")
+    switchFromTinyMCEIFrame()
+    preNoticeApplyButton.click()
     waitForSnackBar("Login notice cleared successfully.")
   }
 
