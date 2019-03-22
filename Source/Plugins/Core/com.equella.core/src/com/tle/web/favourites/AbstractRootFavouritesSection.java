@@ -111,31 +111,6 @@ public abstract class AbstractRootFavouritesSection
     super.afterParameters(info, event);
   }
 
-  //	@Override
-  //  public void valueSet(SectionInfo info, Set<String> value) {
-  //    MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
-  //    SectionTree tree = getCurrentTree(info);
-  //    minfo.addTreeToBottom(tree, true);
-  //    Map<String, String[]> context = getModel(info).getContext();
-  //    if (context != null) {
-  //      info.processEvent(new ParametersEvent(context, false), tree);
-  //      if (favouriteType.getSelectedValueAsString(info).equals(SEARCHES_TYPE)) {
-  //        SearchFavouritesResultsSection searchFavouritesResultsSection =
-  //            info.lookupSection(SearchFavouritesResultsSection.class);
-  //        if (searchFavouritesResultsSection != null) {
-  //          searchFavouritesResultsSection.startSearch(info);
-  //        }
-  //      } else {
-  //        FavouritesResultsSection favouritesResultsSection =
-  //            info.lookupSection(FavouritesResultsSection.class);
-  //        if (favouritesResultsSection != null) {
-  //
-  //          favouritesResultsSection.startSearch(info);
-  //        }
-  //      }
-  //    }
-  //  }
-
   @Override
   protected List<SectionId> getChildIds(RenderContext info) {
     SectionTree tree = getCurrentTree(info, false);
