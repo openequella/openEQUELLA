@@ -65,6 +65,7 @@ class EntityList extends React.Component<EntityListProps, {}> {
       <div id={id} className={classes.overall}>
         {createLink && (
           <Fab
+            id="add-entity"
             className={classes.fab}
             href={createLink.href}
             onClick={createLink.onClick}

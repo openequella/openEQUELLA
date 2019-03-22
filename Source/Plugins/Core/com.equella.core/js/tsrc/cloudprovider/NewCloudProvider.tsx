@@ -94,6 +94,7 @@ class NewCloudProvider extends React.Component<
           {commonString.action.cancel}
         </Button>
         <Button
+          id="register-cloud-provider"
           onClick={this.handleRegisterCloudProvider}
           color="primary"
           disabled={!cloudProviderUrl}
