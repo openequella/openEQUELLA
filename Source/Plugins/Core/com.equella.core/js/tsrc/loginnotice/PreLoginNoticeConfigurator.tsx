@@ -1,14 +1,5 @@
 import * as React from "react";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Grid,
-  Typography
-} from "@material-ui/core";
+import { Button, Grid, Typography } from "@material-ui/core";
 import { commonString } from "../util/commonstrings";
 import {
   clearPreLoginNotice,
@@ -16,7 +7,8 @@ import {
   NotificationType,
   strings,
   submitPreLoginNotice,
-  uploadPreLoginNoticeImage
+  uploadPreLoginNoticeImage,
+  emptyTinyMCEString
 } from "./LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
 import RichTextEditor from "../components/RichTextEditor";
@@ -30,7 +22,6 @@ interface PreLoginNoticeConfiguratorProps {
 interface PreLoginNoticeConfiguratorState {
   html: string;
   dbHtml: string;
-  clearStaged: boolean;
 }
 
 class PreLoginNoticeConfigurator extends React.Component<
@@ -41,45 +32,34 @@ class PreLoginNoticeConfigurator extends React.Component<
     super(props);
     this.state = {
       html: "",
-      dbHtml: "",
-      clearStaged: false
+      dbHtml: ""
     };
   }
 
   handleSubmitPreNotice = () => {
-    submitPreLoginNotice(this.state.html)
-      .then(() => {
-        this.props.notify(NotificationType.Save);
-        this.setState({
-          dbHtml: this.state.html
+    if (this.state.html == emptyTinyMCEString) {
+      clearPreLoginNotice()
+        .then(() => {
+          this.props.notify(NotificationType.Clear);
+          this.setState({
+            dbHtml: this.state.html
+          });
+        })
+        .catch((error: AxiosError) => {
+          this.props.handleError(error);
         });
-      })
-      .catch((error: AxiosError) => {
-        this.props.handleError(error);
-      });
-  };
-
-  forceEditorRefresh = () => {
-    this.setState({
-      html: this.state.dbHtml,
-      dbHtml: this.state.html
-    });
-  };
-
-  handleClearPreNotice = () => {
-    clearPreLoginNotice()
-      .then(() => {
-        this.forceEditorRefresh();
-        this.setState({
-          clearStaged: false,
-          html: "",
-          dbHtml: ""
+    } else {
+      submitPreLoginNotice(this.state.html)
+        .then(() => {
+          this.props.notify(NotificationType.Save);
+          this.setState({
+            dbHtml: this.state.html
+          });
+        })
+        .catch((error: AxiosError) => {
+          this.props.handleError(error);
         });
-        this.props.notify(NotificationType.Clear);
-      })
-      .catch((error: AxiosError) => {
-        this.props.handleError(error);
-      });
+    }
   };
 
   handleUndoPreNotice = () => {
@@ -103,40 +83,8 @@ class PreLoginNoticeConfigurator extends React.Component<
         });
       })
       .catch((error: AxiosError) => {
-        console.log(error);
         this.props.handleError(error);
       });
-  };
-
-  stageClear = () => {
-    this.setState({ clearStaged: true });
-  };
-
-  Dialogs = () => {
-    return (
-      <div>
-        <Dialog
-          open={this.state.clearStaged}
-          onClose={() => this.setState({ clearStaged: false })}
-        >
-          <DialogTitle>{strings.clear.title}</DialogTitle>
-          <DialogContent>
-            <DialogContentText>{strings.clear.confirm}</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button id="okToClear" onClick={this.handleClearPreNotice}>
-              {commonString.action.ok}
-            </Button>
-            <Button
-              id="cancelClear"
-              onClick={() => this.setState({ clearStaged: false })}
-            >
-              {commonString.action.cancel}
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </div>
-    );
   };
 
   handleEditorChange = (html: string) => {
@@ -144,7 +92,6 @@ class PreLoginNoticeConfigurator extends React.Component<
   };
 
   render() {
-    const Dialogs = this.Dialogs;
     return (
       <SettingsMenuContainer>
         <Typography color="textSecondary" variant="subtitle1">
@@ -155,11 +102,7 @@ class PreLoginNoticeConfigurator extends React.Component<
             <RichTextEditor
               htmlInput={this.state.dbHtml}
               onStateChange={this.handleEditorChange}
-              imageUploadCallBack={(file: object) =>
-                uploadPreLoginNoticeImage(file).catch((error: AxiosError) =>
-                  this.props.handleError(error)
-                )
-              }
+              imageUploadCallBack={uploadPreLoginNoticeImage}
             />
           </Grid>
           <Grid item container spacing={8} direction="row-reverse">
@@ -174,27 +117,16 @@ class PreLoginNoticeConfigurator extends React.Component<
             </Grid>
             <Grid item>
               <Button
-                id="preClearButton"
-                onClick={this.stageClear}
-                variant="text"
-                disabled={this.state.html == ""}
-              >
-                {commonString.action.clear}
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
                 id="preUndoButton"
                 onClick={this.handleUndoPreNotice}
                 variant="text"
                 disabled={this.state.html == this.state.dbHtml}
               >
-                {commonString.action.revertchanges}
+                {commonString.action.cancel}
               </Button>
             </Grid>
           </Grid>
         </Grid>
-        <Dialogs />
       </SettingsMenuContainer>
     );
   }

@@ -66,7 +66,7 @@ class LoginNoticeConfigPage extends React.Component<
   notificationString = (notificationType: NotificationType): string => {
     switch (notificationType) {
       case NotificationType.Revert:
-        return strings.notifications.reverted;
+        return strings.notifications.cancelled;
       case NotificationType.Clear:
         return strings.notifications.cleared;
       case NotificationType.Save:

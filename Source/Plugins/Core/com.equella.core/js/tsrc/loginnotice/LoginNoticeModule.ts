@@ -11,6 +11,16 @@ export enum NotificationType {
   Revert
 }
 
+export const emptyTinyMCEString =
+  "<!DOCTYPE html>\n" +
+  "<html>\n" +
+  "<head>\n" +
+  "</head>\n" +
+  "<body>\n" +
+  "\n" +
+  "</body>\n" +
+  "</html>";
+
 export const strings = prepLangStrings("loginnoticepage", {
   title: "Login Notice Editor",
   currentnotice: "Current Notice: ",
@@ -31,7 +41,7 @@ export const strings = prepLangStrings("loginnoticepage", {
   notifications: {
     saved: "Login notice saved successfully.",
     cleared: "Login notice cleared successfully.",
-    reverted: "Reverted changes to login notice."
+    cancelled: "Cancelled changes to login notice."
   },
   errors: {
     permissions: "You do not have permission to edit these settings."
