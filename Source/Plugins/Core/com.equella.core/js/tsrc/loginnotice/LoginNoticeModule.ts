@@ -11,6 +11,18 @@ export enum NotificationType {
   Revert
 }
 
+export enum ScheduleTypeSelection {
+  OFF = "OFF",
+  ON = "ON",
+  SCHEDULED = "SCHEDULED"
+}
+export interface PreLoginNotice {
+  notice?: string;
+  scheduleSettings: ScheduleTypeSelection;
+  startDate?: Date;
+  endDate?: Date;
+}
+
 export const emptyTinyMCEString =
   "<!DOCTYPE html>\n" +
   "<html>\n" +
@@ -45,18 +57,23 @@ export const strings = prepLangStrings("loginnoticepage", {
   },
   errors: {
     permissions: "You do not have permission to edit these settings."
+  },
+  scheduling: {
+    title: "Notice Schedule",
+    start: "Set start date:",
+    end: "Set end date:",
+    scheduled: "Scheduled",
+    alwayson: "Always on",
+    disabled: "Disabled",
+    endbeforestart: "End date must be on or after start date."
   }
 });
 
-export function submitPreLoginNotice(notice: string): AxiosPromise {
-  return axios.put(PRE_LOGIN_NOTICE_API_URL, notice, {
-    headers: {
-      "Content-Type": "text/html"
-    }
-  });
+export function submitPreLoginNotice(notice: PreLoginNotice): AxiosPromise {
+  return axios.put(PRE_LOGIN_NOTICE_API_URL, notice);
 }
 
-export function getPreLoginNotice(): AxiosPromise {
+export function getPreLoginNotice(): AxiosPromise<PreLoginNotice> {
   return axios.get(PRE_LOGIN_NOTICE_API_URL);
 }
 
