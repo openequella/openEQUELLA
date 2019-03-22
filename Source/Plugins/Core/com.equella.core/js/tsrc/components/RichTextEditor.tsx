@@ -8,7 +8,6 @@ require("tinymce/plugins/anchor");
 require("tinymce/plugins/advlist");
 require("tinymce/plugins/autolink");
 require("tinymce/plugins/autoresize");
-require("tinymce/plugins/autosave");
 require("tinymce/plugins/charmap");
 require("tinymce/plugins/code");
 require("tinymce/plugins/codesample");
@@ -94,7 +93,7 @@ class RichTextEditor extends React.Component<RichTextEditorProps> {
           "formatselect | bold italic strikethrough underline forecolor backcolor | link image media file | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent hr | removeformat | undo redo | preview | ltr rtl"
         }
         plugins={
-          "anchor autolink autoresize advlist autosave charmap code codesample colorpicker " +
+          "anchor autolink autoresize advlist charmap code codesample colorpicker " +
           "contextmenu directionality fullpage fullscreen help hr image imagetools " +
           "importcss insertdatetime link lists media nonbreaking noneditable pagebreak paste " +
           "preview print quickbars save searchreplace table template textcolor " +
