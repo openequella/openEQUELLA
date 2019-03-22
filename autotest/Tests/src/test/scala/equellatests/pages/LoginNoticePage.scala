@@ -13,23 +13,23 @@ case class LoginNoticePage(ctx: PageContext)
 
   private def preNoticeClearButton: WebElement = findElementById("preClearButton")
 
-  private def preNoticeField: WebElement = findElement(By.className("public-DraftEditor-content"))
+  private def preNoticeField: WebElement = findElement(By.className("mce-content-body"))
 
-  private def preNoticeAddImageButton: WebElement = findElement(By.className("rdw-image-wrapper"))
+  private def preNoticeIFrame: WebElement = findElement(By.className("tox-edit-area__iframe"))
 
-  private def preNoticeAddImagePopup: WebElement = findElement(By.className("rdw-image-modal"))
+  private def preNoticeAddImageButton: WebElement =
+    findElement(By.cssSelector("button[aria-label='Insert/edit image']"))
+
+  private def preNoticeAddImagePopup: WebElement = findElement(By.className("tox-dialog"))
+
+  private def preNoticeAddImageForm: WebElement =
+    findElement(By.xpath("//*[contains(@class,'tox-form__group')]"))
 
   private def preNoticeAddImageField: WebElement =
-    findElement(By.className("rdw-image-modal-url-input"))
+    preNoticeAddImageForm.findElement(By.xpath("//input"))
 
-  private def preNoticeAddImageURLButton: WebElement =
-    preNoticeAddImagePopup.findElement(
-      By.xpath("//span[contains(@class, 'rdw-image-modal-header-option') and contains(.,'URL')]"))
-
-  private def preNoticeAddImageURLSection: WebElement =
-    findElement(By.className("rdw-image-modal-url-section"))
   private def preNoticeAddImageOK: WebElement =
-    preNoticeAddImagePopup.findElement(By.xpath("//button[text()='Add']"))
+    preNoticeAddImagePopup.findElement(By.xpath("//button[text()='Save']"))
 
   private def postNoticeApplyButton: WebElement = findElementById("postApplyButton")
 
@@ -47,7 +47,17 @@ case class LoginNoticePage(ctx: PageContext)
     preNoticeField.sendKeys(notice)
     waitFor(ExpectedConditions.textToBePresentInElement(preNoticeField, notice))
   }
+
+  private def switchToTinyMCEIFrame(): Unit = {
+    driver.switchTo().frame(preNoticeIFrame)
+  }
+
+  private def switchFromTinyMCEIFrame(): Unit = {
+    driver.switchTo().defaultContent()
+  }
+
   private def clearandPopulatePreNoticeField(notice: String): Unit = {
+    switchToTinyMCEIFrame()
     preNoticeField.sendKeys(Keys.chord(Keys.CONTROL, "a"))
     preNoticeField.sendKeys(Keys.DELETE)
     preNoticeField.sendKeys(notice)
@@ -64,21 +74,22 @@ case class LoginNoticePage(ctx: PageContext)
 
   def setPreLoginNotice(notice: String): Unit = {
     clearandPopulatePreNoticeField(notice)
+    switchFromTinyMCEIFrame()
     preNoticeApplyButton.click()
     waitForSnackBar("Login notice saved successfully.")
   }
 
   def setPreLoginNoticeWithImageURL(imgURL: String): Unit = {
+    clearandPopulatePreNoticeField("Image Test: ")
+    switchFromTinyMCEIFrame()
     preNoticeAddImageButton.click()
     waitFor(ExpectedConditions.visibilityOf(preNoticeAddImagePopup))
-    waitFor(ExpectedConditions.elementToBeClickable(preNoticeAddImageURLButton))
-    preNoticeAddImageURLButton.click()
     waitFor(ExpectedConditions.visibilityOf(preNoticeAddImageField))
     preNoticeAddImageField.click()
     preNoticeAddImageField.sendKeys(imgURL)
+    waitFor(ExpectedConditions.textToBePresentInElementValue(preNoticeAddImageField, imgURL))
     waitFor(ExpectedConditions.elementToBeClickable(preNoticeAddImageOK))
     preNoticeAddImageOK.click()
-    populatePreNoticeField("Image:")
     preNoticeApplyButton.click()
     waitForSnackBar("Login notice saved successfully.")
   }
@@ -91,7 +102,10 @@ case class LoginNoticePage(ctx: PageContext)
   }
 
   def getPreNoticeFieldContents: String = {
-    preNoticeField.getText
+    switchToTinyMCEIFrame()
+    val text = preNoticeField.getText
+    switchFromTinyMCEIFrame()
+    return text
   }
 
   def setPostLoginNotice(notice: String): Unit = {
