@@ -33,6 +33,4 @@ public interface ControlRepository {
   Icon getIcon(String id, boolean scripted);
 
   List<ControlDefinition> getDefinitionsForContext(String category);
-
-  List<ClassLoader> getClassLoaders();
 }
