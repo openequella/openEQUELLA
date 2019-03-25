@@ -193,9 +193,7 @@ class PreLoginNoticeConfigurator extends React.Component<
             okLabel={<span id="ok">OK</span>}
             minDate={new Date().toLocaleDateString()}
             onChange={this.handleStartDateChange}
-            value={
-              this.state.startDate == undefined ? null : this.state.startDate
-            }
+            value={this.state.startDate}
           />
 
           <Typography color="textSecondary" variant="subheading">
@@ -207,7 +205,7 @@ class PreLoginNoticeConfigurator extends React.Component<
             minDate={this.state.startDate}
             minDateMessage={strings.scheduling.endbeforestart}
             onChange={this.handleEndDateChange}
-            value={this.state.endDate == undefined ? null : this.state.endDate}
+            value={this.state.endDate}
           />
         </div>
       </FormControl>
