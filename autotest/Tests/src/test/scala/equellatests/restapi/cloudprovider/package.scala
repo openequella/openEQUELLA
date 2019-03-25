@@ -4,6 +4,10 @@ import java.util.UUID
 
 import org.http4s.Uri
 
+/*
+This package contains classes which represent the JSON sent to and from the cloudprovider REST API.
+The 'R' prefix is to distinguish it from the server side classes of the same name.
+ */
 package object cloudprovider {
 
   val baseUri = Uri.uri("api/cloudprovider")

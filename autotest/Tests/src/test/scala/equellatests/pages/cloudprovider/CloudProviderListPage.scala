@@ -7,8 +7,11 @@ import org.openqa.selenium.{By, WebElement}
 
 case class CloudProviderListPage(ctx: PageContext)
     extends NewTitledPage("Cloud providers", "page/cloudprovider") {
+
   case class CloudProviderEntry(elem: WebElement) {
-    def description(): String = elem.findElement(By.xpath("./div/div/p")).getText()
+
+    def description(): String = elem.findElement(By.xpath("./div/div/p")).getText
+
     def delete(name: String): Unit = {
       val cloudProvider = elem.findElement(By.xpath("./div/button"))
       cloudProvider.click()
@@ -26,7 +29,7 @@ case class CloudProviderListPage(ctx: PageContext)
   }
 
   def findCloudProviderPath(name: String): String = {
-    "id('cloudProviderList')//li[.//h6[text() = " + quoteXPath(name) + "]]"
+    "id('cloudProviderList')//li[.//a[text() = " + quoteXPath(name) + "]]"
   }
 
   def resultForName(name: String) =
@@ -51,8 +54,10 @@ case class CloudProviderListPage(ctx: PageContext)
 
 case class CloudProviderRegisterPage(ctx: PageContext)
     extends NewTitledPage("Create cloud providers", "page/cloudprovider/new") {
+
   def registerProvider(url: String): Unit = {
     findElement(By.id("new_cloud_provider_url")).sendKeys(url)
     findElement(By.id("register-cloud-provider")).click()
   }
+
 }

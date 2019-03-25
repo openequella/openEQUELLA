@@ -81,33 +81,44 @@ object CloudProviderProperties extends StatefulProperties("Cloud Providers") wit
     c match {
       case RegisterProvider(provider) =>
         s.copy(scenarios = s.scenarios + Scenarios.Add, registered = s.registered + provider)
+
       case DeleteProvider(providerName) =>
         s.copy(scenarios = s.scenarios + Scenarios.Delete,
                registered = s.registered.filter(_.name != providerName))
     }
 
+  def loadProviderPage(b: SimpleSeleniumBrowser): CloudProviderListPage = {
+    val listPage = b.page match {
+      case lp: CloudProviderListPage => lp
+      case _                         => CloudProviderListPage(b.page.ctx).load()
+    }
+    b.page = listPage
+    listPage
+  }
+
   override def runCommandInBrowser(c: CloudProviderTestCommand,
                                    s: ProviderTestState,
                                    b: SimpleSeleniumBrowser): Prop = c match {
     case RegisterProvider(provider) =>
-      val actualProvider = provider.copy(name = s"${b.unique} ${provider.name}")
-      val listPage       = CloudProviderListPage(b.page.ctx).load()
-      val addPage        = listPage.add()
-      val cpp            = TestCloudProviderPage(b.page.ctx, actualProvider)
-      addPage.registerProvider(cpp.createRegistrationUrl())
-      cpp.get()
-      cpp.registerProvider()
-      val cplp = cpp.returnToEQUELLA()
-      cplp.waitForResults()
-      val result      = cplp.resultForName(actualProvider.name)
+      val actualProvider   = provider.copy(name = s"${b.unique} ${provider.name}")
+      var listPage         = loadProviderPage(b)
+      val addPage          = listPage.add()
+      val testProviderPage = TestCloudProviderPage(b.page.ctx, actualProvider)
+      addPage.registerProvider(testProviderPage.createRegistrationUrl())
+      testProviderPage.get()
+      testProviderPage.registerProvider()
+      listPage = testProviderPage.returnToEQUELLA()
+      listPage.waitForResults()
+      val result      = listPage.resultForName(actualProvider.name)
       val description = Some(result.description()).filter(_.nonEmpty)
-      Prop.?=(description, actualProvider.description).label("Description should match")
-    case DeleteProvider(name) =>
-      val listPage = CloudProviderListPage(b.page.ctx).load()
-      val realName = s"${b.unique} ${name}"
+      (description ?= actualProvider.description) :| "Description should match"
+
+    case DeleteProvider(providerName) =>
+      val listPage = loadProviderPage(b)
+      val realName = s"${b.unique} $providerName"
       listPage.delete(realName)
       val existing = listPage.checkCloudProviderExisting(realName)
-      Prop(!existing).label(name + " is deleted")
+      Prop(!existing).label(providerName + " is deleted")
 
   }
 }
