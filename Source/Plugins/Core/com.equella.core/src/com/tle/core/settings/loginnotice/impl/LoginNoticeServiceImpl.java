@@ -16,20 +16,30 @@
 
 package com.tle.core.settings.loginnotice.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tle.common.Check;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.core.filesystem.CustomisationFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.settings.loginnotice.LoginNoticeService;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.exceptions.PrivilegeRequiredException;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.ws.rs.BadRequestException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -40,25 +50,53 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
   @Inject ConfigurationService configurationService;
   @Inject FileSystemService fileSystemService;
 
+  @Inject
+  protected void setObjectMapperService(ObjectMapperService objectMapperService) {
+    objectMapper = objectMapperService.createObjectMapper();
+  }
+
+  private ObjectMapper objectMapper;
+
   private static final String PERMISSION_KEY = "EDIT_SYSTEM_SETTINGS";
   private static final String PRE_LOGIN_NOTICE_KEY = "pre.login.notice";
   private static final String POST_LOGIN_NOTICE_KEY = "post.login.notice";
   private static final String LOGIN_NOTICE_IMAGE_FOLDER_NAME = "loginnoticeimages/";
 
   @Override
-  public String getPreLoginNotice() {
-    return configurationService.getProperty(PRE_LOGIN_NOTICE_KEY);
+  public PreLoginNotice getPreLoginNotice() throws IOException {
+    String preLoginNotice = configurationService.getProperty(PRE_LOGIN_NOTICE_KEY);
+    if (Check.isEmpty(preLoginNotice)) {
+      return null;
+    }
+    return objectMapper.readValue(preLoginNotice, PreLoginNotice.class);
   }
 
   @Override
-  public void setPreLoginNotice(String notice) throws IOException {
+  public void setPreLoginNotice(PreLoginNotice notice) throws IOException {
     checkPermissions();
-    if (StringUtils.isBlank(notice)) {
+    if (StringUtils.isBlank(notice.getNotice())) {
       configurationService.deleteProperty(PRE_LOGIN_NOTICE_KEY);
     } else {
-      configurationService.setProperty(PRE_LOGIN_NOTICE_KEY, notice);
+      if (notice.getEndDate().toInstant().isBefore(notice.getStartDate().toInstant())) {
+        throw new BadRequestException(
+            "Invalid start and end date. Start date must be on or before end date.");
+      }
+      configurationService.setProperty(
+          PRE_LOGIN_NOTICE_KEY, objectMapper.writeValueAsString(notice));
     }
-    cleanUpUnusedImages(notice);
+    cleanUpUnusedImages(notice.getNotice());
+  }
+
+  private boolean validateDates(Date start, Date end) {
+    Calendar now = Calendar.getInstance();
+    Calendar startDate = Calendar.getInstance();
+    Calendar endDate = Calendar.getInstance();
+    startDate.setTime(start);
+    endDate.setTime(end);
+    startDate = getDateAtMidnight(startDate);
+    endDate = getDateAtMidnight(endDate);
+    endDate.add(Calendar.DAY_OF_YEAR, 1);
+    return !(now.after(endDate) || now.before(startDate));
   }
 
   private void cleanUpUnusedImages(String notice) throws IOException {
@@ -79,6 +117,28 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     CustomisationFile customisationFile = new CustomisationFile();
     fileSystemService.removeFile(customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME);
     configurationService.deleteProperty(PRE_LOGIN_NOTICE_KEY);
+  }
+
+  private Calendar getDateAtMidnight(Calendar date) {
+    Calendar dateToReturn = (Calendar) date.clone();
+    dateToReturn.set(Calendar.HOUR, 0);
+    dateToReturn.set(Calendar.MINUTE, 0);
+    dateToReturn.set(Calendar.SECOND, 0);
+    dateToReturn.set(Calendar.MILLISECOND, 0);
+    return dateToReturn;
+  }
+
+  public boolean isActive(PreLoginNotice preLoginNotice) {
+    switch (preLoginNotice.getScheduleSettings()) {
+      case OFF:
+        return false;
+      case ON:
+        return true;
+      case SCHEDULED:
+        return validateDates(preLoginNotice.getStartDate(), preLoginNotice.getEndDate());
+      default:
+        return false;
+    }
   }
 
   @Override
