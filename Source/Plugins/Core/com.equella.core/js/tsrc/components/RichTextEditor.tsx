@@ -87,7 +87,8 @@ class RichTextEditor extends React.Component<RichTextEditorProps> {
           paste_data_images: true,
           relative_urls: false,
           skin: "oxide",
-          skin_url: `${baseURL}/tinymce/skins/ui/oxide`
+          skin_url: `${baseURL}/tinymce/skins/ui/oxide`,
+          media_dimensions: false
         }}
         toolbar={
           "formatselect | bold italic strikethrough underline forecolor backcolor | link image media file | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent hr | removeformat | undo redo | preview | ltr rtl"

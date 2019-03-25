@@ -1790,6 +1790,11 @@ Login Notice Formatting
   padding: unset;
 }
 
+#loginNotice iframe {
+  width: 560px;
+  height: 314px;
+}
+
 #loginNotice li {
   font-size: 12px;
   line-height: 2;
