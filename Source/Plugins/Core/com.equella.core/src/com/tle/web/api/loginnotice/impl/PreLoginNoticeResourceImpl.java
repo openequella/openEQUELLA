@@ -19,6 +19,7 @@ package com.tle.web.api.loginnotice.impl;
 import com.google.gson.JsonObject;
 import com.tle.core.guice.Bind;
 import com.tle.core.settings.loginnotice.LoginNoticeService;
+import com.tle.core.settings.loginnotice.impl.PreLoginNotice;
 import com.tle.web.api.loginnotice.PreLoginNoticeResource;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
@@ -27,7 +28,6 @@ import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -41,16 +41,17 @@ public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
       ResourcesService.getResourceHelper(PreLoginNoticeResourceImpl.class);
 
   @Override
-  public Response retrievePreLoginNotice() {
-    String loginNotice = noticeService.getPreLoginNotice();
+  public Response retrievePreLoginNotice() throws IOException {
+    PreLoginNotice loginNotice = noticeService.getPreLoginNotice();
     if (loginNotice != null) {
-      return Response.ok(loginNotice, MediaType.TEXT_HTML).build();
+      return Response.ok(loginNotice, "application/json").build();
+    } else {
+      return Response.status(Response.Status.NOT_FOUND).type("text/plain").build();
     }
-    return Response.status(Response.Status.NOT_FOUND).entity("{}").build();
   }
 
   @Override
-  public Response setPreLoginNotice(String loginNotice) throws IOException {
+  public Response setPreLoginNotice(PreLoginNotice loginNotice) throws IOException {
     noticeService.setPreLoginNotice(loginNotice);
     return Response.ok().build();
   }
