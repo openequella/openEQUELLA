@@ -191,6 +191,7 @@ class PreLoginNoticeConfigurator extends React.Component<
           <DatePicker
             id="startDatePicker"
             okLabel={<span id="ok">OK</span>}
+            format={"DDD"}
             minDate={new Date().toLocaleDateString()}
             onChange={this.handleStartDateChange}
             value={this.state.startDate}
@@ -203,6 +204,7 @@ class PreLoginNoticeConfigurator extends React.Component<
           <DatePicker
             id="endDatePicker"
             minDate={this.state.startDate}
+            format={"DDD"}
             minDateMessage={strings.scheduling.endbeforestart}
             onChange={this.handleEndDateChange}
             value={this.state.endDate}
