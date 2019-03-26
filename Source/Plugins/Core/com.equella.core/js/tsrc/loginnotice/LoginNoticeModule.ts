@@ -77,9 +77,10 @@ export function clearPostLoginNotice(): AxiosPromise {
 }
 
 export function uploadPreLoginNoticeImage(file: any): AxiosPromise {
+  let imageBlob: Blob = file.blob();
   return axios.put(
     PRE_LOGIN_NOTICE_IMAGE_API_URL + file.filename(),
-    file.blob(),
-    { headers: { "content-type": file.blob().type } }
+    imageBlob,
+    { headers: { "content-type": imageBlob.type } }
   );
 }
