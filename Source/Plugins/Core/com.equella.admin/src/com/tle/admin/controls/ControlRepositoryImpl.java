@@ -105,7 +105,7 @@ public class ControlRepositoryImpl implements ControlRepository {
   public ControlDefinition getDefinition(String id) {
     ControlDefinition definition = definitions.get(id);
     if (definition == null) {
-      throw new RuntimeException("No definition for:" + id); // $NON-NLS-1$
+      return new UnavailableControlDefinition(id);
     }
     return definition;
   }
