@@ -1,6 +1,23 @@
+/*
+ * Copyright 2017 Apereo
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.tle.core.cloudproviders
 
 import java.util
+import java.util.UUID
 
 import com.tle.beans.cloudproviders.CloudControlDefinition
 import com.tle.core.guice.Bind
@@ -11,5 +28,10 @@ import scala.collection.JavaConverters._
 @Bind(classOf[CloudProviderAdminService])
 class CloudProviderAdminServiceImpl extends CloudProviderAdminService {
   override def listControls: util.List[CloudControlDefinition] =
-    List(CloudControlDefinition("My control", "/icons/control.gif"): CloudControlDefinition).asJava
+    List(
+      CloudControlDefinition(UUID.fromString("36dc5aaa-b0d4-462c-b6c4-67b7f2f986a3"),
+                             "sample",
+                             "My control",
+                             "/icons/control.gif",
+                             Iterable.empty): CloudControlDefinition).asJava
 }

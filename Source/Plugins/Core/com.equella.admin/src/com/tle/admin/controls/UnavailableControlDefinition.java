@@ -16,25 +16,21 @@
 
 package com.tle.admin.controls;
 
+import com.dytech.edge.admin.wizard.editor.AbstractControlEditor;
 import com.dytech.edge.admin.wizard.editor.Editor;
+import com.dytech.edge.admin.wizard.model.AbstractControlModel;
 import com.dytech.edge.admin.wizard.model.Control;
-import com.dytech.edge.admin.wizard.model.CustomControlModel;
-import com.dytech.edge.wizard.beans.control.CustomControl;
-import com.google.common.collect.ImmutableSet;
+import com.dytech.edge.wizard.beans.control.WizardControl;
 import com.tle.admin.controls.repository.ControlDefinition;
 import com.tle.admin.schema.SchemaModel;
-import com.tle.beans.cloudproviders.CloudControlDefinition;
 import java.util.Set;
 
-public class CloudControlDefinitionImpl implements ControlDefinition {
+public class UnavailableControlDefinition implements ControlDefinition {
 
-  private final CloudControlDefinition def;
-  private final String fullId;
-  private static final Set<String> contexts = ImmutableSet.of("page");
+  private final String id;
 
-  public CloudControlDefinitionImpl(CloudControlDefinition def) {
-    this.def = def;
-    this.fullId = "cp." + def.providerId().toString() + "." + def.controlId();
+  public UnavailableControlDefinition(String id) {
+    this.id = id;
   }
 
   @Override
@@ -44,49 +40,48 @@ public class CloudControlDefinitionImpl implements ControlDefinition {
 
   @Override
   public Set<String> getContexts() {
-    return contexts;
+    return null;
   }
 
   @Override
   public String getName() {
-    return def.name();
-  }
-
-  @Override
-  public String toString() {
-    return getName();
+    return "{" + id + "}";
   }
 
   @Override
   public String getId() {
-    return fullId;
+    return id;
   }
 
   @Override
   public boolean hasContext(String context) {
-    return getContexts().contains(context);
+    return false;
   }
 
   @Override
   public Editor createEditor(Control control, int type, SchemaModel schema) {
-    return new CloudControlEditor(control, type, schema);
+    return new AbstractControlEditor<WizardControl>(control, type, schema) {
+
+      @Override
+      protected void saveControl() {}
+
+      @Override
+      protected void loadControl() {}
+    };
   }
 
   @Override
   public String getIcon() {
-    return def.iconUrl();
+    return null;
   }
 
   @Override
   public Control createControlModel() {
-    return new CustomControlModel<CustomControl>(this);
+    return new AbstractControlModel(this) {};
   }
 
   @Override
   public Object createWrappedObject() {
-
-    CustomControl customControl = new CustomControl();
-    customControl.setClassType(getId());
-    return customControl;
+    return null;
   }
 }
