@@ -155,7 +155,7 @@ class PreLoginNoticeConfigurator extends React.Component<
   ScheduleSettings = () => {
     return (
       <FormControl>
-        <Typography color="textSecondary" variant="subheading">
+        <Typography color="textSecondary" variant="subtitle1">
           {strings.scheduling.title}
         </Typography>
 
@@ -184,7 +184,7 @@ class PreLoginNoticeConfigurator extends React.Component<
         <div
           hidden={this.state.scheduleType != ScheduleTypeSelection.SCHEDULED}
         >
-          <Typography color="textSecondary" variant="subheading">
+          <Typography color="textSecondary" variant="subtitle1">
             {strings.scheduling.start}
           </Typography>
 
@@ -197,7 +197,7 @@ class PreLoginNoticeConfigurator extends React.Component<
             value={this.state.startDate}
           />
 
-          <Typography color="textSecondary" variant="subheading">
+          <Typography color="textSecondary" variant="subtitle1">
             {strings.scheduling.end}
           </Typography>
 
