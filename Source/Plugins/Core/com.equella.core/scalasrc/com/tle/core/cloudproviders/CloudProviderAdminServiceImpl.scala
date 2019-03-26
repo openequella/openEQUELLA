@@ -19,7 +19,12 @@ package com.tle.core.cloudproviders
 import java.util
 import java.util.UUID
 
-import com.tle.beans.cloudproviders.CloudControlDefinition
+import com.tle.beans.cloudproviders.{
+  CloudConfigControl,
+  CloudConfigOption,
+  CloudControlDefinition,
+  CloudControlType
+}
 import com.tle.core.guice.Bind
 import com.tle.core.remoting.CloudProviderAdminService
 
@@ -27,11 +32,54 @@ import scala.collection.JavaConverters._
 
 @Bind(classOf[CloudProviderAdminService])
 class CloudProviderAdminServiceImpl extends CloudProviderAdminService {
-  override def listControls: util.List[CloudControlDefinition] =
-    List(
-      CloudControlDefinition(UUID.fromString("36dc5aaa-b0d4-462c-b6c4-67b7f2f986a3"),
-                             "sample",
-                             "My control",
-                             "/icons/control.gif",
-                             Iterable.empty): CloudControlDefinition).asJava
+
+  val multiOptions =
+    Iterable(CloudConfigOption("First entry", "first"), CloudConfigOption("SecondEntry", "second"))
+
+  override def listControls: util.List[CloudControlDefinition] = {
+    val ctrl1 = CloudControlDefinition(
+      UUID.fromString("36dc5aaa-b0d4-462c-b6c4-67b7f2f986a3"),
+      "sample",
+      "My control",
+      "/icons/control.gif",
+      Iterable(
+        CloudConfigControl("path",
+                           "Target node",
+                           Some("Please select a target node"),
+                           CloudControlType.XPath,
+                           Iterable.empty,
+                           0,
+                           1),
+        CloudConfigControl("plaintext",
+                           "A text entry",
+                           Some("This is some text"),
+                           CloudControlType.Textfield,
+                           Iterable.empty,
+                           1,
+                           1),
+        CloudConfigControl("choice",
+                           "A drop down",
+                           Some("This is mandatory"),
+                           CloudControlType.Dropdown,
+                           multiOptions,
+                           1,
+                           1),
+        CloudConfigControl("checkbox",
+                           "Some checboxes",
+                           Some("Select some if you want"),
+                           CloudControlType.Check,
+                           multiOptions,
+                           0,
+                           Int.MaxValue),
+        CloudConfigControl("radio",
+                           "Some radioboxes",
+                           Some("Please select one of these"),
+                           CloudControlType.Radio,
+                           multiOptions,
+                           1,
+                           1)
+      )
+    )
+    List(ctrl1: CloudControlDefinition).asJava
+  }
 }

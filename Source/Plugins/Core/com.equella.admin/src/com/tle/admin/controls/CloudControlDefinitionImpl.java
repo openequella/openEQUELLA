@@ -16,7 +16,6 @@
 
 package com.tle.admin.controls;
 
-import com.dytech.edge.admin.wizard.editor.Editor;
 import com.dytech.edge.admin.wizard.model.Control;
 import com.dytech.edge.admin.wizard.model.CustomControlModel;
 import com.dytech.edge.wizard.beans.control.CustomControl;
@@ -68,8 +67,8 @@ public class CloudControlDefinitionImpl implements ControlDefinition {
   }
 
   @Override
-  public Editor createEditor(Control control, int type, SchemaModel schema) {
-    return new CloudControlEditor(control, type, schema);
+  public CloudControlEditor createEditor(Control control, int type, SchemaModel schema) {
+    return new CloudControlEditor(def, control, type, schema);
   }
 
   @Override

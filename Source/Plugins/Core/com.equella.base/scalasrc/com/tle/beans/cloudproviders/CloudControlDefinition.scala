@@ -20,10 +20,14 @@ import java.util.UUID
 
 case class CloudConfigOption(name: String, value: String)
 
+object CloudControlType extends Enumeration {
+  val XPath, Textfield, Dropdown, Check, Radio = Value
+}
+
 case class CloudConfigControl(id: String,
                               name: String,
                               description: Option[String],
-                              controlType: String,
+                              controlType: CloudControlType.Value,
                               options: Iterable[CloudConfigOption],
                               min: Int,
                               max: Int)

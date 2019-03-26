@@ -21,6 +21,7 @@ import com.dytech.edge.admin.wizard.model.Control;
 import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.tle.admin.gui.i18n.I18nTextField;
 import com.tle.admin.schema.SchemaModel;
+import com.tle.beans.cloudproviders.CloudControlDefinition;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.i18n.BundleCache;
 import javax.swing.JComponent;
@@ -30,9 +31,12 @@ import javax.swing.JPanel;
 public class CloudControlEditor extends AbstractControlEditor<CustomControl> {
 
   private I18nTextField title;
+  private final CloudControlDefinition definition;
 
-  public CloudControlEditor(Control control, int wizardType, SchemaModel schema) {
+  public CloudControlEditor(
+      CloudControlDefinition definition, Control control, int wizardType, SchemaModel schema) {
     super(control, wizardType, schema);
+    this.definition = definition;
     setupGUI();
   }
 
@@ -59,6 +63,13 @@ public class CloudControlEditor extends AbstractControlEditor<CustomControl> {
     JPanel all = new JPanel();
     all.add(titleLabel);
     all.add(title);
+    definition
+        .configDefinition()
+        .foreach(
+            d ->
+                all.add(
+                    new JLabel(
+                        d.controlType().toString() + " " + d.name() + " " + d.description())));
     return all;
   }
 }
