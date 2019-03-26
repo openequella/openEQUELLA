@@ -28,7 +28,7 @@ public class RootTaskManagementSection
   @PlugKey("manage.title")
   private static Label LABEL_TITLE;
 
-  private static String URL = "/access/managetasks.do";
+  public static String URL = "/access/managetasks.do";
 
   @SuppressWarnings("nls")
   @Override

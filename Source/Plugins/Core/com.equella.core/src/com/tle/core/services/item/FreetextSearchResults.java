@@ -17,6 +17,7 @@
 package com.tle.core.services.item;
 
 import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemKey;
 import com.tle.common.searching.SearchResults;
 
 public interface FreetextSearchResults<T extends FreetextResult> extends SearchResults<Item> {
@@ -24,5 +25,5 @@ public interface FreetextSearchResults<T extends FreetextResult> extends SearchR
 
   Item getItem(int index);
 
-  int getKeyResourcesSize();
+  ItemKey getItemKey(int index);
 }

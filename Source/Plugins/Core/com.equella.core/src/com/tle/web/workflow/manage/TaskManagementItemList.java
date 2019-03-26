@@ -26,6 +26,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.services.item.FreetextResult;
 import com.tle.core.workflow.service.WorkflowService;
 import com.tle.web.itemlist.item.AbstractItemList;
+import com.tle.web.searching.SearchIndexModifier;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxRenderContext;
@@ -114,12 +115,17 @@ public class TaskManagementItemList
     entry.setItem(item);
     entry.setInfo(info);
     entry.setItemList(this);
+    entry.setIndex(index);
+    entry.setAvailable(available);
     return entry;
   }
 
   @EventHandlerMethod
-  public void summary(SectionInfo info, ItemId itemId, boolean progress) {
+  public void summary(SectionInfo info, ItemId itemId, int index, int available, boolean progress) {
     ViewItemUrl vurl = urlFactory.createItemUrl(info, itemId);
+    if (available != 0) {
+      vurl.add(new SearchIndexModifier(RootTaskManagementSection.URL, index, available));
+    }
     SectionInfo vinfo = vurl.getSectionInfo();
     if (progress) {
       vinfo.lookupSection(CurrentModerationLinkSection.class).execute(vinfo);
@@ -130,10 +136,29 @@ public class TaskManagementItemList
   @Bind
   public static class TaskManagementListEntry extends AbstractTaskListEntry {
     private TaskManagementItemList itemList;
+    private int index;
+    private int available;
+
+    public void setIndex(int index) {
+      this.index = index;
+    }
+
+    public void setAvailable(int available) {
+      this.available = available;
+    }
+
+    public int getIndex() {
+      return index;
+    }
+
+    public int getAvailable() {
+      return available;
+    }
 
     @Override
     public HtmlLinkState getTitle() {
-      return itemList.getSummaryLink(info, getTitleLabel(), getItemTaskId(), true);
+      return itemList.getSummaryLink(
+          info, getTitleLabel(), getItemTaskId(), index, available, true);
     }
 
     public void setItemList(TaskManagementItemList itemList) {
@@ -161,13 +186,18 @@ public class TaskManagementItemList
   }
 
   public HtmlLinkState getSummaryLink(
-      SectionInfo info, Label label, ItemTaskId itemTaskId, boolean progress) {
+      SectionInfo info,
+      Label label,
+      ItemTaskId itemTaskId,
+      int index,
+      int available,
+      boolean progress) {
     return new HtmlLinkState(
         label,
         new BookmarkAndModify(
             info,
             events.getNamedModifier(
-                "summary", ItemId.fromKey(itemTaskId), progress))); // $NON-NLS-1$
+                "summary", ItemId.fromKey(itemTaskId), index, available, progress))); // $NON-NLS-1$
   }
 
   @EventHandlerMethod
@@ -197,7 +227,9 @@ public class TaskManagementItemList
     for (TaskManagementListEntry entry : entries) {
       ItemTaskId itemTaskId = entry.getItemTaskId();
       entry.getTag().setElementId(new SimpleElementId(DIV_PFX + itemTaskId.toString()));
-      entry.addRatingMetadata(getSummaryLink(context, LABEL_SUMMARY, itemTaskId, false));
+      entry.addRatingMetadata(
+          getSummaryLink(
+              context, LABEL_SUMMARY, itemTaskId, entry.getIndex(), entry.getAvailable(), false));
       entry.addRatingMetadata(getModeratorLink(context, itemTaskId));
       List<WorkflowMessage> comments = workflowService.getCommentsForTask(itemTaskId);
       if (!comments.isEmpty()) {

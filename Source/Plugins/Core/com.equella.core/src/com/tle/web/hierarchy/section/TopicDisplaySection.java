@@ -30,6 +30,7 @@ import com.tle.beans.hierarchy.HierarchyTopic;
 import com.tle.beans.hierarchy.HierarchyTopicDynamicKeyResources;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
+import com.tle.beans.item.ItemKey;
 import com.tle.common.Check;
 import com.tle.common.URLUtils;
 import com.tle.common.search.DefaultSearch;
@@ -620,7 +621,23 @@ public class TopicDisplaySection
 
     @Override
     public T getResultData(int index) {
-      return wrapped.getResultData(index);
+      if (index < keyResourcesSize) {
+        return null;
+      }
+      return wrapped.getResultData(index - keyResourcesSize);
+    }
+
+    @Override
+    public ItemKey getItemKey(int index) {
+      int i = offset + index;
+      if (i < keyResourcesSize) {
+        return keyResources.get(i).getItemId();
+      } else if (i < mixedEnd) {
+        i = i - keyResourcesSize;
+      } else {
+        i = index;
+      }
+      return wrapped.getItemKey(i);
     }
 
     @Override
@@ -664,11 +681,6 @@ public class TopicDisplaySection
         i = index;
       }
       return wrapped.getItem(i);
-    }
-
-    @Override
-    public int getKeyResourcesSize() {
-      return keyResourcesSize;
     }
   }
 

@@ -16,10 +16,9 @@
 
 package com.tle.web.searching.prevnext;
 
-import com.tle.beans.item.ItemId;
+import com.tle.beans.item.ItemKey;
 import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.FreetextResult;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.search.base.AbstractFreetextResultsSection;
 import com.tle.web.searching.SearchIndexModifier;
@@ -78,9 +77,9 @@ public class SearchPrevNextSection
     SectionInfo searchInfo = info.createForward(model.getSearchPage());
     AbstractFreetextResultsSection srs =
         searchInfo.lookupSection(AbstractFreetextResultsSection.class);
-    FreetextResult ftr = srs.getResultForIndex(searchInfo, nextIndex);
+    ItemKey ftr = srs.getResultForIndex(searchInfo, nextIndex);
     if (ftr != null) {
-      ViewItemUrl vurl = urlFactory.createItemUrl(info, ItemId.fromKey(ftr.getItemIdKey()));
+      ViewItemUrl vurl = urlFactory.createItemUrl(info, ftr);
       vurl.add(new SearchIndexModifier(model.getSearchPage(), nextIndex, model.getAvailable()));
       vurl.forward(info);
     }

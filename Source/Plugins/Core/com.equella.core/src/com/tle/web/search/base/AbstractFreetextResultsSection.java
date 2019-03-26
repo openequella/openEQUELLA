@@ -18,6 +18,7 @@ package com.tle.web.search.base;
 
 import com.dytech.edge.exceptions.InvalidSearchQueryException;
 import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemKey;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.search.LiveItemSearch;
 import com.tle.common.search.PresetSearch;
@@ -171,7 +172,7 @@ public abstract class AbstractFreetextResultsSection<
     }
   }
 
-  public FreetextResult getResultForIndex(SectionInfo info, int index) {
+  public ItemKey getResultForIndex(SectionInfo info, int index) {
     FreetextSearchEvent searchEvent = createSearchEvent(info);
     info.processEvent(searchEvent);
     searchEvent.setOffset(index);
@@ -179,7 +180,7 @@ public abstract class AbstractFreetextResultsSection<
     FreetextSearchResults<? extends FreetextResult> results =
         createResultsEvent(info, searchEvent).getResults();
     if (results.getCount() > 0) {
-      return results.getResultData(0);
+      return results.getItemKey(0);
     }
     return null;
   }

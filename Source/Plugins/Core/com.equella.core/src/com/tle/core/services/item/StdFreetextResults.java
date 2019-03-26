@@ -18,6 +18,7 @@ package com.tle.core.services.item;
 
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemIdKey;
+import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemSelect;
 import com.tle.common.searching.Search;
 import com.tle.common.searching.SearchResults;
@@ -56,6 +57,11 @@ public class StdFreetextResults<T extends FreetextResult> implements FreetextSea
   }
 
   @Override
+  public ItemKey getItemKey(int index) {
+    return results.getResults().get(index).getItemKey();
+  }
+
+  @Override
   public int getAvailable() {
     return results.getAvailable();
   }
@@ -88,15 +94,5 @@ public class StdFreetextResults<T extends FreetextResult> implements FreetextSea
   @Override
   public void setErrorMessage(String errorMessage) {
     // do nothing
-  }
-
-  /**
-   * Standard search unafflicted with keyResources
-   *
-   * @return
-   */
-  @Override
-  public int getKeyResourcesSize() {
-    return 0;
   }
 }
