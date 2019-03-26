@@ -80,6 +80,6 @@ export function uploadPreLoginNoticeImage(file: any): AxiosPromise {
   return axios.put(
     PRE_LOGIN_NOTICE_IMAGE_API_URL + file.filename(),
     file.blob(),
-    { headers: { "content-type": "application/octet-stream" } }
+    { headers: { "content-type": file.blob().type } }
   );
 }
