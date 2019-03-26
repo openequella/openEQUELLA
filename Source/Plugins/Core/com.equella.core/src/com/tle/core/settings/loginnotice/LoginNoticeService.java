@@ -17,7 +17,6 @@
 package com.tle.core.settings.loginnotice;
 
 import com.tle.core.settings.loginnotice.impl.PreLoginNotice;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -29,7 +28,7 @@ public interface LoginNoticeService {
 
   void deletePreLoginNotice();
 
-  String uploadPreLoginNoticeImage(File imageFile, String name) throws IOException;
+  String uploadPreLoginNoticeImage(InputStream imageFile, String name) throws IOException;
 
   InputStream getPreLoginNoticeImage(String name) throws IOException;
 

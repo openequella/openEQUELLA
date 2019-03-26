@@ -27,16 +27,11 @@ import com.tle.core.services.FileSystemService;
 import com.tle.core.settings.loginnotice.LoginNoticeService;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.exceptions.PrivilegeRequiredException;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.BadRequestException;
@@ -142,43 +137,30 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
   }
 
   @Override
-  public String uploadPreLoginNoticeImage(File imageFile, String name) throws IOException {
+  public String uploadPreLoginNoticeImage(InputStream imageFile, String name) throws IOException {
     checkPermissions();
     CustomisationFile customisationFile = new CustomisationFile();
-
-    // read in image file
-    BufferedImage bImage = null;
-    bImage = ImageIO.read(imageFile);
-    if (bImage == null) {
-      throw new IllegalArgumentException("Invalid image file");
-    }
-    ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ImageIO.write(bImage, "png", os);
-    InputStream fis = new ByteArrayInputStream(os.toByteArray());
-    String nameToUse = iterateImageNameIfDuplicateExists(name, ".png");
-
+    String nameToUse = iterateImageNameIfDuplicateExists(name);
     fileSystemService.write(
-        customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameToUse, fis, false);
-    os.close();
-    fis.close();
+        customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameToUse, imageFile, false);
     return nameToUse;
   }
 
-  private String iterateImageNameIfDuplicateExists(String name, String newFileExtension) {
+  private String iterateImageNameIfDuplicateExists(String name) {
     CustomisationFile customisationFile = new CustomisationFile();
     String nameWithoutExtension = FilenameUtils.removeExtension(name);
+    String extension = '.' + FilenameUtils.getExtension(name);
     if (fileSystemService.fileExists(
-        customisationFile,
-        LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameWithoutExtension + newFileExtension)) {
+        customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameWithoutExtension + extension)) {
       int i = 1;
       while (fileSystemService.fileExists(
           customisationFile,
-          LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameWithoutExtension + '_' + i + newFileExtension)) {
+          LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameWithoutExtension + '_' + i + extension)) {
         i++;
       }
-      return nameWithoutExtension + '_' + i + newFileExtension;
+      return nameWithoutExtension + '_' + i + extension;
     }
-    return nameWithoutExtension + newFileExtension;
+    return nameWithoutExtension + extension;
   }
 
   @Override

@@ -23,11 +23,12 @@ import com.tle.core.settings.loginnotice.impl.PreLoginNotice;
 import com.tle.web.api.loginnotice.PreLoginNoticeResource;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -64,12 +65,13 @@ public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
 
   @Override
   public Response getPreLoginNoticeImage(String name) throws IOException {
-    return Response.ok(noticeService.getPreLoginNoticeImage(name), "image/png").build();
+    return Response.ok(noticeService.getPreLoginNoticeImage(name), MediaType.MEDIA_TYPE_WILDCARD)
+        .build();
   }
 
   @Override
-  public Response uploadPreLoginNoticeImage(File imageFile, String imageName, @Context UriInfo info)
-      throws IOException {
+  public Response uploadPreLoginNoticeImage(
+      InputStream imageFile, String imageName, @Context UriInfo info) throws IOException {
     noticeService.checkPermissions();
     JsonObject returnLink = new JsonObject();
     String getImageAPIURL =
