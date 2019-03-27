@@ -11,22 +11,22 @@ export const DELETE_CLOUD_PROVIDER_URL = `${
 export const POST_CLOUD_PROVIDER_REGISTER_INIT_URL = `${
   Config.baseUrl
 }api/cloudprovider/register/init`;
-export const langStrings = prepLangStrings("cp", {
+export const cloudProviderLangStrings = prepLangStrings("cp", {
   title: "Cloud providers",
-  cloudProviderAvailable: {
+  cloudprovideravailable: {
     zero: "No cloud providers available",
     one: "%d cloud provider",
     more: "%d cloud providers"
   },
-  newCloudProviderTitle: "Register a new cloud provider",
-  newCloudProviderInfo: {
-    id: "new_cloud_provider_url",
+  newcloudprovider: {
+    title: "Register a new cloud provider",
     label: "URL",
     help: "Enter the URL supplied by the cloud provider"
   },
-  deleteCloudProviderTitle:
-    "Are you sure you want to delete cloud provider - '%s'?",
-  deleteCloudProviderMsg: "It will be permanently deleted."
+  deletecloudprovider: {
+    title: "Are you sure you want to delete cloud provider - '%s'?",
+    message: "It will be permanently deleted."
+  }
 });
 interface CloudProviderInitResponse {
   url: string;

@@ -8,17 +8,16 @@ import {
   DialogTitle
 } from "@material-ui/core";
 import TextField from "@material-ui/core/es/TextField";
-import { langStrings } from "./CloudProviderModule";
+import { cloudProviderLangStrings } from "./CloudProviderModule";
+import { commonString } from "../util/commonstrings";
 
 interface CloudProviderAddDialogProps {
   open: boolean;
   onCancel: () => void;
-  onRegister: () => void;
-  getUrl: (url: string) => void;
+  onRegister: (url: string) => void;
 }
 interface CloudProviderAddDialogState {
   cloudProviderUrl: string;
-  registerEnable: boolean;
 }
 
 export default class CloudProviderAddDialog extends React.Component<
@@ -28,23 +27,24 @@ export default class CloudProviderAddDialog extends React.Component<
   constructor(props: CloudProviderAddDialogProps) {
     super(props);
     this.state = {
-      cloudProviderUrl: "",
-      registerEnable: true
+      cloudProviderUrl: ""
     };
   }
 
   handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let cloudProviderUrl = e.target.value;
     this.setState({
-      cloudProviderUrl: cloudProviderUrl,
-      registerEnable: !cloudProviderUrl
+      cloudProviderUrl: cloudProviderUrl
     });
-    this.props.getUrl(cloudProviderUrl);
+  };
+
+  handleConfirmButton = () => {
+    this.props.onRegister(this.state.cloudProviderUrl);
   };
 
   render() {
-    const { open, onCancel, onRegister } = this.props;
-    const { registerEnable } = this.state;
+    const { open, onCancel } = this.props;
+    const { cloudProviderUrl } = this.state;
     return (
       <div>
         <Dialog
@@ -55,19 +55,19 @@ export default class CloudProviderAddDialog extends React.Component<
           disableEscapeKeyDown={true}
           fullWidth
         >
-          <DialogTitle id="form-dialog-title">
-            {langStrings.newCloudProviderTitle}
+          <DialogTitle>
+            {cloudProviderLangStrings.newcloudprovider.title}
           </DialogTitle>
           <DialogContent>
             <DialogContentText>
-              {langStrings.newCloudProviderInfo.help}
+              {cloudProviderLangStrings.newcloudprovider.help}
             </DialogContentText>
             <TextField
               autoFocus
               margin="dense"
               id="new_cloud_provider_url"
-              label="URL"
-              value={this.state.cloudProviderUrl}
+              label={cloudProviderLangStrings.newcloudprovider.label}
+              value={cloudProviderUrl}
               required
               fullWidth
               onChange={this.handleTextChange}
@@ -75,15 +75,15 @@ export default class CloudProviderAddDialog extends React.Component<
           </DialogContent>
           <DialogActions>
             <Button id="cancel-register" onClick={onCancel} color="primary">
-              CANCEL
+              {commonString.action.cancel}
             </Button>
             <Button
               id="confirm-register"
-              onClick={onRegister}
+              onClick={this.handleConfirmButton}
               color="primary"
-              disabled={registerEnable}
+              disabled={!cloudProviderUrl}
             >
-              REGISTER
+              {commonString.action.register}
             </Button>
           </DialogActions>
         </Dialog>

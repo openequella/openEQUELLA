@@ -14,7 +14,7 @@ import { CloudProviderEntity } from "./CloudProviderEntity";
 import {
   deleteCloudProvider,
   getCloudProviders,
-  langStrings,
+  cloudProviderLangStrings,
   registerCloudProviderInit
 } from "./CloudProviderModule";
 import { AxiosError } from "axios";
@@ -123,9 +123,8 @@ class CloudProviderListPage extends React.Component<
     });
   };
 
-  confirmRegisterCloudProvider = () => {
-    let cloudProviderUrl = this.state.cloudProviderUrl;
-    registerCloudProviderInit(cloudProviderUrl)
+  confirmRegisterCloudProvider = (url: string) => {
+    registerCloudProviderInit(url)
       .then(result => {
         window.location.href = result.url;
       })
@@ -134,12 +133,6 @@ class CloudProviderListPage extends React.Component<
           error: generateFromError(error)
         });
       });
-  };
-
-  getUrlFromDialog = (url: string) => {
-    this.setState({
-      cloudProviderUrl: url
-    });
   };
 
   render() {
@@ -156,31 +149,30 @@ class CloudProviderListPage extends React.Component<
       onClick: this.registerCloudProvider
     };
     return (
-      <Template title={langStrings.title} errorResponse={error}>
+      <Template title={cloudProviderLangStrings.title} errorResponse={error}>
         {this.state.deleteDetails && (
           <ConfirmDialog
             open={deleteDialogOpen}
             title={sprintf(
-              langStrings.deleteCloudProviderTitle,
+              cloudProviderLangStrings.deletecloudprovider.title,
               this.state.deleteDetails.name
             )}
             onConfirm={this.confirmDeleteCloudProvider}
             onCancel={this.cancelDeleteCloudProvider}
           >
-            {langStrings.deleteCloudProviderMsg}
+            {cloudProviderLangStrings.deletecloudprovider.message}
           </ConfirmDialog>
         )}
         <CloudProviderAddDialog
           open={registerDialogOpen}
           onCancel={this.cancelRegisterCloudProvider}
           onRegister={this.confirmRegisterCloudProvider}
-          getUrl={this.getUrlFromDialog}
         />
         <EntityList
           id="cloudProviderList"
           resultsText={formatSize(
             cloudProviders.length,
-            langStrings.cloudProviderAvailable
+            cloudProviderLangStrings.cloudprovideravailable
           )}
           progress={false}
           createLink={registerLink}
