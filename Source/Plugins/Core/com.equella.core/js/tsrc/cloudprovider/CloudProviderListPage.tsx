@@ -46,7 +46,6 @@ interface CloudProviderListPageState {
   deleteDialogOpen: boolean;
   registerDialogOpen: boolean;
   deleteDetails?: CloudProviderEntity;
-  cloudProviderUrl: string;
 }
 
 class CloudProviderListPage extends React.Component<
@@ -58,8 +57,7 @@ class CloudProviderListPage extends React.Component<
     this.state = {
       cloudProviders: [],
       deleteDialogOpen: false,
-      registerDialogOpen: false,
-      cloudProviderUrl: ""
+      registerDialogOpen: false
     };
   }
 

@@ -32,18 +32,13 @@ export default class CloudProviderAddDialog extends React.Component<
   }
 
   handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let cloudProviderUrl = e.target.value;
     this.setState({
-      cloudProviderUrl: cloudProviderUrl
+      cloudProviderUrl: e.target.value
     });
   };
 
-  handleConfirmButton = () => {
-    this.props.onRegister(this.state.cloudProviderUrl);
-  };
-
   render() {
-    const { open, onCancel } = this.props;
+    const { open, onCancel, onRegister } = this.props;
     const { cloudProviderUrl } = this.state;
     return (
       <div>
@@ -79,7 +74,9 @@ export default class CloudProviderAddDialog extends React.Component<
             </Button>
             <Button
               id="confirm-register"
-              onClick={this.handleConfirmButton}
+              onClick={() => {
+                onRegister(cloudProviderUrl);
+              }}
               color="primary"
               disabled={!cloudProviderUrl}
             >
