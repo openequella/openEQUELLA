@@ -1,4 +1,5 @@
 import * as React from "react";
+import { ChangeEvent } from "react";
 import {
   Button,
   FormControl,
@@ -23,8 +24,7 @@ import {
 import { AxiosError, AxiosResponse } from "axios";
 import RichTextEditor from "../components/RichTextEditor";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
-import { DatePicker } from "material-ui-pickers";
-import { ChangeEvent } from "react";
+import { DateTimePicker } from "material-ui-pickers";
 
 interface PreLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
@@ -188,10 +188,9 @@ class PreLoginNoticeConfigurator extends React.Component<
             {strings.scheduling.start}
           </Typography>
 
-          <DatePicker
+          <DateTimePicker
             id="startDatePicker"
             okLabel={<span id="ok">OK</span>}
-            format={"DDD"}
             minDate={new Date().toLocaleDateString()}
             onChange={this.handleStartDateChange}
             value={this.state.startDate}
@@ -201,10 +200,9 @@ class PreLoginNoticeConfigurator extends React.Component<
             {strings.scheduling.end}
           </Typography>
 
-          <DatePicker
+          <DateTimePicker
             id="endDatePicker"
             minDate={this.state.startDate}
-            format={"DDD"}
             minDateMessage={strings.scheduling.endbeforestart}
             onChange={this.handleEndDateChange}
             value={this.state.endDate}
