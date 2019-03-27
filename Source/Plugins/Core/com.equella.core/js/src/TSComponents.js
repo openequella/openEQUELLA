@@ -7,4 +7,3 @@ exports.themePageClass = require("~/../tsrc/theme/ThemePage").default;
 exports.loginNoticeConfigPageClass = require("~/../tsrc/loginnotice/LoginNoticeConfigPage").default;
 exports.searchConfigsClass = require("~/../tsrc/searchconfig/ListSearchConfigs").default;
 exports.cloudProviderListPageClass = require("~/../tsrc/cloudprovider/CloudProviderListPage").default;
-exports.newCloudProviderClass = require("~/../tsrc/cloudprovider/NewCloudProvider").default;

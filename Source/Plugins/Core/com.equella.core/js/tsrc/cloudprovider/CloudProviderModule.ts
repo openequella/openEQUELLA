@@ -18,11 +18,11 @@ export const langStrings = prepLangStrings("cp", {
     one: "%d cloud provider",
     more: "%d cloud providers"
   },
-  newCloudProviderTitle: "Create cloud providers",
+  newCloudProviderTitle: "Register a new cloud provider",
   newCloudProviderInfo: {
     id: "new_cloud_provider_url",
     label: "URL",
-    help: "Cloud provider URL, e.g. www.equella.com/upload"
+    help: "Enter the URL supplied by the cloud provider"
   },
   deleteCloudProviderTitle:
     "Are you sure you want to delete cloud provider - '%s'?",

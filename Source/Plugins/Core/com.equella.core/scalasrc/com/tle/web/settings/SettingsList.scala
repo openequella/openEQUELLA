@@ -92,7 +92,7 @@ object SettingsList {
 
   val cloudProviderSettings = CoreSettingsPage(
     "cloudprovider",
-    General,
+    Integration,
     "cloudprovider.settings.title",
     "cloudprovider.settings.description",
     CloudProviderListPage,

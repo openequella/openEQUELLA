@@ -3,16 +3,19 @@ import * as React from "react";
 import {
   Avatar,
   createStyles,
+  IconButton,
   Theme,
   withStyles,
   WithStyles
 } from "@material-ui/core";
+import DeleteIcon from "@material-ui/icons/Delete";
 import CloudIcon from "@material-ui/icons/CloudCircleRounded";
 import { CloudProviderEntity } from "./CloudProviderEntity";
 import {
   deleteCloudProvider,
   getCloudProviders,
-  langStrings
+  langStrings,
+  registerCloudProviderInit
 } from "./CloudProviderModule";
 import { AxiosError } from "axios";
 import { ErrorResponse, generateFromError } from "../api/errors";
@@ -20,7 +23,8 @@ import EntityList from "../components/EntityList";
 import { formatSize } from "../util/langstrings";
 import { sprintf } from "sprintf-js";
 import ConfirmDialog from "../components/ConfirmDialog";
-import SearchResult from "../components/SearchResult";
+import CloudProviderAddDialog from "./CloudProviderAddDialog";
+import EquellaListItem from "../components/EquellaListItem";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -39,8 +43,10 @@ interface CloudProviderListPageProps extends WithStyles<typeof styles> {
 interface CloudProviderListPageState {
   cloudProviders: CloudProviderEntity[];
   error?: ErrorResponse;
-  confirmOpen: boolean;
+  deleteDialogOpen: boolean;
+  registerDialogOpen: boolean;
   deleteDetails?: CloudProviderEntity;
+  cloudProviderUrl: string;
 }
 
 class CloudProviderListPage extends React.Component<
@@ -51,7 +57,9 @@ class CloudProviderListPage extends React.Component<
     super(props);
     this.state = {
       cloudProviders: [],
-      confirmOpen: false
+      deleteDialogOpen: false,
+      registerDialogOpen: false,
+      cloudProviderUrl: ""
     };
   }
 
@@ -77,23 +85,22 @@ class CloudProviderListPage extends React.Component<
     });
   };
 
-  handleDelete = (cloudProvider: CloudProviderEntity) => {
+  deleteCloudProvider = (cloudProvider: CloudProviderEntity) => {
     this.setState({
-      confirmOpen: true,
+      deleteDialogOpen: true,
       deleteDetails: cloudProvider
     });
   };
-
-  handleCancel = () => {
+  cancelDeleteCloudProvider = () => {
     this.setState({
-      confirmOpen: false
+      deleteDialogOpen: false
     });
   };
 
-  deleteCloudProvider = () => {
+  confirmDeleteCloudProvider = () => {
     if (this.state.deleteDetails) {
       let id = this.state.deleteDetails.id;
-      this.handleCancel();
+      this.cancelDeleteCloudProvider();
       deleteCloudProvider(id)
         .then(() => {
           this.getCloudProviderList();
@@ -104,30 +111,71 @@ class CloudProviderListPage extends React.Component<
     }
   };
 
+  registerCloudProvider = () => {
+    this.setState({
+      registerDialogOpen: true
+    });
+  };
+
+  cancelRegisterCloudProvider = () => {
+    this.setState({
+      registerDialogOpen: false
+    });
+  };
+
+  confirmRegisterCloudProvider = () => {
+    let cloudProviderUrl = this.state.cloudProviderUrl;
+    registerCloudProviderInit(cloudProviderUrl)
+      .then(result => {
+        window.location.href = result.url;
+      })
+      .catch((error: AxiosError) => {
+        this.setState({
+          error: generateFromError(error)
+        });
+      });
+  };
+
+  getUrlFromDialog = (url: string) => {
+    this.setState({
+      cloudProviderUrl: url
+    });
+  };
+
   render() {
-    const { Template, routes, router } = this.props.bridge;
-    const { error, cloudProviders, confirmOpen } = this.state;
-    //At this stage nothing happens when clicking a list item of cloud providers.
-    const clickEvent = {
-      href: "javascript:void(0);",
-      onClick: () => {}
+    const { Template } = this.props.bridge;
+    const {
+      error,
+      cloudProviders,
+      deleteDialogOpen,
+      registerDialogOpen
+    } = this.state;
+    //open a dialog instead of going to another page
+    const registerLink = {
+      href: "",
+      onClick: this.registerCloudProvider
     };
     return (
       <Template title={langStrings.title} errorResponse={error}>
         {this.state.deleteDetails && (
           <ConfirmDialog
-            open={confirmOpen}
+            open={deleteDialogOpen}
             title={sprintf(
               langStrings.deleteCloudProviderTitle,
               this.state.deleteDetails.name
             )}
-            onConfirm={this.deleteCloudProvider}
-            onCancel={this.handleCancel}
+            onConfirm={this.confirmDeleteCloudProvider}
+            onCancel={this.cancelDeleteCloudProvider}
           >
             {langStrings.deleteCloudProviderMsg}
           </ConfirmDialog>
         )}
-
+        <CloudProviderAddDialog
+          open={registerDialogOpen}
+          onCancel={this.cancelRegisterCloudProvider}
+          onRegister={this.confirmRegisterCloudProvider}
+          getUrl={this.getUrlFromDialog}
+        />
         <EntityList
           id="cloudProviderList"
           resultsText={formatSize(
@@ -135,10 +183,19 @@ class CloudProviderListPage extends React.Component<
             langStrings.cloudProviderAvailable
           )}
           progress={false}
-          createLink={router(routes.NewCloudProvider)}
+          createLink={registerLink}
         >
           {cloudProviders.map(cloudProvider => {
-            let avatar = (
+            let secondaryAction = (
+              <IconButton
+                onClick={() => {
+                  this.deleteCloudProvider(cloudProvider);
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            );
+            let icon = (
               <Avatar
                 src={cloudProvider.iconUrl}
                 alt={cloudProvider.description}
@@ -148,17 +205,15 @@ class CloudProviderListPage extends React.Component<
                 )}
               </Avatar>
             );
+
             return (
-              <SearchResult
+              <EquellaListItem
                 key={cloudProvider.id}
-                href={clickEvent.href}
-                onClick={clickEvent.onClick}
-                primaryText={cloudProvider.name}
-                secondaryText={cloudProvider.description}
-                onDelete={() => {
-                  this.handleDelete(cloudProvider);
-                }}
-                avatar={avatar}
+                listItemPrimaryText={cloudProvider.name}
+                listItemSecondText={cloudProvider.description}
+                listItemAttributes={{ divider: true }}
+                icon={icon}
+                secondaryAction={secondaryAction}
               />
             );
           })}
