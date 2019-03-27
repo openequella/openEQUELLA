@@ -17,6 +17,7 @@
 package com.tle.core.settings.loginnotice.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tle.common.Check;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.core.filesystem.CustomisationFile;
@@ -47,6 +48,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
   @Inject
   protected void setObjectMapperService(ObjectMapperService objectMapperService) {
     objectMapper = objectMapperService.createObjectMapper();
+    objectMapper.registerModule(new JavaTimeModule());
   }
 
   private ObjectMapper objectMapper;
@@ -71,7 +73,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     if (StringUtils.isBlank(notice.getNotice())) {
       configurationService.deleteProperty(PRE_LOGIN_NOTICE_KEY);
     } else {
-      if (notice.getStartDateZDT().isAfter(notice.getEndDateZDT())) {
+      if (notice.getStartDate().isAfter(notice.getEndDate())) {
         throw new BadRequestException("Invalid date range.");
       }
       configurationService.setProperty(
@@ -112,7 +114,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
       case ON:
         return true;
       case SCHEDULED:
-        return validateDates(preLoginNotice.getStartDateZDT(), preLoginNotice.getEndDateZDT());
+        return validateDates(preLoginNotice.getStartDate(), preLoginNotice.getEndDate());
       default:
         return false;
     }

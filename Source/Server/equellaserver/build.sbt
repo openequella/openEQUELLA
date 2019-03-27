@@ -32,17 +32,18 @@ libraryDependencies ++= Seq(
 ).map(_ % circeVersion)
 
 libraryDependencies ++= Seq(
-  "io.github.doolse"             %% "simpledba-jdbc"             % simpledbaVersion,
-  "io.github.doolse"             %% "simpledba-circe"            % simpledbaVersion,
-  "axis"                         % "axis"                        % "1.4",
-  "cglib"                        % "cglib"                       % "2.2",
-  "com.fasterxml.jackson.core"   % "jackson-core"                % jacksonVersion,
-  "com.fasterxml.jackson.module" %% "jackson-module-scala"       % jacksonVersion,
-  "com.fasterxml.jackson.core"   % "jackson-annotations"         % jacksonVersion,
-  "com.fasterxml.jackson.core"   % "jackson-databind"            % jacksonVersion,
-  "com.fasterxml.jackson.jaxrs"  % "jackson-jaxrs-base"          % jacksonVersion,
-  "com.fasterxml.jackson.jaxrs"  % "jackson-jaxrs-json-provider" % jacksonVersion,
-  "com.flickr4java"              % "flickr4java"                 % "2.16" excludeAll (
+  "io.github.doolse"               %% "simpledba-jdbc"             % simpledbaVersion,
+  "io.github.doolse"               %% "simpledba-circe"            % simpledbaVersion,
+  "axis"                           % "axis"                        % "1.4",
+  "cglib"                          % "cglib"                       % "2.2",
+  "com.fasterxml.jackson.core"     % "jackson-core"                % jacksonVersion,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"     % jacksonVersion,
+  "com.fasterxml.jackson.module"   %% "jackson-module-scala"       % jacksonVersion,
+  "com.fasterxml.jackson.core"     % "jackson-annotations"         % jacksonVersion,
+  "com.fasterxml.jackson.core"     % "jackson-databind"            % jacksonVersion,
+  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-base"          % jacksonVersion,
+  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider" % jacksonVersion,
+  "com.flickr4java"                % "flickr4java"                 % "2.16" excludeAll (
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
