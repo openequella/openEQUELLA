@@ -29,7 +29,7 @@ case class CloudProviderListPage(ctx: PageContext)
   }
 
   def findCloudProviderPath(name: String): String = {
-    "id('cloudProviderList')//li[.//a[text() = " + quoteXPath(name) + "]]"
+    "id('cloudProviderList')//li[.//span[text() = " + quoteXPath(name) + "]]"
   }
 
   def resultForName(name: String) =
@@ -42,22 +42,15 @@ case class CloudProviderListPage(ctx: PageContext)
       ExpectedConditions.numberOfElementsToBeMoreThan(By.xpath("id('cloudProviderList')//li"), 0))
   }
 
-  def add(): CloudProviderRegisterPage = {
+  def add(url: String): Unit = {
     findElement(By.id("add-entity")).click()
-    CloudProviderRegisterPage(ctx).get()
+    val urlTextField: WebElement = waitFor(
+      ExpectedConditions.presenceOfElementLocated(By.id("new_cloud_provider_url")))
+    urlTextField.sendKeys(url)
+    waitFor(ExpectedConditions.elementToBeClickable(By.id("confirm-register"))).click()
   }
 
   def delete(name: String): Unit = {
     resultForName(name).delete(name)
   }
-}
-
-case class CloudProviderRegisterPage(ctx: PageContext)
-    extends NewTitledPage("Create cloud providers", "page/cloudprovider/new") {
-
-  def registerProvider(url: String): Unit = {
-    findElement(By.id("new_cloud_provider_url")).sendKeys(url)
-    findElement(By.id("register-cloud-provider")).click()
-  }
-
 }

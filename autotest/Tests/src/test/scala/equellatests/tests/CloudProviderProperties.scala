@@ -49,7 +49,7 @@ object CloudProviderProperties extends StatefulProperties("Cloud Providers") wit
 
   def doAdd: Gen[List[CloudProviderTestCommand]] =
     for {
-      nProviders <- Gen.choose(1, 5)
+      nProviders <- Gen.choose(1, 3)
       providers <- Gen.listOfN(nProviders, for {
         sz <- Gen.choose(0, 10)
         p  <- Gen.resize(sz, genCloudProvider)
@@ -102,9 +102,8 @@ object CloudProviderProperties extends StatefulProperties("Cloud Providers") wit
     case RegisterProvider(provider) =>
       val actualProvider   = provider.copy(name = s"${b.unique} ${provider.name}")
       var listPage         = loadProviderPage(b)
-      val addPage          = listPage.add()
       val testProviderPage = TestCloudProviderPage(b.page.ctx, actualProvider)
-      addPage.registerProvider(testProviderPage.createRegistrationUrl())
+      listPage.add(testProviderPage.createRegistrationUrl())
       testProviderPage.get()
       testProviderPage.registerProvider()
       listPage = testProviderPage.returnToEQUELLA()

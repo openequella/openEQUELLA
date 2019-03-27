@@ -65,7 +65,7 @@ export default class CloudProviderAddDialog extends React.Component<
             <TextField
               autoFocus
               margin="dense"
-              id="name"
+              id="new_cloud_provider_url"
               label="URL"
               value={this.state.cloudProviderUrl}
               required
@@ -74,10 +74,11 @@ export default class CloudProviderAddDialog extends React.Component<
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={onCancel} color="primary">
+            <Button id="cancel-register" onClick={onCancel} color="primary">
               CANCEL
             </Button>
             <Button
+              id="confirm-register"
               onClick={onRegister}
               color="primary"
               disabled={registerEnable}
