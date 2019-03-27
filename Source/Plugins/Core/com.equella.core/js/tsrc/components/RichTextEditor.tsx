@@ -11,8 +11,6 @@ require("tinymce/plugins/autoresize");
 require("tinymce/plugins/charmap");
 require("tinymce/plugins/code");
 require("tinymce/plugins/codesample");
-require("tinymce/plugins/colorpicker");
-require("tinymce/plugins/contextmenu");
 require("tinymce/plugins/directionality");
 require("tinymce/plugins/fullpage");
 require("tinymce/plugins/fullscreen");
@@ -36,7 +34,6 @@ require("tinymce/plugins/save");
 require("tinymce/plugins/searchreplace");
 require("tinymce/plugins/table");
 require("tinymce/plugins/template");
-require("tinymce/plugins/textcolor");
 require("tinymce/plugins/textpattern");
 require("tinymce/plugins/toc");
 require("tinymce/plugins/visualblocks");
@@ -94,10 +91,10 @@ class RichTextEditor extends React.Component<RichTextEditorProps> {
           "formatselect | bold italic strikethrough underline forecolor backcolor | link image media file | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent hr | removeformat | undo redo | preview | ltr rtl"
         }
         plugins={
-          "anchor autolink autoresize advlist charmap code codesample colorpicker " +
-          "contextmenu directionality fullpage fullscreen help hr image imagetools " +
+          "anchor autolink autoresize advlist charmap code codesample  " +
+          "directionality fullpage fullscreen help hr image imagetools " +
           "importcss insertdatetime link lists media nonbreaking noneditable pagebreak paste " +
-          "preview print quickbars save searchreplace table template textcolor " +
+          "preview print quickbars save searchreplace table template " +
           "textpattern toc visualblocks visualchars wordcount"
         }
         onEditorChange={this.props.onStateChange}

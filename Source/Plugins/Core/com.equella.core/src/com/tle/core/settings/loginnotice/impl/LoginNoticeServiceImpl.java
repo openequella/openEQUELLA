@@ -16,9 +16,13 @@
 
 package com.tle.core.settings.loginnotice.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.tle.common.Check;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.core.filesystem.CustomisationFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.settings.loginnotice.LoginNoticeService;
@@ -26,9 +30,11 @@ import com.tle.core.settings.service.ConfigurationService;
 import com.tle.exceptions.PrivilegeRequiredException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.ws.rs.BadRequestException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -39,25 +45,46 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
   @Inject ConfigurationService configurationService;
   @Inject FileSystemService fileSystemService;
 
+  @Inject
+  protected void setObjectMapperService(ObjectMapperService objectMapperService) {
+    objectMapper = objectMapperService.createObjectMapper();
+    objectMapper.registerModule(new JavaTimeModule());
+  }
+
+  private ObjectMapper objectMapper;
+
   private static final String PERMISSION_KEY = "EDIT_SYSTEM_SETTINGS";
   private static final String PRE_LOGIN_NOTICE_KEY = "pre.login.notice";
   private static final String POST_LOGIN_NOTICE_KEY = "post.login.notice";
   private static final String LOGIN_NOTICE_IMAGE_FOLDER_NAME = "loginnoticeimages/";
 
   @Override
-  public String getPreLoginNotice() {
-    return configurationService.getProperty(PRE_LOGIN_NOTICE_KEY);
+  public PreLoginNotice getPreLoginNotice() throws IOException {
+    String preLoginNotice = configurationService.getProperty(PRE_LOGIN_NOTICE_KEY);
+    if (Check.isEmpty(preLoginNotice)) {
+      return null;
+    }
+    return objectMapper.readValue(preLoginNotice, PreLoginNotice.class);
   }
 
   @Override
-  public void setPreLoginNotice(String notice) throws IOException {
+  public void setPreLoginNotice(PreLoginNotice notice) throws IOException {
     checkPermissions();
-    if (StringUtils.isBlank(notice)) {
+    if (StringUtils.isBlank(notice.getNotice())) {
       configurationService.deleteProperty(PRE_LOGIN_NOTICE_KEY);
     } else {
-      configurationService.setProperty(PRE_LOGIN_NOTICE_KEY, notice);
+      if (notice.getStartDate().isAfter(notice.getEndDate())) {
+        throw new BadRequestException("Invalid date range.");
+      }
+      configurationService.setProperty(
+          PRE_LOGIN_NOTICE_KEY, objectMapper.writeValueAsString(notice));
     }
-    cleanUpUnusedImages(notice);
+    cleanUpUnusedImages(notice.getNotice());
+  }
+
+  private boolean validateDates(ZonedDateTime start, ZonedDateTime end) {
+    ZonedDateTime now = ZonedDateTime.now(start.getZone());
+    return (!now.isBefore(start)) && (now.isBefore(end));
   }
 
   private void cleanUpUnusedImages(String notice) throws IOException {
@@ -78,6 +105,19 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     CustomisationFile customisationFile = new CustomisationFile();
     fileSystemService.removeFile(customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME);
     configurationService.deleteProperty(PRE_LOGIN_NOTICE_KEY);
+  }
+
+  public boolean isActive(PreLoginNotice preLoginNotice) {
+    switch (preLoginNotice.getScheduleSettings()) {
+      case OFF:
+        return false;
+      case ON:
+        return true;
+      case SCHEDULED:
+        return validateDates(preLoginNotice.getStartDate(), preLoginNotice.getEndDate());
+      default:
+        return false;
+    }
   }
 
   @Override

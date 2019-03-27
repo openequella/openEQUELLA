@@ -24,7 +24,7 @@ case class LoginNoticePage(ctx: PageContext)
     findElement(By.xpath("//*[contains(@class,'tox-form__group')]"))
 
   private def preNoticeAddImageField: WebElement =
-    preNoticeAddImageForm.findElement(By.xpath("//input"))
+    preNoticeAddImageForm.findElement(By.xpath("//input[contains(@aria-pressed,'false')]"))
 
   private def preNoticeAddImageOK: WebElement =
     preNoticeAddImagePopup.findElement(By.xpath("//button[text()='Save']"))

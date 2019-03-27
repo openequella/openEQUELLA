@@ -16,14 +16,15 @@
 
 package com.tle.core.settings.loginnotice;
 
+import com.tle.core.settings.loginnotice.impl.PreLoginNotice;
 import java.io.IOException;
 import java.io.InputStream;
 
 public interface LoginNoticeService {
 
-  String getPreLoginNotice();
+  PreLoginNotice getPreLoginNotice() throws IOException;
 
-  void setPreLoginNotice(String notice) throws IOException;
+  void setPreLoginNotice(PreLoginNotice notice) throws IOException;
 
   void deletePreLoginNotice();
 
@@ -38,4 +39,6 @@ public interface LoginNoticeService {
   void deletePostLoginNotice();
 
   void checkPermissions();
+
+  boolean isActive(PreLoginNotice preLoginNotice);
 }
