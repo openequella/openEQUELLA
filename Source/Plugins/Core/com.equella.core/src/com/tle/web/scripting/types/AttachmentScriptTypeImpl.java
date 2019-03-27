@@ -127,6 +127,16 @@ public class AttachmentScriptTypeImpl implements AttachmentScriptType {
   }
 
   @Override
+  public void setCustomLongProperty(String propertyName, long propertyValue) {
+    setCustomProperty(propertyName, propertyValue);
+  }
+
+  @Override
+  public void setCustomDoubleProperty(String propertyName, double propertyValue) {
+    setCustomProperty(propertyName, propertyValue);
+  }
+
+  @Override
   public void setCustomProperty(String propertyName, Object propertyValue) {
     CustomAttachment custom = ensureCustomAttachment();
     custom.setData(propertyName, propertyValue);
