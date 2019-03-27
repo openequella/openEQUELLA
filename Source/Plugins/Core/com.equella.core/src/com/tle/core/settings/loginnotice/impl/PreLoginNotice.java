@@ -16,7 +16,8 @@
 
 package com.tle.core.settings.loginnotice.impl;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 enum ScheduleSettings {
   OFF,
@@ -27,8 +28,8 @@ enum ScheduleSettings {
 public class PreLoginNotice {
   private String notice = "";
   private ScheduleSettings scheduleSettings = ScheduleSettings.OFF;
-  private Date startDate;
-  private Date endDate;
+  private ZonedDateTime startDate;
+  private ZonedDateTime endDate;
 
   public String getNotice() {
     return notice;
@@ -46,19 +47,35 @@ public class PreLoginNotice {
     this.scheduleSettings = scheduleSettings;
   }
 
-  public Date getStartDate() {
-    return startDate;
-  }
-
-  public void setStartDate(Date startDate) {
+  public void setStartDate(ZonedDateTime startDate) {
     this.startDate = startDate;
   }
 
-  public Date getEndDate() {
-    return endDate;
+  public void setStartDate(String startDate) {
+    this.startDate = ZonedDateTime.parse(startDate);
   }
 
-  public void setEndDate(Date endDate) {
+  public void setEndDate(ZonedDateTime endDate) {
     this.endDate = endDate;
+  }
+
+  public void setEndDate(String endDate) {
+    this.endDate = ZonedDateTime.parse(endDate);
+  }
+
+  public String getStartDate() {
+    return startDate.format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
+  }
+
+  public String getEndDate() {
+    return endDate.format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
+  }
+
+  ZonedDateTime getStartDateZDT() {
+    return startDate;
+  }
+
+  ZonedDateTime getEndDateZDT() {
+    return endDate;
   }
 }

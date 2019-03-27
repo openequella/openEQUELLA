@@ -29,9 +29,8 @@ import com.tle.core.settings.service.ConfigurationService;
 import com.tle.exceptions.PrivilegeRequiredException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 import java.util.Collections;
-import java.util.Date;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.BadRequestException;
@@ -72,9 +71,8 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     if (StringUtils.isBlank(notice.getNotice())) {
       configurationService.deleteProperty(PRE_LOGIN_NOTICE_KEY);
     } else {
-      if (notice.getEndDate().toInstant().isBefore(notice.getStartDate().toInstant())) {
-        throw new BadRequestException(
-            "Invalid start and end date. Start date must be on or before end date.");
+      if (notice.getStartDateZDT().isAfter(notice.getEndDateZDT())) {
+        throw new BadRequestException("Invalid date range.");
       }
       configurationService.setProperty(
           PRE_LOGIN_NOTICE_KEY, objectMapper.writeValueAsString(notice));
@@ -82,16 +80,9 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     cleanUpUnusedImages(notice.getNotice());
   }
 
-  private boolean validateDates(Date start, Date end) {
-    Calendar now = Calendar.getInstance();
-    Calendar startDate = Calendar.getInstance();
-    Calendar endDate = Calendar.getInstance();
-    startDate.setTime(start);
-    endDate.setTime(end);
-    startDate = getDateAtMidnight(startDate);
-    endDate = getDateAtMidnight(endDate);
-    endDate.add(Calendar.DAY_OF_YEAR, 1);
-    return !(now.after(endDate) || now.before(startDate));
+  private boolean validateDates(ZonedDateTime start, ZonedDateTime end) {
+    ZonedDateTime now = ZonedDateTime.now(start.getZone());
+    return (!now.isBefore(start)) && (now.isBefore(end));
   }
 
   private void cleanUpUnusedImages(String notice) throws IOException {
@@ -114,15 +105,6 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     configurationService.deleteProperty(PRE_LOGIN_NOTICE_KEY);
   }
 
-  private Calendar getDateAtMidnight(Calendar date) {
-    Calendar dateToReturn = (Calendar) date.clone();
-    dateToReturn.set(Calendar.HOUR, 0);
-    dateToReturn.set(Calendar.MINUTE, 0);
-    dateToReturn.set(Calendar.SECOND, 0);
-    dateToReturn.set(Calendar.MILLISECOND, 0);
-    return dateToReturn;
-  }
-
   public boolean isActive(PreLoginNotice preLoginNotice) {
     switch (preLoginNotice.getScheduleSettings()) {
       case OFF:
@@ -130,7 +112,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
       case ON:
         return true;
       case SCHEDULED:
-        return validateDates(preLoginNotice.getStartDate(), preLoginNotice.getEndDate());
+        return validateDates(preLoginNotice.getStartDateZDT(), preLoginNotice.getEndDateZDT());
       default:
         return false;
     }
