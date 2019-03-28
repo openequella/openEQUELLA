@@ -24,7 +24,6 @@ tsBridge = {
         "CoursesPage": CoursesPage, 
         "CourseEdit": CourseEdit, 
         "NewCourse": NewCourse,
-        "NewCloudProvider" : NewCloudProvider,
         "CloudProviderListPage" : CloudProviderListPage
         },
     router : routeHref,

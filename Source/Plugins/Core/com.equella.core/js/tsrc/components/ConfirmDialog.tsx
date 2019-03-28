@@ -38,10 +38,15 @@ class ConfirmDialog extends React.Component<ConfirmDialogProps> {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onCancel} color="secondary">
+          <Button onClick={onCancel} color="secondary" id="cancel-delete">
             {cancel}
           </Button>
-          <Button onClick={onConfirm} color="primary" autoFocus>
+          <Button
+            onClick={onConfirm}
+            color="primary"
+            id="confirm-delete"
+            autoFocus
+          >
             {del}
           </Button>
         </DialogActions>

@@ -4,23 +4,27 @@ import {
   Avatar,
   createStyles,
   IconButton,
-  ListItem,
-  ListItemAvatar,
-  ListItemSecondaryAction,
-  ListItemText,
   Theme,
-  Typography,
   withStyles,
   WithStyles
 } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloudIcon from "@material-ui/icons/CloudCircleRounded";
 import { CloudProviderEntity } from "./CloudProviderEntity";
-import { getCloudProviders, langStrings } from "./CloudProviderModule";
+import {
+  deleteCloudProvider,
+  getCloudProviders,
+  cloudProviderLangStrings,
+  registerCloudProviderInit
+} from "./CloudProviderModule";
 import { AxiosError } from "axios";
 import { ErrorResponse, generateFromError } from "../api/errors";
 import EntityList from "../components/EntityList";
 import { formatSize } from "../util/langstrings";
+import { sprintf } from "sprintf-js";
+import ConfirmDialog from "../components/ConfirmDialog";
+import CloudProviderAddDialog from "./CloudProviderAddDialog";
+import EquellaListItem from "../components/EquellaListItem";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -39,6 +43,9 @@ interface CloudProviderListPageProps extends WithStyles<typeof styles> {
 interface CloudProviderListPageState {
   cloudProviders: CloudProviderEntity[];
   error?: ErrorResponse;
+  deleteDialogOpen: boolean;
+  registerDialogOpen: boolean;
+  deleteDetails?: CloudProviderEntity;
 }
 
 class CloudProviderListPage extends React.Component<
@@ -48,11 +55,17 @@ class CloudProviderListPage extends React.Component<
   constructor(props: CloudProviderListPageProps) {
     super(props);
     this.state = {
-      cloudProviders: []
+      cloudProviders: [],
+      deleteDialogOpen: false,
+      registerDialogOpen: false
     };
   }
 
   componentDidMount(): void {
+    this.getCloudProviderList();
+  }
+
+  getCloudProviderList = () => {
     getCloudProviders()
       .then(result => {
         this.setState(prevState => ({
@@ -60,65 +73,138 @@ class CloudProviderListPage extends React.Component<
         }));
       })
       .catch((error: AxiosError) => {
+        this.handleError(error);
+      });
+  };
+
+  handleError = (error: Error) => {
+    this.setState({
+      error: generateFromError(error)
+    });
+  };
+
+  deleteCloudProvider = (cloudProvider: CloudProviderEntity) => {
+    this.setState({
+      deleteDialogOpen: true,
+      deleteDetails: cloudProvider
+    });
+  };
+  cancelDeleteCloudProvider = () => {
+    this.setState({
+      deleteDialogOpen: false
+    });
+  };
+
+  confirmDeleteCloudProvider = () => {
+    if (this.state.deleteDetails) {
+      let id = this.state.deleteDetails.id;
+      this.cancelDeleteCloudProvider();
+      deleteCloudProvider(id)
+        .then(() => {
+          this.getCloudProviderList();
+        })
+        .catch((error: AxiosError) => {
+          this.handleError(error);
+        });
+    }
+  };
+
+  registerCloudProvider = () => {
+    this.setState({
+      registerDialogOpen: true
+    });
+  };
+
+  cancelRegisterCloudProvider = () => {
+    this.setState({
+      registerDialogOpen: false
+    });
+  };
+
+  confirmRegisterCloudProvider = (url: string) => {
+    registerCloudProviderInit(url)
+      .then(result => {
+        window.location.href = result.url;
+      })
+      .catch((error: AxiosError) => {
         this.setState({
           error: generateFromError(error)
         });
       });
-  }
+  };
 
   render() {
-    const { Template, routes, router } = this.props.bridge;
-    const { error, cloudProviders } = this.state;
+    const { Template } = this.props.bridge;
+    const {
+      error,
+      cloudProviders,
+      deleteDialogOpen,
+      registerDialogOpen
+    } = this.state;
+    //open a dialog instead of going to another page
+    const registerLink = {
+      href: "",
+      onClick: this.registerCloudProvider
+    };
     return (
-      <Template title={langStrings.title} errorResponse={error}>
+      <Template title={cloudProviderLangStrings.title} errorResponse={error}>
+        {this.state.deleteDetails && (
+          <ConfirmDialog
+            open={deleteDialogOpen}
+            title={sprintf(
+              cloudProviderLangStrings.deletecloudprovider.title,
+              this.state.deleteDetails.name
+            )}
+            onConfirm={this.confirmDeleteCloudProvider}
+            onCancel={this.cancelDeleteCloudProvider}
+          >
+            {cloudProviderLangStrings.deletecloudprovider.message}
+          </ConfirmDialog>
+        )}
+        <CloudProviderAddDialog
+          open={registerDialogOpen}
+          onCancel={this.cancelRegisterCloudProvider}
+          onRegister={this.confirmRegisterCloudProvider}
+        />
         <EntityList
+          id="cloudProviderList"
           resultsText={formatSize(
             cloudProviders.length,
-            langStrings.cloudProviderAvailable
+            cloudProviderLangStrings.cloudprovideravailable
           )}
           progress={false}
-          createLink={router(routes.NewCloudProvider)}
+          createLink={registerLink}
         >
           {cloudProviders.map(cloudProvider => {
-            let primaryText = (
-              <Typography color="primary" variant="subtitle1">
-                {cloudProvider.name}
-              </Typography>
-            );
-            let secondaryText = (
-              <Typography
-                variant="body1"
-                className={this.props.classes.searchResultContent}
+            let secondaryAction = (
+              <IconButton
+                onClick={() => {
+                  this.deleteCloudProvider(cloudProvider);
+                }}
               >
-                {cloudProvider.description}
-              </Typography>
+                <DeleteIcon />
+              </IconButton>
+            );
+            let icon = (
+              <Avatar
+                src={cloudProvider.iconUrl}
+                alt={cloudProvider.description}
+              >
+                {!cloudProvider.iconUrl && (
+                  <CloudIcon className={this.props.classes.cloudIcon} />
+                )}
+              </Avatar>
             );
 
             return (
-              <ListItem button divider key={cloudProvider.id}>
-                <ListItemAvatar>
-                  {
-                    <Avatar
-                      src={cloudProvider.iconUrl}
-                      alt={cloudProvider.description}
-                    >
-                      {!cloudProvider.iconUrl && (
-                        <CloudIcon className={this.props.classes.cloudIcon} />
-                      )}
-                    </Avatar>
-                  }
-                </ListItemAvatar>
-                <ListItemText
-                  disableTypography={true}
-                  primary={primaryText}
-                  secondary={secondaryText}
-                />
-                <ListItemSecondaryAction>
-                  <IconButton>
-                    <DeleteIcon />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
+              <EquellaListItem
+                key={cloudProvider.id}
+                listItemPrimaryText={cloudProvider.name}
+                listItemSecondText={cloudProvider.description}
+                listItemAttributes={{ divider: true }}
+                icon={icon}
+                secondaryAction={secondaryAction}
+              />
             );
           })}
         </EntityList>

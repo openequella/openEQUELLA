@@ -19,6 +19,7 @@ package com.tle.core.cloudproviders
 import java.util.concurrent.TimeUnit
 import java.util.{Locale, UUID}
 
+import fs2._
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.ValidatedNec
 import cats.effect.{IO, LiftIO}
@@ -28,7 +29,7 @@ import cats.syntax.applicative._
 import com.tle.core.db._
 import com.tle.core.db.dao.{EntityDB, EntityDBExt}
 import com.tle.core.db.tables.OEQEntity
-import com.tle.core.validation.EntityValidation
+import com.tle.core.validation.{EntityValidation, OEQEntityEdits}
 import com.tle.legacy.LegacyGuice
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.doolse.simpledba.Iso
@@ -54,7 +55,7 @@ case class CloudProviderDB(entity: OEQEntity, data: CloudProviderData)
 object CloudProviderDB {
 
   val tokenCache =
-    LegacyGuice.replicatedCacheService.getCache[String]("cloudRegTokens", 100, 1, TimeUnit.MINUTES)
+    LegacyGuice.replicatedCacheService.getCache[String]("cloudRegTokens", 100, 1, TimeUnit.HOURS)
 
   type CloudProviderVal[A] = ValidatedNec[EntityValidation, A]
 
@@ -85,12 +86,18 @@ object CloudProviderDB {
     )
   }
 
+  case class ProviderStdEdits(reg: CloudProviderRegistration) extends OEQEntityEdits {
+    override def name               = reg.name
+    override def nameStrings        = None
+    override def description        = reg.description
+    override def descriptionStrings = None
+  }
+
   def validateRegistrationFields(oeq: OEQEntity,
                                  reg: CloudProviderRegistration,
                                  oeqAuth: CloudOAuthCredentials,
                                  locale: Locale): CloudProviderVal[CloudProviderDB] = {
-    EntityValidation.nonBlank("name", reg.name, locale).map { name =>
-      val newOeq = oeq.copy(name = name._1, name_strings = name._2)
+    EntityValidation.standardValidation(ProviderStdEdits(reg), oeq, locale).map { newOeq =>
       val data = CloudProviderData(
         baseUrl = reg.baseUrl,
         iconUrl = reg.iconUrl,
@@ -131,11 +138,24 @@ object CloudProviderDB {
       case Invalid(e) => e.invalid[CloudProviderInstance].pure[DB]
     }
 
-  def createRegistrationToken: DB[String] = {
+  val createRegistrationToken: DB[String] = {
     LiftIO[DB].liftIO(IO {
       val newToken = UUID.randomUUID().toString
       tokenCache.put(newToken, newToken)
       newToken
     })
   }
+
+  val allProviders: Stream[DB, CloudProviderDetails] = {
+    EntityDB.readAll[CloudProviderDB].map { cp =>
+      val oeq = cp.entity
+      CloudProviderDetails(id = oeq.uuid.id,
+                           name = oeq.name,
+                           description = oeq.description,
+                           cp.data.iconUrl)
+    }
+  }
+
+  def deleteRegistration(id: UUID): DB[Unit] =
+    EntityDB.delete(id).compile.drain
 }

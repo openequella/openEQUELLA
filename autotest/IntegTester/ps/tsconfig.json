@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "outDir": "dist/",
+    "module": "CommonJS",
+    "target": "es6",
+    "lib": ["es6", "dom"],
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "allowJs": true,
+    "checkJs": true,
+    "jsx": "react",
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "noErrorTruncation": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "noUnusedLocals": true,
+    "baseUrl": "."
+  },
+  "include": ["tsrc/**/*"],
+  "exclude": [
+    "node_modules",
+    "build",
+    "scripts",
+    "acceptance-tests",
+    "webpack",
+    "jest",
+    "src/setupTests.ts"
+  ]
+}

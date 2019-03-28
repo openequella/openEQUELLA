@@ -17,16 +17,18 @@
 package com.tle.web.api.cloudprovider
 
 import java.util.UUID
-
+import cats.syntax.functor._
 import com.tle.core.cloudproviders._
-import com.tle.core.db.RunWithDB
+import com.tle.core.db._
 import com.tle.core.settings.SettingsDB
+import com.tle.legacy.LegacyGuice
 import com.tle.web.api.{ApiHelper, EntityPaging}
-import io.lemonlabs.uri.{Uri, Url}
-import io.lemonlabs.uri.parsing.{UriParser, UrlParser}
+import com.tle.web.settings.SettingsList
+import io.lemonlabs.uri.Url
+import io.lemonlabs.uri.parsing.UrlParser
 import io.swagger.annotations.{Api, ApiOperation}
-import javax.ws.rs.core.{Context, MediaType, Response, UriInfo}
 import javax.ws.rs._
+import javax.ws.rs.core.{Context, MediaType, Response, UriBuilder, UriInfo}
 
 case class CloudProviderForward(url: String)
 
@@ -44,9 +46,18 @@ class CloudProviderApi {
   def register(@QueryParam(TokenParam) @DefaultValue("") regtoken: String,
                registration: CloudProviderRegistration): Response = {
     ApiHelper.runAndBuild {
-      CloudProviderDB.register(regtoken, registration).map { validatedInstance =>
-        ApiHelper.validationOrEntity(
-          validatedInstance.map(inst => CloudProviderRegistrationResponse(inst, "http://")))
+      for {
+        uc                <- getContext
+        validatedInstance <- CloudProviderDB.register(regtoken, registration)
+      } yield {
+        val forwardUrl = UriBuilder
+          .fromUri(uc.inst.getUrlAsUri)
+          .path(SettingsList.CloudProviderListPage)
+          .build()
+          .toString
+        ApiHelper.validationOrEntity(validatedInstance.map { inst =>
+          CloudProviderRegistrationResponse(inst, forwardUrl)
+        })
       }
     }
   }
@@ -55,8 +66,9 @@ class CloudProviderApi {
   @Path("register/init")
   @ApiOperation(
     value = "Generate a cloud provider registration URL",
-    notes = "Given a URL to a cloud provider, generate a response with that URL and an extra parameter ('registration') containing " +
-      "a valid Cloud Provider callback URL"
+    notes = "Given a URL to a cloud provider, generate a response with that URL and two extra parameters.\n" +
+      "'institution' - The institution URL to register against\n" +
+      "'register' - a relative URI which the cloud provider should post it's registration to."
   )
   def prepareRegistration(@QueryParam("url") @DefaultValue("") providerUrl: String,
                           @Context uriInfo: UriInfo): CloudProviderForward = {
@@ -67,13 +79,17 @@ class CloudProviderApi {
             for {
               token <- CloudProviderDB.createRegistrationToken
             } yield {
-              val returnUrl = uriInfo.getBaseUriBuilder
+              val returnUrl = ApiHelper
+                .apiUriBuilder()
                 .path(classOf[CloudProviderApi])
-                .path("register")
+                .path(classOf[CloudProviderApi], "register")
                 .queryParam(TokenParam, token)
                 .build()
                 .toString
-              CloudProviderForward(u.addParam(RegistrationParam, returnUrl).toString)
+              CloudProviderForward(
+                u.addParam(RegistrationParam, returnUrl)
+                  .addParam(InstUrl, LegacyGuice.urlService.getBaseInstitutionURI.toString)
+                  .toString)
             }
           }
         }
@@ -82,30 +98,27 @@ class CloudProviderApi {
 
   }
 
+  @DELETE
+  @Path("provider/{uuid}")
+  @ApiOperation(value = "Delete a cloud provider")
+  def deleteRegistration(@PathParam("uuid") uuid: UUID): Response = ApiHelper.runAndBuild {
+    CloudProviderDB.deleteRegistration(uuid).as(Response.noContent())
+  }
+
   @GET
   @Path("")
   @ApiOperation("List current cloud providers")
   def list(): EntityPaging[CloudProviderDetails] = {
-    EntityPaging.allResults(
-      Iterable(
-        CloudProviderDetails(
-          UUID.randomUUID(),
-          "Edalex",
-          Some("The Edalex cloud provider"),
-          Some(
-            "https://static.wixstatic.com/media/ed3f73_4a88d00cc545486eb879e2752339390e~mv2.png/v1/fill/w_454,h_331,al_c,usm_0.66_1.00_0.01/edalexcloud_edited.png")
-        ),
-        CloudProviderDetails(UUID.randomUUID(),
-                             "Penghai solutions",
-                             Some("Penghai provides clouds"),
-                             None),
-        CloudProviderDetails(UUID.randomUUID(), "Doolsoft", None, None),
-      )
-    )
+    RunWithDB.execute {
+      ApiHelper.allEntities {
+        CloudProviderDB.allProviders
+      }
+    }
   }
 }
 
 object CloudProviderApi {
   final val TokenParam        = "token"
-  final val RegistrationParam = "registration"
+  final val InstUrl           = "institution"
+  final val RegistrationParam = "register"
 }

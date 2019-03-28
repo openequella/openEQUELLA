@@ -6,7 +6,6 @@ import Data.Array (head, mapMaybe)
 import Data.Maybe (fromJust)
 import Data.Tuple (Tuple(..))
 import Effect (Effect)
-import Effect.Class.Console (log)
 import Foreign.Object (Object)
 import Foreign.Object as Object
 import IntegTester (integ)
@@ -29,7 +28,6 @@ main = unsafePartial $ void $ do
     w <- window
     doc <- document w
     path <- location w >>= pathname
-    log path
     rootElem <- fromJust <$> getElementById "app" (toNonElementParentNode $ toDocument doc)
     flip render rootElem $ case path of
         _ ->  (integ postFirst)

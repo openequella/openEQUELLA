@@ -133,7 +133,7 @@ abstract class StatefulProperties(name: String) extends Properties(name: String)
             if (failedAt == previousCommands) System.err.println("*** Failed on next command ***")
             System.err.println(c.toString)
           }
-          runCommandInBrowser(c, s, b).flatMap { r =>
+          Try(runCommandInBrowser(c, s, b)).fold(Prop.exception(_), identity).flatMap { r =>
             if (!r.success) {
               val tc       = b.page.ctx.getTestConfig
               val filename = (name + " " + shortName).replace(' ', '_')
