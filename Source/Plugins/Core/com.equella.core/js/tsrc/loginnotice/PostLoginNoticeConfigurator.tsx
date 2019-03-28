@@ -4,8 +4,7 @@ import {
   DialogContent,
   DialogContentText,
   Grid,
-  TextField,
-  Typography
+  TextField
 } from "@material-ui/core";
 import { commonString } from "../util/commonstrings";
 import {
@@ -130,9 +129,6 @@ class PostLoginNoticeConfigurator extends React.Component<
     const Dialogs = this.Dialogs;
     return (
       <SettingsMenuContainer>
-        <Typography color="textSecondary" variant="subtitle1">
-          {strings.postlogin.label}
-        </Typography>
         <Grid id="postLoginConfig" container spacing={8} direction="column">
           <Grid item>
             <TextField

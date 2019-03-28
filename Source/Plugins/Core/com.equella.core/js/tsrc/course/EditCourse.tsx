@@ -115,9 +115,9 @@ interface EditCourseState {
   editSecurity?: () => TargetListEntry[];
 }
 export const strings = prepLangStrings("courseedit", {
-  title: "Editing Course - %s",
+  title: "Editing course - %s",
   newtitle: "Creating new course",
-  tab: "Course Details",
+  tab: "Course details",
   name: {
     label: "Name",
     help: "Course name, e.g. Advanced EQUELLA studies"
@@ -137,19 +137,19 @@ export const strings = prepLangStrings("courseedit", {
     s: "Staff"
   },
   department: {
-    label: "Department Name"
+    label: "Department name"
   },
   citation: {
     label: "Citation"
   },
   startdate: {
-    label: "Start Date"
+    label: "Start date"
   },
   enddate: {
-    label: "End Date"
+    label: "End date"
   },
   version: {
-    label: "Version Selection",
+    label: "Version selection",
     default: "Institution default",
     forcecurrent:
       "Force selection to be the resource version the user is viewing",
@@ -163,7 +163,7 @@ export const strings = prepLangStrings("courseedit", {
       "When accessing EQUELLA via this course in an external system, all resources added to the external system will use this version selection strategy"
   },
   students: {
-    label: "Unique Individuals"
+    label: "Unique individuals"
   },
   archived: {
     label: "Archived"

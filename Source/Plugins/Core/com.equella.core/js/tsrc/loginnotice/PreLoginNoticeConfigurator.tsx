@@ -158,7 +158,6 @@ class PreLoginNoticeConfigurator extends React.Component<
         <Typography color="textSecondary" variant="subtitle1">
           {strings.scheduling.title}
         </Typography>
-
         <RadioGroup
           row
           value={ScheduleTypeSelection[this.state.scheduleType]}
@@ -228,9 +227,6 @@ class PreLoginNoticeConfigurator extends React.Component<
     const ScheduleSettings = this.ScheduleSettings;
     return (
       <SettingsMenuContainer>
-        <Typography color="textSecondary" variant="subtitle1">
-          {strings.prelogin.label}
-        </Typography>
         <Grid id="preLoginConfig" container spacing={8} direction="column">
           <Grid item>
             <RichTextEditor
