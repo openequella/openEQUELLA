@@ -30,6 +30,7 @@ import com.tle.core.settings.service.ConfigurationService;
 import com.tle.exceptions.PrivilegeRequiredException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import javax.inject.Inject;
@@ -124,7 +125,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
   public String uploadPreLoginNoticeImage(InputStream imageFile, String name) throws IOException {
     checkPermissions();
     CustomisationFile customisationFile = new CustomisationFile();
-    String nameToUse = iterateImageNameIfDuplicateExists(name);
+    String nameToUse = iterateImageNameIfDuplicateExists(URLEncoder.encode(name, "UTF-8"));
     fileSystemService.write(
         customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameToUse, imageFile, false);
     return nameToUse;
@@ -132,7 +133,8 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
 
   private String iterateImageNameIfDuplicateExists(String name) {
     CustomisationFile customisationFile = new CustomisationFile();
-    String nameWithoutExtension = FilenameUtils.removeExtension(name);
+    String nameWithoutExtension =
+        FilenameUtils.removeExtension(name).replaceAll("[^a-zA-Z0-9\\s+]", "");
     String extension = '.' + FilenameUtils.getExtension(name);
     if (fileSystemService.fileExists(
         customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameWithoutExtension + extension)) {
