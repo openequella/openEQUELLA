@@ -41,7 +41,7 @@ require("tinymce/plugins/visualchars");
 require("tinymce/plugins/wordcount");
 
 interface RichTextEditorProps {
-  htmlInput: string;
+  htmlInput?: string;
   onStateChange(html: string): void;
   imageUploadCallBack?(file: any): AxiosPromise<ImageReturnType>;
 }
