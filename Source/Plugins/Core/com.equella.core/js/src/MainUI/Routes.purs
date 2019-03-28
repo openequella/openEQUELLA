@@ -29,7 +29,8 @@ data Route =
     SearchConfigsPage |
     ThemePage |
     NewCourse |
-    LoginNoticeConfigPage
+    LoginNoticeConfigPage |
+    CloudProviderListPage
 
 navGlobals :: forall route. {nav::PushStateInterface, preventNav :: Ref (EffectFn1 route Boolean)}
 navGlobals = unsafePerformEffect do 
@@ -59,6 +60,7 @@ routeMatch =
         CoursesPage <$ (lit "course") <|>
         ThemePage <$ (lit "themeconfiguration") <|>
         LoginNoticeConfigPage <$ (lit "loginconfiguration") <|>
+        CloudProviderListPage <$ (lit "cloudprovider") <|>
         SearchConfigsPage <$ (lit "searchconfigs"))
         <|> (LegacyPage <$> legacyRoute) 
 
@@ -106,6 +108,7 @@ routeURI r = (case r of
     CourseEdit cid -> "page/course/" <> cid <> "/edit"
     ViewItemPage (ItemRef uuid version) -> "integ/gen/" <> uuid <> "/" <> show version
     SearchConfigsPage -> "page/searchconfigs"
+    CloudProviderListPage -> "page/cloudprovider"
     LegacyPage leg -> legacyURIToString leg
   )
 

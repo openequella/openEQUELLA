@@ -23,7 +23,8 @@ tsBridge = {
     routes : unsafeCoerce $ {
         "CoursesPage": CoursesPage, 
         "CourseEdit": CourseEdit, 
-        "NewCourse": NewCourse
+        "NewCourse": NewCourse,
+        "CloudProviderListPage" : CloudProviderListPage
         },
     router : routeHref,
     "Template" : unsafeCoerce templateClass,

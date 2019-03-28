@@ -35,6 +35,7 @@ import com.tle.core.plugins.PluginTracker;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.DebugSettings;
 import com.tle.web.api.LegacyContentApi;
+import com.tle.web.api.cloudprovider.CloudProviderApi;
 import com.tle.web.api.institution.AclResource;
 import com.tle.web.api.institution.GdprResource;
 import com.tle.web.api.item.SelectionApi;
@@ -108,6 +109,8 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
     PluginBeanLocator coreLocator = pluginService.getBeanLocator("com.equella.core");
     Set<Class<?>> classes = application.getClasses();
 
+    registry.addSingletonResource(new CloudProviderApi());
+    classes.add(CloudProviderApi.class);
     registry.addSingletonResource(new SettingsResource());
     classes.add(SettingsResource.class);
     registry.addSingletonResource(new LanguageResource());

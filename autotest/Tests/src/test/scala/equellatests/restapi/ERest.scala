@@ -11,11 +11,12 @@ import org.asynchttpclient.DefaultAsyncHttpClientConfig
 import org.asynchttpclient.proxy.ProxyServer
 import org.http4s.circe._
 import org.http4s.client.asynchttpclient.AsyncHttpClient
-import org.http4s.client.blaze.PooledHttp1Client
-import org.http4s.{Cookie, Headers, Method, Request, Response, Status, Uri, headers}
+import org.http4s.headers.Cookie
+import org.http4s.{Headers, Method, Request, RequestCookie, Response, Status, Uri, headers}
 
 import scala.collection.JavaConverters._
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
+import io.circe.parser._
 
 sealed trait ERestA[A]
 
@@ -28,16 +29,18 @@ case class ERequest[A](method: Method,
 case class ERelativeUri(fullUri: Uri, base: Uri) extends ERestA[Option[Uri]]
 
 object ERest {
+  implicit val cs = IO.contextShift(ExecutionContext.global)
+
   val configBuilder = new DefaultAsyncHttpClientConfig.Builder(AsyncHttpClient.defaultConfig)
-  val client = {
+  val (client, shutdownClient) = {
     if (TestConfig.getConfigProps.hasPath("proxy")) {
       val p = TestConfig.getConfigProps.getConfig("proxy")
       configBuilder.setProxyServer(new ProxyServer.Builder(p.getString("host"), p.getInt("port")))
-      AsyncHttpClient[IO](configBuilder.build())
-    } else PooledHttp1Client[IO]()
-  }
+      AsyncHttpClient.allocate[IO](configBuilder.build())
+    } else AsyncHttpClient.allocate[IO]()
+  }.unsafeRunSync()
 
-  case class ReqContext(base: Uri, cookies: NonEmptyList[Cookie])
+  case class ReqContext(base: Uri, cookies: NonEmptyList[RequestCookie])
 
   type PageIO[A] = Kleisli[IO, ReqContext, A]
 
@@ -68,7 +71,12 @@ object ERest {
 
   def run[A](ctx: PageContext)(er: ERest[A]): A = {
     val cookies = NonEmptyList.fromListUnsafe(
-      ctx.getDriver.manage().getCookies.asScala.map(c => Cookie(c.getName, c.getValue)).toList)
+      ctx.getDriver
+        .manage()
+        .getCookies
+        .asScala
+        .map(c => RequestCookie(c.getName, c.getValue))
+        .toList)
     val reqctx = ReqContext(Uri.unsafeFromString(ctx.getBaseUrl), cookies)
     er.foldMap(pureCompiler).run(reqctx).unsafeRunSync()
   }
@@ -97,6 +105,24 @@ object ERest {
              uri,
              params,
              Some(a.asJson),
-             resp => resp.body.drain.run.map(_ => (resp.status, resp.headers)))
+             resp => resp.body.compile.drain.map(_ => (resp.status, resp.headers)))
   }
+
+  def postEmpty[A](uri: Uri, params: Map[String, Seq[String]] = Map.empty)(
+      implicit dec: Decoder[A]): ERest[A] =
+    Free.liftF {
+      ERequest(
+        Method.POST,
+        uri,
+        params,
+        None,
+        resp =>
+          resp.body
+            .through(fs2.text.utf8Decode)
+            .compile
+            .lastOrError
+            .map(parse)
+            .map(_.flatMap(dec.decodeJson).fold(throw _, identity))
+      )
+    }
 }
