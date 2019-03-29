@@ -5,7 +5,8 @@ import org.scalacheck.{Arbitrary, Gen}
 case class RandomWord(word: String, cased: String)
 
 object RandomWord {
-  implicit val arbWord = Arbitrary(for {
+
+  val word = for {
     sz    <- Gen.choose(5, 10)
     chars <- Gen.listOfN(sz, Gen.alphaChar)
     ct    <- Gen.choose(0, 2)
@@ -17,5 +18,7 @@ object RandomWord {
       case _ => nc.toUpperCase
     }
     RandomWord(nc, cased)
-  })
+  }
+
+  implicit val arbWord = Arbitrary(word)
 }

@@ -61,8 +61,9 @@ object CoreSettingsRest {
 }
 
 object SettingsList {
-  val General     = "general"
-  val Integration = "integration"
+  val General               = "general"
+  val Integration           = "integration"
+  val CloudProviderListPage = "page/cloudprovider"
 
   def +=(setting: EditableSettings): Unit = synchronized {
     allSettings += setting
@@ -86,6 +87,15 @@ object SettingsList {
     "loginnotice.settings.title",
     "loginnotice.settings.description",
     "page/loginconfiguration",
+    () => !aclManager.filterNonGrantedPrivileges("EDIT_SYSTEM_SETTINGS").isEmpty
+  )
+
+  val cloudProviderSettings = CoreSettingsPage(
+    "cloudprovider",
+    Integration,
+    "cloudprovider.settings.title",
+    "cloudprovider.settings.description",
+    CloudProviderListPage,
     () => !aclManager.filterNonGrantedPrivileges("EDIT_SYSTEM_SETTINGS").isEmpty
   )
 
@@ -180,6 +190,7 @@ object SettingsList {
     externalToolsSettings,
     uiSettings,
     loginNoticeSettings,
+    cloudProviderSettings,
     CoreSettingsPage("shortcuts",
                      General,
                      "shortcuts.settings.title",

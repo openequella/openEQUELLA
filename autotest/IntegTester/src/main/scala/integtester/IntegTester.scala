@@ -3,41 +3,43 @@
   */
 package integtester
 
-import cats.effect.IO
+import cats.effect.{ExitCode, IO, IOApp}
 import io.circe.syntax._
-import fs2._
+import org.http4s._
 import org.http4s.dsl.Http4sDsl
-import org.http4s.server.staticcontent._
+import org.http4s.headers._
 import org.http4s.server.blaze.BlazeBuilder
-import org.http4s.server.staticcontent.FileService.Config
-import org.http4s.{HttpService, MediaType, Request, Response, UrlForm}
+import org.http4s.server.staticcontent._
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 
-object IntegTester extends StreamApp[IO] with Http4sDsl[IO] {
+object IntegTester extends IOApp with Http4sDsl[IO] {
 
   val Logger = LoggerFactory.getLogger("IntegTester")
 
+  val integDocument = {
+    val inpStream = getClass.getResourceAsStream(s"/www/integtester.html")
+    val htmlDoc   = Jsoup.parse(inpStream, "UTF-8", "")
+    inpStream.close()
+    htmlDoc
+  }
+
   def appHtml(request: Request[IO], dir: String = ""): IO[Response[IO]] = request.decode[UrlForm] {
     form =>
-      val formJson = (form.values ++ request.uri.query.multiParams).asJson.noSpaces
-      Ok(s"""<html>
-          <head>
-              <link rel="stylesheet" href="${dir}styles.css" type="text/css">
-              <title>Integration Tester</title>
-          </head>
-          <body>
-            <div id="app"></div>
-            <script>var postValues = ${formJson}</script>
-            <script src="${dir}app.js"></script>
-          </body>
-        </html>""").withType(MediaType.`text/html`)
+      val formJson =
+        (form.values.mapValues(_.toVector) ++ request.uri.query.multiParams).asJson.noSpaces
+      val doc = integDocument.clone()
+      doc.body().insertChildren(0, new Element("script").text(s"var postValues = $formJson"))
+      Ok(doc.toString, `Content-Type`(MediaType.text.html))
   }
 
   def echoServer(request: Request[IO]): IO[Response[IO]] = {
     val echo = request.uri.query.params.get("echo")
-    Ok(s"""<html>
+    Ok(
+      s"""<html>
       <head>
         <link rel="stylesheet" href="styles.css" type="text/css">
           <title>Echo Server</title>
@@ -59,28 +61,26 @@ object IntegTester extends StreamApp[IO] with Http4sDsl[IO] {
               <span id="echoed">${echo.getOrElse("")}</span>
             </div>
         </body>
-      </html>""").withType(MediaType.`text/html`)
+      </html>""",
+      `Content-Type`(MediaType.text.html)
+    )
   }
 
-  val appService = HttpService[IO] {
+  val appService = HttpRoutes.of[IO] {
     case request @ (GET | POST) -> Root / "index.html"        => appHtml(request)
     case request @ (GET | POST) -> Root / "echo" / "index.do" => echoServer(request)
   }
 
-  val filePath = sys.props.get("files")
-
-  def stream(args: List[String], requestShutdown: IO[Unit]) =
+  def stream(args: List[String]) =
     BlazeBuilder[IO]
       .bindHttp(8083, "0.0.0.0")
-      .mountService(appService)
-      .mountService(filePath.fold(resourceService[IO](ResourceService.Config("/www"))) { p =>
-        Logger.info(s"Serving from $p")
-        fileService(Config(p))
-      })
+      .mountService(appService, "")
+      .mountService(resourceService[IO](ResourceService.Config("/www", ExecutionContext.global)),
+                    "/")
       .serve
 
   lazy val embeddedRunning: Boolean = {
-    stream(List.empty, IO.pure()).compile.drain.unsafeRunAsync(_ => ())
+    stream(List.empty).compile.drain.unsafeRunAsync(_ => ())
     true
   }
 
@@ -93,4 +93,12 @@ object IntegTester extends StreamApp[IO] with Http4sDsl[IO] {
     embeddedRunning
     "http://localhost:8083/echo"
   }
+
+  def providerRegistrationUrl: String = {
+    embeddedRunning
+    "http://localhost:8083/provider.html"
+  }
+
+  override def run(args: List[String]): IO[ExitCode] =
+    stream(args).compile.drain.map(_ => ExitCode.Success)
 }

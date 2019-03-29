@@ -7,8 +7,9 @@ name := "IntegTester"
 
 version := "1.0"
 
-val Http4sVersion = "0.18.14"
 val CirceVersion  = "0.9.3"
+val Http4sVersion = "0.20.0-M6"
+val jsoupVersion  = "1.11.3"
 
 scalaVersion := "2.12.6"
 scalacOptions += "-Ypartial-unification"
@@ -24,7 +25,8 @@ libraryDependencies ++= Seq(
 libraryDependencies ++= Seq(
   "org.http4s" %% "http4s-blaze-server" % Http4sVersion,
   "org.http4s" %% "http4s-dsl"          % Http4sVersion,
-  "org.slf4j"  % "slf4j-simple"         % "1.7.25"
+  "org.slf4j"  % "slf4j-simple"         % "1.7.25",
+  "org.jsoup"  % "jsoup"                % jsoupVersion
 )
 
 resourceGenerators in Compile += Def.task {
@@ -32,9 +34,10 @@ resourceGenerators in Compile += Def.task {
   val cached = FileFunction.cached(target.value / "pscache") { files =>
     Common.nodeInstall(baseJs)
     Common.nodeScript("build", baseJs)
-    val outDir       = (resourceManaged in Compile).value
-    val baseJsTarget = baseJs / "dist"
-    IO.copy((baseJsTarget ** ("*.js" | "*.css" | "*.json")).pair(rebase(baseJsTarget, outDir)))
+    val outDir       = (resourceManaged in Compile).value / "www"
+    val baseJsTarget = baseJs / "target/www"
+    IO.copy((baseJsTarget ** "*").pair(rebase(baseJsTarget, outDir)))
   }
-  cached((baseJs / "src" ** "*").get.toSet).toSeq
+  cached(
+    ((baseJs / "src" ** "*").get ++ (baseJs / "tsrc" ** "*").get ++ (baseJs / "www" ** "*").get).toSet).toSeq
 }.taskValue

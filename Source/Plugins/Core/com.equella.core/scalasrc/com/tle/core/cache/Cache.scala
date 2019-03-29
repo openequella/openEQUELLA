@@ -68,13 +68,11 @@ object Cache extends CacheInvalidation {
       StateT.inspectF { s: Connection =>
         val key = c.key(uc)
         concurrentMap
-          .computeIfAbsent(
-            key,
-            k =>
-              Async
-                .memoize(
-                  RunWithDB.executeTransaction(uc.ds.getConnection(), c.query.run(uc).map(IO.pure)))
-                .unsafeRunSync())
+          .computeIfAbsent(key, { k =>
+            Async
+              .memoize(RunWithDB.executeTransaction(uc.ds, c.query.run(uc).map(IO.pure)))
+              .unsafeRunSync()
+          })
           .asInstanceOf[IO[A]]
       }
     }
