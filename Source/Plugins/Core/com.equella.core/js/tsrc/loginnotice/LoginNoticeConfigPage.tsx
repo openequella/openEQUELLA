@@ -154,7 +154,7 @@ class LoginNoticeConfigPage extends React.Component<
         footer={
           <Paper>
             <Button
-              id="preApplyButton"
+              id="SaveButton"
               style={{ right: "10px", bottom: "10px", position: "fixed" }}
               onClick={this.handleSubmitButton}
               variant="contained"
