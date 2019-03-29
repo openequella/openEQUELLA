@@ -9,7 +9,7 @@ import {
 } from "../api/errors";
 import PreLoginNoticeConfigurator from "./PreLoginNoticeConfigurator";
 import PostLoginNoticeConfigurator from "./PostLoginNoticeConfigurator";
-import { Button, Paper, Tabs } from "@material-ui/core";
+import { Button, Tabs } from "@material-ui/core";
 import Tab from "@material-ui/core/Tab";
 import { NotificationType, strings } from "./LoginNoticeModule";
 import { commonString } from "../util/commonstrings";
@@ -152,17 +152,15 @@ class LoginNoticeConfigPage extends React.Component<
         }
         errorResponse={this.state.error}
         footer={
-          <Paper>
-            <Button
-              id="SaveButton"
-              style={{ right: "10px", bottom: "10px", position: "fixed" }}
-              onClick={this.handleSubmitButton}
-              variant="contained"
-              size="large"
-            >
-              {commonString.action.save}
-            </Button>
-          </Paper>
+          <Button
+            id="SaveButton"
+            style={{ right: "10px", bottom: "10px", position: "fixed" }}
+            onClick={this.handleSubmitButton}
+            variant="contained"
+            size="large"
+          >
+            {commonString.action.save}
+          </Button>
         }
       >
         <Configurators />
