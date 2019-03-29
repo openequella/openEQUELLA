@@ -73,7 +73,6 @@ class PreLoginNoticeConfigurator extends React.Component<
           this.props.notify(NotificationType.Clear);
           this.setState({
             db: this.state.current
-            // dbHtml: this.state.html
           });
         })
         .catch((error: AxiosError) => {
