@@ -99,8 +99,6 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     Elements imgList = Jsoup.parse(notice).getElementsByTag("img");
     List<String> srcList = imgList.eachAttr("src");
     for (FileEntry imageFile : fileNameList) {
-      System.out.println("SRCLIST" + URLUtils.basicUrlDecode(srcList.toString()));
-      System.out.println(URLUtils.basicUrlDecode(imageFile.getName()));
       boolean imageFileUsed = false;
       for (String src : srcList) {
         if (URLUtils.basicUrlDecode(src).contains(URLUtils.basicUrlDecode(imageFile.getName()))) {
