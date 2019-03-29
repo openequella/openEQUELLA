@@ -24,7 +24,8 @@ tsBridge = {
         "CoursesPage": CoursesPage, 
         "CourseEdit": CourseEdit, 
         "NewCourse": NewCourse,
-        "SettingsPage": SettingsPage
+        "SettingsPage": SettingsPage,
+        "CloudProviderListPage" : CloudProviderListPage
         },
     router : routeHref,
     "Template" : unsafeCoerce templateClass,
