@@ -19,6 +19,7 @@ package com.tle.core.settings.loginnotice.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tle.common.Check;
+import com.tle.common.URLUtils;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.core.filesystem.CustomisationFile;
 import com.tle.core.guice.Bind;
@@ -30,18 +31,21 @@ import com.tle.core.settings.service.ConfigurationService;
 import com.tle.exceptions.PrivilegeRequiredException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLEncoder;
 import java.time.ZonedDateTime;
 import java.util.Collections;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.BadRequestException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.select.Elements;
 
 @Singleton
 @Bind(LoginNoticeService.class)
 public class LoginNoticeServiceImpl implements LoginNoticeService {
+
   @Inject TLEAclManager tleAclManager;
   @Inject ConfigurationService configurationService;
   @Inject FileSystemService fileSystemService;
@@ -92,8 +96,18 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     CustomisationFile customisationFile = new CustomisationFile();
     FileEntry[] fileNameList =
         fileSystemService.enumerate(customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME, null);
+    Elements imgList = Jsoup.parse(notice).getElementsByTag("img");
+    List<String> srcList = imgList.eachAttr("src");
     for (FileEntry imageFile : fileNameList) {
-      if (!notice.contains(imageFile.getName())) {
+      System.out.println("SRCLIST" + URLUtils.basicUrlDecode(srcList.toString()));
+      System.out.println(URLUtils.basicUrlDecode(imageFile.getName()));
+      boolean imageFileUsed = false;
+      for (String src : srcList) {
+        if (URLUtils.basicUrlDecode(src).contains(URLUtils.basicUrlDecode(imageFile.getName()))) {
+          imageFileUsed = true;
+        }
+      }
+      if (!imageFileUsed) {
         fileSystemService.removeFile(
             customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + imageFile.getName());
       }
@@ -125,7 +139,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
   public String uploadPreLoginNoticeImage(InputStream imageFile, String name) throws IOException {
     checkPermissions();
     CustomisationFile customisationFile = new CustomisationFile();
-    String nameToUse = iterateImageNameIfDuplicateExists(URLEncoder.encode(name, "UTF-8"));
+    String nameToUse = iterateImageNameIfDuplicateExists(name);
     fileSystemService.write(
         customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameToUse, imageFile, false);
     return nameToUse;
@@ -133,8 +147,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
 
   private String iterateImageNameIfDuplicateExists(String name) {
     CustomisationFile customisationFile = new CustomisationFile();
-    String nameWithoutExtension =
-        FilenameUtils.removeExtension(name).replaceAll("[^a-zA-Z0-9\\s+]", "");
+    String nameWithoutExtension = FilenameUtils.removeExtension(name);
     String extension = '.' + FilenameUtils.getExtension(name);
     if (fileSystemService.fileExists(
         customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameWithoutExtension + extension)) {
