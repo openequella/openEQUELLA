@@ -1,7 +1,6 @@
 import * as React from "react";
 import { ChangeEvent } from "react";
 import {
-  Button,
   FormControl,
   FormControlLabel,
   Grid,
@@ -9,7 +8,6 @@ import {
   RadioGroup,
   Typography
 } from "@material-ui/core";
-import { commonString } from "../util/commonstrings";
 import {
   clearPreLoginNotice,
   emptyTinyMCEString,
@@ -29,6 +27,7 @@ import { DateTimePicker } from "material-ui-pickers";
 interface PreLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
   notify: (notificationType: NotificationType) => void;
+  submit: boolean;
 }
 
 interface PreLoginNoticeConfiguratorState {
@@ -56,6 +55,15 @@ class PreLoginNoticeConfigurator extends React.Component<
         endDate: new Date()
       }
     };
+  }
+
+  componentWillReceiveProps(
+    nextProps: Readonly<PreLoginNoticeConfiguratorProps>,
+    nextContext: any
+  ): void {
+    if (nextProps.submit != this.props.submit) {
+      this.handleSubmitPreNotice();
+    }
   }
 
   handleSubmitPreNotice = () => {
@@ -216,18 +224,6 @@ class PreLoginNoticeConfigurator extends React.Component<
           </Grid>
           <Grid item>
             <ScheduleSettings />
-          </Grid>
-          <Grid item container spacing={8} direction="row-reverse">
-            <Grid item>
-              <Button
-                id="preApplyButton"
-                onClick={this.handleSubmitPreNotice}
-                variant="contained"
-                disabled={this.areButtonsEnabled()}
-              >
-                {commonString.action.save}
-              </Button>
-            </Grid>
           </Grid>
         </Grid>
       </SettingsMenuContainer>

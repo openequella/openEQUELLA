@@ -9,9 +9,10 @@ import {
 } from "../api/errors";
 import PreLoginNoticeConfigurator from "./PreLoginNoticeConfigurator";
 import PostLoginNoticeConfigurator from "./PostLoginNoticeConfigurator";
-import { Tabs } from "@material-ui/core";
+import { Button, Paper, Tabs } from "@material-ui/core";
 import Tab from "@material-ui/core/Tab";
 import { NotificationType, strings } from "./LoginNoticeModule";
+import { commonString } from "../util/commonstrings";
 
 interface LoginNoticeConfigPageProps {
   bridge: Bridge;
@@ -22,6 +23,8 @@ interface LoginNoticeConfigPageState {
   notificationOpen: boolean;
   error?: ErrorResponse;
   selectedTab: number;
+  submitPreNotice: boolean;
+  submitPostNotice: boolean;
 }
 
 class LoginNoticeConfigPage extends React.Component<
@@ -36,7 +39,9 @@ class LoginNoticeConfigPage extends React.Component<
     notifications: NotificationType.Save,
     notificationOpen: false,
     error: undefined,
-    selectedTab: 0
+    selectedTab: 0,
+    submitPreNotice: false,
+    submitPostNotice: false
   };
 
   handleError = (error: AxiosError) => {
@@ -101,6 +106,7 @@ class LoginNoticeConfigPage extends React.Component<
           <PreLoginNoticeConfigurator
             handleError={this.handleError}
             notify={this.notify}
+            submit={this.state.submitPreNotice}
           />
         );
       default:
@@ -108,18 +114,31 @@ class LoginNoticeConfigPage extends React.Component<
           <PostLoginNoticeConfigurator
             handleError={this.handleError}
             notify={this.notify}
+            submit={this.state.submitPostNotice}
           />
         );
     }
   };
 
+  handleSubmitButton = () => {
+    switch (this.state.selectedTab) {
+      case 0:
+        this.setState({ submitPreNotice: !this.state.submitPreNotice });
+        break;
+      default:
+        this.setState({ submitPostNotice: !this.state.submitPostNotice });
+        break;
+    }
+  };
+
   render() {
-    const { Template } = this.props.bridge;
+    const { Template, routes } = this.props.bridge;
     const Notifications = this.Notifications;
     const Configurators = this.Configurators;
     return (
       <Template
         title={strings.title}
+        backRoute={routes.SettingsPage}
         fixedViewPort
         tabs={
           <Tabs
@@ -132,6 +151,19 @@ class LoginNoticeConfigPage extends React.Component<
           </Tabs>
         }
         errorResponse={this.state.error}
+        footer={
+          <Paper>
+            <Button
+              id="preApplyButton"
+              style={{ right: "10px", bottom: "10px", position: "fixed" }}
+              onClick={this.handleSubmitButton}
+              variant="contained"
+              size="large"
+            >
+              {commonString.action.save}
+            </Button>
+          </Paper>
+        }
       >
         <Configurators />
         <Notifications />
