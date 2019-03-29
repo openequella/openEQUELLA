@@ -19,12 +19,7 @@ package com.tle.core.cloudproviders
 import java.util
 import java.util.UUID
 
-import com.tle.beans.cloudproviders.{
-  CloudConfigControl,
-  CloudConfigOption,
-  CloudControlDefinition,
-  CloudControlType
-}
+import com.tle.beans.cloudproviders._
 import com.tle.core.guice.Bind
 import com.tle.core.remoting.CloudProviderAdminService
 
@@ -33,8 +28,14 @@ import scala.collection.JavaConverters._
 @Bind(classOf[CloudProviderAdminService])
 class CloudProviderAdminServiceImpl extends CloudProviderAdminService {
 
-  val multiOptions =
-    Iterable(CloudConfigOption("First entry", "first"), CloudConfigOption("SecondEntry", "second"))
+  val multiOptions1 =
+    Iterable(CloudConfigOption("Yes", "yes"), CloudConfigOption("No", "no")).asJava
+
+  val multiOptions2 =
+    Iterable(CloudConfigOption("Bold", "bold"), CloudConfigOption("Italic", "italic")).asJava
+
+  val multiOptions3 =
+    Iterable(CloudConfigOption("Red", "red"), CloudConfigOption("Black", "black")).asJava
 
   override def listControls: util.List[CloudControlDefinition] = {
     val ctrl1 = CloudControlDefinition(
@@ -42,44 +43,45 @@ class CloudProviderAdminServiceImpl extends CloudProviderAdminService {
       "sample",
       "My control",
       "/icons/control.gif",
-      Iterable(
-        CloudConfigControl("path",
-                           "Target node",
-                           Some("Please select a target node"),
-                           CloudControlType.XPath,
-                           Iterable.empty,
+      List(
+        CloudControlConfig("path",
+                           "Please select a target node",
+                           "Please select a target node",
+                           CloudControlConfigType.XPath,
+                           Iterable.empty.asJava,
                            0,
                            1),
-        CloudConfigControl("plaintext",
-                           "A text entry",
-                           Some("This is some text"),
-                           CloudControlType.Textfield,
-                           Iterable.empty,
+        CloudControlConfig("plaintext",
+                           "Description",
+                           "This is some text",
+                           CloudControlConfigType.Textfield,
+                           Iterable.empty.asJava,
                            1,
                            1),
-        CloudConfigControl("choice",
-                           "A drop down",
-                           Some("This is mandatory"),
-                           CloudControlType.Dropdown,
-                           multiOptions,
+        CloudControlConfig("choice",
+                           "Display color",
+                           "This is mandatory",
+                           CloudControlConfigType.Dropdown,
+                           multiOptions3,
                            1,
                            1),
-        CloudConfigControl("checkbox",
-                           "Some checboxes",
-                           Some("Select some if you want"),
-                           CloudControlType.Check,
-                           multiOptions,
+        CloudControlConfig("checkbox",
+                           "Display style",
+                           "Select some if you want",
+                           CloudControlConfigType.Check,
+                           multiOptions2,
                            0,
                            Int.MaxValue),
-        CloudConfigControl("radio",
-                           "Some radioboxes",
-                           Some("Please select one of these"),
-                           CloudControlType.Radio,
-                           multiOptions,
+        CloudControlConfig("radio",
+                           "This item is mandatory",
+                           "Please select one of these",
+                           CloudControlConfigType.Radio,
+                           multiOptions1,
                            1,
                            1)
-      )
+      ).asJava
     )
+
     List(ctrl1: CloudControlDefinition).asJava
   }
 }

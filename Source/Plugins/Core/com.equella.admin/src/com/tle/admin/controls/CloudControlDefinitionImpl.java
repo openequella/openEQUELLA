@@ -17,12 +17,13 @@
 package com.tle.admin.controls;
 
 import com.dytech.edge.admin.wizard.model.Control;
-import com.dytech.edge.admin.wizard.model.CustomControlModel;
-import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.google.common.collect.ImmutableSet;
+import com.tle.admin.controls.cloudcontrol.CloudControlEditor;
+import com.tle.admin.controls.cloudcontrol.CloudControlModel;
 import com.tle.admin.controls.repository.ControlDefinition;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.beans.cloudproviders.CloudControlDefinition;
+import com.tle.common.wizard.controls.cloud.CloudControl;
 import java.util.Set;
 
 public class CloudControlDefinitionImpl implements ControlDefinition {
@@ -34,6 +35,10 @@ public class CloudControlDefinitionImpl implements ControlDefinition {
   public CloudControlDefinitionImpl(CloudControlDefinition def) {
     this.def = def;
     this.fullId = "cp." + def.providerId().toString() + "." + def.controlId();
+  }
+
+  public CloudControlDefinition getDef() {
+    return def;
   }
 
   @Override
@@ -78,14 +83,14 @@ public class CloudControlDefinitionImpl implements ControlDefinition {
 
   @Override
   public Control createControlModel() {
-    return new CustomControlModel<CustomControl>(this);
+    return new CloudControlModel(this);
   }
 
   @Override
   public Object createWrappedObject() {
 
-    CustomControl customControl = new CustomControl();
-    customControl.setClassType(getId());
-    return customControl;
+    CloudControl cloudControl = new CloudControl();
+    cloudControl.setClassType(getId());
+    return cloudControl;
   }
 }
