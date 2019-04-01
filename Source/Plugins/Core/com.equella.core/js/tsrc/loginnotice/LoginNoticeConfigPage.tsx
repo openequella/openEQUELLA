@@ -9,7 +9,14 @@ import {
 } from "../api/errors";
 import PreLoginNoticeConfigurator from "./PreLoginNoticeConfigurator";
 import PostLoginNoticeConfigurator from "./PostLoginNoticeConfigurator";
-import { Button, Tabs } from "@material-ui/core";
+import {
+  Button,
+  createStyles,
+  Tabs,
+  Theme,
+  withStyles,
+  WithStyles
+} from "@material-ui/core";
 import Tab from "@material-ui/core/Tab";
 import { NotificationType, strings } from "./LoginNoticeModule";
 import { commonString } from "../util/commonstrings";
@@ -25,8 +32,17 @@ interface LoginNoticeConfigPageState {
   selectedTab: number;
 }
 
+const styles = (theme: Theme) =>
+  createStyles({
+    floatingButton: {
+      right: theme.spacing.unit * 2,
+      bottom: theme.spacing.unit * 2,
+      position: "fixed"
+    }
+  });
+
 class LoginNoticeConfigPage extends React.Component<
-  LoginNoticeConfigPageProps,
+  LoginNoticeConfigPageProps & WithStyles<typeof styles>,
   LoginNoticeConfigPageState
 > {
   private readonly postLoginNoticeConfigurator: React.RefObject<
@@ -36,7 +52,7 @@ class LoginNoticeConfigPage extends React.Component<
     PreLoginNoticeConfigurator
   >;
 
-  constructor(props: LoginNoticeConfigPageProps) {
+  constructor(props: LoginNoticeConfigPageProps & WithStyles<typeof styles>) {
     super(props);
     this.preLoginNoticeConfigurator = React.createRef<
       PreLoginNoticeConfigurator
@@ -146,6 +162,7 @@ class LoginNoticeConfigPage extends React.Component<
 
   render() {
     const { Template, routes } = this.props.bridge;
+    const { classes } = this.props;
     const Notifications = this.Notifications;
     const Configurators = this.Configurators;
     return (
@@ -167,7 +184,7 @@ class LoginNoticeConfigPage extends React.Component<
         footer={
           <Button
             id="SaveButton"
-            style={{ right: "10px", bottom: "10px", position: "fixed" }}
+            className={classes.floatingButton}
             onClick={this.handleSubmitButton}
             variant="contained"
             size="large"
@@ -183,4 +200,4 @@ class LoginNoticeConfigPage extends React.Component<
   }
 }
 
-export default LoginNoticeConfigPage;
+export default withStyles(styles)(LoginNoticeConfigPage);
