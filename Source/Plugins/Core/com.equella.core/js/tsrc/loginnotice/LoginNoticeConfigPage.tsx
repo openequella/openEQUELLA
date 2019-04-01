@@ -21,7 +21,7 @@ import Tab from "@material-ui/core/Tab";
 import { NotificationType, strings } from "./LoginNoticeModule";
 import { commonString } from "../util/commonstrings";
 
-interface LoginNoticeConfigPageProps {
+interface LoginNoticeConfigPageProps extends WithStyles<typeof styles> {
   bridge: Bridge;
 }
 
@@ -42,7 +42,7 @@ const styles = (theme: Theme) =>
   });
 
 class LoginNoticeConfigPage extends React.Component<
-  LoginNoticeConfigPageProps & WithStyles<typeof styles>,
+  LoginNoticeConfigPageProps,
   LoginNoticeConfigPageState
 > {
   private readonly postLoginNoticeConfigurator: React.RefObject<
@@ -52,7 +52,7 @@ class LoginNoticeConfigPage extends React.Component<
     PreLoginNoticeConfigurator
   >;
 
-  constructor(props: LoginNoticeConfigPageProps & WithStyles<typeof styles>) {
+  constructor(props: LoginNoticeConfigPageProps) {
     super(props);
     this.preLoginNoticeConfigurator = React.createRef<
       PreLoginNoticeConfigurator
