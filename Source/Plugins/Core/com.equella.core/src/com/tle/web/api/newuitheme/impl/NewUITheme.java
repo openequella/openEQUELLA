@@ -22,6 +22,7 @@ public class NewUITheme {
   private String backgroundColor = "#fafafa";
   private String menuItemColor = "#ffffff";
   private String menuItemIconColor = "#000000";
+  private String menuItemTextColor = "#000000";
   private String primaryTextColor = "#000000";
   private String secondaryTextColor = "#000000";
   private int fontSize = 14;
@@ -56,6 +57,14 @@ public class NewUITheme {
 
   public void setMenuItemColor(String menuItemColor) {
     this.menuItemColor = menuItemColor;
+  }
+
+  public String getMenuItemTextColor() {
+    return menuItemTextColor;
+  }
+
+  public void setMenuItemTextColor(String menuItemTextColor) {
+    this.menuItemTextColor = menuItemTextColor;
   }
 
   public int getFontSize() {

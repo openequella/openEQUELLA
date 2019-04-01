@@ -28,6 +28,7 @@ interface IThemeSettings {
   secondaryColor: string;
   backgroundColor: string;
   menuItemColor: string;
+  menuItemTextColor: string;
   menuItemIconColor: string;
   primaryTextColor: string;
   secondaryTextColor: string;
@@ -110,6 +111,7 @@ class ThemePage extends React.Component<
     secondary: "",
     background: "",
     menu: "",
+    menuText: "",
     menuIcon: "",
     primaryText: "",
     secondaryText: "",
@@ -130,6 +132,7 @@ class ThemePage extends React.Component<
         primary: "#2196f3",
         secondary: "#ff9800",
         background: "#fafafa",
+        menuText: "#000000",
         menu: "#ffffff",
         menuIcon: "#000000",
         primaryText: "#000000",
@@ -145,6 +148,7 @@ class ThemePage extends React.Component<
       secondary: themeSettings.secondaryColor,
       background: themeSettings.backgroundColor,
       menu: themeSettings.menuItemColor,
+      menuText: themeSettings.menuItemTextColor,
       menuIcon: themeSettings.menuItemIconColor,
       primaryText: themeSettings.primaryTextColor,
       secondaryText: themeSettings.secondaryTextColor
@@ -172,6 +176,10 @@ class ThemePage extends React.Component<
 
   handleMenuIconChange = (color: string) => {
     this.setState({ menuIcon: color });
+  };
+
+  handleMenuTextChange = (color: string) => {
+    this.setState({ menuText: color });
   };
 
   handlePrimaryTextChange = (color: string) => {
@@ -204,6 +212,7 @@ class ThemePage extends React.Component<
         backgroundColor: this.state.background,
         menuItemColor: this.state.menu,
         menuItemIconColor: this.state.menuIcon,
+        menuItemTextColor: this.state.menuText,
         primaryTextColor: this.state.primaryText,
         secondaryTextColor: this.state.secondaryText,
         fontSize: 14
@@ -341,6 +350,11 @@ class ThemePage extends React.Component<
                   strings.colourschemesettings.sidebariconcolour,
                   this.handleMenuIconChange,
                   this.state.menuIcon
+                )}
+                {this.colorPicker(
+                  strings.colourschemesettings.sidebartextcolour,
+                  this.handleMenuTextChange,
+                  this.state.menuText
                 )}
               </Grid>
             </Grid>
