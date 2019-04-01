@@ -234,8 +234,8 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
 		for( Course course : allCourses )
 		{
-			// Only display courses that are available
-			if (Availability.YES.equals(course.getAvailability().getAvailable()))
+			// Display all courses if the archived flag is set, otherwise, just the 'available' ones
+			if (archived || Availability.YES.equals(course.getAvailability().getAvailable()))
 			{
 				final ConnectorCourse cc = new ConnectorCourse(course.getId());
 				cc.setCourseCode(course.getCourseId());
@@ -328,8 +328,13 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
 		final Content content = new Content();
 		content.setTitle(lmsLink.getName());
-		// Assumes BB displays HTML?  Otherwise we change true to false
-		content.setDescription(TextUtils.INSTANCE.ensureWrap(lmsLink.getDescription(),250, 250, true));
+		//TODO consider a nicer way to handle this.  Bb needs the description to be 250 chars or less
+		// Using TextUtils.INSTANCE.ensureWrap(lmsLink.getDescription(),250, 250, true) doesn't work
+		// because it still can produce a **raw** string longer than 250 characters.  Bb content link
+		// descriptions can handle html formatting.  Doesn't look there is a configuration to
+		// change the ensureWrap behavior - I'm reverting this so long descriptions won't block the integration.
+		final String lmsLinkDesc = lmsLink.getDescription();
+		content.setDescription(lmsLinkDesc.substring(0,(lmsLinkDesc.length() > 250) ? 250 : lmsLinkDesc.length()));
 
 		final Content.ContentHandler contentHandler = new Content.ContentHandler();
 		contentHandler.setId(Content.ContentHandler.RESOURCE_LTI_LINK);
@@ -345,7 +350,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 			null, content, Request.Method.POST);
 		LOGGER.trace("Returning a courseId = [" + courseId + "],  and folderId = [" + folderId + "]");
 		ConnectorFolder cf = new ConnectorFolder(folderId, new ConnectorCourse(courseId));
-		// TODO - Is there a better way to get the name of the folder and the course?
+		// CB:  Is there a better way to get the name of the folder and the course?
 		// AH:  Unfortunately not.  We could cache them, but it probably isn't worth the additional complexity
 		Content folder = getContentBean(connector, courseId, folderId);
 		cf.setName(folder.getTitle());
