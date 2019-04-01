@@ -269,7 +269,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       topBar = appBar {className: classes.appBar} $ catMaybes [
         Just $ toolbar {disableGutters: true} $ concat [
           guard hasMenu $> iconButton {
-              color: inherit, className: classes.navIconHide,
+              className: classes.navIconHide,
               onClick: d ToggleMenu } [ icon_ [D.text "menu" ] 
           ], [
             D.div [DP.className classes.titleArea] $ catMaybes [

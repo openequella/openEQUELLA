@@ -30,7 +30,7 @@ import Web.HTML.Window (document)
 
 foreign import themeSettings :: {primaryColor :: String, secondaryColor :: String,
                                 backgroundColor :: String,
-                                menuItemColor :: String, menuItemTextColor :: String, menuItemIconColor :: String, menuTextColor :: String, fontSize :: Int}
+                                menuItemColor :: String, menuItemIconColor :: String, primaryTextColor :: String, secondaryTextColor :: String, fontSize :: Int}
 
 
 type ClickableHref = {href::String, onClick :: EffectFn1 SyntheticMouseEvent Unit}
@@ -52,15 +52,13 @@ ourTheme = createMuiTheme {
       active: themeSettings.menuItemIconColor
     },
     text: {
-      secondary: themeSettings.menuTextColor
+      primary: themeSettings.primaryTextColor,
+      secondary: themeSettings.secondaryTextColor
     }
   },
   typography: {
     useNextVariants: true,
-    fontSize: themeSettings.fontSize,
-    subheading: {
-      color: themeSettings.menuItemTextColor
-    }
+    fontSize: themeSettings.fontSize
   }
 }
 rootTag :: String -> Array ReactElement -> ReactElement
