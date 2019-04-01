@@ -148,12 +148,12 @@ class LoginNoticeConfigPage extends React.Component<
   handleSubmitButton = () => {
     switch (this.state.selectedTab) {
       case 0:
-        if (this.preLoginNoticeConfigurator.current != null) {
+        if (this.preLoginNoticeConfigurator.current) {
           this.preLoginNoticeConfigurator.current.handleSubmitPreNotice();
         }
         break;
       default:
-        if (this.postLoginNoticeConfigurator.current != null) {
+        if (this.postLoginNoticeConfigurator.current) {
           this.postLoginNoticeConfigurator.current.handleSubmitPostNotice();
         }
         break;
