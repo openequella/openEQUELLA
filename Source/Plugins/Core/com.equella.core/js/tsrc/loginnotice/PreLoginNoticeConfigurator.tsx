@@ -27,7 +27,6 @@ import { DateTimePicker } from "material-ui-pickers";
 interface PreLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
   notify: (notificationType: NotificationType) => void;
-  submit: boolean;
 }
 
 interface PreLoginNoticeConfiguratorState {
@@ -55,15 +54,6 @@ class PreLoginNoticeConfigurator extends React.Component<
         endDate: new Date()
       }
     };
-  }
-
-  componentWillReceiveProps(
-    nextProps: Readonly<PreLoginNoticeConfiguratorProps>,
-    nextContext: any
-  ): void {
-    if (nextProps.submit != this.props.submit) {
-      this.handleSubmitPreNotice();
-    }
   }
 
   handleSubmitPreNotice = () => {
@@ -121,11 +111,6 @@ class PreLoginNoticeConfigurator extends React.Component<
     this.setState({
       current: { ...this.state.current, notice: html }
     });
-  };
-
-  areButtonsEnabled = (): boolean => {
-    //state matches database?
-    return this.state.current == this.state.db;
   };
 
   ScheduleSettings = () => {

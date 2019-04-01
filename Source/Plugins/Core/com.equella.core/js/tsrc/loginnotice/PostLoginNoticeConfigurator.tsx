@@ -23,7 +23,6 @@ import DialogActions from "@material-ui/core/DialogActions";
 interface PostLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
   notify: (notificationType: NotificationType) => void;
-  submit: boolean;
 }
 
 interface PostLoginNoticeConfiguratorState {
@@ -69,15 +68,6 @@ class PostLoginNoticeConfigurator extends React.Component<
         this.props.handleError(error);
       });
   };
-
-  componentWillReceiveProps(
-    nextProps: Readonly<PostLoginNoticeConfiguratorProps>,
-    nextContext: any
-  ): void {
-    if (nextProps.submit != this.props.submit) {
-      this.handleSubmitPostNotice();
-    }
-  }
 
   handleUndoPostNotice = () => {
     this.setState({ postNotice: this.state.dbPostNotice });

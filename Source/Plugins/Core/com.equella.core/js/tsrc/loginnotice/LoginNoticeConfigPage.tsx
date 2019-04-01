@@ -23,25 +23,34 @@ interface LoginNoticeConfigPageState {
   notificationOpen: boolean;
   error?: ErrorResponse;
   selectedTab: number;
-  submitPreNotice: boolean;
-  submitPostNotice: boolean;
 }
 
 class LoginNoticeConfigPage extends React.Component<
   LoginNoticeConfigPageProps,
   LoginNoticeConfigPageState
 > {
+  private readonly postLoginNoticeConfigurator: React.RefObject<
+    PostLoginNoticeConfigurator
+  >;
+  private readonly preLoginNoticeConfigurator: React.RefObject<
+    PreLoginNoticeConfigurator
+  >;
+
   constructor(props: LoginNoticeConfigPageProps) {
     super(props);
+    this.preLoginNoticeConfigurator = React.createRef<
+      PreLoginNoticeConfigurator
+    >();
+    this.postLoginNoticeConfigurator = React.createRef<
+      PostLoginNoticeConfigurator
+    >();
   }
 
   state: LoginNoticeConfigPageState = {
     notifications: NotificationType.Save,
     notificationOpen: false,
     error: undefined,
-    selectedTab: 0,
-    submitPreNotice: false,
-    submitPostNotice: false
+    selectedTab: 0
   };
 
   handleError = (error: AxiosError) => {
@@ -106,7 +115,7 @@ class LoginNoticeConfigPage extends React.Component<
           <PreLoginNoticeConfigurator
             handleError={this.handleError}
             notify={this.notify}
-            submit={this.state.submitPreNotice}
+            ref={this.preLoginNoticeConfigurator}
           />
         );
       default:
@@ -114,7 +123,7 @@ class LoginNoticeConfigPage extends React.Component<
           <PostLoginNoticeConfigurator
             handleError={this.handleError}
             notify={this.notify}
-            submit={this.state.submitPostNotice}
+            ref={this.postLoginNoticeConfigurator}
           />
         );
     }
@@ -123,10 +132,14 @@ class LoginNoticeConfigPage extends React.Component<
   handleSubmitButton = () => {
     switch (this.state.selectedTab) {
       case 0:
-        this.setState({ submitPreNotice: !this.state.submitPreNotice });
+        if (this.preLoginNoticeConfigurator.current != null) {
+          this.preLoginNoticeConfigurator.current.handleSubmitPreNotice();
+        }
         break;
       default:
-        this.setState({ submitPostNotice: !this.state.submitPostNotice });
+        if (this.postLoginNoticeConfigurator.current != null) {
+          this.postLoginNoticeConfigurator.current.handleSubmitPostNotice();
+        }
         break;
     }
   };
