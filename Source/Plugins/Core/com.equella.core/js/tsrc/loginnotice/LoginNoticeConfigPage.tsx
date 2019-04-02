@@ -30,6 +30,7 @@ interface LoginNoticeConfigPageState {
   notificationOpen: boolean;
   error?: ErrorResponse;
   selectedTab: number;
+  preventNav: boolean;
 }
 
 const styles = (theme: Theme) =>
@@ -66,7 +67,8 @@ class LoginNoticeConfigPage extends React.Component<
     notifications: NotificationType.Save,
     notificationOpen: false,
     error: undefined,
-    selectedTab: 0
+    selectedTab: 0,
+    preventNav: false
   };
 
   handleError = (error: AxiosError) => {
@@ -132,6 +134,7 @@ class LoginNoticeConfigPage extends React.Component<
             handleError={this.handleError}
             notify={this.notify}
             ref={this.preLoginNoticeConfigurator}
+            preventNav={this.preventNav}
           />
         );
       default:
@@ -140,6 +143,7 @@ class LoginNoticeConfigPage extends React.Component<
             handleError={this.handleError}
             notify={this.notify}
             ref={this.postLoginNoticeConfigurator}
+            preventNav={this.preventNav}
           />
         );
     }
@@ -160,6 +164,10 @@ class LoginNoticeConfigPage extends React.Component<
     }
   };
 
+  preventNav = (preventNav: boolean) => {
+    this.setState({ preventNav });
+  };
+
   render() {
     const { Template, routes } = this.props.bridge;
     const { classes } = this.props;
@@ -170,14 +178,23 @@ class LoginNoticeConfigPage extends React.Component<
         title={strings.title}
         backRoute={routes.SettingsPage}
         fixedViewPort
+        preventNavigation={this.state.preventNav}
         tabs={
           <Tabs
             value={this.state.selectedTab}
             onChange={this.handleChangeTab}
             variant="fullWidth"
           >
-            <Tab id="preTab" label={strings.prelogin.label} />
-            <Tab id="postTab" label={strings.postlogin.label} />
+            <Tab
+              id="preTab"
+              label={strings.prelogin.label}
+              disabled={this.state.preventNav}
+            />
+            <Tab
+              id="postTab"
+              label={strings.postlogin.label}
+              disabled={this.state.preventNav}
+            />
           </Tabs>
         }
         errorResponse={this.state.error}

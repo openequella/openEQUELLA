@@ -27,6 +27,7 @@ import { DateTimePicker } from "material-ui-pickers";
 interface PreLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
   notify: (notificationType: NotificationType) => void;
+  preventNav: (prevNav: boolean) => void;
 }
 
 interface PreLoginNoticeConfiguratorState {
@@ -61,9 +62,12 @@ class PreLoginNoticeConfigurator extends React.Component<
       clearPreLoginNotice()
         .then(() => {
           this.props.notify(NotificationType.Clear);
-          this.setState({
-            db: this.state.current
-          });
+          this.setState(
+            {
+              db: this.state.current
+            },
+            this.setPreventNav
+          );
         })
         .catch((error: AxiosError) => {
           this.props.handleError(error);
@@ -87,9 +91,12 @@ class PreLoginNoticeConfigurator extends React.Component<
   };
 
   setDBToValues = () => {
-    this.setState({
-      db: this.state.current
-    });
+    this.setState(
+      {
+        db: this.state.current
+      },
+      this.setPreventNav
+    );
   };
 
   componentDidMount = () => {
@@ -107,10 +114,17 @@ class PreLoginNoticeConfigurator extends React.Component<
       });
   };
 
+  setPreventNav = () => {
+    this.props.preventNav(this.state.db != this.state.current);
+  };
+
   handleEditorChange = (html: string) => {
-    this.setState({
-      current: { ...this.state.current, notice: html }
-    });
+    this.setState(
+      {
+        current: { ...this.state.current, notice: html }
+      },
+      this.setPreventNav
+    );
   };
 
   ScheduleSettings = () => {
@@ -178,20 +192,29 @@ class PreLoginNoticeConfigurator extends React.Component<
   };
 
   handleStartDateChange = (startDate: Date) => {
-    this.setState({ current: { ...this.state.current, startDate } });
+    this.setState(
+      { current: { ...this.state.current, startDate } },
+      this.setPreventNav
+    );
   };
 
   handleEndDateChange = (endDate: Date) => {
-    this.setState({ current: { ...this.state.current, endDate } });
+    this.setState(
+      { current: { ...this.state.current, endDate } },
+      this.setPreventNav
+    );
   };
 
   handleScheduleTypeSelectionChange = (event: ChangeEvent, value: string) => {
-    this.setState({
-      current: {
-        ...this.state.current,
-        scheduleSettings: ScheduleTypeSelection[value]
-      }
-    });
+    this.setState(
+      {
+        current: {
+          ...this.state.current,
+          scheduleSettings: ScheduleTypeSelection[value]
+        }
+      },
+      this.setPreventNav
+    );
   };
 
   render() {

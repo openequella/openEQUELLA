@@ -23,6 +23,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 interface PostLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
   notify: (notificationType: NotificationType) => void;
+  preventNav: (prevNav: boolean) => void;
 }
 
 interface PostLoginNoticeConfiguratorState {
@@ -50,6 +51,7 @@ class PostLoginNoticeConfigurator extends React.Component<
         .then(() => {
           this.props.notify(NotificationType.Save);
           this.setState({ dbPostNotice: this.state.postNotice });
+          this.props.preventNav(false);
         })
         .catch((error: AxiosError) => {
           this.props.handleError(error);
@@ -62,6 +64,7 @@ class PostLoginNoticeConfigurator extends React.Component<
     clearPostLoginNotice()
       .then(() => {
         this.setState({ dbPostNotice: "", clearStaged: false });
+        this.props.preventNav(false);
         this.props.notify(NotificationType.Clear);
       })
       .catch((error: AxiosError) => {
@@ -78,6 +81,7 @@ class PostLoginNoticeConfigurator extends React.Component<
     e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
   ) => {
     this.setState({ postNotice: e.value });
+    this.props.preventNav(e.value != this.state.dbPostNotice);
   };
 
   componentDidMount = () => {
