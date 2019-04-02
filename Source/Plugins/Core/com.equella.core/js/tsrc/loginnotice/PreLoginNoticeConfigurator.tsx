@@ -66,7 +66,7 @@ class PreLoginNoticeConfigurator extends React.Component<
             {
               db: this.state.current
             },
-            this.setPreventNav
+            () => this.setPreventNav()
           );
         })
         .catch((error: AxiosError) => {
@@ -85,9 +85,12 @@ class PreLoginNoticeConfigurator extends React.Component<
   };
 
   setValuesToDB = () => {
-    this.setState({
-      current: this.state.db
-    });
+    this.setState(
+      {
+        current: this.state.db
+      },
+      () => this.setPreventNav()
+    );
   };
 
   setDBToValues = () => {
@@ -95,7 +98,7 @@ class PreLoginNoticeConfigurator extends React.Component<
       {
         db: this.state.current
       },
-      this.setPreventNav
+      () => this.setPreventNav()
     );
   };
 
@@ -115,7 +118,12 @@ class PreLoginNoticeConfigurator extends React.Component<
   };
 
   setPreventNav = () => {
-    this.props.preventNav(this.state.db != this.state.current);
+    this.props.preventNav(
+      this.state.db.scheduleSettings != this.state.current.scheduleSettings ||
+        this.state.db.endDate != this.state.current.endDate ||
+        this.state.db.startDate != this.state.current.startDate ||
+        this.state.db.notice != this.state.current.notice
+    );
   };
 
   handleEditorChange = (html: string) => {
@@ -123,7 +131,7 @@ class PreLoginNoticeConfigurator extends React.Component<
       {
         current: { ...this.state.current, notice: html }
       },
-      this.setPreventNav
+      () => this.setPreventNav()
     );
   };
 
@@ -192,16 +200,14 @@ class PreLoginNoticeConfigurator extends React.Component<
   };
 
   handleStartDateChange = (startDate: Date) => {
-    this.setState(
-      { current: { ...this.state.current, startDate } },
-      this.setPreventNav
+    this.setState({ current: { ...this.state.current, startDate } }, () =>
+      this.setPreventNav()
     );
   };
 
   handleEndDateChange = (endDate: Date) => {
-    this.setState(
-      { current: { ...this.state.current, endDate } },
-      this.setPreventNav
+    this.setState({ current: { ...this.state.current, endDate } }, () =>
+      this.setPreventNav()
     );
   };
 
@@ -213,7 +219,7 @@ class PreLoginNoticeConfigurator extends React.Component<
           scheduleSettings: ScheduleTypeSelection[value]
         }
       },
-      this.setPreventNav
+      () => this.setPreventNav()
     );
   };
 
