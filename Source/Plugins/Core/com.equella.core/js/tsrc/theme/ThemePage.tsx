@@ -31,7 +31,7 @@ interface IThemeSettings {
   menuItemTextColor: string;
   menuItemIconColor: string;
   primaryTextColor: string;
-  secondaryTextColor: string;
+  menuTextColor: string;
   fontSize: number;
 }
 
@@ -151,7 +151,7 @@ class ThemePage extends React.Component<
       menuText: themeSettings.menuItemTextColor,
       menuIcon: themeSettings.menuItemIconColor,
       primaryText: themeSettings.primaryTextColor,
-      secondaryText: themeSettings.secondaryTextColor
+      secondaryText: themeSettings.menuTextColor
     });
   };
 
@@ -214,7 +214,7 @@ class ThemePage extends React.Component<
         menuItemIconColor: this.state.menuIcon,
         menuItemTextColor: this.state.menuText,
         primaryTextColor: this.state.primaryText,
-        secondaryTextColor: this.state.secondaryText,
+        menuTextColor: this.state.secondaryText,
         fontSize: 14
       })
       .then(() => {
