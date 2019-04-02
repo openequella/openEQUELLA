@@ -24,7 +24,7 @@ public class NewUITheme {
   private String menuItemIconColor = "#000000";
   private String menuItemTextColor = "#000000";
   private String primaryTextColor = "#000000";
-  private String menuTextColor = "#000000";
+  private String menuTextColor = "#444444";
   private int fontSize = 14;
 
   public String getPrimaryColor() {

@@ -136,7 +136,7 @@ class ThemePage extends React.Component<
         menu: "#ffffff",
         menuIcon: "#000000",
         primaryText: "#000000",
-        secondaryText: "#000000"
+        secondaryText: "#444444"
       },
       () => this.submitTheme()
     );
