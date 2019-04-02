@@ -18,7 +18,7 @@ package com.tle.web.settings
 
 import cats.effect.IO
 import cats.syntax.apply._
-import com.tle.core.cache.{Cache, InstCacheable}
+import com.tle.core.cache.{Cache, DBCacheBuilder, InstCacheable}
 import com.tle.core.db.{DB, RunWithDB}
 import com.tle.core.settings.SettingsDB
 import io.circe.generic.extras.Configuration
@@ -39,13 +39,14 @@ object UISettings {
 
   val getUISettings: DB[Option[UISettings]] = SettingsDB.jsonProperty[UISettings](UIPropName).value
 
-  implicit val cacheable = InstCacheable[Option[UISettings]]("uiSettings", getUISettings)
+  val uiSettingsCache =
+    DBCacheBuilder.buildCache(InstCacheable[Option[UISettings]]("uiSettings", _ => getUISettings))
 
   def setUISettings(in: UISettings): DB[IO[Unit]] =
     SettingsDB.setJsonProperty(UIPropName, in) *>
-      Cache.invalidate[Option[UISettings]]
+      uiSettingsCache.invalidate.apply()
 
-  def cachedUISettings: DB[Option[UISettings]] = Cache.get[Option[UISettings]]
+  def cachedUISettings: DB[Option[UISettings]] = uiSettingsCache.get.apply()
 }
 
 object UISettingsJava {

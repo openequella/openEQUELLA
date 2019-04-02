@@ -17,6 +17,7 @@
 package com.tle.core
 
 import cats.data.Kleisli
+import cats.effect.LiftIO
 import cats.syntax.applicative._
 import cats.~>
 import fs2.Stream
@@ -28,6 +29,8 @@ package object db {
   type DB[A] = Kleisli[JDBCIO, UserContext, A]
 
   val getContext: DB[UserContext] = Kleisli.ask
+
+  val dbLiftIO = LiftIO[DB]
 
   def withContext[A](f: UserContext => A): DB[A] =
     Kleisli(uc => f(uc).pure[JDBCIO])
@@ -43,4 +46,10 @@ package object db {
     Stream.eval[DB, UserContext](Kleisli.ask[JDBCIO, UserContext]).flatMap { uc =>
       f(uc).translate(translateDB)
     }
+
+  def toJDBCStream[A](stream: Stream[DB, A]): DB[Stream[JDBCIO, A]] = getContext.map { ctx =>
+    stream.translate(new (DB ~> JDBCIO) {
+      override def apply[A](fa: DB[A]): JDBCIO[A] = fa.run(ctx)
+    })
+  }
 }

@@ -17,6 +17,7 @@
 package com.tle.core.db
 
 import com.tle.core.db.migration.DBSchemaMigration
+import com.tle.core.db.tables.CachedValue
 import com.tle.core.db.types.DbUUID
 import io.doolse.simpledba.Iso
 import io.doolse.simpledba.jdbc._
@@ -31,6 +32,8 @@ object OracleSchema extends DBSchemaMigration with DBSchema with DBQueries with 
   def autoIdCol = longCol
 
   override def insertAuditLog = insertWith(auditLog, hibSeq)
+
+  override def insertCachedValue = insertWith(cachedValues, hibSeq)
 
   def dbUuidCol =
     wrap[String, DbUUID](stringCol,
