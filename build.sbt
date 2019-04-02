@@ -207,3 +207,6 @@ sources in (Compile, doc) := {
     +++ javadocSources((baseDirectory in LocalProject("com_equella_core")).value)).get
 }
 javacOptions in (Compile, doc) := Seq()
+
+lazy val importExport = (project in file("Source/Tools/ImportExportUtils"))
+  .settings(legacyPaths)
