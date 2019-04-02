@@ -20,7 +20,7 @@ import com.dytech.edge.exceptions.WebException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.tle.common.Check;
-import com.tle.common.i18n.CurrentLocale;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.core.oauth.OAuthConstants;
 import com.tle.web.oauth.OAuthException;
 import com.tle.web.oauth.OAuthWebConstants;
@@ -37,8 +37,6 @@ public abstract class AbstractOAuthServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
   private static final Logger LOGGER = Logger.getLogger(AbstractOAuthServlet.class);
 
-  protected static final String PREFIX = "com.tle.web.oauth.";
-
   protected ObjectMapper mapper;
 
   @Override
@@ -46,6 +44,10 @@ public abstract class AbstractOAuthServlet extends HttpServlet {
     mapper = new ObjectMapper();
     mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
     super.init();
+  }
+
+  protected String text(String key, Object... vals) {
+    return CoreStrings.lookup().getString(key, vals);
   }
 
   @Override
@@ -83,7 +85,7 @@ public abstract class AbstractOAuthServlet extends HttpServlet {
           new OAuthException(
               400,
               OAuthConstants.ERROR_INVALID_REQUEST,
-              CurrentLocale.get(PREFIX + "oauth.error.parammandatory", paramName));
+              text("oauth.error.parammandatory", paramName));
       if (paramName.equals(OAuthWebConstants.PARAM_CLIENT_ID)
           || paramName.equals(OAuthWebConstants.PARAM_REDIRECT_URI)) {
         oauthEx.setBadClientOrRedirectUri(true);
