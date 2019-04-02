@@ -19,7 +19,7 @@ package com.tle.core.db
 import java.time.Instant
 
 import com.tle.core.db.tables._
-import com.tle.core.db.types.{DbUUID, InstId, String20, UserId}
+import com.tle.core.db.types.{DbUUID, InstId, String20, String255, UserId}
 import fs2.Stream
 import io.doolse.simpledba.{WriteOp, WriteQueries}
 import io.doolse.simpledba.jdbc.{JDBCColumn, JDBCIO, JDBCSQLConfig}
@@ -65,9 +65,15 @@ case class EntityQueries(
     allByInst: InstId => Stream[JDBCIO, OEQEntity]
 )
 
+case class CachedValueQueries(
+    insertNew: (Long => CachedValue) => Stream[JDBCIO, CachedValue],
+    writes: WriteQueries[JDBCIO, CachedValue],
+    getForKey: ((String255, String255, InstId)) => Stream[JDBCIO, CachedValue])
+
 object DBQueries {
   val logSQL = LoggerFactory.getLogger("org.hibernate.SQL")
 }
+
 trait DBQueries {
 
   type C[A] <: JDBCColumn
@@ -82,4 +88,6 @@ trait DBQueries {
   def settingsQueries: SettingsQueries
 
   def entityQueries: EntityQueries
+
+  def cachedValueQueries: CachedValueQueries
 }

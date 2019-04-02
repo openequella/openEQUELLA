@@ -167,6 +167,15 @@ trait DBSchema extends StdColumns {
     entityTable.query.where(Cols('inst_id), BinOp.EQ).build
   )
 
+  val cachedValues = TableMapper[CachedValue].table("cached_value").edit('id, autoIdCol).key('id)
+
+  def insertCachedValue: (Long => CachedValue) => Stream[JDBCIO, CachedValue]
+
+  val cachedValueQueries = CachedValueQueries(
+    insertCachedValue,
+    cachedValues.writes,
+    cachedValues.query.where(Cols('cache_id, 'key, 'institution_id), BinOp.EQ).build)
+
   allTables ++= newEntityTables
   allIndexes ++= newEntityIndexes
 
