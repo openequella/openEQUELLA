@@ -101,7 +101,8 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     for (FileEntry imageFile : fileNameList) {
       boolean imageFileUsed = false;
       for (String src : srcList) {
-        if (URLUtils.basicUrlDecode(src).contains(URLUtils.basicUrlDecode(imageFile.getName()))) {
+        String srcDecoded = URLUtils.basicUrlDecode(src);
+        if (srcDecoded.contains(imageFile.getName())) {
           imageFileUsed = true;
         }
       }
