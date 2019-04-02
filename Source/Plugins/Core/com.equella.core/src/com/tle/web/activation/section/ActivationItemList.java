@@ -40,6 +40,7 @@ import com.tle.web.itemlist.StdMetadataEntry;
 import com.tle.web.itemlist.item.AbstractItemList;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourceHelper;
+import com.tle.web.searching.SearchIndexModifier;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxRenderContext;
@@ -238,6 +239,8 @@ public class ActivationItemList
     if (resultData instanceof ActivationResult) {
       ActivationResult result = (ActivationResult) resultData;
       ActivationItemListEntry entry = createItemListEntry(info, item, resultData, index, available);
+      entry.addModifier(
+          new SearchIndexModifier(RootActivationSection.ACTIVATIONURL, index, available));
       entry.setActivationId(result.getActivationId());
       addListItem(info, entry);
       return entry;
