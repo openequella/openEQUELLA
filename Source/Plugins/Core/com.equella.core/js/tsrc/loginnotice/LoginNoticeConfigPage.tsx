@@ -9,11 +9,19 @@ import {
 } from "../api/errors";
 import PreLoginNoticeConfigurator from "./PreLoginNoticeConfigurator";
 import PostLoginNoticeConfigurator from "./PostLoginNoticeConfigurator";
-import { Tabs } from "@material-ui/core";
+import {
+  Button,
+  createStyles,
+  Tabs,
+  Theme,
+  withStyles,
+  WithStyles
+} from "@material-ui/core";
 import Tab from "@material-ui/core/Tab";
 import { NotificationType, strings } from "./LoginNoticeModule";
+import { commonString } from "../util/commonstrings";
 
-interface LoginNoticeConfigPageProps {
+interface LoginNoticeConfigPageProps extends WithStyles<typeof styles> {
   bridge: Bridge;
 }
 
@@ -22,21 +30,45 @@ interface LoginNoticeConfigPageState {
   notificationOpen: boolean;
   error?: ErrorResponse;
   selectedTab: number;
+  preventNav: boolean;
 }
+
+const styles = (theme: Theme) =>
+  createStyles({
+    floatingButton: {
+      right: theme.spacing.unit * 2,
+      bottom: theme.spacing.unit * 2,
+      position: "fixed"
+    }
+  });
 
 class LoginNoticeConfigPage extends React.Component<
   LoginNoticeConfigPageProps,
   LoginNoticeConfigPageState
 > {
+  private readonly postLoginNoticeConfigurator: React.RefObject<
+    PostLoginNoticeConfigurator
+  >;
+  private readonly preLoginNoticeConfigurator: React.RefObject<
+    PreLoginNoticeConfigurator
+  >;
+
   constructor(props: LoginNoticeConfigPageProps) {
     super(props);
+    this.preLoginNoticeConfigurator = React.createRef<
+      PreLoginNoticeConfigurator
+    >();
+    this.postLoginNoticeConfigurator = React.createRef<
+      PostLoginNoticeConfigurator
+    >();
   }
 
   state: LoginNoticeConfigPageState = {
     notifications: NotificationType.Save,
     notificationOpen: false,
     error: undefined,
-    selectedTab: 0
+    selectedTab: 0,
+    preventNav: false
   };
 
   handleError = (error: AxiosError) => {
@@ -101,6 +133,8 @@ class LoginNoticeConfigPage extends React.Component<
           <PreLoginNoticeConfigurator
             handleError={this.handleError}
             notify={this.notify}
+            ref={this.preLoginNoticeConfigurator}
+            preventNav={this.preventNav}
           />
         );
       default:
@@ -108,30 +142,73 @@ class LoginNoticeConfigPage extends React.Component<
           <PostLoginNoticeConfigurator
             handleError={this.handleError}
             notify={this.notify}
+            ref={this.postLoginNoticeConfigurator}
+            preventNav={this.preventNav}
           />
         );
     }
   };
 
+  handleSubmitButton = () => {
+    switch (this.state.selectedTab) {
+      case 0:
+        if (this.preLoginNoticeConfigurator.current) {
+          this.preLoginNoticeConfigurator.current.handleSubmitPreNotice();
+        }
+        break;
+      default:
+        if (this.postLoginNoticeConfigurator.current) {
+          this.postLoginNoticeConfigurator.current.handleSubmitPostNotice();
+        }
+        break;
+    }
+  };
+
+  preventNav = (preventNav: boolean) => {
+    this.setState({ preventNav });
+  };
+
   render() {
-    const { Template } = this.props.bridge;
+    const { Template, routes } = this.props.bridge;
+    const { classes } = this.props;
     const Notifications = this.Notifications;
     const Configurators = this.Configurators;
     return (
       <Template
         title={strings.title}
+        backRoute={routes.SettingsPage}
         fixedViewPort
+        preventNavigation={this.state.preventNav}
         tabs={
           <Tabs
             value={this.state.selectedTab}
             onChange={this.handleChangeTab}
             variant="fullWidth"
           >
-            <Tab id="preTab" label={strings.prelogin.label} />
-            <Tab id="postTab" label={strings.postlogin.label} />
+            <Tab
+              id="preTab"
+              label={strings.prelogin.label}
+              disabled={this.state.preventNav}
+            />
+            <Tab
+              id="postTab"
+              label={strings.postlogin.label}
+              disabled={this.state.preventNav}
+            />
           </Tabs>
         }
         errorResponse={this.state.error}
+        footer={
+          <Button
+            id="SaveButton"
+            className={classes.floatingButton}
+            onClick={this.handleSubmitButton}
+            variant="contained"
+            size="large"
+          >
+            {commonString.action.save}
+          </Button>
+        }
       >
         <Configurators />
         <Notifications />
@@ -140,4 +217,4 @@ class LoginNoticeConfigPage extends React.Component<
   }
 }
 
-export default LoginNoticeConfigPage;
+export default withStyles(styles)(LoginNoticeConfigPage);

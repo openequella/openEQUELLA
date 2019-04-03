@@ -34,19 +34,16 @@ export const emptyTinyMCEString =
   "</html>";
 
 export const strings = prepLangStrings("loginnoticepage", {
-  title: "Login Notice Editor",
-  currentnotice: "Current Notice: ",
+  title: "Login notice editor",
   clear: {
     title: "Warning",
     confirm: "Are you sure you want to clear this login notice?"
   },
   prelogin: {
-    label: "Before Login Notice",
-    description:
-      "Write a plaintext message to be displayed on the login screen..."
+    label: "Before login notice"
   },
   postlogin: {
-    label: "After Login Notice",
+    label: "After login notice",
     description:
       "Write a plaintext message to be displayed after login as an alert..."
   },
@@ -59,13 +56,14 @@ export const strings = prepLangStrings("loginnoticepage", {
     permissions: "You do not have permission to edit these settings."
   },
   scheduling: {
-    title: "Notice Schedule",
-    start: "Set start date:",
-    end: "Set end date:",
+    title: "Schedule settings",
+    start: "Start date:",
+    end: "End date:",
     scheduled: "Scheduled",
-    alwayson: "Always on",
-    disabled: "Disabled",
-    endbeforestart: "End of schedule must be on or after start of schedule."
+    alwayson: "On",
+    disabled: "Off",
+    endbeforestart: "End date must be after start date.",
+    expired: "This login notice has expired."
   }
 });
 
@@ -95,9 +93,8 @@ export function clearPostLoginNotice(): AxiosPromise {
 
 export function uploadPreLoginNoticeImage(file: any): AxiosPromise {
   let imageBlob: Blob = file.blob();
-  return axios.put(
-    PRE_LOGIN_NOTICE_IMAGE_API_URL + file.filename(),
-    imageBlob,
-    { headers: { "content-type": imageBlob.type } }
-  );
+  let name: string = encodeURIComponent(file.filename());
+  return axios.put(PRE_LOGIN_NOTICE_IMAGE_API_URL + name, imageBlob, {
+    headers: { "content-type": imageBlob.type }
+  });
 }

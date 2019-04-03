@@ -8,11 +8,11 @@ import Control.Monad.Reader (ReaderT)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
 import Data.Argonaut (class DecodeJson, Json, decodeJson, (.?), (.??))
-import Data.Array (catMaybes, concat, intercalate)
+import Data.Array (catMaybes, concat, elemLastIndex, intercalate)
 import Data.Either (Either(..), either)
 import Data.Lens (Lens', _Just, preview, (^?))
 import Data.Lens.Record (prop)
-import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, isJust, maybe)
+import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, isJust, isNothing, maybe)
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
@@ -273,9 +273,13 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
               className: classes.navIconHide,
               onClick: d ToggleMenu } [ icon_ [D.text "menu" ] 
           ], [
-            D.div [DP.className classes.titleArea] $ catMaybes [
+            D.div [DP.className classes.titleArea] $ let 
+            titleClass = if isNothing $ toMaybe backRoute 
+                          then classes.titlePadding 
+                          else classes.titleDense
+            in catMaybes [
               toMaybe backRoute $> iconButton { onClick: d GoBack} [ icon_ [D.text "arrow_back" ] ],
-              Just $ typography {variant: h5, color: inherit, className: classes.title} [ D.text titleText ],
+              Just $ typography {variant: h5, color: inherit, className: joinWith " " [titleClass, classes.title]} [ D.text titleText ],
               toMaybe titleExtra
             ],
             userMenu 
@@ -420,15 +424,22 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       menuIcon: {
         color: menuColors.icon
       },
-      title: cssList [ 
+      titlePadding: cssList [
         desktop {
           marginLeft: theme.spacing.unit * 4
-        }, 
+        }
+        ],
+        titleDense: {
+          marginLeft: theme.spacing.unit
+          },
+      title: cssList [
         allQuery {
           overflow: "hidden", 
           whiteSpace: "nowrap", 
-          textOverflow: "ellipsis",
-          marginLeft: theme.spacing.unit
+          textOverflow: "ellipsis"
+        },
+        mobile {
+
         }
       ],
       appFrame: {
