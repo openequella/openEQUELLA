@@ -30,6 +30,7 @@ interface IThemeSettings {
   menuItemColor: string;
   menuItemTextColor: string;
   menuItemIconColor: string;
+  primaryTextColor: string;
   menuTextColor: string;
   fontSize: number;
 }
@@ -49,7 +50,8 @@ export const strings = prepLangStrings("newuisettings", {
     backgroundcolour: "Background Colour",
     secondarycolour: "Secondary Colour",
     sidebartextcolour: "Sidebar Text Colour",
-    textcolour: "Text Colour",
+    primarytextcolour: "Primary Text Colour",
+    secondarytextcolour: "Secondary Text Colour",
     sidebariconcolour: "Icon Colour"
   },
   logosettings: {
@@ -111,7 +113,8 @@ class ThemePage extends React.Component<
     menu: "",
     menuText: "",
     menuIcon: "",
-    text: "",
+    primaryText: "",
+    secondaryText: "",
     logoToUpload: "",
     fileName: "",
     noFileNotification: false,
@@ -129,10 +132,11 @@ class ThemePage extends React.Component<
         primary: "#2196f3",
         secondary: "#ff9800",
         background: "#fafafa",
-        menu: "#ffffff",
         menuText: "#000000",
+        menu: "#ffffff",
         menuIcon: "#000000",
-        text: "#000000"
+        primaryText: "#000000",
+        secondaryText: "#444444"
       },
       () => this.submitTheme()
     );
@@ -146,7 +150,8 @@ class ThemePage extends React.Component<
       menu: themeSettings.menuItemColor,
       menuText: themeSettings.menuItemTextColor,
       menuIcon: themeSettings.menuItemIconColor,
-      text: themeSettings.menuTextColor
+      primaryText: themeSettings.primaryTextColor,
+      secondaryText: themeSettings.menuTextColor
     });
   };
 
@@ -169,16 +174,20 @@ class ThemePage extends React.Component<
     this.setState({ menu: color });
   };
 
-  handleMenuTextChange = (color: string) => {
-    this.setState({ menuText: color });
-  };
-
   handleMenuIconChange = (color: string) => {
     this.setState({ menuIcon: color });
   };
 
-  handleTextChange = (color: string) => {
-    this.setState({ text: color });
+  handleMenuTextChange = (color: string) => {
+    this.setState({ menuText: color });
+  };
+
+  handlePrimaryTextChange = (color: string) => {
+    this.setState({ primaryText: color });
+  };
+
+  handleSecondaryTextChange = (color: string) => {
+    this.setState({ secondaryText: color });
   };
 
   handleImageChange = (e: HTMLInputElement) => {
@@ -202,9 +211,10 @@ class ThemePage extends React.Component<
         secondaryColor: this.state.secondary,
         backgroundColor: this.state.background,
         menuItemColor: this.state.menu,
-        menuItemTextColor: this.state.menuText,
         menuItemIconColor: this.state.menuIcon,
-        menuTextColor: this.state.text,
+        menuItemTextColor: this.state.menuText,
+        primaryTextColor: this.state.primaryText,
+        menuTextColor: this.state.secondaryText,
         fontSize: 14
       })
       .then(() => {
@@ -306,14 +316,14 @@ class ThemePage extends React.Component<
                   this.state.primary
                 )}
                 {this.colorPicker(
+                  strings.colourschemesettings.primarytextcolour,
+                  this.handlePrimaryTextChange,
+                  this.state.primaryText
+                )}
+                {this.colorPicker(
                   strings.colourschemesettings.menubackgroundcolour,
                   this.handleMenuChange,
                   this.state.menu
-                )}
-                {this.colorPicker(
-                  strings.colourschemesettings.backgroundcolour,
-                  this.handleBackgroundChange,
-                  this.state.background
                 )}
               </Grid>
 
@@ -324,22 +334,27 @@ class ThemePage extends React.Component<
                   this.state.secondary
                 )}
                 {this.colorPicker(
-                  strings.colourschemesettings.sidebartextcolour,
-                  this.handleMenuTextChange,
-                  this.state.menuText
+                  strings.colourschemesettings.secondarytextcolour,
+                  this.handleSecondaryTextChange,
+                  this.state.secondaryText
+                )}
+                {this.colorPicker(
+                  strings.colourschemesettings.backgroundcolour,
+                  this.handleBackgroundChange,
+                  this.state.background
                 )}
               </Grid>
 
               <Grid item>
                 {this.colorPicker(
-                  strings.colourschemesettings.textcolour,
-                  this.handleTextChange,
-                  this.state.text
-                )}
-                {this.colorPicker(
                   strings.colourschemesettings.sidebariconcolour,
                   this.handleMenuIconChange,
                   this.state.menuIcon
+                )}
+                {this.colorPicker(
+                  strings.colourschemesettings.sidebartextcolour,
+                  this.handleMenuTextChange,
+                  this.state.menuText
                 )}
               </Grid>
             </Grid>
