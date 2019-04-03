@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package com.tle.core.db.tables
+package com.tle.core
 
-import java.time.Instant
+import java.util.concurrent.Executors
 
-import com.tle.core.db.types.{InstId, String255}
+import cats.effect.IO
+import com.softwaremill.sttp.asynchttpclient.fs2.AsyncHttpClientFs2Backend
 
-case class CachedValue(id: Long,
-                       cache_id: String255,
-                       key: String255,
-                       ttl: Option[Instant],
-                       value: String,
-                       institution_id: InstId)
+import scala.concurrent.ExecutionContext
+
+package object httpclient {
+  val blockingEC            = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(5))
+  implicit val contextShift = IO.contextShift(blockingEC)
+
+  implicit val sttpBackend = AsyncHttpClientFs2Backend[IO]()
+}

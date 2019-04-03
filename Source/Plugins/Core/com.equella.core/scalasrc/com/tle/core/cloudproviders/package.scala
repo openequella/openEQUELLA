@@ -28,7 +28,7 @@ package object cloudproviders {
 
   case class Viewer(name: String, serviceId: String)
 
-  case class ServiceUri(authenticated: Boolean, uri: String)
+  case class ServiceUri(uri: String, authenticated: Boolean)
 
   case class CloudProviderRegistration(name: String,
                                        description: Option[String],
