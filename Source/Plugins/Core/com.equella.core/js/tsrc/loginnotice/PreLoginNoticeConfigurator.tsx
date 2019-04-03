@@ -84,15 +84,6 @@ class PreLoginNoticeConfigurator extends React.Component<
     }
   };
 
-  setValuesToDB = () => {
-    this.setState(
-      {
-        current: this.state.db
-      },
-      () => this.setPreventNav()
-    );
-  };
-
   setDBToValues = () => {
     this.setState(
       {
@@ -107,9 +98,9 @@ class PreLoginNoticeConfigurator extends React.Component<
       .then((response: AxiosResponse<PreLoginNotice>) => {
         if (response.data.notice != undefined) {
           this.setState({
-            db: response.data
+            db: response.data,
+            current: response.data
           });
-          this.setValuesToDB();
         }
       })
       .catch((error: AxiosError) => {
@@ -172,13 +163,11 @@ class PreLoginNoticeConfigurator extends React.Component<
           <Typography color="textSecondary" variant="subtitle1">
             {strings.scheduling.start}
           </Typography>
-
           <DateTimePicker
             id="startDatePicker"
             okLabel={<span id="ok">OK</span>}
-            minDate={new Date().toLocaleDateString()}
             onChange={this.handleStartDateChange}
-            format={"dd/MM/yyyy hh:mm a"}
+            format={"d MMM yyyy - h:mm a"}
             value={this.state.current.startDate}
           />
 
@@ -188,10 +177,10 @@ class PreLoginNoticeConfigurator extends React.Component<
 
           <DateTimePicker
             id="endDatePicker"
-            minDate={this.state.current.startDate}
-            minDateMessage={strings.scheduling.endbeforestart}
+            minDate={new Date()}
+            minDateMessage={strings.scheduling.expired}
             onChange={this.handleEndDateChange}
-            format={"dd/MM/yyyy hh:mm a"}
+            format={"d MMM yyyy - h:mm a"}
             value={this.state.current.endDate}
           />
         </div>

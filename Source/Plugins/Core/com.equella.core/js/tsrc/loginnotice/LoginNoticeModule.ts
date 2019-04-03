@@ -62,7 +62,8 @@ export const strings = prepLangStrings("loginnoticepage", {
     scheduled: "Scheduled",
     alwayson: "On",
     disabled: "Off",
-    endbeforestart: "End date must be after start date."
+    endbeforestart: "End date must be after start date.",
+    expired: "This login notice has expired."
   }
 });
 
