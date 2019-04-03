@@ -16,103 +16,131 @@
 
 package com.tle.web.oauth.service;
 
-import com.dytech.edge.exceptions.WebException;
-import com.tle.common.oauth.beans.OAuthClient;
-import com.tle.common.usermanagement.user.UserState;
-import com.tle.core.oauth.OAuthUserState;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthException;
 import net.oauth.OAuthMessage;
 
-/** @author Aaron */
-public interface OAuthWebService {
-  String createCode(OAuthClient client, AuthorisationDetails details) throws WebException;
+import com.dytech.edge.exceptions.WebException;
+import com.tle.common.oauth.beans.OAuthClient;
+import com.tle.core.oauth.OAuthUserState;
+import com.tle.common.usermanagement.user.UserState;
 
-  /**
-   * User details are extracted from the code
-   *
-   * @param client
-   * @param code
-   * @return
-   * @throws WebException
-   */
-  AuthorisationDetails getAuthorisationDetailsByCode(OAuthClient client, String code)
-      throws WebException;
+/**
+ * @author Aaron
+ */
+public interface OAuthWebService
+{
+	String createCode(OAuthClient client, AuthorisationDetails details) throws WebException;
 
-  /**
-   * Uses the user details of the pre-configured user
-   *
-   * @param clientId
-   * @param clientSecret
-   * @return
-   * @throws WebException
-   */
-  AuthorisationDetails getAuthorisationDetailsBySecret(OAuthClient client, String clientSecret)
-      throws WebException;
+	/**
+	 * User details are extracted from the code
+	 *
+	 * @param client
+	 * @param code
+	 * @return
+	 * @throws WebException
+	 */
+	AuthorisationDetails getAuthorisationDetailsByCode(OAuthClient client, String code) throws WebException;
 
-  /**
-   * Requires that the user login to EQUELLA if the client is not pre-configured for a user
-   *
-   * @param client
-   * @return
-   * @throws WebException
-   */
-  AuthorisationDetails getAuthorisationDetailsByUserState(OAuthClient client, UserState userState)
-      throws WebException;
+	/**
+	 * Uses the user details of the pre-configured user
+	 *
+	 * @param client
+	 * @param clientSecret
+	 * @return
+	 * @throws WebException
+	 */
+	AuthorisationDetails getAuthorisationDetailsBySecret(OAuthClient client, String clientSecret) throws WebException;
 
-  /**
-   * @param tokenData
-   * @param request
-   * @return Never returns null.
-   * @throws WebException thrown if token not found
-   */
-  OAuthUserState getUserState(String tokenData, HttpServletRequest request) throws WebException;
+	/**
+	 * Requires that the user login to EQUELLA if the client is not
+	 * pre-configured for a user
+	 *
+	 * @param client
+	 * @return
+	 * @throws WebException
+	 */
+	AuthorisationDetails getAuthorisationDetailsByUserState(OAuthClient client, UserState userState)
+		throws WebException;
 
-  /**
-   * Ensures this code cannot be used again
-   *
-   * @param code .
-   */
-  boolean invalidateCode(String code);
+	/**
+	 * @param tokenData
+	 * @param request
+	 * @return Never returns null.
+	 * @throws WebException thrown if token not found
+	 */
+	OAuthUserState getUserState(String tokenData, HttpServletRequest request) throws WebException;
 
-  void validateMessage(OAuthMessage message, OAuthAccessor accessor)
-      throws OAuthException, IOException, URISyntaxException;
+	/**
+	 * Ensures this code cannot be used again
+	 *
+	 * @param code .
+	 */
+	boolean invalidateCode(String code);
 
-  public static class AuthorisationDetails {
-    private String userId;
-    private String username;
-    private boolean requiresLogin;
+	void validateMessage(OAuthMessage message, OAuthAccessor accessor) throws OAuthException, IOException,
+		URISyntaxException;
 
-    public String getUserId() {
-      return userId;
-    }
 
-    public void setUserId(String userId) {
-      this.userId = userId;
-    }
+	/**
+	 * Method for creating OAuth V1 signature parameters. Creates an oauth message
+	 * and signs it which adds the signature to the message's parameters. Only
+	 * the parameters are returned.
+	 *
+	 * @param consumerKey consumer key
+	 * @param secret shared secret
+	 * @param url launch URL
+	 * @return all parameters needed to sign a POST message
+	 */
+	List<Map.Entry<String, String>> getOauthSignatureParams(String consumerKey, String secret, String url,
+																   Map<String, String[]> postParams);
 
-    /**
-     * Not guaranteed to have any value!
-     *
-     * @return
-     */
-    public String getUsername() {
-      return username;
-    }
+	public static class AuthorisationDetails
+	{
+		private String userId;
+		private String username;
+		private boolean requiresLogin;
 
-    public void setUsername(String username) {
-      this.username = username;
-    }
+		public String getUserId()
+		{
+			return userId;
+		}
 
-    public boolean isRequiresLogin() {
-      return requiresLogin;
-    }
+		public void setUserId(String userId)
+		{
+			this.userId = userId;
+		}
 
-    public void setRequiresLogin(boolean requiresLogin) {
-      this.requiresLogin = requiresLogin;
-    }
-  }
+		/**
+		 * Not guaranteed to have any value!
+		 *
+		 * @return
+		 */
+		public String getUsername()
+		{
+			return username;
+		}
+
+		public void setUsername(String username)
+		{
+			this.username = username;
+		}
+
+		public boolean isRequiresLogin()
+		{
+			return requiresLogin;
+		}
+
+		public void setRequiresLogin(boolean requiresLogin)
+		{
+			this.requiresLogin = requiresLogin;
+		}
+	}
 }

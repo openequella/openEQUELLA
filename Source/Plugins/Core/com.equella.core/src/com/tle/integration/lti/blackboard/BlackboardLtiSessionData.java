@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package com.tle.integration.lti.canvasextension;
-
-import javax.servlet.http.HttpServletRequest;
+package com.tle.integration.lti.blackboard;
 
 import com.tle.integration.lti.LtiSessionData;
 
-public class CanvasSessionData extends LtiSessionData
+import javax.servlet.http.HttpServletRequest;
+
+public class BlackboardLtiSessionData extends LtiSessionData
 {
 	private static final long serialVersionUID = 1L;
 
-	public CanvasSessionData()
+	public BlackboardLtiSessionData()
 	{
 		super();
 	}
 
-	public CanvasSessionData(HttpServletRequest request)
+	public BlackboardLtiSessionData(HttpServletRequest request)
 	{
 		super(request);
 	}
@@ -37,6 +37,6 @@ public class CanvasSessionData extends LtiSessionData
 	@Override
 	public String getIntegrationType()
 	{
-		return "canvas";
+		return "blackboardlti";
 	}
 }
