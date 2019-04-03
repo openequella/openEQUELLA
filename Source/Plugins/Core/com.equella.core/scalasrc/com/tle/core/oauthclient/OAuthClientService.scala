@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017 Apereo
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.tle.core.oauthclient
 
 import java.nio.ByteBuffer
@@ -8,7 +24,8 @@ import cats.effect.IO
 import cats.syntax.applicative._
 import cats.syntax.apply._
 import com.google.common.cache.CacheBuilder
-import com.softwaremill.sttp.asynchttpclient.fs2.AsyncHttpClientFs2Backend
+import com.softwaremill.sttp._
+import com.softwaremill.sttp.circe._
 import com.tle.core.cache.{Cacheable, DBCacheBuilder}
 import com.tle.core.db._
 import com.tle.core.db.tables.CachedValue
@@ -17,10 +34,7 @@ import fs2.Stream
 import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder}
 import io.doolse.simpledba.circe._
-import com.softwaremill.sttp._
-import com.softwaremill.sttp.circe._
-
-import scala.concurrent.ExecutionContext
+import com.tle.core.httpclient._
 
 object OAuthTokenType extends Enumeration {
   val Bearer, EquellaApi = Value
@@ -64,11 +78,6 @@ object OAuthTokenState {
 }
 
 object OAuthClientService {
-
-  val blockingEC            = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(5))
-  implicit val contextShift = IO.contextShift(blockingEC)
-
-  implicit val sttpBackend = AsyncHttpClientFs2Backend[IO]()
 
   val stateJson = circeIsoUnsafe[OAuthTokenState]
 

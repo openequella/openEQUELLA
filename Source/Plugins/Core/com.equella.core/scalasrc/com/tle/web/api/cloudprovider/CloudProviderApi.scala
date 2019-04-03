@@ -115,6 +115,15 @@ class CloudProviderApi {
       }
     }
   }
+
+  @GET
+  @Path("proxy/{uuid}/{serviceId}")
+  @ApiOperation("Proof of concept proxying")
+  def proxy(@PathParam("uuid") uuid: UUID, @PathParam("serviceId") serviceId: String): String = {
+    RunWithDB.execute {
+      CloudProviderService.proxyRequest(uuid, serviceId)
+    }
+  }
 }
 
 object CloudProviderApi {

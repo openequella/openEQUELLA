@@ -92,7 +92,7 @@ object DBCacheBuilder extends CacheInvalidation {
                   _ =>
                     Async
                       .memoize(
-                        RunWithDB.executeTransaction(uc.ds.getConnection(),
+                        RunWithDB.executeTransaction(uc.ds,
                                                      cacheable.query(k).run(uc).map(IO.pure)))
                       .unsafeRunSync())
                 .asInstanceOf[IO[V]]
