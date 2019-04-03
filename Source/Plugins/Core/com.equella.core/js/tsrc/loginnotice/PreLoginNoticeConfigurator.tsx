@@ -1,7 +1,6 @@
 import * as React from "react";
 import { ChangeEvent } from "react";
 import {
-  Button,
   FormControl,
   FormControlLabel,
   Grid,
@@ -9,7 +8,6 @@ import {
   RadioGroup,
   Typography
 } from "@material-ui/core";
-import { commonString } from "../util/commonstrings";
 import {
   clearPreLoginNotice,
   emptyTinyMCEString,
@@ -29,17 +27,12 @@ import { DateTimePicker } from "material-ui-pickers";
 interface PreLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
   notify: (notificationType: NotificationType) => void;
+  preventNav: (prevNav: boolean) => void;
 }
 
 interface PreLoginNoticeConfiguratorState {
-  html: string;
-  dbHtml: string;
-  scheduleType: ScheduleTypeSelection;
-  dbScheduleType: ScheduleTypeSelection;
-  startDate?: Date;
-  endDate?: Date;
-  dbStartDate?: Date;
-  dbEndDate?: Date;
+  current: PreLoginNotice;
+  db: PreLoginNotice;
 }
 
 class PreLoginNoticeConfigurator extends React.Component<
@@ -49,37 +42,38 @@ class PreLoginNoticeConfigurator extends React.Component<
   constructor(props: PreLoginNoticeConfiguratorProps) {
     super(props);
     this.state = {
-      html: "",
-      dbHtml: "",
-      scheduleType: ScheduleTypeSelection.ON,
-      dbScheduleType: ScheduleTypeSelection.ON,
-      startDate: new Date(),
-      dbStartDate: new Date(),
-      endDate: new Date(),
-      dbEndDate: new Date()
+      current: {
+        notice: "",
+        scheduleSettings: ScheduleTypeSelection.ON,
+        startDate: new Date(),
+        endDate: new Date()
+      },
+      db: {
+        notice: "",
+        scheduleSettings: ScheduleTypeSelection.ON,
+        startDate: new Date(),
+        endDate: new Date()
+      }
     };
   }
 
   handleSubmitPreNotice = () => {
-    if (this.state.html == emptyTinyMCEString) {
+    if (this.state.current.notice == emptyTinyMCEString) {
       clearPreLoginNotice()
         .then(() => {
           this.props.notify(NotificationType.Clear);
-          this.setState({
-            dbHtml: this.state.html
-          });
+          this.setState(
+            {
+              db: this.state.current
+            },
+            () => this.setPreventNav()
+          );
         })
         .catch((error: AxiosError) => {
           this.props.handleError(error);
         });
     } else {
-      let noticeToSend: PreLoginNotice = {
-        notice: this.state.html,
-        scheduleSettings: this.state.scheduleType,
-        startDate: this.state.startDate,
-        endDate: this.state.endDate
-      };
-      submitPreLoginNotice(noticeToSend)
+      submitPreLoginNotice(this.state.current)
         .then(() => {
           this.props.notify(NotificationType.Save);
           this.setDBToValues();
@@ -90,47 +84,23 @@ class PreLoginNoticeConfigurator extends React.Component<
     }
   };
 
-  setValuesToDB = () => {
-    this.setState({
-      html: this.state.dbHtml,
-      scheduleType: this.state.dbScheduleType,
-      startDate: this.state.dbStartDate,
-      endDate: this.state.dbEndDate
-    });
-  };
-
   setDBToValues = () => {
-    this.setState({
-      dbHtml: this.state.html,
-      dbScheduleType: this.state.scheduleType,
-      dbStartDate: this.state.startDate,
-      dbEndDate: this.state.endDate
-    });
-  };
-
-  handleUndoPreNotice = () => {
     this.setState(
       {
-        //swap the states to force an update
-        html: this.state.dbHtml,
-        dbHtml: this.state.html
+        db: this.state.current
       },
-      () => this.setState({ dbHtml: this.state.html })
-    ); //set the dbHtml back to it's original value to update the editor
-    this.props.notify(NotificationType.Revert);
+      () => this.setPreventNav()
+    );
   };
 
   componentDidMount = () => {
     getPreLoginNotice()
-      .then((response: AxiosResponse) => {
+      .then((response: AxiosResponse<PreLoginNotice>) => {
         if (response.data.notice != undefined) {
           this.setState({
-            dbHtml: response.data.notice,
-            dbScheduleType: response.data.scheduleSettings,
-            dbStartDate: response.data.startDate,
-            dbEndDate: response.data.endDate
+            db: response.data,
+            current: response.data
           });
-          this.setValuesToDB();
         }
       })
       .catch((error: AxiosError) => {
@@ -138,17 +108,21 @@ class PreLoginNoticeConfigurator extends React.Component<
       });
   };
 
-  handleEditorChange = (html: string) => {
-    this.setState({ html });
+  setPreventNav = () => {
+    this.props.preventNav(
+      this.state.db.scheduleSettings != this.state.current.scheduleSettings ||
+        this.state.db.endDate != this.state.current.endDate ||
+        this.state.db.startDate != this.state.current.startDate ||
+        this.state.db.notice != this.state.current.notice
+    );
   };
 
-  areButtonsEnabled = (): boolean => {
-    //state matches database?
-    return (
-      this.state.scheduleType == this.state.dbScheduleType &&
-      this.state.html == this.state.dbHtml &&
-      this.state.startDate == this.state.dbStartDate &&
-      this.state.endDate == this.state.dbEndDate
+  handleEditorChange = (html: string) => {
+    this.setState(
+      {
+        current: { ...this.state.current, notice: html }
+      },
+      () => this.setPreventNav()
     );
   };
 
@@ -158,10 +132,9 @@ class PreLoginNoticeConfigurator extends React.Component<
         <Typography color="textSecondary" variant="subtitle1">
           {strings.scheduling.title}
         </Typography>
-
         <RadioGroup
           row
-          value={ScheduleTypeSelection[this.state.scheduleType]}
+          value={ScheduleTypeSelection[this.state.current.scheduleSettings]}
           onChange={this.handleScheduleTypeSelectionChange}
         >
           <FormControlLabel
@@ -182,18 +155,20 @@ class PreLoginNoticeConfigurator extends React.Component<
         </RadioGroup>
 
         <div
-          hidden={this.state.scheduleType != ScheduleTypeSelection.SCHEDULED}
+          hidden={
+            this.state.current.scheduleSettings !=
+            ScheduleTypeSelection.SCHEDULED
+          }
         >
           <Typography color="textSecondary" variant="subtitle1">
             {strings.scheduling.start}
           </Typography>
-
           <DateTimePicker
             id="startDatePicker"
             okLabel={<span id="ok">OK</span>}
-            minDate={new Date().toLocaleDateString()}
             onChange={this.handleStartDateChange}
-            value={this.state.startDate}
+            format={"d MMM yyyy - h:mm a"}
+            value={this.state.current.startDate}
           />
 
           <Typography color="textSecondary" variant="subtitle1">
@@ -202,10 +177,11 @@ class PreLoginNoticeConfigurator extends React.Component<
 
           <DateTimePicker
             id="endDatePicker"
-            minDate={this.state.startDate}
-            minDateMessage={strings.scheduling.endbeforestart}
+            minDate={new Date()}
+            minDateMessage={strings.scheduling.expired}
             onChange={this.handleEndDateChange}
-            value={this.state.endDate}
+            format={"d MMM yyyy - h:mm a"}
+            value={this.state.current.endDate}
           />
         </div>
       </FormControl>
@@ -213,56 +189,43 @@ class PreLoginNoticeConfigurator extends React.Component<
   };
 
   handleStartDateChange = (startDate: Date) => {
-    this.setState({ startDate });
+    this.setState({ current: { ...this.state.current, startDate } }, () =>
+      this.setPreventNav()
+    );
   };
 
   handleEndDateChange = (endDate: Date) => {
-    this.setState({ endDate });
+    this.setState({ current: { ...this.state.current, endDate } }, () =>
+      this.setPreventNav()
+    );
   };
 
   handleScheduleTypeSelectionChange = (event: ChangeEvent, value: string) => {
-    this.setState({ scheduleType: ScheduleTypeSelection[value] });
+    this.setState(
+      {
+        current: {
+          ...this.state.current,
+          scheduleSettings: ScheduleTypeSelection[value]
+        }
+      },
+      () => this.setPreventNav()
+    );
   };
 
   render() {
     const ScheduleSettings = this.ScheduleSettings;
     return (
       <SettingsMenuContainer>
-        <Typography color="textSecondary" variant="subtitle1">
-          {strings.prelogin.label}
-        </Typography>
         <Grid id="preLoginConfig" container spacing={8} direction="column">
           <Grid item>
             <RichTextEditor
-              htmlInput={this.state.dbHtml}
+              htmlInput={this.state.db.notice}
               onStateChange={this.handleEditorChange}
               imageUploadCallBack={uploadPreLoginNoticeImage}
             />
           </Grid>
           <Grid item>
             <ScheduleSettings />
-          </Grid>
-          <Grid item container spacing={8} direction="row-reverse">
-            <Grid item>
-              <Button
-                id="preApplyButton"
-                onClick={this.handleSubmitPreNotice}
-                variant="contained"
-                disabled={this.areButtonsEnabled()}
-              >
-                {commonString.action.save}
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
-                id="preUndoButton"
-                onClick={this.handleUndoPreNotice}
-                variant="text"
-                disabled={this.areButtonsEnabled()}
-              >
-                {commonString.action.cancel}
-              </Button>
-            </Grid>
           </Grid>
         </Grid>
       </SettingsMenuContainer>

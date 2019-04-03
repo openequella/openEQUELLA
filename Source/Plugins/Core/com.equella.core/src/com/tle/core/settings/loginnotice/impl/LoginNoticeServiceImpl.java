@@ -19,6 +19,7 @@ package com.tle.core.settings.loginnotice.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tle.common.Check;
+import com.tle.common.URLUtils;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.core.filesystem.CustomisationFile;
 import com.tle.core.guice.Bind;
@@ -32,15 +33,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.util.Collections;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.BadRequestException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.select.Elements;
 
 @Singleton
 @Bind(LoginNoticeService.class)
 public class LoginNoticeServiceImpl implements LoginNoticeService {
+
   @Inject TLEAclManager tleAclManager;
   @Inject ConfigurationService configurationService;
   @Inject FileSystemService fileSystemService;
@@ -91,8 +96,17 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     CustomisationFile customisationFile = new CustomisationFile();
     FileEntry[] fileNameList =
         fileSystemService.enumerate(customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME, null);
+    Elements imgList = Jsoup.parse(notice).getElementsByTag("img");
+    List<String> srcList = imgList.eachAttr("src");
     for (FileEntry imageFile : fileNameList) {
-      if (!notice.contains(imageFile.getName())) {
+      boolean imageFileUsed = false;
+      for (String src : srcList) {
+        String srcDecoded = URLUtils.basicUrlDecode(src);
+        if (srcDecoded.contains(imageFile.getName())) {
+          imageFileUsed = true;
+        }
+      }
+      if (!imageFileUsed) {
         fileSystemService.removeFile(
             customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + imageFile.getName());
       }

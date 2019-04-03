@@ -9,7 +9,7 @@ import org.openqa.selenium.{By, Keys, WebElement}
 case class LoginNoticePage(ctx: PageContext)
     extends NewTitledPage("Login Notice Editor", "page/loginconfiguration") {
 
-  private def preNoticeApplyButton: WebElement = findElementById("preApplyButton")
+  private def saveButton: WebElement = findElementById("SaveButton")
 
   private def preNoticeField: WebElement = findElementById("tinymce")
 
@@ -29,8 +29,6 @@ case class LoginNoticePage(ctx: PageContext)
   private def preNoticeAddImageOK: WebElement =
     preNoticeAddImagePopup.findElement(By.xpath("//button[text()='Save']"))
 
-  private def postNoticeApplyButton: WebElement = findElementById("postApplyButton")
-
   private def postNoticeClearButton: WebElement = findElementById("postClearButton")
 
   private def postNoticeField: WebElement = findElementById("postNoticeField")
@@ -47,7 +45,7 @@ case class LoginNoticePage(ctx: PageContext)
     driver.switchTo().defaultContent()
   }
 
-  private def clearandPopulatePreNoticeField(notice: String): Unit = {
+  private def clearAndPopulatePreNoticeField(notice: String): Unit = {
     switchToTinyMCEIFrame()
     preNoticeField.sendKeys(Keys.chord(Keys.CONTROL, "a"))
     preNoticeField.sendKeys(Keys.DELETE)
@@ -64,14 +62,14 @@ case class LoginNoticePage(ctx: PageContext)
   }
 
   def setPreLoginNotice(notice: String): Unit = {
-    clearandPopulatePreNoticeField(notice)
+    clearAndPopulatePreNoticeField(notice)
     switchFromTinyMCEIFrame()
-    preNoticeApplyButton.click()
+    saveButton.click()
     waitForSnackBar("Login notice saved successfully.")
   }
 
   def setPreLoginNoticeWithImageURL(imgURL: String): Unit = {
-    clearandPopulatePreNoticeField("Image Test: ")
+    clearAndPopulatePreNoticeField("Image Test: ")
     switchFromTinyMCEIFrame()
     preNoticeAddImageButton.click()
     waitFor(ExpectedConditions.visibilityOf(preNoticeAddImagePopup))
@@ -81,14 +79,14 @@ case class LoginNoticePage(ctx: PageContext)
     waitFor(ExpectedConditions.textToBePresentInElementValue(preNoticeAddImageField, imgURL))
     waitFor(ExpectedConditions.elementToBeClickable(preNoticeAddImageOK))
     preNoticeAddImageOK.click()
-    preNoticeApplyButton.click()
+    saveButton.click()
     waitForSnackBar("Login notice saved successfully.")
   }
 
   def clearPreLoginNotice(): Unit = {
-    clearandPopulatePreNoticeField("")
+    clearAndPopulatePreNoticeField("")
     switchFromTinyMCEIFrame()
-    preNoticeApplyButton.click()
+    saveButton.click()
     waitForSnackBar("Login notice cleared successfully.")
   }
 
@@ -96,14 +94,13 @@ case class LoginNoticePage(ctx: PageContext)
     switchToTinyMCEIFrame()
     val text = preNoticeField.getText
     switchFromTinyMCEIFrame()
-
     text
   }
 
   def setPostLoginNotice(notice: String): Unit = {
     gotoPostNoticeTab()
     populatePostNoticeField(notice)
-    postNoticeApplyButton.click()
+    saveButton.click()
     waitForSnackBar("Login notice saved successfully.")
   }
 

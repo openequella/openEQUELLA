@@ -17,6 +17,7 @@
 package com.tle.web.api.loginnotice.impl;
 
 import com.google.gson.JsonObject;
+import com.tle.common.URLUtils;
 import com.tle.core.guice.Bind;
 import com.tle.core.settings.loginnotice.LoginNoticeService;
 import com.tle.core.settings.loginnotice.impl.PreLoginNotice;
@@ -74,12 +75,10 @@ public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
       InputStream imageFile, String imageName, @Context UriInfo info) throws IOException {
     noticeService.checkPermissions();
     JsonObject returnLink = new JsonObject();
+    String imageFileName = noticeService.uploadPreLoginNoticeImage(imageFile, imageName);
     String getImageAPIURL =
-        info.getBaseUriBuilder()
-            .path(PreLoginNoticeResource.class)
-            .path(PreLoginNoticeResource.class, "getPreLoginNoticeImage")
-            .build(noticeService.uploadPreLoginNoticeImage(imageFile, imageName))
-            .toASCIIString();
+        info.getBaseUriBuilder().path(PreLoginNoticeResource.class).build()
+            + URLUtils.urlEncode("image/" + imageFileName, false);
     returnLink.addProperty("link", getImageAPIURL);
     return Response.ok(returnLink.toString(), "application/json").build();
   }
