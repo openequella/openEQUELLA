@@ -90,6 +90,7 @@
   <extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
     <parameter id="class" value="com.tle.legacy.LegacyGuice" />
     <parameter id="class" value="com.tle.core.collection.guice.CollectionTrackerModule" />
+    <parameter id="class" value="com.tle.core.connectors.blackboard.guice.BlackboardConnectorModule" />
     <parameter id="class" value="com.tle.core.connectors.brightspace.guice.BrightspaceConnectorModule" />
     <parameter id="class" value="com.tle.core.entity.guice.EntityTrackerModule" />
     <parameter id="class" value="com.tle.core.filesystem.guice.FilesystemModule" />
@@ -121,6 +122,7 @@
     <parameter id="class" value="com.tle.core.xslt.guice.XsltModule" />
     <parameter id="class" value="com.tle.integration.lti.brightspace.guice.BrightspaceIntegrationModule" />
     <parameter id="class" value="com.tle.integration.lti.canvasextension.guice.CanvasIntegrationModule" />
+    <parameter id="class" value="com.tle.integration.lti.blackboard.guice.BlackboardLtiIntegrationModule" />
     <parameter id="class" value="com.tle.integration.standard.guice.StandardIntegrationModule" />
     <parameter id="class" value="com.tle.mycontent.guice.MyContentModule" />
     <parameter id="class" value="com.tle.mypages.guice.MyPagesModule" />
@@ -332,6 +334,10 @@
   <extension plugin-id="com.tle.web.connectors" point-id="connectorEditor" id="blackboardEditor">
     <parameter id="id" value="blackboard" />
     <parameter id="class" value="bean:com.tle.web.connectors.blackboard.editor.BlackboardConnectorEditor" />
+  </extension>
+  <extension plugin-id="com.tle.web.connectors" point-id="connectorEditor" id="blackboardRESTEditor">
+    <parameter id="id" value="blackboardrest" />
+    <parameter id="class" value="bean:com.tle.web.connectors.blackboard.editor.BlackboardRESTConnectorEditor" />
   </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="userScriptsObjects">
     <parameter id="class" value="com.tle.common.userscripts.entity.UserScript" />
@@ -797,6 +803,11 @@
     <parameter id="path" value="/brightspace/insertstuff.do" />
     <parameter id="root" value="bean:/brightspaceinsertstuff" />
   </extension>
+  <!--
+  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="blackboardStructServlet">
+    <parameter id="bean" value="bean:com.tle.integration.lti.blackboard.servlet.BlackboardStructureInitServlet" />
+    <parameter id="url-pattern" value="/blackboardstructureinit" />
+  </extension>-->
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="brightspaceStructServlet">
     <parameter id="bean" value="bean:com.tle.integration.lti.brightspace.servlet.BrightspaceStructureInitServlet" />
     <parameter id="url-pattern" value="/brightspacestructureinit" />
@@ -2157,6 +2168,10 @@
     <parameter id="id" value="canvas" />
     <parameter id="class" value="bean:com.tle.integration.lti.canvasextension.CanvasIntegration" />
   </extension>
+  <extension plugin-id="com.tle.web.integration" point-id="integration" id="blackboardltiintegration">
+    <parameter id="id" value="blackboardlti" />
+    <parameter id="class" value="bean:com.tle.integration.lti.blackboard.BlackboardLtiIntegration" />
+  </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="signon_2">
     <parameter id="path" value="/canvassignon.do" />
     <parameter id="root" value="bean:/canvassignon" />
@@ -2165,9 +2180,22 @@
     <parameter id="path" value="/canvascipreturn.do" />
     <parameter id="root" value="bean:/canvascipreturn" />
   </extension>
+  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="signon_blackboardLti">
+    <parameter id="path" value="/blackboardltisignon.do" />
+    <parameter id="root" value="bean:/blackboardltisignon" />
+  </extension>
+  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="contentItemPlacementsReturnBlackboardLti">
+    <parameter id="path" value="/blackboardlticipreturn.do" />
+    <parameter id="root" value="bean:/blackboardlticipreturn" />
+  </extension>
   <extension plugin-id="com.tle.web.lti" point-id="ltiWrapperExtension" id="canvasLtiExt">
     <parameter id="id" value="canvas" />
     <parameter id="bean" value="bean:com.tle.integration.lti.canvasextension.CanvasLtiWrapperExtension" />
+    <parameter id="order" value="1000" />
+  </extension>
+  <extension plugin-id="com.tle.web.lti" point-id="ltiWrapperExtension" id="blackboardLtiExt">
+    <parameter id="id" value="bblti" />
+    <parameter id="bean" value="bean:com.tle.integration.lti.blackboard.BlackboardLtiWrapperExtension" />
     <parameter id="order" value="1000" />
   </extension>
   <extension plugin-id="com.tle.web.connectors" point-id="connectorEditor" id="moodleEditor">
@@ -4234,10 +4262,19 @@
     <parameter id="type" value="blackboard" />
     <parameter id="class" value="bean:com.tle.core.connectors.blackboard.service.BlackboardConnectorService" />
   </extension>
+  <extension plugin-id="com.tle.core.connectors" point-id="connectorImplementation" id="blackboardrest">
+    <parameter id="type" value="blackboardrest" />
+    <parameter id="class" value="bean:com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService" />
+  </extension>
   <extension plugin-id="com.tle.core.connectors" point-id="connectorType" id="blackboardConnector">
     <parameter id="id" value="blackboard" />
     <parameter id="nameKey" value="com.equella.core.connector.name" />
     <parameter id="descriptionKey" value="com.equella.core.connector.description" />
+  </extension>
+  <extension plugin-id="com.tle.core.connectors" point-id="connectorType" id="blackboardRESTConnector">
+    <parameter id="id" value="blackboardrest" />
+    <parameter id="nameKey" value="com.equella.core.blackboardrest.connector.name" />
+    <parameter id="descriptionKey" value="com.equella.core.blackboardrest.connector.description" />
   </extension>
   <extension plugin-id="com.tle.core.scheduler" point-id="scheduledTask" id="bbConnectorTask">
     <parameter id="id" value="Blackboard Connector Synchronisation" />

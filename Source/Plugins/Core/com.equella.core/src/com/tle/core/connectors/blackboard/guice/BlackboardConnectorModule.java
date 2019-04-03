@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-package com.tle.integration.lti.canvasextension;
+package com.tle.core.connectors.blackboard.guice;
 
-import javax.servlet.http.HttpServletRequest;
+import com.tle.core.config.guice.OptionalConfigModule;
 
-import com.tle.integration.lti.LtiSessionData;
-
-public class CanvasSessionData extends LtiSessionData
+/**
+ * @author Aaron
+ *
+ */
+@SuppressWarnings("nls")
+public class BlackboardConnectorModule extends OptionalConfigModule
 {
-	private static final long serialVersionUID = 1L;
-
-	public CanvasSessionData()
-	{
-		super();
-	}
-
-	public CanvasSessionData(HttpServletRequest request)
-	{
-		super(request);
-	}
+	private static final String BB_API_VERSION = "1";
 
 	@Override
-	public String getIntegrationType()
+	protected void configure()
 	{
-		return "canvas";
+		bindProp("blackboard.api.version", BB_API_VERSION);
 	}
 }

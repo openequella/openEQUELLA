@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-package com.tle.integration.lti.canvasextension;
+package com.tle.core.connectors.blackboard;
 
-import javax.servlet.http.HttpServletRequest;
-
-import com.tle.integration.lti.LtiSessionData;
-
-public class CanvasSessionData extends LtiSessionData
+/**
+ * @author Aaron
+ */
+@SuppressWarnings("nls")
+public final class BlackboardRESTConnectorConstants
 {
-	private static final long serialVersionUID = 1L;
-
-	public CanvasSessionData()
+	private BlackboardRESTConnectorConstants()
 	{
-		super();
+		throw new Error();
 	}
 
-	public CanvasSessionData(HttpServletRequest request)
-	{
-		super(request);
-	}
+	public static final String CONNECTOR_TYPE = "blackboardrest";
 
-	@Override
-	public String getIntegrationType()
-	{
-		return "canvas";
-	}
+	public static final String FIELD_TESTED_WEBSERVICE = "testedWebservice";
+	public static final String FIELD_API_KEY = "apiKey";
+	public static final String FIELD_API_SECRET = "apiSecret";
 }
