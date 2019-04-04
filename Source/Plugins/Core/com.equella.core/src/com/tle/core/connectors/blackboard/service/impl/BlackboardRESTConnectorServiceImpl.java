@@ -47,9 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -64,13 +62,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   private static final String KEY_PFX =
       AbstractPluginService.getMyPluginId(BlackboardRESTConnectorService.class) + ".";
 
-  private static final String API_ROOT = "/learn/api/public";
-
-  private String bbApi;
-
-  @Inject
-  @Named("blackboard.api.version")
-  private String bbApiVersion;
+  private static final String API_ROOT = "/learn/api/public/v1";
 
   @Inject private HttpService httpService;
   @Inject private ConfigurationService configService;
@@ -97,11 +89,6 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     BlindSSLSocketFactory.register();
     // Turn off spurious Pre-emptive Authentication bollocks
     Logger.getLogger("org.apache.commons.httpclient.HttpMethodDirector").setLevel(Level.ERROR);
-  }
-
-  @PostConstruct
-  public void init() {
-    bbApi = API_ROOT + "/v" + bbApiVersion;
   }
 
   @Inject
@@ -218,7 +205,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
     // FIXME: courses for current user...?
     // TODO - since v3400.8.0, this endpoint should use v2
-    String url = bbApi + "/courses";
+    String url = API_ROOT + "/courses";
     /*
     if( !archived )
     {
@@ -257,7 +244,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   private Course getCourseBean(Connector connector, String courseID) {
     // FIXME: courses for current user...?
     // TODO - since v3400.8.0, this endpoint should use v2
-    String url = bbApi + "/courses/" + courseID;
+    String url = API_ROOT + "/courses/" + courseID;
 
     final Course course =
         sendBlackboardData(connector, url, Course.class, null, Request.Method.GET);
@@ -267,7 +254,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   private Content getContentBean(Connector connector, String courseID, String folderID) {
     // FIXME: courses for current user...?
     // TODO - since v3400.8.0, this endpoint should use v2
-    String url = bbApi + "/courses/" + courseID + "/contents/" + folderID;
+    String url = API_ROOT + "/courses/" + courseID + "/contents/" + folderID;
 
     final Content folder =
         sendBlackboardData(connector, url, Content.class, null, Request.Method.GET);
@@ -279,7 +266,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       Connector connector, String username, String courseId, boolean management)
       throws LmsUserNotFoundException {
     // FIXME: courses for current user...?
-    final String url = bbApi + "/courses/" + courseId + "/contents";
+    final String url = API_ROOT + "/courses/" + courseId + "/contents";
 
     return retrieveFolders(connector, url, username, courseId, management);
   }
@@ -289,7 +276,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       Connector connector, String username, String courseId, String folderId, boolean management)
       throws LmsUserNotFoundException {
     // FIXME: courses for current user...?
-    final String url = bbApi + "/courses/" + courseId + "/contents/" + folderId + "/children/";
+    final String url = API_ROOT + "/courses/" + courseId + "/contents/" + folderId + "/children/";
 
     return retrieveFolders(connector, url, username, courseId, management);
   }
@@ -332,7 +319,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       IItem<?> item,
       SelectedResource selectedResource)
       throws LmsUserNotFoundException {
-    final String url = bbApi + "/courses/" + courseId + "/contents/" + folderId + "/children";
+    final String url = API_ROOT + "/courses/" + courseId + "/contents/" + folderId + "/children";
 
     final Integration.LmsLinkInfo linkInfo = getLmsLink(item, selectedResource);
     final Integration.LmsLink lmsLink = linkInfo.getLmsLink();
