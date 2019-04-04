@@ -12,7 +12,6 @@ require("tinymce/plugins/charmap");
 require("tinymce/plugins/code");
 require("tinymce/plugins/codesample");
 require("tinymce/plugins/directionality");
-require("tinymce/plugins/fullpage");
 require("tinymce/plugins/fullscreen");
 require("tinymce/plugins/help");
 require("tinymce/plugins/hr");
@@ -93,7 +92,7 @@ class RichTextEditor extends React.Component<RichTextEditorProps> {
         }
         plugins={
           "anchor autolink autoresize advlist charmap code codesample  " +
-          "directionality fullpage fullscreen help hr image imagetools " +
+          "directionality fullscreen help hr image imagetools " +
           "importcss insertdatetime link lists media nonbreaking noneditable pagebreak paste " +
           "preview print quickbars save searchreplace table template " +
           "textpattern toc visualblocks visualchars wordcount"
