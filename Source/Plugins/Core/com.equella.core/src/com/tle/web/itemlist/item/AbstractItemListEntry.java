@@ -89,9 +89,9 @@ public abstract class AbstractItemListEntry extends AbstractItemlikeListEntry<It
   protected Bookmark getTitleLink() {
     final Item item = getItem();
     if (item != null) {
-      ViewItemUrl vurl = itemUrls.createItemUrl(info, item.getItemId());
-      itemUrlModifiers.forEach(vurl::add);
-      return vurl;
+      ViewItemUrl viewItemUrl = itemUrls.createItemUrl(info, item.getItemId());
+      itemUrlModifiers.forEach(viewItemUrl::add);
+      return viewItemUrl;
     }
     return new SimpleBookmark("#");
   }

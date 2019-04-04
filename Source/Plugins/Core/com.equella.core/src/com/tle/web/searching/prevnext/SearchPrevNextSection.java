@@ -75,11 +75,11 @@ public class SearchPrevNextSection
     SearchPrevNextModel model = getModel(info);
     int nextIndex = model.getIndex() + direction;
     SectionInfo searchInfo = info.createForward(model.getSearchPage());
-    AbstractFreetextResultsSection srs =
+    AbstractFreetextResultsSection resultsSection =
         searchInfo.lookupSection(AbstractFreetextResultsSection.class);
-    ItemKey ftr = srs.getResultForIndex(searchInfo, nextIndex);
-    if (ftr != null) {
-      ViewItemUrl vurl = urlFactory.createItemUrl(info, ftr);
+    ItemKey resultKey = resultsSection.getResultForIndex(searchInfo, nextIndex);
+    if (resultKey != null) {
+      ViewItemUrl vurl = urlFactory.createItemUrl(info, resultKey);
       vurl.add(new SearchIndexModifier(model.getSearchPage(), nextIndex, model.getAvailable()));
       vurl.forward(info);
     }

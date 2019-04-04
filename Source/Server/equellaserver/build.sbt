@@ -9,7 +9,7 @@ javaSource in Test := baseDirectory.value / "test/java"
 
 scalaSource in Compile := baseDirectory.value / "scalasrc"
 
-updateOptions := updateOptions.value.withCachedResolution(true).withLatestSnapshots(false)
+updateOptions := updateOptions.value.withCachedResolution(true)
 
 unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_config")).value
 

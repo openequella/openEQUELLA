@@ -57,9 +57,9 @@ public class StandardItemListEntryFactory {
     if (itemListItem == null) {
       itemListItem = entryFactory.get();
     }
-    String spage = info.getTreeAttribute(ContextableSearchSection.SEARCHPAGE_ATTR);
-    if (spage != null) {
-      itemListItem.addModifier(new SearchIndexModifier(spage, index, available));
+    String searchPageUri = info.getTreeAttribute(ContextableSearchSection.SEARCHPAGE_ATTR);
+    if (searchPageUri != null) {
+      itemListItem.addModifier(new SearchIndexModifier(searchPageUri, index, available));
     }
     itemListItem.setInfo(info);
     itemListItem.setItem(item);
