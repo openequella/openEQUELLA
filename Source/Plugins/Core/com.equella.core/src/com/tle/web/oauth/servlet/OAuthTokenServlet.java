@@ -18,7 +18,6 @@ package com.tle.web.oauth.servlet;
 
 import com.dytech.edge.exceptions.WebException;
 import com.tle.common.Check;
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.common.oauth.beans.OAuthToken;
 import com.tle.core.guice.Bind;
@@ -46,7 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 public class OAuthTokenServlet extends AbstractOAuthServlet {
   private static final long serialVersionUID = 1L;
 
-  private static final String KEY_CLIENT_NOT_FOUND = PREFIX + "oauth.error.clientnotfound";
+  private static final String KEY_CLIENT_NOT_FOUND = "oauth.error.clientnotfound";
 
   @Inject private UserService userService;
   @Inject private OAuthWebService oauthWebService;
@@ -56,16 +55,6 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
   protected void doService(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException, WebException {
     final String clientId = getParameter(request, OAuthWebConstants.PARAM_CLIENT_ID, true);
-    final String redirectUrl = getParameter(request, OAuthWebConstants.PARAM_REDIRECT_URI, true);
-
-    final OAuthClient client = oauthService.getByClientIdAndRedirectUrl(clientId, redirectUrl);
-    if (client == null) {
-      throw new OAuthException(
-          400,
-          OAuthConstants.ERROR_INVALID_CLIENT,
-          CurrentLocale.get(KEY_CLIENT_NOT_FOUND, clientId, redirectUrl),
-          true);
-    }
 
     // must be one of 'authorization_code' (4.1), 'client_credentials' (4.4)
     final String grantType = getParameter(request, OAuthWebConstants.PARAM_GRANT_TYPE, true);
@@ -80,28 +69,45 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
 
     try {
       final AuthorisationDetails auth;
+      final OAuthClient client;
       // http://tools.ietf.org/html/draft-ietf-oauth-v2-23#section-4.1
       if (isAuthorizationCode) {
+        final String redirectUrl =
+            getParameter(request, OAuthWebConstants.PARAM_REDIRECT_URI, true);
+        client = oauthService.getByClientIdAndRedirectUrl(clientId, redirectUrl);
+        if (client == null) {
+          throw new OAuthException(
+              400,
+              OAuthConstants.ERROR_INVALID_CLIENT,
+              text(KEY_CLIENT_NOT_FOUND, clientId, redirectUrl),
+              true);
+        }
         auth = oauthWebService.getAuthorisationDetailsByCode(client, code);
       }
       // http://tools.ietf.org/html/draft-ietf-oauth-v2-23#section-4.4
       else if (isClientCredentials) {
+        client = oauthService.getByClientIdOnly(clientId);
+        if (client == null) {
+          throw new OAuthException(
+              400,
+              OAuthConstants.ERROR_INVALID_CLIENT,
+              text("oauth.error.clientnotfoundnoredir", clientId),
+              true);
+        }
         final String clientSecret =
             getParameter(request, OAuthWebConstants.PARAM_CLIENT_SECRET, true);
         auth = oauthWebService.getAuthorisationDetailsBySecret(client, clientSecret);
 
         if (Check.isEmpty(client.getUserId())) {
           throw new OAuthException(
-              400,
-              OAuthConstants.ERROR_INVALID_CLIENT,
-              CurrentLocale.get(PREFIX + "oauth.error.musthavefixeduser"));
+              400, OAuthConstants.ERROR_INVALID_CLIENT, text("oauth.error.musthavefixeduser"));
         }
       } else {
         // Invalid grant type
         throw new OAuthException(
             400,
             OAuthConstants.ERROR_UNSUPPORTED_GRANT_TYPE,
-            CurrentLocale.get(PREFIX + "oauth.error.invalidgranttype", grantType));
+            text("oauth.error.invalidgranttype", grantType));
       }
 
       String username = auth.getUsername();

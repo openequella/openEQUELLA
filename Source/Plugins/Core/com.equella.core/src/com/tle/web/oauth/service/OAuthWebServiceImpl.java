@@ -21,7 +21,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.tle.beans.Institution;
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.common.oauth.beans.OAuthToken;
@@ -29,6 +28,7 @@ import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.encryption.EncryptionService;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.core.i18n.service.LanguageService;
 import com.tle.core.institution.InstitutionCache;
 import com.tle.core.institution.InstitutionService;
@@ -70,16 +70,19 @@ import net.oauth.signature.OAuthSignatureMethod;
 public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEventListener {
   private static final long DEFAULT_MAX_TIMESTAMP_AGE = TimeUnit.MINUTES.toMillis(5);
 
-  private static final String PREFIX = "com.tle.web.oauth.";
-  private static final String KEY_CODE_NOT_FOUND = PREFIX + "oauth.error.codenotfound";
-  private static final String KEY_CLIENT_CODE_MISMATCH = PREFIX + "oauth.error.clientcodemismatch";
-  private static final String KEY_INVALID_SECRET = PREFIX + "oauth.error.invalidsecret";
-  private static final String KEY_TOKEN_NOT_FOUND = PREFIX + "oauth.error.tokennotfound";
+  private static final String KEY_CODE_NOT_FOUND = "oauth.error.codenotfound";
+  private static final String KEY_CLIENT_CODE_MISMATCH = "oauth.error.clientcodemismatch";
+  private static final String KEY_INVALID_SECRET = "oauth.error.invalidsecret";
+  private static final String KEY_TOKEN_NOT_FOUND = "oauth.error.tokennotfound";
 
   @Inject private OAuthService oauthService;
   @Inject private UserService userService;
   @Inject private LanguageService languageService;
   @Inject private EncryptionService encryptionService;
+
+  protected String text(String key, Object... vals) {
+    return CoreStrings.lookup().getString(key, vals);
+  }
 
   private ReplicatedCache<Boolean> oAuthNonceCache;
   private ReplicatedCache<CodeReg> oAuthCodesCache;
@@ -129,8 +132,7 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
     // code must be in the map
     Optional<CodeReg> codeOptional = oAuthCodesCache.get(code);
     if (!codeOptional.isPresent()) {
-      throw new OAuthException(
-          400, OAuthConstants.ERROR_INVALID_GRANT, CurrentLocale.get(KEY_CODE_NOT_FOUND));
+      throw new OAuthException(400, OAuthConstants.ERROR_INVALID_GRANT, text(KEY_CODE_NOT_FOUND));
     }
 
     CodeReg codeReg = codeOptional.get();
@@ -140,7 +142,7 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
       throw new OAuthException(
           400,
           OAuthConstants.ERROR_UNAUTHORIZED_CLIENT,
-          CurrentLocale.get(KEY_CLIENT_CODE_MISMATCH, client.getClientId()),
+          text(KEY_CLIENT_CODE_MISMATCH, client.getClientId()),
           true);
     }
 
@@ -155,8 +157,7 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
       OAuthClient client, String clientSecret) {
     if (clientSecret != null
         && !encryptionService.decrypt(client.getClientSecret()).equals(clientSecret)) {
-      throw new OAuthException(
-          400, OAuthConstants.ERROR_INVALID_GRANT, CurrentLocale.get(KEY_INVALID_SECRET));
+      throw new OAuthException(400, OAuthConstants.ERROR_INVALID_GRANT, text(KEY_INVALID_SECRET));
     }
 
     final AuthorisationDetails auth = new AuthorisationDetails();
