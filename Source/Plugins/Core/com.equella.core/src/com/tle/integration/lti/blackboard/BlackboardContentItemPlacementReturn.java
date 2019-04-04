@@ -46,315 +46,280 @@ import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.SimpleElementId;
 import com.tle.web.sections.render.HiddenInput;
 import com.tle.web.sections.render.HtmlRenderer;
-import com.tle.web.sections.render.TextUtils;
 import com.tle.web.selection.SelectedResource;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.template.Decorations;
-import org.apache.log4j.Logger;
-
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import javax.inject.Inject;
+import org.apache.log4j.Logger;
 
-//TODO: defer - we should be able to make this a generic LTI return
+// TODO: defer - we should be able to make this a generic LTI return
 @Bind
-public class BlackboardContentItemPlacementReturn extends AbstractPrototypeSection<Object> implements HtmlRenderer
-{
-	private static final Logger LOGGER = Logger.getLogger(BlackboardContentItemPlacementReturn.class);
+public class BlackboardContentItemPlacementReturn extends AbstractPrototypeSection<Object>
+    implements HtmlRenderer {
+  private static final Logger LOGGER = Logger.getLogger(BlackboardContentItemPlacementReturn.class);
 
-	@Inject
-	private SelectionService selectionService;
-	@Inject
-	private IntegrationService integrationService;
-	@Inject
-	private BlackboardLtiIntegration blackboardLtiIntegration;
-	@Inject
-	private ItemResolver itemResolver;
-	@Inject
-	private OAuthWebService oauthWebService;
-	@Inject
-	private LtiConsumerService consumerService;
+  @Inject private SelectionService selectionService;
+  @Inject private IntegrationService integrationService;
+  @Inject private BlackboardLtiIntegration blackboardLtiIntegration;
+  @Inject private ItemResolver itemResolver;
+  @Inject private OAuthWebService oauthWebService;
+  @Inject private LtiConsumerService consumerService;
 
-	private static final ObjectMapper mapper = new ObjectMapper();
+  private static final ObjectMapper mapper = new ObjectMapper();
 
-	@Override
-	public SectionResult renderHtml(RenderEventContext context) throws Exception
-	{
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) throws Exception {
 
-		final SelectionSession session = selectionService.getCurrentSession(context);
-		Decorations.getDecorations(context).clearAllDecorations();
+    final SelectionSession session = selectionService.getCurrentSession(context);
+    Decorations.getDecorations(context).clearAllDecorations();
 
-		final List<LmsLink> links = new ArrayList<>();
-		for (final SelectedResource resource : session.getSelectedResources())
-		{
-			final IItem<?> item = getItemForResource(resource);
+    final List<LmsLink> links = new ArrayList<>();
+    for (final SelectedResource resource : session.getSelectedResources()) {
+      final IItem<?> item = getItemForResource(resource);
 
-			final LmsLink link = blackboardLtiIntegration.getLinkForResource(context,
-				blackboardLtiIntegration.createViewableItem(item, resource), resource, false, session.isAttachmentUuidUrls())
-				.getLmsLink();
-			links.add(link);
-		}
+      final LmsLink link =
+          blackboardLtiIntegration
+              .getLinkForResource(
+                  context,
+                  blackboardLtiIntegration.createViewableItem(item, resource),
+                  resource,
+                  false,
+                  session.isAttachmentUuidUrls())
+              .getLmsLink();
+      links.add(link);
+    }
 
-		final IntegrationInterface integ = integrationService.getIntegrationInterface(context);
-		final LtiSessionData data = (LtiSessionData) integ.getData();
+    final IntegrationInterface integ = integrationService.getIntegrationInterface(context);
+    final LtiSessionData data = (LtiSessionData) integ.getData();
 
-		final String launchUrl = data.getContentItemReturnUrl();
+    final String launchUrl = data.getContentItemReturnUrl();
 
-		final Map<String, String[]> formParams = new TreeMap<>();
-		addParameter(formParams,"lti_message_type", "ContentItemSelection");
-		addParameter(formParams,"lti_version", "LTI-1p0");
-		addParameter(formParams,"data", data.getData());
-		addParameter(formParams,"content_items", buildSelectionJson(links));
+    final Map<String, String[]> formParams = new TreeMap<>();
+    addParameter(formParams, "lti_message_type", "ContentItemSelection");
+    addParameter(formParams, "lti_version", "LTI-1p0");
+    addParameter(formParams, "data", data.getData());
+    addParameter(formParams, "content_items", buildSelectionJson(links));
 
-		final FormTag formTag = context.getForm();
-		formTag.setName("ltiLaunchForm");
-		formTag.setElementId(new SimpleElementId("ltiLaunchForm"));
-		formTag.setAction(new SimpleFormAction(launchUrl));
-		formTag.setEncoding("application/x-www-form-urlencoded");
-		formTag.setMethod("POST");
+    final FormTag formTag = context.getForm();
+    formTag.setName("ltiLaunchForm");
+    formTag.setElementId(new SimpleElementId("ltiLaunchForm"));
+    formTag.setAction(new SimpleFormAction(launchUrl));
+    formTag.setEncoding("application/x-www-form-urlencoded");
+    formTag.setMethod("POST");
 
-		final List<Map.Entry<String, String>> finalParams = signParameters(launchUrl, formParams);
-		for( Entry<String, String> param : finalParams )
-		{
-			final String val = param.getValue();
-			if( !Check.isEmpty(val) )
-			{
-				formTag.addHidden(new HiddenInput(param.getKey(), val));
-			}
-		}
+    final List<Map.Entry<String, String>> finalParams = signParameters(launchUrl, formParams);
+    for (Entry<String, String> param : finalParams) {
+      final String val = param.getValue();
+      if (!Check.isEmpty(val)) {
+        formTag.addHidden(new HiddenInput(param.getKey(), val));
+      }
+    }
 
-		formTag.addReadyStatements(
-			Js.statement(Js.methodCall(Jq.$('#' + formTag.getElementId(context)), Js.function("submit"))));
-		return null;
-	}
+    formTag.addReadyStatements(
+        Js.statement(
+            Js.methodCall(Jq.$('#' + formTag.getElementId(context)), Js.function("submit"))));
+    return null;
+  }
 
-	private void addParameter(Map<String, String[]> params, String key, String value)
-	{
-		params.put(key, new String[]{ value });
-	}
+  private void addParameter(Map<String, String[]> params, String key, String value) {
+    params.put(key, new String[] {value});
+  }
 
-	private String buildSelectionJson(List<LmsLink> links)
-	{
-		final ContentItemSelection selection = new ContentItemSelection();
-		selection.context = "http://purl.imsglobal.org/ctx/lti/v1/ContentItem";
+  private String buildSelectionJson(List<LmsLink> links) {
+    final ContentItemSelection selection = new ContentItemSelection();
+    selection.context = "http://purl.imsglobal.org/ctx/lti/v1/ContentItem";
 
-		final List<ContentItemSelection.ContentItemGraph> graphList = new ArrayList<>();
-		for (final LmsLink link : links)
-		{
-			final ContentItemSelection.ContentItemGraph graph = new ContentItemSelection.ContentItemGraph();
-			graph.type = "LtiLinkItem";
-			graph.id = link.getUrl();
-			graph.url = link.getUrl();
-			graph.title = link.getName();
-			graph.text = link.getName();
-			// FIXME: Is there a custom BB property for the description?  Base LTI spec doesn't specify one
-			//graph.description = TextUtils.INSTANCE.ensureWrap(link.getDescription(),250, 250, true);
-			graph.mediaType = "application/vnd.ims.lti.v1.ltilink";
-			graph.windowTarget = "_blank";
-			final ContentItemSelection.ContentItemGraph.ContentItemPlacementAdvice placementAdvice = new ContentItemSelection.ContentItemGraph.ContentItemPlacementAdvice();
-			placementAdvice.presentationDocumentTarget = "window";
-			graph.placementAdvice = placementAdvice;
-			graphList.add(graph);
-		}
-		selection.graph = graphList;
+    final List<ContentItemSelection.ContentItemGraph> graphList = new ArrayList<>();
+    for (final LmsLink link : links) {
+      final ContentItemSelection.ContentItemGraph graph =
+          new ContentItemSelection.ContentItemGraph();
+      graph.type = "LtiLinkItem";
+      graph.id = link.getUrl();
+      graph.url = link.getUrl();
+      graph.title = link.getName();
+      graph.text = link.getName();
+      // FIXME: Is there a custom BB property for the description?  Base LTI spec doesn't specify
+      // one
+      // graph.description = TextUtils.INSTANCE.ensureWrap(link.getDescription(),250, 250, true);
+      graph.mediaType = "application/vnd.ims.lti.v1.ltilink";
+      graph.windowTarget = "_blank";
+      final ContentItemSelection.ContentItemGraph.ContentItemPlacementAdvice placementAdvice =
+          new ContentItemSelection.ContentItemGraph.ContentItemPlacementAdvice();
+      placementAdvice.presentationDocumentTarget = "window";
+      graph.placementAdvice = placementAdvice;
+      graphList.add(graph);
+    }
+    selection.graph = graphList;
 
-		try
-		{
-			return mapper.writeValueAsString(selection);
-		}
-		catch (JsonProcessingException ex)
-		{
-			throw Throwables.propagate(ex);
-		}
-	}
+    try {
+      return mapper.writeValueAsString(selection);
+    } catch (JsonProcessingException ex) {
+      throw Throwables.propagate(ex);
+    }
+  }
 
-	private List<Map.Entry<String, String>> signParameters(String launchUrl, Map<String, String[]> formParams)
-	{
-		final LtiData.OAuthData oauthData = getOAuthData();
-		if (oauthData == null)
-		{
-			throw new RuntimeException("Not currently in an LTI session");
-		}
+  private List<Map.Entry<String, String>> signParameters(
+      String launchUrl, Map<String, String[]> formParams) {
+    final LtiData.OAuthData oauthData = getOAuthData();
+    if (oauthData == null) {
+      throw new RuntimeException("Not currently in an LTI session");
+    }
 
-		return oauthWebService.getOauthSignatureParams(oauthData.getConsumerKey(), oauthData.getConsumerSecret(), launchUrl, formParams);
-	}
+    return oauthWebService.getOauthSignatureParams(
+        oauthData.getConsumerKey(), oauthData.getConsumerSecret(), launchUrl, formParams);
+  }
 
-	private LtiData.OAuthData getOAuthData()
-	{
-		final UserState userState = CurrentUser.getUserState();
-		if( userState instanceof LtiUserState)
-		{
-			final LtiData ltiData = ((LtiUserState) userState).getData();
-			if ( ltiData != null )
-			{
-				return ltiData.getOAuthData();
-			}
-		}
-		return null;
-	}
+  private LtiData.OAuthData getOAuthData() {
+    final UserState userState = CurrentUser.getUserState();
+    if (userState instanceof LtiUserState) {
+      final LtiData ltiData = ((LtiUserState) userState).getData();
+      if (ltiData != null) {
+        return ltiData.getOAuthData();
+      }
+    }
+    return null;
+  }
 
-	private IItem<?> getItemForResource(SelectedResource resource)
-	{
-		final String uuid = resource.getUuid();
-		final String extensionType = resource.getKey().getExtensionType();
-		final ItemId itemId;
-		if( resource.isLatest() )
-		{
-			final int latestVersion = itemResolver.getLiveItemVersion(uuid, extensionType);
-			itemId = new ItemId(uuid, latestVersion);
-		}
-		else
-		{
-			itemId = new ItemId(uuid, resource.getVersion());
-		}
-		final IItem<?> item = itemResolver.getItem(itemId, extensionType);
-		if( item == null )
-		{
-			throw new RuntimeException(CurrentLocale.get("com.tle.web.integration.error.noitemforresource",
-				resource.getUuid(), resource.getVersion()));
-		}
-		return item;
-	}
+  private IItem<?> getItemForResource(SelectedResource resource) {
+    final String uuid = resource.getUuid();
+    final String extensionType = resource.getKey().getExtensionType();
+    final ItemId itemId;
+    if (resource.isLatest()) {
+      final int latestVersion = itemResolver.getLiveItemVersion(uuid, extensionType);
+      itemId = new ItemId(uuid, latestVersion);
+    } else {
+      itemId = new ItemId(uuid, resource.getVersion());
+    }
+    final IItem<?> item = itemResolver.getItem(itemId, extensionType);
+    if (item == null) {
+      throw new RuntimeException(
+          CurrentLocale.get(
+              "com.tle.web.integration.error.noitemforresource",
+              resource.getUuid(),
+              resource.getVersion()));
+    }
+    return item;
+  }
 
-	//TODO: defer - move to generic LTI area
-	public static class ContentItemSelection
-	{
-		@JsonProperty("@context")
-		private String context;
-		@JsonProperty("@graph")
-		private List<ContentItemGraph> graph;
+  // TODO: defer - move to generic LTI area
+  public static class ContentItemSelection {
+    @JsonProperty("@context")
+    private String context;
 
-		public String getContext()
-		{
-			return context;
-		}
+    @JsonProperty("@graph")
+    private List<ContentItemGraph> graph;
 
-		public void setContext(String context)
-		{
-			this.context = context;
-		}
+    public String getContext() {
+      return context;
+    }
 
-		public List<ContentItemGraph> getGraph()
-		{
-			return graph;
-		}
+    public void setContext(String context) {
+      this.context = context;
+    }
 
-		public void setGraph(List<ContentItemGraph> graph)
-		{
-			this.graph = graph;
-		}
+    public List<ContentItemGraph> getGraph() {
+      return graph;
+    }
 
-		public static class ContentItemGraph
-		{
-			@JsonProperty("@type")
-			private String type;
-			@JsonProperty("@id")
-			private String id;
-			private String url;
-			private String title;
-			private String text;
-			private String mediaType;
-			private String windowTarget;
-			private ContentItemPlacementAdvice placementAdvice;
+    public void setGraph(List<ContentItemGraph> graph) {
+      this.graph = graph;
+    }
 
-			public String getType()
-			{
-				return type;
-			}
+    public static class ContentItemGraph {
+      @JsonProperty("@type")
+      private String type;
 
-			public void setType(String type)
-			{
-				this.type = type;
-			}
+      @JsonProperty("@id")
+      private String id;
 
-			public String getId()
-			{
-				return id;
-			}
+      private String url;
+      private String title;
+      private String text;
+      private String mediaType;
+      private String windowTarget;
+      private ContentItemPlacementAdvice placementAdvice;
 
-			public void setId(String id)
-			{
-				this.id = id;
-			}
+      public String getType() {
+        return type;
+      }
 
-			public String getUrl()
-			{
-				return url;
-			}
+      public void setType(String type) {
+        this.type = type;
+      }
 
-			public void setUrl(String url)
-			{
-				this.url = url;
-			}
+      public String getId() {
+        return id;
+      }
 
-			public String getTitle()
-			{
-				return title;
-			}
+      public void setId(String id) {
+        this.id = id;
+      }
 
-			public void setTitle(String title)
-			{
-				this.title = title;
-			}
+      public String getUrl() {
+        return url;
+      }
 
-			public String getText()
-			{
-				return text;
-			}
+      public void setUrl(String url) {
+        this.url = url;
+      }
 
-			public void setText(String text)
-			{
-				this.text = text;
-			}
+      public String getTitle() {
+        return title;
+      }
 
-			public String getMediaType()
-			{
-				return mediaType;
-			}
+      public void setTitle(String title) {
+        this.title = title;
+      }
 
-			public void setMediaType(String mediaType)
-			{
-				this.mediaType = mediaType;
-			}
+      public String getText() {
+        return text;
+      }
 
-			public String getWindowTarget()
-			{
-				return windowTarget;
-			}
+      public void setText(String text) {
+        this.text = text;
+      }
 
-			public void setWindowTarget(String windowTarget)
-			{
-				this.windowTarget = windowTarget;
-			}
+      public String getMediaType() {
+        return mediaType;
+      }
 
-			public ContentItemPlacementAdvice getPlacementAdvice()
-			{
-				return placementAdvice;
-			}
+      public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
+      }
 
-			public void setPlacementAdvice(ContentItemPlacementAdvice placementAdvice)
-			{
-				this.placementAdvice = placementAdvice;
-			}
+      public String getWindowTarget() {
+        return windowTarget;
+      }
 
-			public static class ContentItemPlacementAdvice
-			{
-				private String presentationDocumentTarget;
+      public void setWindowTarget(String windowTarget) {
+        this.windowTarget = windowTarget;
+      }
 
-				public String getPresentationDocumentTarget()
-				{
-					return presentationDocumentTarget;
-				}
+      public ContentItemPlacementAdvice getPlacementAdvice() {
+        return placementAdvice;
+      }
 
-				public void setPresentationDocumentTarget(String presentationDocumentTarget)
-				{
-					this.presentationDocumentTarget = presentationDocumentTarget;
-				}
-			}
-		}
-	}
+      public void setPlacementAdvice(ContentItemPlacementAdvice placementAdvice) {
+        this.placementAdvice = placementAdvice;
+      }
+
+      public static class ContentItemPlacementAdvice {
+        private String presentationDocumentTarget;
+
+        public String getPresentationDocumentTarget() {
+          return presentationDocumentTarget;
+        }
+
+        public void setPresentationDocumentTarget(String presentationDocumentTarget) {
+          this.presentationDocumentTarget = presentationDocumentTarget;
+        }
+      }
+    }
+  }
 }

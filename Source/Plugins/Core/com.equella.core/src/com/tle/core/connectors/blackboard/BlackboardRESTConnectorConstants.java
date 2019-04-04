@@ -16,20 +16,16 @@
 
 package com.tle.core.connectors.blackboard;
 
-/**
- * @author Aaron
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public final class BlackboardRESTConnectorConstants
-{
-	private BlackboardRESTConnectorConstants()
-	{
-		throw new Error();
-	}
+public final class BlackboardRESTConnectorConstants {
+  private BlackboardRESTConnectorConstants() {
+    throw new Error();
+  }
 
-	public static final String CONNECTOR_TYPE = "blackboardrest";
+  public static final String CONNECTOR_TYPE = "blackboardrest";
 
-	public static final String FIELD_TESTED_WEBSERVICE = "testedWebservice";
-	public static final String FIELD_API_KEY = "apiKey";
-	public static final String FIELD_API_SECRET = "apiSecret";
+  public static final String FIELD_TESTED_WEBSERVICE = "testedWebservice";
+  public static final String FIELD_API_KEY = "apiKey";
+  public static final String FIELD_API_SECRET = "apiSecret";
 }

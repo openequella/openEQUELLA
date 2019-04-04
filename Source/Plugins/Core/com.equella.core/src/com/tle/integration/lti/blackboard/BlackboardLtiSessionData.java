@@ -17,26 +17,21 @@
 package com.tle.integration.lti.blackboard;
 
 import com.tle.integration.lti.LtiSessionData;
-
 import javax.servlet.http.HttpServletRequest;
 
-public class BlackboardLtiSessionData extends LtiSessionData
-{
-	private static final long serialVersionUID = 1L;
+public class BlackboardLtiSessionData extends LtiSessionData {
+  private static final long serialVersionUID = 1L;
 
-	public BlackboardLtiSessionData()
-	{
-		super();
-	}
+  public BlackboardLtiSessionData() {
+    super();
+  }
 
-	public BlackboardLtiSessionData(HttpServletRequest request)
-	{
-		super(request);
-	}
+  public BlackboardLtiSessionData(HttpServletRequest request) {
+    super(request);
+  }
 
-	@Override
-	public String getIntegrationType()
-	{
-		return "blackboardlti";
-	}
+  @Override
+  public String getIntegrationType() {
+    return "blackboardlti";
+  }
 }

@@ -23,38 +23,32 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.AfterParametersListener;
 import com.tle.web.sections.events.ParametersEvent;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
-
 import javax.inject.Inject;
 
 /**
- * Not sign-on as such, but an extension of signon.do which doesn't do sign-on
- * but sets up an integration selection session
- * 
-  */
+ * Not sign-on as such, but an extension of signon.do which doesn't do sign-on but sets up an
+ * integration selection session
+ */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class BlackboardSignon extends AbstractPrototypeSection<SingleSignonForm> implements AfterParametersListener
-{
-	@Inject
-	private BlackboardLtiIntegration blackboardLtiIntegration;
+public class BlackboardSignon extends AbstractPrototypeSection<SingleSignonForm>
+    implements AfterParametersListener {
+  @Inject private BlackboardLtiIntegration blackboardLtiIntegration;
 
-	@Override
-	public void afterParameters(SectionInfo info, ParametersEvent event)
-	{
-		final SingleSignonForm model = getModel(info);
-		blackboardLtiIntegration.setupSingleSignOn(info, model);
-	}
+  @Override
+  public void afterParameters(SectionInfo info, ParametersEvent event) {
+    final SingleSignonForm model = getModel(info);
+    blackboardLtiIntegration.setupSingleSignOn(info, model);
+  }
 
-	@Override
-	public String getDefaultPropertyName()
-	{
-		return "";
-	}
+  @Override
+  public String getDefaultPropertyName() {
+    return "";
+  }
 
-	@Override
-	public SingleSignonForm instantiateModel(SectionInfo info)
-	{
-		return new SingleSignonForm();
-	}
+  @Override
+  public SingleSignonForm instantiateModel(SectionInfo info) {
+    return new SingleSignonForm();
+  }
 }

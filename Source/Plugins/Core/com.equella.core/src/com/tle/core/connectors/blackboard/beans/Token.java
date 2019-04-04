@@ -1,46 +1,40 @@
 package com.tle.core.connectors.blackboard.beans;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Token
-{
-	@JsonProperty("access_token")
-	private String accessToken;
-	@JsonProperty("token_type")
-	private String tokenType;
-	@JsonProperty("expires_in")
-	private Integer expiresIn;
+public class Token {
+  @JsonProperty("access_token")
+  private String accessToken;
 
-	public String getAccessToken()
-	{
-		return accessToken;
-	}
+  @JsonProperty("token_type")
+  private String tokenType;
 
-	public void setAccessToken(String accessToken)
-	{
-		this.accessToken = accessToken;
-	}
+  @JsonProperty("expires_in")
+  private Integer expiresIn;
 
-	public String getTokenType()
-	{
-		return tokenType;
-	}
+  public String getAccessToken() {
+    return accessToken;
+  }
 
-	public void setTokenType(String tokenType)
-	{
-		this.tokenType = tokenType;
-	}
+  public void setAccessToken(String accessToken) {
+    this.accessToken = accessToken;
+  }
 
-	public Integer getExpiresIn()
-	{
-		return expiresIn;
-	}
+  public String getTokenType() {
+    return tokenType;
+  }
 
-	public void setExpiresIn(Integer expiresIn)
-	{
-		this.expiresIn = expiresIn;
-	}
+  public void setTokenType(String tokenType) {
+    this.tokenType = tokenType;
+  }
+
+  public Integer getExpiresIn() {
+    return expiresIn;
+  }
+
+  public void setExpiresIn(Integer expiresIn) {
+    this.expiresIn = expiresIn;
+  }
 }

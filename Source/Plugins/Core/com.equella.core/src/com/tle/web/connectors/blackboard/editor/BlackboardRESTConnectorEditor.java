@@ -1,7 +1,6 @@
 package com.tle.web.connectors.blackboard.editor;
 
 import com.tle.common.connectors.entity.Connector;
-import com.tle.core.connectors.blackboard.BlackboardConnectorConstants;
 import com.tle.core.connectors.blackboard.BlackboardRESTConnectorConstants;
 import com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService;
 import com.tle.core.connectors.service.ConnectorEditingBean;
@@ -24,149 +23,140 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
-
-import javax.inject.Inject;
 import java.util.Map;
+import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
 public class BlackboardRESTConnectorEditor
-	extends AbstractConnectorEditorSection<BlackboardRESTConnectorEditor.BlackboardRESTConnectorEditorModel>
-{
-	@PlugKey("bb.editor.error.testwebservice.mandatory")
-	private static Label LABEL_TEST_WEBSERVICE_MANDATORY;
-	@PlugKey("editor.error.testwebservice.enteruser")
-	private static Label LABEL_TEST_WEBSERVICE_ENTERUSER;
+    extends AbstractConnectorEditorSection<
+        BlackboardRESTConnectorEditor.BlackboardRESTConnectorEditorModel> {
+  @PlugKey("bb.editor.error.testwebservice.mandatory")
+  private static Label LABEL_TEST_WEBSERVICE_MANDATORY;
 
-	@Inject
-	private BlackboardRESTConnectorService blackboardService;
-	@Inject
-	private EncryptionService encryptionService;
+  @PlugKey("editor.error.testwebservice.enteruser")
+  private static Label LABEL_TEST_WEBSERVICE_ENTERUSER;
 
-	@PlugKey("editor.button.testwebservice")
-	@Component
-	private Button testWebServiceButton;
-	@Component(name = "ak", stateful = false)
-	private TextField apiKey;
-	@Component(name = "as", stateful = false)
-	private TextField apiSecret;
+  @Inject private BlackboardRESTConnectorService blackboardService;
+  @Inject private EncryptionService encryptionService;
 
-	@ViewFactory
-	private FreemarkerFactory view;
-	@EventFactory
-	private EventGenerator events;
+  @PlugKey("editor.button.testwebservice")
+  @Component
+  private Button testWebServiceButton;
 
-	@Override
-	protected SectionRenderable renderFields(RenderEventContext context,
-											 EntityEditingSession<ConnectorEditingBean, Connector> session)
-	{
-		return view.createResult("blackboardrestconnector.ftl", context);
-	}
+  @Component(name = "ak", stateful = false)
+  private TextField apiKey;
 
-	@Override
-	public void registered(String id, SectionTree tree)
-	{
-		super.registered(id, tree);
+  @Component(name = "as", stateful = false)
+  private TextField apiSecret;
 
-		testWebServiceButton.setClickHandler(ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("testWebService"), "testdiv"));
-	}
+  @ViewFactory private FreemarkerFactory view;
+  @EventFactory private EventGenerator events;
 
-	@Override
-	protected String getAjaxDivId()
-	{
-		return "blackboardsetup";
-	}
+  @Override
+  protected SectionRenderable renderFields(
+      RenderEventContext context, EntityEditingSession<ConnectorEditingBean, Connector> session) {
+    return view.createResult("blackboardrestconnector.ftl", context);
+  }
 
-	@EventHandlerMethod
-	public void testWebService(SectionInfo info)
-	{
-//final EntityEditingSession<ConnectorEditingBean, Connector> session = saveToSession(info);
-//
-//
-//final ConnectorEditingBean connector = session.getBean();
-//
-//final String result = blackboardService.testConnection(connector.getServerUrl(), "");
-//	if( result == null )
-//	{
-//	connector.setAttribute(BlackboardRESTConnectorConstants.FIELD_TESTED_WEBSERVICE, true);
-//	getModel(info).setTestWebServiceStatus("ok");
-//	}
-//	else
-//	{
-//	connector.setAttribute(BlackboardRESTConnectorConstants.FIELD_TESTED_WEBSERVICE, false);
-//	getModel(info).setTestWebServiceStatus("fail");
-//	session.getValidationErrors().put("blackboardwebservice", result);
-//	}
-	}
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
 
-	@Override
-	public SectionRenderable renderHelp(RenderContext context)
-	{
-		return null;
-	}
+    testWebServiceButton.setClickHandler(
+        ajax.getAjaxUpdateDomFunction(
+            tree, this, events.getEventHandler("testWebService"), "testdiv"));
+  }
 
-	@Override
-	protected Connector createNewConnector()
-	{
-		return new Connector(BlackboardRESTConnectorConstants.CONNECTOR_TYPE);
-	}
+  @Override
+  protected String getAjaxDivId() {
+    return "blackboardsetup";
+  }
 
-	@Override
-	protected void customValidate(SectionInfo info, ConnectorEditingBean connector, Map<String, Object> errors)
-	{
-		// FIXME: actual validation of key and secret
-//	if( !connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_TESTED_WEBSERVICE, false) )
-//	{
-//	errors.put("blackboardwebservice", LABEL_TEST_WEBSERVICE_MANDATORY.getText());
-//	}
-	}
+  @EventHandlerMethod
+  public void testWebService(SectionInfo info) {
+    // final EntityEditingSession<ConnectorEditingBean, Connector> session = saveToSession(info);
+    //
+    //
+    // final ConnectorEditingBean connector = session.getBean();
+    //
+    // final String result = blackboardService.testConnection(connector.getServerUrl(), "");
+    //	if( result == null )
+    //	{
+    //	connector.setAttribute(BlackboardRESTConnectorConstants.FIELD_TESTED_WEBSERVICE, true);
+    //	getModel(info).setTestWebServiceStatus("ok");
+    //	}
+    //	else
+    //	{
+    //	connector.setAttribute(BlackboardRESTConnectorConstants.FIELD_TESTED_WEBSERVICE, false);
+    //	getModel(info).setTestWebServiceStatus("fail");
+    //	session.getValidationErrors().put("blackboardwebservice", result);
+    //	}
+  }
 
-	@Override
-	protected void customLoad(SectionInfo info, ConnectorEditingBean connector)
-	{
-		apiKey.setValue(info, connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_API_KEY));
-		apiSecret.setValue(info, encryptionService.decrypt(connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_API_SECRET)));
-		final boolean testedWebservice = connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_TESTED_WEBSERVICE,
-			false);
-		if (testedWebservice)
-		{
-			final BlackboardRESTConnectorEditorModel model = getModel(info);
-			//model.setTestWebServiceStatus("ok");
-		}
-	}
+  @Override
+  public SectionRenderable renderHelp(RenderContext context) {
+    return null;
+  }
 
-	@Override
-	protected void customSave(SectionInfo info, ConnectorEditingBean connector)
-	{
-		connector.setAttribute(BlackboardRESTConnectorConstants.FIELD_API_KEY, apiKey.getValue(info));
-		connector.setAttribute(BlackboardRESTConnectorConstants.FIELD_API_SECRET, encryptionService.encrypt(apiSecret.getValue(info)));
-	}
+  @Override
+  protected Connector createNewConnector() {
+    return new Connector(BlackboardRESTConnectorConstants.CONNECTOR_TYPE);
+  }
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
-	{
-		return new BlackboardRESTConnectorEditorModel();
-	}
+  @Override
+  protected void customValidate(
+      SectionInfo info, ConnectorEditingBean connector, Map<String, Object> errors) {
+    // FIXME: actual validation of key and secret
+    //	if( !connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_TESTED_WEBSERVICE, false)
+    // )
+    //	{
+    //	errors.put("blackboardwebservice", LABEL_TEST_WEBSERVICE_MANDATORY.getText());
+    //	}
+  }
 
-	public Button getTestWebServiceButton()
-	{
-		return testWebServiceButton;
-	}
+  @Override
+  protected void customLoad(SectionInfo info, ConnectorEditingBean connector) {
+    apiKey.setValue(info, connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_API_KEY));
+    apiSecret.setValue(
+        info,
+        encryptionService.decrypt(
+            connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_API_SECRET)));
+    final boolean testedWebservice =
+        connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_TESTED_WEBSERVICE, false);
+    if (testedWebservice) {
+      final BlackboardRESTConnectorEditorModel model = getModel(info);
+      // model.setTestWebServiceStatus("ok");
+    }
+  }
 
-	public TextField getApiKey()
-	{
-		return apiKey;
-	}
+  @Override
+  protected void customSave(SectionInfo info, ConnectorEditingBean connector) {
+    connector.setAttribute(BlackboardRESTConnectorConstants.FIELD_API_KEY, apiKey.getValue(info));
+    connector.setAttribute(
+        BlackboardRESTConnectorConstants.FIELD_API_SECRET,
+        encryptionService.encrypt(apiSecret.getValue(info)));
+  }
 
-	public TextField getApiSecret()
-	{
-		return apiSecret;
-	}
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new BlackboardRESTConnectorEditorModel();
+  }
 
-	public class BlackboardRESTConnectorEditorModel
-		extends
-		AbstractConnectorEditorSection<BlackboardRESTConnectorEditor.BlackboardRESTConnectorEditorModel>.AbstractConnectorEditorModel
-	{
-	}
+  public Button getTestWebServiceButton() {
+    return testWebServiceButton;
+  }
+
+  public TextField getApiKey() {
+    return apiKey;
+  }
+
+  public TextField getApiSecret() {
+    return apiSecret;
+  }
+
+  public class BlackboardRESTConnectorEditorModel
+      extends AbstractConnectorEditorSection<
+              BlackboardRESTConnectorEditor.BlackboardRESTConnectorEditorModel>
+          .AbstractConnectorEditorModel {}
 }

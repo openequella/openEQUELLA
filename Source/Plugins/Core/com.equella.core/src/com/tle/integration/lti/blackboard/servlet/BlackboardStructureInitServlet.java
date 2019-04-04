@@ -1,4 +1,4 @@
-///*
+/// *
 // * Copyright 2017 Apereo
 // *
 // * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,54 +14,54 @@
 // * limitations under the License.
 // */
 // TODO - is this needed?
-//package com.tle.integration.lti.blackboard.servlet;
+// package com.tle.integration.lti.blackboard.servlet;
 //
-//import java.io.IOException;
-//import java.util.List;
-//import java.util.concurrent.TimeUnit;
+// import java.io.IOException;
+// import java.util.List;
+// import java.util.concurrent.TimeUnit;
 //
-//import javax.annotation.PostConstruct;
-//import javax.inject.Inject;
-//import javax.inject.Singleton;
-//import javax.servlet.ServletException;
-//import javax.servlet.http.HttpServlet;
-//import javax.servlet.http.HttpServletRequest;
-//import javax.servlet.http.HttpServletResponse;
+// import javax.annotation.PostConstruct;
+// import javax.inject.Inject;
+// import javax.inject.Singleton;
+// import javax.servlet.ServletException;
+// import javax.servlet.http.HttpServlet;
+// import javax.servlet.http.HttpServletRequest;
+// import javax.servlet.http.HttpServletResponse;
 //
-//import com.fasterxml.jackson.core.JsonProcessingException;
-//import com.fasterxml.jackson.core.PrettyPrinter;
-//import com.fasterxml.jackson.core.util.MinimalPrettyPrinter;
-//import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.fasterxml.jackson.databind.node.ArrayNode;
-//import com.fasterxml.jackson.databind.node.ObjectNode;
-//import com.google.common.base.Strings;
-//import com.google.common.base.Throwables;
-//import com.tle.annotation.NonNullByDefault;
-//import com.tle.common.connectors.ConnectorCourse;
-//import com.tle.common.connectors.ConnectorFolder;
-//import com.tle.common.connectors.entity.Connector;
-//import com.tle.core.connectors.blackboard.service.BlackboardConnectorService;
-//import com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService;
-//import com.tle.core.connectors.exception.LmsUserNotFoundException;
-//import com.tle.core.connectors.service.ConnectorService;
-//import com.tle.core.guice.Bind;
-//import com.tle.core.replicatedcache.ReplicatedCacheService;
-//import com.tle.core.replicatedcache.ReplicatedCacheService.ReplicatedCache;
-//import com.tle.core.services.user.UserSessionService;
-//import com.tle.web.integration.extension.StructuredIntegrationSessionExtension;
-//import com.tle.web.selection.SelectionSession;
+// import com.fasterxml.jackson.core.JsonProcessingException;
+// import com.fasterxml.jackson.core.PrettyPrinter;
+// import com.fasterxml.jackson.core.util.MinimalPrettyPrinter;
+// import com.fasterxml.jackson.databind.ObjectMapper;
+// import com.fasterxml.jackson.databind.node.ArrayNode;
+// import com.fasterxml.jackson.databind.node.ObjectNode;
+// import com.google.common.base.Strings;
+// import com.google.common.base.Throwables;
+// import com.tle.annotation.NonNullByDefault;
+// import com.tle.common.connectors.ConnectorCourse;
+// import com.tle.common.connectors.ConnectorFolder;
+// import com.tle.common.connectors.entity.Connector;
+// import com.tle.core.connectors.blackboard.service.BlackboardConnectorService;
+// import com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService;
+// import com.tle.core.connectors.exception.LmsUserNotFoundException;
+// import com.tle.core.connectors.service.ConnectorService;
+// import com.tle.core.guice.Bind;
+// import com.tle.core.replicatedcache.ReplicatedCacheService;
+// import com.tle.core.replicatedcache.ReplicatedCacheService.ReplicatedCache;
+// import com.tle.core.services.user.UserSessionService;
+// import com.tle.web.integration.extension.StructuredIntegrationSessionExtension;
+// import com.tle.web.selection.SelectionSession;
 //
-///**
+/// **
 // * Served at /blackboardstructureinit
 // *
 // * @author Aaron
 // *
 // */
-//@NonNullByDefault
-//@Bind
-//@Singleton
-//public class BlackboardStructureInitServlet extends HttpServlet
-//{
+// @NonNullByDefault
+// @Bind
+// @Singleton
+// public class BlackboardStructureInitServlet extends HttpServlet
+// {
 //	@Inject
 //	private ReplicatedCacheService cacheService;
 //	@Inject
@@ -79,7 +79,8 @@
 //	@PostConstruct
 //	public void setupCache()
 //	{
-//		courseStructureCache = cacheService.getCache("BlackboardSignonCourseStructure", 100, 2, TimeUnit.MINUTES);
+//		courseStructureCache = cacheService.getCache("BlackboardSignonCourseStructure", 100, 2,
+// TimeUnit.MINUTES);
 //	}
 //
 //	@Override
@@ -118,7 +119,8 @@
 //		try
 //		{
 //			final boolean isDefaultApplicable = !Strings.isNullOrEmpty(selected);
-//			final String cacheKey = connectorUuid + ":" + courseId + (!isDefaultApplicable ? "" : ":" + selected);
+//			final String cacheKey = connectorUuid + ":" + courseId + (!isDefaultApplicable ? "" : ":" +
+// selected);
 //			String structure = courseStructureCache.get(cacheKey).orNull();
 //
 //			// if no structure, get from Blackboard
@@ -139,7 +141,8 @@
 //				final ArrayNode foldersNode = objectMapper.createArrayNode();
 //				root.put("folders", foldersNode);
 //
-//				final List<ConnectorFolder> folders = blackboardService.getFoldersForCourse(connector, null, courseId,
+//				final List<ConnectorFolder> folders = blackboardService.getFoldersForCourse(connector, null,
+// courseId,
 //					false);
 //				boolean first = true;
 //				for( ConnectorFolder folder : folders )
@@ -149,7 +152,8 @@
 //					folderNode.put("name", folder.getName());
 //					folderNode.put("targetable", true);
 //					folderNode.put("selected",
-//						(!isDefaultApplicable && first) || (isDefaultApplicable && selected.equals(folder.getId())));
+//						(!isDefaultApplicable && first) || (isDefaultApplicable &&
+// selected.equals(folder.getId())));
 //					foldersNode.add(folderNode);
 //					first = false;
 //
@@ -182,13 +186,15 @@
 //		}
 //	}
 //
-//	private void recurseFolder(Connector connector, String courseId, ConnectorFolder folder, ObjectNode folderNode,
+//	private void recurseFolder(Connector connector, String courseId, ConnectorFolder folder,
+// ObjectNode folderNode,
 //							   String selected)
 //	{
 //		try
 //		{
 //			final boolean isDefaultApplicable = !Strings.isNullOrEmpty(selected);
-//			final List<ConnectorFolder> subFolders = blackboardService.getFoldersForFolder(connector, null, courseId,
+//			final List<ConnectorFolder> subFolders = blackboardService.getFoldersForFolder(connector, null,
+// courseId,
 //				folder.getId(), false);
 //			if( subFolders.size() > 0 )
 //			{
@@ -213,4 +219,4 @@
 //			throw Throwables.propagate(lms);
 //		}
 //	}
-//}
+// }

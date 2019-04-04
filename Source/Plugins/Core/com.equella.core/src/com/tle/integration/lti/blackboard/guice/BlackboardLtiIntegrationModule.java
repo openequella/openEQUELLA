@@ -22,14 +22,15 @@ import com.tle.integration.lti.blackboard.BlackboardSignon;
 import com.tle.web.sections.equella.guice.SectionsModule;
 
 @SuppressWarnings("nls")
-public class BlackboardLtiIntegrationModule extends SectionsModule
-{
-	@Override
-	protected void configure()
-	{
-		bind(Object.class).annotatedWith(Names.named("/blackboardltisignon")).toProvider(node(BlackboardSignon.class));
+public class BlackboardLtiIntegrationModule extends SectionsModule {
+  @Override
+  protected void configure() {
+    bind(Object.class)
+        .annotatedWith(Names.named("/blackboardltisignon"))
+        .toProvider(node(BlackboardSignon.class));
 
-		bind(Object.class).annotatedWith(Names.named("/blackboardlticipreturn"))
-			.toProvider(node(BlackboardContentItemPlacementReturn.class));
-	}
+    bind(Object.class)
+        .annotatedWith(Names.named("/blackboardlticipreturn"))
+        .toProvider(node(BlackboardContentItemPlacementReturn.class));
+  }
 }

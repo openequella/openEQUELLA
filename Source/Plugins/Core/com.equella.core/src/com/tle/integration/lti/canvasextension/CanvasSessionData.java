@@ -16,27 +16,22 @@
 
 package com.tle.integration.lti.canvasextension;
 
+import com.tle.integration.lti.LtiSessionData;
 import javax.servlet.http.HttpServletRequest;
 
-import com.tle.integration.lti.LtiSessionData;
+public class CanvasSessionData extends LtiSessionData {
+  private static final long serialVersionUID = 1L;
 
-public class CanvasSessionData extends LtiSessionData
-{
-	private static final long serialVersionUID = 1L;
+  public CanvasSessionData() {
+    super();
+  }
 
-	public CanvasSessionData()
-	{
-		super();
-	}
+  public CanvasSessionData(HttpServletRequest request) {
+    super(request);
+  }
 
-	public CanvasSessionData(HttpServletRequest request)
-	{
-		super(request);
-	}
-
-	@Override
-	public String getIntegrationType()
-	{
-		return "canvas";
-	}
+  @Override
+  public String getIntegrationType() {
+    return "canvas";
+  }
 }

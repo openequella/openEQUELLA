@@ -23,32 +23,27 @@ import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.remoting.RemoteExternalToolsService;
 import com.tle.core.service.session.ExternalToolEditingBean;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 public interface ExternalToolsService
-	extends
-		AbstractEntityService<ExternalToolEditingBean, ExternalTool>,
-		RemoteExternalToolsService
-{
-	/**
-	 * @param launchURL tool launch URL entered during contribution
-	 * @return first matched enabled provider configuration or null if none
-	 *         found
-	 */
-	public ExternalTool findMatchingBaseURL(String launchURL);
+    extends AbstractEntityService<ExternalToolEditingBean, ExternalTool>,
+        RemoteExternalToolsService {
+  /**
+   * @param launchURL tool launch URL entered during contribution
+   * @return first matched enabled provider configuration or null if none found
+   */
+  public ExternalTool findMatchingBaseURL(String launchURL);
 
-	List<NameValue> parseCustomParamsString(String paramString);
+  List<NameValue> parseCustomParamsString(String paramString);
 
-	String customParamListToString(List<NameValue> customParams);
+  String customParamListToString(List<NameValue> customParams);
 
-	/**
-	 * If an ICON_URL isn't found in the attachment, look for an ExternalTool
-	 * uuid and if found use it's URL if it exists. Fall back on the mime
-	 * entry's icon it that exists and after all that, return null.
-	 *
-	 * @param attachment
-	 * @return icon url, or null if not found at all
-	 */
-	String findApplicableIconUrl(Attachment attachment);
+  /**
+   * If an ICON_URL isn't found in the attachment, look for an ExternalTool uuid and if found use
+   * it's URL if it exists. Fall back on the mime entry's icon it that exists and after all that,
+   * return null.
+   *
+   * @param attachment
+   * @return icon url, or null if not found at all
+   */
+  String findApplicableIconUrl(Attachment attachment);
 }

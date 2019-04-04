@@ -18,18 +18,13 @@ package com.tle.core.connectors.blackboard.guice;
 
 import com.tle.core.config.guice.OptionalConfigModule;
 
-/**
- * @author Aaron
- *
- */
+/** @author Aaron */
 @SuppressWarnings("nls")
-public class BlackboardConnectorModule extends OptionalConfigModule
-{
-	private static final String BB_API_VERSION = "1";
+public class BlackboardConnectorModule extends OptionalConfigModule {
+  private static final String BB_API_VERSION = "1";
 
-	@Override
-	protected void configure()
-	{
-		bindProp("blackboard.api.version", BB_API_VERSION);
-	}
+  @Override
+  protected void configure() {
+    bindProp("blackboard.api.version", BB_API_VERSION);
+  }
 }
