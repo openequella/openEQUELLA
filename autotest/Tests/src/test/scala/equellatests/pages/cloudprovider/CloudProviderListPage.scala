@@ -4,13 +4,15 @@ import com.tle.webtests.framework.PageContext
 import equellatests.browserpage.NewTitledPage
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.{By, WebElement}
+import scala.collection.JavaConverters._
 
 case class CloudProviderListPage(ctx: PageContext)
     extends NewTitledPage("Cloud providers", "page/cloudprovider") {
 
   case class CloudProviderEntry(elem: WebElement) {
 
-    def description(): String = elem.findElement(By.xpath("./div/div/p")).getText
+    def description(): Option[String] =
+      elem.findElements(By.xpath("./div/div/p")).asScala.headOption.map(_.getText)
 
     def delete(name: String): Unit = {
       val cloudProvider = elem.findElement(By.xpath("./div/button"))
