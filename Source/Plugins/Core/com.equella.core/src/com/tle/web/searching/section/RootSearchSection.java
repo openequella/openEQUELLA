@@ -96,4 +96,9 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
         ? super.getDefaultLayout(info)
         : ContentLayout.ONE_COLUMN;
   }
+
+  @Override
+  protected String getPageName() {
+    return SEARCHURL;
+  }
 }

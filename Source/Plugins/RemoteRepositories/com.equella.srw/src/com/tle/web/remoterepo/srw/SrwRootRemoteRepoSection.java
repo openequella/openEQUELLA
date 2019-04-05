@@ -47,4 +47,9 @@ public class SrwRootRemoteRepoSection extends AbstractRootRemoteRepoSection {
   protected String getSessionKey() {
     return CONTEXT_KEY;
   }
+
+  @Override
+  protected String getPageName() {
+    return null;
+  }
 }

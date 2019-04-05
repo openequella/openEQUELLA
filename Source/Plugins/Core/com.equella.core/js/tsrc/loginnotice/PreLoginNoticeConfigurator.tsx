@@ -10,7 +10,6 @@ import {
 } from "@material-ui/core";
 import {
   clearPreLoginNotice,
-  emptyTinyMCEString,
   getPreLoginNotice,
   NotificationType,
   PreLoginNotice,
@@ -58,7 +57,7 @@ class PreLoginNoticeConfigurator extends React.Component<
   }
 
   handleSubmitPreNotice = () => {
-    if (this.state.current.notice == emptyTinyMCEString) {
+    if (this.state.current.notice == "") {
       clearPreLoginNotice()
         .then(() => {
           this.props.notify(NotificationType.Clear);

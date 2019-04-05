@@ -30,6 +30,7 @@ import com.tle.web.sections.events.BookmarkEvent;
 import com.tle.web.sections.events.ParametersEvent;
 import com.tle.web.sections.events.ReadyToRespondListener;
 import com.tle.web.sections.events.RenderEventContext;
+import com.tle.web.sections.events.RespondingListener;
 import com.tle.web.sections.generic.InfoBookmark;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
@@ -40,9 +41,12 @@ import javax.inject.Inject;
 
 public abstract class ContextableSearchSection<M extends ContextableSearchSection.Model>
     extends AbstractRootSearchSection<M>
-    implements PublicBookmarkFactory, AfterParametersListener, ReadyToRespondListener {
+    implements PublicBookmarkFactory,
+        AfterParametersListener,
+        ReadyToRespondListener,
+        RespondingListener {
   public static final String HISTORYURL_CONTEXT = "css-historyUrl"; // $NON-NLS-1$
-
+  public static final String SEARCHPAGE_ATTR = "SEARCH_PAGE";
   @Inject private UserSessionService userSessionService;
   @Inject protected SelectionService selectionService;
 
@@ -108,8 +112,8 @@ public abstract class ContextableSearchSection<M extends ContextableSearchSectio
   }
 
   @Override
-  public void readyToRespond(SectionInfo info, boolean redirect) {
-    if (redirect || getModel(info).isUpdateContext()) {
+  public void responding(SectionInfo info) {
+    if (getModel(info).isUpdateContext()) {
       final Map<String, String[]> searchContext = buildSearchContext(info);
       final SelectionSession selectionSession = selectionService.getCurrentSession(info);
       if (selectionSession == null) {
@@ -117,6 +121,13 @@ public abstract class ContextableSearchSection<M extends ContextableSearchSectio
       } else {
         selectionSession.setSearchContext(getSessionKey(), searchContext);
       }
+    }
+  }
+
+  @Override
+  public void readyToRespond(SectionInfo info, boolean redirect) {
+    if (redirect) {
+      getModel(info).setUpdateContext(true);
     }
   }
 
@@ -128,7 +139,15 @@ public abstract class ContextableSearchSection<M extends ContextableSearchSectio
     return bookmarkEvent.getBookmarkState();
   }
 
+  @Override
+  public void registered(String id, SectionTree tree) {
+    super.registered(id, tree);
+    tree.setAttribute(SEARCHPAGE_ATTR, getPageName());
+  }
+
   protected abstract String getSessionKey();
+
+  protected abstract String getPageName();
 
   @Override
   public Object instantiateModel(SectionInfo info) {

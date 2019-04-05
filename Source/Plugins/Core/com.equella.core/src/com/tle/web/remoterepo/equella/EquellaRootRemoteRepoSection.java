@@ -66,4 +66,9 @@ public class EquellaRootRemoteRepoSection extends AbstractRootRemoteRepoSection 
   protected RemoteRepoViewResultSection<?, ?, ?> getViewSection() {
     return null;
   }
+
+  @Override
+  protected String getPageName() {
+    return null;
+  }
 }

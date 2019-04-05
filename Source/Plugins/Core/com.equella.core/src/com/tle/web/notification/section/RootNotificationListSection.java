@@ -48,4 +48,9 @@ public class RootNotificationListSection
   public void updateTopbar(SectionInfo info) {
     topbarLinkService.clearCachedData();
   }
+
+  @Override
+  protected String getPageName() {
+    return URL;
+  }
 }

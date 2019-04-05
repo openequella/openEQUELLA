@@ -23,16 +23,6 @@ export interface PreLoginNotice {
   endDate?: Date;
 }
 
-export const emptyTinyMCEString =
-  "<!DOCTYPE html>\n" +
-  "<html>\n" +
-  "<head>\n" +
-  "</head>\n" +
-  "<body>\n" +
-  "\n" +
-  "</body>\n" +
-  "</html>";
-
 export const strings = prepLangStrings("loginnoticepage", {
   title: "Login notice editor",
   clear: {

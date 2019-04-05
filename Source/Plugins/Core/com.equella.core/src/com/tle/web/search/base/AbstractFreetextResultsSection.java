@@ -18,11 +18,11 @@ package com.tle.web.search.base;
 
 import com.dytech.edge.exceptions.InvalidSearchQueryException;
 import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemKey;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.search.LiveItemSearch;
 import com.tle.common.search.PresetSearch;
 import com.tle.core.freetext.service.FreeTextService;
-import com.tle.core.search.MappedSearchIndexValues;
 import com.tle.core.services.item.FreetextResult;
 import com.tle.core.services.item.FreetextSearchResults;
 import com.tle.core.services.user.UserSessionService;
@@ -39,7 +39,6 @@ import com.tle.web.sections.TreeIndexed;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.TextLabel;
-import com.tle.web.selection.section.RootSelectionSection.Layout;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -102,37 +101,11 @@ public abstract class AbstractFreetextResultsSection<
     // previous iteration
     itemList.setNullItemsRemovedOnModel(info, false);
 
-    // On having conducted any search, expunge the mapped-index structure
-    // from any previous search that may be held by the session.
-    sessionService.removeAttribute(MappedSearchIndexValues.MAPPED_SEARCH_ATTR_KEY);
-
-    // The existence of either Layout.SKINNY or affirmative to
-    // isInIntegrationSession is enough to flag that we avoid mapping index
-    // values for the benefit of next/prev buttons
-    boolean inSkinny = false;
-    if (count > 0) {
-      inSkinny =
-          getSelectionService().getCurrentSession(info) != null
-              && getSelectionService().getCurrentSession(info).getLayout() == Layout.SKINNY;
-      if (!inSkinny) {
-        inSkinny = integrationService.isInIntegrationSession(info);
-      }
-    }
-    // The existence of null items in the results list can only occur if an
-    // item has been purged in the very recent (ie within the last few
-    // seconds) past, and yet the indexer hasn't caught up. More likely to
-    // occur in automated tests than in reality. Nonetheless, if we find a
-    // null item, flag its existence.
     for (int i = 0; i < count; i++) {
       Item item = results.getItem(i);
       if (item != null) {
-        itemList.addItem(info, item, results.getResultData(i));
-        // Only if we're not in a skinny session shall we map the
-        // index numbers, and hence enable the prev/next buttons.
-        if (!inSkinny) {
-          mapItemIdToSearchIndexForSession(
-              results, event.getSearchEvent().getFinalSearch(), item, i);
-        }
+        itemList.addItem(
+            info, item, results.getResultData(i), i + results.getOffset(), results.getAvailable());
       } else {
         flagListAsNullItemsRemoved = true;
       }
@@ -143,35 +116,6 @@ public abstract class AbstractFreetextResultsSection<
     if (flagListAsNullItemsRemoved) {
       itemList.setNullItemsRemovedOnModel(info, true);
     }
-  }
-
-  /**
-   * The object placed into the session is basically a map of ItemId, Integer, whereby the integer
-   * is the index value into the search result set. In addition to the map however, we also need to
-   * preserve the total available size (ie above and beyond the limits to the returned page size)
-   * from the search. Accordingly the object lodged with the session is a Pair<Map, Integer>.
-   *
-   * @param results
-   * @param item
-   * @param i
-   */
-  protected void mapItemIdToSearchIndexForSession(
-      FreetextSearchResults<? extends FreetextResult> results,
-      DefaultSearch search,
-      Item item,
-      int i) {
-    MappedSearchIndexValues indexMap = null;
-    Object mapAttr = sessionService.getAttribute(MappedSearchIndexValues.MAPPED_SEARCH_ATTR_KEY);
-    if (mapAttr != null) {
-      indexMap = (MappedSearchIndexValues) mapAttr;
-    } else {
-      int available = results.getAvailable();
-      int offset = results.getOffset();
-      indexMap = new MappedSearchIndexValues(available, offset, 0);
-      indexMap.setActiveSearch(search);
-      sessionService.setAttribute(MappedSearchIndexValues.MAPPED_SEARCH_ATTR_KEY, indexMap);
-    }
-    indexMap.mapItemIdWithIndex(item.getItemId(), i, true);
   }
 
   protected void customiseSettings(SectionInfo info, ListSettings<LE> settings) {
@@ -226,5 +170,18 @@ public abstract class AbstractFreetextResultsSection<
       LOGGER.error("Error searching", t); // $NON-NLS-1$
       return new FreetextSearchResultEvent(t, searchEvent);
     }
+  }
+
+  public ItemKey getResultForIndex(SectionInfo info, int index) {
+    FreetextSearchEvent searchEvent = createSearchEvent(info);
+    info.processEvent(searchEvent);
+    searchEvent.setOffset(index);
+    searchEvent.setCount(1);
+    FreetextSearchResults<? extends FreetextResult> results =
+        createResultsEvent(info, searchEvent).getResults();
+    if (results.getCount() > 0) {
+      return results.getItemKey(0);
+    }
+    return null;
   }
 }

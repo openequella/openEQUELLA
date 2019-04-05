@@ -288,7 +288,7 @@ public class FeedServlet extends HttpServlet {
     int i = 0;
     for (Item item : results.getResults()) {
       FreetextResult freetextResult = results.getResultData(i);
-      itemList.addItem(info, item, freetextResult);
+      itemList.addItem(info, item, freetextResult, i, results.getAvailable());
       i++;
     }
     List<? extends ItemListEntry> itemEntries = itemList.initEntries(new DummyRenderContext(info));
