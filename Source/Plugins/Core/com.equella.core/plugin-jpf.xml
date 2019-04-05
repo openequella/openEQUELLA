@@ -803,11 +803,6 @@
     <parameter id="path" value="/brightspace/insertstuff.do" />
     <parameter id="root" value="bean:/brightspaceinsertstuff" />
   </extension>
-  <!--
-  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="blackboardStructServlet">
-    <parameter id="bean" value="bean:com.tle.integration.lti.blackboard.servlet.BlackboardStructureInitServlet" />
-    <parameter id="url-pattern" value="/blackboardstructureinit" />
-  </extension>-->
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="brightspaceStructServlet">
     <parameter id="bean" value="bean:com.tle.integration.lti.brightspace.servlet.BrightspaceStructureInitServlet" />
     <parameter id="url-pattern" value="/brightspacestructureinit" />
