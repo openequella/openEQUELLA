@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package com.tle.core.services.item;
+package com.tle.web.searching
 
-import com.tle.beans.item.Item;
-import com.tle.beans.item.ItemKey;
-import com.tle.common.searching.SearchResults;
+import java.util
 
-public interface FreetextSearchResults<T extends FreetextResult> extends SearchResults<Item> {
-  T getResultData(int index);
+import com.tle.web.sections.{BookmarkModifier, SectionInfo}
 
-  Item getItem(int index);
-
-  ItemKey getItemKey(int index);
+case class SearchIndexModifier(searchPage: String, index: Int, available: Int)
+    extends BookmarkModifier {
+  override def addToBookmark(info: SectionInfo,
+                             bookmarkState: util.Map[String, Array[String]]): Unit = {
+    bookmarkState.put("search", Array(searchPage))
+    bookmarkState.put("index", Array(index.toString))
+    bookmarkState.put("available", Array(available.toString))
+  }
 }

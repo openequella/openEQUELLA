@@ -49,4 +49,9 @@ public class RootConnectorManagementSection
     securityProvider.checkAuthorised();
     return super.renderHtml(context);
   }
+
+  @Override
+  protected String getPageName() {
+    return null;
+  }
 }

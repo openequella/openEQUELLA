@@ -62,4 +62,9 @@ public class RootItemAdminSection extends ContextableSearchSection<ContextableSe
   public void addBlueBarResults(RenderContext context, BlueBarEvent event) {
     event.addHelp(view.createResult("itemadmin-help.ftl", this));
   }
+
+  @Override
+  protected String getPageName() {
+    return ITEMADMINURL;
+  }
 }

@@ -42,4 +42,9 @@ public class MerlotRootRemoteRepoSection extends AbstractRootRemoteRepoSection {
   protected RemoteRepoViewResultSection<?, ?, ?> getViewSection() {
     return viewResult;
   }
+
+  @Override
+  protected String getPageName() {
+    return null;
+  }
 }

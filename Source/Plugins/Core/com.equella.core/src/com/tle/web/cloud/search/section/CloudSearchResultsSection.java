@@ -57,7 +57,7 @@ public class CloudSearchResultsSection
     final CloudSearchResults results = event.getResults();
     final List<CloudItem> searchResults = results.getResults();
     for (CloudItem cloudItemBean : searchResults) {
-      list.addItem(info, cloudItemBean, null);
+      list.addItem(info, cloudItemBean, null, 0, event.getMaximumResults());
     }
 
     final Collection<String> words =
