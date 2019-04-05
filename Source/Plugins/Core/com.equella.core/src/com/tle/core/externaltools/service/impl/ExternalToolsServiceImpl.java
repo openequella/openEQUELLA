@@ -48,22 +48,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import net.oauth.OAuth;
-import net.oauth.OAuth.Parameter;
-import net.oauth.OAuthAccessor;
-import net.oauth.OAuthConsumer;
-import net.oauth.OAuthMessage;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Bind(ExternalToolsService.class)
 @Singleton
-@SecureEntity(ExternalToolsService.ENTITY_TYPE)
+@SecureEntity("EXTERNAL_TOOL")
 @SuppressWarnings("nls")
 public class ExternalToolsServiceImpl
     extends AbstractEntityServiceImpl<ExternalToolEditingBean, ExternalTool, ExternalToolsService>
@@ -202,54 +193,6 @@ public class ExternalToolsServiceImpl
     entity.setCustomParams(bean.getCustomParams());
     entity.setShareName(bean.isShareName());
     entity.setShareEmail(bean.isShareEmail());
-  }
-
-  @Override
-  public List<Entry<String, String>> getOauthSignatureParams(
-      String consumerKey, String secret, String urlStr, Map<String, String[]> formParams) {
-    String nonce = UUID.randomUUID().toString();
-    String timestamp = Long.toString(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
-    // OAuth likes the Map.Entry interface, so copy into a Collection of a
-    // local implementation thereof. Note that this is a flat list.
-    List<Parameter> postParams = null;
-
-    if (!Check.isEmpty(formParams)) {
-      postParams = new ArrayList<Parameter>(formParams.size());
-      for (Entry<String, String[]> entry : formParams.entrySet()) {
-        String key = entry.getKey();
-        String[] formParamEntry = entry.getValue();
-        // cater for multiple values for the same key
-        if (formParamEntry.length > 0) {
-          for (int i = 0; i < formParamEntry.length; ++i) {
-            Parameter erp = new Parameter(entry.getKey(), formParamEntry[i]);
-            postParams.add(erp);
-          }
-        } else {
-          // key with no value
-          postParams.add(new Parameter(key, null));
-        }
-      }
-    }
-
-    OAuthMessage message = new OAuthMessage(OAuthMessage.POST, urlStr, postParams);
-    // Parameters needed for a signature
-    message.addParameter(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
-    message.addParameter(OAuth.OAUTH_SIGNATURE_METHOD, OAuth.HMAC_SHA1);
-    message.addParameter(OAuth.OAUTH_NONCE, nonce);
-    message.addParameter(OAuth.OAUTH_TIMESTAMP, timestamp);
-    message.addParameter(OAuth.OAUTH_VERSION, OAuth.VERSION_1_0);
-    message.addParameter(OAuth.OAUTH_CALLBACK, "about:blank");
-
-    // Sign the request
-    OAuthConsumer consumer = new OAuthConsumer("about:blank", consumerKey, secret, null);
-    OAuthAccessor accessor = new OAuthAccessor(consumer);
-    try {
-      message.sign(accessor);
-      // send oauth parameters back including signature
-      return message.getParameters();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
   }
 
   /**

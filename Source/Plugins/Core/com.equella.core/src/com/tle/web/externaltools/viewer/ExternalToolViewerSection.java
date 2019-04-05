@@ -56,6 +56,7 @@ import com.tle.core.services.ApplicationVersion;
 import com.tle.core.services.http.Request.Method;
 import com.tle.web.lti.LtiData.OAuthData;
 import com.tle.web.lti.usermanagement.LtiUserState;
+import com.tle.web.oauth.service.OAuthWebService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionUtils;
@@ -102,6 +103,7 @@ public class ExternalToolViewerSection
   private String externalToolContactEmail = "";
 
   @Inject private ExternalToolsService toolService;
+  @Inject private OAuthWebService oauthWebService;
   @Inject private InstitutionService institutionService;
   @Inject private ViewItemUrlFactory itemUrls;
 
@@ -623,7 +625,7 @@ public class ExternalToolViewerSection
    *
    * @param formParams
    * @param sharedSecret
-   * @param launchUrl
+   * @param urlLaunchURL
    */
   private void calculateAndAddOauth(
       Map<String, String> formParams, String consumerKey, String sharedSecret, URL urlLaunchURL) {
@@ -657,7 +659,7 @@ public class ExternalToolViewerSection
       // specifically DON'T want here - is to only add the oauth_
       // parameters
       List<Entry<String, String>> oauthExtendedParams =
-          toolService.getOauthSignatureParams(
+          oauthWebService.getOauthSignatureParams(
               consumerKey, sharedSecret, urlStr, queryPaddedFormParams);
       for (Entry<String, String> entry : oauthExtendedParams) {
         if (entry.getKey().startsWith("oauth_")) {
