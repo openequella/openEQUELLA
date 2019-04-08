@@ -162,6 +162,15 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
   }
 
   @Override
+  public String getMimeType(String name) throws IOException {
+    CustomisationFile customisationFile = new CustomisationFile();
+    if (fileSystemService.fileExists(customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + name)) {
+      return fileSystemService.getMimeType(customisationFile, name);
+    }
+    return null;
+  }
+
+  @Override
   public InputStream getPreLoginNoticeImage(String name) throws IOException {
     CustomisationFile customisationFile = new CustomisationFile();
     if (fileSystemService.fileExists(customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + name)) {

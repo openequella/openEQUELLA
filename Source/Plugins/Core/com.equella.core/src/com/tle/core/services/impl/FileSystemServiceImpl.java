@@ -362,6 +362,10 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
     return new FileInfo(byteCount, filename);
   }
 
+  public String getMimeType(FileHandle fileHandle, String name) throws IOException {
+    return Files.probeContentType(getFile(fileHandle, name).toPath());
+  }
+
   @Override
   public FileInfo getFileInfo(FileHandle handle, String filename) {
     File extFile = getFile(handle, filename);
