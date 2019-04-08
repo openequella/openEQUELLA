@@ -23,7 +23,7 @@ public class CloudControlModel extends CustomControlModel<CloudControl> {
           "wizard.cloudcontrol.validation.message", CurrentLocale.get("wizard.controls.title"));
     }
     for (CloudControlConfig c : definition.getDef().configDefinition()) {
-      if (cloudControl.isConfigMandatory(c)) {
+      if (c.isConfigMandatory()) {
         Object value = cloudControl.getAttributes().get(c.id());
         if (value == null || value.toString().isEmpty()) {
           return CurrentLocale.get("wizard.cloudcontrol.validation.message", c.name());

@@ -121,20 +121,19 @@ public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
   private void renderBody() {
     int gridY = 1;
     for (CloudControlConfig cloudControlConfig : cloudControlConfigs) {
-      gridBagConstraints.gridy = gridY;
+      gridBagConstraints.gridy = gridY++;
       JPanel configPanel = createSubPanel();
-      // controlType is always non-null
       String description = Optional.ofNullable(cloudControlConfig.description()).orElse("");
       configPanel.setToolTipText(description);
       String configType = cloudControlConfig.configType().toString();
-      String labelPostion = (configType.equals("XPath") ? BorderLayout.NORTH : BorderLayout.WEST);
+      String labelPosition = (configType.equals("XPath") ? BorderLayout.NORTH : BorderLayout.WEST);
       configPanel.add(
           new JLabel(
               cloudControlConfig.name()
-                  + (isConfigMandatory(cloudControlConfig)
+                  + (cloudControlConfig.isConfigMandatory()
                       ? CurrentLocale.get("wizard.controls.isrequired")
                       : "")),
-          labelPostion);
+          labelPosition);
       switch (configType) {
         case "Textfield":
           JTextField textField = new JTextField();
@@ -255,12 +254,12 @@ public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
                     checkBoxes.add(checkBox);
                   });
           configPanel.add(checkBoxPanel, BorderLayout.CENTER);
-          boolean[] checkBoxSelections = new boolean[checkBoxes.size()];
           cloudControlConfigMap.put(
               cloudControlConfig.id(),
               new CloudControlConfigControl() {
                 @Override
                 public void saveConfig(CloudControl control) {
+                  boolean[] checkBoxSelections = new boolean[checkBoxes.size()];
                   for (int i = 0; i < checkBoxes.size(); i++) {
                     checkBoxSelections[i] = checkBoxes.get(i).isSelected();
                   }
@@ -270,10 +269,10 @@ public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
                 @Override
                 public void loadConfig(CloudControl control) {
                   if (control.getAttributes().containsKey(cloudControlConfig.id())) {
-                    boolean[] isSelected =
+                    boolean[] checkBoxSelections =
                         (boolean[]) control.getAttributes().get(cloudControlConfig.id());
                     for (int i = 0; i < checkBoxes.size(); i++) {
-                      checkBoxes.get(i).setSelected(isSelected[i]);
+                      checkBoxes.get(i).setSelected(checkBoxSelections[i]);
                     }
                   }
                 }
@@ -293,7 +292,6 @@ public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
           break;
       }
       mainPanel.add(configPanel, gridBagConstraints);
-      gridY++;
     }
   }
 
@@ -308,9 +306,5 @@ public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
                 config.loadConfig(control);
               }
             });
-  }
-
-  private boolean isConfigMandatory(CloudControlConfig c) {
-    return control.isConfigMandatory(c);
   }
 }

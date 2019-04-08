@@ -30,7 +30,11 @@ case class CloudControlConfig(id: String,
                               configType: CloudControlConfigType.Value,
                               options: java.lang.Iterable[CloudConfigOption],
                               min: Int,
-                              max: Int)
+                              max: Int) {
+  def isConfigMandatory: Boolean = {
+    !(min < max)
+  }
+}
 
 case class CloudControlDefinition(providerId: UUID,
                                   controlId: String,
