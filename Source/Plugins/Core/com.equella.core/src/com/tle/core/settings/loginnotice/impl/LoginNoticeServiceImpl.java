@@ -37,6 +37,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.core.MediaType;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
@@ -167,7 +168,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     if (fileSystemService.fileExists(customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + name)) {
       return fileSystemService.getMimeType(customisationFile, name);
     }
-    return null;
+    return MediaType.MEDIA_TYPE_WILDCARD;
   }
 
   @Override
