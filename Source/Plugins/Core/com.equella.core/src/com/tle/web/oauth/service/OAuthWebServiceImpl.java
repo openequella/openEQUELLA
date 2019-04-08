@@ -22,7 +22,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.tle.beans.Institution;
 import com.tle.common.Check;
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.common.oauth.beans.OAuthToken;
