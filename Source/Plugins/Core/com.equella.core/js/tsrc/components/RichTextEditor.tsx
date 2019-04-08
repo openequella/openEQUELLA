@@ -76,7 +76,6 @@ class RichTextEditor extends React.Component<RichTextEditorProps> {
       <Editor
         init={{
           min_height: 500,
-          max_height: 550,
           automatic_uploads: true,
           file_picker_types: "image",
           images_reuse_filename: true,
