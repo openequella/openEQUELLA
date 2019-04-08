@@ -10,10 +10,10 @@ before_install:
   - nvm install $NODE_JS_VERSION
   - node --version
   - sudo apt-get install -y awscli
-  - yarn global add purescript psc-package
+  - npm install --global purescript psc-package
 install:
   - git fetch --unshallow
-  - yarn install && yarn run check
+  - npm install && npm run check
   - sbt headerCheck
 script:
   - sbt test installerZip writeLanguagePack writeScriptingJavadoc
