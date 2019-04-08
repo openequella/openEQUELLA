@@ -308,11 +308,11 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel>
   @Override
   public void leavingTab(SectionInfo info, SectionTab tab) {
     unfinishedTab(info, tab);
-    info.forceRedirect();
   }
 
   @Override
   public void unfinishedTab(SectionInfo info, SectionTab tab) {
     getPage(info, Integer.parseInt(tab.getData()), true, false).setShowMandatory(true);
+    info.forceRedirect();
   }
 }
