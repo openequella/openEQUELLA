@@ -30,6 +30,8 @@ public interface LoginNoticeService {
 
   String uploadPreLoginNoticeImage(InputStream imageFile, String name) throws IOException;
 
+  String getMimeType(String name) throws IOException;
+
   InputStream getPreLoginNoticeImage(String name) throws IOException;
 
   String getPostLoginNotice();
