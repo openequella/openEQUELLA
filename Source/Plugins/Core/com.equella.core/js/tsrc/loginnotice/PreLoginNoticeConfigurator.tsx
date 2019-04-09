@@ -125,6 +125,12 @@ class PreLoginNoticeConfigurator extends React.Component<
     );
   };
 
+  checkExpiry = (): boolean => {
+    return (
+      new Date(this.state.current.endDate).getTime() > new Date().getTime()
+    );
+  };
+
   ScheduleSettings = () => {
     return (
       <FormControl>
@@ -159,6 +165,11 @@ class PreLoginNoticeConfigurator extends React.Component<
             ScheduleTypeSelection.SCHEDULED
           }
         >
+          <div hidden={this.checkExpiry()}>
+            <Typography color="error" variant="subtitle1">
+              {strings.scheduling.expired}
+            </Typography>
+          </div>
           <Typography color="textSecondary" variant="subtitle1">
             {strings.scheduling.start}
           </Typography>
@@ -176,8 +187,6 @@ class PreLoginNoticeConfigurator extends React.Component<
 
           <DateTimePicker
             id="endDatePicker"
-            minDate={new Date()}
-            minDateMessage={strings.scheduling.expired}
             onChange={this.handleEndDateChange}
             format={"d MMM yyyy - h:mm a"}
             value={this.state.current.endDate}

@@ -19,8 +19,8 @@ export enum ScheduleTypeSelection {
 export interface PreLoginNotice {
   notice?: string;
   scheduleSettings: ScheduleTypeSelection;
-  startDate?: Date;
-  endDate?: Date;
+  startDate: Date;
+  endDate: Date;
 }
 
 export const strings = prepLangStrings("loginnoticepage", {
