@@ -61,6 +61,7 @@ public class Save extends WizardCommand {
   public void execute(SectionInfo info, WizardSectionInfo winfo, String type) throws Exception {
     SaveDialog saveDialog = info.lookupSection(SaveDialog.class);
     saveDialog.save(info, "save", null);
+    info.forceRedirect();
   }
 
   @Override

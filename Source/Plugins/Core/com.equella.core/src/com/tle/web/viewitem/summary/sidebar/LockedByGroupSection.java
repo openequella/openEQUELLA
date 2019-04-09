@@ -108,6 +108,7 @@ public class LockedByGroupSection
     ItemSectionInfo itemInfo = getItemInfo(info);
     itemService.forceUnlock(itemInfo.getItem());
     itemInfo.refreshItem(true);
+    info.forceRedirect();
   }
 
   public Button getUnlock() {

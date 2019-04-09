@@ -59,6 +59,7 @@ public class EditInWizard extends WizardCommand {
     for (WebWizardPage page : winfo.getWizardState().getPages()) {
       wizardService.ensureInitialisedPage(info, page, ps.getReloadFunction(), true);
     }
+    info.forceRedirect();
   }
 
   @Override
