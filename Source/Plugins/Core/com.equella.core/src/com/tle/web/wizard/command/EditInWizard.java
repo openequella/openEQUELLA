@@ -19,8 +19,6 @@ package com.tle.web.wizard.command;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;
-import com.tle.web.sections.events.js.JSHandler;
-import com.tle.web.sections.js.JSCallable;
 import com.tle.web.wizard.WebWizardPage;
 import com.tle.web.wizard.WizardService;
 import com.tle.web.wizard.impl.WizardCommand;
@@ -62,12 +60,6 @@ public class EditInWizard extends WizardCommand {
       wizardService.ensureInitialisedPage(info, page, ps.getReloadFunction(), true);
     }
     info.forceRedirect();
-  }
-
-  @Override
-  public JSHandler getJavascript(
-      SectionInfo info, WizardSectionInfo winfo, JSCallable submitFunction) {
-    return super.getJavascript(info, winfo, submitFunction);
   }
 
   @Override
