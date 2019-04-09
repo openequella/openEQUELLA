@@ -30,13 +30,18 @@ interface OAuthCredentials {
   clientSecret: string;
 }
 
+interface ServiceUri {
+  uri: string;
+  authenticated: boolean;
+}
+
 interface ProviderRegistration {
   name: string;
   description?: string;
   baseUrl: string;
   iconUrl?: string;
   providerAuth: OAuthCredentials;
-  serviceUris: object;
+  serviceUris: { [key: string]: ServiceUri };
   viewers: object;
 }
 
@@ -67,6 +72,8 @@ const useStyles = makeStyles((theme: Theme) => {
   };
 });
 
+const baseUrl = "http://localhost:8083/provider/";
+
 function CloudProvider(props: { query: Props }) {
   const q = props.query;
   const [error, setError] = useState<Error | null>(null);
@@ -79,9 +86,12 @@ function CloudProvider(props: { query: Props }) {
       name: q.name!,
       description: q.description,
       iconUrl: q.iconUrl,
-      baseUrl: document.location.href,
-      providerAuth: { clientId: "MyClient", clientSecret: "HEI" },
-      serviceUris: {},
+      baseUrl: baseUrl,
+      providerAuth: { clientId: q.name!, clientSecret: q.name! },
+      serviceUris: {
+        oauth: { uri: "${baseurl}access_token", authenticated: false },
+        controls: { uri: "${baseurl}controls", authenticated: true }
+      },
       viewers: {}
     };
     await axios

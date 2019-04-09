@@ -41,8 +41,10 @@ object OAuthTokenType extends Enumeration {
 
   def fromString(s: Option[String]): Value =
     s.map {
-        case "bearer"      => Bearer
-        case "equella_api" => EquellaApi
+        _.toLowerCase match {
+          case "bearer"      => Bearer
+          case "equella_api" => EquellaApi
+        }
       }
       .getOrElse(Bearer)
 
@@ -161,16 +163,17 @@ object OAuthClientService {
   private def tokenStillValid(token: OAuthTokenState): Boolean =
     token.expires.isEmpty || token.expires.exists(_.isAfter(Instant.now))
 
-  def tokenForClient(authTokenUrl: String,
-                     clientId: String,
-                     clientSecret: String): DB[OAuthTokenState] = {
-    val tokenRequest = TokenRequest(authTokenUrl, clientId, clientSecret)
+  def removeToken(tokenRequest: TokenRequest): DB[Unit] = {
+    OAuthTokenCache.removeFromDB(tokenRequest) *>
+      clientTokenCache.invalidate(tokenRequest).flatMap(dbLiftIO.liftIO)
+  }
+
+  def tokenForClient(tokenRequest: TokenRequest): DB[OAuthTokenState] = {
     for {
       cachedToken <- clientTokenCache.get(tokenRequest)
       refreshedToken <- if (tokenStillValid(cachedToken)) cachedToken.pure[DB]
       else {
-        OAuthTokenCache.removeFromDB(tokenRequest) *>
-          clientTokenCache.invalidate(tokenRequest).flatMap(dbLiftIO.liftIO) *>
+        removeToken(tokenRequest) *>
           OAuthTokenCache.requestTokenAndSave(tokenRequest)
       }
     } yield refreshedToken
@@ -182,7 +185,21 @@ object OAuthClientService {
     val authHeader = tokenType match {
       case OAuthTokenType.EquellaApi =>
         OAuthWebConstants.HEADER_X_AUTHORIZATION -> s"${OAuthWebConstants.AUTHORIZATION_ACCESS_TOKEN}=$token"
+      case OAuthTokenType.Bearer =>
+        OAuthWebConstants.HEADER_AUTHORIZATION -> s"${OAuthWebConstants.AUTHORIZATION_BEARER} $token"
     }
     request.headers(authHeader).send[IO]()
+  }
+
+  def authorizedRequest[T](authTokenUrl: String,
+                           clientId: String,
+                           clientSecret: String,
+                           request: Request[T, Stream[IO, ByteBuffer]]): DB[Response[T]] = {
+    val tokenRequest = TokenRequest(authTokenUrl, clientId, clientSecret)
+    for {
+      token    <- tokenForClient(tokenRequest)
+      response <- dbLiftIO.liftIO(requestWithToken(request, token.token, token.tokenType))
+      _        <- if (response.code == StatusCodes.Unauthorized) removeToken(tokenRequest) else ().pure[DB]
+    } yield response
   }
 }

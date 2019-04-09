@@ -26,6 +26,7 @@ import com.tle.core.events.ApplicationEvent
 import com.tle.core.events.ApplicationEvent.PostTo
 import com.tle.core.events.listeners.ApplicationListener
 import com.tle.legacy.LegacyGuice
+import cats.syntax.applicative._
 
 import scala.collection.mutable
 
@@ -55,6 +56,10 @@ trait CacheInvalidation extends ApplicationListener {
 trait Cache[K, V] {
   def invalidate: K => DB[IO[Unit]]
   def get: K => DB[V]
+  def getIfValid(k: K, valid: V => Boolean): DB[V] = get(k).flatMap { value =>
+    if (valid(value)) value.pure[DB]
+    else invalidate(k).flatMap(dbLiftIO.liftIO).flatMap(_ => get(k))
+  }
 }
 
 object DBCacheBuilder extends CacheInvalidation {

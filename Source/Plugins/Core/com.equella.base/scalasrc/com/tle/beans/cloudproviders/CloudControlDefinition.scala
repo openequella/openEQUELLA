@@ -16,7 +16,12 @@
 
 package com.tle.beans.cloudproviders
 
-import java.util.UUID
+import java.util.{Optional, UUID}
+
+import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto._
+
+import scala.collection.JavaConverters._
 
 case class CloudConfigOption(name: String, value: String)
 
@@ -26,18 +31,34 @@ object CloudControlConfigType extends Enumeration {
 
 case class CloudControlConfig(id: String,
                               name: String,
-                              description: String,
+                              description: Option[String],
                               configType: CloudControlConfigType.Value,
-                              options: java.lang.Iterable[CloudConfigOption],
+                              options: Iterable[CloudConfigOption],
                               min: Int,
                               max: Int) {
   def isConfigMandatory: Boolean = {
     !(min < max)
   }
+
+  def getDescription = Optional.ofNullable(description.orNull)
+  def getOptions     = options.asJava
 }
 
 case class CloudControlDefinition(providerId: UUID,
                                   controlId: String,
                                   name: String,
                                   iconUrl: String,
-                                  configDefinition: java.util.List[CloudControlConfig])
+                                  configDefinition: Iterable[CloudControlConfig]) {
+  def getConfigDefinition = configDefinition.asJava
+}
+
+case class ProviderControlDefinition(name: String,
+                                     iconUrl: Option[String],
+                                     configuration: Iterable[CloudControlConfig])
+
+object ProviderControlDefinition {
+  implicit val typeDec        = Decoder.enumDecoder(CloudControlConfigType)
+  implicit val ccoDec         = deriveDecoder[CloudConfigOption]
+  implicit val dec            = deriveDecoder[CloudControlConfig]
+  implicit val decodeControls = deriveDecoder[ProviderControlDefinition]
+}
