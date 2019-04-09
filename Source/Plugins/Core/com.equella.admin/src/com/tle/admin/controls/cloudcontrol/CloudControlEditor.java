@@ -16,7 +16,6 @@
 
 package com.tle.admin.controls.cloudcontrol;
 
-import com.dytech.edge.admin.wizard.WizardHelper;
 import com.dytech.edge.admin.wizard.editor.AbstractControlEditor;
 import com.dytech.edge.admin.wizard.model.Control;
 import com.dytech.gui.ChangeDetector;
@@ -27,28 +26,20 @@ import com.tle.admin.controls.cloudcontrol.configcomponent.TextFieldConfig;
 import com.tle.admin.controls.cloudcontrol.configcomponent.XpathConfig;
 import com.tle.admin.gui.i18n.I18nTextField;
 import com.tle.admin.i18n.Lookup;
-import com.tle.admin.schema.MultiTargetChooser;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.beans.cloudproviders.CloudControlConfig;
 import com.tle.beans.cloudproviders.CloudControlDefinition;
 import com.tle.common.wizard.controls.cloud.CloudControl;
 import com.tle.i18n.BundleCache;
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
 
 public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
   private final CloudControl control = getWizardControl();
@@ -140,68 +131,34 @@ public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
           labelPosition);
       switch (configType) {
         case "Textfield":
-          JTextField textField = new JTextField();
-          changeDetector.watch(textField);
-          configPanel.add(textField, BorderLayout.CENTER);
           cloudControlConfigMap.put(
-              cloudControlConfig.id(), new TextFieldConfig(textField, cloudControlConfig));
+              cloudControlConfig.id(),
+              new TextFieldConfig(cloudControlConfig, configPanel, changeDetector));
           break;
         case "XPath":
-          MultiTargetChooser picker = WizardHelper.createMultiTargetChooser(this);
-          changeDetector.watch(picker);
-          configPanel.add(picker, BorderLayout.CENTER);
           cloudControlConfigMap.put(
-              cloudControlConfig.id(), new XpathConfig(picker, cloudControlConfig));
+              cloudControlConfig.id(),
+              new XpathConfig(cloudControlConfig, configPanel, changeDetector, this));
           break;
         case "Dropdown":
-          JComboBox<String> comboBox = new JComboBox<>();
-          changeDetector.watch(comboBox);
-          cloudControlConfig
-              .options()
-              .forEach(cloudConfigOption -> comboBox.addItem(cloudConfigOption.name()));
-          configPanel.add(comboBox);
           cloudControlConfigMap.put(
-              cloudControlConfig.id(), new DropdownConfig(comboBox, cloudControlConfig));
+              cloudControlConfig.id(),
+              new DropdownConfig(cloudControlConfig, configPanel, changeDetector));
           break;
         case "Radio":
-          ArrayList<JRadioButton> radioButtons = new ArrayList<>();
-          ButtonGroup radioButtonGroup = new ButtonGroup();
-          JPanel radioButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-          cloudControlConfig
-              .options()
-              .forEach(
-                  cloudConfigOption -> {
-                    JRadioButton radioButton = new JRadioButton(cloudConfigOption.name());
-                    radioButtonGroup.add(radioButton);
-                    radioButtonPanel.add(radioButton);
-                    radioButtons.add(radioButton);
-                  });
-          changeDetector.watch(radioButtonGroup);
-          configPanel.add(radioButtonPanel, BorderLayout.CENTER);
           cloudControlConfigMap.put(
-              cloudControlConfig.id(), new RadiobuttonConfig(radioButtons, cloudControlConfig));
+              cloudControlConfig.id(),
+              new RadiobuttonConfig(cloudControlConfig, configPanel, changeDetector));
           break;
         case "Check":
-          ArrayList<JCheckBox> checkBoxes = new ArrayList<>();
-          JPanel checkBoxPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-          cloudControlConfig
-              .options()
-              .forEach(
-                  cloudConfigOption -> {
-                    JCheckBox checkBox = new JCheckBox(cloudConfigOption.name());
-                    changeDetector.watch(checkBox);
-                    checkBoxPanel.add(checkBox);
-                    checkBoxes.add(checkBox);
-                  });
-          configPanel.add(checkBoxPanel, BorderLayout.CENTER);
           cloudControlConfigMap.put(
-              cloudControlConfig.id(), new CheckboxConfig(checkBoxes, cloudControlConfig));
+              cloudControlConfig.id(),
+              new CheckboxConfig(cloudControlConfig, configPanel, changeDetector));
           break;
         default:
           configPanel.removeAll();
           cloudControlModel.setErrorMessage(
               Lookup.lookup.text("cloudcontrol.unknownconfig.message", configType));
-          break;
       }
       mainPanel.add(configPanel, gridBagConstraints);
     }
