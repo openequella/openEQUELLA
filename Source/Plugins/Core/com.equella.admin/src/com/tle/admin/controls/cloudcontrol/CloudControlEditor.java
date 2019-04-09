@@ -20,13 +20,17 @@ import com.dytech.edge.admin.wizard.WizardHelper;
 import com.dytech.edge.admin.wizard.editor.AbstractControlEditor;
 import com.dytech.edge.admin.wizard.model.Control;
 import com.dytech.gui.ChangeDetector;
-import com.tle.admin.gui.EditorException;
+import com.tle.admin.controls.cloudcontrol.configcomponent.CheckboxConfig;
+import com.tle.admin.controls.cloudcontrol.configcomponent.DropdownConfig;
+import com.tle.admin.controls.cloudcontrol.configcomponent.RadiobuttonConfig;
+import com.tle.admin.controls.cloudcontrol.configcomponent.TextFieldConfig;
+import com.tle.admin.controls.cloudcontrol.configcomponent.XpathConfig;
 import com.tle.admin.gui.i18n.I18nTextField;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.schema.MultiTargetChooser;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.beans.cloudproviders.CloudControlConfig;
 import com.tle.beans.cloudproviders.CloudControlDefinition;
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.wizard.controls.cloud.CloudControl;
 import com.tle.i18n.BundleCache;
 import java.awt.BorderLayout;
@@ -49,6 +53,8 @@ import javax.swing.JTextField;
 public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
   private final CloudControl control = getWizardControl();
   private final ChangeDetector changeDetector = getChangeDetector();
+  private static final int SUB_PANEL_HORIZONTAL_GAP = 20;
+  private static final int SUB_PANEL_VERTICAL_GAP = 10;
   private List<CloudControlConfig> cloudControlConfigs;
   private Map<String, CloudControlConfigControl> cloudControlConfigMap = new HashMap<>();
   private JPanel mainPanel;
@@ -90,7 +96,6 @@ public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
     gridBagConstraints.weightx = 1;
-    // title and each config is accommodated in a sub panel
     renderTitle();
     renderBody();
     addSection(mainPanel);
@@ -99,8 +104,8 @@ public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
   private JPanel createSubPanel() {
     JPanel configPanel = new JPanel();
     BorderLayout subPanelLayout = new BorderLayout();
-    subPanelLayout.setHgap(20);
-    subPanelLayout.setVgap(10);
+    subPanelLayout.setHgap(SUB_PANEL_HORIZONTAL_GAP);
+    subPanelLayout.setVgap(SUB_PANEL_VERTICAL_GAP);
     configPanel.setLayout(subPanelLayout);
     return configPanel;
   }
@@ -109,8 +114,7 @@ public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
     JPanel titlePanel = createSubPanel();
     JLabel titleLabel =
         new JLabel(
-            CurrentLocale.get("wizard.controls.title")
-                + CurrentLocale.get("wizard.controls.isrequired"));
+            Lookup.lookup.text("cloudcontrol.title") + Lookup.lookup.text("cloudcontrol.required"));
     title = new I18nTextField(BundleCache.getLanguages());
     changeDetector.watch(title);
     titlePanel.add(titleLabel, BorderLayout.WEST);
@@ -131,7 +135,7 @@ public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
           new JLabel(
               cloudControlConfig.name()
                   + (cloudControlConfig.isConfigMandatory()
-                      ? CurrentLocale.get("wizard.controls.isrequired")
+                      ? Lookup.lookup.text("cloudcontrol.required")
                       : "")),
           labelPosition);
       switch (configType) {
@@ -140,43 +144,14 @@ public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
           changeDetector.watch(textField);
           configPanel.add(textField, BorderLayout.CENTER);
           cloudControlConfigMap.put(
-              cloudControlConfig.id(),
-              new CloudControlConfigControl() {
-                @Override
-                public void saveConfig(CloudControl control) {
-                  control.getAttributes().put(cloudControlConfig.id(), textField.getText());
-                }
-
-                @Override
-                public void loadConfig(CloudControl control) {
-                  if (control.getAttributes().containsKey(cloudControlConfig.id())) {
-                    textField.setText(
-                        control.getAttributes().get(cloudControlConfig.id()).toString());
-                  }
-                }
-              });
+              cloudControlConfig.id(), new TextFieldConfig(textField, cloudControlConfig));
           break;
         case "XPath":
           MultiTargetChooser picker = WizardHelper.createMultiTargetChooser(this);
           changeDetector.watch(picker);
           configPanel.add(picker, BorderLayout.CENTER);
           cloudControlConfigMap.put(
-              cloudControlConfig.id(),
-              new CloudControlConfigControl() {
-                @Override
-                public void saveConfig(CloudControl control) {
-                  control.getAttributes().put(cloudControlConfig.id(), picker.getTargets());
-                }
-
-                @Override
-                @SuppressWarnings("unchecked")
-                public void loadConfig(CloudControl control) {
-                  if (control.getAttributes().containsKey(cloudControlConfig.id())) {
-                    picker.setTargets(
-                        (List<String>) control.getAttributes().get(cloudControlConfig.id()));
-                  }
-                }
-              });
+              cloudControlConfig.id(), new XpathConfig(picker, cloudControlConfig));
           break;
         case "Dropdown":
           JComboBox<String> comboBox = new JComboBox<>();
@@ -186,21 +161,7 @@ public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
               .forEach(cloudConfigOption -> comboBox.addItem(cloudConfigOption.name()));
           configPanel.add(comboBox);
           cloudControlConfigMap.put(
-              cloudControlConfig.id(),
-              new CloudControlConfigControl() {
-                @Override
-                public void saveConfig(CloudControl control) {
-                  control.getAttributes().put(cloudControlConfig.id(), comboBox.getSelectedIndex());
-                }
-
-                @Override
-                public void loadConfig(CloudControl control) {
-                  if (control.getAttributes().containsKey(cloudControlConfig.id())) {
-                    comboBox.setSelectedIndex(
-                        (int) control.getAttributes().get(cloudControlConfig.id()));
-                  }
-                }
-              });
+              cloudControlConfig.id(), new DropdownConfig(comboBox, cloudControlConfig));
           break;
         case "Radio":
           ArrayList<JRadioButton> radioButtons = new ArrayList<>();
@@ -218,28 +179,7 @@ public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
           changeDetector.watch(radioButtonGroup);
           configPanel.add(radioButtonPanel, BorderLayout.CENTER);
           cloudControlConfigMap.put(
-              cloudControlConfig.id(),
-              new CloudControlConfigControl() {
-                @Override
-                public void saveConfig(CloudControl control) {
-                  for (int i = 0; i < radioButtons.size(); i++) {
-                    if (radioButtons.get(i).isSelected()) {
-                      control.getAttributes().put(cloudControlConfig.id(), i);
-                      return;
-                    }
-                  }
-                }
-
-                @Override
-                public void loadConfig(CloudControl control) {
-                  if (control.getAttributes().containsKey(cloudControlConfig.id())) {
-                    radioButtons
-                        .get((int) control.getAttributes().get(cloudControlConfig.id()))
-                        .setSelected(true);
-                  }
-                }
-              });
-
+              cloudControlConfig.id(), new RadiobuttonConfig(radioButtons, cloudControlConfig));
           break;
         case "Check":
           ArrayList<JCheckBox> checkBoxes = new ArrayList<>();
@@ -255,40 +195,12 @@ public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
                   });
           configPanel.add(checkBoxPanel, BorderLayout.CENTER);
           cloudControlConfigMap.put(
-              cloudControlConfig.id(),
-              new CloudControlConfigControl() {
-                @Override
-                public void saveConfig(CloudControl control) {
-                  boolean[] checkBoxSelections = new boolean[checkBoxes.size()];
-                  for (int i = 0; i < checkBoxes.size(); i++) {
-                    checkBoxSelections[i] = checkBoxes.get(i).isSelected();
-                  }
-                  control.getAttributes().put(cloudControlConfig.id(), checkBoxSelections);
-                }
-
-                @Override
-                public void loadConfig(CloudControl control) {
-                  if (control.getAttributes().containsKey(cloudControlConfig.id())) {
-                    boolean[] checkBoxSelections =
-                        (boolean[]) control.getAttributes().get(cloudControlConfig.id());
-                    for (int i = 0; i < checkBoxes.size(); i++) {
-                      checkBoxes.get(i).setSelected(checkBoxSelections[i]);
-                    }
-                  }
-                }
-              });
-
+              cloudControlConfig.id(), new CheckboxConfig(checkBoxes, cloudControlConfig));
           break;
         default:
-          try {
-            configPanel.removeAll();
-            cloudControlModel.setErrorMessage(
-                CurrentLocale.get("wizard.cloudcontrol.unknownconfig.message", configType));
-            throw new EditorException(
-                CurrentLocale.get("wizard.cloudcontrol.unknownconfig.message"));
-          } catch (EditorException e) {
-            e.printStackTrace();
-          }
+          configPanel.removeAll();
+          cloudControlModel.setErrorMessage(
+              Lookup.lookup.text("cloudcontrol.unknownconfig.message", configType));
           break;
       }
       mainPanel.add(configPanel, gridBagConstraints);
