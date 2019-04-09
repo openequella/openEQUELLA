@@ -22,7 +22,6 @@ import com.google.inject.Inject;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.guice.Bind;
 import com.tle.core.oauth.OAuthConstants;
-import com.tle.core.oauth.OAuthUserState;
 import com.tle.web.core.filter.UserStateHook;
 import com.tle.web.core.filter.UserStateResult;
 import com.tle.web.core.filter.UserStateResult.Result;
@@ -75,7 +74,7 @@ public class OAuthUserStateHook implements UserStateHook {
 
   private UserStateResult userStateFromToken(
       HttpServletRequest request, String tokenData, boolean session) {
-    final OAuthUserState userState = oauthWebService.getUserState(tokenData, request);
+    final UserState userState = oauthWebService.getUserState(tokenData, request);
     userState.setAuditable(session);
     return new UserStateResult(userState, session ? Result.LOGIN_SESSION : Result.LOGIN);
   }
