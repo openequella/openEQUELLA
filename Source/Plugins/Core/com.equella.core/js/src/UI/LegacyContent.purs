@@ -38,6 +38,7 @@ import React.DOM as D
 import React.DOM.Props (Props, _id, _type, onSubmit)
 import React.DOM.Props as DP
 import React.SyntheticEvent (preventDefault)
+import Unsafe.Reference (unsafeRefEq)
 import Web.DOM.Document (createElement, getElementsByTagName, toNonElementParentNode)
 import Web.DOM.Element as Elem
 import Web.DOM.HTMLCollection (item, toArray)
@@ -252,7 +253,7 @@ legacyContent = unsafeCreateLeafElement $ withStyles styles $ component "LegacyC
     eval = case _ of 
       Updated oldPage -> do 
         {page} <- getProps
-        if oldPage /= page then eval LoadPage else pure unit
+        if not $ unsafeRefEq oldPage page then eval LoadPage else pure unit
       LoadPage -> do 
         {page: LegacyURI pagePath params} <- getProps 
         modifyState _ {pagePath = pagePath}
