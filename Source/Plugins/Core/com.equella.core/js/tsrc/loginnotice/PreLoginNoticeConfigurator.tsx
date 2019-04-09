@@ -129,7 +129,7 @@ class PreLoginNoticeConfigurator extends React.Component<
     );
   };
 
-  isExpired = (): boolean => {
+  isNoticeCurrent = (): boolean => {
     return this.state.current.endDate.getTime() > new Date().getTime();
   };
 
@@ -167,7 +167,7 @@ class PreLoginNoticeConfigurator extends React.Component<
             ScheduleTypeSelection.SCHEDULED
           }
         >
-          <div hidden={this.isExpired()}>
+          <div hidden={this.isNoticeCurrent()}>
             <Typography color="error" variant="subtitle1">
               {strings.scheduling.expired}
             </Typography>
