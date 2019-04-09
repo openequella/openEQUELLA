@@ -81,6 +81,17 @@ export function clearPostLoginNotice(): AxiosPromise {
   return axios.delete(POST_LOGIN_NOTICE_API_URL);
 }
 
+export function unMarshallPreLoginNotice(
+  marshalled: PreLoginNotice
+): PreLoginNotice {
+  return {
+    notice: marshalled.notice,
+    endDate: new Date(marshalled.endDate),
+    startDate: new Date(marshalled.startDate),
+    scheduleSettings: marshalled.scheduleSettings
+  };
+}
+
 export function uploadPreLoginNoticeImage(file: any): AxiosPromise {
   let imageBlob: Blob = file.blob();
   let name: string = encodeURIComponent(file.filename());
