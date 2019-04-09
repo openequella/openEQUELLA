@@ -670,6 +670,10 @@
     <parameter id="class" value="com.tle.core.remoting.RemoteBaseEntityService" />
     <parameter id="bean" value="bean:remoteBaseEntityService" />
   </extension>
+  <extension plugin-id="com.tle.web.services" point-id="invoker" id="cloudProviderInvoker">
+    <parameter id="class" value="com.tle.core.remoting.CloudProviderAdminService" />
+    <parameter id="bean" value="bean:com.tle.core.remoting.CloudProviderAdminService" />
+  </extension>
   <extension plugin-id="com.tle.core.item" point-id="itemResolver" id="cloud">
     <parameter id="id" value="cloud" />
     <parameter id="bean" value="bean:com.tle.core.cloud.service.CloudService" />

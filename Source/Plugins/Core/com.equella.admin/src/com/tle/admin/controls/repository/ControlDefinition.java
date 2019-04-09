@@ -16,69 +16,29 @@
 
 package com.tle.admin.controls.repository;
 
-import java.util.HashSet;
+import com.dytech.edge.admin.wizard.editor.Editor;
+import com.dytech.edge.admin.wizard.model.Control;
+import com.tle.admin.controls.EditorFactory;
+import com.tle.admin.schema.SchemaModel;
 import java.util.Set;
-import org.java.plugin.registry.Extension;
 
 /** @author Nicholas Read */
-public class ControlDefinition {
-  private Set<String> contexts = new HashSet<String>();
+public interface ControlDefinition {
+  EditorFactory editorFactory();
 
-  private String id;
-  private String name;
-  private String editorFactoryClass;
-  private Extension extension;
+  Set<String> getContexts();
 
-  public ControlDefinition() {
-    super();
-  }
+  String getName();
 
-  public Extension getExtension() {
-    return extension;
-  }
+  String getId();
 
-  public void setExtension(Extension extension) {
-    this.extension = extension;
-  }
+  boolean hasContext(String context);
 
-  public String getId() {
-    return id;
-  }
+  Editor createEditor(Control control, int type, SchemaModel schema);
 
-  public void setId(String id) {
-    this.id = id;
-  }
+  String getIcon();
 
-  public String getName() {
-    return name;
-  }
+  Control createControlModel();
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  @Override
-  public String toString() {
-    return getName();
-  }
-
-  public String getEditorFactoryClass() {
-    return editorFactoryClass;
-  }
-
-  public void setEditorFactoryClass(String editorFactoryClass) {
-    this.editorFactoryClass = editorFactoryClass;
-  }
-
-  public Set<String> getContexts() {
-    return contexts;
-  }
-
-  public void setContexts(Set<String> contexts) {
-    this.contexts = contexts;
-  }
-
-  public boolean hasContext(String context) {
-    return contexts.contains(context);
-  }
+  Object createWrappedObject();
 }

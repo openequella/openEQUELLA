@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package com.tle.admin.controls;
+package com.tle.core.remoting;
 
-import com.dytech.edge.admin.wizard.editor.Editor;
-import com.dytech.edge.admin.wizard.model.Control;
-import com.tle.admin.controls.repository.ControlDefinition;
-import com.tle.admin.schema.SchemaModel;
-import com.tle.core.plugins.PluginService;
+import com.tle.beans.cloudproviders.CloudControlDefinition;
+import java.util.List;
 
-public class StandardEditorFactory implements EditorFactory {
+public interface CloudProviderAdminService {
 
-  @Override
-  public Editor getEditor(
-      Control control, int type, SchemaModel schema, PluginService pluginService) {
-    ControlDefinition definition = control.getDefinition();
-    return definition.createEditor(control, type, schema);
-  }
+  List<CloudControlDefinition> listControls();
 }

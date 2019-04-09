@@ -45,7 +45,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import org.java.plugin.registry.Extension;
 
 public class PowerSearchTab extends AbstractPowerSearchTab
     implements ActionListener, ListSelectionListener {
@@ -178,12 +177,7 @@ public class PowerSearchTab extends AbstractPowerSearchTab
               // Get the class
               PluginServiceImpl pluginService = Driver.instance().getPluginService();
               ControlDefinition definition = control.getDefinition();
-              Extension extension = definition.getExtension();
-              EditorFactory editorFactory =
-                  (EditorFactory)
-                      pluginService.getBean(
-                          extension.getDeclaringPluginDescriptor(),
-                          definition.getEditorFactoryClass());
+              EditorFactory editorFactory = definition.editorFactory();
 
               currentEditor =
                   editorFactory.getEditor(

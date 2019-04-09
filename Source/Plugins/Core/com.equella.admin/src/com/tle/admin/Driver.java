@@ -177,7 +177,7 @@ public final class Driver {
 
   public ControlRepository getControlRepository() {
     if (controlRepository == null) {
-      controlRepository = new ControlRepositoryImpl(pluginService);
+      controlRepository = new ControlRepositoryImpl(pluginService, clientService);
     }
     return controlRepository;
   }
