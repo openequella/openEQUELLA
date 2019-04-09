@@ -16,6 +16,7 @@ import {
   ScheduleTypeSelection,
   strings,
   submitPreLoginNotice,
+  unMarshallPreLoginNotice,
   uploadPreLoginNoticeImage
 } from "./LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
@@ -95,10 +96,13 @@ class PreLoginNoticeConfigurator extends React.Component<
   componentDidMount = () => {
     getPreLoginNotice()
       .then((response: AxiosResponse<PreLoginNotice>) => {
-        if (response.data.notice != undefined) {
+        let preLoginNotice: PreLoginNotice = unMarshallPreLoginNotice(
+          response.data
+        );
+        if (preLoginNotice.notice != undefined) {
           this.setState({
-            db: response.data,
-            current: response.data
+            db: preLoginNotice,
+            current: preLoginNotice
           });
         }
       })
@@ -123,6 +127,10 @@ class PreLoginNoticeConfigurator extends React.Component<
       },
       () => this.setPreventNav()
     );
+  };
+
+  isNoticeCurrent = (): boolean => {
+    return this.state.current.endDate.getTime() > new Date().getTime();
   };
 
   ScheduleSettings = () => {
@@ -159,6 +167,11 @@ class PreLoginNoticeConfigurator extends React.Component<
             ScheduleTypeSelection.SCHEDULED
           }
         >
+          <div hidden={this.isNoticeCurrent()}>
+            <Typography color="error" variant="subtitle1">
+              {strings.scheduling.expired}
+            </Typography>
+          </div>
           <Typography color="textSecondary" variant="subtitle1">
             {strings.scheduling.start}
           </Typography>
@@ -176,8 +189,6 @@ class PreLoginNoticeConfigurator extends React.Component<
 
           <DateTimePicker
             id="endDatePicker"
-            minDate={new Date()}
-            minDateMessage={strings.scheduling.expired}
             onChange={this.handleEndDateChange}
             format={"d MMM yyyy - h:mm a"}
             value={this.state.current.endDate}

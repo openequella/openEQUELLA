@@ -19,8 +19,8 @@ export enum ScheduleTypeSelection {
 export interface PreLoginNotice {
   notice?: string;
   scheduleSettings: ScheduleTypeSelection;
-  startDate?: Date;
-  endDate?: Date;
+  startDate: Date;
+  endDate: Date;
 }
 
 export const strings = prepLangStrings("loginnoticepage", {
@@ -79,6 +79,17 @@ export function getPostLoginNotice(): AxiosPromise {
 
 export function clearPostLoginNotice(): AxiosPromise {
   return axios.delete(POST_LOGIN_NOTICE_API_URL);
+}
+
+export function unMarshallPreLoginNotice(
+  marshalled: PreLoginNotice
+): PreLoginNotice {
+  return {
+    notice: marshalled.notice,
+    endDate: new Date(marshalled.endDate),
+    startDate: new Date(marshalled.startDate),
+    scheduleSettings: marshalled.scheduleSettings
+  };
 }
 
 export function uploadPreLoginNoticeImage(file: any): AxiosPromise {
