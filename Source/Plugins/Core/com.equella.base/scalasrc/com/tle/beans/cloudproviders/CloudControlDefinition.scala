@@ -20,20 +20,24 @@ import java.util.UUID
 
 case class CloudConfigOption(name: String, value: String)
 
-object CloudControlType extends Enumeration {
+object CloudControlConfigType extends Enumeration {
   val XPath, Textfield, Dropdown, Check, Radio = Value
 }
 
-case class CloudConfigControl(id: String,
+case class CloudControlConfig(id: String,
                               name: String,
-                              description: Option[String],
-                              controlType: CloudControlType.Value,
-                              options: Iterable[CloudConfigOption],
+                              description: String,
+                              configType: CloudControlConfigType.Value,
+                              options: java.lang.Iterable[CloudConfigOption],
                               min: Int,
-                              max: Int)
+                              max: Int) {
+  def isConfigMandatory: Boolean = {
+    !(min < max)
+  }
+}
 
 case class CloudControlDefinition(providerId: UUID,
                                   controlId: String,
                                   name: String,
                                   iconUrl: String,
-                                  configDefinition: Iterable[CloudConfigControl])
+                                  configDefinition: java.util.List[CloudControlConfig])
