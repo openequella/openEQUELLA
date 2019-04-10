@@ -55,7 +55,7 @@ import Network.HTTP.Affjax.Response as Resp
 import OEQ.Data.Error (ErrorResponse)
 import OEQ.Environment (baseUrl, prepLangStrings)
 import OEQ.MainUI.Routes (Route, forcePushRoute, logoutRoute, matchRoute, pushRoute, routeHref, routeURI, setPreventNav, userPrefsRoute)
-import OEQ.UI.Common (rootTag, withCurrentTarget)
+import OEQ.UI.Common (extendedTheme, rootTag, withCurrentTarget)
 import OEQ.UI.MessageInfo (messageInfo)
 import OEQ.Utils.Interop (nullAny)
 import Partial.Unsafe (unsafePartial)
@@ -65,6 +65,7 @@ import React.DOM (footer, img, text)
 import React.DOM as D
 import React.DOM.Props (src)
 import React.DOM.Props as DP
+import Unsafe.Coerce (unsafeCoerce)
 import Web.DOM.DOMTokenList as DOMTokens
 import Web.DOM.Document (documentElement)
 import Web.Event.EventTarget (EventListener, addEventListener, removeEventListener)
@@ -269,7 +270,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       topBar = appBar {className: classes.appBar} $ catMaybes [
         Just $ toolbar {disableGutters: true} $ concat [
           guard hasMenu $> iconButton {
-              color: inherit, className: classes.navIconHide,
+              className: classes.navIconHide,
               onClick: d ToggleMenu } [ icon_ [D.text "menu" ] 
           ], [
             D.div [DP.className classes.titleArea] $ let 
@@ -334,8 +335,8 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
             [
               listItemIcon_ $ case iconUrl of 
                 Just url -> img [src url]
-                Nothing -> icon {color: inherit} [ D.text $ fromMaybe "folder" $ systemIcon ],
-              listItemText' {disableTypography: true, primary: typography {variant: subtitle1, component: "div"} [text title] }
+                Nothing -> icon {color: inherit, className: classes.menuIcon} [ D.text $ fromMaybe "folder" $ systemIcon ],
+              listItemText' {disableTypography: true, primary: typography {variant: subtitle1, className: classes.menuItem, component: "div"} [text title] }
             ]
             where 
               linkProps = case route of 
@@ -410,10 +411,18 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
           desktop = mediaQuery $ theme.breakpoints.up "md"
           mobile :: forall a. {|a} -> MediaQuery
           mobile = mediaQuery $ theme.breakpoints.up "sm"
+          extTheme = extendedTheme theme
+          menuColors = extTheme.palette.menu
       in {
       root: {
         width: "100%",
         zIndex: 1
+      },
+      menuItem: {
+        color: menuColors.text
+      },
+      menuIcon: {
+        color: menuColors.icon
       },
       titlePadding: cssList [
         desktop {
@@ -455,7 +464,8 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
         },
         allQuery { 
           width: drawerWidth,
-          zIndex: 1100
+          zIndex: 1100,
+          background: menuColors.background
         }
       ],
       tabs: {

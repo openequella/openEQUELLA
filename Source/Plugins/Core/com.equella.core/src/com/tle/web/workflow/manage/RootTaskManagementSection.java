@@ -28,6 +28,8 @@ public class RootTaskManagementSection
   @PlugKey("manage.title")
   private static Label LABEL_TITLE;
 
+  public static String URL = "/access/managetasks.do";
+
   @SuppressWarnings("nls")
   @Override
   protected String getSessionKey() {
@@ -41,11 +43,16 @@ public class RootTaskManagementSection
 
   @SuppressWarnings("nls")
   public static SectionInfo create(InfoCreator creator) {
-    return creator.createForward("/access/managetasks.do");
+    return creator.createForward(URL);
   }
 
   @Override
   protected ContentLayout getDefaultLayout(SectionInfo info) {
     return ContentLayout.TWO_COLUMN;
+  }
+
+  @Override
+  protected String getPageName() {
+    return URL;
   }
 }

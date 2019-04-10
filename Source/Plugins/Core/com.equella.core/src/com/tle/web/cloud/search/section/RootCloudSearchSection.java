@@ -95,4 +95,9 @@ public class RootCloudSearchSection
         ? super.getDefaultLayout(info)
         : ContentLayout.ONE_COLUMN;
   }
+
+  @Override
+  protected String getPageName() {
+    return null;
+  }
 }

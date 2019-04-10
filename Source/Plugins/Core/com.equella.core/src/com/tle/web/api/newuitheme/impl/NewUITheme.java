@@ -21,9 +21,10 @@ public class NewUITheme {
   private String secondaryColor = "#ff9800";
   private String backgroundColor = "#fafafa";
   private String menuItemColor = "#ffffff";
-  private String menuItemTextColor = "#000000";
   private String menuItemIconColor = "#000000";
-  private String menuTextColor = "#000000";
+  private String menuItemTextColor = "#000000";
+  private String primaryTextColor = "#000000";
+  private String menuTextColor = "#444444";
   private int fontSize = 14;
 
   public String getPrimaryColor() {
@@ -80,6 +81,14 @@ public class NewUITheme {
 
   public void setMenuItemIconColor(String menuItemIconColor) {
     this.menuItemIconColor = menuItemIconColor;
+  }
+
+  public String getPrimaryTextColor() {
+    return primaryTextColor;
+  }
+
+  public void setPrimaryTextColor(String primaryTextColor) {
+    this.primaryTextColor = primaryTextColor;
   }
 
   public String getMenuTextColor() {

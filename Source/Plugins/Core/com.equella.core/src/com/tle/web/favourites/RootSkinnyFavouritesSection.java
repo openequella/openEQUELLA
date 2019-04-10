@@ -42,4 +42,9 @@ public class RootSkinnyFavouritesSection extends AbstractRootFavouritesSection {
   protected SectionTree getItemTree() {
     return itemTree;
   }
+
+  @Override
+  protected String getPageName() {
+    return null;
+  }
 }

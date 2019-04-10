@@ -16,33 +16,32 @@
 
 package com.tle.web.favourites;
 
-import com.tle.web.favourites.searches.SearchFavouritesResultsSection;
 import com.tle.web.search.base.ContextableSearchSection;
 import com.tle.web.sections.MutableSectionInfo;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
+import com.tle.web.sections.annotations.Bookmarked;
+import com.tle.web.sections.annotations.EventFactory;
+import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.utils.VoidKeyOption;
 import com.tle.web.sections.events.ParametersEvent;
 import com.tle.web.sections.events.RenderContext;
-import com.tle.web.sections.js.generic.ReloadHandler;
+import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.annotations.Component;
-import com.tle.web.sections.standard.event.ValueSetListener;
 import com.tle.web.sections.standard.model.SimpleHtmlListModel;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @SuppressWarnings("nls")
 public abstract class AbstractRootFavouritesSection
-    extends ContextableSearchSection<ContextableSearchSection.Model>
-    implements ValueSetListener<Set<String>> {
+    extends ContextableSearchSection<AbstractRootFavouritesSection.Model> {
   private static final String CONTEXT_KEY = "favouritesContext";
 
+  private static final String SEARCHTYPE_PARAM = "favtype";
   private static final String SEARCHES_TYPE = "searches";
   private static final String ITEMS_TYPE = "items";
 
@@ -55,11 +54,19 @@ public abstract class AbstractRootFavouritesSection
   @PlugKey(ITEMS_TYPE)
   private static String KEY_ITEMS;
 
-  @Component private SingleSelectionList<Void> favouriteType;
+  @Component(stateful = false)
+  private SingleSelectionList<Void> favouriteType;
 
   protected abstract SectionTree getSearchTree();
 
   protected abstract SectionTree getItemTree();
+
+  @EventHandlerMethod
+  public void changeSearchType(SectionInfo info) {
+    getModel(info).setSearchType(favouriteType.getSelectedValueAsString(info));
+  }
+
+  @EventFactory private EventGenerator events;
 
   @Override
   public void registered(String id, SectionTree tree) {
@@ -69,9 +76,8 @@ public abstract class AbstractRootFavouritesSection
         new SimpleHtmlListModel<Void>(
             new VoidKeyOption(KEY_ITEMS, ITEMS_TYPE),
             new VoidKeyOption(KEY_SEARCHES, SEARCHES_TYPE)));
-    favouriteType.addChangeEventHandler(new ReloadHandler());
+    favouriteType.addChangeEventHandler(events.getNamedHandler("changeSearchType"));
     favouriteType.setAlwaysSelect(true);
-    favouriteType.setValueSetListener(this);
   }
 
   @Override
@@ -94,47 +100,76 @@ public abstract class AbstractRootFavouritesSection
   }
 
   @Override
-  public void valueSet(SectionInfo info, Set<String> value) {
-    MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
-    SectionTree tree = getCurrentTree(info);
-    minfo.addTreeToBottom(tree, true);
-    Map<String, String[]> context = getModel(info).getContext();
-    if (context != null) {
-      info.processEvent(new ParametersEvent(context, false), tree);
-      if (favouriteType.getSelectedValueAsString(info).equals(SEARCHES_TYPE)) {
-        SearchFavouritesResultsSection searchFavouritesResultsSection =
-            info.lookupSection(SearchFavouritesResultsSection.class);
-        if (searchFavouritesResultsSection != null) {
-          searchFavouritesResultsSection.startSearch(info);
-        }
-      } else {
-        FavouritesResultsSection favouritesResultsSection =
-            info.lookupSection(FavouritesResultsSection.class);
-        if (favouritesResultsSection != null) {
-
-          favouritesResultsSection.startSearch(info);
-        }
+  public void afterParameters(SectionInfo info, ParametersEvent event) {
+    if (event.hasParameter(SEARCHTYPE_PARAM)) {
+      if (!event.isInitial()) {
+        MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
+        minfo.addParametersEvent(event);
       }
+      getCurrentTree(info, true);
     }
+    super.afterParameters(info, event);
   }
 
   @Override
   protected List<SectionId> getChildIds(RenderContext info) {
-    SectionTree tree = getCurrentTree(info);
+    SectionTree tree = getCurrentTree(info, false);
     return tree.getChildIds(tree.getRootId());
   }
 
-  private SectionTree getCurrentTree(SectionInfo info) {
-    String list = favouriteType.getSelectedValueAsString(info);
-    return list.equals(SEARCHES_TYPE) ? getSearchTree() : getItemTree();
+  private SectionTree getCurrentTree(SectionInfo info, boolean params) {
+    Model model = getModel(info);
+    String list = model.getSearchType();
+    SectionTree tree = list.equals(SEARCHES_TYPE) ? getSearchTree() : getItemTree();
+    if (!model.treeAdded) {
+      model.setTreeAdded(true);
+      MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
+      minfo.addTreeToBottom(tree, params);
+    }
+    return tree;
   }
 
   @Override
   protected SectionRenderable getBodyHeader(RenderContext info) {
+    favouriteType.setSelectedStringValue(info, getModel(info).getSearchType());
     return viewFactory.createResult("favourites.ftl", this);
   }
 
   public SingleSelectionList<Void> getFavouriteType() {
     return favouriteType;
+  }
+
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new Model();
+  }
+
+  @Override
+  protected String getPageName() {
+    return "/access/favourites.do";
+  }
+
+  public static class Model extends ContextableSearchSection.Model {
+
+    @Bookmarked(parameter = SEARCHTYPE_PARAM)
+    private String searchType = ITEMS_TYPE;
+
+    private boolean treeAdded;
+
+    public boolean isTreeAdded() {
+      return treeAdded;
+    }
+
+    public void setTreeAdded(boolean treeAdded) {
+      this.treeAdded = treeAdded;
+    }
+
+    public String getSearchType() {
+      return searchType;
+    }
+
+    public void setSearchType(String searchType) {
+      this.searchType = searchType;
+    }
   }
 }

@@ -103,20 +103,6 @@ public class RootHierarchySection extends ContextableSearchSection<ContextableSe
     event.addHelp(viewFactory.createResult("hierarchyhelp.ftl", this));
   }
 
-  /**
-   * Browsers show annoying capacity to drop booleans from their event parameters when that boolean
-   * is false. Accordingly the attempt in ContextableSearchSection.afterParameters to remove
-   * previously held values fails resulting in the 'reverse order' "rs" boolean checkbox becoming
-   * stuck on true/checked once set. The best that can be said about this workaround is that it's
-   * harmless where not required.
-   *
-   * @param context
-   */
-  @Override
-  protected boolean hasContextBeenSpecified(SectionInfo info) {
-    return super.hasContextBeenSpecified(info) || getModel(info).isUpdateContext();
-  }
-
   @Override
   protected Map<String, String[]> buildSearchContext(SectionInfo info) {
     final BookmarkEvent bookmarkEvent = new BookmarkEvent();
@@ -131,5 +117,10 @@ public class RootHierarchySection extends ContextableSearchSection<ContextableSe
     return selectionService.getCurrentSession(info) != null
         ? super.getDefaultLayout(info)
         : ContentLayout.ONE_COLUMN;
+  }
+
+  @Override
+  protected String getPageName() {
+    return HIERARCHYURL;
   }
 }
