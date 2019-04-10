@@ -109,7 +109,7 @@ object CloudProviderProperties extends StatefulProperties("Cloud Providers") wit
       listPage = testProviderPage.returnToEQUELLA()
       listPage.waitForResults()
       val result      = listPage.resultForName(actualProvider.name)
-      val description = Some(result.description()).filter(_.nonEmpty)
+      val description = result.description()
       (description ?= actualProvider.description) :| "Description should match"
 
     case DeleteProvider(providerName) =>

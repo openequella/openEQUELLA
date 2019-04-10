@@ -29,7 +29,6 @@ import java.io.InputStream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -66,7 +65,7 @@ public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
 
   @Override
   public Response getPreLoginNoticeImage(String name) throws IOException {
-    return Response.ok(noticeService.getPreLoginNoticeImage(name), MediaType.MEDIA_TYPE_WILDCARD)
+    return Response.ok(noticeService.getPreLoginNoticeImage(name), noticeService.getMimeType(name))
         .build();
   }
 

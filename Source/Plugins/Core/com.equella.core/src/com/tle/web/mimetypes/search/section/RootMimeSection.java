@@ -86,4 +86,9 @@ public class RootMimeSection extends ContextableSearchSection<ContextableSearchS
   public void addBlueBarResults(RenderContext context, BlueBarEvent event) {
     event.addHelp(view.createResult("mime-help.ftl", this));
   }
+
+  @Override
+  protected String getPageName() {
+    return null;
+  }
 }

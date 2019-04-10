@@ -30,6 +30,7 @@ import com.tle.core.services.item.FreetextResult;
 import com.tle.web.itemlist.item.AbstractItemList;
 import com.tle.web.notification.NotificationItemListEntry;
 import com.tle.web.notification.WebNotificationExtension;
+import com.tle.web.searching.SearchIndexModifier;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxRenderContext;
@@ -177,19 +178,23 @@ public class NotificationItemList
 
   @Override
   protected NotificationItemListEntry createItemListEntry(
-      SectionInfo info, Item item, FreetextResult result) {
+      SectionInfo info, Item item, FreetextResult result, int index, int available) {
     NotificationItemListEntry notificationItemListItem = entryFactory.get();
     notificationItemListItem.setInfo(info);
     notificationItemListItem.setItem(item);
+
     return notificationItemListItem;
   }
 
   @SuppressWarnings("nls")
   @Override
-  public NotificationItemListEntry addItem(SectionInfo info, Item item, FreetextResult resultData) {
+  public NotificationItemListEntry addItem(
+      SectionInfo info, Item item, FreetextResult resultData, int index, int available) {
     if (resultData instanceof NotificationResult) {
       NotificationResult result = (NotificationResult) resultData;
-      NotificationItemListEntry entry = createItemListEntry(info, item, resultData);
+      NotificationItemListEntry entry =
+          createItemListEntry(info, item, resultData, index, available);
+      entry.addModifier(new SearchIndexModifier(RootNotificationListSection.URL, index, available));
       entry.setNotificationId(result.getNotificationId());
       addListItem(info, entry);
       return entry;

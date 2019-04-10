@@ -70,4 +70,9 @@ public class RootMyResourcesSection extends ContextableSearchSection<Contextable
   protected boolean hasContextBeenSpecified(SectionInfo info) {
     return getModel(info).isUpdateContext();
   }
+
+  @Override
+  protected String getPageName() {
+    return URL;
+  }
 }
