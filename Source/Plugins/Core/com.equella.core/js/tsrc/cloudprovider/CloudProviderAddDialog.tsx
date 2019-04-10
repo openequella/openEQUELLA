@@ -37,9 +37,19 @@ export default class CloudProviderAddDialog extends React.Component<
     });
   };
 
+  validateUrl = (): boolean => {
+    let url = this.state.cloudProviderUrl;
+    if (url == "") {
+      return true;
+    } else {
+      return url.search(/^[Hh][Tt][Tt][Pp]([Ss]?):\/\//) == 0;
+    }
+  };
+
   render() {
     const { open, onCancel, onRegister } = this.props;
     const { cloudProviderUrl } = this.state;
+    let isUrlValid = this.validateUrl();
     return (
       <div>
         <Dialog
@@ -55,7 +65,7 @@ export default class CloudProviderAddDialog extends React.Component<
           </DialogTitle>
           <DialogContent>
             <DialogContentText>
-              {cloudProviderLangStrings.newcloudprovider.help}
+              {cloudProviderLangStrings.newcloudprovider.text}
             </DialogContentText>
             <TextField
               autoFocus
@@ -66,6 +76,8 @@ export default class CloudProviderAddDialog extends React.Component<
               required
               fullWidth
               onChange={this.handleTextChange}
+              error={!isUrlValid}
+              helperText={cloudProviderLangStrings.newcloudprovider.help}
             />
           </DialogContent>
           <DialogActions>
@@ -78,7 +90,7 @@ export default class CloudProviderAddDialog extends React.Component<
                 onRegister(cloudProviderUrl);
               }}
               color="primary"
-              disabled={!cloudProviderUrl}
+              disabled={!cloudProviderUrl || !isUrlValid}
             >
               {commonString.action.register}
             </Button>
