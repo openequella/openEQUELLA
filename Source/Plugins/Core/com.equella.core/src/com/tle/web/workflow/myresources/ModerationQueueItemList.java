@@ -27,6 +27,8 @@ import com.tle.core.workflow.service.WorkflowService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.itemlist.item.AbstractItemList;
+import com.tle.web.search.base.ContextableSearchSection;
+import com.tle.web.searching.SearchIndexModifier;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -128,6 +130,9 @@ public class ModerationQueueItemList
   protected ModerationQueueEntry createItemListEntry(
       SectionInfo info, Item item, FreetextResult result, int index, int available) {
     final ModerationQueueEntry entry = factory.get();
+    entry.addModifier(
+        new SearchIndexModifier(
+            info.getTreeAttribute(ContextableSearchSection.SEARCHPAGE_ATTR), index, available));
     entry.setItem(item);
     entry.setInfo(info);
     return entry;
