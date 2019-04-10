@@ -199,14 +199,16 @@ class PreLoginNoticeConfigurator extends React.Component<
   };
 
   handleStartDateChange = (startDate: Date) => {
-    this.setState({ current: { ...this.state.current, startDate } }, () =>
-      this.setPreventNav()
+    this.setState(
+      { current: { ...this.state.current, startDate: new Date(startDate) } },
+      () => this.setPreventNav()
     );
   };
 
   handleEndDateChange = (endDate: Date) => {
-    this.setState({ current: { ...this.state.current, endDate } }, () =>
-      this.setPreventNav()
+    this.setState(
+      { current: { ...this.state.current, endDate: new Date(endDate) } },
+      () => this.setPreventNav()
     );
   };
 
