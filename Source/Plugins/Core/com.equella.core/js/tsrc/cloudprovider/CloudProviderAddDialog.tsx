@@ -18,7 +18,6 @@ interface CloudProviderAddDialogProps {
 }
 interface CloudProviderAddDialogState {
   cloudProviderUrl: string;
-  isUrlValid: boolean;
 }
 
 export default class CloudProviderAddDialog extends React.Component<
@@ -28,22 +27,29 @@ export default class CloudProviderAddDialog extends React.Component<
   constructor(props: CloudProviderAddDialogProps) {
     super(props);
     this.state = {
-      cloudProviderUrl: "",
-      isUrlValid: true
+      cloudProviderUrl: ""
     };
   }
 
   handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let url = e.target.value.toLowerCase();
     this.setState({
-      cloudProviderUrl: url,
-      isUrlValid: url.search(/^http(s?):\/\//) == 0
+      cloudProviderUrl: e.target.value
     });
+  };
+
+  validateUrl = (): boolean => {
+    let url = this.state.cloudProviderUrl;
+    if (url == "") {
+      return true;
+    } else {
+      return url.search(/^[Hh][Tt][Tt][Pp]([Ss]?):\/\//) == 0;
+    }
   };
 
   render() {
     const { open, onCancel, onRegister } = this.props;
-    const { cloudProviderUrl, isUrlValid } = this.state;
+    const { cloudProviderUrl } = this.state;
+    let isUrlValid = this.validateUrl();
     return (
       <div>
         <Dialog
@@ -59,7 +65,7 @@ export default class CloudProviderAddDialog extends React.Component<
           </DialogTitle>
           <DialogContent>
             <DialogContentText>
-              {cloudProviderLangStrings.newcloudprovider.help}
+              {cloudProviderLangStrings.newcloudprovider.text}
             </DialogContentText>
             <TextField
               autoFocus
@@ -71,7 +77,7 @@ export default class CloudProviderAddDialog extends React.Component<
               fullWidth
               onChange={this.handleTextChange}
               error={!isUrlValid}
-              helperText={cloudProviderLangStrings.newcloudprovider.error}
+              helperText={cloudProviderLangStrings.newcloudprovider.help}
             />
           </DialogContent>
           <DialogActions>

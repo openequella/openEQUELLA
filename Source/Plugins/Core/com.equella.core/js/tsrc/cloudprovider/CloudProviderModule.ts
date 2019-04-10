@@ -21,8 +21,8 @@ export const cloudProviderLangStrings = prepLangStrings("cp", {
   newcloudprovider: {
     title: "Register a new cloud provider",
     label: "URL",
-    help: "Enter the URL supplied by the cloud provider",
-    error: "The URL should start with either http:// or https://"
+    text: "Enter the URL supplied by the cloud provider",
+    help: "The URL should start with either http:// or https://"
   },
   deletecloudprovider: {
     title: "Are you sure you want to delete cloud provider - '%s'?",
