@@ -18,6 +18,7 @@ interface CloudProviderAddDialogProps {
 }
 interface CloudProviderAddDialogState {
   cloudProviderUrl: string;
+  isUrlValid: boolean;
 }
 
 export default class CloudProviderAddDialog extends React.Component<
@@ -27,19 +28,22 @@ export default class CloudProviderAddDialog extends React.Component<
   constructor(props: CloudProviderAddDialogProps) {
     super(props);
     this.state = {
-      cloudProviderUrl: ""
+      cloudProviderUrl: "",
+      isUrlValid: true
     };
   }
 
   handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let url = e.target.value.toLowerCase();
     this.setState({
-      cloudProviderUrl: e.target.value
+      cloudProviderUrl: url,
+      isUrlValid: url.search(/^http(s?):\/\//) == 0
     });
   };
 
   render() {
     const { open, onCancel, onRegister } = this.props;
-    const { cloudProviderUrl } = this.state;
+    const { cloudProviderUrl, isUrlValid } = this.state;
     return (
       <div>
         <Dialog
@@ -66,6 +70,8 @@ export default class CloudProviderAddDialog extends React.Component<
               required
               fullWidth
               onChange={this.handleTextChange}
+              error={!isUrlValid}
+              helperText={cloudProviderLangStrings.newcloudprovider.error}
             />
           </DialogContent>
           <DialogActions>
@@ -78,7 +84,7 @@ export default class CloudProviderAddDialog extends React.Component<
                 onRegister(cloudProviderUrl);
               }}
               color="primary"
-              disabled={!cloudProviderUrl}
+              disabled={!cloudProviderUrl || !isUrlValid}
             >
               {commonString.action.register}
             </Button>
