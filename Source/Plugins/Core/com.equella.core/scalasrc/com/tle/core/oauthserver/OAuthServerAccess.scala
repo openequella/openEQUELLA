@@ -71,7 +71,7 @@ object OAuthServerAccess {
   case class StdOAuthToken(token: OAuthToken) extends IOAuthToken {
     override def getToken: String = token.getToken
 
-    override def getExpiry: Instant = token.getExpiry.toInstant
+    override def getExpiry: Instant = Option(token.getExpiry).map(_.toInstant).orNull
   }
 
   case class CloudAuthToken(token: String, expiry: Instant) extends IOAuthToken {
