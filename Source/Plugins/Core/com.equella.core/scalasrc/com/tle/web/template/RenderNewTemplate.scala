@@ -16,6 +16,8 @@
 
 package com.tle.web.template
 
+import java.util.concurrent.ConcurrentHashMap
+
 import com.tle.common.i18n.{CurrentLocale, LocaleUtils}
 import com.tle.core.db.RunWithDB
 import com.tle.core.i18n.LocaleLookup
@@ -31,19 +33,21 @@ import com.tle.web.sections.js.generic.expression.ObjectExpression
 import com.tle.web.sections.js.generic.function.IncludeFile
 import com.tle.web.sections.render._
 import com.tle.web.settings.UISettings
-import io.circe.generic.auto._
+import org.jsoup.Jsoup
+import org.jsoup.nodes.{Document, Element}
 
 import scala.collection.JavaConverters._
 
 case class ReactPageModel(getReactScript: String)
 
 object RenderNewTemplate {
+
   val r            = ResourcesService.getResourceHelper(getClass)
   val DisableNewUI = "DISABLE_NEWUI"
   val SetupJSKey   = "setupJSData"
-  val ReactJSKey   = "reactJSBundle"
+  val ReactHtmlKey = "reactJSHtml"
 
-  val reactTemplate = r.url("reactjs/index.js")
+  val htmlBundleCache = new ConcurrentHashMap[String, (PreRenderable, Document)]()
 
   val bundleJs = new PreRenderable {
     override def preRender(info: PreRenderContext): Unit = {
@@ -52,7 +56,29 @@ object RenderNewTemplate {
         .preRender(info)
       new IncludeFile(s"api/theme/theme.js").preRender(info)
     }
+  }
 
+  def parseEntryHtml(filename: String): (PreRenderable, Document) = {
+    val inpStream = getClass.getResourceAsStream(s"/web/reactjs/$filename")
+    if (inpStream == null) sys.error(s"Failed to find $filename react html bundle")
+    val htmlDoc = Jsoup.parse(inpStream, "UTF-8", "")
+    inpStream.close()
+    val links   = htmlDoc.getElementsByTag("link").asScala
+    val scripts = htmlDoc.getElementsByTag("script").asScala
+    scripts.foreach { e =>
+      if (e.hasAttr("src")) {
+        e.attr("src", r.url(e.attr("src")))
+      }
+    }
+    val prerender: PreRenderable = info => {
+      info.preRender(JQueryCore.PRERENDER)
+      if (Option(info.getRequest.getHeader("User-Agent")).exists(_.contains("Trident"))) {
+        info.addJs("https://cdn.polyfill.io/v2/polyfill.min.js?features=es6")
+      }
+      info.preRender(bundleJs)
+      links.foreach(l => info.addCss(r.url(l.attr("href"))))
+    }
+    (prerender, htmlDoc)
   }
 
   val NewLayoutKey = "NEW_LAYOUT"
@@ -106,31 +132,30 @@ object RenderNewTemplate {
       Option(req.getAttribute(SetupJSKey).asInstanceOf[ObjectExpression => ObjectExpression])
         .map(_.apply(_renderData))
         .getOrElse(_renderData)
-    val bundleJS =
-      Option(req.getAttribute(ReactJSKey).asInstanceOf[String]).getOrElse(reactTemplate)
-    renderReact(context, viewFactory, renderData, bundleJS)
+
+    val htmlPage =
+      Option(req.getAttribute(ReactHtmlKey).asInstanceOf[String]).getOrElse("index.html")
+    val (scriptPreRender, body) =
+      if (DebugSettings.isDevMode) parseEntryHtml(htmlPage)
+      else htmlBundleCache.computeIfAbsent(htmlPage, parseEntryHtml)
+    context.preRender(scriptPreRender)
+    renderReact(context, viewFactory, renderData, body.body().toString)
   }
 
   def renderReact(context: RenderEventContext,
                   viewFactory: FreemarkerFactory,
                   renderData: ObjectExpression,
-                  scriptUrl: String): SectionResult = {
-    context.preRender(JQueryCore.PRERENDER)
+                  body: String): SectionResult = {
     if (DebugSettings.isAutoTestMode) {
       context.preRender(RenderTemplate.AUTOTEST_JS)
     }
-
-    if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident"))) {
-      context.getPreRenderContext.addJs("https://cdn.polyfill.io/v2/polyfill.min.js?features=es6")
-    }
-    context.preRender(bundleJs)
     val tempResult = new GenericTemplateResult()
     tempResult.addNamedResult("header", HeaderSection)
     viewFactory.createResultWithModel("layouts/outer/react.ftl",
-                                      TemplateScript(scriptUrl, renderData, tempResult, ""))
+                                      TemplateScript(body, renderData, tempResult, ""))
   }
 
-  case class TemplateScript(getScriptUrl: String,
+  case class TemplateScript(getBody: String,
                             getRenderJs: ObjectExpression,
                             getTemplate: TemplateResult,
                             htmlAttributes: String) {

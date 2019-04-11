@@ -1,0 +1,21 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>29711</id>
+  <institution>
+    <id>29168</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>htm</string>
+    <string>shtml</string>
+    <string>html</string>
+  </extensions>
+  <type>text/html</type>
+  <description>HTML Document</description>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/html.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

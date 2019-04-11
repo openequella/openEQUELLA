@@ -1,0 +1,12 @@
+<list>
+  <com.tle.beans.security.AccessExpression>
+    <id>1043</id>
+    <dynamic>false</dynamic>
+    <expression>*</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>29004</id>
+    <dynamic>false</dynamic>
+    <expression>R:8b8d40b2-e20f-4905-92e8-5e9eaf57ec52 </expression>
+  </com.tle.beans.security.AccessExpression>
+</list>

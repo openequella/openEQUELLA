@@ -40,6 +40,7 @@ import com.tle.web.itemlist.StdMetadataEntry;
 import com.tle.web.itemlist.item.AbstractItemList;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourceHelper;
+import com.tle.web.searching.SearchIndexModifier;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxRenderContext;
@@ -233,10 +234,13 @@ public class ActivationItemList
   }
 
   @Override
-  public ActivationItemListEntry addItem(SectionInfo info, Item item, FreetextResult resultData) {
+  public ActivationItemListEntry addItem(
+      SectionInfo info, Item item, FreetextResult resultData, int index, int available) {
     if (resultData instanceof ActivationResult) {
       ActivationResult result = (ActivationResult) resultData;
-      ActivationItemListEntry entry = createItemListEntry(info, item, resultData);
+      ActivationItemListEntry entry = createItemListEntry(info, item, resultData, index, available);
+      entry.addModifier(
+          new SearchIndexModifier(RootActivationSection.ACTIVATIONURL, index, available));
       entry.setActivationId(result.getActivationId());
       addListItem(info, entry);
       return entry;
@@ -253,7 +257,7 @@ public class ActivationItemList
 
   @Override
   protected ActivationItemListEntry createItemListEntry(
-      SectionInfo info, Item item, FreetextResult result) {
+      SectionInfo info, Item item, FreetextResult result, int index, int available) {
     ActivationItemListEntry activationItemListItem = entryFactory.get();
     activationItemListItem.setInfo(info);
     activationItemListItem.setItem(item);

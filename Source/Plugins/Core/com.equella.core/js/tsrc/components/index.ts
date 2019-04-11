@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ErrorResponse, generateFromAxiosError } from "../api/errors";
+import { ErrorResponse, generateFromError } from "../api/errors";
 
 export { default as Error } from "./Error";
 export { default as Loader } from "./Loader";
@@ -10,6 +10,6 @@ export function handleUnexpectedApiError<P>(
   t: React.Component<P, { errorResponse?: ErrorResponse }>
 ): (err: any) => void {
   return function(err) {
-    t.setState({ errorResponse: generateFromAxiosError(err) });
+    t.setState({ errorResponse: generateFromError(err) });
   };
 }

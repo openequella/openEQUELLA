@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assessmentTest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+ xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+ xmlns:xi="http://www.w3.org/2001/XInclude"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:m="http://www.w3.org/1998/Math/MathML"
+ toolVersion="0.1"
+ title="BBQs test package"
+ toolName="Spectatus"
+ identifier="SPECTATUS-GENERATED-TEST">
+    <outcomeDeclaration baseType="float" cardinality="single" identifier="TEST_total">
+        <defaultValue>
+            <value>0.0</value>
+        </defaultValue>
+    </outcomeDeclaration>
+    <outcomeDeclaration baseType="float" cardinality="single" identifier="SECTION_1_total">
+        <defaultValue>
+            <value>0.0</value>
+        </defaultValue>
+    </outcomeDeclaration>
+    <outcomeDeclaration baseType="float" cardinality="single" identifier="SECTION_2_total">
+        <defaultValue>
+            <value>0.0</value>
+        </defaultValue>
+    </outcomeDeclaration>
+    <outcomeDeclaration baseType="identifier" cardinality="multiple" identifier="TEST_FEEDBACK"/>
+    <testPart submissionMode="individual" navigationMode="nonlinear" identifier="TP">
+        <assessmentSection title="Section 1 - BBQ items a-m" visible="true" identifier="S1">
+            <assessmentItemRef href="id-5c1b1e2d56bd/either-or.xml" identifier="id-5c1b1e2d56bd"/>
+            <assessmentItemRef href="id-75bd778a3504/essay-vacation.xml"
+                identifier="id-75bd778a3504"/>
+            <assessmentItemRef href="id-992e8bd3c9ac/hotspot-maximum.xml"
+                identifier="id-992e8bd3c9ac"/>
+            <assessmentItemRef href="id-f8e13982226c/jumble-gapMatch.xml"
+                identifier="id-f8e13982226c"/>
+            <assessmentItemRef href="id-377d71221b04/jumble-inlineChoice.xml"
+                identifier="id-377d71221b04"/>
+            <assessmentItemRef href="id-7e4520cd463f/Likert-choice-questionSet.xml"
+                identifier="id-7e4520cd463f"/>
+            <assessmentItemRef href="id-2a2cfb9f4dde/Likert-match-questionSet.xml"
+                identifier="id-2a2cfb9f4dde"/>
+            <assessmentItemRef href="id-200e2c3f7d76/matching-associate-trigDeriv.xml"
+                identifier="id-200e2c3f7d76"/>
+            <assessmentItemRef href="id-7f35b6c393d5/matching-match-trigDeriv.xml"
+                identifier="id-7f35b6c393d5"/>
+            <assessmentItemRef href="id-3cd82285401e/MultipleAnswer-choice-materials.xml"
+                identifier="id-3cd82285401e"/>
+            <assessmentItemRef href="id-371b0f88774a/MultipleChoice-choice-polynomials.xml"
+                identifier="id-371b0f88774a"/>
+        </assessmentSection>
+        <assessmentSection title="Section 2 - BBQ items n-z" visible="true"
+            identifier="id-637f1e66940f">
+            <assessmentItemRef href="id-90b59b73c8e4/upload-file.xml" identifier="id-90b59b73c8e4"/>
+            <assessmentItemRef href="id-e475c3c922f6/order-maths.xml" identifier="id-e475c3c922f6"/>
+            <assessmentItemRef href="id-be3cd3bdd3d4/order-mountains.xml"
+                identifier="id-be3cd3bdd3d4"/>
+            <assessmentItemRef href="id-8167235c360b/QuizBowl-multi-geometry.xml"
+                identifier="id-8167235c360b"/>
+            <assessmentItemRef href="id-1ccd6e04685f/ShortAnswer-extText-postcard.xml"
+                identifier="id-1ccd6e04685f"/>
+            <assessmentItemRef href="id-bd44a757f562/SineRule-001.xml" identifier="id-bd44a757f562"/>
+            <assessmentItemRef href="id-13b92f311fc0/SineRule-002-maths.xml"
+                identifier="id-13b92f311fc0"/>
+            <assessmentItemRef href="id-c0bdd9a130c7/text_entry-calculus.xml"
+                identifier="id-c0bdd9a130c7"/>
+            <assessmentItemRef href="id-d565dbe89933/text_entry-Lycidas.xml"
+                identifier="id-d565dbe89933"/>
+            <assessmentItemRef href="id-83210b60ed8f/TF-choice.xml" identifier="id-83210b60ed8f"/>
+            <assessmentItemRef href="id-f9f3153e2ba4/TheAnswer-001.xml" identifier="id-f9f3153e2ba4"
+            />
+        </assessmentSection>
+    </testPart>
+    <outcomeProcessing>
+        <setOutcomeValue identifier="SECTION_1_total">
+            <sum>
+                <testVariables baseType="float" sectionIdentifier="S1" variableIdentifier="SCORE"/>
+            </sum>
+        </setOutcomeValue>
+        <setOutcomeValue identifier="SECTION_2_total">
+            <sum>
+                <testVariables baseType="float" sectionIdentifier="id-637f1e66940f"
+                    variableIdentifier="SCORE"/>
+            </sum>
+        </setOutcomeValue>
+        <setOutcomeValue identifier="TEST_total">
+            <sum>
+                <testVariables baseType="float" variableIdentifier="SCORE"/>
+            </sum>
+        </setOutcomeValue>
+        <setOutcomeValue identifier="TEST_FEEDBACK">
+            <multiple>
+                <baseValue baseType="identifier">S1_END_FB</baseValue>
+                <baseValue baseType="identifier">S2_END_FB</baseValue>
+                <baseValue baseType="identifier">TEST_FB</baseValue>
+            </multiple>
+        </setOutcomeValue>
+    </outcomeProcessing>
+    <testFeedback outcomeIdentifier="TEST_FEEDBACK" access="atEnd" showHide="show"
+        identifier="TEST_FB">
+        <div>You have reached the end of the test.</div>
+        <div>Section 1 score: <printedVariable identifier="SECTION_1_total" format="%.1f"/> (from a
+            maximum of 39.0)</div>
+        <div>Section 2 score: <printedVariable identifier="SECTION_2_total" format="%.1f"/> (from a
+            maximum of 66.0)</div>
+        <div>Total score: <printedVariable identifier="TEST_total" format="%.1f"/> (from a maximum
+            of 105.0)</div>
+    </testFeedback>
+</assessmentTest>

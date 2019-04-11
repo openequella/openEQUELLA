@@ -1,0 +1,711 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<manifest identifier="MD-QTI_test_566ff2f02b12" xmlns="http://www.imsglobal.org/xsd/imscp_v1p1"
+    xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2"
+    xmlns:imsqti="http://www.imsglobal.org/xsd/imsqti_metadata_v2p1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 http://www.imsglobal.org/xsd/imscp_v1p2.xsd http://www.imsglobal.org/xsd/imsmd_v1p2 http://www.imsglobal.org/xsd/imsmd_v1p2p4.xsd http://www.imsglobal.org/xsd/imsqti_metadata_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_metadata_v2p1.xsd">
+    <metadata>
+        <schema>IMS Content</schema>
+        <schemaversion>1.2</schemaversion>
+        <imsmd:lom>
+            <imsmd:general>
+                <imsmd:identifier>QTI_test_566ff2f02b12</imsmd:identifier>
+                <imsmd:title>
+                    <imsmd:langstring xml:lang="en">BBQs test package</imsmd:langstring>
+                </imsmd:title>
+                <imsmd:language>en</imsmd:language>
+                <imsmd:description>
+                    <imsmd:langstring xml:lang="en">Test package for IMS Quarterly in Nottingham, February 2012</imsmd:langstring>
+                </imsmd:description>
+                <imsmd:keyword>
+                    <imsmd:langstring xml:lang="en">UKOER</imsmd:langstring>
+                </imsmd:keyword>
+                <imsmd:keyword>
+                    <imsmd:langstring xml:lang="en">QTIv2.1</imsmd:langstring>
+                </imsmd:keyword>
+                <imsmd:keyword>
+                    <imsmd:langstring xml:lang="en">sample</imsmd:langstring>
+                </imsmd:keyword>
+                <imsmd:keyword>
+                    <imsmd:langstring xml:lang="en">item</imsmd:langstring>
+                </imsmd:keyword>
+            </imsmd:general>
+            <imsmd:lifecycle>
+                <imsmd:contribute>
+                    <imsmd:role>
+                        <imsmd:source>
+                            <imsmd:langstring xml:lang="x-none">LOMv1.0</imsmd:langstring>
+                        </imsmd:source>
+                        <imsmd:value>
+                            <imsmd:langstring xml:lang="x-none">Creator</imsmd:langstring>
+                        </imsmd:value>
+                    </imsmd:role>
+                    <imsmd:centity>
+                        <imsmd:vcard>BEGIN:VCARD FN:Sue Milne ORG:University of Glasgow   END:VCARD </imsmd:vcard>
+                    </imsmd:centity>
+                    <imsmd:date>
+                        <imsmd:datetime>2012-02-17</imsmd:datetime>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en"/>
+                        </imsmd:description>
+                    </imsmd:date>
+                </imsmd:contribute>
+                <imsmd:contribute>
+                    <imsmd:role>
+                        <imsmd:source>
+                            <imsmd:langstring xml:lang="x-none">LOMv1.0</imsmd:langstring>
+                        </imsmd:source>
+                        <imsmd:value>
+                            <imsmd:langstring xml:lang="x-none">Editor</imsmd:langstring>
+                        </imsmd:value>
+                    </imsmd:role>
+                    <imsmd:centity>
+                        <imsmd:vcard>BEGIN:VCARD FN:FETLAR END:VCARD</imsmd:vcard>
+                    </imsmd:centity>
+                    <imsmd:date>
+                        <imsmd:datetime>2012-02-17</imsmd:datetime>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en"/>
+                        </imsmd:description>
+                    </imsmd:date>
+                </imsmd:contribute>
+            </imsmd:lifecycle>
+            <imsmd:metametadata>
+                <imsmd:identifier>urn:www.fetlar.ac.uk:0eb32b3c-c889-41fb-a6bf-5654ddceb8b9</imsmd:identifier>
+                <imsmd:catalogentry>
+                    <imsmd:catalog>http://www.fetlar.ac.uk/</imsmd:catalog>
+                    <imsmd:entry>
+                        <imsmd:langstring xml:lang="en">FETLAR-2-1329499261</imsmd:langstring>
+                    </imsmd:entry>
+                </imsmd:catalogentry>
+                <imsmd:contribute>
+                    <imsmd:role>
+                        <imsmd:source>
+                            <imsmd:langstring xml:lang="x-none">LOMv1.0</imsmd:langstring>
+                        </imsmd:source>
+                        <imsmd:value>
+                            <imsmd:langstring xml:lang="x-none">Creator</imsmd:langstring>
+                        </imsmd:value>
+                    </imsmd:role>
+                    <imsmd:centity>
+                        <imsmd:vcard>BEGIN:VCARD FN:FETLAR END:VCARD</imsmd:vcard>
+                    </imsmd:centity>
+                </imsmd:contribute>
+                <imsmd:metadatascheme>LOMv1.0</imsmd:metadatascheme>
+                <imsmd:metadatascheme>JORUMv1.0</imsmd:metadatascheme>
+                <imsmd:language>en</imsmd:language>
+            </imsmd:metametadata>
+            <imsmd:technical>
+                <imsmd:format>text/x-imsqti-test-xml</imsmd:format>
+                <imsmd:size>181347</imsmd:size>
+                <imsmd:location/>
+                <imsmd:otherplatformrequirements>
+                    <imsmd:langstring xml:lang="en">QTIv2.1+Maths</imsmd:langstring>
+                    <imsmd:langstring xml:lang="en">QTIv2.1</imsmd:langstring>
+                </imsmd:otherplatformrequirements>
+            </imsmd:technical>
+            <imsmd:educational>
+                <imsmd:learningresourcetype>
+                    <imsmd:source>
+                        <imsmd:langstring xml:lang="x-none">RDNLTSNType</imsmd:langstring>
+                    </imsmd:source>
+                    <imsmd:value>
+                        <imsmd:langstring xml:lang="x-none">ExaminationTest</imsmd:langstring>
+                    </imsmd:value>
+                </imsmd:learningresourcetype>
+                <imsmd:context>
+                    <imsmd:source>
+                        <imsmd:langstring xml:lang="x-none">LOMv1.0</imsmd:langstring>
+                    </imsmd:source>
+                    <imsmd:value>
+                        <imsmd:langstring xml:lang="x-none">higher education</imsmd:langstring>
+                    </imsmd:value>
+                </imsmd:context>
+                <imsmd:description>
+                    <imsmd:langstring xml:lang="x-none">A test</imsmd:langstring>
+                </imsmd:description>
+                <imsmd:language>en</imsmd:language>
+            </imsmd:educational>
+            <imsmd:rights>
+                <imsmd:copyrightandotherrestrictions>
+                    <imsmd:source>
+                        <imsmd:langstring xml:lang="x-none">LOMv1.0</imsmd:langstring>
+                    </imsmd:source>
+                    <imsmd:value>
+                        <imsmd:langstring xml:lang="x-none">yes</imsmd:langstring>
+                    </imsmd:value>
+                </imsmd:copyrightandotherrestrictions>
+                <imsmd:description>
+                    <imsmd:langstring xml:lang="en">{{CC-URL}}</imsmd:langstring>
+                </imsmd:description>
+            </imsmd:rights>
+            <imsmd:classification>
+                <imsmd:purpose>
+                    <imsmd:source>
+                        <imsmd:langstring xml:lang="x-none">LOMv1.0</imsmd:langstring>
+                    </imsmd:source>
+                    <imsmd:value>
+                        <imsmd:langstring xml:lang="x-none">Discipline</imsmd:langstring>
+                    </imsmd:value>
+                </imsmd:purpose>
+                <imsmd:taxonpath>
+                    <imsmd:source>
+                        <imsmd:langstring xml:lang="x-none">jacs</imsmd:langstring>
+                    </imsmd:source>
+                    <imsmd:taxon>
+                        <imsmd:id>G1</imsmd:id>
+                        <imsmd:entry>
+                            <imsmd:langstring xml:lang="en">Mathematics</imsmd:langstring>
+                        </imsmd:entry>
+                    </imsmd:taxon>
+                </imsmd:taxonpath>
+            </imsmd:classification>
+            <imsmd:classification>
+                <imsmd:purpose>
+                    <imsmd:source>
+                        <imsmd:langstring xml:lang="x-none">LOMv1.0</imsmd:langstring>
+                    </imsmd:source>
+                    <imsmd:value>
+                        <imsmd:langstring xml:lang="x-none">Educational Level</imsmd:langstring>
+                    </imsmd:value>
+                </imsmd:purpose>
+                <imsmd:taxonpath>
+                    <imsmd:source>
+                        <imsmd:langstring xml:lang="x-none">UKEL</imsmd:langstring>
+                    </imsmd:source>
+                    <imsmd:taxon>
+                        <imsmd:id>ukel10</imsmd:id>
+                        <imsmd:entry>
+                            <imsmd:langstring xml:lang="en">UK Educational Level 10</imsmd:langstring>
+                        </imsmd:entry>
+                    </imsmd:taxon>
+                </imsmd:taxonpath>
+            </imsmd:classification>
+            <imsmd:classification>
+                <imsmd:purpose>
+                    <imsmd:source>
+                        <imsmd:langstring xml:lang="x-none">imsmdv1.0</imsmd:langstring>
+                    </imsmd:source>
+                    <imsmd:value>
+                        <imsmd:langstring xml:lang="x-none">Discipline</imsmd:langstring>
+                    </imsmd:value>
+                </imsmd:purpose>
+                <imsmd:taxonpath>
+                    <imsmd:source>
+                        <imsmd:langstring xml:lang="en">JACSTaxonomy</imsmd:langstring>
+                    </imsmd:source>
+                    <imsmd:taxon>
+                        <imsmd:entry>
+                            <imsmd:langstring xml:lang="en">X990 Education not elsewhere classified</imsmd:langstring>
+                        </imsmd:entry>
+                    </imsmd:taxon>
+                </imsmd:taxonpath>
+            </imsmd:classification>
+        </imsmd:lom>
+    </metadata>
+    <organizations/>
+    <resources>
+        <resource href="assessment.xml" type="imsqti_test_xmlv2p1" identifier="TEST">
+            <file href="assessment.xml"/>
+            <dependency identifierref="id-5c1b1e2d56bd"/>
+            <dependency identifierref="id-75bd778a3504"/>
+            <dependency identifierref="id-992e8bd3c9ac"/>
+            <dependency identifierref="id-f8e13982226c"/>
+            <dependency identifierref="id-377d71221b04"/>
+            <dependency identifierref="id-7e4520cd463f"/>
+            <dependency identifierref="id-2a2cfb9f4dde"/>
+            <dependency identifierref="id-200e2c3f7d76"/>
+            <dependency identifierref="id-7f35b6c393d5"/>
+            <dependency identifierref="id-3cd82285401e"/>
+            <dependency identifierref="id-371b0f88774a"/>
+            <dependency identifierref="id-90b59b73c8e4"/>
+            <dependency identifierref="id-e475c3c922f6"/>
+            <dependency identifierref="id-be3cd3bdd3d4"/>
+            <dependency identifierref="id-8167235c360b"/>
+            <dependency identifierref="id-1ccd6e04685f"/>
+            <dependency identifierref="id-bd44a757f562"/>
+            <dependency identifierref="id-13b92f311fc0"/>
+            <dependency identifierref="id-c0bdd9a130c7"/>
+            <dependency identifierref="id-d565dbe89933"/>
+            <dependency identifierref="id-83210b60ed8f"/>
+            <dependency identifierref="id-f9f3153e2ba4"/>
+        </resource>
+        <resource href="id-5c1b1e2d56bd/either-or.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-5c1b1e2d56bd">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-5c1b1e2d56bd/either-or.xml"/>
+        </resource>
+        <resource href="id-75bd778a3504/essay-vacation.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-75bd778a3504">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-75bd778a3504/essay-vacation.xml"/>
+        </resource>
+        <resource href="id-992e8bd3c9ac/hotspot-maximum.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-992e8bd3c9ac">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:identifier>hotspot-maximum</imsmd:identifier>
+                        <imsmd:title>
+                            <imsmd:langstring xml:lang="en">Local Maximum</imsmd:langstring>
+                        </imsmd:title>
+                        <imsmd:language>en</imsmd:language>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">Identify local maximum on given graph</imsmd:langstring>
+                        </imsmd:description>
+                        <imsmd:keyword>
+                            <imsmd:langstring xml:lang="en">calculus</imsmd:langstring>
+                        </imsmd:keyword>
+                        <imsmd:keyword>
+                            <imsmd:langstring xml:lang="en">local maximum</imsmd:langstring>
+                        </imsmd:keyword>
+                        <imsmd:keyword>
+                            <imsmd:langstring xml:lang="en">graph</imsmd:langstring>
+                        </imsmd:keyword>
+                    </imsmd:general>
+                    <imsmd:lifecycle>
+                        <imsmd:contribute>
+                            <imsmd:role>
+                                <imsmd:source>
+                                    <imsmd:langstring xml:lang="x-none">LOMv1.0</imsmd:langstring>
+                                </imsmd:source>
+                                <imsmd:value>
+                                    <imsmd:langstring xml:lang="x-none">Creator</imsmd:langstring>
+                                </imsmd:value>
+                            </imsmd:role>
+                            <imsmd:centity>
+                                <imsmd:vcard>BEGIN:VCARD FN:Sue Milne END:VCARD </imsmd:vcard>
+                            </imsmd:centity>
+                            <imsmd:date>
+                                <imsmd:datetime>2011-04-25</imsmd:datetime>
+                                <imsmd:description>
+                                    <imsmd:langstring xml:lang="en"/>
+                                </imsmd:description>
+                            </imsmd:date>
+                        </imsmd:contribute>
+                        <imsmd:contribute>
+                            <imsmd:role>
+                                <imsmd:source>
+                                    <imsmd:langstring xml:lang="x-none">LOMv1.0</imsmd:langstring>
+                                </imsmd:source>
+                                <imsmd:value>
+                                    <imsmd:langstring xml:lang="x-none">Editor</imsmd:langstring>
+                                </imsmd:value>
+                            </imsmd:role>
+                            <imsmd:centity>
+                                <imsmd:vcard>BEGIN:VCARD FN:FETLAR END:VCARD</imsmd:vcard>
+                            </imsmd:centity>
+                            <imsmd:date>
+                                <imsmd:datetime>2011-04-25</imsmd:datetime>
+                                <imsmd:description>
+                                    <imsmd:langstring xml:lang="en"/>
+                                </imsmd:description>
+                            </imsmd:date>
+                        </imsmd:contribute>
+                    </imsmd:lifecycle>
+                    <imsmd:metametadata>
+                        <imsmd:identifier>urn::364C159CF7B6D42BF1FE58CA86CF6709</imsmd:identifier>
+                        <imsmd:catalogentry>
+                            <imsmd:catalog>http:///</imsmd:catalog>
+                            <imsmd:entry>
+                                <imsmd:langstring xml:lang="en">FETLAR-2-1303726335</imsmd:langstring>
+                            </imsmd:entry>
+                        </imsmd:catalogentry>
+                        <imsmd:contribute>
+                            <imsmd:role>
+                                <imsmd:source>
+                                    <imsmd:langstring xml:lang="x-none">LOMv1.0</imsmd:langstring>
+                                </imsmd:source>
+                                <imsmd:value>
+                                    <imsmd:langstring xml:lang="x-none">Creator</imsmd:langstring>
+                                </imsmd:value>
+                            </imsmd:role>
+                            <imsmd:centity>
+                                <imsmd:vcard>BEGIN:VCARD FN:FETLAR END:VCARD</imsmd:vcard>
+                            </imsmd:centity>
+                        </imsmd:contribute>
+                        <imsmd:metadatascheme>LOMv1.0</imsmd:metadatascheme>
+                        <imsmd:metadatascheme>JORUMv1.0</imsmd:metadatascheme>
+                        <imsmd:language>en</imsmd:language>
+                    </imsmd:metametadata>
+                    <imsmd:technical>
+                        <imsmd:format>text/x-imsqti-item-xml</imsmd:format>
+                        <imsmd:size>10240</imsmd:size>
+                        <imsmd:location/>
+                        <imsmd:otherplatformrequirements>
+                            <imsmd:langstring xml:lang="en">QTIv2.1</imsmd:langstring>
+                        </imsmd:otherplatformrequirements>
+                    </imsmd:technical>
+                    <imsmd:educational>
+                        <imsmd:learningresourcetype>
+                            <imsmd:source>
+                                <imsmd:langstring xml:lang="x-none">RDNLTSNType</imsmd:langstring>
+                            </imsmd:source>
+                            <imsmd:value>
+                                <imsmd:langstring xml:lang="x-none">AssessmentItem</imsmd:langstring>
+                            </imsmd:value>
+                        </imsmd:learningresourcetype>
+                        <imsmd:context>
+                            <imsmd:source>
+                                <imsmd:langstring xml:lang="x-none">LOMv1.0</imsmd:langstring>
+                            </imsmd:source>
+                            <imsmd:value>
+                                <imsmd:langstring xml:lang="x-none">higher education</imsmd:langstring>
+                            </imsmd:value>
+                        </imsmd:context>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="x-none">A test question</imsmd:langstring>
+                        </imsmd:description>
+                        <imsmd:language>en</imsmd:language>
+                    </imsmd:educational>
+                    <imsmd:rights>
+                        <imsmd:copyrightandotherrestrictions>
+                            <imsmd:source>
+                                <imsmd:langstring xml:lang="x-none">LOMv1.0</imsmd:langstring>
+                            </imsmd:source>
+                            <imsmd:value>
+                                <imsmd:langstring xml:lang="x-none">yes</imsmd:langstring>
+                            </imsmd:value>
+                        </imsmd:copyrightandotherrestrictions>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">CC-BY-SA</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:rights>
+                    <imsmd:classification>
+                        <imsmd:purpose>
+                            <imsmd:source>
+                                <imsmd:langstring xml:lang="x-none">LOMv1.0</imsmd:langstring>
+                            </imsmd:source>
+                            <imsmd:value>
+                                <imsmd:langstring xml:lang="x-none">Discipline</imsmd:langstring>
+                            </imsmd:value>
+                        </imsmd:purpose>
+                        <imsmd:taxonpath>
+                            <imsmd:source>
+                                <imsmd:langstring xml:lang="x-none">jacs</imsmd:langstring>
+                            </imsmd:source>
+                            <imsmd:taxon>
+                                <imsmd:id>G1</imsmd:id>
+                                <imsmd:entry>
+                                    <imsmd:langstring xml:lang="en">Mathematics</imsmd:langstring>
+                                </imsmd:entry>
+                            </imsmd:taxon>
+                        </imsmd:taxonpath>
+                    </imsmd:classification>
+                    <imsmd:classification>
+                        <imsmd:purpose>
+                            <imsmd:source>
+                                <imsmd:langstring xml:lang="x-none">LOMv1.0</imsmd:langstring>
+                            </imsmd:source>
+                            <imsmd:value>
+                                <imsmd:langstring xml:lang="x-none">Educational Level</imsmd:langstring>
+                            </imsmd:value>
+                        </imsmd:purpose>
+                        <imsmd:taxonpath>
+                            <imsmd:source>
+                                <imsmd:langstring xml:lang="x-none">UKEL</imsmd:langstring>
+                            </imsmd:source>
+                            <imsmd:taxon>
+                                <imsmd:id>ukel10</imsmd:id>
+                                <imsmd:entry>
+                                    <imsmd:langstring xml:lang="en">UK Educational Level 10</imsmd:langstring>
+                                </imsmd:entry>
+                            </imsmd:taxon>
+                        </imsmd:taxonpath>
+                    </imsmd:classification>
+                    <imsmd:classification>
+                        <imsmd:purpose>
+                            <imsmd:source>
+                                <imsmd:langstring xml:lang="x-none">imsmdv1.0</imsmd:langstring>
+                            </imsmd:source>
+                            <imsmd:value>
+                                <imsmd:langstring xml:lang="x-none">Discipline</imsmd:langstring>
+                            </imsmd:value>
+                        </imsmd:purpose>
+                        <imsmd:taxonpath>
+                            <imsmd:source>
+                                <imsmd:langstring xml:lang="en">MathAssess Taxonomy</imsmd:langstring>
+                            </imsmd:source>
+                            <imsmd:taxon>
+                                <imsmd:entry>
+                                    <imsmd:langstring xml:lang="en">6.1.4 Differentiation</imsmd:langstring>
+                                </imsmd:entry>
+                            </imsmd:taxon>
+                        </imsmd:taxonpath>
+                    </imsmd:classification>
+                </imsmd:lom>
+                <imsqti:qtiMetadata>
+                    <imsqti:timeDependent>false</imsqti:timeDependent>
+                    <imsqti:solutionAvailable>false</imsqti:solutionAvailable>
+                    <imsqti:toolName>Mathqurate</imsqti:toolName>
+                    <imsqti:toolVersion>1.0</imsqti:toolVersion>
+                </imsqti:qtiMetadata>
+            </metadata>
+            <file href="id-992e8bd3c9ac/hotspot-maximum.xml"/>
+            <file href="id-992e8bd3c9ac/images/cubic_xpw3d6m2xp3.png"/>
+        </resource>
+        <resource href="id-f8e13982226c/jumble-gapMatch.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-f8e13982226c">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-f8e13982226c/jumble-gapMatch.xml"/>
+        </resource>
+        <resource href="id-377d71221b04/jumble-inlineChoice.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-377d71221b04">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-377d71221b04/jumble-inlineChoice.xml"/>
+        </resource>
+        <resource href="id-7e4520cd463f/Likert-choice-questionSet.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-7e4520cd463f">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-7e4520cd463f/Likert-choice-questionSet.xml"/>
+        </resource>
+        <resource href="id-2a2cfb9f4dde/Likert-match-questionSet.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-2a2cfb9f4dde">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-2a2cfb9f4dde/Likert-match-questionSet.xml"/>
+        </resource>
+        <resource href="id-200e2c3f7d76/matching-associate-trigDeriv.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-200e2c3f7d76">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-200e2c3f7d76/matching-associate-trigDeriv.xml"/>
+        </resource>
+        <resource href="id-7f35b6c393d5/matching-match-trigDeriv.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-7f35b6c393d5">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-7f35b6c393d5/matching-match-trigDeriv.xml"/>
+        </resource>
+        <resource href="id-3cd82285401e/MultipleAnswer-choice-materials.xml"
+            type="imsqti_item_xmlv2p1" identifier="id-3cd82285401e">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-3cd82285401e/MultipleAnswer-choice-materials.xml"/>
+        </resource>
+        <resource href="id-371b0f88774a/MultipleChoice-choice-polynomials.xml"
+            type="imsqti_item_xmlv2p1" identifier="id-371b0f88774a">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-371b0f88774a/MultipleChoice-choice-polynomials.xml"/>
+        </resource>
+        <resource href="id-90b59b73c8e4/upload-file.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-90b59b73c8e4">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-90b59b73c8e4/upload-file.xml"/>
+        </resource>
+        <resource href="id-e475c3c922f6/order-maths.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-e475c3c922f6">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-e475c3c922f6/order-maths.xml"/>
+        </resource>
+        <resource href="id-be3cd3bdd3d4/order-mountains.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-be3cd3bdd3d4">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-be3cd3bdd3d4/order-mountains.xml"/>
+        </resource>
+        <resource href="id-8167235c360b/QuizBowl-multi-geometry.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-8167235c360b">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-8167235c360b/QuizBowl-multi-geometry.xml"/>
+        </resource>
+        <resource href="id-1ccd6e04685f/ShortAnswer-extText-postcard.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-1ccd6e04685f">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-1ccd6e04685f/ShortAnswer-extText-postcard.xml"/>
+        </resource>
+        <resource href="id-bd44a757f562/SineRule-001.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-bd44a757f562">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-bd44a757f562/SineRule-001.xml"/>
+        </resource>
+        <resource href="id-13b92f311fc0/SineRule-002-maths.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-13b92f311fc0">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-13b92f311fc0/SineRule-002-maths.xml"/>
+        </resource>
+        <resource href="id-c0bdd9a130c7/text_entry-calculus.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-c0bdd9a130c7">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-c0bdd9a130c7/text_entry-calculus.xml"/>
+        </resource>
+        <resource href="id-d565dbe89933/text_entry-Lycidas.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-d565dbe89933">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-d565dbe89933/text_entry-Lycidas.xml"/>
+        </resource>
+        <resource href="id-83210b60ed8f/TF-choice.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-83210b60ed8f">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-83210b60ed8f/TF-choice.xml"/>
+        </resource>
+        <resource href="id-f9f3153e2ba4/TheAnswer-001.xml" type="imsqti_item_xmlv2p1"
+            identifier="id-f9f3153e2ba4">
+            <metadata>
+                <imsmd:lom>
+                    <imsmd:general>
+                        <imsmd:description>
+                            <imsmd:langstring xml:lang="en">This question is an XML file imported into Spectatus.</imsmd:langstring>
+                        </imsmd:description>
+                    </imsmd:general>
+                </imsmd:lom>
+            </metadata>
+            <file href="id-f9f3153e2ba4/TheAnswer-001.xml"/>
+        </resource>
+    </resources>
+</manifest>

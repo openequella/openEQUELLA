@@ -1,0 +1,19 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>202686</id>
+  <institution>
+    <id>202538</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>wmv</string>
+  </extensions>
+  <type>video/x-ms-wmv</type>
+  <description>Video</description>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/video.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

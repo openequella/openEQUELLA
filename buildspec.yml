@@ -3,23 +3,27 @@ version: 0.2
 env:
   variables:
     KALTURA_BRANCH: master
+    AUTOTEST_CONFIG: "autotest/codebuild.conf"
+    EQ_EXIFTOOL_PATH: "/usr/bin/exiftool"
 phases:
   pre_build:
     commands:
       - env
-      - yarn global add psc-package@0.3.2
-      - psc-package --version
       - setupBuild
+      - npm config set unsafe-perm true
+      - npm install -g npm@5.6.0
+  install:
+    commands:
+      - service postgresql start
   build:
     commands:
       - sbt -no-colors -Dconfig.file=${HOME}/build.conf test installerZip writeLanguagePack writeScriptingJavadoc
+      - sbt -mem 2048 -no-colors "project autotest" installEquella startEquella configureInstall setupForTests Tests/test Tests/Serial/test OldTests/test coverageReport
   post_build:
     commands:
-      - publishBuild
-      - echo "Finished"
+      - publishBuildResults
 cache:
   paths:
-    - '/root/.ivy2/**/*'
-    - '/root/.npm/**/*'
-    - '/root/.sbt/**/*'
-    
+    - "/root/.ivy2/**/*"
+    - "/root/.npm/**/*"
+    - "/root/.sbt/**/*"

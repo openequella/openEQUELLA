@@ -1,0 +1,10 @@
+<list>
+  <com.tle.beans.UserPreference>
+    <key>
+      <institution>120267</institution>
+      <userID>adfcaf58-241b-4eca-9740-6a26d1c3dd58</userID>
+      <preferenceID>recent.selections</preferenceID>
+    </key>
+    <data>[{&quot;selectedDate&quot;:1316395696551,&quot;selection&quot;:&quot;p&quot;,&quot;title&quot;:&quot;Testable CAL Book&quot;,&quot;uuid&quot;:&quot;4901497d-d3e8-46bb-85d6-3012e63e0f6a&quot;,&quot;version&quot;:1}]</data>
+  </com.tle.beans.UserPreference>
+</list>

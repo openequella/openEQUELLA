@@ -10,7 +10,7 @@ import Effect.Ref (Ref)
 import Effect.Ref as Ref
 import Effect.Uncurried (EffectFn1, EffectFn2, mkEffectFn1, mkEffectFn2)
 import ExtUI.MaterialUIPicker.MuiPickersUtilsProvider (luxonUtils, muiPickersUtilsProvider)
-import MaterialUI.CssBaseline (cssBaseline', cssBaseline_)
+import MaterialUI.CssBaseline (cssBaseline')
 import MaterialUI.Styles (createMuiTheme, muiThemeProvider)
 import MaterialUI.Theme (Theme)
 import Partial.Unsafe (unsafePartial)
@@ -29,11 +29,23 @@ import Web.HTML.HTMLDocument as HTMLDoc
 import Web.HTML.Window (document)
 
 foreign import themeSettings :: {primaryColor :: String, secondaryColor :: String,
-                                backgroundColor :: String,
+                                backgroundColor :: String, primaryTextColor :: String,
                                 menuItemColor :: String, menuItemTextColor :: String, menuItemIconColor :: String, menuTextColor :: String, fontSize :: Int}
 
 
 type ClickableHref = {href::String, onClick :: EffectFn1 SyntheticMouseEvent Unit}
+
+type ExtTheme = {
+  palette:: {
+    menu:: {
+      text :: String, 
+      icon :: String, 
+      background :: String
+    }
+  }
+}
+extendedTheme :: Theme -> ExtTheme 
+extendedTheme = unsafeCoerce
 
 ourTheme :: Theme
 ourTheme = createMuiTheme {
@@ -45,21 +57,21 @@ ourTheme = createMuiTheme {
       main: themeSettings.secondaryColor
     },
     background: {
-      default: themeSettings.backgroundColor,
-      paper: themeSettings.menuItemColor
-    },
-    action: {
-      active: themeSettings.menuItemIconColor
+      default: themeSettings.backgroundColor
     },
     text: {
-      secondary: themeSettings.menuTextColor
+      primary: themeSettings.primaryTextColor,
+      secondary: themeSettings.menuTextColor 
+    }, 
+    menu: {
+      text: themeSettings.menuItemTextColor,
+      icon: themeSettings.menuItemIconColor,
+      background: themeSettings.menuItemColor
     }
   },
   typography: {
-    fontSize: themeSettings.fontSize,
-    subheading: {
-      color: themeSettings.menuItemTextColor
-    }
+    useNextVariants: true,
+    fontSize: themeSettings.fontSize
   }
 }
 rootTag :: String -> Array ReactElement -> ReactElement

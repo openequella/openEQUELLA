@@ -36,4 +36,9 @@ public class MyContentSelectSection
   public Label getTitle(SectionInfo info) {
     return LABEL_TITLE;
   }
+
+  @Override
+  protected String getPageName() {
+    return null;
+  }
 }

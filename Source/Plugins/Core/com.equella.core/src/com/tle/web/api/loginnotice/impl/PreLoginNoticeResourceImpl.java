@@ -16,29 +16,43 @@
 
 package com.tle.web.api.loginnotice.impl;
 
+import com.google.gson.JsonObject;
+import com.tle.common.URLUtils;
 import com.tle.core.guice.Bind;
 import com.tle.core.settings.loginnotice.LoginNoticeService;
+import com.tle.core.settings.loginnotice.impl.PreLoginNotice;
 import com.tle.web.api.loginnotice.PreLoginNoticeResource;
+import com.tle.web.resources.PluginResourceHelper;
+import com.tle.web.resources.ResourcesService;
+import java.io.IOException;
+import java.io.InputStream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 @Bind(PreLoginNoticeResource.class)
 @Singleton
 public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
   @Inject LoginNoticeService noticeService;
 
+  @Inject
+  private static PluginResourceHelper helper =
+      ResourcesService.getResourceHelper(PreLoginNoticeResourceImpl.class);
+
   @Override
-  public Response retrievePreLoginNotice() {
-    String loginNotice = noticeService.getPreLoginNotice();
+  public Response retrievePreLoginNotice() throws IOException {
+    PreLoginNotice loginNotice = noticeService.getPreLoginNotice();
     if (loginNotice != null) {
-      return Response.ok(loginNotice, "text/plain").build();
+      return Response.ok(loginNotice, "application/json").build();
+    } else {
+      return Response.status(Response.Status.NOT_FOUND).type("text/plain").build();
     }
-    return Response.status(Response.Status.NOT_FOUND).entity(null).build();
   }
 
   @Override
-  public Response setPreLoginNotice(String loginNotice) {
+  public Response setPreLoginNotice(PreLoginNotice loginNotice) throws IOException {
     noticeService.setPreLoginNotice(loginNotice);
     return Response.ok().build();
   }
@@ -47,5 +61,24 @@ public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
   public Response deletePreLoginNotice() {
     noticeService.deletePreLoginNotice();
     return Response.ok().build();
+  }
+
+  @Override
+  public Response getPreLoginNoticeImage(String name) throws IOException {
+    return Response.ok(noticeService.getPreLoginNoticeImage(name), noticeService.getMimeType(name))
+        .build();
+  }
+
+  @Override
+  public Response uploadPreLoginNoticeImage(
+      InputStream imageFile, String imageName, @Context UriInfo info) throws IOException {
+    noticeService.checkPermissions();
+    JsonObject returnLink = new JsonObject();
+    String imageFileName = noticeService.uploadPreLoginNoticeImage(imageFile, imageName);
+    String getImageAPIURL =
+        info.getBaseUriBuilder().path(PreLoginNoticeResource.class).build()
+            + URLUtils.urlEncode("image/" + imageFileName, false);
+    returnLink.addProperty("link", getImageAPIURL);
+    return Response.ok(returnLink.toString(), "application/json").build();
   }
 }

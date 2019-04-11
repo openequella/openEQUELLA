@@ -145,7 +145,7 @@ you have modified before commiting. To set it up you must run the installer once
 (from the root dir):
 
 ```bash
-yarn install
+npm install
 ```
 
 #### Create dev configuration settings
@@ -216,14 +216,14 @@ or run `com.tle.client.harness.ClientLauncher` in the `Source/Server/adminTool` 
 
 In the `Source/Plugins/Core/com.equella.core/js` directory you will find a yarn/npm
 project which compiles Purescript/Typescript/Sass into JS and CSS. Currently there are number
-of separate JS bundles which are generated and you could develop them easier by running a yarn
-"watched build" script. E.g. to develop the main bundle:
+of separate JS bundles which are generated using Parcel. You can use parcel watched mode to
+have changes automatically bundled up and reloaded in the browser:
 
 ```sh
-~/Source/Plugins/Core/com.equella.core/js$ yarn run dev:index
+~/Source/Plugins/Core/com.equella.core/js$ npm run dev
 ```
 
-This will build the javascript bundle to the correct location for running a dev openEQUELLA and will
+This will build the javascript bundles to the correct location for running a dev openEQUELLA and will
 watch for source changes and re-build if required.
 
 ### SBT Notes

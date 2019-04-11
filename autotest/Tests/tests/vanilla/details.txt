@@ -1,0 +1,21 @@
+***********
+*  Users  *
+***********
+
+AutoTest - automated
+Should be able to do anything
+
+QuotaTest - ``````
+Specifically given a quota of 1MB
+
+tokenuser - ``````
+tokenuser2 - ``````
+For token tests only
+
+*****************
+*  Collections  *
+*****************
+
+Generic Testing Collection
+For uploading files and IMS packages
+

@@ -1,0 +1,59 @@
+{
+  "uuid" : "672c5ae2-df5c-4538-89fc-1cb9f2d86699",
+  "version" : 1,
+  "name" : "ItemApiViewTest - SCORM",
+  "nameStrings" : {
+    "en_AU" : "ItemApiViewTest - SCORM"
+  },
+  "metadata" : "<xml><item><attachments><attachment3>5f2639a3-0bcb-40eb-a668-345efcda04ce</attachment3></attachments><name>ItemApiViewTest - SCORM</name></item></xml>",
+  "status" : "draft",
+  "createdDate" : "2014-05-12T15:43:47.798+10:00",
+  "modifiedDate" : "2014-05-12T15:43:51.067+10:00",
+  "owner" : {
+    "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  },
+  "collaborators" : [ ],
+  "collection" : {
+    "uuid" : "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c"
+  },
+  "rating" : -1.0,
+  "attachments" : [ {
+    "type" : "scorm",
+    "uuid" : "5f2639a3-0bcb-40eb-a668-345efcda04ce",
+    "description" : "scormpackage.zip",
+    "preview" : false,
+    "packageFile" : "scormpackage.zip",
+    "scormVersion" : "1.2",
+    "size" : 172045,
+    "links" : { }
+  } ],
+  "navigation" : {
+    "hideUnreferencedAttachments" : false,
+    "showSplitOption" : false,
+    "nodes" : [ ]
+  },
+  "drm" : { },
+  "_export" : {
+    "exportVersion" : "1.0",
+    "history" : [ {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:47.798+10:00",
+      "type" : "edit",
+      "state" : "draft"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:51.067+10:00",
+      "type" : "edit",
+      "state" : "draft"
+    } ],
+    "statuses" : [ ],
+    "moderating" : false
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/item/672c5ae2-df5c-4538-89fc-1cb9f2d86699/1"
+  }
+}

@@ -24,7 +24,7 @@ import Effect.Uncurried (mkEffectFn1)
 import MaterialUI.Chip (chip')
 import MaterialUI.CircularProgress (circularProgress')
 import MaterialUI.Divider (divider_)
-import MaterialUI.Enums (subheading, title)
+import MaterialUI.Enums (h6, subtitle1)
 import MaterialUI.Fade (fade)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.Typography (typography)
@@ -96,7 +96,7 @@ searchLayout = unsafeCreateLeafElement $ withStyles styles $ R.component "Search
         mainContent = dualPane { 
           left: renderResults searchResults <> progress, 
           right: (mapMaybe (placementMatch Selections) controlsRendered) <>
-            [ typography {className: classes.filterTitle, variant: title} [text strings.refineTitle ] ] <>
+            [ typography {className: classes.filterTitle, variant: h6} [text strings.refineTitle ] ] <>
             (intercalate [divider_ []] $ (mapMaybe (map singleton <<< placementMatch Filters) controlsRendered))
         }
 
@@ -108,7 +108,7 @@ searchLayout = unsafeCreateLeafElement $ withStyles styles $ R.component "Search
 
         renderResults (Just (SearchResults {results,available})) = [
           div [ DP.className classes.resultHeader ] $ [
-            typography {className: classes.available, component: "div", variant: subheading} [ 
+            typography {className: classes.available, component: "div", variant: subtitle1} [ 
                 text $ show available <> " " <> strings.resultsAvailable ] 
           ] <> 
           (mapMaybe (placementMatch ResultHeader) controlsRendered)

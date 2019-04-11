@@ -1,0 +1,25 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>18467</id>
+  <institution>
+    <id>18208</id>
+    <uniqueId>0</uniqueId>
+    <quota>0.0</quota>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>mov</string>
+    <string>qt</string>
+  </extensions>
+  <type>video/quicktime</type>
+  <description>Video</description>
+  <attributes>
+    <entry>
+      <string>EmbeddingTemplate</string>
+      <string>&lt;div style=&quot;border: 1px solid&quot;&gt;&lt;object classid=&quot;clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B&quot; codebase=&quot;http://www.apple.com/qtactivex/qtplugin.cab#version=6,0,2,0&quot; height=&quot;256&quot; width=&quot;320&quot;&gt;&quot; &lt;param name=&quot;src&quot; value=&quot;${resource.getViewerUrl(&apos;file&apos;)}&quot;&gt; &lt;param name=&quot;autoplay&quot; value=&quot;true&quot;&gt; &lt;param name=&quot;type&quot; value=&quot;video/quicktime&quot; height=&quot;256&quot; width=&quot;320&quot;&gt; &lt;embed src=&quot;${resource.getViewerUrl(&apos;file&apos;)}&quot; height=&quot;256&quot; width=&quot;320&quot; autoplay=&quot;true&quot; type=&quot;video/quicktime&quot; pluginspage=&quot;http://www.apple.com/quicktime/download/&quot;&gt; &lt;/object&gt;&lt;/div&gt;</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/quicktime.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

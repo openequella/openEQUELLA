@@ -1,0 +1,57 @@
+<com.tle.beans.entity.DynaCollection>
+  <id>116648</id>
+  <uuid>637314db-75b6-4d8e-81ea-41a1c64a9e9a</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-03-18 10:48:14.687</dateModified>
+  <dateCreated class="sql-timestamp">2014-03-18 10:28:06.287</dateCreated>
+  <description>
+    <id>116649</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116650</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>A dynamic collection which has a virtual path for the description field drawn from contributed value &apos;giant&apos; (2 items), &apos;average&apos; (0 items) and &apos;,miniature&apos;(1 item), and whose definition includes a search for &quot;size&quot;,  is a precondition of the SearchApiTest</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>116651</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116652</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>SearchApiTestClientDynamic</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>manualListVirtualiser</key>
+      <value>&lt;list&gt;
+  &lt;string&gt;giant&lt;/string&gt;
+  &lt;string&gt;average&lt;/string&gt;
+  &lt;string&gt;miniature&lt;/string&gt;
+&lt;/list&gt;</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <usageIds>
+    <string>searchUsage</string>
+  </usageIds>
+  <freetextQuery>size</freetextQuery>
+  <itemDefs/>
+  <schemas/>
+  <virtualisationId>manualListVirtualiser</virtualisationId>
+  <virtualisationPath>/item/itembody/description</virtualisationPath>
+</com.tle.beans.entity.DynaCollection>

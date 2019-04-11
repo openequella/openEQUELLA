@@ -20,12 +20,10 @@ import java.sql.Connection
 
 import cats.effect.IO
 import com.tle.common.institution.CurrentInstitution
-import com.tle.common.usermanagement.user.CurrentUser
-import com.tle.core.hibernate.CurrentDataSource
 import com.tle.core.hibernate.impl.HibernateServiceImpl
 import com.tle.web.DebugSettings
 import io.doolse.simpledba.jdbc._
-import org.hibernate.jdbc.Work
+import javax.sql.DataSource
 import org.slf4j.LoggerFactory
 import org.springframework.orm.hibernate3.SessionHolder
 import org.springframework.transaction.support.TransactionSynchronizationManager
@@ -37,26 +35,29 @@ object RunWithDB {
   lazy val getSessionFactory =
     HibernateServiceImpl.getInstance().getTransactionAwareSessionFactory("main", false)
 
+  def getSessionHolder() = {
+    TransactionSynchronizationManager.getResource(getSessionFactory).asInstanceOf[SessionHolder]
+  }
+
   def executeWithHibernate[A](jdbc: DB[A]): A = {
-    val sessionHolder =
-      TransactionSynchronizationManager.getResource(getSessionFactory).asInstanceOf[SessionHolder]
+    val sessionHolder = getSessionHolder()
     if (sessionHolder == null) {
       sys.error("There is no hibernate session - make sure it's inside @Transactional")
     }
     val con = sessionHolder.getSession().connection()
-    val uc = UserContext(CurrentInstitution.get(),
-                         CurrentUser.getUserState,
-                         CurrentDataSource.get().getDataSource)
+    val uc  = UserContext.fromThreadLocals()
     jdbc.run(uc).runA(con).unsafeRunSync()
   }
 
-  def executeTransaction[A](connection: Connection, jdbc: JDBCIO[A]): A = {
-    if (TransactionSynchronizationManager.isSynchronizationActive) {
+  def executeTransaction[A](ds: DataSource, jdbc: JDBCIO[A]): A = {
+    val sessionHolder = getSessionHolder()
+    if (sessionHolder != null && Option(sessionHolder.getTransaction).exists(_.isActive)) {
       val msg =
         "Hibernate transaction is available on this thread - should be using executeWithHibernate"
       if (DebugSettings.isDebuggingMode) sys.error(msg)
       else logger.error(msg)
     }
+    val connection = ds.getConnection()
     jdbc.runA(connection).attempt.unsafeRunSync() match {
       case Left(e)  => connection.rollback(); connection.close(); throw e
       case Right(v) => connection.commit(); connection.close(); v
@@ -68,17 +69,13 @@ object RunWithDB {
   }
 
   def execute[A](db: DB[A]): A = {
-    val uc = UserContext(CurrentInstitution.get(),
-                         CurrentUser.getUserState,
-                         CurrentDataSource.get().getDataSource)
-    executeTransaction(uc.ds.getConnection(), db.run(uc).map(a => IO.pure(a))).unsafeRunSync()
+    val uc = UserContext.fromThreadLocals()
+    executeTransaction(uc.ds, db.run(uc).map(a => IO.pure(a))).unsafeRunSync()
   }
 
   def executeWithPostCommit(db: DB[IO[Unit]]): Unit = {
-    val uc = UserContext(CurrentInstitution.get(),
-                         CurrentUser.getUserState,
-                         CurrentDataSource.get().getDataSource)
-    executeTransaction(uc.ds.getConnection(), db.run(uc)).unsafeRunSync()
+    val uc = UserContext.fromThreadLocals()
+    executeTransaction(uc.ds, db.run(uc)).unsafeRunSync()
   }
 
 }

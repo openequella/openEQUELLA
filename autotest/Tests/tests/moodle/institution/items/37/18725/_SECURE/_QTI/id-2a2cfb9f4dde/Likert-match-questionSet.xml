@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+	identifier="Likert-choice-questionSet" title="Question set" adaptive="false" timeDependent="false">
+	<responseDeclaration identifier="RESPONSE" cardinality="multiple" baseType="directedPair">
+		<correctResponse>
+			<value>SA Q1</value>
+		</correctResponse>
+		<mapping defaultValue="0">
+			<mapEntry mapKey="SA Q1" mappedValue="2"/>
+		</mapping>
+	</responseDeclaration>
+	<outcomeDeclaration identifier="SCORE" cardinality="single" baseType="float"/>
+    <outcomeDeclaration identifier="FEEDBACK" cardinality="single" baseType="identifier"/>
+    <itemBody>
+        <!-- the simpleMatchSets will appear as follows:
+        the first set in a vertical list, the second set as headers for the choice columns
+        This is not the usual configuration for Likert questionnaires... -->
+	    <matchInteraction responseIdentifier="RESPONSE" shuffle="false" maxAssociations="3">
+	        <prompt> </prompt>
+	        <simpleMatchSet>
+	            <!-- in this set, matchmax should be the number of simpleAssociableChoices in the other set, 
+	                so that users can select the same response for all questions in the questionnaire -->
+	            <simpleAssociableChoice identifier="SA" matchMax="1">Strongly Agree</simpleAssociableChoice>
+	            <simpleAssociableChoice identifier="A" matchMax="1">Agree</simpleAssociableChoice>
+	            <simpleAssociableChoice identifier="NAD" matchMax="1">Neither Agree nor Disagree</simpleAssociableChoice>
+	            <simpleAssociableChoice identifier="D" matchMax="1">Disagree</simpleAssociableChoice>
+	            <simpleAssociableChoice identifier="SD" matchMax="1">Strongly Disagree</simpleAssociableChoice>
+	            <simpleAssociableChoice identifier="NA" matchMax="1">Not Applicable</simpleAssociableChoice>
+	        </simpleMatchSet>
+	        <simpleMatchSet>
+	            <simpleAssociableChoice identifier="Q1" matchMax="1">This set of questions covers the capabilities of the main LMSs.</simpleAssociableChoice>
+	        </simpleMatchSet>
+	    </matchInteraction>
+        <p>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="OK">
+                Yes, that's the intention :)</feedbackInline>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="No">
+                Oh, that's a pity, we hoped you would Strongly Agree :(</feedbackInline>
+        </p>
+    </itemBody>
+	<responseProcessing>
+	    <responseCondition>
+	        <responseIf>
+	            <isNull>
+	                <variable identifier="RESPONSE"/>
+	            </isNull>
+	            <setOutcomeValue identifier="SCORE">
+	                <baseValue baseType="float">0.0</baseValue>
+	            </setOutcomeValue>
+	        </responseIf>
+	        <responseElse>
+	            <setOutcomeValue identifier="SCORE">
+	                <mapResponse identifier="RESPONSE"/>
+	            </setOutcomeValue>
+	            <responseCondition>
+	                <responseIf>
+	                    <equal toleranceMode="exact">
+	                        <variable identifier="SCORE"/>
+	                        <baseValue baseType="float">2.0</baseValue>
+	                    </equal>
+	                    <setOutcomeValue identifier="FEEDBACK">
+	                        <baseValue baseType="identifier">OK</baseValue>
+	                    </setOutcomeValue>
+	                </responseIf>
+	                <responseElse>
+	                    <setOutcomeValue identifier="FEEDBACK">
+	                        <baseValue baseType="identifier">No</baseValue>
+	                    </setOutcomeValue>
+	                </responseElse>
+	            </responseCondition>
+	        </responseElse>
+	    </responseCondition>
+	</responseProcessing>
+</assessmentItem>

@@ -6,6 +6,8 @@ addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.6")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "1.0.0")
 
+addSbtPlugin("de.johoop" % "sbt-testng-plugin" % "3.1.1")
+
 // Old version used because something else depends on an old JAWN
 val circeVersion = "0.7.1"
 
@@ -16,8 +18,9 @@ libraryDependencies ++= Seq(
 ).map(_ % circeVersion)
 
 libraryDependencies ++= Seq(
-  "org.jdom"               % "jdom2"                 % "2.0.6",
   "com.typesafe"           % "config"                % "1.3.1",
+  "org.jacoco"             % "org.jacoco.report"     % "0.7.9",
+  "org.jdom"               % "jdom2"                 % "2.0.6",
   "org.apache.axis2"       % "axis2-kernel"          % "1.6.2",
   "org.apache.axis2"       % "axis2-java2wsdl"       % "1.6.2",
   "org.apache.axis2"       % "axis2-adb"             % "1.6.2",

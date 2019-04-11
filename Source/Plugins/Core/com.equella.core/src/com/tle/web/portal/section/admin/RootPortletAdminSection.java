@@ -97,4 +97,9 @@ public class RootPortletAdminSection
   protected ContentLayout getDefaultLayout(SectionInfo info) {
     return ContentLayout.ONE_COLUMN;
   }
+
+  @Override
+  protected String getPageName() {
+    return null;
+  }
 }

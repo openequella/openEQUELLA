@@ -21,7 +21,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.tle.beans.Institution;
-import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.Check;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.common.oauth.beans.OAuthToken;
@@ -29,6 +29,7 @@ import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.encryption.EncryptionService;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.core.i18n.service.LanguageService;
 import com.tle.core.institution.InstitutionCache;
 import com.tle.core.institution.InstitutionService;
@@ -46,21 +47,12 @@ import com.tle.web.oauth.OAuthWebConstants;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
-import net.oauth.OAuth;
-import net.oauth.OAuthAccessor;
-import net.oauth.OAuthMessage;
-import net.oauth.OAuthProblemException;
+import net.oauth.*;
 import net.oauth.signature.OAuthSignatureMethod;
 
 /** @author Aaron */
@@ -70,16 +62,19 @@ import net.oauth.signature.OAuthSignatureMethod;
 public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEventListener {
   private static final long DEFAULT_MAX_TIMESTAMP_AGE = TimeUnit.MINUTES.toMillis(5);
 
-  private static final String PREFIX = "com.tle.web.oauth.";
-  private static final String KEY_CODE_NOT_FOUND = PREFIX + "oauth.error.codenotfound";
-  private static final String KEY_CLIENT_CODE_MISMATCH = PREFIX + "oauth.error.clientcodemismatch";
-  private static final String KEY_INVALID_SECRET = PREFIX + "oauth.error.invalidsecret";
-  private static final String KEY_TOKEN_NOT_FOUND = PREFIX + "oauth.error.tokennotfound";
+  private static final String KEY_CODE_NOT_FOUND = "oauth.error.codenotfound";
+  private static final String KEY_CLIENT_CODE_MISMATCH = "oauth.error.clientcodemismatch";
+  private static final String KEY_INVALID_SECRET = "oauth.error.invalidsecret";
+  private static final String KEY_TOKEN_NOT_FOUND = "oauth.error.tokennotfound";
 
   @Inject private OAuthService oauthService;
   @Inject private UserService userService;
   @Inject private LanguageService languageService;
   @Inject private EncryptionService encryptionService;
+
+  protected String text(String key, Object... vals) {
+    return CoreStrings.lookup().getString(key, vals);
+  }
 
   private ReplicatedCache<Boolean> oAuthNonceCache;
   private ReplicatedCache<CodeReg> oAuthCodesCache;
@@ -129,8 +124,7 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
     // code must be in the map
     Optional<CodeReg> codeOptional = oAuthCodesCache.get(code);
     if (!codeOptional.isPresent()) {
-      throw new OAuthException(
-          400, OAuthConstants.ERROR_INVALID_GRANT, CurrentLocale.get(KEY_CODE_NOT_FOUND));
+      throw new OAuthException(400, OAuthConstants.ERROR_INVALID_GRANT, text(KEY_CODE_NOT_FOUND));
     }
 
     CodeReg codeReg = codeOptional.get();
@@ -140,7 +134,7 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
       throw new OAuthException(
           400,
           OAuthConstants.ERROR_UNAUTHORIZED_CLIENT,
-          CurrentLocale.get(KEY_CLIENT_CODE_MISMATCH, client.getClientId()),
+          text(KEY_CLIENT_CODE_MISMATCH, client.getClientId()),
           true);
     }
 
@@ -155,8 +149,7 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
       OAuthClient client, String clientSecret) {
     if (clientSecret != null
         && !encryptionService.decrypt(client.getClientSecret()).equals(clientSecret)) {
-      throw new OAuthException(
-          400, OAuthConstants.ERROR_INVALID_GRANT, CurrentLocale.get(KEY_INVALID_SECRET));
+      throw new OAuthException(400, OAuthConstants.ERROR_INVALID_GRANT, text(KEY_INVALID_SECRET));
     }
 
     final AuthorisationDetails auth = new AuthorisationDetails();
@@ -325,6 +318,54 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
     message.requireParameters(
         OAuth.OAUTH_CONSUMER_KEY, OAuth.OAUTH_SIGNATURE_METHOD, OAuth.OAUTH_SIGNATURE);
     OAuthSignatureMethod.newSigner(message, accessor).validate(message);
+  }
+
+  @Override
+  public List<Map.Entry<String, String>> getOauthSignatureParams(
+      String consumerKey, String secret, String urlStr, Map<String, String[]> formParams) {
+    String nonce = UUID.randomUUID().toString();
+    String timestamp = Long.toString(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
+    // OAuth likes the Map.Entry interface, so copy into a Collection of a
+    // local implementation thereof. Note that this is a flat list.
+    List<OAuth.Parameter> postParams = null;
+
+    if (!Check.isEmpty(formParams)) {
+      postParams = new ArrayList<OAuth.Parameter>(formParams.size());
+      for (Map.Entry<String, String[]> entry : formParams.entrySet()) {
+        String key = entry.getKey();
+        String[] formParamEntry = entry.getValue();
+        // cater for multiple values for the same key
+        if (formParamEntry.length > 0) {
+          for (int i = 0; i < formParamEntry.length; ++i) {
+            OAuth.Parameter erp = new OAuth.Parameter(entry.getKey(), formParamEntry[i]);
+            postParams.add(erp);
+          }
+        } else {
+          // key with no value
+          postParams.add(new OAuth.Parameter(key, null));
+        }
+      }
+    }
+
+    OAuthMessage message = new OAuthMessage(OAuthMessage.POST, urlStr, postParams);
+    // Parameters needed for a signature
+    message.addParameter(OAuth.OAUTH_CONSUMER_KEY, consumerKey);
+    message.addParameter(OAuth.OAUTH_SIGNATURE_METHOD, OAuth.HMAC_SHA1);
+    message.addParameter(OAuth.OAUTH_NONCE, nonce);
+    message.addParameter(OAuth.OAUTH_TIMESTAMP, timestamp);
+    message.addParameter(OAuth.OAUTH_VERSION, OAuth.VERSION_1_0);
+    message.addParameter(OAuth.OAUTH_CALLBACK, "about:blank");
+
+    // Sign the request
+    OAuthConsumer consumer = new OAuthConsumer("about:blank", consumerKey, secret, null);
+    OAuthAccessor accessor = new OAuthAccessor(consumer);
+    try {
+      message.sign(accessor);
+      // send oauth parameters back including signature
+      return message.getParameters();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private static class CodeReg implements Serializable {

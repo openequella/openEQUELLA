@@ -32,6 +32,8 @@ import javax.inject.Singleton;
 @Bind
 @Singleton
 public class ZippingConverter extends AbstractConverter<Object> {
+  public static String ID = "ZIPFILES";
+
   @Override
   public void doDelete(Institution institution, ConverterParams callback) {
     // nada
@@ -66,7 +68,7 @@ public class ZippingConverter extends AbstractConverter<Object> {
   @Override
   public void addTasks(ConvertType type, ConverterTasks tasks, ConverterParams params) {
     if (type == ConvertType.EXPORT) {
-      tasks.add(getStandardTask("ZIPFILES"));
+      tasks.add(getStandardTask(ID));
     }
   }
 

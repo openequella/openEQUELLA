@@ -1,0 +1,12 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>2016964</id>
+  <institution>
+    <id>2016849</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>ice</string>
+  </extensions>
+  <type>x-conference/x-cooltalk</type>
+  <attributes/>
+</com.tle.beans.mime.MimeEntry>

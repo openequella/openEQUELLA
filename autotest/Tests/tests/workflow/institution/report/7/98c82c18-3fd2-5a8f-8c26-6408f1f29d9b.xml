@@ -1,0 +1,30 @@
+<com.tle.beans.entity.report.Report>
+  <id>29568</id>
+  <uuid>98c82c18-3fd2-5a8f-8c26-6408f1f29d9b</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2007-05-16 15:31:58.267</dateModified>
+  <dateCreated class="sql-timestamp">2007-05-09 15:24:11.363</dateCreated>
+  <description>
+    <id>29569</id>
+    <strings/>
+  </description>
+  <name>
+    <id>29570</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>29571</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Items rejected this week</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <filename>rejected_items.rptdesign</filename>
+</com.tle.beans.entity.report.Report>

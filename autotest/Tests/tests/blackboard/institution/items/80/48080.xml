@@ -1,0 +1,202 @@
+<com.tle.beans.item.Item>
+  <id>48080</id>
+  <uuid>061656e7-bd4f-4089-a19e-cd3cc925fef2</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2011-09-15 16:25:49.891</dateModified>
+  <dateCreated class="sql-timestamp">2011-09-15 15:46:05.658</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.416</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.ZipAttachment>
+      <id>48094</id>
+      <uuid>6083e2b4-f6ac-487e-973d-c20b8f57dce4</uuid>
+      <url>_zips/zip with a space and %.zip</url>
+      <description>zip with a space and %.zip</description>
+      <value1>false</value1>
+      <value2>true</value2>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.ZipAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>48095</id>
+      <uuid>53657de9-3f52-4804-adde-b1f1b4283cbb</uuid>
+      <url>zip with a space and %.zip/google #1.png</url>
+      <description>google #1.png</description>
+      <value1>7007</value1>
+      <value2>false</value2>
+      <data>
+        <entry>
+          <string>ZIP_ATTACHMENT_UUID</string>
+          <string>6083e2b4-f6ac-487e-973d-c20b8f57dce4</string>
+        </entry>
+      </data>
+      <md5sum>d41d8cd98f00b204e9800998ecf8427e</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>48096</id>
+      <uuid>eb559e34-bcf1-4eba-9158-aa058c63ee3b</uuid>
+      <url>zip with a space and %.zip/google &quot;name&quot;.png</url>
+      <description>google &quot;name&quot;.png</description>
+      <value1>7007</value1>
+      <value2>false</value2>
+      <data>
+        <entry>
+          <string>ZIP_ATTACHMENT_UUID</string>
+          <string>6083e2b4-f6ac-487e-973d-c20b8f57dce4</string>
+        </entry>
+      </data>
+      <md5sum>d41d8cd98f00b204e9800998ecf8427e</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>48097</id>
+      <uuid>c6430df7-a9fd-445b-bfec-a1bf9feb2478</uuid>
+      <url>zip with a space and %.zip/google &apos;#1&apos;.png</url>
+      <description>google &apos;#1&apos;.png</description>
+      <value1>7007</value1>
+      <value2>false</value2>
+      <data>
+        <entry>
+          <string>ZIP_ATTACHMENT_UUID</string>
+          <string>6083e2b4-f6ac-487e-973d-c20b8f57dce4</string>
+        </entry>
+      </data>
+      <md5sum>d41d8cd98f00b204e9800998ecf8427e</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>48098</id>
+      <uuid>2486fec9-71d8-42a8-9241-d9cf37ac4e65</uuid>
+      <url>zip with a space and %.zip/google&apos;s #1.png</url>
+      <description>google&apos;s #1.png</description>
+      <value1>7007</value1>
+      <value2>false</value2>
+      <data>
+        <entry>
+          <string>ZIP_ATTACHMENT_UUID</string>
+          <string>6083e2b4-f6ac-487e-973d-c20b8f57dce4</string>
+        </entry>
+      </data>
+      <md5sum>d41d8cd98f00b204e9800998ecf8427e</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>48099</id>
+      <uuid>eaa5f053-afec-42bf-b838-a92e63151288</uuid>
+      <url>zip with a space and %.zip/google&apos;s &quot;name&quot;.png</url>
+      <description>google&apos;s &quot;name&quot;.png</description>
+      <value1>7007</value1>
+      <value2>false</value2>
+      <data>
+        <entry>
+          <string>ZIP_ATTACHMENT_UUID</string>
+          <string>6083e2b4-f6ac-487e-973d-c20b8f57dce4</string>
+        </entry>
+      </data>
+      <md5sum>d41d8cd98f00b204e9800998ecf8427e</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>48100</id>
+      <uuid>12d10262-402d-4ee3-b972-8fb3021d3bae</uuid>
+      <url>zip with a space and %.zip/google&apos;s.png</url>
+      <description>google&apos;s.png</description>
+      <value1>7007</value1>
+      <value2>false</value2>
+      <data>
+        <entry>
+          <string>ZIP_ATTACHMENT_UUID</string>
+          <string>6083e2b4-f6ac-487e-973d-c20b8f57dce4</string>
+        </entry>
+      </data>
+      <md5sum>d41d8cd98f00b204e9800998ecf8427e</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>48086</id>
+    <liveApprovalDate class="sql-timestamp">2011-09-15 15:46:05.655</liveApprovalDate>
+    <start class="sql-timestamp">2011-09-15 15:46:27.226</start>
+    <lastAction class="sql-timestamp">2011-09-15 15:46:05.655</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>48101</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-15 15:46:05.655</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>48102</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-15 15:46:05.655</date>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>48103</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-15 15:46:05.655</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>48104</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-15 16:25:49.891</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>48089</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>48091</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>SpecialCharacters - Folder</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

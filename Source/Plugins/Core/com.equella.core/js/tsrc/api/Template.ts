@@ -5,7 +5,7 @@ import { ErrorResponse } from "./errors";
 export interface TemplateProps {
   title: String;
   /* Fix the height of the main content, otherwise use min-height */
-  fixedViewPort?: Boolean;
+  fixedViewPort?: boolean;
   /* Extra part of the App bar (e.g. Search control) */
   titleExtra?: ReactNode;
   /* Extra menu options */
@@ -15,7 +15,7 @@ export interface TemplateProps {
   /* Additional markup for displaying tabs which integrate with the App bar */
   tabs?: ReactNode;
   /* Prevent navigation away from this page (e.g. Unsaved data) */
-  preventNavigation?: Boolean;
+  preventNavigation?: boolean;
   /* An optional Route for showing a back icon button */
   backRoute?: Route;
   /* Markup to show at the bottom of the main area. E.g. save/cancel options */

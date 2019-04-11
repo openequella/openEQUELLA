@@ -1,0 +1,21 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>6025</id>
+  <institution>
+    <id>41</id>
+    <uniqueId>0</uniqueId>
+    <quota>0.0</quota>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>rm</string>
+    <string>ram</string>
+  </extensions>
+  <type>audio/x-pn-realaudio</type>
+  <description>Audio</description>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/sound.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

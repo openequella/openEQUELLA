@@ -1,0 +1,12 @@
+<list>
+  <com.tle.beans.Language>
+    <id>2017060</id>
+    <language>en</language>
+    <country></country>
+    <variant></variant>
+    <institution>
+      <id>2016849</id>
+      <enabled>true</enabled>
+    </institution>
+  </com.tle.beans.Language>
+</list>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Thie example adapted from the PET Handbook, copyright University of Cambridge ESOL Examinations -->
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+	identifier="TF-choice" title="True/false question about geometry" adaptive="false" timeDependent="false">
+	<responseDeclaration identifier="RESPONSE" cardinality="single" baseType="identifier">
+		<correctResponse>
+			<value>ChoiceB</value>
+		</correctResponse>
+	</responseDeclaration>
+    <outcomeDeclaration identifier="SCORE" cardinality="single" baseType="float" normalMaximum="1.0">
+		<defaultValue>
+			<value>0.0</value>
+		</defaultValue>
+	</outcomeDeclaration>
+    <outcomeDeclaration identifier="FEEDBACK" cardinality="single" baseType="identifier"/>
+    <itemBody>
+		<div>
+		    An octahedron has 12 faces.
+		</div>
+		<choiceInteraction responseIdentifier="RESPONSE" shuffle="false" maxChoices="1">
+			<prompt> </prompt>
+			<simpleChoice identifier="ChoiceA">True
+     			<feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="ChoiceA">
+     			    No, an octahedron has 8 faces.
+     			</feedbackInline>
+			</simpleChoice>
+			<simpleChoice identifier="ChoiceB">False
+			    <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="ChoiceB">
+			        That's right, an octahedron has 8 faces.
+			    </feedbackInline>
+			</simpleChoice>
+		</choiceInteraction>
+	</itemBody>
+    <responseProcessing>
+        <responseCondition>
+            <responseIf>
+                <match>
+                    <variable identifier="RESPONSE"/>
+                    <correct identifier="RESPONSE"/>
+                </match>
+                <setOutcomeValue identifier="SCORE">
+                    <baseValue baseType="float">1</baseValue>
+                </setOutcomeValue>
+            </responseIf>
+            <responseElse>
+                <setOutcomeValue identifier="SCORE">
+                    <baseValue baseType="float">0</baseValue>
+                </setOutcomeValue>
+            </responseElse>
+        </responseCondition>
+        <setOutcomeValue identifier="FEEDBACK">
+            <variable identifier="RESPONSE"/>
+        </setOutcomeValue>
+    </responseProcessing>
+</assessmentItem>

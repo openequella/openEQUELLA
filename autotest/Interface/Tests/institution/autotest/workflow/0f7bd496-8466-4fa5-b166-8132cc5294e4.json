@@ -1,0 +1,73 @@
+{
+  "uuid" : "0f7bd496-8466-4fa5-b166-8132cc5294e4",
+  "name" : "3 step, priority & duedate",
+  "nameStrings" : {
+    "en" : "3 step, priority & duedate"
+  },
+  "modifiedDate" : "2014-05-12T15:43:40.816+10:00",
+  "createdDate" : "2014-05-12T15:43:40.811+10:00",
+  "owner" : {
+    "id" : "system"
+  },
+  "security" : {
+    "rules" : [ ]
+  },
+  "root" : {
+    "uuid" : "3bedced8-2355-42e0-aaa6-3c44c34c33be",
+    "name" : "Start",
+    "nameStrings" : {
+      "en_AU" : "Start"
+    },
+    "type" : "s",
+    "nodes" : [ {
+      "uuid" : "3c4926a7-4b28-4ea2-88b8-42da1902a9ed",
+      "name" : "Step 1",
+      "nameStrings" : {
+        "en" : "Step 1"
+      },
+      "type" : "t",
+      "users" : [ "adfcaf58-241b-4eca-9740-6a26d1c3dd58" ],
+      "groups" : [ ],
+      "roles" : [ ],
+      "description" : "High priority",
+      "descriptionStrings" : {
+        "en" : "High priority"
+      },
+      "escalate" : true,
+      "escalationdays" : 1,
+      "moveLive" : "no",
+      "autoAction" : "none",
+      "priority" : 30,
+      "actionDays" : 1,
+      "dueDatePath" : "/item/mod_date"
+    }, {
+      "uuid" : "723d03cf-deb9-4033-b66d-32dac9260dac",
+      "name" : "Step 2",
+      "nameStrings" : {
+        "en" : "Step 2"
+      },
+      "type" : "t",
+      "users" : [ "adfcaf58-241b-4eca-9740-6a26d1c3dd58" ],
+      "groups" : [ ],
+      "roles" : [ ],
+      "description" : "Low priority",
+      "descriptionStrings" : {
+        "en" : "Low priority"
+      },
+      "escalate" : true,
+      "escalationdays" : 1,
+      "moveLive" : "no",
+      "autoAction" : "none",
+      "priority" : 10,
+      "actionDays" : 1,
+      "dueDatePath" : "/item/mod_date"
+    } ]
+  },
+  "moveLive" : false,
+  "_export" : {
+    "exportVersion" : "1.0"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/workflow/0f7bd496-8466-4fa5-b166-8132cc5294e4"
+  }
+}

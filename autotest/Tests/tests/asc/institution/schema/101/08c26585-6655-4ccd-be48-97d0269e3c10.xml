@@ -1,0 +1,31 @@
+<com.tle.beans.entity.Schema>
+  <id>116108</id>
+  <uuid>08c26585-6655-4ccd-be48-97d0269e3c10</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-11-06 10:14:27.339</dateModified>
+  <dateCreated class="sql-timestamp">2012-11-05 14:57:23.181</dateCreated>
+  <name>
+    <id>116109</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116110</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>PropBagSchema</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms/>
+  <impTransforms/>
+  <itemNamePath>/item/name</itemNamePath>
+  <itemDescriptionPath>/item/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;id attribute=&quot;true&quot; field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;name field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;isNewValueSet field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;copiedValue field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;getAllValueFromNode2 field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;listValueFromNode2 field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;countSubNodes field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;isAppendWork field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;appendedValue field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;isSubtreeCreated field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;isSubtreeDeleted field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;isFoundById field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/item&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>

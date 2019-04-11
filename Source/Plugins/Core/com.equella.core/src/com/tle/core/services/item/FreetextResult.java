@@ -16,7 +16,9 @@
 
 package com.tle.core.services.item;
 
+import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemIdKey;
+import com.tle.beans.item.ItemKey;
 import java.io.Serializable;
 
 public class FreetextResult implements Serializable {
@@ -60,5 +62,9 @@ public class FreetextResult implements Serializable {
 
   public void setKeywordFoundInAttachment(boolean keywordFoundInAttachment) {
     this.keywordFoundInAttachment = keywordFoundInAttachment;
+  }
+
+  public ItemKey getItemKey() {
+    return ItemId.fromKey(itemIdKey);
   }
 }

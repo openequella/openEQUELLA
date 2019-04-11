@@ -138,10 +138,10 @@ object AuditLogJavaDao {
     Kleisli.liftF {
       queries
         .listForInst(inst)
-        .segmentN(perFile)
+        .chunkN(perFile)
         .zipWithIndex
         .map { a =>
-          val xmlList = new util.ArrayList(a._1.force.toVector.map { ale =>
+          val xmlList = new util.ArrayList(a._1.toVector.map { ale =>
             val xml = new AuditLogEntryXml()
             xml.timestamp = new Date(ale.timestamp.toEpochMilli)
             xml.eventCategory = ale.event_category.value

@@ -1,0 +1,122 @@
+<com.tle.beans.item.Item>
+  <id>18712</id>
+  <uuid>c9c0f6a5-a5cf-4dc9-90a1-0bb90206776d</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2011-09-26 11:51:43.25</dateModified>
+  <dateCreated class="sql-timestamp">2011-09-26 11:51:43.252</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.581</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.IMSResourceAttachment>
+      <id>18717</id>
+      <uuid>60f52d1d-1b8f-403f-abbf-aca87cc8ec29</uuid>
+      <url>package.zip/index.html</url>
+      <description>index.html</description>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.IMSResourceAttachment>
+    <com.tle.beans.item.attachments.ImsAttachment>
+      <id>18718</id>
+      <uuid>baebb0eb-93cb-4510-896c-c9e35b066550</uuid>
+      <url>package.zip</url>
+      <description>Zou ba! Visiting China: Is this your first visit?</description>
+      <value1>1173771</value1>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.ImsAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="9a735fbf-226c-4d99-8f8f-6ec8368d9347"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>18714</id>
+    <liveApprovalDate class="sql-timestamp">2011-09-26 11:51:43.25</liveApprovalDate>
+    <start class="sql-timestamp">2011-09-26 11:54:47.638</start>
+    <lastAction class="sql-timestamp">2011-09-26 11:51:43.25</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18719</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-26 11:51:43.25</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18720</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-26 11:51:43.25</date>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18721</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-26 11:51:43.25</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes>
+    <com.tle.beans.item.attachments.ItemNavigationNode>
+      <id>18722</id>
+      <uuid>1d1db66f-28c2-44f7-a1f5-0b16bd1ac66b</uuid>
+      <name>Start: Zou ba! Visiting China: Is this your first visit?</name>
+      <parent>
+        <id>18724</id>
+        <uuid>390e30e7-0840-4af8-89a3-7d2c8c83dd92</uuid>
+        <name>Zou ba! Visiting China: Is this your first visit?</name>
+        <tabs/>
+        <index>0</index>
+      </parent>
+      <tabs>
+        <com.tle.beans.item.attachments.ItemNavigationTab>
+          <id>18723</id>
+          <name>Auto Created By IMS Viewer</name>
+          <attachment class="com.tle.beans.item.attachments.IMSResourceAttachment" reference="../../../../../attachments/com.tle.beans.item.attachments.IMSResourceAttachment"/>
+        </com.tle.beans.item.attachments.ItemNavigationTab>
+      </tabs>
+      <identifier>O56149I0</identifier>
+      <index>0</index>
+    </com.tle.beans.item.attachments.ItemNavigationNode>
+    <com.tle.beans.item.attachments.ItemNavigationNode reference="../com.tle.beans.item.attachments.ItemNavigationNode/parent"/>
+  </treeNodes>
+  <notifications/>
+  <name>
+    <id>18715</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>18716</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>BasicSelectionPackage</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

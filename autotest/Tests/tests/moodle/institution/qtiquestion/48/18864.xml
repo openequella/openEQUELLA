@@ -1,0 +1,24 @@
+<com.tle.common.qti.entity.QtiAssessmentItem>
+  <id>18864</id>
+  <uuid>39d33c1e-c9b6-4ebb-a28b-34a8ab5b7a55</uuid>
+  <identifier>matching-associate-trigDeriv</identifier>
+  <title>Associate derivatives of trigonometric functions</title>
+  <itemBody>uk.ac.ed.ph.jqtiplus.node.content.ItemBody@1a3667cb(
+    blocks =&gt; java.util.ArrayList[
+        0 =&gt; &lt;p&gt;@1775783390(xPath=/assessmentItem[@identifier=&quot;matching-associate-trigDeriv&quot;]/itemBody[1]/p[1],location=XmlSourceLocationInformation@77e0601b(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-200e2c3f7d76/matching-associate-trigDeriv.xml,lineNumber=22,columnNumber=6))
+        1 =&gt; &lt;associateInteraction&gt;@734382617(xPath=/assessmentItem[@identifier=&quot;matching-associate-trigDeriv&quot;]/itemBody[1]/associateInteraction[1],location=XmlSourceLocationInformation@465745c2(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-200e2c3f7d76/matching-associate-trigDeriv.xml,lineNumber=23,columnNumber=90))
+        2 =&gt; &lt;p&gt;@195356578(xPath=/assessmentItem[@identifier=&quot;matching-associate-trigDeriv&quot;]/itemBody[1]/p[2],location=XmlSourceLocationInformation@776342a6(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-200e2c3f7d76/matching-associate-trigDeriv.xml,lineNumber=132,columnNumber=6))
+    ]
+    id =&gt; null
+    classAttr =&gt; null
+    lang =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    label =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    parent =&gt; &lt;assessmentItem&gt;@363650438(xPath=/assessmentItem[@identifier=&quot;matching-associate-trigDeriv&quot;],location=XmlSourceLocationInformation@8039388(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-200e2c3f7d76/matching-associate-trigDeriv.xml,lineNumber=6,columnNumber=98))(systemId=_SECURE/_QTI/id-200e2c3f7d76/matching-associate-trigDeriv.xml)
+    attributes =&gt; uk.ac.ed.ph.jqtiplus.attribute.AttributeList@22cac9d4
+    sourceLocation =&gt; XmlSourceLocationInformation@2f888f24(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-200e2c3f7d76/matching-associate-trigDeriv.xml,lineNumber=21,columnNumber=12)
+    rootNode =&gt; &lt;assessmentItem&gt;@363650438(xPath=/assessmentItem[@identifier=&quot;matching-associate-trigDeriv&quot;],location=XmlSourceLocationInformation@8039388(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-200e2c3f7d76/matching-associate-trigDeriv.xml,lineNumber=6,columnNumber=98))(systemId=_SECURE/_QTI/id-200e2c3f7d76/matching-associate-trigDeriv.xml)
+    nodeGroups =&gt; uk.ac.ed.ph.jqtiplus.group.NodeGroupList@2e6d9cdd
+    qtiClassName =&gt; itemBody
+)
+</itemBody>
+  <adaptive>false</adaptive>
+  <timeDependent>false</timeDependent>
+</com.tle.common.qti.entity.QtiAssessmentItem>

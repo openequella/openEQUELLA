@@ -8,11 +8,11 @@ import Control.Monad.Reader (ReaderT)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
 import Data.Argonaut (class DecodeJson, Json, decodeJson, (.?), (.??))
-import Data.Array (catMaybes, concat, intercalate)
+import Data.Array (catMaybes, concat, elemLastIndex, intercalate)
 import Data.Either (Either(..), either)
 import Data.Lens (Lens', _Just, preview, (^?))
 import Data.Lens.Record (prop)
-import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, isJust, maybe)
+import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, isJust, isNothing, maybe)
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
@@ -35,7 +35,7 @@ import MaterialUI.DialogContentText (dialogContentText_)
 import MaterialUI.DialogTitle (dialogTitle_)
 import MaterialUI.Divider (divider_)
 import MaterialUI.Drawer (drawer)
-import MaterialUI.Enums (css, headline, inherit, left, permanent, primary, secondary, subheading, temporary)
+import MaterialUI.Enums (css, h5, inherit, left, permanent, primary, secondary, subtitle1, temporary)
 import MaterialUI.Enums as String
 import MaterialUI.Hidden (hidden)
 import MaterialUI.Icon (icon, icon_)
@@ -55,7 +55,7 @@ import Network.HTTP.Affjax.Response as Resp
 import OEQ.Data.Error (ErrorResponse)
 import OEQ.Environment (baseUrl, prepLangStrings)
 import OEQ.MainUI.Routes (Route, forcePushRoute, logoutRoute, matchRoute, pushRoute, routeHref, routeURI, setPreventNav, userPrefsRoute)
-import OEQ.UI.Common (rootTag, withCurrentTarget)
+import OEQ.UI.Common (extendedTheme, rootTag, withCurrentTarget)
 import OEQ.UI.MessageInfo (messageInfo)
 import OEQ.Utils.Interop (nullAny)
 import Partial.Unsafe (unsafePartial)
@@ -65,6 +65,7 @@ import React.DOM (footer, img, text)
 import React.DOM as D
 import React.DOM.Props (src)
 import React.DOM.Props as DP
+import Unsafe.Coerce (unsafeCoerce)
 import Web.DOM.DOMTokenList as DOMTokens
 import Web.DOM.Document (documentElement)
 import Web.Event.EventTarget (EventListener, addEventListener, removeEventListener)
@@ -269,12 +270,16 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       topBar = appBar {className: classes.appBar} $ catMaybes [
         Just $ toolbar {disableGutters: true} $ concat [
           guard hasMenu $> iconButton {
-              color: inherit, className: classes.navIconHide,
+              className: classes.navIconHide,
               onClick: d ToggleMenu } [ icon_ [D.text "menu" ] 
           ], [
-            D.div [DP.className classes.titleArea] $ catMaybes [
+            D.div [DP.className classes.titleArea] $ let 
+            titleClass = if isNothing $ toMaybe backRoute 
+                          then classes.titlePadding 
+                          else classes.titleDense
+            in catMaybes [
               toMaybe backRoute $> iconButton { onClick: d GoBack} [ icon_ [D.text "arrow_back" ] ],
-              Just $ typography {variant: headline, color: inherit, className: classes.title} [ D.text titleText ],
+              Just $ typography {variant: h5, color: inherit, className: joinWith " " [titleClass, classes.title]} [ D.text titleText ],
               toMaybe titleExtra
             ],
             userMenu 
@@ -330,8 +335,8 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
             [
               listItemIcon_ $ case iconUrl of 
                 Just url -> img [src url]
-                Nothing -> icon {color: inherit} [ D.text $ fromMaybe "folder" $ systemIcon ],
-              listItemText' {disableTypography: true, primary: typography {variant: subheading, component: "div"} [text title] }
+                Nothing -> icon {color: inherit, className: classes.menuIcon} [ D.text $ fromMaybe "folder" $ systemIcon ],
+              listItemText' {disableTypography: true, primary: typography {variant: subtitle1, className: classes.menuItem, component: "div"} [text title] }
             ]
             where 
               linkProps = case route of 
@@ -406,20 +411,35 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
           desktop = mediaQuery $ theme.breakpoints.up "md"
           mobile :: forall a. {|a} -> MediaQuery
           mobile = mediaQuery $ theme.breakpoints.up "sm"
+          extTheme = extendedTheme theme
+          menuColors = extTheme.palette.menu
       in {
       root: {
         width: "100%",
         zIndex: 1
       },
-      title: cssList [ 
+      menuItem: {
+        color: menuColors.text
+      },
+      menuIcon: {
+        color: menuColors.icon
+      },
+      titlePadding: cssList [
         desktop {
           marginLeft: theme.spacing.unit * 4
-        }, 
+        }
+        ],
+        titleDense: {
+          marginLeft: theme.spacing.unit
+          },
+      title: cssList [
         allQuery {
           overflow: "hidden", 
           whiteSpace: "nowrap", 
-          textOverflow: "ellipsis",
-          marginLeft: theme.spacing.unit
+          textOverflow: "ellipsis"
+        },
+        mobile {
+
         }
       ],
       appFrame: {
@@ -444,7 +464,8 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
         },
         allQuery { 
           width: drawerWidth,
-          zIndex: 1100
+          zIndex: 1100,
+          background: menuColors.background
         }
       ],
       tabs: {

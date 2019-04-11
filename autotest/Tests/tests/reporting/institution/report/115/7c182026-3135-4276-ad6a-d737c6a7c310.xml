@@ -1,0 +1,27 @@
+<com.tle.beans.entity.report.Report>
+  <id>3309752</id>
+  <uuid>7c182026-3135-4276-ad6a-d737c6a7c310</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-04-02 10:35:25.249</dateModified>
+  <dateCreated class="sql-timestamp">2012-04-02 10:34:47.452</dateCreated>
+  <name>
+    <id>3309753</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>3309754</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>HiddenReport</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <filename>reportFiles/loginsbyuser.rptdesign</filename>
+  <hideReport>true</hideReport>
+</com.tle.beans.entity.report.Report>

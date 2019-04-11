@@ -1,35 +1,38 @@
 import * as React from "react";
+import { ChangeEvent } from "react";
 import {
-  Button,
-  DialogContent,
-  DialogContentText,
+  FormControl,
+  FormControlLabel,
   Grid,
-  TextField,
+  Radio,
+  RadioGroup,
   Typography
 } from "@material-ui/core";
-import { commonString } from "../util/commonstrings";
 import {
   clearPreLoginNotice,
   getPreLoginNotice,
   NotificationType,
+  PreLoginNotice,
+  ScheduleTypeSelection,
+  strings,
   submitPreLoginNotice,
-  strings
+  unMarshallPreLoginNotice,
+  uploadPreLoginNoticeImage
 } from "./LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
+import RichTextEditor from "../components/RichTextEditor";
 import SettingsMenuContainer from "../components/SettingsMenuContainer";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
+import { DateTimePicker } from "material-ui-pickers";
 
 interface PreLoginNoticeConfiguratorProps {
   handleError: (axiosError: AxiosError) => void;
   notify: (notificationType: NotificationType) => void;
+  preventNav: (prevNav: boolean) => void;
 }
 
 interface PreLoginNoticeConfiguratorState {
-  preNotice?: string; //what is currently in the textfield
-  dbPreNotice?: string; //what is currently in the database
-  clearStaged: boolean;
+  current: PreLoginNotice;
+  db: PreLoginNotice;
 }
 
 class PreLoginNoticeConfigurator extends React.Component<
@@ -39,18 +42,41 @@ class PreLoginNoticeConfigurator extends React.Component<
   constructor(props: PreLoginNoticeConfiguratorProps) {
     super(props);
     this.state = {
-      preNotice: "",
-      dbPreNotice: "",
-      clearStaged: false
+      current: {
+        notice: "",
+        scheduleSettings: ScheduleTypeSelection.ON,
+        startDate: new Date(),
+        endDate: new Date()
+      },
+      db: {
+        notice: "",
+        scheduleSettings: ScheduleTypeSelection.ON,
+        startDate: new Date(),
+        endDate: new Date()
+      }
     };
   }
 
   handleSubmitPreNotice = () => {
-    if (this.state.preNotice != undefined) {
-      submitPreLoginNotice(this.state.preNotice)
+    if (this.state.current.notice == "") {
+      clearPreLoginNotice()
+        .then(() => {
+          this.props.notify(NotificationType.Clear);
+          this.setState(
+            {
+              db: this.state.current
+            },
+            () => this.setPreventNav()
+          );
+        })
+        .catch((error: AxiosError) => {
+          this.props.handleError(error);
+        });
+    } else {
+      submitPreLoginNotice(this.state.current)
         .then(() => {
           this.props.notify(NotificationType.Save);
-          this.setState({ dbPreNotice: this.state.preNotice });
+          this.setDBToValues();
         })
         .catch((error: AxiosError) => {
           this.props.handleError(error);
@@ -58,127 +84,162 @@ class PreLoginNoticeConfigurator extends React.Component<
     }
   };
 
-  handleClearPreNotice = () => {
-    this.setState({ preNotice: "" });
-    clearPreLoginNotice()
-      .then(() => {
-        this.setState({ dbPreNotice: "", clearStaged: false });
-        this.props.notify(NotificationType.Clear);
-      })
-      .catch((error: AxiosError) => {
-        this.props.handleError(error);
-      });
-  };
-
-  handleUndoPreNotice = () => {
-    this.setState({ preNotice: this.state.dbPreNotice });
-    this.props.notify(NotificationType.Revert);
-  };
-
-  handlePreTextFieldChange = (
-    e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-  ) => {
-    this.setState({ preNotice: e.value });
+  setDBToValues = () => {
+    this.setState(
+      {
+        db: this.state.current
+      },
+      () => this.setPreventNav()
+    );
   };
 
   componentDidMount = () => {
     getPreLoginNotice()
-      .then((response: AxiosResponse) => {
-        this.setState({ dbPreNotice: response.data, preNotice: response.data });
+      .then((response: AxiosResponse<PreLoginNotice>) => {
+        let preLoginNotice: PreLoginNotice = unMarshallPreLoginNotice(
+          response.data
+        );
+        if (preLoginNotice.notice != undefined) {
+          this.setState({
+            db: preLoginNotice,
+            current: preLoginNotice
+          });
+        }
       })
       .catch((error: AxiosError) => {
         this.props.handleError(error);
       });
   };
 
-  stageClear = () => {
-    this.setState({ clearStaged: true });
+  setPreventNav = () => {
+    this.props.preventNav(
+      this.state.db.scheduleSettings != this.state.current.scheduleSettings ||
+        this.state.db.endDate != this.state.current.endDate ||
+        this.state.db.startDate != this.state.current.startDate ||
+        this.state.db.notice != this.state.current.notice
+    );
   };
 
-  Dialogs = () => {
+  handleEditorChange = (html: string) => {
+    this.setState(
+      {
+        current: { ...this.state.current, notice: html }
+      },
+      () => this.setPreventNav()
+    );
+  };
+
+  isNoticeCurrent = (): boolean => {
+    return this.state.current.endDate.getTime() > new Date().getTime();
+  };
+
+  ScheduleSettings = () => {
     return (
-      <div>
-        <Dialog
-          open={this.state.clearStaged}
-          onClose={() => this.setState({ clearStaged: false })}
+      <FormControl>
+        <Typography color="textSecondary" variant="subtitle1">
+          {strings.scheduling.title}
+        </Typography>
+        <RadioGroup
+          row
+          value={ScheduleTypeSelection[this.state.current.scheduleSettings]}
+          onChange={this.handleScheduleTypeSelectionChange}
         >
-          <DialogTitle>{strings.clear.title}</DialogTitle>
-          <DialogContent>
-            <DialogContentText>{strings.clear.confirm}</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button id="okToClear" onClick={this.handleClearPreNotice}>
-              {commonString.action.ok}
-            </Button>
-            <Button
-              id="cancelClear"
-              onClick={() => this.setState({ clearStaged: false })}
-            >
-              {commonString.action.cancel}
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </div>
+          <FormControlLabel
+            value={ScheduleTypeSelection[ScheduleTypeSelection.ON]}
+            label={strings.scheduling.alwayson}
+            control={<Radio id="onRadioButton" />}
+          />
+          <FormControlLabel
+            value={ScheduleTypeSelection[ScheduleTypeSelection.SCHEDULED]}
+            label={strings.scheduling.scheduled}
+            control={<Radio id="scheduledRadioButton" />}
+          />
+          <FormControlLabel
+            value={ScheduleTypeSelection[ScheduleTypeSelection.OFF]}
+            label={strings.scheduling.disabled}
+            control={<Radio id="offRadioButton" />}
+          />
+        </RadioGroup>
+
+        <div
+          hidden={
+            this.state.current.scheduleSettings !=
+            ScheduleTypeSelection.SCHEDULED
+          }
+        >
+          <div hidden={this.isNoticeCurrent()}>
+            <Typography color="error" variant="subtitle1">
+              {strings.scheduling.expired}
+            </Typography>
+          </div>
+          <Typography color="textSecondary" variant="subtitle1">
+            {strings.scheduling.start}
+          </Typography>
+          <DateTimePicker
+            id="startDatePicker"
+            okLabel={<span id="ok">OK</span>}
+            onChange={this.handleStartDateChange}
+            format={"d MMM yyyy - h:mm a"}
+            value={this.state.current.startDate}
+          />
+
+          <Typography color="textSecondary" variant="subtitle1">
+            {strings.scheduling.end}
+          </Typography>
+
+          <DateTimePicker
+            id="endDatePicker"
+            onChange={this.handleEndDateChange}
+            format={"d MMM yyyy - h:mm a"}
+            value={this.state.current.endDate}
+          />
+        </div>
+      </FormControl>
+    );
+  };
+
+  handleStartDateChange = (startDate: Date) => {
+    this.setState(
+      { current: { ...this.state.current, startDate: new Date(startDate) } },
+      () => this.setPreventNav()
+    );
+  };
+
+  handleEndDateChange = (endDate: Date) => {
+    this.setState(
+      { current: { ...this.state.current, endDate: new Date(endDate) } },
+      () => this.setPreventNav()
+    );
+  };
+
+  handleScheduleTypeSelectionChange = (event: ChangeEvent, value: string) => {
+    this.setState(
+      {
+        current: {
+          ...this.state.current,
+          scheduleSettings: ScheduleTypeSelection[value]
+        }
+      },
+      () => this.setPreventNav()
     );
   };
 
   render() {
-    const { preNotice, dbPreNotice } = this.state;
-    const Dialogs = this.Dialogs;
+    const ScheduleSettings = this.ScheduleSettings;
     return (
       <SettingsMenuContainer>
-        <Typography color="textSecondary" variant="subheading">
-          {strings.prelogin.label}
-        </Typography>
         <Grid id="preLoginConfig" container spacing={8} direction="column">
           <Grid item>
-            <TextField
-              id="preNoticeField"
-              variant="outlined"
-              rows="12"
-              rowsMax="35"
-              multiline
-              fullWidth
-              inputProps={{ length: 12 }}
-              placeholder={strings.prelogin.description}
-              onChange={e => this.handlePreTextFieldChange(e.target)}
-              value={preNotice}
+            <RichTextEditor
+              htmlInput={this.state.db.notice}
+              onStateChange={this.handleEditorChange}
+              imageUploadCallBack={uploadPreLoginNoticeImage}
             />
           </Grid>
-          <Grid item container spacing={8} direction="row-reverse">
-            <Grid item>
-              <Button
-                id="preApplyButton"
-                disabled={preNotice == dbPreNotice}
-                onClick={this.handleSubmitPreNotice}
-                variant="contained"
-              >
-                {commonString.action.save}
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
-                id="preClearButton"
-                disabled={dbPreNotice == ""}
-                onClick={this.stageClear}
-                variant="text"
-              >
-                {commonString.action.clear}
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
-                id="preUndoButton"
-                disabled={dbPreNotice == preNotice}
-                onClick={this.handleUndoPreNotice}
-                variant="text"
-              >
-                {commonString.action.revertchanges}
-              </Button>
-            </Grid>
+          <Grid item>
+            <ScheduleSettings />
           </Grid>
         </Grid>
-        <Dialogs />
       </SettingsMenuContainer>
     );
   }

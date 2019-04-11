@@ -1,0 +1,18 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>35315</id>
+  <institution>
+    <id>35074</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>wmlsc</string>
+  </extensions>
+  <type>application/vnd.wap.wmlscriptc</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

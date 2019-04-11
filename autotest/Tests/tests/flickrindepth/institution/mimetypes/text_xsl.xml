@@ -1,0 +1,17 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>413797</id>
+  <institution>
+    <id>413481</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>xsl</string>
+  </extensions>
+  <type>text/xsl</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/doc.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

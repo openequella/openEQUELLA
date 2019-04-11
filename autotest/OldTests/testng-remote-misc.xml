@@ -1,0 +1,19 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Auto Test Suite misc" parallel="instances" data-provider-thread-count="4" thread-count="8"	configfailurepolicy="continue">
+	<test name="All Remote Tests">
+		<packages>
+			<package name="com.tle.webtests.remotetest.contribute.controls.attachments" />
+		</packages>
+	</test>
+	<test name="Import-Export-Clone">
+		<packages>
+			<package name="com.tle.webtests.test.importexport" />
+		</packages>
+	</test>
+	<test name="Replicated User">
+		<packages>
+			<package name="com.tle.webtests.test.replicated" />
+		</packages>
+	</test>
+</suite>

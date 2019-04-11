@@ -25,10 +25,7 @@ import com.tle.core.i18n.BundleCache;
 import com.tle.core.item.helper.ItemHelper;
 import com.tle.core.wizard.LERepository;
 import com.tle.core.wizard.controls.HTMLControl;
-import com.tle.web.sections.SectionId;
-import com.tle.web.sections.SectionInfo;
-import com.tle.web.sections.SectionResult;
-import com.tle.web.sections.SectionTree;
+import com.tle.web.sections.*;
 import com.tle.web.sections.ajax.AjaxGenerator;
 import com.tle.web.sections.ajax.AjaxRenderContext;
 import com.tle.web.sections.ajax.JSONResponseCallback;
@@ -74,6 +71,10 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel>
   @Override
   public String getDefaultPropertyName() {
     return "pages"; //$NON-NLS-1$
+  }
+
+  public JSCallable getReloadFunction() {
+    return reloadFunction;
   }
 
   @Override
@@ -159,22 +160,9 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel>
       throw new Error("No pages in wizard");
     }
     WebWizardPage page = pages.get(pageNum);
-    boolean doLoad = load;
-    try {
-      if (!page.isLoaded()) {
-        page.setReloadFunction(reloadFunction);
-        page.createPage();
-        doLoad = true;
-      }
-      if (doLoad) {
-        page.loadFromDocument(info);
-        page.saveDefaults();
-      }
-      page.ensureTreeAdded(info, params);
-      return page;
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+    wizardService.ensureInitialisedPage(info, page, reloadFunction, load);
+    page.ensureTreeAdded(info, params);
+    return page;
   }
 
   protected List<WebWizardPage> getPages(WizardState state) {
@@ -308,11 +296,11 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel>
   @Override
   public void leavingTab(SectionInfo info, SectionTab tab) {
     unfinishedTab(info, tab);
-    info.forceRedirect();
   }
 
   @Override
   public void unfinishedTab(SectionInfo info, SectionTab tab) {
     getPage(info, Integer.parseInt(tab.getData()), true, false).setShowMandatory(true);
+    info.forceRedirect();
   }
 }

@@ -1,0 +1,26 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>116672</id>
+  <uuid>3669c253-12e9-479c-b2da-3b10a470b616</uuid>
+  <value>REST-TERM-2</value>
+  <valueHash>3ff0bad3925144e2ca75632d307315f7</valueHash>
+  <fullValue>REST-TAXONOMY-TYPES\REST-TERM-2</fullValue>
+  <parent>
+    <id>116666</id>
+  </parent>
+  <attributes>
+    <entry>
+      <string>key11</string>
+      <com.tle.common.taxonomy.terms.Term_-TermAttribute>
+        <key>key11</key>
+        <value>value11</value>
+      </com.tle.common.taxonomy.terms.Term_-TermAttribute>
+    </entry>
+    <entry>
+      <string>key22</string>
+      <com.tle.common.taxonomy.terms.Term_-TermAttribute>
+        <key>key22</key>
+        <value>value22</value>
+      </com.tle.common.taxonomy.terms.Term_-TermAttribute>
+    </entry>
+  </attributes>
+</com.tle.common.taxonomy.terms.Term>

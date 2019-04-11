@@ -1,0 +1,30 @@
+{
+  "name": "integ-tester",
+  "private": true,
+  "scripts": {
+    "install": "psc-package install",
+    "build": "pulp build && parcel build --no-autoinstall --out-dir=target/www www/*.html",
+    "dev": "pulp build && parcel watch --no-autoinstall --out-dir=../target/scala-2.12/classes/www www/*.html"
+  },
+  "dependencies": {
+    "@material-ui/core": "^3.9.2",
+    "@material-ui/styles": "^3.0.0-alpha.10",
+    "axios": "^0.18.0",
+    "babel-polyfill": "^6.26.0",
+    "js-md5": "^0.7.3",
+    "jss": "^10.0.0-alpha.14",
+    "query-string": "^6.4.0",
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4"
+  },
+  "devDependencies": {
+    "@types/react": "^16.8.8",
+    "@types/react-dom": "^16.8.2",
+    "mkdirp": "^0.5.1",
+    "parcel-bundler": "^1.12.2",
+    "psc-package": "^3.0.1",
+    "pulp": "^12.3.0",
+    "purescript": "^0.12.3",
+    "typescript": "^3.3.3333"
+  }
+}

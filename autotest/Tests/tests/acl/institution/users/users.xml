@@ -1,0 +1,83 @@
+<list>
+  <com.tle.beans.user.TLEUser>
+    <id>131415</id>
+    <uuid>e61893b3-7aa9-4bdc-9697-d5418f5e5e56</uuid>
+    <username>purge_deny</username>
+    <firstName>purge</firstName>
+    <lastName>deny</lastName>
+    <emailAddress>awd@faw</emailAddress>
+    <password>SHA256:7f79302f9f5af172d5827002b8a64badbe0e39deccb8673bcae901437b47e9f5</password>
+  </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>131416</id>
+    <uuid>654c0b3a-0809-48d7-bfe1-af922ec09095</uuid>
+    <username>purge_grant</username>
+    <firstName>purge</firstName>
+    <lastName>grant</lastName>
+    <emailAddress>aw@faef</emailAddress>
+    <password>SHA256:7f79302f9f5af172d5827002b8a64badbe0e39deccb8673bcae901437b47e9f5</password>
+  </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>131417</id>
+    <uuid>ead712b0-8d9a-4aed-8d19-4b48313ef901</uuid>
+    <username>int.demoteacher</username>
+    <firstName>Internal EQUELLA</firstName>
+    <lastName>Demonstration Teacher</lastName>
+    <emailAddress></emailAddress>
+    <password>SHA256:c9cb02db972223b7d476c792f30c371b71cd0af9fb09c2d00e892ddf2b4d6729</password>
+  </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>131418</id>
+    <uuid>74d5ab31-7148-4457-84e8-507b146073fd</uuid>
+    <username>int.demosysadmin</username>
+    <firstName>Internal EQUELLA</firstName>
+    <lastName>Demonstration System Administrator</lastName>
+    <emailAddress></emailAddress>
+    <password>SHA256:c9cb02db972223b7d476c792f30c371b71cd0af9fb09c2d00e892ddf2b4d6729</password>
+  </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>131419</id>
+    <uuid>eac5fe64-3f01-4e7a-bf7e-b79dc0316a5d</uuid>
+    <username>int.demostudent</username>
+    <firstName>Internal EQUELLA</firstName>
+    <lastName>Demonstration Student</lastName>
+    <emailAddress></emailAddress>
+    <password>SHA256:c9cb02db972223b7d476c792f30c371b71cd0af9fb09c2d00e892ddf2b4d6729</password>
+  </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>131420</id>
+    <uuid>ed07bcca-eb3d-4466-927c-ac14e183dfa1</uuid>
+    <username>int.democontentadmin</username>
+    <firstName>Internal EQUELLA</firstName>
+    <lastName>Demonstration Content Administrator</lastName>
+    <emailAddress></emailAddress>
+    <password>SHA256:c9cb02db972223b7d476c792f30c371b71cd0af9fb09c2d00e892ddf2b4d6729</password>
+  </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>131421</id>
+    <uuid>adfcaf58-241b-4eca-9740-6a26d1c3dd58</uuid>
+    <username>AutoTest</username>
+    <firstName>Automated</firstName>
+    <lastName>Testing</lastName>
+    <emailAddress></emailAddress>
+    <password>MD5:a434f46aa79bfef92ecf227e9ee704a1</password>
+  </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>131728</id>
+    <uuid>2be3f71a-8df0-4ff5-b91d-391e0cadfdb0</uuid>
+    <username>view_attachment_grant</username>
+    <firstName>view</firstName>
+    <lastName>attachment</lastName>
+    <emailAddress></emailAddress>
+    <password>SHA256:7f79302f9f5af172d5827002b8a64badbe0e39deccb8673bcae901437b47e9f5</password>
+  </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>131729</id>
+    <uuid>bb53b77b-1ee4-41b4-aa12-7160004abceb</uuid>
+    <username>view_attachment_revoke</username>
+    <firstName>view</firstName>
+    <lastName>attachment revoke</lastName>
+    <emailAddress></emailAddress>
+    <password>SHA256:7f79302f9f5af172d5827002b8a64badbe0e39deccb8673bcae901437b47e9f5</password>
+  </com.tle.beans.user.TLEUser>
+</list>

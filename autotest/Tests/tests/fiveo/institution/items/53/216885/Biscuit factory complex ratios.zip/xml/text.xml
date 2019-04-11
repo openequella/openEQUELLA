@@ -1,0 +1,656 @@
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<content>
+    <section1>
+        <!--Section 1. both cogs the same-->
+        <task>
+            <!--Task instruction and correct feedback-->
+            <text1>
+                <!--task 1 NOW COMBINED WITH TASK 2-->
+                <![CDATA[Rotate the driver once and watch the counter.<br/><br/>How many teeth are in the belt gear?<br/><br/>How many times does the belt gear turn for one rotation of the driver? <br/><br/>Type these two answers in the table, and then select <b>OK</b>.]]>
+            </text1>
+            <text2>
+                <!--task 2 NOT USED-->
+                <![CDATA[Rotate the driver again and watch the odometer readings.<br/>These count the number of turns, on both gears.<br/>Then use the table to record how many times the belt gear rotates, for one rotation of the driver.]]>
+            </text2>
+            <text3>
+                <!--correct text-->
+                <![CDATA[That's right!<br/><br/>The driver and the belt gear are the same size, with <b>30</b> teeth.<br/><br/>The belt gear rotates <b>once</b> for every rotation of the driver.]]>
+            </text3>
+            <text4>
+                <!--next task-->
+                <![CDATA[Let's investigate some belt gears with different numbers of teeth.<br/><br/>Select <b>Show next</b> to see four new gears. Then choose one and select <b>Replace</b> to test it.]]>
+            </text4>
+            <text5>
+                <!--next task-->
+                <![CDATA[Now select <b>Rotate once</b> to see how many times the new belt gear rotates for one rotation of the driver.<br/><br/>Type the results in the table.]]>
+            </text5>
+            <text6>
+                <!--new second feedback -->
+                <![CDATA[This point can also be plotted on a graph. The vertical axis shows the number of rotations of the belt gear for one rotation of the driver.<br/><br/>The horizontal axis shows the number of teeth in the belt gear. In this case, the point shows that the belt gear with 30 teeth turns once.]]>
+            </text6>
+            <!-- new feedback for choosing next gears -->
+            <text7>
+                <![CDATA[Choose another belt gear and select <b>Replace</b> to test it.<br>]]>
+            </text7>
+            <text8>
+                <!-- second half of text6 (doesnt fit in one box)-->
+                <![CDATA[Now let's see what happens when the driver and the belt gear don't have the same number of teeth.]]>
+            </text8>
+        </task>
+        <feedback>
+            <!--Incorrect feedback-->
+            <text1>
+                <!--incorrect 1-->
+                <![CDATA[That's not right.<br/><br/>First, type in the number of teeth the belt gear has.<br/><br/>Then type in how many times it rotates when the driver rotates once.]]>
+            </text1>
+            <text2>
+                <!--incorrect 2-->
+                <![CDATA[That's still not right.<br/><br/>Check the counter under the belt gear. How many teeth<br>does it have? How many times did it turn?<br/><br/>Type these numbers into the table.]]>
+            </text2>
+            <text3>
+                <!--incorrect 3-->
+                <![CDATA[That still wasn't correct.<br/><br/>The driver and the belt gear both have <b>30</b> teeth; they are the same size.<br/>The belt gear rotates <b>once</b> for every <b>one</b> rotation of the driver.<br/><br/>I've put the correct numbers in the table for you.]]>
+            </text3>
+        </feedback>
+    </section1>
+    <!-- smaller cogs sections-->
+    <section2>
+        <!--Section 2. 5 tooth cog-->
+        <task>
+            <!--Task instruction and correct feedback-->
+            <text1>
+                <!--next task-->
+                <![CDATA[That's right!<br/><br/>The driver has <b>30</b> teeth and the belt gear has <b>5</b>. When<br>the driver rotates <b>once</b>, the belt gear rotates <b>6</b> times.]]>
+            </text1>
+            <!--optional endings for both correct feedback and 3rd incorrect-->
+            <text2>
+                <![CDATA[<br/><br/>Now choose a different-sized gear and see what happens.]]>
+            </text2>
+            <text3>
+                <![CDATA[<br/><br/>Now you have tested four different gears.<br/>•	Can you see a pattern in the numbers?<br/>•	Can you see a pattern in the graph?]]>
+            </text3>
+            <!-- new second text -->
+            <text4>
+                <![CDATA[Let's plot this point on the graph.]]>
+            </text4>
+        </task>
+        <feedback>
+            <!--Incorrect feedback-->
+            <text1>
+                <!--incorrect 1-->
+                <![CDATA[That's not right.<br/><br/>First, type in the number of teeth the belt gear has.<br/><br/>Then type in how many times it rotates when the driver rotates once.]]>
+            </text1>
+            <text2>
+                <!--incorrect 2-->
+                <![CDATA[That's still not right.<br/><br/>Check the counter under the belt gear. How many teeth<br>does it have? How many times did it turn?<br/><br/>Type these numbers into the table.]]>
+            </text2>
+            <text3>
+                <!--incorrect 3-->
+                <![CDATA[That still wasn't correct.<br/><br/>The driver has <b>30</b> teeth and the belt gear has <b>5</b>. When<br>the driver rotates <b>once</b>, the belt gear rotates <b>6</b> times.<br/><br/>I've put the correct numbers in the table for you.]]>
+            </text3>
+        </feedback>
+    </section2>
+    <section3>
+        <!--Section 3. 6 tooth cog-->
+        <task>
+            <!--Task instruction and correct feedback-->
+            <text1>
+                <!--next task-->
+                <![CDATA[That's right!<br/><br/>The driver has <b>30</b> teeth and the belt gear has <b>6</b>. When<br>the driver rotates <b>once</b>, the belt gear rotates <b>5</b> times.]]>
+            </text1>
+            <!--optional endings for both correct feedback and 3rd incorrect-->
+            <text2>
+                <![CDATA[<br/><br/>Now choose a different-sized gear and see what happens.]]>
+            </text2>
+            <text3>
+                <![CDATA[<br/><br/>Now you have tested four different gears.<br/>•	Can you see a pattern in the numbers?<br/>•	Can you see a pattern in the graph?]]>
+            </text3>
+            <!-- new second text -->
+            <text4>
+                <![CDATA[Let's plot this point on the graph.]]>
+            </text4>
+        </task>
+        <feedback>
+            <!--Incorrect feedback-->
+            <text1>
+                <!--incorrect 1-->
+                <![CDATA[That's not right.<br/><br/>First, type in the number of teeth the belt gear has.<br/><br/>Then type in how many times it rotates when the driver rotates once.]]>
+            </text1>
+            <text2>
+                <!--incorrect 2-->
+                <![CDATA[That's still not right.<br/><br/>Check the counter under the belt gear. How many teeth<br>does it have? How many times did it turn?<br/><br/>Type these numbers into the table.]]>
+            </text2>
+            <text3>
+                <!--incorrect 3-->
+                <![CDATA[That still wasn't correct.<br/><br/>The driver has <b>30</b> teeth and the belt gear has <b>6</b>. When<br>the driver rotates <b>once</b>, the belt gear rotates <b>5</b> times.<br/><br/>I've put the correct numbers in the table for you.]]>
+            </text3>
+        </feedback>
+    </section3>
+    <section4>
+        <!--Section 3. 10 tooth cog-->
+        <task>
+            <!--Task instruction and correct feedback-->
+            <text1>
+                <!--next task-->
+                <![CDATA[That's right!<br/><br/>The driver has <b>30</b> teeth and the belt gear has <b>10</b>. When<br>the driver rotates <b>once</b>, the belt gear rotates <b>3</b> times.]]>
+            </text1>
+            <!--optional endings for both correct feedback and 3rd incorrect-->
+            <text2>
+                <![CDATA[<br/><br/>Now choose a different-sized gear and see what happens.]]>
+            </text2>
+            <text3>
+                <![CDATA[<br/><br/>Now you have tested four different gears.<br/>•	Can you see a pattern in the numbers?<br/>•	Can you see a pattern in the graph?]]>
+            </text3>
+            <!-- new second text -->
+            <text4>
+                <![CDATA[Let's plot this point on the graph.]]>
+            </text4>
+        </task>
+        <feedback>
+            <!--Incorrect feedback-->
+            <text1>
+                <!--incorrect 1-->
+                <![CDATA[That's not right.<br/><br/>First, type in the number of teeth the belt gear has.<br/><br/>Then type in how many times it rotates when the driver rotates once.]]>
+            </text1>
+            <text2>
+                <!--incorrect 2-->
+                <![CDATA[That's still not right.<br/><br/>Check the counter under the belt gear. How many teeth<br>does it have? How many times did it turn?<br/><br/>Type these numbers into the table.]]>
+            </text2>
+            <text3>
+                <!--incorrect 3-->
+                <![CDATA[That still wasn't correct.<br/><br/>The driver has <b>30</b> teeth and the belt gear has <b>10</b>. When<br>the driver rotates <b>once</b>, the belt gear rotates <b>3</b> times.<br/><br/>I've put the correct numbers in the table for you.]]>
+            </text3>
+        </feedback>
+    </section4>
+    <section5>
+        <!--Section 5. 15 tooth cog-->
+        <task>
+            <!--Task instruction and correct feedback-->
+            <text1>
+                <!--next task-->
+                <![CDATA[That's right!<br/><br/>The driver has <b>30</b> teeth and the belt gear has <b>15</b>. When<br>the driver rotates <b>once</b>, the belt gear rotates <b>2</b> times.]]>
+            </text1>
+            <!--optional endings for both correct feedback and 3rd incorrect-->
+            <text2>
+                <![CDATA[<br/><br/>Now choose a different-sized gear and see what happens.]]>
+            </text2>
+            <text3>
+                <![CDATA[<br/><br/>Now you have tested four different gears.<br/>•	Can you see a pattern in the numbers?<br/>•	Can you see a pattern in the graph?]]>
+            </text3>
+            <!-- new second text -->
+            <text4>
+                <![CDATA[Let's plot this point on the graph.]]>
+            </text4>
+        </task>
+        <feedback>
+            <!--Incorrect feedback-->
+            <text1>
+                <!--incorrect 1-->
+                <![CDATA[That's not right.<br/><br/>First, type in the number of teeth the belt gear has.<br/><br/>Then type in how many times it rotates when the driver rotates once.]]>
+            </text1>
+            <text2>
+                <!--incorrect 2-->
+                <![CDATA[That's still not right.<br/><br/>Check the counter under the belt gear. How many teeth<br>does it have? How many times did it turn?<br/><br/>Type these numbers into the table.]]>
+            </text2>
+            <text3>
+                <!--incorrect 3-->
+                <![CDATA[That still wasn't correct.<br/><br/>The driver has <b>30</b> teeth and the belt gear has <b>15</b>. When<br>the driver rotates <b>once</b>, the belt gear rotates <b>2</b> times.<br/><br/>I've put the correct numbers in the table for you.]]>
+            </text3>
+        </feedback>
+    </section5>
+    <section6>
+        <!--Section 6. the last remaining cog prediction-->
+        <task>
+            <!--Task instruction and correct feedback-->
+            <text1>
+                <!--task-->
+                <![CDATA[There is one gear left to try.<br/><br/>But first, look at the pattern of numbers in the table. Can you predict how many times this gear will rotate for <b>one</b> rotation of the driver?<br/><br/>Type your prediction in the table.]]>
+            </text1>
+            <text2>
+                <!--correct text-->
+                <![CDATA[Your prediction was correct!]]>
+            </text2>
+            <text3>
+                <!--next task-->
+                <![CDATA[Look at the table and the graph. Notice how the fewer teeth the belt gear has, the more times it turns? This makes the belt move faster.<br/><br/>All four of these gears are <i>smaller</i> than the driver. What do you think will happen when the belt gear is <i>bigger</i> than the driver?]]>
+            </text3>
+        </task>
+        <feedback>
+            <!--Incorrect feedback-->
+            <text1>
+                <!--5 teeth cog-->
+                <![CDATA[Your prediction was incorrect.<br/>We can find the right number by dividing the number of driver teeth by the number of belt gear teeth:<br/>30 ÷ 5 = 6]]>
+            </text1>
+            <text2>
+                <!--6 teeth cog-->
+                <![CDATA[Your prediction was incorrect.<br/>We can find the right number by dividing the number of driver teeth by the number of belt gear teeth:<br/>30 ÷ 6 = 5]]>
+            </text2>
+            <text3>
+                <!--10 teeth cog-->
+                <![CDATA[Your prediction was incorrect.<br/>We can find the right number by dividing the number of driver teeth by the number of belt gear teeth:<br/>30 ÷ 10 = 3]]>
+            </text3>
+            <text4>
+                <!--15 teeth cog-->
+                <![CDATA[Your prediction was incorrect.<br/><br/>We can find the right number by dividing the number of driver teeth by the number of belt gear teeth:<br/>30 ÷ 15 = 2]]>
+            </text4>
+			<!-- part 2 -->
+			 <text1>
+                <!--5 teeth cog-->
+                <![CDATA[The belt gear rotates <b>6</b> times for every rotation of the driver.<br/><br/>I've put the correct numbers in the table for you.]]>
+            </text1>
+            <text2>
+                <!--6 teeth cog-->
+                <![CDATA[The belt gear rotates <b>5</b> times for every rotation of the driver.<br/><br/>I've put the correct numbers in the table for you.]]>
+            </text2>
+            <text3>
+                <!--10 teeth cog-->
+                <![CDATA[The belt gear rotates <b>3</b> times for every rotation of the driver.<br/><br/>I've put the correct numbers in the table for you.]]>
+            </text3>
+            <text4>
+                <!--15 teeth cog-->
+                <![CDATA[The belt gear rotates <b>2</b> times for every <b>one</b> rotation of the driver.<br/><br/>I've put the correct numbers in the table for you.]]>
+            </text4>
+			
+        </feedback>
+    </section6>
+    <!-- larger cogs sections-->
+    <section7>
+        <!--overall task-->
+        <task>
+            <!--Task instruction and correct feedback-->
+            <text1>
+                <![CDATA[Here is a new set of bigger gears.<br/><br/>Choose one and select <b>Replace</b> to test it.<br/><br/>Select <b>Rotate once</b> and type the results in the table. You may need to type in a fraction.]]>
+            </text1>
+            <text2>
+                <![CDATA[Choose another belt gear and select <b>Replace</b> to test it.<br>]]>
+            </text2>
+        </task>
+    </section7>
+    <section8>
+        <!--Section 5. 45 tooth cog-->
+        <task>
+            <!--Task instruction and correct feedback-->
+            <text1>
+                <!--next task-->
+                <![CDATA[That's right!<br/><br/>The driver has <b>30</b> teeth and the belt gear has <b>45</b>. When<br>the driver rotates <b>once,</b> the belt gear turns <font face='PIXymbolsFractions' size = '16'>W/D</font> of a full<br/>rotation (which is the simplified way of writing <font face='PIXymbolsFractions' size = '16'>EP/FG</font>). ]]>
+            </text1>
+            <!--optional endings for both correct feedback and 3rd incorrect-->
+            <text2>
+                <![CDATA[<br/><br/>Let's see what happens with another gear that is larger than the driver.]]>
+            </text2>
+            <text3>
+                <![CDATA[<br/><br/>There's only one gear left to test.<br/><br/>Can you see a pattern in the numbers in the table so far?]]>
+            </text3>
+            <!-- feedback for if different but correct text is entered -->
+            <text4>
+                <![CDATA[That's right!<br/><br/>This can also be written as <font face='PIXymbolsFractions' size = '16'>W/D</font>. The simplified fraction has been put in the table.<br/><br/>]]>
+            </text4>
+            <!--additional feedback for graph plot -->
+            <text5>
+                <![CDATA[Now look at the graph to see this result plotted. Notice that the number of belt gear rotations is less than one.]]>
+            </text5>
+        </task>
+        <feedback>
+            <!--Incorrect feedback-->
+            <text1>
+                <!--incorrect 1-->
+                <![CDATA[That's not correct.<br/><br/>First, type in the number of teeth on the belt gear.<br/><br/>Then type in how many times it rotates when the driver rotates once.]]>
+            </text1>
+            <text2>
+                <!--incorrect 2-->
+                <![CDATA[That's still not right.<br/><br/>Check the counter under the belt gear. How many teeth does it have? What fraction of a full rotation does it make?<br/><br/>Type these numbers into the table.]]>
+            </text2>
+            <text3>
+                <!--incorrect 3-->
+                <![CDATA[That still wasn't correct.<br/><br/>The driver has <b>30</b> teeth and the belt gear has <b>45</b>. When<br>the driver rotates <b>once,</b> the belt gear turns <font face='PIXymbolsFractions' size = '16'>W/D</font> of a full<br/>rotation (which is the simplified way of writing <font face='PIXymbolsFractions' size = '16'>EP/FG</font>). ]]>
+            </text3>
+        </feedback>
+    </section8>
+    <section9>
+        <!--Section 5. 60 tooth cog-->
+        <task>
+            <!--Task instruction and correct feedback-->
+            <text1>
+                <!--next task-->
+                <![CDATA[That's right!<br/><br/>The driver has <b>30</b> teeth and the belt gear has <b>60</b>. When<br>the driver rotates <b>once,</b> the belt gear turns <font face='PIXymbolsFractions' size = '16'>Q/S</font> of a full<br/>rotation (which is the simplified way of writing <font face='PIXymbolsFractions' size = '16'>EP/H:</font>). ]]>
+            </text1>
+            <!--optional endings for both correct feedback and 3rd incorrect-->
+            <text2>
+                <![CDATA[<br/><br/>Let's see what happens with another gear that is larger than the driver.]]>
+            </text2>
+            <text3>
+                <![CDATA[<br/><br/>There's only one gear left to test.<br/>Can you see a pattern in the numbers in the table so far?]]>
+            </text3>
+            <!-- feedback for if different but correct text is entered -->
+            <text4>
+                <![CDATA[That's right!<br/><br/>This can also be written as <font face='PIXymbolsFractions' size = '16'>Q/S</font>. The simplified fraction has been put in the table.<br/><br/>]]>
+            </text4>
+            <!--additional feedback for graph plot -->
+            <text5>
+                <![CDATA[Now look at the graph to see this result plotted. Notice that the number of belt gear rotations is less than one.]]>
+            </text5>
+        </task>
+        <feedback>
+            <!--Incorrect feedback-->
+            <text1>
+                <!--incorrect 1-->
+                <![CDATA[That's not correct.<br/><br/>First, type in the number of teeth on the belt gear.<br/><br/>Then type in how many times it rotates when the driver rotates once.]]>
+            </text1>
+            <text2>
+                <!--incorrect 2-->
+                <![CDATA[That's still not right.<br/><br/>Check the counter under the belt gear. How many teeth does it have? What fraction of a full rotation does it make?<br/><br/>Type these numbers into the table.]]>
+            </text2>
+            <text3>
+                <!--incorrect 3-->
+                <![CDATA[That still wasn't correct.<br/><br/>The driver has <b>30</b> teeth and the belt gear has <b>60</b>. When<br>the driver rotates <b>once,</b> the belt gear turns <font face='PIXymbolsFractions' size = '16'>Q/S</font></b> of a full<br/>rotation (which is the simplified way of writing <font face='PIXymbolsFractions' size = '16'>EP/H:</font>). ]]>
+            </text3>
+        </feedback>
+    </section9>
+    <section10>
+        <!--Section 5. 75 tooth cog-->
+        <task>
+            <!--Task instruction and correct feedback-->
+            <text1>
+                <!--next task-->
+                <![CDATA[That's right!<br/><br/>The driver has <b>30</b> teeth and the belt gear has <b>75</b>. When the driver rotates <b>once,</b> the belt gear turns <font face='PIXymbolsFractions' size = '16'>W/G</font> of a full rotation (which is the simplified way of writing <font face='PIXymbolsFractions' size = '16'>EP/JG</font>). ]]>
+            </text1>
+            <!--optional endings for both correct feedback and 3rd incorrect-->
+            <text2>
+                <![CDATA[<br/><br/>Let's see what happens with another gear that is larger than the driver.]]>
+            </text2>
+            <text3>
+                <![CDATA[<br/><br/>There's only one gear left to test.<br/><br/>Can you see a pattern in the numbers in the table so far?]]>
+            </text3>
+            <!-- feedback for if different but correct text is entered -->
+            <text4>
+                <![CDATA[That's right!<br/><br/>This can also be written as <font face='PIXymbolsFractions' size = '16'>W/G</font>. The simplified fraction has been put in the table.<br/><br/> ]]>
+            </text4>
+            <!--additional feedback for graph plot -->
+            <text5>
+                <![CDATA[Now look at the graph to see this result plotted. Notice that the number of belt gear rotations is less than one.]]>
+            </text5>
+        </task>
+        <feedback>
+            <!--Incorrect feedback-->
+            <text1>
+                <!--incorrect 1-->
+                <![CDATA[That's not correct.<br/><br/>First, type in the number of teeth on the belt gear.<br/><br/>Then type in how many times it rotates when the driver rotates once.]]>
+            </text1>
+            <text2>
+                <!--incorrect 2-->
+                <![CDATA[That's still not right.<br/><br/>Check the counter under the belt gear. How many teeth does it have? What fraction of a full rotation does it make?<br/><br/>Type these numbers into the table.]]>
+            </text2>
+            <text3>
+                <!--incorrect 3-->
+                <![CDATA[That still wasn't correct.<br/><br/>The driver has <b>30</b> teeth and the belt gear has <b>75</b>. When<br/>the driver rotates <b>once,</b> the belt gear turns <font face='PIXymbolsFractions' size = '16'>W/G</font> of a full<br/>rotation (which is the simplified way of writing <font face='PIXymbolsFractions' size = '16'>EP/JG</font>). ]]>
+            </text3>
+        </feedback>
+    </section10>
+    <section11>
+        <!--Section 5. 90 tooth cog-->
+        <task>
+            <!--Task instruction and correct feedback-->
+            <text1>
+                <!--next task-->
+                <![CDATA[That's right!<br/><br/>The driver has <b>30</b> teeth and the belt gear has <b>90</b>. When<br>the driver rotates <b>once,</b> the belt gear turns <font face='PIXymbolsFractions' size = '16'>Q/D</font> of a full<br/>rotation (which is the simplified way of writing <font face='PIXymbolsFractions' size = '16'>EP/L:</font>).]]>
+            </text1>
+            <!--optional endings for both correct feedback and 3rd incorrect-->
+            <text2>
+                <![CDATA[<br/><br/>Let's see what happens with another gear that is larger than the driver.]]>
+            </text2>
+            <text3>
+                <![CDATA[<br/><br/>There's only one gear left to test. Can you see a pattern in the numbers in the table so far?]]>
+            </text3>
+            <!-- feedback for if different but correct text is entered -->
+            <text4>
+                <![CDATA[That's right!<br/><br/>This can also be written as <font face='PIXymbolsFractions' size = '16'>Q/D</font>. The simplified fraction has been put in the table.<br/><br/>]]>
+            </text4>
+            <!--additional feedback for graph plot -->
+            <text5>
+                <![CDATA[Now look at the graph to see this result plotted. Notice that the number of belt gear rotations is less than one.]]>
+            </text5>
+        </task>
+        <feedback>
+            <!--Incorrect feedback-->
+            <text1>
+                <!-- TODO: replace all apostrophes marked -->
+                <!--incorrect 1-->
+                <![CDATA[That's not correct.<br/><br/>First, type in the number of teeth on the belt gear.<br/><br/>Then type in how many times it rotates when the driver rotates once.]]>
+            </text1>
+            <text2>
+                <!--incorrect 2-->
+                <![CDATA[That's still not right.<br/><br/>Check the counter under the belt gear. How many teeth does it have? What fraction of a full rotation does it make?<br/><br/>Type these numbers into the table.]]>
+            </text2>
+            <text3>
+                <!--incorrect 3-->
+                <![CDATA[That still wasn't correct.<br/><br/>The driver has <b>30</b> teeth and the belt gear has <b>90</b>. When<br>the driver rotates <b>once,</b> the belt gear turns <font face='PIXymbolsFractions' size = '16'>Q/D</font> of a full<br/>rotation (which is the simplified way of writing <font face='PIXymbolsFractions' size = '16'>EP/L:</font>). ]]>
+            </text3>
+        </feedback>
+    </section11>
+    <section12>
+        <!-- prediction section using remaining cog-->
+        <task>
+            <!--Task instruction and correct feedback-->
+            <text1>
+                <!--task-->
+                <![CDATA[There is one gear left to try.<br/><br/>But first, look at the pattern of numbers in the table. Can you predict how many times this gear will rotate for <b>one</b> rotation of the driver?<br/><br/>Type your prediction in the table.]]>
+            </text1>
+            <text2>
+                <!--next task (correct)-->
+                <![CDATA[Excellent! Your prediction was correct!<br/><br/>Look at the table and the graph. Notice how the more teeth the belt gear has, the less of a full rotation it makes? This makes the belt move more slowly.]]>
+            </text2>
+            <text3>
+                <!--next task (incorrect)-->
+                <![CDATA[<br/>I've put the correct numbers in the table for you. Notice how the more teeth the belt gear has, the less of a full rotation it makes? This makes the belt move more slowly.]]>
+            </text3>
+            <text4>
+                <!-- second half of both text 2 and 3 (doesnt fit)-->
+                <![CDATA[So the number of rotations (and the speed of the belt) depends on the size of the driver compared to the size of the belt gear. That comparison can be described as their ratio.<br/><br/>Now you're ready to make some biscuits!]]>
+            </text4>
+        </task>
+        <feedback>
+            <!--Incorrect feedback-->
+            <text1>
+                <!--45 teeth cog-->
+                <![CDATA[Your prediction was incorrect.<br/><br/>To work it out, divide the number of driver teeth by the number of belt gear teeth: 30 ÷ 45 = <font face='PIXymbolsFractions' size = '16'>EP/FG</font> or <font face='PIXymbolsFractions' size = '16'>W/D</font><br/><br/>The belt gear turns <font face='PIXymbolsFractions' size = '16'>W/D</font> for <b>one</b> full rotation of the driver.]]>
+            </text1>
+            <text2>
+                <!--60 teeth cog-->
+                <![CDATA[Your prediction was incorrect.<br/><br/>To work it out, divide the number of driver teeth by the number of belt gear teeth: 30 ÷ 60 = <font face='PIXymbolsFractions' size = '16'>EP/H:</font> or <font face='PIXymbolsFractions' size = '16'>Q/S</font><br/><br/>The belt gear turns <font face='PIXymbolsFractions' size = '16'>Q/S</font> for <b>one</b> full rotation of the driver.]]>
+            </text2>
+            <text3>
+                <!--75 teeth cog-->
+                <![CDATA[Your prediction was incorrect.<br/><br/>To work it out, divide the number of driver teeth by the number of belt gear teeth: 30 ÷ 75 = <font face='PIXymbolsFractions' size = '16'>EP/JG</font> or <font face='PIXymbolsFractions' size = '16'>W/G</font><br/><br/>The belt gear turns <font face='PIXymbolsFractions' size = '16'>W/G</font> for <b>one</b> full rotation of the driver.]]>
+            </text3>
+            <text4>
+                <!--90 teeth cog-->
+                <![CDATA[Your prediction was incorrect.<br/><br/>To work it out, divide the number of driver teeth by the number of belt gear teeth: 30 ÷ 90 = <font face='PIXymbolsFractions' size = '16'>EP/L:</font> or <font face='PIXymbolsFractions' size = '16'>Q/D</font><br/><br/>The belt gear turns <font face='PIXymbolsFractions' size = '16'>Q/D</font> for <b>one</b> full rotation of the driver.]]>
+            </text4>
+        </feedback>
+    </section12>
+    <section13>
+        <!--bake biscuits section-->
+        <task>
+            <!--Task instruction and correct feedback-->
+            <text1>
+                <!--task-->
+                <![CDATA[It's time to bake the first batch of biscuits!<br/><br/>The belt needs to move the gingerbread men at a certain speed so that they bake properly. For this batch, the belt gear must rotate <b>6</b> times for every <b>one</b> rotation of the driver. This driver has <b>48</b> teeth.<br/><br/>Choose the right belt gear and select <b>Replace</b> to test it.]]>
+            </text1>
+            <text2>
+                <!-- well done text-->
+                <![CDATA[Well done! The biscuits are perfect.<br/><br/>You chose the gear that has a <b>six-to-one</b> ratio with the driver. That means it turns <b>6</b> times for <b>1</b> full rotation of the driver.<br/><br/>Let's try another recipe.]]>
+            </text2>
+            <!-- second bit of task text (now merged with first)-->
+            <text3>
+                <![CDATA[The driver has <b>48</b> teeth.<br/><br/>Choose a belt gear that will rotate <b>6</b> times for <b>one</b> turn of the driver.<br/><br/>Then select <b>Replace</b> to test it.]]>
+            </text3>
+        </task>
+        <feedback>
+            <!--Incorrect feedback-->
+            <text1>
+                <!--Too fast 1 -->
+                <![CDATA[Oops! The dough didn't get cooked because that gear made the belt go through the oven too fast.<br/><br/>You need a gear that rotates <b>6</b> times for each rotation of the driver. The driver has <b>48</b> teeth.]]>
+            </text1>
+            <text2>
+                <!--Too slow 1 -->
+                <![CDATA[Oh no! The biscuits are burnt because that gear made the belt go through the oven too slowly.<br/><br/>You need a gear that rotates <b>6</b> times for each rotation of the driver. The driver has <b>48</b> teeth.]]>
+            </text2>
+            <text1>
+                <!--Too fast 2 -->
+                <![CDATA[That's still not right.<br/><br/>That gear is too small, so it makes the belt go too fast.<br/><br/>You need a gear that rotates <b>6</b> times for each rotation of the driver. The driver has <b>48</b> teeth.]]>
+            </text1>
+            <text2>
+                <!--Too slow 2 -->
+                <![CDATA[That's still not right.<br/><br/>That gear is too large, so it makes the belt go too slowly.<br/><br/>You need a gear that rotates <b>6</b> times for each rotation of the driver. The driver has <b>48</b> teeth.]]>
+            </text2>
+            <text1>
+                <!--Too fast 3 -->
+                <![CDATA[That's still not right.<br/>To find the gear that rotates <b>6</b> times for each rotation of the driver, you need to work out which one has <b>6</b> times less teeth. If the driver has <b>48</b> teeth, divide this by <b>6</b>: 48 ÷ 6 = 8<br/>Let's try the gear with <b>8</b> teeth.]]>
+            </text1>
+            <text2>
+                <!--Too slow 3  (same as too fast)-->
+                <![CDATA[That's still not right.<br/>To find the gear that rotates <b>6</b> times for each rotation of the driver, you need to work out which one has <b>6</b> times less teeth. If the driver has 48 teeth, divide this by 6: 48 ÷ 6 = 8<br/><br/>Let's try the gear with <b>8</b> teeth.]]>
+            </text2>
+        </feedback>
+    </section13>
+    <section14>
+        <!--bake biscuits section 2-->
+        <task>
+            <!--Task instruction and correct feedback-->
+            <text1>
+                <!--task-->
+                <![CDATA[Now let’s try a new recipe.<br/><br/>This time, the biscuits will only bake correctly if the belt gear makes <font face='PIXymbolsFractions' size = '16'>E/F</font> of a rotation for every <b>one</b> rotation of the driver. This driver has <b>60</b> teeth.<br/><br/>Choose the right belt gear and then select <b>Replace</b> to test it.]]>
+            </text1>
+            <text2>
+                <!-- well done text-->
+                <![CDATA[Well done! The biscuits are perfect.<br/><br/>You chose the gear that has a <font face='PIXymbolsFractions' size = '16'>E/F</font>-to-one ratio with the driver. That means it turns <font face='PIXymbolsFractions' size = '16'>E/F</font> times for <b>1</b> full rotation of the driver.<br/><br/>Let's try another recipe.]]>
+            </text2>
+            <!-- second bit of task text -->
+            <text3>
+                <![CDATA[The driver has <b>24</b> teeth.<br/><br/>Choose a belt gear that will rotate <font face='PIXymbolsFractions' size = '16'>E/F</font> times for <b>one</b> turn of the driver.<br/><br/>Then select <b>Replace</b> to test it.]]>
+            </text3>
+        </task>
+        <feedback>
+            <!--Incorrect feedback-->
+            <text1>
+                <!--Too fast 1 -->
+                <![CDATA[Oops! That gear made the belt go through the oven too fast.<br/><br/>You need a gear that makes <font face='PIXymbolsFractions' size = '16'>E/F</font> of a full rotation for each rotation of the driver. The driver has <b>60</b> teeth.]]>
+            </text1>
+            <text2>
+                <!--Too slow 1 -->
+                <![CDATA[Oh no! The biscuits are burnt because that gear made the belt go through the oven too slowly.<br/><br/>You need a gear that makes <font face='PIXymbolsFractions' size = '16'>E/F</font> of a full rotation for each rotation of the driver. The driver has <b>60</b> teeth.]]>
+            </text2>
+            <text1>
+                <!--Too fast 2 -->
+                <![CDATA[That's still not right.<br/><br/>That gear is too small, so it makes the belt go too fast.<br/><br/>You need a gear that makes <font face='PIXymbolsFractions' size = '16'>E/F</font> of a full rotation for each rotation of the driver. The driver has <b>60</b> teeth.]]>
+            </text1>
+            <text2>
+                <!--Too slow 2 -->
+                <![CDATA[That's still not right.<br/><br/>That gear is too large, so it makes the belt go too slowly.<br/><br/>You need a gear that makes <font face='PIXymbolsFractions' size = '16'>E/F</font> of a full rotation for each rotation of the driver. The driver has <b>60</b> teeth.]]>
+            </text2>
+            <text1>
+                <!--Too fast 3 -->
+				<![CDATA[That’s still not right.<br/><br/>The correct gear must make <font face='PIXymbolsFractions' size = '16'>E/F</font> of a full rotation for each rotation of the driver. So you need the gear where <b>60</b> is <font face='PIXymbolsFractions' size = '16'>E/F</font> of the number of its teeth.]]>
+            </text1>
+            <text2>
+                <!--Too slow 3 -->
+				<![CDATA[That’s still not right.<br/><br/>The correct gear must make <font face='PIXymbolsFractions' size = '16'>E/F</font> of a full rotation for each rotation of the driver. So you need the gear where <b>60</b> is <font face='PIXymbolsFractions' size = '16'>E/F</font> of the number of its teeth.]]>
+            </text2>
+			<text3>
+                <!-- second part of previous two texts -->
+				<![CDATA[You can work this out with the equation:<br/><font face='PIXymbolsFractions' size = '16'>YP</font><b>/x</b> = <font face='PIXymbolsFractions' size = '16'>E/F</font><br/>So <b>x</b> = 80 (because 60 is <font face='PIXymbolsFractions' size = '16'>E/F</font> of 80).<br/><br/>Let’s try the gear with <b>80</b> teeth.]]>
+            </text3>
+        </feedback>
+    </section14>
+    <section15>
+        <!--bake biscuits section 3-->
+        <task>
+            <!--Task instruction and correct feedback-->
+            <text1>
+                <!--task-->
+                <![CDATA[And finally, our last baking task!<br/><br/>For these biscuits, the belt gear must rotate <b>1</b><font face='PIXymbolsFractions' size = '16'>Q/F</font> times for every <b>one</b> rotation of the driver. This driver has <b>45</b> teeth.<br/><br/>Choose the right belt gear and then select <b>Replace</b> to test it.]]>
+            </text1>
+            <text2>
+                <!-- well done text-->
+                <![CDATA[Well done!<br/><br/>These biscuits are perfect.<br/><br/>Your choice shows a good understanding of the way the number of teeth in each gear affects the number of rotations of the gears.]]>
+            </text2>
+        </task>
+        <feedback>
+            <!--Incorrect feedback-->
+            <text1>
+                <!--Too fast 1 -->
+                <![CDATA[Oops! That gear made the belt go through the oven too fast.<br/><br/>The belt gear must rotate <b>1</b><font face='PIXymbolsFractions' size = '16'>Q/F</font> times for every <b>one</b> rotation of the driver. The driver has <b>45</b> teeth.]]>
+            </text1>
+            <text2>
+                <!--Too slow 1 -->
+                <![CDATA[Oh no! The biscuits are burnt because that gear made the belt go through the oven too slowly.<br/><br/>You need a gear that rotates <b>1</b><font face='PIXymbolsFractions' size = '16'>Q/F</font> times for each rotation of the driver. The driver has <b>45</b> teeth.]]>
+            </text2>
+            <text3>
+                <!--Too fast 2 -->
+                <![CDATA[That's still not right.<br/><br/>That gear is too small, so it makes the belt go too fast.<br/><br/>The belt gear must rotate <b>1</b><font face='PIXymbolsFractions' size = '16'>Q/F</font> times for every <b>one</b> rotation of the driver. The driver has <b>45</b> teeth.
+]]>
+            </text3>
+            <text4>
+                <!--Too slow 2 -->
+                <![CDATA[That's still not right.<br/><br/>That gear is too large, so it makes the belt go too slowly.<br/><br/>You need a gear that rotates <b>1</b><font face='PIXymbolsFractions' size = '16'>Q/F</font> times for each rotation of the driver. The driver has <b>45</b> teeth.]]>
+            </text4>
+            <text5>
+                <!--Too fast 3 -->
+                <!--<![CDATA[That's still not right.<br/><br/>To find the gear that rotates 1<font face='PIXymbolsFractions' size = '16'>Q/F</font> times for each rotation of the driver, you need to work out which one has 1<font face='PIXymbolsFractions' size = '16'>Q/F</font> times less teeth.]]>-->
+				<![CDATA[That’s still not right.<br/><br/>The correct gear must make <b>1</b><font face='PIXymbolsFractions' size = '16'>Q/F</font> of a full rotation for each rotation of the driver. That can also be written as <font face='PIXymbolsFractions' size = '16'>T/F</font>. So you need the gear where <b>45</b> is <font face='PIXymbolsFractions' size = '16'>T/F</font> of the number of its teeth.]]>
+            </text5>
+            <text6>
+                <!--Too slow 3 -->
+				<!--<![CDATA[That's still not right.<br/><br/>To find the gear that rotates 1<font face='PIXymbolsFractions' size = '16'>Q/F</font> times for each rotation of the driver, you need to work out which one has 1<font face='PIXymbolsFractions' size = '16'>Q/F</font> times less teeth.]]>-->
+				<![CDATA[That’s still not right.<br/><br/>The correct gear must make <b>1</b><font face='PIXymbolsFractions' size = '16'>Q/F</font> of a full rotation for each rotation of the driver. That can also be written as <font face='PIXymbolsFractions' size = '16'>T/F</font>. So you need the gear where <b>45</b> is <font face='PIXymbolsFractions' size = '16'>T/F</font> of the number of its teeth.]]>
+            </text6>
+            <text7>
+                <!-- second part of previous two texts -->
+                <!--<![CDATA[<br/>If the driver has 45 teeth, divide this by 1<font face='PIXymbolsFractions' size = '16'>Q/F</font>:<br/>65 ÷ 1<font face='PIXymbolsFractions' size = '16'>Q/F</font> = 36<br/><br/>Let's try the gear with <b>36</b> teeth.]]>-->
+				<![CDATA[You can work this out with the equation:<br/><font face='PIXymbolsFractions' size = '16'>RT</font><b>/x</b> = <font face='PIXymbolsFractions' size = '16'>T/F</font><br/>So <b>x</b> = 36 (because 45 is 1<font face='PIXymbolsFractions' size = '16'>Q/F</font> of 36).<br/><br/>Let’s try the gear with <b>36</b> teeth.]]>
+            </text7>
+        </feedback>
+    </section15>
+    <section16>
+        <task>
+            <text1>
+                <![CDATA[That's great! We've finished all the baking.<br/><br/>Thank you for helping me work out the right gears to use for each recipe.<br/><br/>Bye!]]>
+            </text1>
+        </task>
+    </section16>
+    <introSection>
+        <text>
+            <![CDATA[Welcome to my biscuit factory! I need you to help me operate this machine, which moves biscuits through the oven to bake them.<br><br>Let's see how it works.]]>
+        </text>
+        <text>
+            <![CDATA[See the wheels with teeth? They're called gears.<br><br>The teeth fit together so that when one gear turns, it makes the other gear turn.]]>
+        </text>
+        <text>
+            <![CDATA[This gear is called the driver.<br><br>That's because it drives the other gear.]]>
+        </text>
+        <text>
+            <![CDATA[This gear is called the belt gear because it moves the belt that carries the biscuits.]]>
+        </text>
+        <text>
+            <![CDATA[The counter counts the number of rotations (turns) of each gear.<br><br>It also tells how many teeth each gear has. These gears both have 30 teeth.]]>
+        </text>
+        <text>
+            <![CDATA[This is the belt that brings the dough to the biscuit-cutter and then carries the biscuits to the oven.]]>
+        </text>
+        <text>
+            <![CDATA[I put my delicious dough here, where it pours onto the belt.]]>
+        </text>
+        <text>
+            <![CDATA[Then this tool cuts the dough into the right shapes.<br><br>Today's biscuits are gingerbread men!]]>
+        </text>
+        <text>
+            <![CDATA[Finally, the dough is carried through the oven on the belt. The slower the belt moves, the longer the dough gets cooked.<br><br>But what controls the speed? That's where the gears come in.]]>
+        </text>
+        <text>
+            <![CDATA[Mmmm, perfectly cooked gingerbread men!<br><br>Are you ready to help me choose the correct gears to bake perfect biscuits?]]>
+        </text>
+        <text>
+            <![CDATA[Before we bake biscuits, we need to choose the right gears. Remember that the gears control the speed of the belt, and therefore how long the dough gets cooked.<br><br>Let's see how the two gears work when they both have the same number of teeth.]]>
+        </text>
+    </introSection>
+</content>

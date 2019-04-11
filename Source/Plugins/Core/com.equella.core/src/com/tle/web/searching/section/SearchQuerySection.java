@@ -661,7 +661,7 @@ public class SearchQuerySection
 
   @NonNullByDefault(false)
   public class SearchQueryModel extends AbstractResetFiltersQuerySection.AbstractQuerySectionModel {
-    @Bookmarked(name = "sw")
+    @Bookmarked(name = "sw", stateful = false)
     private boolean submitWizard;
 
     @Bookmarked(name = "editquery", parameter = "editquery", supported = true)

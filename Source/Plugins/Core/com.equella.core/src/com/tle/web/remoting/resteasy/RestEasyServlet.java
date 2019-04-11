@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.fasterxml.jackson.module.scala.DefaultScalaModule;
 import com.tle.common.interfaces.equella.I18NSerializer;
@@ -34,6 +35,7 @@ import com.tle.core.plugins.PluginTracker;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.DebugSettings;
 import com.tle.web.api.LegacyContentApi;
+import com.tle.web.api.cloudprovider.CloudProviderApi;
 import com.tle.web.api.institution.AclResource;
 import com.tle.web.api.institution.GdprResource;
 import com.tle.web.api.item.SelectionApi;
@@ -107,6 +109,8 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
     PluginBeanLocator coreLocator = pluginService.getBeanLocator("com.equella.core");
     Set<Class<?>> classes = application.getClasses();
 
+    registry.addSingletonResource(new CloudProviderApi());
+    classes.add(CloudProviderApi.class);
     registry.addSingletonResource(new SettingsResource());
     classes.add(SettingsResource.class);
     registry.addSingletonResource(new LanguageResource());
@@ -240,7 +244,7 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
     restModule.addSerializer(new I18NSerializer());
     mapper.registerModule(restModule);
     mapper.registerModule(new JavaTypesModule());
-
+    mapper.registerModule(new JavaTimeModule());
     mapper.registerModule(new RestStringsModule());
     mapper.setSerializationInclusion(Include.NON_ABSENT);
 

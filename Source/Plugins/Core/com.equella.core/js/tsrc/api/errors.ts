@@ -1,5 +1,4 @@
 import v4 = require("uuid/v4");
-import { AxiosError } from "axios";
 
 export interface ErrorResponse {
   id: string;
@@ -19,7 +18,7 @@ export const generateNewErrorID = (
   };
 };
 
-export const generateFromAxiosError = (error: AxiosError): ErrorResponse => {
+export const generateFromError = (error: Error): ErrorResponse => {
   return {
     id: v4(),
     error: error.name,

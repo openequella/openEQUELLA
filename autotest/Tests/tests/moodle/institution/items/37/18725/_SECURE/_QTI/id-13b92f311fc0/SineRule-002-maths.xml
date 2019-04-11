@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assessmentItem toolVersion="0.5.1" toolName="Mathqurate" title="Apply the sine rule"
+    timeDependent="false" identifier="SineRule-CalcFormQ-001" adaptive="false"
+    xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+    xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1" xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:lip="http://www.imsglobal.org/xsd/imslip_v1p0"
+    xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:m="http://www.w3.org/1998/Math/MathML"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <responseDeclaration identifier="RESPONSE1" cardinality="single" baseType="float"/>
+    <responseDeclaration identifier="RESPONSE2" cardinality="single" baseType="string"/>
+    <outcomeDeclaration baseType="identifier" cardinality="single" identifier="FEEDBACK"/>
+    <outcomeDeclaration baseType="float" cardinality="single" identifier="SCORE"
+        normalMaximum="10.0" normalMinimum="0.0">
+        <defaultValue>
+            <value>0.0</value>
+        </defaultValue>
+    </outcomeDeclaration>
+    <templateDeclaration identifier="A" cardinality="single" baseType="integer"
+        paramVariable="false" mathVariable="true"/>
+    <templateDeclaration identifier="B" cardinality="single" baseType="integer"
+        paramVariable="false" mathVariable="true"/>
+    <templateDeclaration identifier="a" cardinality="single" baseType="integer"
+        paramVariable="false" mathVariable="true"/>
+    <templateDeclaration identifier="fAns" cardinality="single" baseType="float"
+        paramVariable="false" mathVariable="true"/>
+    <templateDeclaration identifier="fPiOver180" cardinality="single" baseType="float"
+        paramVariable="false" mathVariable="true"/>
+    <templateProcessing>
+        <!-- now do the randomisation and mathematical calculations, using maxima -->
+        <setTemplateValue identifier="A">
+            <randomInteger min="5" max="100"/>
+        </setTemplateValue>
+        <setTemplateValue identifier="B">
+            <randomInteger min="5" max="70"/>
+        </setTemplateValue>
+        <setTemplateValue identifier="a">
+            <randomInteger min="5" max="50"/>
+        </setTemplateValue>
+        <setTemplateValue identifier="fPiOver180">
+            <divide>
+                <mathConstant name="pi"/>
+                <baseValue baseType="integer">180</baseValue>
+            </divide>
+        </setTemplateValue>
+        <setTemplateValue identifier="fAns">
+            <divide>
+                <product>
+                    <variable identifier="a"/>
+                    <mathOperator name="sin">
+                        <product>
+                            <subtract>
+                                <baseValue baseType="integer">180</baseValue>
+                                <sum>
+                                    <variable identifier="A"/>
+                                    <variable identifier="B"/>
+                                </sum>
+                            </subtract>
+                            <variable identifier="fPiOver180"/>
+                        </product>
+                    </mathOperator>
+                </product>
+                <mathOperator name="sin">
+                    <product>
+                        <variable identifier="A"/>
+                        <variable identifier="fPiOver180"/>
+                    </product>
+                </mathOperator>
+            </divide>
+        </setTemplateValue>
+        <setTemplateValue identifier="fAns">
+            <divide>
+                <round>
+                    <product>
+                        <variable identifier="fAns"/>
+                        <baseValue baseType="integer">100</baseValue>
+                    </product>
+                </round>
+                <baseValue baseType="integer">100</baseValue>
+            </divide>
+        </setTemplateValue>
+    </templateProcessing>
+    <itemBody>
+        <p>In triangle ABC, a=<printedVariable identifier="a"/>cm, A=<printedVariable identifier="A"
+        />&#xb0; and B=<printedVariable identifier="B"/>&#xb0;. Find the length of side c.</p>
+        <div class="">
+            <textEntryInteraction responseIdentifier="RESPONSE1" expectedLength="20"/>
+            <textEntryInteraction responseIdentifier="RESPONSE2" expectedLength="5"/>
+        </div>
+        <div class="">
+            <feedbackInline id="feedbackInline3" showHide="show" outcomeIdentifier="FEEDBACK"
+                identifier="Correct"> OK </feedbackInline></div>
+        <div class="">
+            <feedbackInline id="feedbackInline2" showHide="show" outcomeIdentifier="FEEDBACK"
+                identifier="Partial"> Not far off... </feedbackInline></div>
+        <div class="">
+            <feedbackInline id="feedbackInline2" showHide="show" outcomeIdentifier="FEEDBACK"
+                identifier="Incorrect"> No, but you have the units correct. </feedbackInline></div>
+        <div class="">
+            <feedbackInline id="feedbackInline2" showHide="show" outcomeIdentifier="FEEDBACK"
+                identifier="OKNoUnits"> OK, but the units are incorrect</feedbackInline></div>
+        <div class="">
+            <feedbackInline id="feedbackInline2" showHide="show" outcomeIdentifier="FEEDBACK"
+                identifier="PartialNoUnits"> Not far off, but the units are incorrect </feedbackInline></div>
+        <div class="">
+            <feedbackInline id="feedbackInline2" showHide="show" outcomeIdentifier="FEEDBACK"
+                identifier="IncorrectNoUnits"> Incorrect, and the units are incorrect </feedbackInline></div>
+    </itemBody>
+    <responseProcessing>
+        <responseCondition>
+            <responseIf>
+                <isNull>
+                    <variable identifier="RESPONSE1"/>
+                </isNull>
+                <setOutcomeValue identifier="SCORE">
+                    <baseValue baseType="float">0</baseValue>
+                </setOutcomeValue>
+            </responseIf>
+            <responseElse>
+                <responseCondition>
+                    <responseIf>
+                        <equal toleranceMode="absolute" tolerance="0.01">
+                            <variable identifier="RESPONSE1"/>
+                            <variable identifier="fAns"/>
+                        </equal>
+                        <responseCondition>
+                            <responseIf>
+                                <or>
+                                    <match>
+                                        <variable identifier="RESPONSE2"/>
+                                        <baseValue baseType="string">cm</baseValue>
+                                    </match>
+                                    <match>
+                                        <variable identifier="RESPONSE2"/>
+                                        <baseValue baseType="string">cms</baseValue>
+                                    </match>
+                                </or>
+                                <setOutcomeValue identifier="FEEDBACK">
+                                    <baseValue baseType="identifier">Correct</baseValue>
+                                </setOutcomeValue>
+                                <setOutcomeValue identifier="SCORE">
+                                    <baseValue baseType="float">10.0</baseValue>
+                                </setOutcomeValue>
+                            </responseIf>
+                            <responseElse>
+                                <setOutcomeValue identifier="FEEDBACK">
+                                    <baseValue baseType="identifier">OKNoUnits</baseValue>
+                                </setOutcomeValue>
+                                <setOutcomeValue identifier="SCORE">
+                                    <baseValue baseType="float">9.0</baseValue>
+                                </setOutcomeValue>
+                            </responseElse>
+                        </responseCondition>
+                    </responseIf>
+                    <responseElseIf>
+                        <equal toleranceMode="absolute" tolerance="0.05">
+                            <variable identifier="RESPONSE1"/>
+                            <variable identifier="fAns"/>
+                        </equal>
+                        <responseCondition>
+                            <responseIf>
+                                <or>
+                                    <match>
+                                        <variable identifier="RESPONSE2"/>
+                                        <baseValue baseType="string">cm</baseValue>
+                                    </match>
+                                    <match>
+                                        <variable identifier="RESPONSE2"/>
+                                        <baseValue baseType="string">cms</baseValue>
+                                    </match>
+                                </or>
+                                <setOutcomeValue identifier="FEEDBACK">
+                                    <baseValue baseType="identifier">Partial</baseValue>
+                                </setOutcomeValue>
+                                <setOutcomeValue identifier="SCORE">
+                                    <baseValue baseType="float">5.0</baseValue>
+                                </setOutcomeValue>
+                            </responseIf>
+                            <responseElse>
+                                <setOutcomeValue identifier="FEEDBACK">
+                                    <baseValue baseType="identifier">PartialNoUnits</baseValue>
+                                </setOutcomeValue>
+                                <setOutcomeValue identifier="SCORE">
+                                    <baseValue baseType="float">4.0</baseValue>
+                                </setOutcomeValue>
+                            </responseElse>
+                        </responseCondition>
+                    </responseElseIf>
+                    <responseElse>
+                        <responseCondition>
+                            <responseIf>
+                                <or>
+                                    <match>
+                                        <variable identifier="RESPONSE2"/>
+                                        <baseValue baseType="string">cm</baseValue>
+                                    </match>
+                                    <match>
+                                        <variable identifier="RESPONSE2"/>
+                                        <baseValue baseType="string">cms</baseValue>
+                                    </match>
+                                </or>
+                                <setOutcomeValue identifier="FEEDBACK">
+                                    <baseValue baseType="identifier">Incorrect</baseValue>
+                                </setOutcomeValue>
+                                <setOutcomeValue identifier="SCORE">
+                                    <baseValue baseType="float">1.0</baseValue>
+                                </setOutcomeValue>
+                            </responseIf>
+                            <responseElse>
+                                <setOutcomeValue identifier="FEEDBACK">
+                                    <baseValue baseType="identifier">IncorrectNoUnits</baseValue>
+                                </setOutcomeValue>
+                                <setOutcomeValue identifier="SCORE">
+                                    <baseValue baseType="float">0.0</baseValue>
+                                </setOutcomeValue>
+                            </responseElse>
+                        </responseCondition>
+                    </responseElse>
+                </responseCondition>
+                <setOutcomeValue identifier="completionStatus">
+                    <baseValue baseType="identifier">                                            completed                                        </baseValue>
+                </setOutcomeValue>
+            </responseElse>
+        </responseCondition>
+    </responseProcessing>
+</assessmentItem>

@@ -1,0 +1,50 @@
+{
+  "uuid" : "66c96d10-d9e3-4abc-933d-ac618595c9b9",
+  "version" : 1,
+  "name" : "MyResourcesApiTest - Draft",
+  "nameStrings" : {
+    "en_AU" : "MyResourcesApiTest - Draft"
+  },
+  "metadata" : "<xml><item><name>MyResourcesApiTest - Draft</name><description/></item></xml>",
+  "status" : "draft",
+  "createdDate" : "2014-05-12T15:43:46.414+10:00",
+  "modifiedDate" : "2014-05-12T15:43:51.314+10:00",
+  "owner" : {
+    "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  },
+  "collaborators" : [ ],
+  "collection" : {
+    "uuid" : "3d31ac33-261e-404c-a157-487e51716268"
+  },
+  "rating" : -1.0,
+  "attachments" : [ ],
+  "navigation" : {
+    "hideUnreferencedAttachments" : false,
+    "showSplitOption" : false,
+    "nodes" : [ ]
+  },
+  "drm" : { },
+  "_export" : {
+    "exportVersion" : "1.0",
+    "history" : [ {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:46.414+10:00",
+      "type" : "edit",
+      "state" : "draft"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:51.314+10:00",
+      "type" : "edit",
+      "state" : "draft"
+    } ],
+    "statuses" : [ ],
+    "moderating" : false
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/item/66c96d10-d9e3-4abc-933d-ac618595c9b9/1"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "uuid" : "95c92f26-c08e-40a0-8fc4-45251977aade",
+  "version" : 1,
+  "name" : "SearchApiTest - Other collection draft",
+  "nameStrings" : {
+    "en_AU" : "SearchApiTest - Other collection draft"
+  },
+  "metadata" : "<xml><item><name>SearchApiTest - Other collection draft</name></item></xml>",
+  "status" : "draft",
+  "createdDate" : "2014-05-12T15:43:46.639+10:00",
+  "modifiedDate" : "2014-05-12T15:43:50.785+10:00",
+  "owner" : {
+    "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  },
+  "collaborators" : [ ],
+  "collection" : {
+    "uuid" : "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c"
+  },
+  "rating" : -1.0,
+  "attachments" : [ ],
+  "navigation" : {
+    "hideUnreferencedAttachments" : false,
+    "showSplitOption" : false,
+    "nodes" : [ ]
+  },
+  "drm" : { },
+  "_export" : {
+    "exportVersion" : "1.0",
+    "history" : [ {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:46.639+10:00",
+      "type" : "edit",
+      "state" : "draft"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:50.785+10:00",
+      "type" : "edit",
+      "state" : "draft"
+    } ],
+    "statuses" : [ ],
+    "moderating" : false
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/item/95c92f26-c08e-40a0-8fc4-45251977aade/1"
+  }
+}

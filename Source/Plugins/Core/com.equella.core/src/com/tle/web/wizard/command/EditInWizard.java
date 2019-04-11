@@ -19,8 +19,10 @@ package com.tle.web.wizard.command;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;
+import com.tle.web.wizard.WebWizardPage;
 import com.tle.web.wizard.WizardService;
 import com.tle.web.wizard.impl.WizardCommand;
+import com.tle.web.wizard.section.PagesSection;
 import com.tle.web.wizard.section.WizardSectionInfo;
 import com.tle.web.workflow.tasks.ModerationService;
 import javax.inject.Inject;
@@ -52,6 +54,12 @@ public class EditInWizard extends WizardCommand {
   public void execute(SectionInfo info, WizardSectionInfo winfo, String data) throws Exception {
     wizardService.reload(winfo.getWizardState(), true);
     moderationService.setEditing(info, true);
+    // validate mandatory fields when moderating items
+    PagesSection ps = info.lookupSection(PagesSection.class);
+    for (WebWizardPage page : winfo.getWizardState().getPages()) {
+      wizardService.ensureInitialisedPage(info, page, ps.getReloadFunction(), true);
+    }
+    info.forceRedirect();
   }
 
   @Override

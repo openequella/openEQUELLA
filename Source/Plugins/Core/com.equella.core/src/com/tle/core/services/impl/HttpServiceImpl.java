@@ -28,6 +28,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
+import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -39,11 +40,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.services.HttpService;
 import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Response;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -76,12 +73,7 @@ import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpOptions;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.params.HttpClientParams;
@@ -233,14 +225,37 @@ public class HttpServiceImpl implements HttpService {
     return client;
   }
 
-  private HttpResponse exec(HttpClient client, HttpRequestBase method, Cookies cookies)
+  private HttpResponse exec(HttpClient client, HttpRequestBase request, Cookies cookies)
       throws Exception {
-    addCookies(method, cookies);
+    addCookies(request, cookies);
 
-    LOGGER.debug(method.getMethod() + "ing " + method.getURI());
+    LOGGER.debug(request.getMethod() + "ing " + request.getURI());
 
-    final HttpResponse response = client.execute(method);
-    extractCookies(method.getURI(), response, cookies);
+    if (LOGGER.isTraceEnabled()) {
+      // Log request in RFC 2616 format
+      final StringBuilder trace = new StringBuilder(request.getMethod());
+      trace.append(" ").append(request.getURI()).append(" HTTP/1.1").append("\n");
+      for (Header header : request.getAllHeaders()) {
+        trace.append(header.getName()).append(": ").append(header.getValue()).append("\n");
+      }
+      if (request instanceof HttpEntityEnclosingRequestBase) {
+        final HttpEntityEnclosingRequestBase entityRequest =
+            (HttpEntityEnclosingRequestBase) request;
+        final HttpEntity entity = entityRequest.getEntity();
+
+        if (entity.isRepeatable()) {
+          final String stringContent =
+              CharStreams.toString(new InputStreamReader(entity.getContent(), Constants.UTF8));
+          trace.append("\n").append(stringContent);
+        } else {
+          trace.append("\n[Non repeatable stream content]");
+        }
+      }
+      LOGGER.trace(trace.toString());
+    }
+
+    final HttpResponse response = client.execute(request);
+    extractCookies(request.getURI(), response, cookies);
 
     return response;
   }
@@ -353,11 +368,7 @@ public class HttpServiceImpl implements HttpService {
   }
 
   /**
-   * @param url
-   * @param method
-   * @param params
-   * @param postHtml If method == post and postHtml == true, then set the content type to
-   *     'application/x-www-form-urlencoded; charset=UTF-8'
+   * @param request
    * @return null if the method can't be handled
    */
   @SuppressWarnings("deprecation")

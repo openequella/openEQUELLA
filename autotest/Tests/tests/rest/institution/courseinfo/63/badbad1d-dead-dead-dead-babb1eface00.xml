@@ -1,0 +1,48 @@
+<com.tle.beans.item.cal.request.CourseInfo>
+  <id>116675</id>
+  <uuid>badbad1d-dead-dead-dead-babb1eface00</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-04-07 16:34:50.95</dateModified>
+  <dateCreated class="sql-timestamp">2014-04-07 15:22:28.973</dateCreated>
+  <description>
+    <id>116676</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116677</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Guaranteed to have the UUID - badbad1d-dead-dead-dead-babb1eface00, and no activations. At least no persisted activations</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>116678</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116679</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>babble-face-oh-oh - expected by ActivationApiTest</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <students>0</students>
+  <from class="sql-timestamp">2014-01-01 11:00:00.0</from>
+  <until class="sql-timestamp">2025-12-31 11:00:00.0</until>
+  <citation>Generic</citation>
+  <departmentName>Babblengineering</departmentName>
+  <courseType>i</courseType>
+  <code>babbleface</code>
+  <versionSelection>INSTITUTION_DEFAULT</versionSelection>
+</com.tle.beans.item.cal.request.CourseInfo>

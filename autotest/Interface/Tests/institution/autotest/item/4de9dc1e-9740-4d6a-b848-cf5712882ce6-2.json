@@ -1,0 +1,85 @@
+{
+  "uuid" : "4de9dc1e-9740-4d6a-b848-cf5712882ce6",
+  "version" : 2,
+  "name" : "ItemApiViewTest - DRM and versioning v2",
+  "nameStrings" : {
+    "en_AU" : "ItemApiViewTest - DRM and versioning v2"
+  },
+  "metadata" : "<xml><item><name>ItemApiViewTest - DRM and versioning v2</name></item></xml>",
+  "status" : "live",
+  "createdDate" : "2014-05-12T15:43:45.800+10:00",
+  "modifiedDate" : "2014-05-12T15:43:49.561+10:00",
+  "owner" : {
+    "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  },
+  "collaborators" : [ ],
+  "collection" : {
+    "uuid" : "9a961a09-0c6a-b24f-b05b-eb21a696528b"
+  },
+  "rating" : -1.0,
+  "attachments" : [ ],
+  "navigation" : {
+    "hideUnreferencedAttachments" : false,
+    "showSplitOption" : false,
+    "nodes" : [ ]
+  },
+  "drm" : {
+    "options" : {
+      "drmPageUuid" : "8a1d54b7-3f82-42e5-b5ad-1895149fe1a3",
+      "hideLicencesFromOwner" : false,
+      "showLicenceCount" : false,
+      "allowSummary" : false,
+      "ownerMustAccept" : false,
+      "studentsMustAcceptIfInCompilation" : true,
+      "previewAllowed" : false,
+      "attributionOfOwnership" : false,
+      "enforceAttribution" : true,
+      "contentOwners" : [ {
+        "userId" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58",
+        "name" : "Auto Test [AutoTest]",
+        "email" : "auto@test.com",
+        "owner" : true
+      } ],
+      "usages" : [ "DISPLAY", "EXECUTE", "PLAY", "PRINT" ],
+      "termsOfAgreement" : "Verifiable use statement",
+      "requireAcceptanceFrom" : "* ",
+      "restriction" : {
+        "educationalSector" : false,
+        "maximumUsage" : 0
+      }
+    }
+  },
+  "_export" : {
+    "exportVersion" : "1.0",
+    "history" : [ {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:45.801+10:00",
+      "type" : "edit",
+      "state" : "draft"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:45.825+10:00",
+      "type" : "statechange",
+      "state" : "live"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:49.561+10:00",
+      "type" : "edit",
+      "state" : "live"
+    } ],
+    "statuses" : [ ],
+    "moderating" : false,
+    "liveApprovalDate" : "2014-05-12T15:43:45.825+10:00",
+    "start" : "2014-05-12T15:45:23.539+10:00",
+    "lastAction" : "2014-05-12T15:43:45.825+10:00"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/item/4de9dc1e-9740-4d6a-b848-cf5712882ce6/2"
+  }
+}

@@ -76,7 +76,6 @@ public class Cancel extends WizardCommand {
   public void execute(SectionInfo info, WizardSectionInfo winfo, String data) throws Exception {
     final WizardState state = winfo.getWizardState();
     final boolean locked = state.isLockedForEditing();
-
     winfo.cancelEdit();
 
     if (moderationService.isModerating(info)) {
@@ -105,6 +104,7 @@ public class Cancel extends WizardCommand {
         }
       }
     }
+    info.forceRedirect();
   }
 
   private List<ItemDefinition> enumerateCreatable(SectionInfo info) {

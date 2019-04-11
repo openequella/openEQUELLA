@@ -1,0 +1,49 @@
+<com.tle.beans.entity.Schema>
+  <id>116562</id>
+  <uuid>87e848e3-675b-4ec6-8008-1326a5a45368</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2011-04-06 14:29:00.357</dateModified>
+  <dateCreated class="sql-timestamp">2011-04-06 14:29:00.357</dateCreated>
+  <name>
+    <id>116563</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116564</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Attachment Schema</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>identity.xslt</filename>
+      <type>OAI_DC</type>
+    </com.tle.beans.entity.SchemaTransform>
+  </expTransforms>
+  <impTransforms>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>merlotdemo.xslt</filename>
+      <type>MERLOT</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>lorndemo.xslt</filename>
+      <type>LORN</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>ednademo.xslt</filename>
+      <type>EDNA</type>
+    </com.tle.beans.entity.SchemaTransform>
+  </impTransforms>
+  <itemNamePath>/item/name</itemNamePath>
+  <itemDescriptionPath>/item/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;name field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;attachments&gt;&lt;attachment1 type=&quot;text&quot;/&gt;&lt;attachment2 type=&quot;text&quot;/&gt;&lt;attachment3 type=&quot;text&quot;/&gt;&lt;attachment4 type=&quot;text&quot;/&gt;&lt;attachment5 type=&quot;text&quot;/&gt;&lt;/attachments&gt;&lt;/item&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>

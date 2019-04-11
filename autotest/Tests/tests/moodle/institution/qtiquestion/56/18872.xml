@@ -1,0 +1,26 @@
+<com.tle.common.qti.entity.QtiAssessmentItem>
+  <id>18872</id>
+  <uuid>ef610201-6bed-413c-90c8-db2276d229e3</uuid>
+  <identifier>ShortAnswer-extText-postcard</identifier>
+  <title>Writing a Postcard - again</title>
+  <itemBody>uk.ac.ed.ph.jqtiplus.node.content.ItemBody@7e52a388(
+    blocks =&gt; java.util.ArrayList[
+        0 =&gt; &lt;p&gt;@1112625990(xPath=/assessmentItem[@identifier=&quot;ShortAnswer-extText-postcard&quot;]/itemBody[1]/p[1],location=XmlSourceLocationInformation@69323aad(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-1ccd6e04685f/ShortAnswer-extText-postcard.xml,lineNumber=12,columnNumber=6))
+        1 =&gt; &lt;div&gt;@1621780943(xPath=/assessmentItem[@identifier=&quot;ShortAnswer-extText-postcard&quot;]/itemBody[1]/div[1],location=XmlSourceLocationInformation@5408c69d(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-1ccd6e04685f/ShortAnswer-extText-postcard.xml,lineNumber=13,columnNumber=8))
+        2 =&gt; &lt;extendedTextInteraction&gt;@203921541(xPath=/assessmentItem[@identifier=&quot;ShortAnswer-extText-postcard&quot;]/itemBody[1]/extendedTextInteraction[1],location=XmlSourceLocationInformation@7b8e49fe(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-1ccd6e04685f/ShortAnswer-extText-postcard.xml,lineNumber=21,columnNumber=22))
+        3 =&gt; &lt;p&gt;@983302673(xPath=/assessmentItem[@identifier=&quot;ShortAnswer-extText-postcard&quot;]/itemBody[1]/p[2],location=XmlSourceLocationInformation@584bc826(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-1ccd6e04685f/ShortAnswer-extText-postcard.xml,lineNumber=24,columnNumber=6))
+        4 =&gt; &lt;p&gt;@1463903251(xPath=/assessmentItem[@identifier=&quot;ShortAnswer-extText-postcard&quot;]/itemBody[1]/p[3],location=XmlSourceLocationInformation@6114826(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-1ccd6e04685f/ShortAnswer-extText-postcard.xml,lineNumber=25,columnNumber=6))
+    ]
+    id =&gt; null
+    classAttr =&gt; null
+    lang =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    label =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    parent =&gt; &lt;assessmentItem&gt;@552596122(xPath=/assessmentItem[@identifier=&quot;ShortAnswer-extText-postcard&quot;],location=XmlSourceLocationInformation@69206d5a(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-1ccd6e04685f/ShortAnswer-extText-postcard.xml,lineNumber=7,columnNumber=24))(systemId=_SECURE/_QTI/id-1ccd6e04685f/ShortAnswer-extText-postcard.xml)
+    attributes =&gt; uk.ac.ed.ph.jqtiplus.attribute.AttributeList@294b8c29
+    sourceLocation =&gt; XmlSourceLocationInformation@46e48efd(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-1ccd6e04685f/ShortAnswer-extText-postcard.xml,lineNumber=11,columnNumber=12)
+    rootNode =&gt; &lt;assessmentItem&gt;@552596122(xPath=/assessmentItem[@identifier=&quot;ShortAnswer-extText-postcard&quot;],location=XmlSourceLocationInformation@69206d5a(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-1ccd6e04685f/ShortAnswer-extText-postcard.xml,lineNumber=7,columnNumber=24))(systemId=_SECURE/_QTI/id-1ccd6e04685f/ShortAnswer-extText-postcard.xml)
+    nodeGroups =&gt; uk.ac.ed.ph.jqtiplus.group.NodeGroupList@546fc636
+    qtiClassName =&gt; itemBody
+)
+</itemBody>
+  <adaptive>false</adaptive>
+  <timeDependent>false</timeDependent>
+</com.tle.common.qti.entity.QtiAssessmentItem>

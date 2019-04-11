@@ -1,0 +1,80 @@
+<com.tle.beans.item.Item>
+  <id>769587</id>
+  <uuid>c90cf8a9-7155-4814-9af4-47fa443df57d</uuid>
+  <version>1</version>
+  <owner>andrew.gibb</owner>
+  <dateModified class="sql-timestamp">2012-10-26 09:26:33.856</dateModified>
+  <dateCreated class="sql-timestamp">2012-10-26 09:26:33.858</dateCreated>
+  <dateForIndex class="sql-timestamp">2012-11-14 13:30:59.86</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="b28f1ffe-2008-4f5e-d559-83c8acd79316"/>
+  <collaborators/>
+  <badUrls/>
+  <moderation>
+    <id>769590</id>
+    <liveApprovalDate class="sql-timestamp">2012-10-26 09:26:33.856</liveApprovalDate>
+    <start class="sql-timestamp">2012-10-29 10:43:46.054</start>
+    <lastAction class="sql-timestamp">2012-10-26 09:26:33.856</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>769595</id>
+      <user>andrew.gibb</user>
+      <date class="sql-timestamp">2012-10-26 09:26:33.856</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>769596</id>
+      <user>andrew.gibb</user>
+      <date class="sql-timestamp">2012-10-26 09:26:33.856</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>769597</id>
+      <user>andrew.gibb</user>
+      <date class="sql-timestamp">2012-10-26 09:26:33.856</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>769592</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>769594</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>LDAPTest - Role2</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

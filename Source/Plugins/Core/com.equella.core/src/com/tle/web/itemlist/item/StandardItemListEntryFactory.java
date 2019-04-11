@@ -24,6 +24,8 @@ import com.tle.core.plugins.PluginTracker;
 import com.tle.core.plugins.PluginTracker.ContainsParamFilter;
 import com.tle.core.plugins.PluginTracker.NotContainsParamFilter;
 import com.tle.core.services.item.FreetextResult;
+import com.tle.web.search.base.ContextableSearchSection;
+import com.tle.web.searching.SearchIndexModifier;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import java.util.ArrayList;
@@ -42,7 +44,7 @@ public class StandardItemListEntryFactory {
   @Inject private Provider<StandardItemListEntry> entryFactory;
 
   public StandardItemListEntry createItemListItem(
-      SectionInfo info, Item item, FreetextResult result) {
+      SectionInfo info, Item item, FreetextResult result, int index, int available) {
     StandardItemListEntry itemListItem = null;
     List<ItemListEntryFactoryExtension> extensions = factoryTracker.getBeanList();
     for (ItemListEntryFactoryExtension extension : extensions) {
@@ -54,6 +56,10 @@ public class StandardItemListEntryFactory {
     }
     if (itemListItem == null) {
       itemListItem = entryFactory.get();
+    }
+    String searchPageUri = info.getTreeAttribute(ContextableSearchSection.SEARCHPAGE_ATTR);
+    if (searchPageUri != null) {
+      itemListItem.addModifier(new SearchIndexModifier(searchPageUri, index, available));
     }
     itemListItem.setInfo(info);
     itemListItem.setItem(item);

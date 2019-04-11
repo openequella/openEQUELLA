@@ -1,0 +1,179 @@
+<com.tle.common.workflow.Workflow>
+  <id>29290</id>
+  <uuid>24f52670-a07f-536f-6674-5292d0d9e218</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2009-08-27 15:48:22.983</dateModified>
+  <dateCreated class="sql-timestamp">2009-08-27 14:18:26.157</dateCreated>
+  <name>
+    <id>29291</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>29292</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Sibling reject points in Decision nodes</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <movelive>false</movelive>
+  <nodes>
+    <com.tle.common.workflow.node.DecisionNode>
+      <id>29293</id>
+      <uuid>1a725bb5-a99e-8336-3902-b92965d1fbda</uuid>
+      <name>
+        <id>29294</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>29295</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>Does this item require moderation?</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </name>
+      <rejectPoint>false</rejectPoint>
+      <parent class="com.tle.common.workflow.node.SerialNode">
+        <id>29296</id>
+        <uuid>fe9c9560-37f3-3f14-7385-59a5e98bc823</uuid>
+        <name>
+          <id>29297</id>
+          <strings>
+            <entry>
+              <string>en_GB</string>
+              <com.tle.beans.entity.LanguageString>
+                <id>29298</id>
+                <locale>en_GB</locale>
+                <priority>2</priority>
+                <text>Start</text>
+                <bundle reference="../../../.."/>
+              </com.tle.beans.entity.LanguageString>
+            </entry>
+          </strings>
+        </name>
+        <rejectPoint>false</rejectPoint>
+        <childIndex>0</childIndex>
+      </parent>
+      <childIndex>0</childIndex>
+      <script>var bRet = false; 
+if( xml.contains(&apos;/radio_button1&apos;, &apos;yes&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+    </com.tle.common.workflow.node.DecisionNode>
+    <com.tle.common.workflow.node.SerialNode reference="../com.tle.common.workflow.node.DecisionNode/parent"/>
+    <com.tle.common.workflow.node.WorkflowItem>
+      <id>29302</id>
+      <uuid>0bac2199-05c5-94ac-740d-060438672c43</uuid>
+      <name>
+        <id>29303</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>29304</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>Moderation Step 1</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </name>
+      <rejectPoint>true</rejectPoint>
+      <parent class="com.tle.common.workflow.node.DecisionNode" reference="../../com.tle.common.workflow.node.DecisionNode"/>
+      <childIndex>0</childIndex>
+      <users>
+        <string>d58b8087-7d64-2115-c187-20e5eb890743</string>
+      </users>
+      <groups/>
+      <roles/>
+      <unanimousacceptance>false</unanimousacceptance>
+      <escalate>false</escalate>
+      <escalationdays>0</escalationdays>
+      <allowEditing>false</allowEditing>
+      <movelive>false</movelive>
+      <moveliveAccept>false</moveliveAccept>
+      <priority>20</priority>
+      <actionDays>0</actionDays>
+      <autoAssigns/>
+    </com.tle.common.workflow.node.WorkflowItem>
+    <com.tle.common.workflow.node.DecisionNode>
+      <id>29305</id>
+      <uuid>aac84a7d-b7e8-5de7-d0c1-f01002aedc44</uuid>
+      <name>
+        <id>29306</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>29307</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>Further Moderation?</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </name>
+      <rejectPoint>false</rejectPoint>
+      <parent class="com.tle.common.workflow.node.DecisionNode" reference="../../com.tle.common.workflow.node.DecisionNode"/>
+      <childIndex>1</childIndex>
+      <script>var bRet = false; 
+if( xml.contains(&apos;/radio_button2&apos;, &apos;yes&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+    </com.tle.common.workflow.node.DecisionNode>
+    <com.tle.common.workflow.node.WorkflowItem>
+      <id>29299</id>
+      <uuid>4fc4cef4-f22d-da0b-083c-2d7065d11264</uuid>
+      <name>
+        <id>29300</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>29301</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>Moderation Step 2</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </name>
+      <rejectPoint>false</rejectPoint>
+      <parent class="com.tle.common.workflow.node.DecisionNode" reference="../../com.tle.common.workflow.node.DecisionNode[2]"/>
+      <childIndex>0</childIndex>
+      <users>
+        <string>0203b997-afa7-fb34-3793-57be9ee04524</string>
+      </users>
+      <groups/>
+      <roles/>
+      <unanimousacceptance>false</unanimousacceptance>
+      <escalate>false</escalate>
+      <escalationdays>0</escalationdays>
+      <allowEditing>false</allowEditing>
+      <movelive>false</movelive>
+      <moveliveAccept>false</moveliveAccept>
+      <priority>20</priority>
+      <actionDays>0</actionDays>
+      <autoAssigns/>
+    </com.tle.common.workflow.node.WorkflowItem>
+  </nodes>
+</com.tle.common.workflow.Workflow>

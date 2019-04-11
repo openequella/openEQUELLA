@@ -35,9 +35,9 @@ import javax.inject.Inject;
 /** @author aholland */
 @SecureOnCall(priv = "COPYRIGHT_ITEM")
 public class RolloverOperation extends AbstractBulkableActivationOperation {
-  private long courseId;
-  private Date from;
-  private Date until;
+  private final long courseId;
+  private final Date from;
+  private final Date until;
   private boolean cancel;
   private boolean sameCourse;
   private boolean rolloverDates;
@@ -91,14 +91,15 @@ public class RolloverOperation extends AbstractBulkableActivationOperation {
     } catch (CloneNotSupportedException e) {
       throw new RuntimeException(e);
     }
-    if (cancel && request.getUntil().after(from)) {
+    Date newFrom = rolledOverRequest.getFrom();
+    if (cancel && request.getUntil().after(newFrom)) {
       // If new start date < now then deactivate old
       // otherwise set end date of old activation to start date of new
       // activation
-      if (from.before(new Date())) {
+      if (newFrom.before(new Date())) {
         activationService.deactivateByUuid(request.getUuid());
       } else {
-        request.setUntil(from);
+        request.setUntil(newFrom);
         dao.update(request);
       }
     }

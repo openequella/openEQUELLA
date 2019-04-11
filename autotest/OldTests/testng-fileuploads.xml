@@ -1,0 +1,11 @@
+
+<suite name="File upload tests" parallel="instances" data-provider-thread-count="4" thread-count="4" configfailurepolicy="continue">
+    <test name="File tests">
+        <classes>
+            <class name="com.tle.webtests.test.contribute.controls.PackageAndNavigationTest" />
+            <class name="com.tle.webtests.test.contribute.controls.BannedExtensionTest" />
+            <class name="com.tle.webtests.test.contribute.controls.attachments.FileAttachmentControlTest" />
+            <class name="com.tle.webtests.test.contribute.controls.attachments.AttachmentControlTest" />
+        </classes>
+    </test>
+</suite>

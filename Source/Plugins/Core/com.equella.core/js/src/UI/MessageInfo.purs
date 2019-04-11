@@ -2,7 +2,6 @@ module OEQ.UI.MessageInfo where
 
 import Prelude
 
-import Data.Nullable (Nullable)
 import Data.TSCompat (OneOf, OptionRecord, StringConst)
 import Data.TSCompat.Class (class IsTSEq)
 import Effect (Effect)

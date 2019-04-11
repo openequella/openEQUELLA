@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+	identifier="text_entry-Lycidas" title="FIB-Multiple - Lycidas" adaptive="false"
+	timeDependent="false">
+	<responseDeclaration identifier="RESPONSE1" cardinality="single" baseType="string">
+		<correctResponse>
+			<value>fresh woods</value>
+		</correctResponse>
+		<mapping defaultValue="0">
+			<mapEntry mapKey="fresh woods" mappedValue="1"/>
+			<mapEntry mapKey="fresh fields" mappedValue="0.5"/>
+		</mapping>
+	</responseDeclaration>
+	<responseDeclaration identifier="RESPONSE2" cardinality="single" baseType="string">
+		<correctResponse>
+			<value>pastures new</value>
+		</correctResponse>
+		<mapping defaultValue="0">
+			<mapEntry mapKey="pastures new" mappedValue="1"/>
+			<mapEntry mapKey="pastures green" mappedValue="0.5"/>
+		</mapping>
+	</responseDeclaration>
+	<outcomeDeclaration identifier="SCORE" cardinality="single" baseType="float" normalMaximum="2.0"/>
+	<outcomeDeclaration identifier="FEEDBACK" cardinality="single" baseType="identifier"/>
+	<outcomeDeclaration identifier="FEEDBACK1" cardinality="single" baseType="identifier"/>
+	<outcomeDeclaration identifier="FEEDBACK2" cardinality="single" baseType="identifier"/>
+	<itemBody>
+		<p>Complete this excerpt from "Lycidas" by John Milton: </p>
+		<blockquote>
+			<p>"At last he rose, and twitched his mantle blue: <br/> To-morrow to
+					<textEntryInteraction responseIdentifier="RESPONSE1" expectedLength="15"/>, and
+					<textEntryInteraction responseIdentifier="RESPONSE2" expectedLength="15"/>."</p>
+		</blockquote>
+		<feedbackBlock outcomeIdentifier="FEEDBACK1" showHide="show" identifier="Correct1">
+			<p> Your first input is correct. </p>
+		</feedbackBlock>
+		<feedbackBlock outcomeIdentifier="FEEDBACK1" showHide="show" identifier="Incorrect1">
+			<p> No, the correct answer for the first box is "fresh woods". </p>
+		</feedbackBlock>
+		<feedbackBlock outcomeIdentifier="FEEDBACK2" showHide="show" identifier="Correct2">
+			<p> Your second input is correct. </p>
+		</feedbackBlock>
+		<feedbackBlock outcomeIdentifier="FEEDBACK2" showHide="show" identifier="Incorrect2">
+			<p> No, the correct answer for the second box is "pastures new". </p>
+		</feedbackBlock>
+	</itemBody>
+	<responseProcessing>
+		<responseCondition>
+			<responseIf>
+				<isNull>
+					<variable identifier="RESPONSE1"/>
+				</isNull>
+				<setOutcomeValue identifier="SCORE">
+					<baseValue baseType="float">0.0</baseValue>
+				</setOutcomeValue>
+			</responseIf>
+			<responseElse>
+				<setOutcomeValue identifier="SCORE">
+					<mapResponse identifier="RESPONSE1"/>
+				</setOutcomeValue>
+				<responseCondition>
+					<responseIf>
+						<match>
+							<variable identifier="RESPONSE1"/>
+							<correct identifier="RESPONSE1"/>
+						</match>
+						<setOutcomeValue identifier="FEEDBACK1">
+							<baseValue baseType="identifier">Correct1</baseValue>
+						</setOutcomeValue>
+					</responseIf>
+					<responseElse>
+						<setOutcomeValue identifier="FEEDBACK1">
+							<baseValue baseType="identifier">Incorrect1</baseValue>
+						</setOutcomeValue>
+					</responseElse>
+				</responseCondition>
+			</responseElse>
+		</responseCondition>
+		<responseCondition>
+			<responseIf>
+				<isNull>
+					<variable identifier="RESPONSE2"/>
+				</isNull>
+				<setOutcomeValue identifier="SCORE">
+					<baseValue baseType="float">0.0</baseValue>
+				</setOutcomeValue>
+			</responseIf>
+			<responseElse>
+				<setOutcomeValue identifier="SCORE">
+					<sum>
+						<variable identifier="SCORE"/>
+						<mapResponse identifier="RESPONSE2"/>
+					</sum>
+				</setOutcomeValue>
+				<responseCondition>
+					<responseIf>
+						<match>
+							<variable identifier="RESPONSE2"/>
+							<correct identifier="RESPONSE2"/>
+						</match>
+						<setOutcomeValue identifier="FEEDBACK2">
+							<baseValue baseType="identifier">Correct2</baseValue>
+						</setOutcomeValue>
+					</responseIf>
+					<responseElse>
+						<setOutcomeValue identifier="FEEDBACK2">
+							<baseValue baseType="identifier">Incorrect2</baseValue>
+						</setOutcomeValue>
+					</responseElse>
+				</responseCondition>
+			</responseElse>
+		</responseCondition>
+		<responseCondition>
+			<responseIf>
+				<lt>
+					<variable identifier="SCORE"/>
+					<baseValue baseType="float">2.0</baseValue>
+				</lt>
+				<setOutcomeValue identifier="FEEDBACK">
+					<baseValue baseType="identifier">incorrect</baseValue>
+				</setOutcomeValue>
+			</responseIf>
+			<responseElse>
+				<setOutcomeValue identifier="FEEDBACK">
+					<baseValue baseType="identifier">correct</baseValue>
+				</setOutcomeValue>
+			</responseElse>
+		</responseCondition>
+
+	</responseProcessing>
+	<modalFeedback outcomeIdentifier="FEEDBACK" showHide="show" identifier="correct"> All
+		correct</modalFeedback>
+	<modalFeedback outcomeIdentifier="FEEDBACK" showHide="show" identifier="incorrect">At least one
+		of your inputs is incorrect.</modalFeedback>
+</assessmentItem>

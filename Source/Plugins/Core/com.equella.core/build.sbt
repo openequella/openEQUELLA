@@ -6,7 +6,7 @@ import _root_.io.circe.parser._
 langStrings := {
   val langDir = (resourceDirectory in Compile).value / "com/tle/core/i18n/service/impl"
   val baseJs  = baseDirectory.value / "js"
-  Common.runYarn("build:langbundle", baseJs)
+  Common.nodeScript("build:langbundle", baseJs)
   val bundle =
     decode[Map[String, String]](IO.read(baseJs / "target/resources/lang/jsbundle.json"))
       .fold(throw _, identity)
@@ -114,7 +114,8 @@ resourceGenerators in Compile += Def.task {
 
 resourceGenerators in Compile += Def.task {
   val baseSwagger = baseDirectory.value / "swaggerui"
-  Common.runYarn("browserify", baseSwagger)
+  Common.nodeInstall(baseSwagger)
+  Common.nodeScript("build", baseSwagger)
   val outDir = (resourceManaged in Compile).value / "web/apidocs"
   val bundle = baseSwagger / "target/bundle.js"
   val css    = baseSwagger / "node_modules/swagger-ui/dist/swagger-ui.css"
@@ -123,10 +124,13 @@ resourceGenerators in Compile += Def.task {
 
 buildJS := {
   val baseJs = baseDirectory.value / "js"
-  Common.runYarn("build", baseJs)
+  Common.nodeInstall(baseJs)
+  Common.nodeScript("build", baseJs)
   val outDir       = (resourceManaged in Compile).value
   val baseJsTarget = baseJs / "target/resources"
-  IO.copy((baseJsTarget ** ("*.js" | "*.css" | "*.json")).pair(rebase(baseJsTarget, outDir))).toSeq
+  IO.copy(
+      (baseJsTarget ** ("*.js" | "*.css" | "*.json" | "*.html")).pair(rebase(baseJsTarget, outDir)))
+    .toSeq
 }
 
 resourceGenerators in Compile += buildJS.taskValue

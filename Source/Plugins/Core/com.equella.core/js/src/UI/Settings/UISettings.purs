@@ -4,7 +4,6 @@ import Prelude
 
 import Control.Monad.Reader (runReaderT)
 import Control.Monad.Trans.Class (lift)
-import Control.MonadZero (guard)
 import Data.Either (either)
 import Data.Lens.Record (prop)
 import Data.Lens.Setter (set)
@@ -34,7 +33,7 @@ import React.DOM (text)
 import React.DOM as D
 import React.DOM.Props as DP
 import Web.HTML (window)
-import Web.HTML.Location (reload, replace)
+import Web.HTML.Location (replace)
 import Web.HTML.Window (location)
 
 

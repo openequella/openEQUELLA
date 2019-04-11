@@ -118,4 +118,9 @@ public class RootTaskListSection extends ContextableSearchSection<RootTaskListSe
   protected ContentLayout getDefaultLayout(SectionInfo info) {
     return ContentLayout.TWO_COLUMN;
   }
+
+  @Override
+  protected String getPageName() {
+    return URL;
+  }
 }

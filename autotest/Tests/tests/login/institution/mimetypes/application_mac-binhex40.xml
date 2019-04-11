@@ -1,0 +1,17 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>2016878</id>
+  <institution>
+    <id>2016849</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>hqx</string>
+  </extensions>
+  <type>application/mac-binhex40</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.gif</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

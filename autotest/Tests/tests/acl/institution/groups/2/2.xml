@@ -1,0 +1,9 @@
+<com.tle.beans.user.TLEGroup>
+  <id>131423</id>
+  <uuid>b90c6ee8-05d7-408c-a697-1904966ce785</uuid>
+  <name>INT - Students</name>
+  <description></description>
+  <users>
+    <string>eac5fe64-3f01-4e7a-bf7e-b79dc0316a5d</string>
+  </users>
+</com.tle.beans.user.TLEGroup>

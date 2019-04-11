@@ -1,0 +1,36 @@
+<com.tle.beans.entity.FederatedSearch>
+  <id>413648</id>
+  <uuid>a111887b-4303-da17-5fbd-712616bad348</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2007-05-09 15:24:11.363</dateModified>
+  <dateCreated class="sql-timestamp">2007-05-09 15:24:11.363</dateCreated>
+  <name>
+    <id>413649</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>413650</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Google</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>username</key>
+      <value>guest</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>clientkey</key>
+      <value>fUqodsnkT3MC7VoSvZtzVD18GFqXeREx</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <type>GoogleSearchEngine</type>
+  <timeout>30</timeout>
+  <disabled>false</disabled>
+</com.tle.beans.entity.FederatedSearch>

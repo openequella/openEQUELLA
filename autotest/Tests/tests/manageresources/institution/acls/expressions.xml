@@ -1,0 +1,82 @@
+<list>
+  <com.tle.beans.security.AccessExpression>
+    <id>19211</id>
+    <dynamic>false</dynamic>
+    <expression>U:b09a4042-b091-87ed-eba9-6fb3c0fbe9a6 </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>17007</id>
+    <dynamic>false</dynamic>
+    <expression>R:ROLE_CONTENT_ASSEMBLER</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>17012</id>
+    <dynamic>false</dynamic>
+    <expression>R:ROLE_SYSTEM_ADMINISTRATOR U:34510ce8-cade-eddd-8edc-c47bdfc91dc2 OR U:325c1203-65dc-c3c5-d815-e78418e08b38 OR </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>1041</id>
+    <dynamic>true</dynamic>
+    <expression>$OWNER</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>17002</id>
+    <dynamic>false</dynamic>
+    <expression>R:ROLE_REPORTING_USER</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>16998</id>
+    <dynamic>false</dynamic>
+    <expression>R:ROLE_CONTENT_SEARCHER</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>17003</id>
+    <dynamic>false</dynamic>
+    <expression>R:ROLE_SYSTEM_DESIGNER </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>17010</id>
+    <dynamic>true</dynamic>
+    <expression>$OWNER </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>17008</id>
+    <dynamic>false</dynamic>
+    <expression>R:ROLE_CONTENT_ADMINISTRATOR </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>17001</id>
+    <dynamic>false</dynamic>
+    <expression>R:2237ce17-de72-57a8-7321-aadca36b3ec4 </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>16999</id>
+    <dynamic>false</dynamic>
+    <expression>R:ROLE_SYSTEM_DESIGNER</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>1043</id>
+    <dynamic>false</dynamic>
+    <expression>*</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>17005</id>
+    <dynamic>false</dynamic>
+    <expression>U:34510ce8-cade-eddd-8edc-c47bdfc91dc2 </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>17014</id>
+    <dynamic>false</dynamic>
+    <expression>R:ROLE_SYSTEM_ADMINISTRATOR</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>17004</id>
+    <dynamic>false</dynamic>
+    <expression>R:ROLE_CONTENT_ADMINISTRATOR</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>17011</id>
+    <dynamic>false</dynamic>
+    <expression>U:b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</expression>
+  </com.tle.beans.security.AccessExpression>
+</list>

@@ -24,7 +24,9 @@ tsBridge = {
     routes : unsafeCoerce $ {
         "CoursesPage": CoursesPage, 
         "CourseEdit": CourseEdit, 
-        "NewCourse": NewCourse
+        "NewCourse": NewCourse,
+        "SettingsPage": SettingsPage,
+        "CloudProviderListPage" : CloudProviderListPage
         },
     router : routeHref,
     forcePushRoute: mkEffectFn1 forcePushRoute,

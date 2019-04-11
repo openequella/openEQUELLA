@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Auto Test Suite admin" parallel="instances" data-provider-thread-count="4" thread-count="8" configfailurepolicy="continue">
+	<test name="Admin Console">
+		<packages>
+			<package name="com.tle.webtests.test.adminconsole" />
+		</packages>
+	</test>
+</suite>

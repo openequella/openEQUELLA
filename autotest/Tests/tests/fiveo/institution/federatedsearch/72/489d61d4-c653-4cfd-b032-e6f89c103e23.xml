@@ -1,0 +1,73 @@
+<com.tle.beans.entity.FederatedSearch>
+  <id>216100</id>
+  <uuid>489d61d4-c653-4cfd-b032-e6f89c103e23</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2015-03-19 10:32:15.587</dateModified>
+  <dateCreated class="sql-timestamp">2015-03-19 10:29:04.911</dateCreated>
+  <name>
+    <id>216101</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216102</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Z3950 (Bath 0)</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>database</key>
+      <value>innopac</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>password</key>
+      <value></value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>standardAttributes</key>
+      <value>1016.3.3.2.100.1</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>port</key>
+      <value>210</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>advanced</key>
+      <value>true</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>host</key>
+      <value>library.anu.edu.au</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>importRecordSchema</key>
+      <value>http://www.loc.gov/mods/</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>xslt</key>
+      <value></value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>schemaInputTransform</key>
+      <value>EDNA</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>username</key>
+      <value></value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>group</key>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <type>Z3950SearchEngine</type>
+  <timeout>30</timeout>
+  <collectionUuid>4cf01977-2cf1-414e-b833-905bf2df5242</collectionUuid>
+  <advancedSearchFields>&lt;xml&gt;&lt;entry&gt;&lt;value&gt;1016.3.3.2.100.1&lt;/value&gt;&lt;name&gt;&lt;string language=&quot;en_AU&quot;&gt;Any field [Keyword]&lt;/string&gt;&lt;/name&gt;&lt;/entry&gt;&lt;entry&gt;&lt;value&gt;1003.3.3.101.100.1&lt;/value&gt;&lt;name&gt;&lt;string language=&quot;en_AU&quot;&gt;Author [Precision Match]&lt;/string&gt;&lt;/name&gt;&lt;/entry&gt;&lt;entry&gt;&lt;value&gt;4.3.3.2.100.1&lt;/value&gt;&lt;name&gt;&lt;string language=&quot;en_AU&quot;&gt;Title [Keyword]&lt;/string&gt;&lt;/name&gt;&lt;/entry&gt;&lt;entry&gt;&lt;value&gt;21.3.3.2.100.1&lt;/value&gt;&lt;name&gt;&lt;string language=&quot;en_AU&quot;&gt;Subject [Keyword]&lt;/string&gt;&lt;/name&gt;&lt;/entry&gt;&lt;/xml&gt;</advancedSearchFields>
+</com.tle.beans.entity.FederatedSearch>

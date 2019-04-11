@@ -2,7 +2,7 @@ module OEQ.Utils.Dates where
 
 import Prelude
 
-import Data.DateTime (Date, Day, Month, Year, canonicalDate, day, month, year)
+import Data.DateTime (Date, canonicalDate, day, month, year)
 import Data.Enum (class BoundedEnum, fromEnum, toEnum)
 import Data.Int (floor, toNumber)
 import Data.JSDate (JSDate, getDate, getFullYear, getMonth, jsdateLocal)

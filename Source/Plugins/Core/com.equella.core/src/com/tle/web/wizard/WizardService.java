@@ -30,6 +30,7 @@ import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.wizard.controls.HTMLControl;
 import com.tle.core.wizard.controls.WizardPage;
 import com.tle.web.sections.SectionInfo;
+import com.tle.web.sections.js.JSCallable;
 import com.tle.web.viewable.ViewableItem;
 import java.util.Collection;
 import java.util.List;
@@ -154,4 +155,7 @@ public interface WizardService extends ScriptEvaluator {
   void updateSession(SectionInfo info, WizardStateInterface state);
 
   Object getThreadLock();
+
+  void ensureInitialisedPage(
+      SectionInfo info, WebWizardPage page, JSCallable reloadFunction, boolean load);
 }

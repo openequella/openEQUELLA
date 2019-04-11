@@ -1,0 +1,500 @@
+
+/*Stylesheet CG Main v1.6.0*/ 
+/*Main*/
+
+#skipanchor {
+	display:none;
+	}
+
+body {
+background-color: #ffffff;
+color: #000000;
+font-family: Verdana, Helvetica, Arial, sans-serif;
+font-size: 0.8em;
+margin: 0em;}
+
+p {
+font-size: 1.0em;
+line-height: 1.4em;}
+
+ul {
+font-size: 1.0em;
+line-height: 1.4em;
+}
+
+ol {
+font-size: 1.0em;
+line-height: 1.4em;
+list-style-type: decimal;}
+
+ol ol {
+font-size: 1.0em;
+list-style-type: lower-alpha;}
+
+ol ol ol {
+font-size: 1.0em;
+list-style-type: lower-roman;}
+
+ol ul {
+font-size: 1.0em;}
+
+ul ul {
+	font-size: 1.0em;
+}
+
+ul ol {
+font-size: 1.0em;}
+
+h1 {
+font-size: 1.5em;
+}
+
+h2 {
+color: #666666;
+font:  2em bold Verdana, Arial, Helvetica, sans-serif; 
+border-bottom: solid 1px #CCCCCC;
+margin-bottom: 5px;
+margin-right: 40px;
+margin-top: 20px;
+text-align:left;
+vertical-align:text-bottom;
+}
+
+h3 {
+font-size: 1.5em;
+color: #666666;
+} 
+h4 {
+font-size: 1.2em;
+color: #666666;
+}
+h5 {
+font-size: 1.0em;}
+
+h6 {
+font-size: 0.875em;}
+
+img {
+vertical-align: middle;
+min-height:15px;
+}
+
+img.leftalign {
+float: left;
+position: relative;
+padding-right: 15px;}
+
+img.rightalign {
+float: right;
+position: relative;
+padding-left: 15px;} 
+/*Links*/
+
+a:link {
+color: #3399cc;} 
+
+a:visited {
+color: #9966cc;}
+
+a:hover {
+background-color: #dedede;
+color: #006699;}
+
+a:active {
+color: #cc0000;}
+
+p.caption {
+color: #4BAE37;
+font-size: 0.875em;
+font-weight: bold;
+margin-top:-15px;
+}
+
+span.mediacaption {
+color: #669999;
+font-size: 0.875em;
+font-weight: bold;} 
+
+/*Tables*/
+
+table {
+/*table fix to allow for Quirks mode in WebCT - do not delete*/
+background-color: transparent;
+color: #000000;
+font-family: Verdana, Helvetica, Arial, sans-serif;
+font-size: 1em;
+}
+
+table.unbordered {
+padding: 2px;}
+
+table.unbordered th {
+padding: 2px;}
+
+table.unbordered td {
+padding: 2px;}
+
+table.bordered {
+border: 1px #cccccc solid;
+border-collapse: collapse;
+padding: 2px;}
+
+table.bordered th {
+border: 1px #cccccc solid;
+background-color: #dedede;
+padding: 2px;}
+
+table.bordered td {
+border: 1px #cccccc solid;
+padding: 2px;} 
+/*Display Formats*/
+
+div.boxtext {
+border: 1px #999999 solid;
+padding-left: 1em;
+padding-right: 1em;
+margin-bottom: 0.5em;
+margin-top: 0.5em;}
+
+div.paneltext {
+background-color: #dedede;
+padding-left: 1em;
+padding-right: 1em;
+margin-bottom: 0.5em;
+margin-top: 0.5em;}
+
+div.quotetext {
+font-style: italic;
+margin-left: 1em;
+margin-right: 1em;}
+
+div.definition {
+border: 1px #999999 solid;
+padding-left: 1em;
+padding-right: 1em;
+margin-bottom: 0.5em;
+margin-top: 0.5em;}
+
+div.definition h3 {
+font-size: 1.0em;
+font-weight: bold;}
+
+div.definition p {
+font-size: 1.0em;}
+
+/* Hides from IE5-mac \*/
+* html div {height: 1%;}
+/* End hide from IE5-mac */ 
+
+pre.literal {
+font-size: 1.1em;}
+
+/*Questions*/
+
+table.question {
+font-family: Verdana, Helvetica, Arial, sans-serif;
+width: 95%;
+padding: 4px;}
+
+td.qnum {
+background-color: #cccccc;
+font-size: 2em;
+color: #666699;
+text-align: left;
+width: 0.7em;}
+
+td.qbody {
+font-size: 1em;
+line-height: 0.8em;}
+
+table.qinput {
+width: 100%;
+padding: 8px;
+font-size: 1em;
+line-height: 1.4em;}
+
+#feedback {
+margin: 8px;
+padding: 8px;
+position: static;
+font-family: Verdana, Helvetica, Arial, sans-serif;
+font-size: 1em;
+line-height: 1.2em;
+position: static;}
+
+#feedback p, #feedback ul, #feedback ol , #feedback table {
+font-size: 1em;}
+
+.Qfeedbackgeneric {
+display: none;
+background-color: #bfd5ea;
+border: 1px #666666 solid;
+line-height: 1.2em;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 6px;
+padding-right: 6px;}
+
+.Qfeedbackcorrect {
+display: none;
+background-color: #c1e8bd;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 6px;
+padding-right: 6px;
+border: 1px #666666 solid;
+line-height: 1.2em;}
+
+.Qfeedbackincorrect {
+display: none;
+background-color: #ffcccc;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 6px;
+padding-right: 6px;
+border: 1px #666666 solid;
+line-height: 1.2em;}
+
+.Qfeedbackcorrect-chb2 {
+display: none;
+background-color: #c1e8bd;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 6px;
+padding-right: 6px;
+line-height: 1.2em;}
+
+.Qfeedbackincorrect-chb2 {
+display: none;
+background-color: #ffcccc;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 6px;
+padding-right: 6px;
+line-height: 1.2em;}
+
+.Qfeedbacksaved {
+display: none;
+background-color: #ffcc99;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 6px;
+padding-right: 6px;
+border: 1px #666666 solid;
+line-height: 1.2em;}
+
+#feedback TABLE {
+font-size: 1em}
+
+ 
+/*Popups*/
+
+#popup {
+margin: 8px;
+padding: 8px;
+position: static;
+font-family: Verdana, Helvetica, Arial, sans-serif;
+font-size: 1.0em;
+line-height: 1.2em;}
+ 
+/*Header*/
+
+#header {
+color:#FFFFFF;
+padding-left: 6px;
+padding-right: 6px;
+padding-top: 40px;
+padding-bottom: 4px;
+text-align: right;
+background:#84C841 url(buttons/header_bg.jpg) top left no-repeat;
+padding-left: 300px;
+}
+
+
+#header h1 {
+font-size: 1.1em;
+display: inline;
+font-family:Geneva, Arial, Helvetica, sans-serif;
+text-transform:uppercase;
+letter-spacing: 0.5em;
+
+}
+
+#header a:link, #header a:hover, #header a:visited, #header a:active {
+background:transparent;} 
+/*Logo*/
+
+#logo {
+position: absolute;
+left:30px;
+top:27px;
+height:40px;
+background-color:transparent;
+} /*Index*/
+
+#index {
+font-family: Verdana, Helvetica, Arial, sans-serif;
+padding-left: 12px;}
+
+#index a:link, #index a:visited {
+color: #006699;
+background-color: #ffffff;
+padding-top: 3px;
+padding-bottom: 3px;
+text-decoration: none;}
+
+#index a:hover {
+background-color: #dedede;}
+
+#index h2 {
+font-size: 1.25em;
+color: #006699;}
+
+#index ol {
+line-height: 1.7em;}
+
+#index ol.section {
+line-height: 1.7em;
+list-style-type: upper-alpha;}
+
+#index ol.section ol {
+list-style-type: decimal;}
+
+/*Table of Contents*/
+
+td#maintable-toc {
+border-bottom: 1px #cccccc solid;}
+
+td#maintable-content {
+border-left: 1px #cccccc solid;
+border-bottom: 1px #cccccc solid;}
+
+#toc {
+font-size: 0.8em;
+padding-right: 0px;
+font-family: Verdana, Helvetica, Arial, sans-serif;
+background-color: #ffffff;}
+
+#toc h2 {
+font-size: 1.25em;
+text-align: center;}
+
+#toc a:link, #toc a:visited {
+display: block;
+color: #006699;
+background-color: #ffffff;
+padding-top: 3px;
+padding-bottom: 3px;
+text-decoration: none;}
+
+#toc a:hover {
+background-color: #dedede;}
+
+#toc li {
+text-indent: 0px;
+text-align: left;}
+
+#toc #toc-title {
+} #toc ol {
+list-style-type: decimal;}
+
+#toc ol ol {
+list-style-type: lower-alpha;}
+
+#toc ol.section {
+list-style-type: upper-alpha;}
+
+#toc ol.section ol {
+list-style-type: decimal;}
+
+li.currentpage {
+font-weight: bold;
+color: #006699;}
+
+div.currentpage {
+font-weight: bold;
+color: #006699;}
+
+/*Main Content*/
+
+#main-content-withtoc {
+background-color: #ffffff;
+margin-left: 10px;
+margin-right: 10px;
+padding-left: 20px;
+padding-right: 20px;
+margin-bottom: 20px;}
+
+#main-content-notoc {
+background-color: #ffffff;
+margin-left: 10px;
+margin-right: 10px;
+padding-left: 20px;
+padding-right: 20px;
+margin-bottom: 20px;} 
+/*Footer*/
+
+#footer-withtoc {
+padding-left: 6px;
+padding-right: 6px;
+margin-left: 180px;
+margin-right: 10px;
+margin-top: 10px;
+margin-bottom: 10px;
+padding-top: 4px;
+padding-bottom: 4px;
+font-size: 0.8em;
+position: static;
+text-align: center;}
+/* Hides from IE5-mac \*/
+* html #footer-withtoc {height: 1%;}
+/* End hide from IE5-mac */ 
+
+#footer-notoc {
+padding-left: 6px;
+padding-right: 6px;
+margin-top: 10px;
+margin-bottom: 0px;
+padding-top: 4px;
+padding-bottom: 4px;
+font-size: 0.8em;
+position: static;
+text-align: center;
+color:#ffffff;
+background: #84C841 url(buttons/header_bg.jpg) top left repeat-y;
+}
+/* Hides from IE5-mac \*/
+* html #footer-notoc {height: 1%;}
+/* End hide from IE5-mac */ 
+
+#footer a:link, #footer-withtoc a:link, #header a:hover, #header a:visited, #header a:active {
+background:transparent;}
+
+#bottom-nav {
+padding-left: 10px;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-right: 10px;
+position: absolute;
+right: 10px;
+bottom: 0px;}
+
+.floatright {
+
+margin-top: 10px;
+margin-left: 10px;
+display: block;
+}
+
+.floattopright {
+float: right;
+margin-top: 20%;
+margin-left: 10px;
+display: inline;}
+
+/*Longdescriptions*/
+
+#longdesc {
+margin: 10px;}
+
+

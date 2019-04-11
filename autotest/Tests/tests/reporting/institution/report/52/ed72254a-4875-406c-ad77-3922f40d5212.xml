@@ -1,0 +1,27 @@
+<com.tle.beans.entity.report.Report>
+  <id>3309764</id>
+  <uuid>ed72254a-4875-406c-ad77-3922f40d5212</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2013-01-10 14:11:19.246</dateModified>
+  <dateCreated class="sql-timestamp">2012-12-28 15:06:44.842</dateCreated>
+  <name>
+    <id>3309765</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>3309766</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>DisplayText parameters report</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <filename>reportFiles/displaytextparamtest.rptdesign</filename>
+  <hideReport>false</hideReport>
+</com.tle.beans.entity.report.Report>

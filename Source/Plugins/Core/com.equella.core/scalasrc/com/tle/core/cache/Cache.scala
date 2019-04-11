@@ -20,7 +20,7 @@ import java.sql.Connection
 import java.util.concurrent.ConcurrentHashMap
 
 import cats.data.{Kleisli, StateT}
-import cats.effect.IO
+import cats.effect.{Async, Effect, IO}
 import com.tle.core.db.{DB, RunWithDB, UserContext}
 import com.tle.core.events.ApplicationEvent
 import com.tle.core.events.ApplicationEvent.PostTo
@@ -68,13 +68,11 @@ object Cache extends CacheInvalidation {
       StateT.inspectF { s: Connection =>
         val key = c.key(uc)
         concurrentMap
-          .computeIfAbsent(
-            key,
-            k =>
-              fs2.async
-                .once(
-                  RunWithDB.executeTransaction(uc.ds.getConnection(), c.query.run(uc).map(IO.pure)))
-                .unsafeRunSync())
+          .computeIfAbsent(key, { k =>
+            Async
+              .memoize(RunWithDB.executeTransaction(uc.ds, c.query.run(uc).map(IO.pure)))
+              .unsafeRunSync()
+          })
           .asInstanceOf[IO[A]]
       }
     }

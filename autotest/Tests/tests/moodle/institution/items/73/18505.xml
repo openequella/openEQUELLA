@@ -1,0 +1,153 @@
+<com.tle.beans.item.Item>
+  <id>18505</id>
+  <uuid>f2ea0fb4-16be-4375-87ae-dd5881225acf</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-01-08 11:39:49.564</dateModified>
+  <dateCreated class="sql-timestamp">2014-01-08 11:32:22.878</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.699</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>18512</id>
+      <uuid>843309a3-0367-47b6-93b2-e7e54fcde8ba</uuid>
+      <url></url>
+      <description>wikitool</description>
+      <value1>lti</value1>
+      <data>
+        <entry>
+          <string>ICON_URL</string>
+          <string>https://www.edu-apps.org/tools/wikipedia/icon.png</string>
+        </entry>
+        <entry>
+          <string>SHARE_EMAIL</string>
+          <boolean>true</boolean>
+        </entry>
+        <entry>
+          <string>SHARE_NAME</string>
+          <boolean>true</boolean>
+        </entry>
+        <entry>
+          <string>LAUNCH_URL</string>
+          <string>https://www.edu-apps.org/tool_redirect?id=wikipedia</string>
+        </entry>
+        <entry>
+          <string>EXTERNAL_TOOL_PROVIDER_UUID</string>
+          <string>AUTOMATIC_UUID</string>
+        </entry>
+      </data>
+      <viewer></viewer>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.CustomAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="9a735fbf-226c-4d99-8f8f-6ec8368d9347"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>18509</id>
+    <liveApprovalDate class="sql-timestamp">2014-01-08 11:32:22.872</liveApprovalDate>
+    <start class="sql-timestamp">2014-01-08 11:40:45.063</start>
+    <lastAction class="sql-timestamp">2014-01-08 11:32:22.872</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18513</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-01-08 11:32:22.872</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18514</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-01-08 11:32:22.872</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18515</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-01-08 11:32:22.872</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18516</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-01-08 11:35:42.038</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18517</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-01-08 11:39:26.532</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18518</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-01-08 11:39:49.564</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>18510</id>
+    <strings>
+      <entry>
+        <string>en_GB</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>18511</id>
+          <locale>en_GB</locale>
+          <priority>2</priority>
+          <text>LTI Item</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>18506</id>
+    <strings>
+      <entry>
+        <string>en_GB</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>18507</id>
+          <locale>en_GB</locale>
+          <priority>2</priority>
+          <text>LTI tool for launchin&apos;</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

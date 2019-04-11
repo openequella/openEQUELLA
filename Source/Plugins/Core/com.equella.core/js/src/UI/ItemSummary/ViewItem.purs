@@ -88,7 +88,7 @@ viewItemSummary = unsafeCreateLeafElement $ withStyles styles $ statelessCompone
       } [text t]
     renderSection section = div [DP.className classes.section ] $ case section of 
       BasicDetails {description} -> [ typography {variant: E.display1} [ text itemName ] ] <> 
-        maybe [] (\desc -> [ titleText "Description", typography {variant: E.subheading} [text desc] ]) description
+        maybe [] (\desc -> [ titleText "Description", typography {variant: E.subtitle1} [text desc] ]) description
       DisplayNodes dn -> 
         let nodes near = div [DP.className classes.metaRow] $ node <$> Array.fromFoldable near
             node {value:t,title,metaType} = 

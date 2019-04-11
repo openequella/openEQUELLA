@@ -1,0 +1,31 @@
+<com.tle.beans.entity.Schema>
+  <id>215920</id>
+  <uuid>8d6cf2dd-6166-2e2d-f8bb-129de8b90d3d</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2011-09-23 15:08:59.21</dateModified>
+  <dateCreated class="sql-timestamp">2011-03-17 16:58:27.911</dateCreated>
+  <name>
+    <id>215921</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>215922</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Controls Schema</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms/>
+  <impTransforms/>
+  <itemNamePath>/item/name</itemNamePath>
+  <itemDescriptionPath>/item/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;name field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;controls&gt;&lt;editbox field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;htmleditbox field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;checkboxes field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;radiogroup field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;shufflebox field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;listbox field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;shufflelist field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;file type=&quot;text&quot;/&gt;&lt;calendar&gt;&lt;nodefault field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;range field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;today type=&quot;text&quot;/&gt;&lt;birthday type=&quot;text&quot;/&gt;&lt;reload type=&quot;text&quot;/&gt;&lt;/calendar&gt;&lt;userselector&gt;&lt;allusers field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;group type=&quot;text&quot;/&gt;&lt;/userselector&gt;&lt;emailselector&gt;&lt;multiple type=&quot;text&quot;/&gt;&lt;single type=&quot;text&quot;/&gt;&lt;/emailselector&gt;&lt;multilanguage type=&quot;text&quot;/&gt;&lt;group type=&quot;text&quot;/&gt;&lt;taxonomy&gt;&lt;auto field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;auto2 field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;popup field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/taxonomy&gt;&lt;shufflegroup&gt;&lt;editbox type=&quot;text&quot;/&gt;&lt;listbox type=&quot;text&quot;/&gt;&lt;/shufflegroup&gt;&lt;repeater&gt;&lt;editbox type=&quot;text&quot;/&gt;&lt;listbox type=&quot;text&quot;/&gt;&lt;subrepeater&gt;&lt;editbox type=&quot;text&quot;/&gt;&lt;listbox type=&quot;text&quot;/&gt;&lt;/subrepeater&gt;&lt;/repeater&gt;&lt;html&gt;&lt;htmleditbox field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;htmleditboxondemand field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/html&gt;&lt;/controls&gt;&lt;visible&gt;&lt;calendar type=&quot;text&quot;/&gt;&lt;userselector type=&quot;text&quot;/&gt;&lt;emailselector type=&quot;text&quot;/&gt;&lt;multilanguage type=&quot;text&quot;/&gt;&lt;basic type=&quot;text&quot;/&gt;&lt;shufflegroup type=&quot;text&quot;/&gt;&lt;repeater type=&quot;text&quot;/&gt;&lt;/visible&gt;&lt;keep&gt;&lt;editbox type=&quot;text&quot;/&gt;&lt;checkboxes type=&quot;text&quot;/&gt;&lt;/keep&gt;&lt;lose&gt;&lt;editbox type=&quot;text&quot;/&gt;&lt;checkboxes type=&quot;text&quot;/&gt;&lt;/lose&gt;&lt;same&gt;&lt;checkboxes type=&quot;text&quot;/&gt;&lt;/same&gt;&lt;unique&gt;&lt;editbox&gt;&lt;warned field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;forced field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/editbox&gt;&lt;shufflelist&gt;&lt;warned field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;forced field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/shufflelist&gt;&lt;/unique&gt;&lt;/item&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>

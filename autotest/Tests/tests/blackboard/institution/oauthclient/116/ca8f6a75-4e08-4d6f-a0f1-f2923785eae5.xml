@@ -1,0 +1,35 @@
+<com.tle.core.oauth.beans.OAuthClient>
+  <id>47866</id>
+  <uuid>ca8f6a75-4e08-4d6f-a0f1-f2923785eae5</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2014-08-26 15:54:34.485</dateModified>
+  <dateCreated class="sql-timestamp">2014-08-26 15:54:34.485</dateCreated>
+  <name>
+    <id>47867</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>47868</id>
+          <locale>en</locale>
+          <priority>0</priority>
+          <text>BB Autotest</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>oauth.flow</key>
+      <value>oog</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <clientId>4cc26aca-d58b-4ce9-bd79-3edbc6921423</clientId>
+  <clientSecret>5f781a8c-f69d-401e-b292-0f4aedb0f698</clientSecret>
+  <redirectUrl>default</redirectUrl>
+  <permissions/>
+  <requiresApproval>false</requiresApproval>
+</com.tle.core.oauth.beans.OAuthClient>

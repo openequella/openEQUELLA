@@ -1,0 +1,31 @@
+<com.tle.beans.entity.Schema>
+  <id>116102</id>
+  <uuid>766491d6-d162-43ba-94bc-9341b7d3e950</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2012-10-26 11:15:17.493</dateModified>
+  <dateCreated class="sql-timestamp">2012-10-26 11:15:17.493</dateCreated>
+  <name>
+    <id>116103</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116104</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Facet Schema</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms/>
+  <impTransforms/>
+  <itemNamePath>/name</itemNamePath>
+  <itemDescriptionPath>/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;name field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;include field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;facet_xpath field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>

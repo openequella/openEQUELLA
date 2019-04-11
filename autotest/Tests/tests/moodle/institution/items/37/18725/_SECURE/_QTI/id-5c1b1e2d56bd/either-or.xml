@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Thie example adapted from the PET Handbook, copyright University of Cambridge ESOL Examinations -->
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+	identifier="either-or-choice-root2" title="Either/Or question about root 2" adaptive="false" timeDependent="false">
+	<responseDeclaration identifier="RESPONSE" cardinality="single" baseType="identifier">
+		<correctResponse>
+			<value>ChoiceB</value>
+		</correctResponse>
+	</responseDeclaration>
+    <outcomeDeclaration identifier="SCORE" cardinality="single" baseType="float" normalMaximum="1.0">
+		<defaultValue>
+			<value>0.0</value>
+		</defaultValue>
+	</outcomeDeclaration>
+    <outcomeDeclaration identifier="FEEDBACK" cardinality="single" baseType="identifier"/>
+    <itemBody>
+		<div>
+		    <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+		        <semantics>
+		            <mrow>
+		                <msqrt>
+		                    <mn>2</mn>
+		                </msqrt>
+		                <mo>&gt;</mo>
+		                <mn>2</mn>
+		            </mrow>
+		            <annotation encoding="SnuggleTeX">\[ \sqrt{2}&gt;2 \]</annotation>
+		        </semantics>
+		    </math>
+		</div>
+		<choiceInteraction responseIdentifier="RESPONSE" shuffle="false" maxChoices="1">
+			<prompt>Is this right or wrong?</prompt>
+			<simpleChoice identifier="ChoiceA">Right
+     			<feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="ChoiceA">
+     			    No, 
+     			    <math xmlns="http://www.w3.org/1998/Math/MathML">
+     			        <semantics>
+     			            <mrow>
+     			                <msqrt>
+     			                    <mn>2</mn>
+     			                </msqrt>
+     			                <mo>&lt;</mo>
+     			                <mn>2</mn>
+     			            </mrow>
+     			            <annotation encoding="SnuggleTeX">\[ \sqrt{2}&lt;2 \]</annotation>
+     			        </semantics>
+     			    </math>
+     			</feedbackInline>
+			</simpleChoice>
+			<simpleChoice identifier="ChoiceB">Wrong
+			    <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="ChoiceB">
+			        That's right, 
+			        <math xmlns="http://www.w3.org/1998/Math/MathML">
+			            <semantics>
+			                <mrow>
+			                    <msqrt>
+			                        <mn>2</mn>
+			                    </msqrt>
+			                    <mo>&lt;</mo>
+			                    <mn>2</mn>
+			                </mrow>
+			                <annotation encoding="SnuggleTeX">\[ \sqrt{2}&lt;2 \]</annotation>
+			            </semantics>
+			        </math>
+			    </feedbackInline>
+			</simpleChoice>
+		</choiceInteraction>
+	</itemBody>
+    <responseProcessing>
+        <responseCondition>
+            <responseIf>
+                <match>
+                    <variable identifier="RESPONSE"/>
+                    <correct identifier="RESPONSE"/>
+                </match>
+                <setOutcomeValue identifier="SCORE">
+                    <baseValue baseType="float">1</baseValue>
+                </setOutcomeValue>
+            </responseIf>
+            <responseElse>
+                <setOutcomeValue identifier="SCORE">
+                    <baseValue baseType="float">0</baseValue>
+                </setOutcomeValue>
+            </responseElse>
+        </responseCondition>
+        <setOutcomeValue identifier="FEEDBACK">
+            <variable identifier="RESPONSE"/>
+        </setOutcomeValue>
+    </responseProcessing>
+</assessmentItem>

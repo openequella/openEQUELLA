@@ -1,0 +1,28 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Auto Test Suite moodle" parallel="instances" data-provider-thread-count="4" thread-count="8" configfailurepolicy="continue">
+	<listeners>
+		<listener class-name="com.tle.webtests.framework.moodle.SequentialMoodleInterceptor" />
+	</listeners>
+<!-- 	<test name="Download Moodle Module"> -->
+<!-- 		<classes> -->
+<!-- 			<class name="com.tle.webtests.remotetest.integration.moodle.DownloadModuleTest" /> -->
+<!-- 		</classes> -->
+<!-- 	</test> -->
+	<test name="Sync Moodle Module">
+		<classes>
+			<class name="com.tle.webtests.remotetest.integration.moodle.SyncMoodle" />
+		</classes>
+	</test>
+	<test name="Moodle Tests">
+		<classes>
+			<class name="com.tle.webtests.remotetest.integration.moodle.MoodleTestFactory" />
+		</classes>
+	</test>
+	<test name="Moodle Settings" thread-count="1">
+		<parameter name="class-type" value="com.tle.webtests.remotetest.integration.moodle.AbstractSequentialMoodleTest" />
+		<classes>
+			<class name="com.tle.webtests.remotetest.integration.moodle.MoodleTestFactory" />
+		</classes>
+	</test>
+</suite>

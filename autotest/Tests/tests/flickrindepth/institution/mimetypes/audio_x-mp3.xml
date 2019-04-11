@@ -1,0 +1,18 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>413693</id>
+  <institution>
+    <id>413481</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>mp3</string>
+  </extensions>
+  <type>audio/x-mp3</type>
+  <description>Audio</description>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/sound.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

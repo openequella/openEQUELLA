@@ -22,6 +22,8 @@ import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.oauth.OAuthUserState;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthException;
@@ -45,7 +47,7 @@ public interface OAuthWebService {
   /**
    * Uses the user details of the pre-configured user
    *
-   * @param clientId
+   * @param client
    * @param clientSecret
    * @return
    * @throws WebException
@@ -80,6 +82,18 @@ public interface OAuthWebService {
 
   void validateMessage(OAuthMessage message, OAuthAccessor accessor)
       throws OAuthException, IOException, URISyntaxException;
+
+  /**
+   * Method for creating OAuth V1 signature parameters. Creates an oauth message and signs it which
+   * adds the signature to the message's parameters. Only the parameters are returned.
+   *
+   * @param consumerKey consumer key
+   * @param secret shared secret
+   * @param url launch URL
+   * @return all parameters needed to sign a POST message
+   */
+  List<Map.Entry<String, String>> getOauthSignatureParams(
+      String consumerKey, String secret, String url, Map<String, String[]> postParams);
 
   public static class AuthorisationDetails {
     private String userId;

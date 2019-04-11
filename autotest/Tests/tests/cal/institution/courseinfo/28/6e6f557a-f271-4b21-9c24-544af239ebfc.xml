@@ -1,0 +1,45 @@
+<com.tle.beans.item.cal.request.CourseInfo>
+  <id>63550</id>
+  <uuid>6e6f557a-f271-4b21-9c24-544af239ebfc</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2009-05-08 14:38:58.403</dateModified>
+  <dateCreated class="sql-timestamp">2009-05-08 14:38:36.83</dateCreated>
+  <description>
+    <id>63551</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>63552</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>courseowner@owner.com</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>63553</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>63554</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Sample Test Course</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <students>50</students>
+  <citation>Harvard</citation>
+  <departmentName>Department of simple courses</departmentName>
+  <courseType>i</courseType>
+  <code>4321</code>
+</com.tle.beans.item.cal.request.CourseInfo>

@@ -38,7 +38,9 @@
 	</#list>
 </div>
 <#if m.loginNotice??>
-  <div id="loginNotice" class="area">
-    ${m.loginNotice?html}
+  <div class="area">
+    <div id="loginNotice" class="loginnotice">
+      ${m.loginNotice}
+    </div>
   </div>
 </#if>

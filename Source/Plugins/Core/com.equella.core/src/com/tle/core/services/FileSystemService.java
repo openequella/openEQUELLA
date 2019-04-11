@@ -133,6 +133,8 @@ public interface FileSystemService extends RemoteFileSystemService {
   FileInfo write(FileHandle handle, String filename, Reader content, boolean append)
       throws IOException;
 
+  String getMimeType(FileHandle fileHandle, String name) throws IOException;
+
   FileInfo getFileInfo(FileHandle handle, String filename);
 
   void saveFiles(StagingFile staging, FileHandle destination) throws IOException;

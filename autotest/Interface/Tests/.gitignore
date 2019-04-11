@@ -1,0 +1,15 @@
+config/localserver.properties
+logs
+test-output
+results
+config/testing.xml
+config/localcoverage-groups.json
+classes
+*~
+/staging
+server.xml
+chromedriver.log
+product
+lib
+plays
+.sonar

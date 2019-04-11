@@ -16,10 +16,26 @@
 
 package com.tle.core.db
 
-import java.sql.Connection
+import java.util.Locale
 
 import com.tle.beans.Institution
-import com.tle.common.usermanagement.user.UserState
+import com.tle.common.i18n.CurrentLocale
+import com.tle.common.institution.CurrentInstitution
+import com.tle.common.usermanagement.user.{CurrentUser, UserState}
+import com.tle.core.hibernate.CurrentDataSource
 import javax.sql.DataSource
 
-case class UserContext(inst: Institution, user: UserState, ds: DataSource)
+case class UserContext(inst: Institution, user: UserState, ds: DataSource, locale: Locale)
+
+object UserContext {
+
+  def fromThreadLocals(): UserContext = {
+    UserContext(
+      CurrentInstitution.get(),
+      CurrentUser.getUserState,
+      CurrentDataSource.get().getDataSource,
+      CurrentLocale.getLocale
+    )
+  }
+
+}

@@ -18,9 +18,9 @@ val axis2Version     = "1.6.2"
 val TomcatVersion    = "8.5.23"
 val SwaggerVersion   = "1.5.16"
 val RestEasyVersion  = "3.5.0.Final"
-val simpledbaVersion = "0.1.7-SNAPSHOT"
-val fs2Version       = "0.10.2"
+val simpledbaVersion = "0.1.8-SNAPSHOT"
 val circeVersion     = "0.9.1"
+val jsoupVersion     = "1.11.3"
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 
@@ -32,17 +32,18 @@ libraryDependencies ++= Seq(
 ).map(_ % circeVersion)
 
 libraryDependencies ++= Seq(
-  "co.fs2"                       %% "fs2-core"                   % fs2Version,
-  "io.github.doolse"             %% "simpledba-jdbc"             % simpledbaVersion,
-  "axis"                         % "axis"                        % "1.4",
-  "cglib"                        % "cglib"                       % "2.2",
-  "com.fasterxml.jackson.core"   % "jackson-core"                % jacksonVersion,
-  "com.fasterxml.jackson.module" %% "jackson-module-scala"       % jacksonVersion,
-  "com.fasterxml.jackson.core"   % "jackson-annotations"         % jacksonVersion,
-  "com.fasterxml.jackson.core"   % "jackson-databind"            % jacksonVersion,
-  "com.fasterxml.jackson.jaxrs"  % "jackson-jaxrs-base"          % jacksonVersion,
-  "com.fasterxml.jackson.jaxrs"  % "jackson-jaxrs-json-provider" % jacksonVersion,
-  "com.flickr4java"              % "flickr4java"                 % "2.16" excludeAll (
+  "io.github.doolse"               %% "simpledba-jdbc"             % simpledbaVersion,
+  "io.github.doolse"               %% "simpledba-circe"            % simpledbaVersion,
+  "axis"                           % "axis"                        % "1.4",
+  "cglib"                          % "cglib"                       % "2.2",
+  "com.fasterxml.jackson.core"     % "jackson-core"                % jacksonVersion,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"     % jacksonVersion,
+  "com.fasterxml.jackson.module"   %% "jackson-module-scala"       % jacksonVersion,
+  "com.fasterxml.jackson.core"     % "jackson-annotations"         % jacksonVersion,
+  "com.fasterxml.jackson.core"     % "jackson-databind"            % jacksonVersion,
+  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-base"          % jacksonVersion,
+  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider" % jacksonVersion,
+  "com.flickr4java"                % "flickr4java"                 % "2.16" excludeAll (
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
@@ -193,7 +194,7 @@ libraryDependencies ++= Seq(
   "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api"   % "1.0.1",
   "org.eclipse.microprofile.config"      % "microprofile-config-api"        % "1.2.1",
   "javax.json.bind"                      % "javax.json.bind-api"            % "1.0",
-  "org.jsoup"                            % "jsoup"                          % "1.6.1",
+  "org.jsoup"                            % "jsoup"                          % jsoupVersion,
   xstreamDep,
   "org.opensaml" % "xmltooling" % "1.3.1" excludeAll (
     ExclusionRule(organization = "org.slf4j")
