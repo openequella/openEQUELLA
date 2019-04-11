@@ -19,7 +19,6 @@ package com.tle.web.oauth.service;
 import com.dytech.edge.exceptions.WebException;
 import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.common.usermanagement.user.UserState;
-import com.tle.core.oauth.OAuthUserState;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -41,7 +40,7 @@ public interface OAuthWebService {
    * @return
    * @throws WebException
    */
-  AuthorisationDetails getAuthorisationDetailsByCode(OAuthClient client, String code)
+  AuthorisationDetails getAuthorisationDetailsByCode(IOAuthClient client, String code)
       throws WebException;
 
   /**
@@ -52,7 +51,7 @@ public interface OAuthWebService {
    * @return
    * @throws WebException
    */
-  AuthorisationDetails getAuthorisationDetailsBySecret(OAuthClient client, String clientSecret)
+  AuthorisationDetails getAuthorisationDetailsBySecret(IOAuthClient client, String clientSecret)
       throws WebException;
 
   /**
@@ -71,7 +70,7 @@ public interface OAuthWebService {
    * @return Never returns null.
    * @throws WebException thrown if token not found
    */
-  OAuthUserState getUserState(String tokenData, HttpServletRequest request) throws WebException;
+  UserState getUserState(String tokenData, HttpServletRequest request) throws WebException;
 
   /**
    * Ensures this code cannot be used again
@@ -95,7 +94,13 @@ public interface OAuthWebService {
   List<Map.Entry<String, String>> getOauthSignatureParams(
       String consumerKey, String secret, String url, Map<String, String[]> postParams);
 
-  public static class AuthorisationDetails {
+  IOAuthToken getOrCreateToken(AuthorisationDetails authDetails, IOAuthClient client, String code);
+
+  IOAuthClient getByClientIdOnly(String clientId);
+
+  IOAuthClient getByClientIdAndRedirectUrl(String clientId, String redirectUrl);
+
+  class AuthorisationDetails {
     private String userId;
     private String username;
     private boolean requiresLogin;
