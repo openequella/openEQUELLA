@@ -7,6 +7,7 @@ import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.generic.component.SelectUserDialog;
 import com.tle.webtests.pageobject.remoterepo.RemoteRepoPage;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
+import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -219,10 +220,23 @@ public class SearchPage
     return By.xpath("//ul[@id='mt']//label[text()=" + quoteXPath(filterName) + "]/../input");
   }
 
+  public SearchPage clearResourceTypeFilters() {
+    List<WebElement> webElements = driver.findElements(By.xpath("//ul[@id='mt']//input"));
+    webElements.forEach(
+        webElement -> {
+          if (webElement.isSelected()) {
+            webElement.click();
+            waiter.until(ExpectedConditions.elementSelectionStateToBe(webElement, false));
+          }
+        });
+    return get();
+  }
+
   public SearchPage checkResourceTypeFilter(String filterName, boolean check) {
     WebElement element = driver.findElement(getByForResourceTypeFilter(filterName));
     if (element.isSelected() != check) {
       element.click();
+      waiter.until(ExpectedConditions.elementSelectionStateToBe(element, check));
     }
     return get();
   }

@@ -184,6 +184,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     assertTrue(
         searchPage.hasResourceTypeFilter(filterName),
         "Expected to find " + filterName + " in resource type filters");
+    searchPage.clearResourceTypeFilters();
     searchPage.checkResourceTypeFilter(filterName, true);
     String itemName = MessageFormat.format("SearchSettings - Image {0} - {1}", count, filterName);
     ItemListPage results = SearchPage.searchExact(context, itemName);
