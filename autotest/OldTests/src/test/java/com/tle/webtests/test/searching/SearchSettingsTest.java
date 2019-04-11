@@ -58,9 +58,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
   }
 
   // Test the sort order options
-  @Test(
-      dependsOnMethods = {"testRemoveSearchFilters"},
-      enabled = false)
+  @Test(dependsOnMethods = {"testRemoveSearchFilters"})
   public void testChangeResultOrder() {
     SettingsPage sp = new SettingsPage(context).load();
 
@@ -114,9 +112,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
   }
 
   // Test the show non live options
-  @Test(
-      dependsOnMethods = {"testRemoveSearchFilters"},
-      enabled = false)
+  @Test(dependsOnMethods = {"testRemoveSearchFilters"})
   public void testShowNonLive() {
     logon("AutoTest", "automated");
     SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings().load();
@@ -140,7 +136,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     assertTrue(!results.doesResultExist("SearchSettings - Draft Item", 1));
   }
 
-  @Test(enabled = false)
+  @Test
   public void testDisableCloud() {
     logon("AutoTest", "automated");
     SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings().load();
@@ -167,7 +163,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
   }
 
   // Test the setup/usage of the MIME type search filters
-  @Test(dataProvider = "filters", enabled = false)
+  @Test(dataProvider = "filters")
   public void testSetupSearchFilters(String filterName, String mimetype, int count) {
     logon("AutoTest", "automated");
     SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings();
@@ -192,9 +188,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
   }
 
   // Test the editing of MIME type search filters
-  @Test(
-      dependsOnMethods = {"testRemoveSearchFilters"},
-      enabled = false)
+  @Test(dependsOnMethods = {"testRemoveSearchFilters"})
   public void testEditSearchFilter() {
     logon("AutoTest", "automated");
     SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings();
@@ -240,8 +234,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
   // Test the removal of the MIME type search filters
   @Test(
       dependsOnMethods = {"testSetupSearchFilters"},
-      dataProvider = "filters",
-      enabled = false)
+      dataProvider = "filters")
   public void testRemoveSearchFilters(String filterName, String mimetype, int count) {
     SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings();
     ssp.removeFilter(filterName);
@@ -249,9 +242,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
   }
 
   // Test Authenticated feeds
-  @Test(
-      dependsOnMethods = {"testRemoveSearchFilters"},
-      enabled = false)
+  @Test(dependsOnMethods = {"testRemoveSearchFilters"})
   public void testGenerateAuthenticatedFeeds() throws Exception {
     logon("AutoTest", "automated");
     final String searchTerm = "Relevance";
@@ -296,9 +287,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     assertTrue(checkAtomResponse(getResponse(soapService, atomUrl, basicCreds), false));
   }
 
-  @Test(
-      dependsOnMethods = {"testRemoveSearchFilters"},
-      enabled = false)
+  @Test(dependsOnMethods = {"testRemoveSearchFilters"})
   public void testContentIndexing() throws Exception {
     logon("AutoTest", "automated");
     SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings();
