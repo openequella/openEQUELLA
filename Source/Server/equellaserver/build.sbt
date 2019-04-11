@@ -19,9 +19,9 @@ val TomcatVersion    = "8.5.23"
 val SwaggerVersion   = "1.5.16"
 val RestEasyVersion  = "3.5.0.Final"
 val simpledbaVersion = "0.1.8-SNAPSHOT"
-val circeVersion     = "0.9.1"
+val circeVersion     = "0.11.1"
 val jsoupVersion     = "1.11.3"
-
+val sttpVersion      = "1.5.11"
 resolvers += Resolver.sonatypeRepo("snapshots")
 
 libraryDependencies ++= Seq(
@@ -32,18 +32,21 @@ libraryDependencies ++= Seq(
 ).map(_ % circeVersion)
 
 libraryDependencies ++= Seq(
-  "io.github.doolse"               %% "simpledba-jdbc"             % simpledbaVersion,
-  "io.github.doolse"               %% "simpledba-circe"            % simpledbaVersion,
-  "axis"                           % "axis"                        % "1.4",
-  "cglib"                          % "cglib"                       % "2.2",
-  "com.fasterxml.jackson.core"     % "jackson-core"                % jacksonVersion,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"     % jacksonVersion,
-  "com.fasterxml.jackson.module"   %% "jackson-module-scala"       % jacksonVersion,
-  "com.fasterxml.jackson.core"     % "jackson-annotations"         % jacksonVersion,
-  "com.fasterxml.jackson.core"     % "jackson-databind"            % jacksonVersion,
-  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-base"          % jacksonVersion,
-  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider" % jacksonVersion,
-  "com.flickr4java"                % "flickr4java"                 % "2.16" excludeAll (
+  "com.softwaremill.sttp"          %% "core"                          % sttpVersion,
+  "com.softwaremill.sttp"          %% "async-http-client-backend-fs2" % sttpVersion,
+  "com.softwaremill.sttp"          %% "circe"                         % sttpVersion,
+  "io.github.doolse"               %% "simpledba-jdbc"                % simpledbaVersion,
+  "io.github.doolse"               %% "simpledba-circe"               % simpledbaVersion,
+  "axis"                           % "axis"                           % "1.4",
+  "cglib"                          % "cglib"                          % "2.2",
+  "com.fasterxml.jackson.core"     % "jackson-core"                   % jacksonVersion,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"        % jacksonVersion,
+  "com.fasterxml.jackson.module"   %% "jackson-module-scala"          % jacksonVersion,
+  "com.fasterxml.jackson.core"     % "jackson-annotations"            % jacksonVersion,
+  "com.fasterxml.jackson.core"     % "jackson-databind"               % jacksonVersion,
+  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-base"             % jacksonVersion,
+  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider"    % jacksonVersion,
+  "com.flickr4java"                % "flickr4java"                    % "2.16" excludeAll (
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
@@ -225,10 +228,11 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "ch.qos.logback"),
     ExclusionRule(organization = "net.sf.saxon")
   ),
-  "xml-resolver"  % "xml-resolver" % "1.2",
-  "org.scala-sbt" %% "io"          % "1.1.0",
-  "org.mozilla"   % "rhino"        % "1.7R4",
-  "io.lemonlabs"  %% "scala-uri"   % "1.1.5"
+  "xml-resolver"           % "xml-resolver"              % "1.2",
+  "org.scala-sbt"          %% "io"                       % "1.1.0",
+  "org.mozilla"            % "rhino"                     % "1.7R4",
+  "io.lemonlabs"           %% "scala-uri"                % "1.1.5",
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1"
 )
 
 dependencyOverrides += "javax.mail" % "mail" % "1.4.3"
@@ -244,6 +248,7 @@ excludeDependencies ++= Seq(
   "javax.xml"                    % "jaxrpc-api",
   "xalan"                        % "xalan",
   "xerces"                       % "xercesImpl",
+  "javax.activation"             % "activation",
   "javax.xml.stream"             % "stax-api",
   "javax.ws.rs"                  % "jsr311-api",
   "org.apache.ws.commons"        % "XmlSchema",
@@ -281,19 +286,20 @@ mainClass in assembly := Some("com.tle.core.equella.runner.EQUELLAServer")
 fullClasspath in assembly := (fullClasspath in Compile).value
 
 assemblyMergeStrategy in assembly := {
-  case PathList("META-INF", "axiom.xml")            => MergeStrategy.first
-  case PathList("javax", "wsdl", _*)                => MergeStrategy.last
-  case PathList("com", "ibm", "wsdl", _*)           => MergeStrategy.first
-  case PathList("org", "apache", "regexp", _*)      => MergeStrategy.first
-  case PathList("javax", "servlet", "jsp", _*)      => MergeStrategy.first
-  case PathList("javax", "annotation", _*)          => MergeStrategy.first
-  case PathList("org", "w3c", "dom", _*)            => MergeStrategy.first
-  case PathList("META-INF", "mailcap")              => MergeStrategy.first
-  case PathList("META-INF", "mimetypes.default")    => MergeStrategy.first
-  case PathList("META-INF", "javamail.charset.map") => MergeStrategy.first
-  case PathList("javax", "activation", _*)          => MergeStrategy.first
-  case PathList("org", "xmlpull", "v1", _*)         => MergeStrategy.first
-  case PathList("junit", _*)                        => MergeStrategy.discard
+  case PathList("META-INF", "axiom.xml")                    => MergeStrategy.first
+  case PathList("javax", "wsdl", _*)                        => MergeStrategy.last
+  case PathList("com", "ibm", "wsdl", _*)                   => MergeStrategy.first
+  case PathList("org", "apache", "regexp", _*)              => MergeStrategy.first
+  case PathList("javax", "servlet", "jsp", _*)              => MergeStrategy.first
+  case PathList("javax", "annotation", _*)                  => MergeStrategy.first
+  case PathList("org", "w3c", "dom", _*)                    => MergeStrategy.first
+  case PathList("META-INF", "mailcap")                      => MergeStrategy.first
+  case PathList("META-INF", "mimetypes.default")            => MergeStrategy.first
+  case PathList("META-INF", "javamail.charset.map")         => MergeStrategy.first
+  case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.first
+  case PathList("javax", "activation", _*)                  => MergeStrategy.first
+  case PathList("org", "xmlpull", "v1", _*)                 => MergeStrategy.first
+  case PathList("junit", _*)                                => MergeStrategy.discard
   case PathList("org", "apache", "axis2", "transport", "http", "util", "ComplexPart.class") =>
     MergeStrategy.first
   case x =>

@@ -24,7 +24,6 @@ import com.tle.beans.Institution;
 import com.tle.common.Check;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.oauth.beans.OAuthClient;
-import com.tle.common.oauth.beans.OAuthToken;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.encryption.EncryptionService;
@@ -34,15 +33,14 @@ import com.tle.core.i18n.service.LanguageService;
 import com.tle.core.institution.InstitutionCache;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.oauth.OAuthConstants;
-import com.tle.core.oauth.OAuthUserState;
 import com.tle.core.oauth.event.DeleteOAuthTokensEvent;
 import com.tle.core.oauth.event.listener.DeleteOAuthTokensEventListener;
 import com.tle.core.oauth.service.OAuthService;
+import com.tle.core.oauthserver.OAuthServerAccess;
 import com.tle.core.replicatedcache.ReplicatedCacheService;
 import com.tle.core.replicatedcache.ReplicatedCacheService.ReplicatedCache;
 import com.tle.core.services.user.UserService;
 import com.tle.web.oauth.OAuthException;
-import com.tle.web.oauth.OAuthUserStateImpl;
 import com.tle.web.oauth.OAuthWebConstants;
 import java.io.IOException;
 import java.io.Serializable;
@@ -65,7 +63,6 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
   private static final String KEY_CODE_NOT_FOUND = "oauth.error.codenotfound";
   private static final String KEY_CLIENT_CODE_MISMATCH = "oauth.error.clientcodemismatch";
   private static final String KEY_INVALID_SECRET = "oauth.error.invalidsecret";
-  private static final String KEY_TOKEN_NOT_FOUND = "oauth.error.tokennotfound";
 
   @Inject private OAuthService oauthService;
   @Inject private UserService userService;
@@ -82,7 +79,7 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
   // Not cluster safe, but that's ok, we will re-evaluate ACLs if the user
   // hits another node. The first key is institution uniqueId, second token
   // key.
-  private InstitutionCache<Cache<String, OAuthUserState>> userStateMap;
+  private InstitutionCache<Cache<String, UserState>> userStateMap;
 
   @Inject
   public void setReplicatedCache(ReplicatedCacheService service) {
@@ -94,9 +91,9 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
   public void setInstitutionService(InstitutionService service) {
     userStateMap =
         service.newInstitutionAwareCache(
-            new CacheLoader<Institution, Cache<String, OAuthUserState>>() {
+            new CacheLoader<Institution, Cache<String, UserState>>() {
               @Override
-              public Cache<String, OAuthUserState> load(Institution key) throws Exception {
+              public Cache<String, UserState> load(Institution key) throws Exception {
                 return CacheBuilder.newBuilder()
                     .concurrencyLevel(10)
                     .maximumSize(50000)
@@ -120,7 +117,7 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
   }
 
   @Override
-  public AuthorisationDetails getAuthorisationDetailsByCode(OAuthClient client, String code) {
+  public AuthorisationDetails getAuthorisationDetailsByCode(IOAuthClient client, String code) {
     // code must be in the map
     Optional<CodeReg> codeOptional = oAuthCodesCache.get(code);
     if (!codeOptional.isPresent()) {
@@ -146,9 +143,8 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
 
   @Override
   public AuthorisationDetails getAuthorisationDetailsBySecret(
-      OAuthClient client, String clientSecret) {
-    if (clientSecret != null
-        && !encryptionService.decrypt(client.getClientSecret()).equals(clientSecret)) {
+      IOAuthClient client, String clientSecret) {
+    if (clientSecret != null && !client.secretMatches(clientSecret)) {
       throw new OAuthException(400, OAuthConstants.ERROR_INVALID_GRANT, text(KEY_INVALID_SECRET));
     }
 
@@ -173,34 +169,18 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
   }
 
   @Override
-  public OAuthUserState getUserState(String tokenData, HttpServletRequest request) {
-    Cache<String, OAuthUserState> userCache = getUserCache(CurrentInstitution.get());
-    OAuthUserState oauthUserState = userCache.getIfPresent(tokenData);
+  public UserState getUserState(String tokenData, HttpServletRequest request) {
+    Cache<String, UserState> userCache = getUserCache(CurrentInstitution.get());
+    UserState oauthUserState = userCache.getIfPresent(tokenData);
     if (oauthUserState == null) {
       // find the token and the user associated with it
-      final OAuthToken token = oauthService.getToken(tokenData);
-      if (token == null) {
-        // FIXME: Need to fall back on server language since
-        // LocaleEncodingFilter has not run yet...
-        throw new OAuthException(
-            403,
-            OAuthConstants.ERROR_ACCESS_DENIED,
-            languageService
-                .getResourceBundle(Locale.getDefault(), "resource-centre")
-                .getString(KEY_TOKEN_NOT_FOUND));
-      }
-
-      final UserState userState =
-          userService.authenticateAsUser(
-              token.getUsername(), userService.getWebAuthenticationDetails(request));
-
-      oauthUserState = new OAuthUserStateImpl(userState, token);
+      oauthUserState = OAuthServerAccess.findUserState(tokenData, request);
       userCache.put(tokenData, oauthUserState);
     }
-    return (OAuthUserState) oauthUserState.clone();
+    return oauthUserState.clone();
   }
 
-  private Cache<String, OAuthUserState> getUserCache(Institution institution) {
+  private Cache<String, UserState> getUserCache(Institution institution) {
     return userStateMap.getCache(institution);
   }
 
@@ -212,7 +192,7 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
 
   @Override
   public void deleteOAuthTokensEvent(DeleteOAuthTokensEvent event) {
-    Cache<String, OAuthUserState> userCache = getUserCache(CurrentInstitution.get());
+    Cache<String, UserState> userCache = getUserCache(CurrentInstitution.get());
     userCache.invalidateAll(event.getTokens());
   }
 
@@ -223,6 +203,22 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
     validateVersion(message); // Is OAuth 1
     validateTimestampAndNonce(message);
     validateSignature(message, accessor);
+  }
+
+  @Override
+  public IOAuthToken getOrCreateToken(
+      AuthorisationDetails authDetails, IOAuthClient client, String code) {
+    return OAuthServerAccess.getOrCreateToken(authDetails, client, code);
+  }
+
+  @Override
+  public IOAuthClient getByClientIdOnly(String clientId) {
+    return OAuthServerAccess.byClientId(clientId);
+  }
+
+  @Override
+  public IOAuthClient getByClientIdAndRedirectUrl(String clientId, String redirectUrl) {
+    return OAuthServerAccess.byClientIdAndRedirect(clientId, redirectUrl);
   }
 
   /** Throw an exception if any SINGLE_PARAMETERS occur repeatedly. */

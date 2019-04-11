@@ -21,6 +21,7 @@ import com.tle.cal.service.CALService;
 import com.tle.cal.web.service.CALWebServiceImpl;
 import com.tle.common.scripting.service.ScriptingService;
 import com.tle.core.activation.service.ActivationService;
+import com.tle.core.encryption.EncryptionService;
 import com.tle.core.events.services.EventService;
 import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.i18n.service.LanguageService;
@@ -28,6 +29,7 @@ import com.tle.core.institution.InstitutionService;
 import com.tle.core.item.helper.ItemHelper;
 import com.tle.core.item.standard.service.ItemCommentService;
 import com.tle.core.jackson.ObjectMapperService;
+import com.tle.core.oauth.service.OAuthService;
 import com.tle.core.replicatedcache.ReplicatedCacheService;
 import com.tle.core.search.service.impl.SearchPrivilegeTreeProvider;
 import com.tle.core.security.TLEAclManager;
@@ -184,6 +186,10 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static Provider<SelectionService> selectionService;
 
   @Inject public static ReplicatedCacheService replicatedCacheService;
+
+  @Inject public static OAuthService oAuthService;
+
+  @Inject public static EncryptionService encryptionService;
 
   @Override
   protected void configure() {

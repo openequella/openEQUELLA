@@ -21,7 +21,7 @@ import java.util.{Locale, UUID}
 
 import fs2._
 import cats.data.Validated.{Invalid, Valid}
-import cats.data.ValidatedNec
+import cats.data.{OptionT, ValidatedNec}
 import cats.effect.{IO, LiftIO}
 import cats.syntax.validated._
 import cats.syntax.apply._
@@ -146,6 +146,10 @@ object CloudProviderDB {
     })
   }
 
+  val readAll: Stream[DB, CloudProviderInstance] = {
+    EntityDB.readAll[CloudProviderDB].map(toInstance)
+  }
+
   val allProviders: Stream[DB, CloudProviderDetails] = {
     EntityDB.readAll[CloudProviderDB].map { cp =>
       val oeq = cp.entity
@@ -158,4 +162,8 @@ object CloudProviderDB {
 
   def deleteRegistration(id: UUID): DB[Unit] =
     EntityDB.delete(id).compile.drain
+
+  def get(id: UUID): OptionT[DB, CloudProviderInstance] = {
+    EntityDB.readOne(id).map(toInstance)
+  }
 }

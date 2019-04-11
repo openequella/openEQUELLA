@@ -18,8 +18,10 @@ package com.tle.core.db
 import java.util.UUID
 
 import com.tle.core.db.migration.DBSchemaMigration
+import com.tle.core.db.tables.CachedValue
 import com.tle.core.db.types.DbUUID
 import io.doolse.simpledba.Iso
+import io.doolse.simpledba.jdbc.JDBCIO
 import io.doolse.simpledba.jdbc.sqlserver._
 
 object SQLServerSchema
@@ -33,6 +35,8 @@ object SQLServerSchema
   override def autoIdCol: SQLServerColumn[Long] = identityCol[Long]
 
   override def insertAuditLog = insertIdentity(auditLog)
+
+  override def insertCachedValue = insertIdentity(cachedValues)
 
   def dbUuidCol =
     wrap[String, DbUUID](stringCol,

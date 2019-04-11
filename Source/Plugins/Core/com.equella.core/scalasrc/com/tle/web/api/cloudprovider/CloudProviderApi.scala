@@ -47,11 +47,11 @@ class CloudProviderApi {
                registration: CloudProviderRegistration): Response = {
     ApiHelper.runAndBuild {
       for {
-        uc                <- getContext
+        ctx               <- getContext
         validatedInstance <- CloudProviderDB.register(regtoken, registration)
       } yield {
         val forwardUrl = UriBuilder
-          .fromUri(uc.inst.getUrlAsUri)
+          .fromUri(ctx.inst.getUrlAsUri)
           .path(SettingsList.CloudProviderListPage)
           .build()
           .toString

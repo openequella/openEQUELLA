@@ -18,20 +18,19 @@ package com.tle.web.oauth.servlet;
 
 import com.dytech.edge.exceptions.WebException;
 import com.tle.common.Check;
-import com.tle.common.oauth.beans.OAuthClient;
-import com.tle.common.oauth.beans.OAuthToken;
 import com.tle.core.guice.Bind;
 import com.tle.core.oauth.OAuthConstants;
-import com.tle.core.oauth.service.OAuthService;
 import com.tle.core.services.user.UserService;
 import com.tle.web.oauth.OAuthException;
 import com.tle.web.oauth.OAuthWebConstants;
 import com.tle.web.oauth.response.ErrorResponse;
 import com.tle.web.oauth.response.TokenResponse;
+import com.tle.web.oauth.service.IOAuthClient;
+import com.tle.web.oauth.service.IOAuthToken;
 import com.tle.web.oauth.service.OAuthWebService;
 import com.tle.web.oauth.service.OAuthWebService.AuthorisationDetails;
 import java.io.IOException;
-import java.util.Date;
+import java.time.Instant;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletException;
@@ -49,7 +48,6 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
 
   @Inject private UserService userService;
   @Inject private OAuthWebService oauthWebService;
-  @Inject private OAuthService oauthService;
 
   @Override
   protected void doService(HttpServletRequest request, HttpServletResponse response)
@@ -69,12 +67,12 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
 
     try {
       final AuthorisationDetails auth;
-      final OAuthClient client;
+      final IOAuthClient client;
       // http://tools.ietf.org/html/draft-ietf-oauth-v2-23#section-4.1
       if (isAuthorizationCode) {
         final String redirectUrl =
             getParameter(request, OAuthWebConstants.PARAM_REDIRECT_URI, true);
-        client = oauthService.getByClientIdAndRedirectUrl(clientId, redirectUrl);
+        client = oauthWebService.getByClientIdAndRedirectUrl(clientId, redirectUrl);
         if (client == null) {
           throw new OAuthException(
               400,
@@ -86,7 +84,7 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
       }
       // http://tools.ietf.org/html/draft-ietf-oauth-v2-23#section-4.4
       else if (isClientCredentials) {
-        client = oauthService.getByClientIdOnly(clientId);
+        client = oauthWebService.getByClientIdOnly(clientId);
         if (client == null) {
           throw new OAuthException(
               400,
@@ -110,13 +108,8 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
             text("oauth.error.invalidgranttype", grantType));
       }
 
-      String username = auth.getUsername();
-      if (username == null) {
-        username = userService.getInformationForUser(auth.getUserId()).getUsername();
-      }
       try {
-        final OAuthToken token =
-            oauthService.getOrCreateToken(auth.getUserId(), username, client, code);
+        final IOAuthToken token = oauthWebService.getOrCreateToken(auth, client, code);
 
         respondWithToken(response, token, OAuthWebConstants.TOKEN_TYPE_EQUELLA_API, state);
       } catch (Exception e) // NOSONAR
@@ -145,20 +138,21 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
   }
 
   protected void respondWithToken(
-      HttpServletResponse response, OAuthToken token, String tokenType, String state)
+      HttpServletResponse response, IOAuthToken token, String tokenType, String state)
       throws IOException {
     final TokenResponse r = new TokenResponse();
     r.setAccessToken(token.getToken());
     r.setTokenType(tokenType);
     r.setExpiresIn(token.getExpiry() == null ? Long.MAX_VALUE : calcExpiresIn(token.getExpiry()));
     r.setState(state);
+    response.setHeader("Access-Control-Allow-Origin", "*");
     response.setContentType("application/json");
     mapper.writeValue(response.getOutputStream(), r);
   }
 
-  private long calcExpiresIn(Date expiry) {
-    long now = new Date().getTime();
-    long then = expiry.getTime();
+  private long calcExpiresIn(Instant expiry) {
+    long now = Instant.now().toEpochMilli();
+    long then = expiry.toEpochMilli();
     return then - now;
   }
 }

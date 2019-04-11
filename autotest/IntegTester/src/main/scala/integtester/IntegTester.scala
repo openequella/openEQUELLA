@@ -4,6 +4,7 @@
 package integtester
 
 import cats.effect.{ExitCode, IO, IOApp}
+import integtester.testprovider.TestingCloudProvider
 import io.circe.syntax._
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
@@ -75,6 +76,7 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
     BlazeBuilder[IO]
       .bindHttp(8083, "0.0.0.0")
       .mountService(appService, "")
+      .mountService(TestingCloudProvider.oauthService, "/provider/")
       .mountService(resourceService[IO](ResourceService.Config("/www", ExecutionContext.global)),
                     "/")
       .serve

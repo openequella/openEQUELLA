@@ -19,6 +19,8 @@ import equellatests.tests.SanityTestProperties.Pages
 
 object CloudProviderProperties extends StatefulProperties("Cloud Providers") with SimpleTestCase {
 
+  val CloudProviderFirstLast = ("Cloud", "Provider")
+
   object Scenarios extends Enumeration {
     val Add, Delete = Value
   }
@@ -106,11 +108,17 @@ object CloudProviderProperties extends StatefulProperties("Cloud Providers") wit
       listPage.add(testProviderPage.createRegistrationUrl())
       testProviderPage.get()
       testProviderPage.registerProvider()
+      testProviderPage.authenticateAsProvider()
+      val firstName = testProviderPage.getFirstName
+      val lastName  = testProviderPage.getLastName
       listPage = testProviderPage.returnToEQUELLA()
       listPage.waitForResults()
       val result      = listPage.resultForName(actualProvider.name)
       val description = result.description()
-      (description ?= actualProvider.description) :| "Description should match"
+      Prop.all(
+        ((firstName, lastName) ?= CloudProviderFirstLast) :| "Should be able to authenticate as the cloud provider",
+        (description ?= actualProvider.description) :| "Description should match"
+      )
 
     case DeleteProvider(providerName) =>
       val listPage = loadProviderPage(b)
