@@ -16,69 +16,128 @@
 
 package com.tle.core.cloudproviders
 
-import java.net.URI
-import java.util.UUID
+import java.nio.ByteBuffer
+import java.time.Instant
 
-import cats.data.OptionT
 import cats.effect.IO
+import cats.syntax.either._
+import cats.syntax.applicative._
 import com.softwaremill.sttp._
-import com.tle.core.httpclient._
+import com.softwaremill.sttp.circe._
+import com.tle.beans.cloudproviders.{CloudControlDefinition, ProviderControlDefinition}
+import com.tle.core.cache.{Cacheable, DBCacheBuilder}
 import com.tle.core.db._
-import com.tle.core.oauthclient.{OAuthClientService, OAuthTokenState}
+import com.tle.core.httpclient._
+import com.tle.core.oauthclient.OAuthClientService
+import fs2.Stream
+import org.slf4j.LoggerFactory
+
+sealed trait CloudProviderError
+case class IOError(throwable: Throwable)                          extends CloudProviderError
+case class HttpError(message: String)                             extends CloudProviderError
+case class JSONError(error: DeserializationError[io.circe.Error]) extends CloudProviderError
 
 object CloudProviderService {
 
-  val OAuthServiceId = "oauth"
+  val Logger = LoggerFactory.getLogger(getClass)
 
-  def tokenForProvider(cp: CloudProviderInstance): DB[OAuthTokenState] = {
-    cp.serviceUris
+  val ControlCacheValidSeconds   = 60
+  val InvalidControlRetrySeconds = 20
+
+  val OAuthServiceId    = "oauth"
+  val ControlsServiceId = "controls"
+
+  def tokenUrlForProvider(provider: CloudProviderInstance): IO[Uri] = {
+    provider.serviceUris
       .get(OAuthServiceId)
       .map { oauthService =>
-        dbLiftIO
-          .liftIO(
-            IO.fromEither(UriTemplateService.replaceVariables(oauthService.uri, cp.baseUrl, Map())))
-          .flatMap { uri =>
-            OAuthClientService.tokenForClient(uri.toString,
-                                              cp.providerAuth.clientId,
-                                              cp.providerAuth.clientSecret)
+        IO.fromEither(
+          UriTemplateService.replaceVariables(oauthService.uri, provider.baseUrl, Map()))
+      }
+      .getOrElse(IO.raiseError(new Throwable("No OAuth service URL")))
+  }
+
+  def serviceRequest[T](serviceUri: ServiceUri,
+                        provider: CloudProviderInstance,
+                        params: Map[String, String],
+                        f: Uri => Request[T, Stream[IO, ByteBuffer]]): DB[Response[T]] =
+    for {
+      uri <- dbLiftIO.liftIO {
+        IO.fromEither(UriTemplateService.replaceVariables(serviceUri.uri, provider.baseUrl, params))
+      }
+      req  = f(uri)
+      auth = provider.providerAuth
+      response <- if (serviceUri.authenticated) {
+        dbLiftIO.liftIO(tokenUrlForProvider(provider)).flatMap { oauthUrl =>
+          OAuthClientService
+            .authorizedRequest(oauthUrl.toString, auth.clientId, auth.clientSecret, req)
+        }
+      } else dbLiftIO.liftIO(req.send())
+    } yield response
+
+  case class ControlListCacheValue(
+      expiry: Instant,
+      result: Either[CloudProviderError, Iterable[CloudControlDefinition]])
+
+  object ControlListCache extends Cacheable[CloudProviderInstance, ControlListCacheValue] {
+    override def cacheId: String = "cloudControlLists"
+
+    override def key(userContext: UserContext, v: CloudProviderInstance): String =
+      s"${userContext.inst.getUniqueId}_${v.id}"
+
+    def withTimeout(result: Either[CloudProviderError, Iterable[CloudControlDefinition]])
+      : ControlListCacheValue = {
+      val timeoutSeconds =
+        if (result.isLeft) InvalidControlRetrySeconds else ControlCacheValidSeconds
+      ControlListCacheValue(Instant.now().plusSeconds(timeoutSeconds), result)
+    }
+    override def query: CloudProviderInstance => DB[ControlListCacheValue] = provider => {
+      provider.serviceUris.get(ControlsServiceId) match {
+        case None => withTimeout(Right(Iterable.empty)).pure[DB]
+        case Some(controlsService) =>
+          dbAttempt {
+            serviceRequest(
+              controlsService,
+              provider,
+              Map(),
+              u => sttp.get(u).response(asJson[Map[String, ProviderControlDefinition]]))
+          }.map { responseOrError =>
+            withTimeout {
+              for {
+                response   <- responseOrError.leftMap(IOError)
+                controlMap <- response.body.leftMap(HttpError).flatMap(_.leftMap(JSONError))
+              } yield {
+                controlMap.map {
+                  case (controlId, config) =>
+                    CloudControlDefinition(provider.id,
+                                           controlId,
+                                           config.name,
+                                           config.iconUrl.getOrElse("/icons/control.gif"),
+                                           config.configuration)
+                }
+              }
+            }
           }
       }
-      .getOrElse(dbLiftIO.liftIO(IO.raiseError(new Throwable("No OAuth service URL"))))
+    }
   }
 
-  def proxyRequest(uuid: UUID, serviceId: String): DB[String] = {
-    CloudProviderDB
-      .get(uuid)
-      .flatMap { cp =>
-        val tempCP = cp.copy(
-          baseUrl = "http://doolse-sabre:8080/my/",
-          serviceUris = Map(
-            "oauth"       -> ServiceUri("${baseurl}oauth/access_token", authenticated = false),
-            "currentuser" -> ServiceUri("${baseurl}api/content/currentuser", authenticated = true)
-          ),
-          providerAuth = CloudOAuthCredentials("aadd359a-3478-484f-8aca-97b18901bcd9",
-                                               "985477ca-52ee-400d-a162-7ad403149352")
-        )
-        OptionT.fromOption[DB](tempCP.serviceUris.get(serviceId)).semiflatMap {
-          case ServiceUri(uriTemplate, auth) =>
-            for {
-              uri <- dbLiftIO.liftIO {
-                IO.fromEither(
-                  UriTemplateService.replaceVariables(uriTemplate, tempCP.baseUrl, Map()))
-              }
-              req = sttp.get(uri)
-              response <- if (auth) {
-                tokenForProvider(tempCP).flatMap { token =>
-                  dbLiftIO.liftIO {
-                    OAuthClientService.requestWithToken(req, token.token, token.tokenType)
-                  }
-                }
-              } else dbLiftIO.liftIO { req.send() }
+  val controlListCache = DBCacheBuilder.buildCache(ControlListCache)
 
-            } yield response.unsafeBody
-        }
+  def queryControls(): DB[Vector[CloudControlDefinition]] =
+    CloudProviderDB.readAll
+      .evalMap { cp =>
+        controlListCache
+          .getIfValid(cp, _.expiry.isAfter(Instant.now()))
+          .map(cv => cp.name -> cv.result)
       }
-      .getOrElse("")
-  }
+      .flatMap {
+        case (name, Left(error)) =>
+          Logger.info(s"Failed querying $name - $error")
+          Stream.empty
+        case (_, Right(controls)) => Stream.emits(controls.toSeq)
+      }
+      .compile
+      .toVector
 
 }

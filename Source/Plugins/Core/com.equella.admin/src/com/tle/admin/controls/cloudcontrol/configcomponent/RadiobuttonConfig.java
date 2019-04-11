@@ -37,7 +37,7 @@ public class RadiobuttonConfig implements CloudControlConfigControl {
       CloudControlConfig cloudControlConfig, JPanel configPanel, ChangeDetector changeDetector) {
     this.cloudControlConfig = cloudControlConfig;
     cloudControlConfig
-        .options()
+        .getOptions()
         .forEach(
             cloudConfigOption -> {
               JRadioButton radioButton = new JRadioButton(cloudConfigOption.name());

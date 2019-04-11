@@ -174,7 +174,9 @@ trait DBSchema extends StdColumns {
   val cachedValueQueries = CachedValueQueries(
     insertCachedValue,
     cachedValues.writes,
-    cachedValues.query.where(Cols('cache_id, 'key, 'institution_id), BinOp.EQ).build)
+    cachedValues.query.where(Cols('cache_id, 'key, 'institution_id), BinOp.EQ).build,
+    cachedValues.query.where(Cols('cache_id, 'value, 'institution_id), BinOp.EQ).build
+  )
 
   allTables ++= newEntityTables
   allIndexes ++= newEntityIndexes

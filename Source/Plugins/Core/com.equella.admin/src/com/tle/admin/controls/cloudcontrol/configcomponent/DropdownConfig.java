@@ -32,7 +32,7 @@ public class DropdownConfig implements CloudControlConfigControl {
     this.comboBox = new JComboBox<>();
     this.cloudControlConfig = cloudControlConfig;
     cloudControlConfig
-        .options()
+        .getOptions()
         .forEach(cloudConfigOption -> comboBox.addItem(cloudConfigOption.name()));
     changeDetector.watch(comboBox);
     configPanel.add(comboBox);

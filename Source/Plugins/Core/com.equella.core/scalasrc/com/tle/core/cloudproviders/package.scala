@@ -18,6 +18,10 @@ package com.tle.core
 import java.net.URI
 import java.util.UUID
 
+import com.tle.beans.Institution
+import com.tle.common.usermanagement.user.AbstractUserState
+import com.tle.common.usermanagement.user.valuebean.DefaultUserBean
+
 package object cloudproviders {
 
   case class CloudOAuthCredentials(clientId: String, clientSecret: String)
@@ -54,4 +58,15 @@ package object cloudproviders {
                                   name: String,
                                   description: Option[String],
                                   iconUrl: Option[String])
+
+  class CloudProviderUserState(providerId: String, institution: Institution)
+      extends AbstractUserState {
+
+    val userId = "cp:" + providerId
+    setInstitution(institution)
+    setLoggedInUser(new DefaultUserBean(userId, userId, "Cloud", "Provider", null))
+
+    override def isSystem: Boolean = true
+    override def getSessionID      = "PROVIDER"
+  }
 }

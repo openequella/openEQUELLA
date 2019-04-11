@@ -47,11 +47,11 @@ class CloudProviderApi {
                registration: CloudProviderRegistration): Response = {
     ApiHelper.runAndBuild {
       for {
-        uc                <- getContext
+        ctx               <- getContext
         validatedInstance <- CloudProviderDB.register(regtoken, registration)
       } yield {
         val forwardUrl = UriBuilder
-          .fromUri(uc.inst.getUrlAsUri)
+          .fromUri(ctx.inst.getUrlAsUri)
           .path(SettingsList.CloudProviderListPage)
           .build()
           .toString
@@ -113,15 +113,6 @@ class CloudProviderApi {
       ApiHelper.allEntities {
         CloudProviderDB.allProviders
       }
-    }
-  }
-
-  @GET
-  @Path("proxy/{uuid}/{serviceId}")
-  @ApiOperation("Proof of concept proxying")
-  def proxy(@PathParam("uuid") uuid: UUID, @PathParam("serviceId") serviceId: String): String = {
-    RunWithDB.execute {
-      CloudProviderService.proxyRequest(uuid, serviceId)
     }
   }
 }

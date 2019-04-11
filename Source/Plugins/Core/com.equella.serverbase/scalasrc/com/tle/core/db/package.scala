@@ -16,7 +16,7 @@
 
 package com.tle.core
 
-import cats.data.Kleisli
+import cats.data.{Kleisli, StateT}
 import cats.effect.LiftIO
 import cats.syntax.applicative._
 import cats.~>
@@ -31,6 +31,12 @@ package object db {
   val getContext: DB[UserContext] = Kleisli.ask
 
   val dbLiftIO = LiftIO[DB]
+
+  def dbAttempt[A](db: DB[A]): DB[Either[Throwable, A]] = Kleisli { uc =>
+    StateT { con =>
+      db.run(uc).runA(con).attempt.map(e => (con, e))
+    }
+  }
 
   def withContext[A](f: UserContext => A): DB[A] =
     Kleisli(uc => f(uc).pure[JDBCIO])

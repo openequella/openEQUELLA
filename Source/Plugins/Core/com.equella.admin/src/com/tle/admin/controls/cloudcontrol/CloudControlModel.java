@@ -38,7 +38,7 @@ public class CloudControlModel extends CustomControlModel<CloudControl> {
       return Lookup.lookup.text(
           "cloudcontrol.validation.message", Lookup.lookup.text("cloudcontrol.title"));
     }
-    for (CloudControlConfig c : definition.getDef().configDefinition()) {
+    for (CloudControlConfig c : definition.getDef().getConfigDefinition()) {
       if (c.isConfigMandatory()) {
         Object value = cloudControl.getAttributes().get(c.id());
         if (value == null || value.toString().isEmpty()) {

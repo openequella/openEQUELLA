@@ -50,10 +50,10 @@ public final class OAuthWebConstants {
   public static final String OAUTH_DEFAULT_REDIRECT_URL_NAME = "default";
   public static final String OAUTH_TOKEN_URL = "oauth/access_token";
 
-  // public static final String HEADER_AUTHORIZATION = "Authorization";
+  public static final String HEADER_AUTHORIZATION = "Authorization";
   public static final String HEADER_X_AUTHORIZATION = "X-Authorization";
   public static final String AUTHORIZATION_ACCESS_TOKEN = "access_token";
-  // public static final String AUTHORIZATION_BEARER = "Bearer";
+  public static final String AUTHORIZATION_BEARER = "Bearer";
 
   public static final String PARAM_CODE = "code";
   public static final String PARAM_CLIENT_ID = "client_id";

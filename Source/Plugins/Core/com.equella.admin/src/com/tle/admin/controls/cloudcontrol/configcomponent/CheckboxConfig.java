@@ -35,7 +35,7 @@ public class CheckboxConfig implements CloudControlConfigControl {
       CloudControlConfig cloudControlConfig, JPanel configPanel, ChangeDetector changeDetector) {
     this.cloudControlConfig = cloudControlConfig;
     cloudControlConfig
-        .options()
+        .getOptions()
         .forEach(
             cloudConfigOption -> {
               JCheckBox checkBox = new JCheckBox(cloudConfigOption.name());

@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package com.tle.core.cloudproviders
+package com.tle.web.oauth.service;
 
-import java.util
+public interface IOAuthClient {
 
-import com.tle.beans.cloudproviders._
-import com.tle.core.db.RunWithDB
-import com.tle.core.guice.Bind
-import com.tle.core.remoting.CloudProviderAdminService
+  String getUserId();
 
-import scala.collection.JavaConverters._
+  String getClientId();
 
-@Bind(classOf[CloudProviderAdminService])
-class CloudProviderAdminServiceImpl extends CloudProviderAdminService {
+  String getRedirectUrl();
 
-  override def listControls: util.List[CloudControlDefinition] = {
-    RunWithDB.execute(CloudProviderService.queryControls()).asJava
-  }
+  String getClientSecret();
+
+  boolean secretMatches(String clientSecret);
 }

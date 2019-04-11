@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-package com.tle.core.oauth;
+package com.tle.web.oauth.service;
 
-import com.tle.common.oauth.beans.OAuthClient;
-import com.tle.common.usermanagement.user.UserState;
-import com.tle.core.oauth.dao.OAuthClientDao;
+import java.time.Instant;
 
-/** @author Aaron */
-public interface OAuthUserState extends UserState {
-  String getOAuthToken();
+public interface IOAuthToken {
 
-  String getClientUuid();
+  String getToken();
 
-  /**
-   * The dao is required in case the transient value is missing
-   *
-   * @return
-   */
-  OAuthClient getClient(OAuthClientDao dao);
+  Instant getExpiry();
 }

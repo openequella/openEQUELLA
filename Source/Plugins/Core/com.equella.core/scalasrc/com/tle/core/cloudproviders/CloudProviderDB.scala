@@ -146,6 +146,10 @@ object CloudProviderDB {
     })
   }
 
+  val readAll: Stream[DB, CloudProviderInstance] = {
+    EntityDB.readAll[CloudProviderDB].map(toInstance)
+  }
+
   val allProviders: Stream[DB, CloudProviderDetails] = {
     EntityDB.readAll[CloudProviderDB].map { cp =>
       val oeq = cp.entity

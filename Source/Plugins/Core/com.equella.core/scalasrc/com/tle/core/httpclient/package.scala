@@ -19,7 +19,10 @@ package com.tle.core
 import java.util.concurrent.Executors
 
 import cats.effect.IO
+import com.softwaremill.sttp.SttpBackendOptions
+import com.softwaremill.sttp.SttpBackendOptions.{Proxy, ProxyType}
 import com.softwaremill.sttp.asynchttpclient.fs2.AsyncHttpClientFs2Backend
+import com.tle.legacy.LegacyGuice
 
 import scala.concurrent.ExecutionContext
 
@@ -27,5 +30,9 @@ package object httpclient {
   val blockingEC            = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(5))
   implicit val contextShift = IO.contextShift(blockingEC)
 
-  implicit val sttpBackend = AsyncHttpClientFs2Backend[IO]()
+  implicit lazy val sttpBackend = {
+    val proxy     = LegacyGuice.configService.getProxyDetails
+    val sttpProxy = Option(proxy.getHost).map(h => Proxy(h, proxy.getPort, ProxyType.Http))
+    AsyncHttpClientFs2Backend[IO](SttpBackendOptions.Default.copy(proxy = sttpProxy))
+  }
 }

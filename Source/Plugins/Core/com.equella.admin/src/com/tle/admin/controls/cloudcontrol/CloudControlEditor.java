@@ -34,10 +34,9 @@ import com.tle.i18n.BundleCache;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -46,7 +45,11 @@ public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
   private final ChangeDetector changeDetector = getChangeDetector();
   private static final int SUB_PANEL_HORIZONTAL_GAP = 20;
   private static final int SUB_PANEL_VERTICAL_GAP = 10;
-  private List<CloudControlConfig> cloudControlConfigs;
+  private static final int MAIN_PANEL_GRID_X = 0;
+  private static final int MAIN_PANEL_GRID_Y = 0;
+  private static final int MAIN_PANEL_WEIGHT_X = 1;
+  private static final Insets MAIN_PANEL_SPACING = new Insets(0, 0, 5, 0);
+  private Iterable<CloudControlConfig> cloudControlConfigs;
   private Map<String, CloudControlConfigControl> cloudControlConfigMap = new HashMap<>();
   private JPanel mainPanel;
   private GridBagConstraints gridBagConstraints;
@@ -56,7 +59,7 @@ public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
   public CloudControlEditor(
       CloudControlDefinition definition, Control control, int wizardType, SchemaModel schema) {
     super(control, wizardType, schema);
-    this.cloudControlConfigs = definition.configDefinition();
+    this.cloudControlConfigs = definition.getConfigDefinition();
     this.cloudControlModel = control;
     setupGUI();
   }
@@ -84,9 +87,10 @@ public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.weightx = 1;
+    gridBagConstraints.gridx = MAIN_PANEL_GRID_X;
+    gridBagConstraints.gridy = MAIN_PANEL_GRID_Y;
+    gridBagConstraints.weightx = MAIN_PANEL_WEIGHT_X;
+    gridBagConstraints.insets = MAIN_PANEL_SPACING;
     renderTitle();
     renderBody();
     addSection(mainPanel);
@@ -118,7 +122,8 @@ public class CloudControlEditor extends AbstractControlEditor<CloudControl> {
     for (CloudControlConfig cloudControlConfig : cloudControlConfigs) {
       gridBagConstraints.gridy = gridY++;
       JPanel configPanel = createSubPanel();
-      String description = Optional.ofNullable(cloudControlConfig.description()).orElse("");
+      // controlType is always non-null
+      String description = cloudControlConfig.getDescription().orElse("");
       configPanel.setToolTipText(description);
       String configType = cloudControlConfig.configType().toString();
       String labelPosition = (configType.equals("XPath") ? BorderLayout.NORTH : BorderLayout.WEST);
