@@ -1722,6 +1722,9 @@
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="htmleditorSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.htmleditor.settings.HtmlEditorSettingsPrivilegeTreeProvider" />
   </extension>
+  <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="cloudProviderSettingPrivilegeTreeProvider">
+    <parameter id="provider" value="bean:com.tle.web.cloudprovider.CloudProviderSettingPrivilegeTreeProvider" />
+  </extension>
   <extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="move">
     <parameter id="id" value="move" />
     <parameter id="class" value="bean:com.tle.web.cloneormove.section.MoveItemSection" />

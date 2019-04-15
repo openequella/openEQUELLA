@@ -27,6 +27,7 @@ import com.tle.core.i18n.CoreStrings
 import com.tle.core.oauth.OAuthConstants
 import com.tle.core.security.AclChecks
 import com.tle.legacy.LegacyGuice._
+import com.tle.web.cloudprovider.CloudProviderConstants
 import com.tle.web.mimetypes.MimeEditorUtils
 import com.tle.web.sections.render.TextLabel
 import com.tle.web.sections.standard.model.{HtmlLinkState, SimpleBookmark}
@@ -96,7 +97,10 @@ object SettingsList {
     "cloudprovider.settings.title",
     "cloudprovider.settings.description",
     CloudProviderListPage,
-    () => !aclManager.filterNonGrantedPrivileges("EDIT_SYSTEM_SETTINGS").isEmpty
+    () =>
+      !aclManager
+        .filterNonGrantedPrivileges(CloudProviderConstants.PRI_MANAGE_CLOUD_PROVIDER)
+        .isEmpty
   )
 
   val echoSettings = CoreSettingsPage(

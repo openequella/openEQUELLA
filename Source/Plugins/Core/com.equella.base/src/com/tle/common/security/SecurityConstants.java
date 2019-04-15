@@ -124,6 +124,8 @@ public final class SecurityConstants {
   public static final int PRIORITY_MANAGING = 350;
   public static final int PRIORITY_ALL_SYSTEM_SETTINGS = 325;
   public static final int PRIORITY_SYSTEM_SETTING = 300;
+  public static final int PRIORITY_ALL_CLOUD_PROVIDER = 250;
+  public static final int PRIORITY_CLOUD_PROVIDER = 225;
   public static final int PRIORITY_HIERARCHY_TOPIC = 200;
   public static final int PRIORITY_ITEM = 100;
   public static final int PRIORITY_OBJECT_INSTANCE = 0;
