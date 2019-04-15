@@ -30,6 +30,7 @@ public class PostLoginNoticeResourceImpl implements PostLoginNoticeResource {
 
   @Override
   public Response retrievePostLoginNotice() {
+    noticeService.checkPermissions();
     String loginNotice = noticeService.getPostLoginNotice();
     if (loginNotice != null) {
       return Response.ok(loginNotice, "text/plain").build();

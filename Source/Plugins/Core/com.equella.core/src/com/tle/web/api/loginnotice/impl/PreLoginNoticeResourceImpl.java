@@ -43,6 +43,7 @@ public class PreLoginNoticeResourceImpl implements PreLoginNoticeResource {
 
   @Override
   public Response retrievePreLoginNotice() throws IOException {
+    noticeService.checkPermissions();
     PreLoginNotice loginNotice = noticeService.getPreLoginNotice();
     if (loginNotice != null) {
       return Response.ok(loginNotice, "application/json").build();
