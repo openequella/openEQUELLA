@@ -87,7 +87,7 @@ object SettingsList {
     "loginnotice.settings.title",
     "loginnotice.settings.description",
     "page/loginconfiguration",
-    () => !aclManager.filterNonGrantedPrivileges("EDIT_SYSTEM_SETTINGS").isEmpty
+    loginNoticeEditorPrivilegeTreeProvider.isAuthorised
   )
 
   val cloudProviderSettings = CoreSettingsPage(
