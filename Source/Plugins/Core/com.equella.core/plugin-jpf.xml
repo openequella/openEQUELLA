@@ -1459,6 +1459,9 @@
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="loginSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.login.LoginSettingsPrivilegeTreeProvider" />
   </extension>
+  <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="loginNoticeEditorPrivilegeTreeProvider">
+    <parameter id="provider" value="bean:com.tle.web.loginnotice.LoginNoticeEditorPrivilegeTreeProvider" />
+  </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="userScriptsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.userscripts.privileges.UserScriptsPrivilegeTreeProvider" />
   </extension>

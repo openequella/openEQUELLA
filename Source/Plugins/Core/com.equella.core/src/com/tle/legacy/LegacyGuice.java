@@ -54,6 +54,7 @@ import com.tle.web.integration.service.IntegrationService;
 import com.tle.web.language.LanguageSettingsPrivilegeTreeProvider;
 import com.tle.web.loggedinusers.LoggedInUsersPrivilegeTreeProvider;
 import com.tle.web.login.LoginSettingsPrivilegeTreeProvider;
+import com.tle.web.loginnotice.LoginNoticeEditorPrivilegeTreeProvider;
 import com.tle.web.mail.MailSettingsPrivilegeTreeProvider;
 import com.tle.web.manualdatafixes.ManualDataFixesPrivilegeTreeProvider;
 import com.tle.web.mimetypes.MimeSearchPrivilegeTreeProvider;
@@ -91,6 +92,9 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static SearchPrivilegeTreeProvider searchPrivProvider;
 
   @Inject public static LoginSettingsPrivilegeTreeProvider loginPrivProvider;
+
+  @Inject
+  public static LoginNoticeEditorPrivilegeTreeProvider loginNoticeEditorPrivilegeTreeProvider;
 
   @Inject
   public static QuickContributeAndVersionSettingsPrivilegeTreeProvider quickContribPrivProvider;

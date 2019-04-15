@@ -16,6 +16,8 @@
 
 package com.tle.core.settings.loginnotice.impl;
 
+import static com.tle.legacy.LegacyGuice.loginNoticeEditorPrivilegeTreeProvider;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tle.common.Check;
@@ -32,7 +34,6 @@ import com.tle.exceptions.PrivilegeRequiredException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -202,9 +203,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
   }
 
   public void checkPermissions() {
-    if (tleAclManager
-        .filterNonGrantedPrivileges(Collections.singleton(PERMISSION_KEY), false)
-        .isEmpty()) {
+    if (!loginNoticeEditorPrivilegeTreeProvider.isAuthorised()) {
       throw new PrivilegeRequiredException(PERMISSION_KEY);
     }
   }
