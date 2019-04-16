@@ -21,6 +21,9 @@ import java.util.UUID
 import com.tle.beans.Institution
 import com.tle.common.usermanagement.user.AbstractUserState
 import com.tle.common.usermanagement.user.valuebean.DefaultUserBean
+import com.tle.exceptions.PrivilegeRequiredException
+import com.tle.legacy.LegacyGuice
+import com.tle.web.cloudprovider.CloudProviderConstants
 
 package object cloudproviders {
 
@@ -68,5 +71,13 @@ package object cloudproviders {
 
     override def isSystem: Boolean = true
     override def getSessionID      = "PROVIDER"
+  }
+
+  def checkPermissions(): Unit = {
+    if (LegacyGuice.aclManager
+          .filterNonGrantedPrivileges(CloudProviderConstants.PRI_MANAGE_CLOUD_PROVIDER)
+          .isEmpty) {
+      throw new PrivilegeRequiredException(CloudProviderConstants.PRI_MANAGE_CLOUD_PROVIDER)
+    }
   }
 }

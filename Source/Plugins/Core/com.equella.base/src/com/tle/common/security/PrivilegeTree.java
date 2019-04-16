@@ -16,6 +16,7 @@
 
 package com.tle.common.security;
 
+import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_CLOUD_PROVIDER;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_COLLECTIONS;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_CONNECTORS;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_COURSE_INFO;
@@ -39,6 +40,7 @@ import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_SYSTEM_SETT
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_TAXONOMIES;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_USER_SCRIPTS;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_WORKFLOWS;
+import static com.tle.common.security.SecurityConstants.PRIORITY_CLOUD_PROVIDER;
 import static com.tle.common.security.SecurityConstants.PRIORITY_COLLECTION;
 import static com.tle.common.security.SecurityConstants.PRIORITY_CONNECTOR;
 import static com.tle.common.security.SecurityConstants.PRIORITY_COURSE_INFO;
@@ -163,6 +165,10 @@ public final class PrivilegeTree {
     // Sigh. Tiny MCE Plugins HAX
     ALL_HTMLEDITOR_PLUGINS(true, PRIORITY_ALL_HTMLEDITOR_PLUGINS),
     HTMLEDITOR_PLUGIN(false, PRIORITY_HTMLEDITOR_PLUGIN),
+
+    // Cloud provider
+    ALL_CLOUD_PROVIDER(true, PRIORITY_ALL_CLOUD_PROVIDER),
+    CLOUD_PROVIDER(false, PRIORITY_CLOUD_PROVIDER),
 
     ALL_HARVESTER_PROFILES(true, PRIORITY_ALL_HARVESTER_PROFILES),
     HARVESTER_PROFILE(false, PRIORITY_HARVESTER_PROFILE),
@@ -483,6 +489,12 @@ public final class PrivilegeTree {
     mapping.put(Node.ALL_SYSTEM_SETTINGS, allSystemSettings);
     allSystemSettings.registerPrivilege("EDIT_SYSTEM_SETTINGS");
     allSystemSettings.getChildren().add(systemSetting);
+
+    // Because MANAGE_CLOUD_PROVIDERS is the only one privilege needed now so there is no need to
+    // call buildBasic
+    PrivilegeNode cloudProvider = new PrivilegeNode(Node.ALL_CLOUD_PROVIDER);
+    cloudProvider.registerPrivilege("MANAGE_CLOUD_PROVIDER");
+    mapping.put(Node.ALL_CLOUD_PROVIDER, cloudProvider);
 
     // Managing activations/items/etc
     PrivilegeNode manage = new PrivilegeNode(Node.MANAGING);
