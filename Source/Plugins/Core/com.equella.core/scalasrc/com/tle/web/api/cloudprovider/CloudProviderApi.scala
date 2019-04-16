@@ -72,6 +72,7 @@ class CloudProviderApi {
   )
   def prepareRegistration(@QueryParam("url") @DefaultValue("") providerUrl: String,
                           @Context uriInfo: UriInfo): CloudProviderForward = {
+    checkPermissions()
     UrlParser.parseUrl(providerUrl) match {
       case u: Url =>
         RunWithDB.execute {
@@ -102,6 +103,7 @@ class CloudProviderApi {
   @Path("provider/{uuid}")
   @ApiOperation(value = "Delete a cloud provider")
   def deleteRegistration(@PathParam("uuid") uuid: UUID): Response = ApiHelper.runAndBuild {
+    checkPermissions()
     CloudProviderDB.deleteRegistration(uuid).as(Response.noContent())
   }
 
@@ -109,6 +111,7 @@ class CloudProviderApi {
   @Path("")
   @ApiOperation("List current cloud providers")
   def list(): EntityPaging[CloudProviderDetails] = {
+    checkPermissions()
     RunWithDB.execute {
       ApiHelper.allEntities {
         CloudProviderDB.allProviders
