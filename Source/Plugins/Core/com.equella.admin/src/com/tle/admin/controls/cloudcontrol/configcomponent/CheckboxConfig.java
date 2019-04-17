@@ -63,7 +63,6 @@ public class CheckboxConfig implements CloudControlConfigControl {
   public void loadConfig(CloudControl control) {
     Object selections = control.getAttributes().get(cloudControlConfig.id());
     if (selections instanceof List) {
-
       List<String> checkBoxSelections = (List<String>) selections;
       for (Pair<String, JCheckBox> checkBox : checkBoxes) {
         checkBox.getSecond().setSelected(checkBoxSelections.contains(checkBox.getFirst()));

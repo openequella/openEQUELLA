@@ -63,6 +63,15 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
       Iterable(RCloudConfigOption("Yellow", "y"), RCloudConfigOption("Green", "g")),
       0,
       1
+    ),
+    RCloudControlConfig(
+      "radio",
+      "Which station do you listen to?",
+      Some("Please choose a station"),
+      RCloudControlConfigType.Radio,
+      Iterable(RCloudConfigOption("Tripl J", "92.9"), RCloudConfigOption("Sea FM", "who cares")),
+      0,
+      1
     )
   )
 
