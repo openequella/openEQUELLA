@@ -106,18 +106,14 @@ class CloudProviderApi {
                          registration: CloudProviderRegistration): Response = {
     checkPermissions()
     ApiHelper.runAndBuild {
-      for {
-        ctx                <- getContext
-        validatedInstanceO <- CloudProviderDB.editRegistered(uuid, registration).value
-      } yield {
-        validatedInstanceO
-          .map { validatedInstance =>
-            ApiHelper.validationOr(validatedInstance.map { inst =>
-              Response.noContent()
-            })
-          }
-          .getOrElse(Response.status(404))
-      }
+      CloudProviderDB
+        .editRegistered(uuid, registration)
+        .map { validatedInstance =>
+          ApiHelper.validationOr(validatedInstance.map { inst =>
+            Response.noContent()
+          })
+        }
+        .getOrElse(Response.status(404))
     }
   }
 
