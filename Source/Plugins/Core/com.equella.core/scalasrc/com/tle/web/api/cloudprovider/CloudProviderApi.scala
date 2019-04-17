@@ -102,12 +102,20 @@ class CloudProviderApi {
   @PUT
   @Path("provider/{uuid}")
   @ApiOperation(value = "Edit a cloud provider's service details")
-  def modifyRegistration(@PathParam("uuid") uuid: UUID,
-                         details: CloudProviderEditableDetails): Response =
+  def editServiceDetails(@PathParam("uuid") uuid: UUID,
+                         registration: CloudProviderRegistration): Response =
     ApiHelper.runAndBuild {
-      SettingsDB.ensureEditSystem {
-        CloudProviderDB
-          .editCloudProvider(uuid, details) as Response.noContent()
+      for {
+        ctx                <- getContext
+        validatedInstanceO <- CloudProviderDB.editRegistered(uuid, registration).value
+      } yield {
+        validatedInstanceO
+          .map { validatedInstance =>
+            ApiHelper.validationOr(validatedInstance.map { inst =>
+              Response.noContent()
+            })
+          }
+          .getOrElse(Response.status(404))
       }
     }
 

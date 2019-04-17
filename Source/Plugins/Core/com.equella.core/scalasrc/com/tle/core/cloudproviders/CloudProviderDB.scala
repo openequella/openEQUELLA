@@ -140,6 +140,16 @@ object CloudProviderDB {
       case Invalid(e) => e.invalid[CloudProviderInstance].pure[DB]
     }
 
+  def editRegistered(id: UUID, registration: CloudProviderRegistration)
+    : OptionT[DB, CloudProviderVal[CloudProviderInstance]] =
+    EntityDB.readOne(id).semiflatMap { oeq =>
+      for {
+        locale <- getContext.map(_.locale)
+        validated = validateRegistrationFields(oeq.entity, registration, oeq.data.oeqAuth, locale)
+        _ <- validated.traverse(cdb => flushDB(EntityDB.update[CloudProviderDB](oeq.entity, cdb)))
+      } yield validated.map(toInstance)
+    }
+
   val createRegistrationToken: DB[String] = {
     LiftIO[DB].liftIO(IO {
       val newToken = UUID.randomUUID().toString
