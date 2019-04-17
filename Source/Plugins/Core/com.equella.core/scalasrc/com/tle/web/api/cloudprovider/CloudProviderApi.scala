@@ -28,7 +28,7 @@ import io.lemonlabs.uri.Url
 import io.lemonlabs.uri.parsing.UrlParser
 import io.swagger.annotations.{Api, ApiOperation}
 import javax.ws.rs._
-import javax.ws.rs.core.{Context, MediaType, Response, UriBuilder, UriInfo}
+import javax.ws.rs.core._
 
 case class CloudProviderForward(url: String)
 
@@ -98,6 +98,18 @@ class CloudProviderApi {
     }
 
   }
+
+  @PUT
+  @Path("provider/{uuid}")
+  @ApiOperation(value = "Edit a cloud provider's service details")
+  def modifyRegistration(@PathParam("uuid") uuid: UUID,
+                         details: CloudProviderEditableDetails): Response =
+    ApiHelper.runAndBuild {
+      SettingsDB.ensureEditSystem {
+        CloudProviderDB
+          .editCloudProvider(uuid, details) as Response.noContent()
+      }
+    }
 
   @DELETE
   @Path("provider/{uuid}")

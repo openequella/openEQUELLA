@@ -33,6 +33,9 @@ trait OEQEntityEdits {
   def descriptionStrings: Option[Map[String, String]]
 }
 
+trait CloudProviderEdits extends OEQEntityEdits {
+  def iconUrl: Option[String]
+}
 object EntityValidation {
   def nonBlankStrings(
       field: String,
@@ -52,6 +55,28 @@ object EntityValidation {
     nonBlankStrings(field, string, None, locale)
 
   def standardValidation(
+      edits: OEQEntityEdits,
+      oeq: OEQEntity,
+      locale: Locale
+  ): ValidatedNec[EntityValidation, OEQEntity] = {
+    EntityValidation
+      .nonBlankStrings("name", edits.name, edits.nameStrings, locale)
+      .map { n =>
+        val desc = LocaleStrings.fromStrings(
+          edits.description.getOrElse(""),
+          edits.descriptionStrings,
+          locale
+        )
+        oeq.copy(
+          name = n._1,
+          name_strings = n._2,
+          description = desc.map(_._1),
+          modified = Instant.now,
+          description_strings = desc.map(_._2).getOrElse(LocaleStrings.empty)
+        )
+      }
+  }
+  def cloudProviderValidation(
       edits: OEQEntityEdits,
       oeq: OEQEntity,
       locale: Locale
