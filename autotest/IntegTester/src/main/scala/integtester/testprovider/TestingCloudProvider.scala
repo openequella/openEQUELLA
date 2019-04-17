@@ -4,8 +4,9 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 import cats.data.{Kleisli, OptionT}
-import cats.effect.IO
+import cats.effect.{ContextShift, IO}
 import cats.syntax.semigroupk._
+import integtester.IntegTester
 import io.circe.syntax._
 import org.http4s._
 import org.http4s.circe._
@@ -14,11 +15,11 @@ import org.http4s.server.AuthMiddleware
 import scalaoauth2.provider._
 
 import scala.collection.JavaConverters._
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 case class TestUser(clientId: String)
 
-object TestingCloudProvider extends Http4sDsl[IO] {
+class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[IO] {
 
   case class OAuthTokenResponse(access_token: String,
                                 refresh_token: Option[String],
@@ -53,6 +54,15 @@ object TestingCloudProvider extends Http4sDsl[IO] {
       Iterable(RCloudConfigOption("Yellow", "y"), RCloudConfigOption("Green", "g")),
       1,
       1
+    ),
+    RCloudControlConfig(
+      "colours",
+      "Which other colours do you want?",
+      Some("Please choose some colour(s)"),
+      RCloudControlConfigType.Check,
+      Iterable(RCloudConfigOption("Yellow", "y"), RCloudConfigOption("Green", "g")),
+      0,
+      1
     )
   )
 
@@ -68,7 +78,7 @@ object TestingCloudProvider extends Http4sDsl[IO] {
       }
     }
 
-  val tokenService = HttpRoutes.of[IO] {
+  val publicServices = HttpRoutes.of[IO] {
     case request @ POST -> Root / "access_token" =>
       request.decode[UrlForm] { formData =>
         val formMap = formData.values.mapValues(_.toVector)
@@ -84,6 +94,11 @@ object TestingCloudProvider extends Http4sDsl[IO] {
                                  None).asJson)
         }
       }
+    case request @ GET -> Root / "control.js" => {
+      StaticFile
+        .fromResource[IO]("/www/control.js", ExecutionContext.global)
+        .getOrElse(Response.notFound)
+    }
   }
 
   val middleware: AuthMiddleware[IO, TestUser] =
@@ -93,7 +108,7 @@ object TestingCloudProvider extends Http4sDsl[IO] {
     case GET -> Root / "controls" as user =>
       Ok(
         Map(
-          s"testcontrol_${user.clientId}" ->
+          s"testcontrol" ->
             RProviderControlDefinition(
               s"Lovely control ${user.clientId}",
               None,
@@ -101,7 +116,7 @@ object TestingCloudProvider extends Http4sDsl[IO] {
             )).asJson)
   }
 
-  val oauthService = tokenService <+> middleware(protectedService)
+  val oauthService = publicServices <+> middleware(protectedService)
 
   val tokenMap = new ConcurrentHashMap[String, (TestUser, AccessToken)].asScala
 
