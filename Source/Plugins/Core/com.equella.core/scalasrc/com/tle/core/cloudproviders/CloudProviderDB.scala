@@ -171,38 +171,6 @@ object CloudProviderDB {
                            cp.data.iconUrl)
     }
   }
-  def editFields(
-      original: CloudProviderDB,
-      edits: CloudProviderEditableDetails,
-      locale: Locale
-  ): CloudProviderVal[CloudProviderDB] =
-    EntityValidation
-      .cloudProviderValidation(
-        new OEQEntityEdits() {
-          override def name: String                = edits.name
-          override def nameStrings                 = None
-          override def description: Option[String] = edits.description
-          override def descriptionStrings          = None
-        },
-        original.entity,
-        locale
-      )
-      .map { newoeq =>
-        CloudProviderDB(newoeq, original.data.copy(iconUrl = edits.iconUrl))
-      }
-
-  def editCloudProvider(id: UUID,
-                        edits: CloudProviderEditableDetails): DB[CloudProviderVal[Boolean]] =
-    getContext.map(_.locale).flatMap { locale =>
-      EntityDB
-        .readOne[CloudProviderDB](id)
-        .semiflatMap { orig =>
-          editFields(orig, edits, locale).traverse { edited =>
-            flushDB(EntityDB.update[CloudProviderDB](orig.entity, edited)).as(true)
-          }
-        }
-        .getOrElse(false.valid)
-    }
 
   def deleteRegistration(id: UUID): DB[Unit] =
     EntityDB.delete(id).compile.drain
