@@ -62,10 +62,6 @@ package object cloudproviders {
                                   description: Option[String],
                                   iconUrl: Option[String])
 
-  case class CloudProviderEditableDetails(name: String,
-                                          description: Option[String],
-                                          iconUrl: Option[String])
-
   class CloudProviderUserState(providerId: String, institution: Institution)
       extends AbstractUserState {
 
