@@ -103,7 +103,8 @@ class CloudProviderApi {
   @Path("provider/{uuid}")
   @ApiOperation(value = "Edit a cloud provider's service details")
   def editServiceDetails(@PathParam("uuid") uuid: UUID,
-                         registration: CloudProviderRegistration): Response =
+                         registration: CloudProviderRegistration): Response = {
+    checkPermissions()
     ApiHelper.runAndBuild {
       for {
         ctx                <- getContext
@@ -118,6 +119,7 @@ class CloudProviderApi {
           .getOrElse(Response.status(404))
       }
     }
+  }
 
   @DELETE
   @Path("provider/{uuid}")
