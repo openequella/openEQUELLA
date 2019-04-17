@@ -18,14 +18,16 @@ install:
 script:
   - sbt test installerZip writeLanguagePack writeScriptingJavadoc
 after_success:
-  - aws s3 --region us-east-1 cp Source/Server/equellaserver/target/tle-upgrade*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
+  - aws s3 --region us-east-1 cp Source/Server/equellaserver/target/tle-upgrade*.zip
+    s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
   - aws s3 --region us-east-1 cp Installer/target/equella-installer*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
   - aws s3 --region us-east-1 cp target/reference-language-pack.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
   - aws s3 --region us-east-1 cp target/scriptingapi-javadoc-*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
   - aws s3 --region us-east-1 rm --recursive s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/latest/
-  - aws s3 --region us-east-1 cp --recursive s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/ s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/latest/
+  - aws s3 --region us-east-1 cp --recursive s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
+    s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/latest/
 env:
   global:
-    - secure: iTlrOG7Yg5QjL7ZoVYcCyYoF88ib5bzujvI+P18xoO5wTDHFlupR5tqikCeQXRdA1V5hNXE1KFdMVJ2vPkqXjGCX9+iXnleYd2KN/XXIvJJpbsE2oCkVuC51lvJmClDb5mZWUDLGkt+VraQodaKKVUbe/FcefdpJo3QJRg9XivP4ydfl1weWGYD/S10rCj4Qwdg4YPXn8FFZ5caNiYdjy8cV8ZIo1E5eiG3rltStAFaqfOcbir1mLQipnxqy+ZN0dasbxhjLnLF/AWFUcok+lRFgdnZaWW2+fO+0x/Deo/Waohcy91rzcyLyn2oxWVGwvogjPGhNC9RfhXgd2t5Q+APuJq6JR604wVH1XqqMI1E52ryOuzSxPB7I/WM+4kyjMG4pJrZRNZqZAe7RxjT3TCtjp5I4Ff1J48RSATX0joj16GPG60wJaF+SHc83V0zB8WT9qztDafxskhe+hMrbAbDxU4oNgVdITksQsRJDJJvZ2seMqfx8C0518J5l9TfH6k7wYec4PgoOyafhgfqQVL9o3KRymXLcHthirAIinWbNY9N7qzxUe2A/NwKExxNcCfPcfQJfz8jtHp7kRq7AkQx30ohx+0X3PNiT8TiZY2KtEi8jqsrmnz4bAqz8BxArNHZgymR5yGRc2X+IoYaqh3CUgQSJvnjWenO7vNLeTMg=
-    - secure: at4gz7i1hdZ5U2o+Ys71JRPiKlpkwkhSRTkF4SsomO3QrgBHwfVVUmUG3IGqJcc4oe7RwCt8zjqrdjFzv+RZaFlJmHYqTM4BSvLtrqlpWSslWqzdW4Vk69oSzC056HfzIbFPetgOVkMQC5cYNzoNxfBCsE4cdeOTep76Ry+63m77xjwTrAhSQxhho0nlDPx1N/+VVOO6AJT9HXNnaCqchaXjBZl8jUyu6d8stwxDTFDqJl/HD2ZYv0nRhaqCnUwJHt0SEPXzmOkuu9bnoIDHnxL4kqvCpgVRso1atSB91sEM/qmTSzL1IZstNopbOilgOTs3qt7VgIjNopYEtv5GkJg2XFsoLn7JXT3tIryg6MaLWcO9Z5u5BEcvr0wQHx00nJ8BMrMzfa8dL/LN1HE0VvxDXGnK9mWWK8JUuVm9mUjTv9si0TU1b2isIGHD82a32ejojpabV3EVQsGRsgz42CZNE25r+ED9/1S+3y/TJFVkTvXI5iGC+0wHImFXkIpHiG6SYF1ROvTO0n/P6BOOZp8yp2xUELy4XxZx2U2cX98lWlxEpXdNTT4W4K1fs5FbLEqdf5aGeXrGRePrkskVcJtc5mzcH/hvk9PuZ5yCBBovmdQQXrNvRZsDtSSSTZ2MWmU5U1ehgpSmBHla3v9AMGGbmrNx2CWh/gn+Cqk7L64=
     - NODE_JS_VERSION=8.11.3
+    - secure: oPNwtBPjC3DT1JykqxjHyX+Asg9fIaHdR27w8TiaogjpILnbYik4MfaUrSxeuhsLGI6gTbFO1xkqo2v6NbNXYGoza74NafLnnn7mYYB6vnebpn1p91liWDo4w5LYFuqY1y7kzNsAcrpfuLwOukLMnx1No5SWToigQR62mapCQ0qgzDyeya5wHspZWS/0PU7bXV3cLNFRDhYW/AdvqUcOJ9R5RQ3l0MZM6OAUkkEn9yrJCcfNYYMQ76T4uCrVvWv6OXygNpVEmUwnN5+Yl10N1hSdbrr7mSHVCiJJSIMqM+yQTjxOylnhao4S5uIfNFyl7yfX43+APDJoGyNmQExAeK5SfjfS+BWhbJKfamqmPzEWu5f9D5wYA8Re8Pqpwqnn92SlHikLCiCWjTS0CUFdAnA2Kq9wF5iJYWNpKSUB0b2C06ewep6sw2UJtLMhXD8BsUb7oAk+h1jVtI5mNPlIeaNORuV69FhcEUbD4bi0IWrmdi4/AjFx/DTDqbpGd4LJgH5AQbQHQBoTkepI151/FdN41a4mdgc4cDUHKr2x8q34BILV3ednUP+We/cTfRQUJphgAd6cTIrAUrE9EaG8g8uI22LCVDH68bNE6LoZqBtVfoy2qos4RTnM4s0/UumHjZaSJPvDOyLlWQ/P4/jN3VYlUaJMcg26ODwXnl3nL4Q=
+    - secure: J83GUtzuJL+mxEM429C4qlq4ssURbRMRkpdyqIxrgHA/BU3lnubNjil5hFaOVeCmVE+/F+gQ/5M9j/oyJy9S4Bhs9vVOwkBMMouOYKLSacNkFXMAlz9LtAUInq+6wgmxYXD0NQVCyLLou/JNleUNkmCAgh+a7ZmcyvEfE6datGzf/2M2C4KmntVKn8KiacLUp4kJNbygKnIfqmSbQ5ETLcH55+zUhtviidIVJEjQvBd6kmJUql+I5ATxfW1gA4xLfgVy96aH5XLEpehondv1GPPwEI0Yp1zPURM1BmiIlOxvYN0wrq2D3GyYV/M/Hi+A03MWyTBQPbBZdzh4iIFbqNpASsCv5Sbkkxk+2yMrQdUiDlwvD0GMNDubIqa56C7yg9btdHyeGA5qsmCTl/pdxNNtxhZiiHvq/19LqI+cIZVjEzLFbLqvZ19+qomVCmjxW2OOBXuMBJtV4KfyuZIIj/KyPSK1lB0C8UXfPHJQrJN2OFrbORngpv2uneNHnEUi5ZXrIL2AjzE7AmLlwhChpbB6yeMjuGP9CdRAwNvp9hvQ6uc6gTz/TN43wf5t3UVc7Ax151F6ATKY2EoCcd//vAyzoi9XsDYYD/XUnqbhsZI1Csq9WYOkYao8JiVxSksSC0sQU+9w9L5xYdnhShG6ziETbEczQKaU23pG2KDPk4w=
