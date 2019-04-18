@@ -8,7 +8,7 @@ env:
 phases:
   pre_build:
     commands:
-      - env
+      - env | grep -vi key\|secret\|password
       - setupBuild
       - npm config set unsafe-perm true
       - npm install -g npm@5.6.0
