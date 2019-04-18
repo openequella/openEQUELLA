@@ -23,8 +23,7 @@ after_success:
   - aws s3 --region us-east-1 cp target/reference-language-pack.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
   - aws s3 --region us-east-1 cp target/scriptingapi-javadoc-*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
   - aws s3 --region us-east-1 rm --recursive s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/latest/
-  - aws s3 --region us-east-1 cp --recursive s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
-    s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/latest/
+  - aws s3 --region us-east-1 cp --recursive s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/ s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/latest/
 env:
   global:
     - NODE_JS_VERSION=8.11.3
