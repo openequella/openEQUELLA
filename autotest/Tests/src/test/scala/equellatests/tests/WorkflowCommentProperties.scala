@@ -260,16 +260,16 @@ object WorkflowCommentProperties
 
   override def logon = adminLogon
 
-  statefulProp("comment on workflow steps") {
-    generateCommands(doComments(_.commentTypes != MessageTypes.values, stdComment))
-  }
-
-  statefulProp("comment with no message") {
-    generateCommands(doComments(!_.attemptedInvalid, errorComment(NoMessage, genFile(false))))
-  }
-
-  statefulProp("upload banned file") {
-    generateCommands(doComments(!_.attemptedInvalid, errorComment(BannedFile, genFile(true))))
-  }
+//  statefulProp("comment on workflow steps") {
+//    generateCommands(doComments(_.commentTypes != MessageTypes.values, stdComment))
+//  }
+//
+//  statefulProp("comment with no message") {
+//    generateCommands(doComments(!_.attemptedInvalid, errorComment(NoMessage, genFile(false))))
+//  }
+//
+//  statefulProp("upload banned file") {
+//    generateCommands(doComments(!_.attemptedInvalid, errorComment(BannedFile, genFile(true))))
+//  }
 
 }

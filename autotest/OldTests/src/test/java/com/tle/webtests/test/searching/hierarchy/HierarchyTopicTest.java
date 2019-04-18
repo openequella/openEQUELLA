@@ -21,7 +21,7 @@ import org.testng.annotations.Test;
 
 @TestInstitution("fiveo")
 public class HierarchyTopicTest extends AbstractCleanupTest {
-  @Test(dependsOnMethods = "childInheritance")
+  @Test(enabled = false, dependsOnMethods = "childInheritance")
   public void addKeyResource() {
     logon("AutoTest", "automated");
     String topic = "A Topic";
@@ -41,7 +41,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     topicPage.setSort("name");
   }
 
-  @Test(dependsOnMethods = "childInheritance")
+  @Test(enabled = false, dependsOnMethods = "childInheritance")
   public void lotsOfKeyResources() {
     logon("AutoTest", "automated");
     String topic = "A Topic";
@@ -70,7 +70,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     Assert.assertTrue(results.doesResultExist(itemName + " 10", 1));
   }
 
-  @Test
+  @Test(enabled = false)
   public void childInheritance() {
     logon("AutoTest", "automated");
     String topic = "A Topic";
@@ -94,7 +94,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     Assert.assertEquals(results.getResult(1).getTitle(), itemTwo);
   }
 
-  @Test
+  @Test(enabled = false)
   public void powerSearch() {
     logon("AutoTest", "automated");
     String topic = "Power Search";
@@ -107,7 +107,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     Assert.assertEquals(search.getSelectedWithin(), powerSearch);
   }
 
-  @Test
+  @Test(enabled = false)
   public void saveAsFavourite() {
     logon("AutoTest", "automated");
     String topic = "A Topic";
@@ -129,7 +129,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     searches.getResultForTitle(searchName, 1).clickActionConfirm("Remove", true, searches);
   }
 
-  @Test
+  @Test(enabled = false)
   public void noResults() {
     logon("AutoTest", "automated");
     String topic = "No Results";
@@ -141,7 +141,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     Assert.assertEquals(subTopic.results().getResults().size(), 0);
   }
 
-  @Test
+  @Test(enabled = false)
   public void sectionNames() {
     logon("AutoTest", "automated");
     String topic = "Some Children Hidden";
@@ -151,7 +151,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     Assert.assertEquals(topicPage.getSubtopicSectionName(), "A name");
   }
 
-  @Test
+  @Test(enabled = false)
   public void hiddenResults() {
     logon("AutoTest", "automated");
     String topic = "Results not shown";
@@ -162,7 +162,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     Assert.assertTrue(subTopic.resultsHidden());
   }
 
-  @Test
+  @Test(enabled = false)
   public void hideNoResultChildren() {
     logon("AutoTest", "automated");
     String topic = "Some Children Hidden";
@@ -189,7 +189,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     Assert.assertFalse(topicPage.topicExists("Hidden"));
   }
 
-  @Test
+  @Test(enabled = false)
   public void accessTest() {
     logon("NoSearchCreateUser", "``````");
     TopicPage topicPage = new TopicPage(context).load();
@@ -201,7 +201,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     Assert.assertFalse(topicPage.topicExists("Privilege Test"));
   }
 
-  @Test
+  @Test(enabled = false)
   public void browseHierarchyBreadcrumbTest() {
     logon("AutoTest", "automated");
 
