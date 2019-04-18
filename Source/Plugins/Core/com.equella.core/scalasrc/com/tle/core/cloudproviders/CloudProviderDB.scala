@@ -20,11 +20,13 @@ import java.util.concurrent.TimeUnit
 import java.util.{Locale, UUID}
 
 import fs2._
+import cats.syntax.apply._
+import cats.syntax.functor._
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.{OptionT, ValidatedNec}
 import cats.effect.{IO, LiftIO}
 import cats.syntax.validated._
-import cats.syntax.apply._
+
 import cats.syntax.applicative._
 import com.tle.core.db._
 import com.tle.core.db.dao.{EntityDB, EntityDBExt}
@@ -136,6 +138,16 @@ object CloudProviderDB {
           _ <- validated.traverse(cdb => flushDB(EntityDB.create(cdb)))
         } yield validated.map(toInstance)
       case Invalid(e) => e.invalid[CloudProviderInstance].pure[DB]
+    }
+
+  def editRegistered(id: UUID, registration: CloudProviderRegistration)
+    : OptionT[DB, CloudProviderVal[CloudProviderInstance]] =
+    EntityDB.readOne(id).semiflatMap { oeq =>
+      for {
+        locale <- getContext.map(_.locale)
+        validated = validateRegistrationFields(oeq.entity, registration, oeq.data.oeqAuth, locale)
+        _ <- validated.traverse(cdb => flushDB(EntityDB.update[CloudProviderDB](oeq.entity, cdb)))
+      } yield validated.map(toInstance)
     }
 
   val createRegistrationToken: DB[String] = {

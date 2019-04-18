@@ -28,7 +28,7 @@ import io.lemonlabs.uri.Url
 import io.lemonlabs.uri.parsing.UrlParser
 import io.swagger.annotations.{Api, ApiOperation}
 import javax.ws.rs._
-import javax.ws.rs.core.{Context, MediaType, Response, UriBuilder, UriInfo}
+import javax.ws.rs.core._
 
 case class CloudProviderForward(url: String)
 
@@ -97,6 +97,24 @@ class CloudProviderApi {
       case _ => throw new BadRequestException("Invalid provider registration url")
     }
 
+  }
+
+  @PUT
+  @Path("provider/{uuid}")
+  @ApiOperation(value = "Edit a cloud provider's service details")
+  def editServiceDetails(@PathParam("uuid") uuid: UUID,
+                         registration: CloudProviderRegistration): Response = {
+    checkPermissions()
+    ApiHelper.runAndBuild {
+      CloudProviderDB
+        .editRegistered(uuid, registration)
+        .map { validatedInstance =>
+          ApiHelper.validationOr(validatedInstance.map { inst =>
+            Response.noContent()
+          })
+        }
+        .getOrElse(Response.status(404))
+    }
   }
 
   @DELETE
