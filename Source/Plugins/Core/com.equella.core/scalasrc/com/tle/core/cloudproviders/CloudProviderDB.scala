@@ -39,6 +39,7 @@ import io.doolse.simpledba.circe.circeJsonUnsafe
 
 case class CloudProviderData(baseUrl: String,
                              iconUrl: Option[String],
+                             vendorId: String,
                              providerAuth: CloudOAuthCredentials,
                              oeqAuth: CloudOAuthCredentials,
                              serviceUris: Map[String, ServiceUri],
@@ -55,6 +56,8 @@ object CloudProviderData {
 case class CloudProviderDB(entity: OEQEntity, data: CloudProviderData)
 
 object CloudProviderDB {
+
+  val FieldVendorId = "vendorId"
 
   val tokenCache =
     LegacyGuice.replicatedCacheService.getCache[String]("cloudRegTokens", 100, 1, TimeUnit.HOURS)
@@ -79,6 +82,7 @@ object CloudProviderDB {
       id = oeq.uuid.id,
       name = oeq.name,
       description = oeq.description,
+      vendorId = data.vendorId,
       baseUrl = data.baseUrl,
       iconUrl = data.iconUrl,
       providerAuth = data.providerAuth,
@@ -99,17 +103,19 @@ object CloudProviderDB {
                                  reg: CloudProviderRegistration,
                                  oeqAuth: CloudOAuthCredentials,
                                  locale: Locale): CloudProviderVal[CloudProviderDB] = {
-    EntityValidation.standardValidation(ProviderStdEdits(reg), oeq, locale).map { newOeq =>
-      val data = CloudProviderData(
-        baseUrl = reg.baseUrl,
-        iconUrl = reg.iconUrl,
-        providerAuth = reg.providerAuth,
-        oeqAuth = oeqAuth,
-        serviceUris = reg.serviceUris,
-        viewers = reg.viewers
-      )
-      CloudProviderDB(newOeq, data)
-    }
+    EntityValidation.nonBlankString(FieldVendorId, reg.vendorId) *>
+      EntityValidation.standardValidation(ProviderStdEdits(reg), oeq, locale).map { newOeq =>
+        val data = CloudProviderData(
+          baseUrl = reg.baseUrl,
+          iconUrl = reg.iconUrl,
+          vendorId = reg.vendorId,
+          providerAuth = reg.providerAuth,
+          oeqAuth = oeqAuth,
+          serviceUris = reg.serviceUris,
+          viewers = reg.viewers
+        )
+        CloudProviderDB(newOeq, data)
+      }
   }
 
   def validToken(regToken: String): DB[CloudProviderVal[Unit]] = {
@@ -168,7 +174,8 @@ object CloudProviderDB {
       CloudProviderDetails(id = oeq.uuid.id,
                            name = oeq.name,
                            description = oeq.description,
-                           cp.data.iconUrl)
+                           vendorId = cp.data.vendorId,
+                           iconUrl = cp.data.iconUrl)
     }
   }
 

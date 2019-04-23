@@ -83,8 +83,7 @@ divWithHtml = unsafeCreateLeafElement $ component "JQueryDiv" $ \this -> do
       pure $ contentId /= newcontentId
   }
 
-resolveUrl :: String -> String 
-resolveUrl u = baseUrl <> u
+foreign import resolveUrl :: String -> String 
 
 filterUrls :: Set String -> Array String -> Array String 
 filterUrls existing = filter (not <<< flip Set.member existing)

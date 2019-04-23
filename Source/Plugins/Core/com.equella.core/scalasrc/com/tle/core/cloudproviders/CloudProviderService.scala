@@ -57,6 +57,14 @@ object CloudProviderService {
       .getOrElse(IO.raiseError(new Throwable("No OAuth service URL")))
   }
 
+  def serviceUri(provider: CloudProviderInstance,
+                 serviceId: String,
+                 params: Map[String, String]): Option[Uri] = {
+    provider.serviceUris.get(serviceId).flatMap { serviceUri =>
+      UriTemplateService.replaceVariables(serviceUri.uri, provider.baseUrl, params).toOption
+    }
+  }
+
   def serviceRequest[T](serviceUri: ServiceUri,
                         provider: CloudProviderInstance,
                         params: Map[String, String],

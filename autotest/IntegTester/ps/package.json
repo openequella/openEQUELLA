@@ -3,8 +3,8 @@
   "private": true,
   "scripts": {
     "install": "psc-package install",
-    "build": "pulp build && parcel build --no-autoinstall --out-dir=target/www www/*.html",
-    "dev": "pulp build && parcel watch --no-autoinstall --out-dir=../target/scala-2.12/classes/www www/*.html"
+    "build": "pulp build && parcel build --no-autoinstall --out-dir=target/www www/*.html www/*.tsx",
+    "dev": "pulp build && parcel watch --no-autoinstall --out-dir=../target/scala-2.12/classes/www www/*.html www/*.tsx"
   },
   "dependencies": {
     "@material-ui/core": "^3.9.2",

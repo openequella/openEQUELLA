@@ -34,6 +34,10 @@ trait OEQEntityEdits {
 }
 
 object EntityValidation {
+
+  final val NameField = "name"
+  final val FailBlank = "blank"
+
   def nonBlankStrings(
       field: String,
       string: String,
@@ -43,7 +47,7 @@ object EntityValidation {
     LocaleStrings
       .fromStrings(string, strings, locale)
       .map(_.validNec)
-      .getOrElse(EntityValidation(field, "blank").invalidNec)
+      .getOrElse(EntityValidation(field, FailBlank).invalidNec)
   }
 
   def nonBlank(field: String,
@@ -51,13 +55,16 @@ object EntityValidation {
                locale: Locale): ValidatedNec[EntityValidation, (String, LocaleStrings)] =
     nonBlankStrings(field, string, None, locale)
 
+  def nonBlankString(field: String, string: String): ValidatedNec[EntityValidation, String] =
+    Validated.condNec(string.nonEmpty, string, EntityValidation(field, FailBlank))
+
   def standardValidation(
       edits: OEQEntityEdits,
       oeq: OEQEntity,
       locale: Locale
   ): ValidatedNec[EntityValidation, OEQEntity] = {
     EntityValidation
-      .nonBlankStrings("name", edits.name, edits.nameStrings, locale)
+      .nonBlankStrings(NameField, edits.name, edits.nameStrings, locale)
       .map { n =>
         val desc = LocaleStrings.fromStrings(
           edits.description.getOrElse(""),

@@ -38,6 +38,7 @@ interface ServiceUri {
 interface ProviderRegistration {
   name: string;
   description?: string;
+  vendorId: String;
   baseUrl: string;
   iconUrl?: string;
   providerAuth: OAuthCredentials;
@@ -99,10 +100,15 @@ function CloudProvider(props: { query: Props }) {
       description: q.description,
       iconUrl: q.iconUrl,
       baseUrl: baseUrl,
+      vendorId: "oeq_autotest",
       providerAuth: { clientId: q.name!, clientSecret: q.name! },
       serviceUris: {
         oauth: { uri: "${baseurl}access_token", authenticated: false },
-        controls: { uri: "${baseurl}controls", authenticated: true }
+        controls: { uri: "${baseurl}controls", authenticated: true },
+        control_testcontrol: {
+          uri: "${baseurl}control.js",
+          authenticated: false
+        }
       },
       viewers: {}
     };

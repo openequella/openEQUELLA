@@ -19,16 +19,18 @@ package com.tle.admin.controls.cloudcontrol.configcomponent;
 import com.dytech.gui.ChangeDetector;
 import com.tle.admin.controls.cloudcontrol.CloudControlConfigControl;
 import com.tle.beans.cloudproviders.CloudControlConfig;
+import com.tle.common.Pair;
 import com.tle.common.wizard.controls.cloud.CloudControl;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
 public class CheckboxConfig implements CloudControlConfigControl {
   private CloudControlConfig cloudControlConfig;
-  private ArrayList<JCheckBox> checkBoxes = new ArrayList<>();
+  private List<Pair<String, JCheckBox>> checkBoxes = new ArrayList<>();
   private JPanel checkBoxPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
   public CheckboxConfig(
@@ -41,27 +43,29 @@ public class CheckboxConfig implements CloudControlConfigControl {
               JCheckBox checkBox = new JCheckBox(cloudConfigOption.name());
               changeDetector.watch(checkBox);
               checkBoxPanel.add(checkBox);
-              checkBoxes.add(checkBox);
+              checkBoxes.add(new Pair<>(cloudConfigOption.value(), checkBox));
             });
     configPanel.add(checkBoxPanel, BorderLayout.CENTER);
   }
 
   @Override
   public void saveConfig(CloudControl control) {
-    boolean[] checkBoxSelections = new boolean[checkBoxes.size()];
-    for (int i = 0; i < checkBoxes.size(); i++) {
-      checkBoxSelections[i] = checkBoxes.get(i).isSelected();
+    List<String> checkBoxSelections = new ArrayList<>();
+    for (Pair<String, JCheckBox> checkBox : checkBoxes) {
+      if (checkBox.getSecond().isSelected()) {
+        checkBoxSelections.add(checkBox.getFirst());
+      }
     }
     control.getAttributes().put(cloudControlConfig.id(), checkBoxSelections);
   }
 
   @Override
   public void loadConfig(CloudControl control) {
-    if (control.getAttributes().containsKey(cloudControlConfig.id())) {
-      boolean[] checkBoxSelections =
-          (boolean[]) control.getAttributes().get(cloudControlConfig.id());
-      for (int i = 0; i < checkBoxes.size(); i++) {
-        checkBoxes.get(i).setSelected(checkBoxSelections[i]);
+    Object selections = control.getAttributes().get(cloudControlConfig.id());
+    if (selections instanceof List) {
+      List<String> checkBoxSelections = (List<String>) selections;
+      for (Pair<String, JCheckBox> checkBox : checkBoxes) {
+        checkBox.getSecond().setSelected(checkBoxSelections.contains(checkBox.getFirst()));
       }
     }
   }

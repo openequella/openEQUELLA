@@ -76,7 +76,7 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
     BlazeBuilder[IO]
       .bindHttp(8083, "0.0.0.0")
       .mountService(appService, "")
-      .mountService(TestingCloudProvider.oauthService, "/provider/")
+      .mountService(new TestingCloudProvider().oauthService, "/provider/")
       .mountService(resourceService[IO](ResourceService.Config("/www", ExecutionContext.global)),
                     "/")
       .serve

@@ -19,17 +19,19 @@ package com.tle.admin.controls.cloudcontrol.configcomponent;
 import com.dytech.gui.ChangeDetector;
 import com.tle.admin.controls.cloudcontrol.CloudControlConfigControl;
 import com.tle.beans.cloudproviders.CloudControlConfig;
+import com.tle.common.Pair;
 import com.tle.common.wizard.controls.cloud.CloudControl;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 public class RadiobuttonConfig implements CloudControlConfigControl {
   private CloudControlConfig cloudControlConfig;
-  private ArrayList<JRadioButton> radioButtons = new ArrayList<>();
+  private List<Pair<String, JRadioButton>> radioButtons = new ArrayList<>();
   private ButtonGroup radioButtonGroup = new ButtonGroup();
   private JPanel radioButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
@@ -43,7 +45,7 @@ public class RadiobuttonConfig implements CloudControlConfigControl {
               JRadioButton radioButton = new JRadioButton(cloudConfigOption.name());
               radioButtonGroup.add(radioButton);
               radioButtonPanel.add(radioButton);
-              radioButtons.add(radioButton);
+              radioButtons.add(new Pair<>(cloudConfigOption.value(), radioButton));
             });
     changeDetector.watch(radioButtonGroup);
     configPanel.add(radioButtonPanel, BorderLayout.CENTER);
@@ -52,8 +54,9 @@ public class RadiobuttonConfig implements CloudControlConfigControl {
   @Override
   public void saveConfig(CloudControl control) {
     for (int i = 0; i < radioButtons.size(); i++) {
-      if (radioButtons.get(i).isSelected()) {
-        control.getAttributes().put(cloudControlConfig.id(), i);
+      Pair<String, JRadioButton> button = radioButtons.get(i);
+      if (button.getSecond().isSelected()) {
+        control.getAttributes().put(cloudControlConfig.id(), button.getFirst());
         return;
       }
     }
@@ -61,10 +64,14 @@ public class RadiobuttonConfig implements CloudControlConfigControl {
 
   @Override
   public void loadConfig(CloudControl control) {
-    if (control.getAttributes().containsKey(cloudControlConfig.id())) {
-      radioButtons
-          .get((int) control.getAttributes().get(cloudControlConfig.id()))
-          .setSelected(true);
+    Object value = control.getAttributes().get(cloudControlConfig.id());
+    if (value instanceof String) {
+      for (Pair<String, JRadioButton> radio : radioButtons) {
+        if (radio.getFirst().equals(value)) {
+          radio.getSecond().setSelected(true);
+          break;
+        }
+      }
     }
   }
 }

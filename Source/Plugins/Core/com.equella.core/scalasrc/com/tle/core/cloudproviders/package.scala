@@ -39,6 +39,7 @@ package object cloudproviders {
 
   case class CloudProviderRegistration(name: String,
                                        description: Option[String],
+                                       vendorId: String,
                                        baseUrl: String,
                                        iconUrl: Option[String],
                                        providerAuth: CloudOAuthCredentials,
@@ -50,6 +51,7 @@ package object cloudproviders {
   case class CloudProviderInstance(id: UUID,
                                    name: String,
                                    description: Option[String],
+                                   vendorId: String,
                                    baseUrl: String,
                                    iconUrl: Option[String],
                                    providerAuth: CloudOAuthCredentials,
@@ -60,7 +62,8 @@ package object cloudproviders {
   case class CloudProviderDetails(id: UUID,
                                   name: String,
                                   description: Option[String],
-                                  iconUrl: Option[String])
+                                  iconUrl: Option[String],
+                                  vendorId: String)
 
   class CloudProviderUserState(providerId: String, institution: Institution)
       extends AbstractUserState {

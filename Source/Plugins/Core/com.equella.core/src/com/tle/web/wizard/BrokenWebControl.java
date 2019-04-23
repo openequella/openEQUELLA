@@ -99,7 +99,7 @@ public class BrokenWebControl extends HTMLCtrlWrapper implements WebControl {
 
   @Override
   public Object instantiateModel(SectionInfo info) {
-    return null;
+    return new Object();
   }
 
   @Override
