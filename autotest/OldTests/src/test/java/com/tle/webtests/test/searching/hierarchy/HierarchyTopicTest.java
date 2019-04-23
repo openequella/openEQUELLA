@@ -41,7 +41,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     topicPage.setSort("name");
   }
 
-  @Test(enabled = false, dependsOnMethods = "childInheritance")
+  @Test(dependsOnMethods = "childInheritance")
   public void lotsOfKeyResources() {
     logon("AutoTest", "automated");
     String topic = "A Topic";
@@ -70,7 +70,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     Assert.assertTrue(results.doesResultExist(itemName + " 10", 1));
   }
 
-  @Test(enabled = false)
+  @Test
   public void childInheritance() {
     logon("AutoTest", "automated");
     String topic = "A Topic";
@@ -82,19 +82,19 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
 
     topicPage.setSort("name");
     TopicListPage results = topicPage.results();
-    Assert.assertEquals(results.getResults().size(), 2);
-    Assert.assertEquals(results.getResult(1).getTitle(), itemOne);
-    Assert.assertEquals(results.getResult(2).getTitle(), itemTwo);
 
+    Assert.assertTrue(results.doesResultExist(itemOne));
+    Assert.assertTrue(results.doesResultExist(itemTwo));
     Assert.assertEquals(topicPage.topicCount("Child"), 1);
 
     topicPage = topicPage.clickSubTopic("Child");
-    Assert.assertFalse(topicPage.resultsHidden());
 
-    Assert.assertEquals(results.getResult(1).getTitle(), itemTwo);
+    Assert.assertFalse(topicPage.resultsHidden());
+    Assert.assertTrue(results.doesResultExist(itemTwo));
+    Assert.assertFalse(results.doesResultExist(itemOne));
   }
 
-  @Test(enabled = false)
+  @Test
   public void powerSearch() {
     logon("AutoTest", "automated");
     String topic = "Power Search";
@@ -107,7 +107,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     Assert.assertEquals(search.getSelectedWithin(), powerSearch);
   }
 
-  @Test(enabled = false)
+  @Test
   public void saveAsFavourite() {
     logon("AutoTest", "automated");
     String topic = "A Topic";
@@ -129,7 +129,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     searches.getResultForTitle(searchName, 1).clickActionConfirm("Remove", true, searches);
   }
 
-  @Test(enabled = false)
+  @Test
   public void noResults() {
     logon("AutoTest", "automated");
     String topic = "No Results";
@@ -141,7 +141,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     Assert.assertEquals(subTopic.results().getResults().size(), 0);
   }
 
-  @Test(enabled = false)
+  @Test
   public void sectionNames() {
     logon("AutoTest", "automated");
     String topic = "Some Children Hidden";
@@ -151,7 +151,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     Assert.assertEquals(topicPage.getSubtopicSectionName(), "A name");
   }
 
-  @Test(enabled = false)
+  @Test
   public void hiddenResults() {
     logon("AutoTest", "automated");
     String topic = "Results not shown";
@@ -162,7 +162,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     Assert.assertTrue(subTopic.resultsHidden());
   }
 
-  @Test(enabled = false)
+  @Test
   public void hideNoResultChildren() {
     logon("AutoTest", "automated");
     String topic = "Some Children Hidden";
@@ -189,7 +189,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     Assert.assertFalse(topicPage.topicExists("Hidden"));
   }
 
-  @Test(enabled = false)
+  @Test
   public void accessTest() {
     logon("NoSearchCreateUser", "``````");
     TopicPage topicPage = new TopicPage(context).load();
@@ -201,7 +201,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     Assert.assertFalse(topicPage.topicExists("Privilege Test"));
   }
 
-  @Test(enabled = false)
+  @Test
   public void browseHierarchyBreadcrumbTest() {
     logon("AutoTest", "automated");
 
