@@ -1,5 +1,5 @@
 name: SingleSuite
-threadCount: 2
+threadCount: 1
 
 tests:
   - name: OneAfterAnother
