@@ -16,11 +16,9 @@
 
 package com.tle.admin.controls;
 
-import com.dytech.edge.admin.wizard.editor.AbstractControlEditor;
 import com.dytech.edge.admin.wizard.editor.Editor;
 import com.dytech.edge.admin.wizard.model.AbstractControlModel;
 import com.dytech.edge.admin.wizard.model.Control;
-import com.dytech.edge.wizard.beans.control.WizardControl;
 import com.tle.admin.controls.repository.ControlDefinition;
 import com.tle.admin.schema.SchemaModel;
 import java.util.Set;
@@ -60,14 +58,7 @@ public class UnavailableControlDefinition implements ControlDefinition {
 
   @Override
   public Editor createEditor(Control control, int type, SchemaModel schema) {
-    return new AbstractControlEditor<WizardControl>(control, type, schema) {
-
-      @Override
-      protected void saveControl() {}
-
-      @Override
-      protected void loadControl() {}
-    };
+    return new UnavailableControlEditor(control, type, schema);
   }
 
   @Override
