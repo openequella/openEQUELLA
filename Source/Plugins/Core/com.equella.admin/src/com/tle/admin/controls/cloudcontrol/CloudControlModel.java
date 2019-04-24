@@ -20,8 +20,10 @@ import com.dytech.edge.admin.wizard.model.CustomControlModel;
 import com.tle.admin.controls.CloudControlDefinitionImpl;
 import com.tle.admin.i18n.Lookup;
 import com.tle.beans.cloudproviders.CloudControlConfig;
+import com.tle.beans.cloudproviders.CloudControlConfigType;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.wizard.controls.cloud.CloudControl;
+import java.util.List;
 
 public class CloudControlModel extends CustomControlModel<CloudControl> {
   private CloudControlDefinitionImpl definition;
@@ -41,7 +43,10 @@ public class CloudControlModel extends CustomControlModel<CloudControl> {
     for (CloudControlConfig c : definition.getDef().getConfigDefinition()) {
       if (c.isConfigMandatory()) {
         Object value = cloudControl.getAttributes().get(c.id());
-        if (value == null || value.toString().isEmpty()) {
+        if (value == null
+            || value.toString().isEmpty()
+            || (c.configType() == CloudControlConfigType.XPath()
+                && ((List<?>) value).size() == 0)) {
           return Lookup.lookup.text("cloudcontrol.validation.message", c.name());
         }
       }
