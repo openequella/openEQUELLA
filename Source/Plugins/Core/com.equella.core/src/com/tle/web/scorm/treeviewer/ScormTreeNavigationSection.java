@@ -18,6 +18,8 @@ package com.tle.web.scorm.treeviewer;
 
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
+import com.tle.beans.item.attachments.Attachment;
+import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.ItemNavigationNode;
@@ -34,6 +36,7 @@ import com.tle.web.viewitem.AbstractAttachmentViewItemResource;
 import com.tle.web.viewitem.section.RootItemFileSection;
 import com.tle.web.viewitem.treeviewer.TreeNavigationSection;
 import com.tle.web.viewurl.UseViewer;
+import com.tle.web.viewurl.ViewAuditEntry;
 import com.tle.web.viewurl.ViewItemFilter;
 import com.tle.web.viewurl.ViewItemResource;
 import com.tle.web.viewurl.ViewItemService;
@@ -65,6 +68,21 @@ public class ScormTreeNavigationSection extends TreeNavigationSection implements
   protected List<ItemNavigationNode> getTreeNodes(SectionInfo info) {
     return getTreeNodes(
         info, Collections.singletonList(getAttachment(info, getModel(info).getResource())), true);
+  }
+
+  @Nullable
+  @Override
+  public ViewAuditEntry getAuditEntry(SectionInfo info, ViewItemResource resource) {
+    if (getModel(info).getMethod() != null) {
+      return null;
+    }
+    List<Attachment> attachments = resource.getViewableItem().getItem().getAttachments();
+    for (Attachment attachment : attachments) {
+      if (attachment.getAttachmentType() == AttachmentType.CUSTOM) {
+        return new ViewAuditEntry("SCORM", attachment.getUrl());
+      }
+    }
+    return null;
   }
 
   @Nullable
@@ -102,6 +120,7 @@ public class ScormTreeNavigationSection extends TreeNavigationSection implements
         if (att != null) {
           if ("pssViewer"
               .equals(viewItemService.getDefaultViewerId(MimeTypeConstants.MIME_SCORM))) {
+            //						attachmentResourceService.getViewableResource(info, vi, att).getFilepath();
             return new ScormTreeAttachmentViewItemResource(
                 resource, attachmentResourceService.getViewableResource(info, vi, att), false);
           }
