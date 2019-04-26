@@ -29,7 +29,7 @@ object StandardFileCreate {
       fa.setDescription(uploaded.description)
       fa.setMd5sum(uploaded.fileInfo.getMd5CheckSum)
       fa.setSize(uploaded.fileInfo.getLength)
-      stg.gatherAdditionalMetadata(uploaded.originalFilename).foreach { a =>
+      stg.gatherAdditionalMetadata(uploaded.uploadPath).foreach { a =>
         fa.setData(a._1, a._2)
       }
       fa
