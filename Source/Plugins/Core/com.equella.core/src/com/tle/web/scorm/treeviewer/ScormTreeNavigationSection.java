@@ -120,7 +120,6 @@ public class ScormTreeNavigationSection extends TreeNavigationSection implements
         if (att != null) {
           if ("pssViewer"
               .equals(viewItemService.getDefaultViewerId(MimeTypeConstants.MIME_SCORM))) {
-            //						attachmentResourceService.getViewableResource(info, vi, att).getFilepath();
             return new ScormTreeAttachmentViewItemResource(
                 resource, attachmentResourceService.getViewableResource(info, vi, att), false);
           }
