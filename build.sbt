@@ -1,8 +1,9 @@
 import java.util.Properties
 
+import Path.rebase
 import com.typesafe.sbt.license.LicenseReport
 import sbt.io.Using
-import Path.rebase
+
 import scala.collection.JavaConverters._
 
 lazy val learningedge_config = project in file("Dev/learningedge-config")
@@ -62,6 +63,27 @@ lazy val equella = (project in file("."))
              conversion,
              UpgradeInstallation,
              learningedge_config)
+
+lazy val checkProjectStyleTask = taskKey[Unit]("running checkstyle")
+checkProjectStyleTask := {
+  import com.etsy.sbt.checkstyle._
+  val sourceFile       = (baseDirectory in LocalProject("equella")).value
+  val outputXmlFile    = (target in LocalProject("equella")).value / "checkstyle-report.xml"
+  val outputHtmlFile   = (target in LocalProject("equella")).value / "checkstyle-report.html"
+  val configFile       = CheckstyleConfigLocation.File("checkstyle-config.xml")
+  val htmlTemplateFile = (baseDirectory in LocalProject("equella")).value / "checkstyle-report-template.xml"
+  Checkstyle.checkstyle(sourceFile,
+                        null,
+                        outputXmlFile,
+                        configFile,
+                        Some(Set(CheckstyleXSLTSettings(htmlTemplateFile, outputHtmlFile))),
+                        None,
+                        streams.value)
+}
+
+(checkProjectStyleTask in Compile) := (checkProjectStyleTask in Compile)
+  .triggeredBy(compile in Compile)
+  .value
 
 buildConfig in ThisBuild := Common.buildConfig
 
