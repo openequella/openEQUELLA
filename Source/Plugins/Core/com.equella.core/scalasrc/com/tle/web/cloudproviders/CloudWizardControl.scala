@@ -16,23 +16,38 @@
 
 package com.tle.web.cloudproviders
 
+import java.util
 import java.util.UUID
 
 import com.dytech.edge.wizard.beans.control.CustomControl
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.softwaremill.sttp.Uri
+import com.tle.common.filesystem.FileEntry
 import com.tle.core.cloudproviders.{CloudProviderDB, CloudProviderInstance, CloudProviderService}
 import com.tle.core.db.RunWithDB
+import com.tle.core.item.serializer.impl.{
+  AttachmentSerializerProvider,
+  StandardAttachmentSerializer
+}
 import com.tle.core.wizard.controls.HTMLControl
+import com.tle.legacy.LegacyGuice
+import com.tle.web.api.item.equella.interfaces.beans.EquellaAttachmentBean
 import com.tle.web.resources.ResourcesService
-import com.tle.web.sections.events.RenderEventContext
-import com.tle.web.sections.js.ElementId
-import com.tle.web.sections.js.generic.expression.ObjectExpression
-import com.tle.web.sections.js.generic.function.IncludeFile
-import com.tle.web.sections.render.TagState
+import com.tle.web.sections.events.{PreRenderContext, RenderContext, RenderEventContext}
+import com.tle.web.sections.js.generic.Js
+import com.tle.web.sections.js.generic.expression.{
+  ElementByIdExpression,
+  ObjectExpression,
+  ScriptVariable
+}
+import com.tle.web.sections.js.generic.function.{ExternallyDefinedFunction, IncludeFile}
+import com.tle.web.sections.js.generic.statement.DeclarationStatement
+import com.tle.web.sections.js.{ElementId, JSExpression, JSUtils}
+import com.tle.web.sections.render.{PreRenderOnly, PreRenderable, TagState}
 import com.tle.web.sections.standard.renderers.DivRenderer
 import com.tle.web.sections.{SectionInfo, SectionResult}
-import com.tle.web.wizard.BrokenWebControl
 import com.tle.web.wizard.controls.{AbstractWebControl, WebControl, WebControlModel}
+import com.tle.web.wizard.{BrokenWebControl, WizardStateInterface}
 
 import scala.collection.JavaConverters._
 
@@ -41,7 +56,64 @@ object CloudWizardControl {
   private val r     = ResourcesService.getResourceHelper(getClass)
   val ProviderRegex = """cp\.(.+)\.(.+)""".r
 
-  val cloudJs = new IncludeFile(r.url("scripts/cloudcontrol.js"))
+  val cloudJs = new IncludeFile(r.url("reactjs/scripts/cloudcontrol.js"))
+
+  val initRender =
+    new ExternallyDefinedFunction("CloudControl.createRender", cloudJs)
+
+  val attachTypeMap = LegacyGuice.attachmentDeserializers.getBeanMap
+
+  def writeFiles(entries: Iterable[FileEntry]): ObjectExpression = {
+    val oe = new ObjectExpression()
+    entries.foreach { entry =>
+      val (filename, obj) = writeFile(entry)
+      oe.put(filename, obj)
+    }
+    oe
+  }
+
+  def writeFile(fileInfo: FileEntry): (String, ObjectExpression) = {
+    val o = new ObjectExpression()
+    o.put("size", fileInfo.getLength)
+    if (fileInfo.isFolder) {
+      o.put("files", writeFiles(fileInfo.getFiles.asScala))
+    }
+    (fileInfo.getName, o)
+  }
+
+  val writeJson = LegacyGuice.objectMapperService
+    .createObjectMapper("rest")
+    .registerModule(new DefaultScalaModule)
+
+  class AttachmentHolder(val attachments: Iterable[EquellaAttachmentBean])
+
+  val globalWizardData = new JSExpression {
+    override def getExpression(info: RenderContext): String = {
+      val wss     = info.getAttributeForClass(classOf[WizardStateInterface])
+      val wizData = new ObjectExpression()
+      wizData.put("xml", wss.getItemxml.toString)
+      wizData.put("wizid", wss.getWizid)
+      wizData.put("stagingid", wss.getStagingId)
+      val allAttachments = wss.getItem.getAttachmentsUnmodifiable.asScala.map { attach =>
+        AttachmentSerializerProvider.serializeAttachment(attach, attachTypeMap)
+      }
+      val attachmentJson = writeJson.writeValueAsString(new AttachmentHolder(allAttachments))
+      wizData.put("attachments", attachmentJson)
+      val files = LegacyGuice.fileSystemService.enumerateTree(wss.getFileHandle, "", null)
+      wizData.put("files", writeFiles(files.getFiles.asScala))
+      wizData.getExpression(info)
+    }
+    override def preRender(info: PreRenderContext): Unit = {}
+  }
+
+  val renderControlFunc = new ScriptVariable("RenderControl") {
+    def getName   = name
+    val declareIt = new DeclarationStatement(this, Js.call(initRender, globalWizardData))
+    override def preRender(info: PreRenderContext): Unit = {
+      info.preRender(declareIt);
+      info.addStatements(declareIt)
+    }
+  }
 
   def cloudControl(controlDef: HTMLControl): WebControl = {
     controlDef.getControlBean.getClassType match {
@@ -77,23 +149,26 @@ object CloudWizardControl {
     override protected def getIdForLabel: ElementId = null
 
     override def renderHtml(context: RenderEventContext): SectionResult = {
-      import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction
+
       val renderControl =
-        new ExternallyDefinedFunction("CloudControl.render",
-                                      new IncludeFile(uri.toString(), cloudJs))
-      val ts = new TagState(this)
+        new ExternallyDefinedFunction(renderControlFunc.getName,
+                                      new IncludeFile(uri.toString(), renderControlFunc))
+      val ts = new TagState()
 
       val configValues = new ObjectExpression
       config.getAttributes.asScala.foreach { nv =>
         configValues.put(nv._1.toString, nv._2)
       }
+      val func   = getReloadFunction(true)
       val params = new ObjectExpression()
       params.put("title", getTitle)
       params.put("vendorId", provider.vendorId)
       params.put("providerId", provider.id.toString)
       params.put("controlType", controlType)
-      params.put("element", this)
+      params.put("element", new ElementByIdExpression(this))
+      params.put("reload", func)
       params.put("config", configValues)
+
       ts.addReadyStatements(renderControl, params)
       new DivRenderer(ts)
     }

@@ -87,7 +87,7 @@ public class YoutubeAttachmentSerializer extends AbstractAttachmentSerializer {
     editor.editViewUrl(youBean.getViewUrl());
     editor.editUploadedDate(youBean.getUploadedDate());
     editor.editCustomParameters(youBean.getCustomParameters());
-    return uuid;
+    return editor.getAttachmentUuid();
   }
 
   @Override
