@@ -64,24 +64,32 @@ lazy val equella = (project in file("."))
              UpgradeInstallation,
              learningedge_config)
 
-lazy val checkProjectStyleTask = taskKey[Unit]("running checkstyle")
-checkProjectStyleTask := {
+checkJavaCodeStyle := {
   import com.etsy.sbt.checkstyle._
-  val sourceFile       = (baseDirectory in LocalProject("equella")).value
-  val outputXmlFile    = (target in LocalProject("equella")).value / "checkstyle-report.xml"
-  val outputHtmlFile   = (target in LocalProject("equella")).value / "checkstyle-report.html"
+  val rootDirectory       = (baseDirectory in LocalProject("equella")).value
+  val rootTargetDirectory = (target in LocalProject("equella")).value
+  val sourceFile          = rootDirectory
+  // As we will specify where the config file is, the resource file can be null
+  val resourceFile     = null
+  val outputXmlFile    = rootTargetDirectory / "checkstyle-report.xml"
+  val outputHtmlFile   = rootTargetDirectory / "checkstyle-report.html"
   val configFile       = CheckstyleConfigLocation.File("checkstyle-config.xml")
-  val htmlTemplateFile = (baseDirectory in LocalProject("equella")).value / "checkstyle-report-template.xml"
+  val htmlTemplateFile = rootDirectory / "checkstyle-report-template.xml"
+  val xsltTransformationSetting =
+    Some(Set(CheckstyleXSLTSettings(htmlTemplateFile, outputHtmlFile)))
+  // We don't want to exit SBT if checkstyle finds any issue, so severityLevel should be None
+  val severityLevel = None
   Checkstyle.checkstyle(sourceFile,
-                        null,
+                        resourceFile,
                         outputXmlFile,
                         configFile,
-                        Some(Set(CheckstyleXSLTSettings(htmlTemplateFile, outputHtmlFile))),
-                        None,
+                        xsltTransformationSetting,
+                        severityLevel,
                         streams.value)
 }
 
-(checkProjectStyleTask in Compile) := (checkProjectStyleTask in Compile)
+// Make checkJavaCodeStyle executed after compile is done
+(checkJavaCodeStyle in Compile) := (checkJavaCodeStyle in Compile)
   .triggeredBy(compile in Compile)
   .value
 
