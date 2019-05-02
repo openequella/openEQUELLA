@@ -8,7 +8,7 @@ import {
   ItemState,
   ItemCommandResponse,
   FileEntries
-} from "../../../../../../../cloudprovidersdk/controls/src";
+} from "oeq-cloudproviders/controls";
 
 interface ItemEdit {
   xml?: string;

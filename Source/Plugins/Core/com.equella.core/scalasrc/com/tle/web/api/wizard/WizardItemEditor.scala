@@ -16,7 +16,7 @@
 
 package com.tle.web.api.wizard
 
-import java.util.{Date, List, Map, Objects, UUID}
+import java.util.{Date, Objects, UUID}
 import java.{lang, util}
 
 import com.dytech.devlib.PropBagEx
@@ -125,7 +125,7 @@ class WizardItemEditor(wsi: WizardStateInterface) extends ItemEditor with ItemEd
     }
   }
 
-  override def processExportDetails(itemBean: EquellaItemBean): Unit = {}
+  override def processExportDetails(itemBean: EquellaItemBean): Unit = unsupported
 
   override def getNavigationEditor: NavigationEditor = unsupported
 
@@ -147,17 +147,11 @@ class WizardItemEditor(wsi: WizardStateInterface) extends ItemEditor with ItemEd
     }
   }
 
-  override def editDetected(): Unit = {
-    //    System.err.println("editDetected")
-  }
+  override def editDetected(): Unit = {}
 
-  override def attachmentEditDetected(): Unit = {
-    //    System.err.println("attachmentEditDetected")
-  }
+  override def attachmentEditDetected(): Unit = {}
 
-  override def addIndexingEdit(editType: String): Unit = {
-//    System.err.println(s"addIndexingEdit($editType)")
-  }
+  override def addIndexingEdit(editType: String): Unit = {}
 
   override def editWithPrivilege(priv: String): Unit = {}
 }

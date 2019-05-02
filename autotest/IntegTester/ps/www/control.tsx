@@ -6,7 +6,7 @@ import {
   ItemState,
   Attachment,
   FileEntries
-} from "../../../../cloudprovidersdk/controls/src/index";
+} from "oeq-cloudproviders/controls";
 
 declare const CloudControl: CloudControlRegister;
 
