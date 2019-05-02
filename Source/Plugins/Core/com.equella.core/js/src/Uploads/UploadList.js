@@ -13,6 +13,6 @@ exports.simpleFormat = function(format) {
   };
 };
 
-exports.main = function() {
-  window.PS = PS;
+exports.register = function(exp) {
+  window.UploadList = exp;
 };

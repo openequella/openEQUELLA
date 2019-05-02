@@ -1,1 +1,3 @@
-require("../../entrybuild/scripts/uploadlist.js");
+import { main } from "../../output/Uploads.UploadList";
+
+main();

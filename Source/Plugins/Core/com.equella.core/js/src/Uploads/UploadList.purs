@@ -13,7 +13,7 @@ import Data.Unfoldable as U
 import Dispatcher (affAction)
 import Dispatcher.React (stateRenderer)
 import Effect (Effect)
-import Effect.Uncurried (EffectFn1, EffectFn2, mkEffectFn1, runEffectFn2)
+import Effect.Uncurried (EffectFn1, EffectFn2, mkEffectFn1, runEffectFn1, runEffectFn2)
 import Effect.Unsafe (unsafePerformEffect)
 import Network.HTTP.Affjax (URL)
 import React (ReactClass, ReactElement, component, getState, unsafeCreateLeafElement)
@@ -48,7 +48,7 @@ jsVoid = href "javascript:void(0);"
 renderError :: String -> ReactElement
 renderError msg = div [ className "ctrlinvalid" ] [ p [ className "ctrlinvalidmessage" ] [ text msg ] ]
 
-foreign import main :: Effect Unit 
+foreign import register :: forall a. EffectFn1 a Unit 
 
 foreign import updateCtrlErrorText :: EffectFn2 String String Unit
 foreign import simpleFormat :: String -> Array String -> String 
@@ -136,6 +136,9 @@ inlineUploadClass = component "InlineUpload" $ \this -> do
 
 inlineUpload :: EffectFn1 { elem :: Element | InlineProps } Unit
 inlineUpload = mkEffectFn1 $ \props -> void $ flip RD.render props.elem $ unsafeCreateLeafElement inlineUploadClass (unsafeCoerce props)
+
+main :: Effect Unit
+main = runEffectFn1 register {inlineUpload, universalUpload}
 
 universalUpload :: {
     elem :: Element,
