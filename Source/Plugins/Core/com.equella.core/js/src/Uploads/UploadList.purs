@@ -62,14 +62,15 @@ type InlineProps = (
     onAdd :: Effect Unit,
     editable :: Boolean,
     commandUrl :: URL,
-    strings :: ControlStrings
+    strings :: ControlStrings,
+    reloadState :: Effect Unit
 )
 
 inlineUploadClass :: ReactClass {|InlineProps}
 inlineUploadClass = component "InlineUpload" $ \this -> do 
   props@{commandUrl,ctrlId,strings} <- R.getProps this
   let 
-    d = commandEval {commandUrl,updateUI:Nothing} >>> affAction this
+    d = commandEval {commandUrl,updateUI:Just props.reloadState} >>> affAction this
     maxAttach = toMaybe props.maxAttachments
 
     componentDidUpdate _ {entries:oldEntries} _ = do

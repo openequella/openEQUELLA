@@ -16,21 +16,13 @@
 
 package com.tle.web.cloudproviders
 
-import java.util
 import java.util.UUID
 
 import com.dytech.edge.wizard.beans.control.CustomControl
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.softwaremill.sttp.Uri
-import com.tle.common.filesystem.FileEntry
 import com.tle.core.cloudproviders.{CloudProviderDB, CloudProviderInstance, CloudProviderService}
 import com.tle.core.db.RunWithDB
-import com.tle.core.item.serializer.impl.{
-  AttachmentSerializerProvider,
-  StandardAttachmentSerializer
-}
 import com.tle.core.wizard.controls.HTMLControl
-import com.tle.legacy.LegacyGuice
 import com.tle.web.api.item.equella.interfaces.beans.EquellaAttachmentBean
 import com.tle.web.resources.ResourcesService
 import com.tle.web.sections.events.{PreRenderContext, RenderContext, RenderEventContext}
@@ -42,8 +34,8 @@ import com.tle.web.sections.js.generic.expression.{
 }
 import com.tle.web.sections.js.generic.function.{ExternallyDefinedFunction, IncludeFile}
 import com.tle.web.sections.js.generic.statement.DeclarationStatement
-import com.tle.web.sections.js.{ElementId, JSExpression, JSUtils}
-import com.tle.web.sections.render.{PreRenderOnly, PreRenderable, TagState}
+import com.tle.web.sections.js.{ElementId, JSExpression}
+import com.tle.web.sections.render.TagState
 import com.tle.web.sections.standard.renderers.DivRenderer
 import com.tle.web.sections.{SectionInfo, SectionResult}
 import com.tle.web.wizard.controls.{AbstractWebControl, WebControl, WebControlModel}
@@ -61,29 +53,8 @@ object CloudWizardControl {
   val initRender =
     new ExternallyDefinedFunction("CloudControl.createRender", cloudJs)
 
-  val attachTypeMap = LegacyGuice.attachmentDeserializers.getBeanMap
-
-  def writeFiles(entries: Iterable[FileEntry]): ObjectExpression = {
-    val oe = new ObjectExpression()
-    entries.foreach { entry =>
-      val (filename, obj) = writeFile(entry)
-      oe.put(filename, obj)
-    }
-    oe
-  }
-
-  def writeFile(fileInfo: FileEntry): (String, ObjectExpression) = {
-    val o = new ObjectExpression()
-    o.put("size", fileInfo.getLength)
-    if (fileInfo.isFolder) {
-      o.put("files", writeFiles(fileInfo.getFiles.asScala))
-    }
-    (fileInfo.getName, o)
-  }
-
-  val writeJson = LegacyGuice.objectMapperService
-    .createObjectMapper("rest")
-    .registerModule(new DefaultScalaModule)
+  val reloadState =
+    new ExternallyDefinedFunction("CloudControl.forceReload", cloudJs)
 
   class AttachmentHolder(val attachments: Iterable[EquellaAttachmentBean])
 
@@ -91,16 +62,8 @@ object CloudWizardControl {
     override def getExpression(info: RenderContext): String = {
       val wss     = info.getAttributeForClass(classOf[WizardStateInterface])
       val wizData = new ObjectExpression()
-      wizData.put("xml", wss.getItemxml.toString)
       wizData.put("wizid", wss.getWizid)
       wizData.put("stagingid", wss.getStagingId)
-      val allAttachments = wss.getItem.getAttachmentsUnmodifiable.asScala.map { attach =>
-        AttachmentSerializerProvider.serializeAttachment(attach, attachTypeMap)
-      }
-      val attachmentJson = writeJson.writeValueAsString(new AttachmentHolder(allAttachments))
-      wizData.put("attachments", attachmentJson)
-      val files = LegacyGuice.fileSystemService.enumerateTree(wss.getFileHandle, "", null)
-      wizData.put("files", writeFiles(files.getFiles.asScala))
       wizData.getExpression(info)
     }
     override def preRender(info: PreRenderContext): Unit = {}
