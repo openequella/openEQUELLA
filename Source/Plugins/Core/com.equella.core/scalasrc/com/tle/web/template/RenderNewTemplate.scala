@@ -148,7 +148,7 @@ object RenderNewTemplate {
       htmlMap
     } else null
 
-    val title = Option(decs.getTitle).map(_.getText).getOrElse("")
+    val title = Option(decs.getBannerTitle).orElse(Option(decs.getTitle)).map(_.getText).getOrElse("")
     val menuValues = menuOptions(context, menuService)
     val renderData = new ObjectExpression("baseResources", r.url(""),
       "newUI", java.lang.Boolean.TRUE, "html", htmlVals, "title", title,
