@@ -40,11 +40,10 @@ import com.tle.web.wizard.impl.WizardServiceImpl.WizardSessionState
 import io.swagger.annotations.Api
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.core.{Context, Response}
-import javax.ws.rs.{POST, PUT, Path, PathParam, QueryParam}
+import javax.ws.rs.{GET, POST, PUT, Path, PathParam, QueryParam}
 import com.softwaremill.sttp._
-
+import com.tle.common.filesystem.FileEntry
 import scala.collection.JavaConverters._
-import scala.util.Random
 
 object WizardApi {
   lazy val editorMap = LegacyGuice.attachmentDeserializers.getBeanMap.asScala
@@ -81,6 +80,11 @@ case class DeleteAttachmentResponse(uuid: String)                    extends Ite
 
 case class ItemEditResponses(xml: String, results: Iterable[ItemEditResponse])
 
+case class FileInfo(size: Long, files: Option[Map[String, FileInfo]])
+case class ItemState(xml: String,
+                     attachments: Iterable[EquellaAttachmentBean],
+                     files: Map[String, FileInfo])
+
 @Api("Wizard editing")
 @Path("wizard/{wizid}")
 class WizardApi {
@@ -95,6 +99,31 @@ class WizardApi {
     val res = f(wsi)
     sessionService.setAttribute(wizid, new WizardSessionState(wsi))
     res
+  }
+
+  @GET
+  @Path("state")
+  def getState(@PathParam("wizid") wizid: String, @Context req: HttpServletRequest): ItemState = {
+    editWizardSate(wizid, req) { wsi =>
+      val attachments = wsi.getItem.getAttachments.asScala.map(a =>
+        AttachmentSerializerProvider.serializeAttachment(a, attachTypeMap))
+      val itemPack = wsi.getItemPack
+
+      def writeFile(fileInfo: FileEntry): (String, FileInfo) = {
+        val childFiles = if (fileInfo.isFolder) {
+          Some(writeFiles(fileInfo.getFiles.asScala))
+        } else {
+          None
+        }
+        (fileInfo.getName, FileInfo(fileInfo.getLength, childFiles))
+      }
+
+      def writeFiles(entries: Iterable[FileEntry]): Map[String, FileInfo] = {
+        entries.map(writeFile).toMap
+      }
+      val files = LegacyGuice.fileSystemService.enumerateTree(wsi.getFileHandle, "", null)
+      ItemState(itemPack.getXml.toString, attachments, writeFiles(files.getFiles.asScala))
+    }
   }
 
   @PUT

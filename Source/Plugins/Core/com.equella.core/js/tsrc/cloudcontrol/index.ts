@@ -7,22 +7,32 @@ import {
   ControlParameters,
   ItemState,
   ItemCommandResponse,
+  Attachment,
   FileEntries
 } from "oeq-cloudproviders/controls";
+
+interface ItemStateJSON {
+  xml: string;
+  attachments: Attachment[];
+  files: FileEntries;
+}
 
 interface ItemEdit {
   xml?: string;
   edits: ItemCommand[];
 }
 
+interface WizardIds {
+  wizid: string;
+  stagingid: string;
+}
+
 interface CloudControlRegisterImpl extends CloudControlRegister {
-  createRender: <T extends object = object>(data: {
-    xml: string;
-    wizid: string;
-    stagingid: string;
-    attachments: string;
-    files: FileEntries;
-  }) => (params: ControlApi<T>) => void;
+  createRender: <T extends object = object>(
+    data: WizardIds
+  ) => (params: ControlApi<T>) => void;
+  forceReload(): void;
+  sendBatch(state: ItemState): Promise<ItemState>;
 }
 
 interface ItemCommandResponses {
@@ -45,18 +55,35 @@ var registrations: {
 var listeners: ((doc: ItemState) => void)[] = [];
 var commandQueue: CommandsPromise[] = [];
 var transformState: ((doc: XMLDocument) => XMLDocument) | null = null;
+var reloadState: boolean = false;
+var wizardIds: WizardIds;
 var currentState: Promise<ItemState>;
+
+const parser = new DOMParser();
+const serializer = new XMLSerializer();
+
 var activeElements: {
   element: Element;
   removed: (removed: Element) => void;
 }[] = [];
 
-async function putEdits(
-  wizid: string,
-  itemEdit: ItemEdit
-): Promise<ItemCommandResponses> {
+function wizardUri(path: string): string {
+  return "api/wizard/" + encodeURIComponent(wizardIds.wizid) + "/" + path;
+}
+
+async function getState(wizid: string): Promise<ItemState> {
+  const res = await Axios.get<ItemStateJSON>(wizardUri("state"));
+  const nextState = {
+    ...res.data,
+    xml: parser.parseFromString(res.data.xml, "text/xml")
+  };
+  listeners.forEach(f => f(nextState));
+  return nextState;
+}
+
+async function putEdits(itemEdit: ItemEdit): Promise<ItemCommandResponses> {
   const res = await Axios.put<ItemCommandResponses>(
-    "api/wizard/" + encodeURIComponent(wizid) + "/edit",
+    wizardUri("edit"),
     itemEdit
   );
   return res.data;
@@ -103,19 +130,76 @@ export const CloudControl: CloudControlRegisterImpl = {
   ) {
     registrations[vendorId + "_" + controlType] = { mount, unmount };
   },
+  forceReload: function() {
+    if (currentState) {
+      reloadState = true;
+      currentState = currentState.then(CloudControl.sendBatch);
+    }
+  },
+  sendBatch: async function(state: ItemState): Promise<ItemState> {
+    if (reloadState) {
+      reloadState = false;
+      var nextState = await getState(wizardIds.wizid);
+      return CloudControl.sendBatch(nextState);
+    }
+    var edits: ItemCommand[] = [];
+    var currentPromises: CommandsPromise[] = [];
+    var xml;
+    var newXml = state.xml;
+    if (transformState) {
+      newXml = transformState(newXml);
+      xml = serializer.serializeToString(newXml);
+    }
+    commandQueue.forEach(j => {
+      edits = edits.concat(j.commands);
+      currentPromises.push(j);
+    });
+    transformState = null;
+    commandQueue = [];
+    if (!edits.length && !xml) {
+      return Promise.resolve(state);
+    }
+    try {
+      const responses = await putEdits({ xml, edits });
+      var att = state.attachments;
+      const updateAttachments = function(change: ItemCommandResponse) {
+        switch (change.type) {
+          case "added":
+            att.push(change.attachment);
+            break;
+          case "deleted":
+            att = att.filter(at => at.uuid != change.uuid);
+            break;
+          case "edited":
+            var ind = att.findIndex(at => at.uuid == change.attachment.uuid);
+            att[ind] = change.attachment;
+            break;
+        }
+      };
+
+      currentPromises.forEach(f => {
+        const editResponses = responses.results.splice(0, f.commands.length);
+        editResponses.forEach(updateAttachments);
+        f.resolved(editResponses);
+      });
+
+      newXml = parser.parseFromString(responses.xml, "text/xml");
+      const nextState = { files: state.files, attachments: att, xml: newXml };
+      listeners.forEach(f => f(nextState));
+      return nextState;
+    } catch (err) {
+      currentPromises.forEach(p => p.rejected(err));
+      return state;
+    }
+  },
   createRender: function(data) {
-    const { wizid, xml } = data;
-    const parser = new DOMParser();
-    var initialXml = parser.parseFromString(xml, "text/xml");
-    var initialAttachments = JSON.parse(data.attachments).attachments;
-    var itemState = {
-      xml: initialXml,
-      attachments: initialAttachments,
-      files: data.files
-    };
-    listeners.forEach(cb => cb(itemState));
-    currentState = Promise.resolve(itemState);
-    const serializer = new XMLSerializer();
+    const { wizid } = data;
+    wizardIds = data;
+    if (!currentState) {
+      currentState = getState(wizid);
+    } else {
+      CloudControl.forceReload();
+    }
 
     const editXml = function(edit: (doc: XMLDocument) => XMLDocument) {
       if (transformState == null) transformState = edit;
@@ -123,65 +207,13 @@ export const CloudControl: CloudControlRegisterImpl = {
         const oldf = transformState;
         transformState = x => edit(oldf(x));
       }
-      currentState = currentState.then(sendBatch);
-    };
-
-    const sendBatch = async function(state: ItemState): Promise<ItemState> {
-      var edits: ItemCommand[] = [];
-      var currentPromises: CommandsPromise[] = [];
-      var xml;
-      var newXml = state.xml;
-      if (transformState) {
-        newXml = transformState(newXml);
-        xml = serializer.serializeToString(newXml);
-      }
-      commandQueue.forEach(j => {
-        edits = edits.concat(j.commands);
-        currentPromises.push(j);
-      });
-      transformState = null;
-      commandQueue = [];
-      if (!edits.length && !xml) {
-        return Promise.resolve(state);
-      }
-      try {
-        const responses = await putEdits(wizid, { xml, edits });
-        var att = state.attachments;
-        const updateAttachments = function(change: ItemCommandResponse) {
-          switch (change.type) {
-            case "added":
-              att.push(change.attachment);
-              break;
-            case "deleted":
-              att = att.filter(at => at.uuid != change.uuid);
-              break;
-            case "edited":
-              var ind = att.findIndex(at => at.uuid == change.attachment.uuid);
-              att[ind] = change.attachment;
-              break;
-          }
-        };
-
-        currentPromises.forEach(f => {
-          const editResponses = responses.results.splice(0, f.commands.length);
-          editResponses.forEach(updateAttachments);
-          f.resolved(editResponses);
-        });
-
-        newXml = parser.parseFromString(responses.xml, "text/xml");
-        const nextState = { files: state.files, attachments: att, xml: newXml };
-        listeners.forEach(f => f(nextState));
-        return nextState;
-      } catch (err) {
-        currentPromises.forEach(p => p.rejected(err));
-        return state;
-      }
+      currentState = currentState.then(CloudControl.sendBatch);
     };
 
     const edits = function(edits: Array<ItemCommand>) {
       return new Promise<ItemCommandResponse[]>(function(resolved, rejected) {
         commandQueue.push({ commands: edits, resolved, rejected });
-        currentState = currentState.then(sendBatch);
+        currentState = currentState.then(CloudControl.sendBatch);
       });
     };
     const subscribeUpdates = function(callback: (doc: ItemState) => void) {
@@ -200,17 +232,18 @@ export const CloudControl: CloudControlRegisterImpl = {
         );
       };
       const uploadFile = function(name: string, file: File): Promise<void> {
-        return Axios.put(stagingPath(name), file).then(params.reload);
+        return Axios.put(stagingPath(name), file).then(
+          CloudControl.forceReload
+        );
       };
       const deleteFile = function(name: string): Promise<void> {
-        return Axios.delete(stagingPath(name)).then(params.reload);
+        return Axios.delete(stagingPath(name)).then(CloudControl.forceReload);
       };
       const registerNotification = function() {
         Axios.post(
-          "api/wizard/" +
-            encodeURIComponent(wizid) +
-            "/notify?providerId=" +
-            encodeURIComponent(params.providerId)
+          wizardUri(
+            "notify?providerId=" + encodeURIComponent(params.providerId)
+          )
         );
       };
       params.element.setAttribute("data-clientupdate", "true");
@@ -222,20 +255,20 @@ export const CloudControl: CloudControlRegisterImpl = {
         element: params.element,
         removed: unmount
       });
-      const api = {
-        ...params,
-        files: data.files,
-        xml: initialXml,
-        editXml,
-        subscribeUpdates,
-        unsubscribeUpdates,
-        attachments: initialAttachments,
-        edits,
-        uploadFile,
-        deleteFile,
-        registerNotification
-      };
-      mount(api);
+      currentState.then(state => {
+        const api = {
+          ...state,
+          ...params,
+          editXml,
+          subscribeUpdates,
+          unsubscribeUpdates,
+          edits,
+          uploadFile,
+          deleteFile,
+          registerNotification
+        };
+        mount(api);
+      });
     };
   }
 };
