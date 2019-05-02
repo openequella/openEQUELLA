@@ -51,6 +51,34 @@ public class AttachmentSerializerProvider implements ItemSerializerProvider, Map
   @Inject private PluginTracker<AttachmentSerializer> tracker;
   @Inject private ItemDao itemDao;
 
+  public static EquellaAttachmentBean serializeAttachment(
+      Attachment attachment, Map<String, AttachmentSerializer> typeMap) {
+    String type = attachment.getAttachmentType().name().toLowerCase();
+    if (type.equals("custom")) {
+      type = type + '/' + ((CustomAttachment) attachment).getType();
+    }
+    AttachmentSerializer attachmentSerializer = typeMap.get(type);
+    if (attachmentSerializer == null) {
+      throw new RuntimeException("No attachment serializer for type '" + type + "'");
+    }
+    EquellaAttachmentBean attachBean = attachmentSerializer.serialize(attachment);
+    attachBean.setRestricted(attachment.isRestricted());
+    attachBean.setPreview(attachment.isPreview());
+    if (attachBean.getThumbnail() == null) {
+      attachBean.setThumbnail(attachment.getThumbnail());
+    }
+    if (attachBean.getUuid() == null) {
+      attachBean.setUuid(attachment.getUuid());
+    }
+    if (attachBean.getDescription() == null) {
+      attachBean.setDescription(attachment.getDescription());
+    }
+    if (attachBean.getViewer() == null) {
+      attachBean.setViewer(attachment.getViewer());
+    }
+    return attachBean;
+  }
+
   @Override
   public void prepareItemQuery(ItemSerializerState state) {
     if (state.hasCategory(ItemSerializerService.CATEGORY_ATTACHMENT)) {
@@ -87,30 +115,7 @@ public class AttachmentSerializerProvider implements ItemSerializerProvider, Map
       List<AttachmentBean> attachmentBeans = Lists.newArrayList();
       if (attachments != null) {
         for (Attachment attachment : attachments) {
-          String type = attachment.getAttachmentType().name().toLowerCase();
-          if (type.equals("custom")) {
-            type = type + '/' + ((CustomAttachment) attachment).getType();
-          }
-          AttachmentSerializer attachmentSerializer = typeMap.get(type);
-          if (attachmentSerializer == null) {
-            throw new RuntimeException("No attachment serializer for type '" + type + "'");
-          }
-          EquellaAttachmentBean attachBean = attachmentSerializer.serialize(attachment);
-          attachBean.setRestricted(attachment.isRestricted());
-          attachBean.setPreview(attachment.isPreview());
-          if (attachBean.getThumbnail() == null) {
-            attachBean.setThumbnail(attachment.getThumbnail());
-          }
-          if (attachBean.getUuid() == null) {
-            attachBean.setUuid(attachment.getUuid());
-          }
-          if (attachBean.getDescription() == null) {
-            attachBean.setDescription(attachment.getDescription());
-          }
-          if (attachBean.getViewer() == null) {
-            attachBean.setViewer(attachment.getViewer());
-          }
-          attachmentBeans.add(attachBean);
+          attachmentBeans.add(serializeAttachment(attachment, typeMap));
         }
       }
       equellaItemBean.setAttachments(attachmentBeans);

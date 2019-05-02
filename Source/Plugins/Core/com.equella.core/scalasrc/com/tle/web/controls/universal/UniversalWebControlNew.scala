@@ -85,7 +85,7 @@ object UniversalWebControlNew {
   val DELETE_CONFIRM               = WebFileUploads.label("list.delete.confirm")
   val PREVIEW                      = WebFileUploads.label("list.preview")
   val KEY_HIDDEN_FROM_SUMMARY_NOTE = WebFileUploads.r.key("list.hidden.from.summary")
-  val uploadListSrc = new IncludeFile(WebFileUploads.r.url("reactjs/uploadlist.js"),
+  val uploadListSrc = new IncludeFile(WebFileUploads.r.url("reactjs/scripts/uploadlist.js"),
                                       JQueryProgression.PRERENDER,
                                       FileDropRenderer.CSS,
                                       ZebraTableRenderer.CSS)

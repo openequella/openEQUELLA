@@ -13,6 +13,7 @@
     "babel-polyfill": "^6.26.0",
     "js-md5": "^0.7.3",
     "jss": "^10.0.0-alpha.14",
+    "oeq-cloudproviders": "file:../../../cloudprovidersdk",
     "query-string": "^6.4.0",
     "react": "^16.8.4",
     "react-dom": "^16.8.4"

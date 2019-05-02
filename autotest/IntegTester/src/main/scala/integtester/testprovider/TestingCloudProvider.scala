@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap
 import cats.data.{Kleisli, OptionT}
 import cats.effect.{ContextShift, IO}
 import cats.syntax.semigroupk._
-import integtester.IntegTester
 import io.circe.syntax._
 import org.http4s._
 import org.http4s.circe._
@@ -123,6 +122,9 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
               None,
               sampleConfig
             )).asJson)
+    case req @ POST -> Root / "itemNotification" as user =>
+      System.err.println(req.req.queryString)
+      Ok()
   }
 
   val oauthService = publicServices <+> middleware(protectedService)

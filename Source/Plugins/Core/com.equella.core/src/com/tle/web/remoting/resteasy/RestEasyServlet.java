@@ -46,6 +46,7 @@ import com.tle.web.api.newuitheme.NewUIThemeResource;
 import com.tle.web.api.searches.SearchConfigApi;
 import com.tle.web.api.settings.SettingsResource;
 import com.tle.web.api.users.UserQueryResource;
+import com.tle.web.api.wizard.WizardApi;
 import com.tle.web.remoting.rest.resource.InstitutionSecurityFilter;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
 import java.io.IOException;
@@ -119,6 +120,8 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
     classes.add(UserQueryResource.class);
     registry.addSingletonResource(new AclResource());
     classes.add(AclResource.class);
+    registry.addSingletonResource(new WizardApi());
+    classes.add(WizardApi.class);
     registry.addResourceFactory(new BeanLocatorResource(NewUIThemeResource.class, coreLocator));
     classes.add(NewUIThemeResource.class);
     registry.addResourceFactory(new BeanLocatorResource(PreLoginNoticeResource.class, coreLocator));
