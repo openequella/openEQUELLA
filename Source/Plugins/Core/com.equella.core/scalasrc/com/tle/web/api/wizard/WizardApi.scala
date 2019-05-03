@@ -228,7 +228,8 @@ class WizardApi {
                 cp,
                 queryParams,
                 uri => f(uri).response(asStream[Stream[IO, ByteBuffer]])))
-          } yield streamedResponse(response)).getOrElse(Response.status(Status.NOT_FOUND))
+          } yield streamedResponse(response))
+            .getOrElse(Response.status(Status.NOT_FOUND))
         }
         .build()
     }
@@ -236,22 +237,22 @@ class WizardApi {
 
   @GET
   @Path("provider/{providerId}/{serviceId}")
-  def providerRequest(@PathParam("wizid") wizid: String,
-                      @PathParam("providerId") providerId: UUID,
-                      @PathParam("serviceId") serviceId: String,
-                      @Context uriInfo: UriInfo,
-                      @Context req: HttpServletRequest): Response = {
+  def proxyGET(@PathParam("wizid") wizid: String,
+               @PathParam("providerId") providerId: UUID,
+               @PathParam("serviceId") serviceId: String,
+               @Context uriInfo: UriInfo,
+               @Context req: HttpServletRequest): Response = {
     proxyRequest(wizid, req, providerId, serviceId, uriInfo)(sttp.get)
   }
 
   @POST
   @Path("provider/{providerId}/{serviceId}")
-  def providerRequest(@PathParam("wizid") wizid: String,
-                      @PathParam("providerId") providerId: UUID,
-                      @PathParam("serviceId") serviceId: String,
-                      @Context uriInfo: UriInfo,
-                      @Context req: HttpServletRequest,
-                      content: InputStream): Response = {
+  def proxyPOST(@PathParam("wizid") wizid: String,
+                @PathParam("providerId") providerId: UUID,
+                @PathParam("serviceId") serviceId: String,
+                @Context uriInfo: UriInfo,
+                @Context req: HttpServletRequest,
+                content: InputStream): Response = {
     val streamedBody =
       readInputStream(IO(content), 4096, Implicits.global).chunks.map(_.toByteBuffer)
     proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>

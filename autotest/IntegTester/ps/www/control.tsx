@@ -63,6 +63,7 @@ function TestControl(p: ControlApi<MyConfig>) {
   const [serviceResponse, setServiceResponse] = React.useState(null as
     | null
     | any);
+  const [postRequest, setPostRequest] = React.useState(true);
   React.useEffect(() => {
     p.registerNotification();
     const updateHandler = function(state: ItemState) {
@@ -114,14 +115,24 @@ function TestControl(p: ControlApi<MyConfig>) {
         />
       </div>
       <div>
-        Payload:
-        <textarea
-          value={serviceContent}
-          onChange={e => setServiceContent(e.target.value)}
-          cols={100}
-          rows={10}
+        POST Request?{" "}
+        <input
+          type="checkbox"
+          checked={postRequest}
+          onChange={e => setPostRequest(e.target.checked)}
         />
       </div>
+      {postRequest && (
+        <div>
+          Payload:
+          <textarea
+            value={serviceContent}
+            onChange={e => setServiceContent(e.target.value)}
+            cols={100}
+            rows={10}
+          />
+        </div>
+      )}
       {serviceResponse && (
         <div>
           Response:
@@ -135,10 +146,13 @@ function TestControl(p: ControlApi<MyConfig>) {
       )}
       <button
         onClick={_ => {
-          return axios
-            .post(p.providerUrl(serviceId) + "?" + queryString, {
-              data: serviceContent
-            })
+          const url = p.providerUrl(serviceId) + "?" + queryString;
+          const req = postRequest
+            ? axios.post(url, {
+                data: serviceContent
+              })
+            : axios.get(url);
+          return req
             .then(resp => setServiceResponse(resp.data))
             .catch((err: Error) => {
               setServiceResponse(err.message);
