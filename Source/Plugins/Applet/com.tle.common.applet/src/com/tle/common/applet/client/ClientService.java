@@ -22,7 +22,7 @@ import com.tle.common.applet.SessionHolder;
 import java.net.URL;
 
 public interface ClientService {
-  void showDocument(URL url, String string);
+  void showDocument(URL url);
 
   void stop();
 

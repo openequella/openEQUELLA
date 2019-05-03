@@ -22,11 +22,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import javax.annotation.Nullable;
 
 public interface ContentStream {
   InputStream getInputStream() throws IOException;
 
   File getDirectFile();
+
+  /**
+   * There may be some cost associated with calling this method. Avoid calling it unless you know
+   * you need it.
+   *
+   * @return
+   */
+  @Nullable
+  String calculateETag();
 
   long getLastModified();
 

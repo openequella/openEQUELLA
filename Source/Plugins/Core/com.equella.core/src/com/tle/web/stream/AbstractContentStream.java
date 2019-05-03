@@ -82,6 +82,11 @@ public abstract class AbstractContentStream implements ContentStream {
   }
 
   @Override
+  public String calculateETag() {
+    return null;
+  }
+
+  @Override
   public String getFilenameWithoutPath() {
     return filenameWithoutPath;
   }

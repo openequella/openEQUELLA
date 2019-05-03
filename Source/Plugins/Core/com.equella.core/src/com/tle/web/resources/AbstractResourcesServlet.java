@@ -37,6 +37,8 @@ import org.java.plugin.util.IoUtil;
 public abstract class AbstractResourcesServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
 
+  protected boolean isCalculateETag = false;
+
   @Inject private PluginService pluginService;
   @Inject private ContentStreamWriter contentStreamWriter;
 
@@ -64,7 +66,7 @@ public abstract class AbstractResourcesServlet extends HttpServlet {
     } else {
       stream = new URLContentStream(res, filename, mimeType);
     }
-    contentStreamWriter.outputStream(request, response, stream);
+    contentStreamWriter.outputStream(request, response, stream, isCalculateETag);
   }
 
   public abstract String getRootPath();

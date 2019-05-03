@@ -64,7 +64,7 @@ public class FlickrSettingsPanel
           @Override
           public void hyperlinkUpdate(HyperlinkEvent e) {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-              getClientService().showDocument(e.getURL(), null);
+              getClientService().showDocument(e.getURL());
             }
           }
         });
