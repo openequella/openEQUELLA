@@ -65,13 +65,18 @@ object CloudProviderService {
     }
   }
 
+  def contextParams: DB[Map[String, Any]] =
+    getContext.map(c => Map("userid" -> c.user.getUserBean.getUniqueID))
+
   def serviceRequest[T](serviceUri: ServiceUri,
                         provider: CloudProviderInstance,
-                        params: Map[String, String],
+                        params: Map[String, Any],
                         f: Uri => Request[T, Stream[IO, ByteBuffer]]): DB[Response[T]] =
     for {
+      cparams <- contextParams
       uri <- dbLiftIO.liftIO {
-        IO.fromEither(UriTemplateService.replaceVariables(serviceUri.uri, provider.baseUrl, params))
+        IO.fromEither(
+          UriTemplateService.replaceVariables(serviceUri.uri, provider.baseUrl, cparams ++ params))
       }
       req  = f(uri)
       auth = provider.providerAuth

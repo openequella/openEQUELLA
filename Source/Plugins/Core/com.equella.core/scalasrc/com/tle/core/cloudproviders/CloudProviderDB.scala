@@ -19,7 +19,6 @@ package com.tle.core.cloudproviders
 import java.util.concurrent.TimeUnit
 import java.util.{Locale, UUID}
 
-import fs2._
 import cats.syntax.apply._
 import cats.syntax.functor._
 import cats.data.Validated.{Invalid, Valid}
@@ -36,6 +35,7 @@ import com.tle.legacy.LegacyGuice
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.doolse.simpledba.Iso
 import io.doolse.simpledba.circe.circeJsonUnsafe
+import fs2.Stream
 
 case class CloudProviderData(baseUrl: String,
                              iconUrl: Option[String],

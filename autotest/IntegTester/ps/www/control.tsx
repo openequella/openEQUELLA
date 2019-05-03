@@ -1,5 +1,7 @@
 import * as ReactDOM from "react-dom";
 import * as React from "react";
+import axios from "axios";
+
 import {
   ControlApi,
   CloudControlRegister,
@@ -53,6 +55,15 @@ function TestControl(p: ControlApi<MyConfig>) {
   const [currentXml, setCurrentXml] = React.useState(() =>
     xmlSerializer.serializeToString(p.xml)
   );
+  const [serviceId, setServiceId] = React.useState("myService");
+  const [serviceContent, setServiceContent] = React.useState("");
+  const [queryString, setQueryString] = React.useState(
+    "param1=single&param2=more&param2=than&param2=two"
+  );
+  const [serviceResponse, setServiceResponse] = React.useState(null as
+    | null
+    | any);
+  const [postRequest, setPostRequest] = React.useState(true);
   React.useEffect(() => {
     p.registerNotification();
     const updateHandler = function(state: ItemState) {
@@ -85,27 +96,88 @@ function TestControl(p: ControlApi<MyConfig>) {
     });
   }
 
+  const renderService = (
+    <div>
+      <div>
+        ServiceId:
+        <input
+          type="text"
+          value={serviceId}
+          onChange={e => setServiceId(e.target.value)}
+        />
+      </div>
+      <div>
+        QueryString:
+        <input
+          type="text"
+          value={queryString}
+          onChange={e => setQueryString(e.target.value)}
+        />
+      </div>
+      <div>
+        POST Request?{" "}
+        <input
+          type="checkbox"
+          checked={postRequest}
+          onChange={e => setPostRequest(e.target.checked)}
+        />
+      </div>
+      {postRequest && (
+        <div>
+          Payload:
+          <textarea
+            value={serviceContent}
+            onChange={e => setServiceContent(e.target.value)}
+            cols={100}
+            rows={10}
+          />
+        </div>
+      )}
+      {serviceResponse && (
+        <div>
+          Response:
+          <textarea
+            value={JSON.stringify(serviceResponse)}
+            readOnly
+            cols={100}
+            rows={10}
+          />
+        </div>
+      )}
+      <button
+        onClick={_ => {
+          const url = p.providerUrl(serviceId) + "?" + queryString;
+          const req = postRequest
+            ? axios.post(url, {
+                data: serviceContent
+              })
+            : axios.get(url);
+          return req
+            .then(resp => setServiceResponse(resp.data))
+            .catch((err: Error) => {
+              setServiceResponse(err.message);
+            });
+        }}
+      >
+        Execute
+      </button>
+    </div>
+  );
+
   return (
     <div className="control">
       <label>
         <h3>{p.title}</h3>
       </label>
-      <input
-        type="file"
-        multiple
-        onChange={e => {
-          Array.from(e.currentTarget.files).forEach(f =>
-            p.uploadFile("folder/" + f.name, f)
-          );
-        }}
-      />
+      <h4>UserID: {p.userId}</h4>
+      <h4>File tree</h4>
       <div>{writeDir("", files)}</div>
-      <div>{attachXPath}</div>
+      <h4>Metadata</h4>
       <div>{currentXml}</div>
+      <h4>Attachments</h4>
       {attachments.map(a => (
         <div key={a.uuid}>
-          Name {a.description}
-          {a.uuid}
+          Name: {a.description}&nbsp;UUID: {a.uuid}
           <button
             onClick={() =>
               p.edits([
@@ -136,6 +208,17 @@ function TestControl(p: ControlApi<MyConfig>) {
           </button>
         </div>
       ))}
+      <h4>Upload file</h4>
+      <input
+        type="file"
+        multiple
+        onChange={e => {
+          Array.from(e.currentTarget.files).forEach(f =>
+            p.uploadFile("folder/" + f.name, f)
+          );
+        }}
+      />
+      <h4>Meddle with attachments</h4>
       <button
         onClick={_ => {
           p.editXml(doc => {
@@ -169,6 +252,8 @@ function TestControl(p: ControlApi<MyConfig>) {
       >
         Append some text
       </button>
+      <h4>Communicate with provider</h4>
+      {renderService}
     </div>
   );
 }

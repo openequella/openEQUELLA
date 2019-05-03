@@ -56,7 +56,7 @@ object UriTemplateService {
 
   def replaceVariables(template: String,
                        baseurl: String,
-                       variables: Map[String, String]): Either[UriParseError, Uri] = {
+                       variables: Map[String, Any]): Either[UriParseError, Uri] = {
 
     def maybeBlank(strings: List[String], prev: Option[UriTemplate]): List[String] = prev match {
       case Some(Text(_)) => strings
@@ -73,7 +73,7 @@ object UriTemplateService {
               case Replacement(v) =>
                 val replaceValue = v match {
                   case "baseurl" => baseurl
-                  case o         => variables.get(v)
+                  case o         => variables.get(v).getOrElse(None)
                 }
                 CollectTemplate(maybeBlank(raw, last), replaceValue :: args, Some(uriTemplate))
             }

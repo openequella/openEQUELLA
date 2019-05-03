@@ -112,6 +112,11 @@ function CloudProvider(props: { query: Props }) {
         control_testcontrol: {
           uri: "${baseurl}control.js",
           authenticated: false
+        },
+        myService: {
+          uri:
+            "${baseurl}myService?param1=${param1}&param2=${param2}&from=${userid}",
+          authenticated: true
         }
       },
       viewers: {}
