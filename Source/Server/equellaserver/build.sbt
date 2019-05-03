@@ -22,6 +22,7 @@ val simpledbaVersion = "0.1.8-SNAPSHOT"
 val circeVersion     = "0.11.1"
 val jsoupVersion     = "1.11.3"
 val sttpVersion      = "1.5.11"
+val fs2Version       = "1.0.3"
 resolvers += Resolver.sonatypeRepo("snapshots")
 
 libraryDependencies ++= Seq(
@@ -32,6 +33,7 @@ libraryDependencies ++= Seq(
 ).map(_ % circeVersion)
 
 libraryDependencies ++= Seq(
+  "co.fs2"                         %% "fs2-io"                        % fs2Version,
   "com.softwaremill.sttp"          %% "core"                          % sttpVersion,
   "com.softwaremill.sttp"          %% "async-http-client-backend-fs2" % sttpVersion,
   "com.softwaremill.sttp"          %% "circe"                         % sttpVersion,

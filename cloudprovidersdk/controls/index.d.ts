@@ -91,6 +91,7 @@ interface ControlApi<T extends object> extends ControlParameters<T> {
   xml: XMLDocument;
   attachments: Attachment[];
   files: FileEntries;
+  userId: string;
   editXml: (edit: (doc: XMLDocument) => XMLDocument) => void;
   edits: (edits: ItemCommand[]) => Promise<ItemCommandResponse[]>;
   subscribeUpdates: (callback: (doc: ItemState) => void) => void;
@@ -98,6 +99,7 @@ interface ControlApi<T extends object> extends ControlParameters<T> {
   uploadFile(filepath: string, f: File): Promise<void>;
   deleteFile(filepath: string): Promise<void>;
   registerNotification: () => void;
+  providerUrl(serviceId: string): string;
 }
 
 interface CloudControlRegister {

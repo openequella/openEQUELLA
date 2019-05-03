@@ -20,6 +20,7 @@ import java.util.UUID
 
 import com.dytech.edge.wizard.beans.control.CustomControl
 import com.softwaremill.sttp.Uri
+import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.cloudproviders.{CloudProviderDB, CloudProviderInstance, CloudProviderService}
 import com.tle.core.db.RunWithDB
 import com.tle.core.wizard.controls.HTMLControl
@@ -62,8 +63,9 @@ object CloudWizardControl {
     override def getExpression(info: RenderContext): String = {
       val wss     = info.getAttributeForClass(classOf[WizardStateInterface])
       val wizData = new ObjectExpression()
-      wizData.put("wizid", wss.getWizid)
-      wizData.put("stagingid", wss.getStagingId)
+      wizData.put("wizId", wss.getWizid)
+      wizData.put("stagingId", wss.getStagingId)
+      wizData.put("userId", CurrentUser.getUserID)
       wizData.getExpression(info)
     }
     override def preRender(info: PreRenderContext): Unit = {}

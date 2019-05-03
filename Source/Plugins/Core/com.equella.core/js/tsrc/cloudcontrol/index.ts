@@ -23,8 +23,9 @@ interface ItemEdit {
 }
 
 interface WizardIds {
-  wizid: string;
-  stagingid: string;
+  wizId: string;
+  stagingId: string;
+  userId: string;
 }
 
 interface CloudControlRegisterImpl extends CloudControlRegister {
@@ -68,7 +69,7 @@ var activeElements: {
 }[] = [];
 
 function wizardUri(path: string): string {
-  return "api/wizard/" + encodeURIComponent(wizardIds.wizid) + "/" + path;
+  return "api/wizard/" + encodeURIComponent(wizardIds.wizId) + "/" + path;
 }
 
 async function getState(wizid: string): Promise<ItemState> {
@@ -139,7 +140,7 @@ export const CloudControl: CloudControlRegisterImpl = {
   sendBatch: async function(state: ItemState): Promise<ItemState> {
     if (reloadState) {
       reloadState = false;
-      var nextState = await getState(wizardIds.wizid);
+      var nextState = await getState(wizardIds.wizId);
       return CloudControl.sendBatch(nextState);
     }
     var edits: ItemCommand[] = [];
@@ -193,10 +194,10 @@ export const CloudControl: CloudControlRegisterImpl = {
     }
   },
   createRender: function(data) {
-    const { wizid } = data;
+    const { wizId } = data;
     wizardIds = data;
     if (!currentState) {
-      currentState = getState(wizid);
+      currentState = getState(wizId);
     } else {
       CloudControl.forceReload();
     }
@@ -226,7 +227,7 @@ export const CloudControl: CloudControlRegisterImpl = {
       const stagingPath = function(name: string): string {
         return (
           "api/staging/" +
-          encodeURIComponent(data.stagingid) +
+          encodeURIComponent(data.stagingId) +
           "/" +
           encodeFilepath(name)
         );
@@ -255,6 +256,14 @@ export const CloudControl: CloudControlRegisterImpl = {
         element: params.element,
         removed: unmount
       });
+      const providerUrl = function(serviceId: string) {
+        return wizardUri(
+          "provider/" +
+            encodeURIComponent(params.providerId) +
+            "/" +
+            encodeURIComponent(serviceId)
+        );
+      };
       currentState.then(state => {
         const api = {
           ...state,
@@ -265,7 +274,9 @@ export const CloudControl: CloudControlRegisterImpl = {
           edits,
           uploadFile,
           deleteFile,
-          registerNotification
+          registerNotification,
+          providerUrl,
+          userId: wizardIds.userId
         };
         mount(api);
       });

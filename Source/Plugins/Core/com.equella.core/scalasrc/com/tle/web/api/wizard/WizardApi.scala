@@ -16,10 +16,13 @@
 
 package com.tle.web.api.wizard
 
-import java.io.IOException
+import java.io.{IOException, InputStream, OutputStream}
+import java.nio.ByteBuffer
+import java.nio.channels.Channels
 import java.util.UUID
 
 import cats.data.OptionT
+import cats.effect.IO
 import com.dytech.devlib.PropBagEx
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id
@@ -39,11 +42,17 @@ import com.tle.web.wizard.{WizardState, WizardStateInterface}
 import com.tle.web.wizard.impl.WizardServiceImpl.WizardSessionState
 import io.swagger.annotations.Api
 import javax.servlet.http.HttpServletRequest
-import javax.ws.rs.core.{Context, Response}
+import javax.ws.rs.core.{Context, Response, StreamingOutput, UriInfo}
 import javax.ws.rs.{GET, POST, PUT, Path, PathParam, QueryParam}
 import com.softwaremill.sttp._
 import com.tle.common.filesystem.FileEntry
+import javax.ws.rs.core.Response.{ResponseBuilder, Status}
+import fs2.Stream
+import fs2.io._
+import com.tle.core.httpclient._
+
 import scala.collection.JavaConverters._
+import scala.concurrent.ExecutionContext.Implicits
 
 object WizardApi {
   lazy val editorMap = LegacyGuice.attachmentDeserializers.getBeanMap.asScala
@@ -179,6 +188,77 @@ class WizardApi {
         ws.setWizardSaveOperation(providerId, NotifyProvider(UUID.fromString(providerId)))
     }
     Response.ok().build()
+  }
+
+  def streamedResponse(
+      response: com.softwaremill.sttp.Response[Stream[IO, ByteBuffer]]): ResponseBuilder = {
+    response.body match {
+      case Right(responseStream) =>
+        val stream = new StreamingOutput {
+          override def write(output: OutputStream): Unit = {
+            val channel = Channels.newChannel(output)
+            responseStream.evalMap(bb => IO(channel.write(bb))).compile.drain.unsafeRunSync()
+          }
+        }
+        Response
+          .status(response.code)
+          .header(HeaderNames.ContentType, response.contentType.orNull)
+          .header(HeaderNames.ContentLength, response.contentLength.orNull)
+          .entity(stream)
+      case _ => Response.status(response.code)
+    }
+  }
+
+  private def proxyRequest[T](
+      wizid: String,
+      request: HttpServletRequest,
+      providerId: UUID,
+      serviceId: String,
+      uriInfo: UriInfo)(f: Uri => Request[T, Stream[IO, ByteBuffer]]): Response = {
+    editWizardSate(wizid, request) { _ =>
+      val queryParams = uriInfo.getQueryParameters.asScala.mapValues(_.asScala).toMap
+      RunWithDB
+        .execute {
+          (for {
+            cp         <- CloudProviderDB.get(providerId)
+            serviceUri <- OptionT.fromOption[DB](cp.serviceUris.get(serviceId))
+            response <- OptionT.liftF(
+              CloudProviderService.serviceRequest(
+                serviceUri,
+                cp,
+                queryParams,
+                uri => f(uri).response(asStream[Stream[IO, ByteBuffer]])))
+          } yield streamedResponse(response)).getOrElse(Response.status(Status.NOT_FOUND))
+        }
+        .build()
+    }
+  }
+
+  @GET
+  @Path("provider/{providerId}/{serviceId}")
+  def providerRequest(@PathParam("wizid") wizid: String,
+                      @PathParam("providerId") providerId: UUID,
+                      @PathParam("serviceId") serviceId: String,
+                      @Context uriInfo: UriInfo,
+                      @Context req: HttpServletRequest): Response = {
+    proxyRequest(wizid, req, providerId, serviceId, uriInfo)(sttp.get)
+  }
+
+  @POST
+  @Path("provider/{providerId}/{serviceId}")
+  def providerRequest(@PathParam("wizid") wizid: String,
+                      @PathParam("providerId") providerId: UUID,
+                      @PathParam("serviceId") serviceId: String,
+                      @Context uriInfo: UriInfo,
+                      @Context req: HttpServletRequest,
+                      content: InputStream): Response = {
+    val streamedBody =
+      readInputStream(IO(content), 4096, Implicits.global).chunks.map(_.toByteBuffer)
+    proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>
+      sttp
+        .post(uri)
+        .streamBody(streamedBody)
+    }
   }
 }
 
