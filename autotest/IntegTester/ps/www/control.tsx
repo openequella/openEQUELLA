@@ -138,7 +138,7 @@ function TestControl(p: ControlApi<MyConfig>) {
           Response:
           <textarea
             value={JSON.stringify(serviceResponse)}
-            suppressContentEditableWarning
+            readOnly
             cols={100}
             rows={10}
           />

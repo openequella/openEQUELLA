@@ -43,7 +43,7 @@ import com.tle.web.wizard.impl.WizardServiceImpl.WizardSessionState
 import io.swagger.annotations.Api
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.core.{Context, Response, StreamingOutput, UriInfo}
-import javax.ws.rs.{GET, POST, PUT, Path, PathParam, QueryParam}
+import javax.ws.rs.{GET, POST, PUT, Path, PathParam, QueryParam, WebApplicationException}
 import com.softwaremill.sttp._
 import com.tle.common.filesystem.FileEntry
 import javax.ws.rs.core.Response.{ResponseBuilder, Status}
@@ -103,11 +103,14 @@ class WizardApi {
   def editWizardSate[A](wizid: String, req: HttpServletRequest)(f: WizardStateInterface => A): A = {
     val sessionService = LegacyGuice.userSessionService
     sessionService.reenableSessionUse()
-    val wss = sessionService.getAttribute(wizid).asInstanceOf[WizardSessionState]
-    val wsi = wss.getWizardState
-    val res = f(wsi)
-    sessionService.setAttribute(wizid, new WizardSessionState(wsi))
-    res
+    Option(sessionService.getAttribute(wizid).asInstanceOf[WizardSessionState])
+      .map { wss =>
+        val wsi = wss.getWizardState
+        val res = f(wsi)
+        sessionService.setAttribute(wizid, new WizardSessionState(wsi))
+        res
+      }
+      .getOrElse(throw new WebApplicationException(404))
   }
 
   @GET
