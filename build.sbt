@@ -68,30 +68,22 @@ checkJavaCodeStyle := {
   import com.etsy.sbt.checkstyle._
   val rootDirectory       = (baseDirectory in LocalProject("equella")).value
   val rootTargetDirectory = (target in LocalProject("equella")).value
-  val sourceFile          = rootDirectory
   // As we will specify where the config file is, the resource file can be null
-  val resourceFile     = null
-  val outputXmlFile    = rootTargetDirectory / "checkstyle-report.xml"
-  val outputHtmlFile   = rootTargetDirectory / "checkstyle-report.html"
-  val configFile       = CheckstyleConfigLocation.File("checkstyle-config.xml")
-  val htmlTemplateFile = rootDirectory / "checkstyle-report-template.xml"
-  val xsltTransformationSetting =
-    Some(Set(CheckstyleXSLTSettings(htmlTemplateFile, outputHtmlFile)))
   // We don't want to exit SBT if checkstyle finds any issue, so severityLevel should be None
-  val severityLevel = None
-  Checkstyle.checkstyle(sourceFile,
-                        resourceFile,
-                        outputXmlFile,
-                        configFile,
-                        xsltTransformationSetting,
-                        severityLevel,
-                        streams.value)
+  Checkstyle.checkstyle(
+    javaSource = rootDirectory,
+    resources = null,
+    outputFile = rootTargetDirectory / "checkstyle-report.xml",
+    configLocation = CheckstyleConfigLocation.File("checkstyle-config.xml"),
+    xsltTransformations = Some(
+      Set(CheckstyleXSLTSettings(rootDirectory / "checkstyle-report-template.xml",
+                                 rootTargetDirectory / "checkstyle-report.html"))),
+    severityLevel = None,
+    streams = streams.value
+  )
 }
-
-// Make checkJavaCodeStyle executed after compile is done
-(checkJavaCodeStyle in Compile) := (checkJavaCodeStyle in Compile)
-  .triggeredBy(compile in Compile)
-  .value
+// Make checkJavaCodeStyle executed before sbt compile
+(compile in Compile) := (compile in Compile).dependsOn(checkJavaCodeStyle).value
 
 buildConfig in ThisBuild := Common.buildConfig
 
