@@ -70,12 +70,12 @@ checkJavaCodeStyle := {
   val rootTargetDirectory = (target in LocalProject("equella")).value
   def countErrorNumber: Int = {
     val outputFile = new File("target/checkstyle-report.xml")
+    println("report file is generated")
     if (outputFile.exists()) {
-      var i      = 0
       val report = scala.xml.XML.loadFile(outputFile)
       (report \ "file").flatMap { file =>
         (file \ "error").map { _ =>
-          i + 1
+          1
         }
       }.sum
     } else {
@@ -96,10 +96,13 @@ checkJavaCodeStyle := {
     streams = streams.value
   )
   val t = countErrorNumber
-  if (t > 885) System.exit(1)
+  println("error number:" + t)
+  if (t > 870) {
+    System.exit(1)
+  }
 }
 // Make checkJavaCodeStyle executed before sbt compile
-(compile in Compile) := (compile in Compile).dependsOn(checkJavaCodeStyle).value
+//(compile in Compile) := (compile in Compile).dependsOn(checkJavaCodeStyle).value
 
 buildConfig in ThisBuild := Common.buildConfig
 
