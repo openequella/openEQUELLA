@@ -187,7 +187,11 @@ public class SearchPage
   }
 
   public static ItemListPage searchExact(PageContext context, String itemFullName) {
-    return new SearchPage(context).load().search('"' + itemFullName + '"');
+    SearchPage page = new SearchPage(context);
+    page.load();
+    ItemListPage list = page.search('"' + itemFullName + '"');
+    list.checkLoaded();
+    return list;
   }
 
   public SearchPage setOwnerFilter(String owner) {
