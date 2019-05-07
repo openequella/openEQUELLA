@@ -96,11 +96,11 @@
     <!--<module name="LocalFinalVariableName"/>-->
     <!--<module name="LocalVariableName"/>-->
     <!--<module name="MemberName"/>-->
-    <module name="MethodName"/>
+    <!--<module name="MethodName"/>-->
     <module name="PackageName"/>
-    <module name="ParameterName"/>
+    <!--<module name="ParameterName"/>-->
     <!--<module name="StaticVariableName"/>-->
-    <module name="TypeName"/>
+    <!--<module name="TypeName"/>-->
 
     <!-- Checks for imports                              -->
     <!-- See http://checkstyle.sourceforge.net/config_import.html -->
@@ -113,24 +113,21 @@
 
     <!-- Checks for Size Violations.                    -->
     <!-- See http://checkstyle.sourceforge.net/config_sizes.html -->
-    <module name="LineLength">
-      <property name="max" value="100"/>
-    </module>
     <module name="MethodLength"/>
     <module name="ParameterNumber"/>
 
     <!-- Checks for whitespace                               -->
     <!-- See http://checkstyle.sourceforge.net/config_whitespace.html -->
-    <module name="EmptyForIteratorPad"/>
+    <!--<module name="EmptyForIteratorPad"/>-->
     <module name="GenericWhitespace"/>
     <module name="MethodParamPad"/>
-    <module name="NoWhitespaceAfter"/>
+    <!--<module name="NoWhitespaceAfter"/>-->
     <module name="NoWhitespaceBefore"/>
     <module name="OperatorWrap"/>
-    <module name="ParenPad"/>
+    <!--<module name="ParenPad"/>-->
     <module name="TypecastParenPad"/>
     <module name="WhitespaceAfter"/>
-    <module name="WhitespaceAround"/>
+    <!--<module name="WhitespaceAround"/>-->
 
     <!-- Modifier Checks                                    -->
     <!-- See http://checkstyle.sourceforge.net/config_modifiers.html -->

@@ -68,6 +68,20 @@ checkJavaCodeStyle := {
   import com.etsy.sbt.checkstyle._
   val rootDirectory       = (baseDirectory in LocalProject("equella")).value
   val rootTargetDirectory = (target in LocalProject("equella")).value
+  def countErrorNumber: Int = {
+    val outputFile = new File("target/checkstyle-report.xml")
+    if (outputFile.exists()) {
+      var i      = 0
+      val report = scala.xml.XML.loadFile(outputFile)
+      (report \ "file").flatMap { file =>
+        (file \ "error").map { _ =>
+          i + 1
+        }
+      }.sum
+    } else {
+      Int.MaxValue
+    }
+  }
   // As we will specify where the config file is, the resource file can be null
   // We don't want to exit SBT if checkstyle finds any issue, so severityLevel should be None
   Checkstyle.checkstyle(
@@ -81,6 +95,8 @@ checkJavaCodeStyle := {
     severityLevel = None,
     streams = streams.value
   )
+  val t = countErrorNumber
+  if (t > 885) System.exit(1)
 }
 // Make checkJavaCodeStyle executed before sbt compile
 (compile in Compile) := (compile in Compile).dependsOn(checkJavaCodeStyle).value
