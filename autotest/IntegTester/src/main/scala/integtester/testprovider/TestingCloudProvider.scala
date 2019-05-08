@@ -102,11 +102,11 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
                                  None).asJson)
         }
       }
-    case request @ GET -> Root / "control.js" => {
+    case request @ GET -> Root / "control.js" =>
       StaticFile
         .fromResource[IO]("/www/control.js", ExecutionContext.global)
         .getOrElse(Response.notFound)
-    }
+
   }
 
   val middleware: AuthMiddleware[IO, TestUser] =

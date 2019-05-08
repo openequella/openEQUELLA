@@ -57,7 +57,7 @@ import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits
 
 object WizardApi {
-  lazy val editorMap = LegacyGuice.attachmentDeserializers.getBeanMap.asScala
+  val editorMap = LegacyGuice.attachmentSerializerProvider.getAttachmentSerializers.asScala
 }
 
 @JsonTypeInfo(use = Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "command")
@@ -100,7 +100,7 @@ case class ItemState(xml: String,
 @Path("wizard/{wizid}")
 class WizardApi {
 
-  val attachTypeMap = LegacyGuice.attachmentDeserializers.getBeanMap
+  val attachmentSerializer = LegacyGuice.attachmentSerializerProvider
 
   def editWizardSate[A](wizid: String, req: HttpServletRequest)(f: WizardStateInterface => A): A = {
     val sessionService = LegacyGuice.userSessionService
@@ -119,8 +119,8 @@ class WizardApi {
   @Path("state")
   def getState(@PathParam("wizid") wizid: String, @Context req: HttpServletRequest): ItemState = {
     editWizardSate(wizid, req) { wsi =>
-      val attachments = wsi.getItem.getAttachments.asScala.map(a =>
-        AttachmentSerializerProvider.serializeAttachment(a, attachTypeMap))
+      val attachments =
+        wsi.getItem.getAttachments.asScala.map(a => attachmentSerializer.serializeAttachment(a))
       val itemPack = wsi.getItemPack
 
       def writeFile(fileInfo: FileEntry): (String, FileInfo) = {
@@ -155,7 +155,7 @@ class WizardApi {
       }
 
       def serializeAttach(uuid: String): EquellaAttachmentBean =
-        AttachmentSerializerProvider.serializeAttachment(editor.attachmentMap(uuid), attachTypeMap)
+        attachmentSerializer.serializeAttachment(editor.attachmentMap(uuid))
 
       val responses = itemEdit.edits.map {
         case AddAttachment(attachment, xmlPath) =>

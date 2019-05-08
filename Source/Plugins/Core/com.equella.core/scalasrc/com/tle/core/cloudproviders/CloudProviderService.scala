@@ -60,10 +60,10 @@ object CloudProviderService {
   }
 
   def serviceUri(provider: CloudProviderInstance,
-                 serviceId: String,
-                 params: Map[String, String]): Option[Uri] = {
-    provider.serviceUris.get(serviceId).flatMap { serviceUri =>
-      UriTemplateService.replaceVariables(serviceUri.uri, provider.baseUrl, params).toOption
+                 serviceUri: ServiceUri,
+                 params: Map[String, Any]): DB[Either[UriParseError, Uri]] = {
+    contextParams.map { ctxParams =>
+      UriTemplateService.replaceVariables(serviceUri.uri, provider.baseUrl, ctxParams ++ params)
     }
   }
 

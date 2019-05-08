@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.CustomAttachment;
+import com.tle.core.cloudproviders.CloudAttachmentSerializer;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.dao.ItemDao;
 import com.tle.core.item.security.ItemSecurityConstants;
@@ -50,15 +51,17 @@ import javax.inject.Singleton;
 public class AttachmentSerializerProvider implements ItemSerializerProvider, MapperExtension {
   private static final String ALIAS_ATTACHMENTS = "attachments";
 
-  @Inject private PluginTracker<AttachmentSerializer> tracker;
+  @Inject private PluginTracker<AttachmentSerializer> _tracker;
   @Inject private ItemDao itemDao;
 
-  public static EquellaAttachmentBean serializeAttachment(
-      Attachment attachment, Map<String, AttachmentSerializer> typeMap) {
+  private Map<String, AttachmentSerializer> serializerMap;
+
+  public EquellaAttachmentBean serializeAttachment(Attachment attachment) {
     String type = attachment.getAttachmentType().name().toLowerCase();
     if (type.equals("custom")) {
       type = type + '/' + ((CustomAttachment) attachment).getType();
     }
+    Map<String, AttachmentSerializer> typeMap = getAttachmentSerializers();
     AttachmentSerializer attachmentSerializer = typeMap.get(type);
     if (attachmentSerializer == null) {
       throw new RuntimeException("No attachment serializer for type '" + type + "'");
@@ -112,12 +115,11 @@ public class AttachmentSerializerProvider implements ItemSerializerProvider, Map
       EquellaItemBean equellaItemBean, ItemSerializerState state, long itemId) {
     if (state.hasCategory(ItemSerializerService.CATEGORY_ATTACHMENT)
         && state.hasPrivilege(itemId, ItemSecurityConstants.VIEW_ITEM)) {
-      Map<String, AttachmentSerializer> typeMap = tracker.getBeanMap();
       Collection<Attachment> attachments = state.getData(itemId, ALIAS_ATTACHMENTS);
       List<AttachmentBean> attachmentBeans = Lists.newArrayList();
       if (attachments != null) {
         for (Attachment attachment : attachments) {
-          attachmentBeans.add(serializeAttachment(attachment, typeMap));
+          attachmentBeans.add(serializeAttachment(attachment));
         }
       }
       equellaItemBean.setAttachments(attachmentBeans);
@@ -126,7 +128,7 @@ public class AttachmentSerializerProvider implements ItemSerializerProvider, Map
 
   @Override
   public void extendMapper(ObjectMapper mapper) {
-    List<AttachmentSerializer> serializers = tracker.getBeanList();
+    Collection<AttachmentSerializer> serializers = getAttachmentSerializers().values();
     for (AttachmentSerializer attachmentSerializer : serializers) {
       Map<String, Class<? extends EquellaAttachmentBean>> types =
           attachmentSerializer.getAttachmentBeanTypes();
@@ -140,7 +142,15 @@ public class AttachmentSerializerProvider implements ItemSerializerProvider, Map
 
   public boolean exportable(EquellaAttachmentBean attachmentBean) {
     AttachmentSerializer attachmentSerializer =
-        tracker.getBeanMap().get(attachmentBean.getRawAttachmentType());
+        getAttachmentSerializers().get(attachmentBean.getRawAttachmentType());
     return attachmentSerializer.exportable(attachmentBean);
+  }
+
+  public synchronized Map<String, AttachmentSerializer> getAttachmentSerializers() {
+    if (serializerMap == null) {
+      serializerMap = _tracker.getNewBeanMap();
+      serializerMap.put("custom/cloud", new CloudAttachmentSerializer());
+    }
+    return serializerMap;
   }
 }
