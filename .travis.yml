@@ -13,9 +13,6 @@ before_install:
   - npm install --global purescript psc-package
 install:
   - sbt checkJavaCodeStyle
-  - cat /home/travis/build/equella/Equella/checkstyle-config.xml
-  - cat /home/travis/build/equella/Equella/target/checkstyle-report.html
-  - cat /home/travis/build/equella/Equella/target/checkstyle-report.xml
   - git fetch --unshallow
   - npm install && npm run check
   - sbt headerCheck
