@@ -21,7 +21,20 @@ interface YoutubeAttachment extends BaseAttachment {
   uploadedDate: Date;
 }
 
-type Attachment = FileAttachment | UrlAttachment | YoutubeAttachment;
+interface CloudAttachment extends BaseAttachment {
+  type: "cloud";
+  providerId: string;
+  vendorId: string;
+  cloudType: string;
+  display?: object;
+  meta?: object;
+}
+
+type Attachment =
+  | FileAttachment
+  | UrlAttachment
+  | YoutubeAttachment
+  | CloudAttachment;
 
 interface AddAttachment {
   command: "addAttachment";

@@ -10,12 +10,12 @@ import {
   Toolbar,
   Paper,
   Button,
-  Theme,
-  createMuiTheme,
   CssBaseline
 } from "@material-ui/core";
-import { makeStyles, ThemeProvider } from "@material-ui/styles";
-import { deepOrange, deepPurple } from "@material-ui/core/colors";
+import { ThemeProvider } from "@material-ui/styles";
+import { ProviderRegistrationResponse } from "oeq-cloudproviders/registration";
+import { createRegistration, UpdateRegistration } from "./registration";
+import { theme, useStyles } from "./theme";
 
 interface Props {
   register?: string;
@@ -23,36 +23,6 @@ interface Props {
   name?: string;
   description?: string;
   iconUrl?: string;
-}
-
-interface OAuthCredentials {
-  clientId: string;
-  clientSecret: string;
-}
-
-interface ServiceUri {
-  uri: string;
-  authenticated: boolean;
-}
-
-interface ProviderRegistration {
-  name: string;
-  description?: string;
-  vendorId: String;
-  baseUrl: string;
-  iconUrl?: string;
-  providerAuth: OAuthCredentials;
-  serviceUris: { [key: string]: ServiceUri };
-  viewers: object;
-}
-
-interface ProviderRegistrationInstance extends ProviderRegistration {
-  oeqAuth: OAuthCredentials;
-}
-
-interface ProviderRegistrationResponse {
-  instance: ProviderRegistrationInstance;
-  forwardUrl: string;
 }
 
 interface TokenResponse {
@@ -63,26 +33,6 @@ interface CurrentUserDetails {
   firstName: String;
   lastName: String;
 }
-
-const useStyles = makeStyles((theme: Theme) => {
-  return {
-    content: {
-      display: "flex",
-      flexDirection: "column",
-      flexGrow: 1
-    },
-    root: {
-      height: "100vh",
-      display: "flex",
-      flexDirection: "column"
-    },
-    body: {
-      margin: theme.spacing.unit * 2
-    }
-  };
-});
-
-const baseUrl = "http://localhost:8083/provider/";
 
 function CloudProvider(props: { query: Props }) {
   const q = props.query;
@@ -95,32 +45,11 @@ function CloudProvider(props: { query: Props }) {
   );
 
   async function registerCP(url: string) {
-    const pr: ProviderRegistration = {
+    const pr = createRegistration({
       name: q.name!,
-      description: q.description,
-      iconUrl: q.iconUrl,
-      baseUrl: baseUrl,
-      vendorId: "oeq_autotest",
-      providerAuth: { clientId: q.name!, clientSecret: q.name! },
-      serviceUris: {
-        oauth: { uri: "${baseurl}access_token", authenticated: false },
-        controls: { uri: "${baseurl}controls", authenticated: true },
-        itemNotification: {
-          uri: "${baseurl}itemNotification?uuid=${uuid}&version=${version}",
-          authenticated: true
-        },
-        control_testcontrol: {
-          uri: "${baseurl}control.js",
-          authenticated: false
-        },
-        myService: {
-          uri:
-            "${baseurl}myService?param1=${param1}&param2=${param2}&from=${userid}",
-          authenticated: true
-        }
-      },
-      viewers: {}
-    };
+      description: q.description!,
+      iconUrl: q.iconUrl
+    });
     await axios
       .post<ProviderRegistrationResponse>(url, pr)
       .then(resp => setResponse(resp.data))
@@ -220,16 +149,6 @@ function CloudProvider(props: { query: Props }) {
     </div>
   );
 }
-
-const theme = createMuiTheme({
-  palette: {
-    primary: deepOrange,
-    secondary: deepPurple
-  },
-  typography: {
-    useNextVariants: true
-  }
-});
 
 ReactDOM.render(
   <React.Fragment>

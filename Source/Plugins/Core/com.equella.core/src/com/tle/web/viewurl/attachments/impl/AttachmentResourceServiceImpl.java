@@ -19,6 +19,7 @@
 package com.tle.web.viewurl.attachments.impl;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -35,6 +36,7 @@ import com.tle.common.filesystem.FileSystemConstants;
 import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.item.AttachmentUtils;
+import com.tle.core.cloudproviders.CloudAttachmentResourceExtension;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.item.service.ItemResolver;
@@ -73,6 +75,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.commons.httpclient.URIException;
@@ -86,7 +89,9 @@ import org.java.plugin.registry.Extension.Parameter;
 public class AttachmentResourceServiceImpl implements AttachmentResourceService {
   @Inject private PluginTracker<AttachmentResourceExtension<IAttachment>> attachmentResources;
 
-  @Nullable private volatile Map<String, List<Extension>> extensionMap;
+  @Nullable
+  private volatile Map<String, List<Supplier<AttachmentResourceExtension<IAttachment>>>>
+      extensionMap;
 
   private Object mapLock = new Object();
 
@@ -100,19 +105,16 @@ public class AttachmentResourceServiceImpl implements AttachmentResourceService 
   public ViewableResource getViewableResource(
       SectionInfo info, ViewableItem viewableItem, IAttachment attachment) {
     ViewableResource currentResource = new ViewAttachmentResource(info, viewableItem, attachment);
-    Map<String, List<Extension>> map = getExtensionMap();
+    Map<String, List<Supplier<AttachmentResourceExtension<IAttachment>>>> map = getExtensionMap();
     String type = getTypeForAttachment(attachment);
-    List<Extension> extensions = map.get(type);
+    List<Supplier<AttachmentResourceExtension<IAttachment>>> extensions = map.get(type);
 
     if (isRestricted(viewableItem, attachment) || extensions == null) {
       currentResource.setAttribute(ViewableResource.KEY_HIDDEN, true);
     }
     if (extensions != null) {
-      for (Extension extension : extensions) {
-        currentResource =
-            attachmentResources
-                .getBeanByExtension(extension)
-                .process(info, currentResource, attachment);
+      for (Supplier<AttachmentResourceExtension<IAttachment>> extension : extensions) {
+        currentResource = extension.get().process(info, currentResource, attachment);
       }
     }
     return currentResource;
@@ -157,23 +159,21 @@ public class AttachmentResourceServiceImpl implements AttachmentResourceService 
     return type;
   }
 
-  private Map<String, List<Extension>> getExtensionMap() {
+  private Map<String, List<Supplier<AttachmentResourceExtension<IAttachment>>>> getExtensionMap() {
     if (extensionMap == null) {
       synchronized (mapLock) {
-        extensionMap = new HashMap<String, List<Extension>>();
+        extensionMap = new HashMap<>();
         List<Extension> extensions = attachmentResources.getExtensions();
         for (Extension extension : extensions) {
           Collection<Parameter> typeParams = extension.getParameters("type"); // $NON-NLS-1$
           for (Parameter parameter : typeParams) {
             String typeString = parameter.valueAsString();
-            List<Extension> perTypeList = extensionMap.get(typeString);
-            if (perTypeList == null) {
-              perTypeList = new ArrayList<Extension>();
-              extensionMap.put(typeString, perTypeList);
-            }
-            perTypeList.add(extension);
+            List<Supplier<AttachmentResourceExtension<IAttachment>>> perTypeList =
+                extensionMap.computeIfAbsent(typeString, k -> new ArrayList<>());
+            perTypeList.add(() -> attachmentResources.getBeanByExtension(extension));
           }
         }
+        extensionMap.put("custom/cloud", ImmutableList.of(CloudAttachmentResourceExtension::new));
       }
     }
     return extensionMap;

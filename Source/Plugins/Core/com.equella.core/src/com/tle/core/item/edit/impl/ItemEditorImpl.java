@@ -64,6 +64,7 @@ import com.tle.core.item.edit.ItemMetadataListener;
 import com.tle.core.item.edit.NavigationEditor;
 import com.tle.core.item.edit.attachment.AbstractAttachmentEditor;
 import com.tle.core.item.edit.attachment.AttachmentEditor;
+import com.tle.core.item.edit.attachment.AttachmentEditorProvider;
 import com.tle.core.item.event.IndexItemBackgroundEvent;
 import com.tle.core.item.event.IndexItemNowEvent;
 import com.tle.core.item.helper.ItemHelper;
@@ -92,7 +93,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import javax.inject.Inject;
-import org.java.plugin.registry.Extension;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -100,7 +100,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEditorChangeTracker {
   private static final String SAVE_SCRIPT_NAME = "saveOperation";
 
-  @Inject private PluginTracker<AbstractAttachmentEditor> attachEditorTracker;
   @Inject private PluginTracker<ItemMetadataListener> metadataListenerTracker;
   @Inject private PluginTracker<ItemAttachmentListener> attachmentListenerTracker;
   @Inject private ItemService itemService;
@@ -308,12 +307,8 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
         checkValidUuid(uuid);
       }
     }
-    Map<String, Extension> extMap = attachEditorTracker.getExtensionMap();
-    Extension extension = extMap.get(type.getName());
-    if (extension == null) {
-      throw new ItemEditingException("No extension for '" + type.getName() + "'");
-    }
-    AbstractAttachmentEditor attachEditor = attachEditorTracker.getNewBeanByExtension(extension);
+    AbstractAttachmentEditor attachEditor =
+        AttachmentEditorProvider.createEditorForType(type.getName());
     attachEditor.setItemEditorChangeTracker(this);
     attachEditor.setItem(item);
     attachEditor.setFileHandle(fileHandle);

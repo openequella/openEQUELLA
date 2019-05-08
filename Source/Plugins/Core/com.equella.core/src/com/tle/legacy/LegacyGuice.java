@@ -30,7 +30,7 @@ import com.tle.core.i18n.service.LanguageService;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.item.edit.attachment.AbstractAttachmentEditor;
 import com.tle.core.item.helper.ItemHelper;
-import com.tle.core.item.serializer.AttachmentSerializer;
+import com.tle.core.item.serializer.impl.AttachmentSerializerProvider;
 import com.tle.core.item.standard.service.ItemCommentService;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.oauth.service.OAuthService;
@@ -200,7 +200,7 @@ public class LegacyGuice extends AbstractModule {
 
   @Inject public static EncryptionService encryptionService;
 
-  @Inject public static PluginTracker<AttachmentSerializer> attachmentDeserializers;
+  @Inject public static AttachmentSerializerProvider attachmentSerializerProvider;
 
   @Inject public static PluginTracker<AbstractAttachmentEditor> attachEditorTracker;
 

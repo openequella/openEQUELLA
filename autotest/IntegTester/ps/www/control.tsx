@@ -246,6 +246,25 @@ function TestControl(p: ControlApi<MyConfig>) {
                 uploadedDate: new Date()
               },
               xmlPath: rootNode + "/two/uuid"
+            },
+            {
+              command: "addAttachment",
+              attachment: {
+                type: "cloud",
+                description: "This is a cloud attachment",
+                providerId: p.providerId,
+                cloudType: "simple",
+                vendorId: p.vendorId,
+                display: {
+                  Arbitrary: "Field",
+                  Size: 0,
+                  Ordered: true
+                },
+                meta: {
+                  viewer: "Something"
+                }
+              },
+              xmlPath: rootNode + "/one/uuid"
             }
           ]);
         }}

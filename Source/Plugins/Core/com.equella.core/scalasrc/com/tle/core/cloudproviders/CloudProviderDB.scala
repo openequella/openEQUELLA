@@ -21,23 +21,21 @@ package com.tle.core.cloudproviders
 import java.util.concurrent.TimeUnit
 import java.util.{Locale, UUID}
 
-import cats.syntax.apply._
-import cats.syntax.functor._
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.{OptionT, ValidatedNec}
 import cats.effect.{IO, LiftIO}
-import cats.syntax.validated._
-
 import cats.syntax.applicative._
+import cats.syntax.apply._
+import cats.syntax.validated._
 import com.tle.core.db._
 import com.tle.core.db.dao.{EntityDB, EntityDBExt}
 import com.tle.core.db.tables.OEQEntity
 import com.tle.core.validation.{EntityValidation, OEQEntityEdits}
 import com.tle.legacy.LegacyGuice
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import fs2.Stream
+import io.circe.generic.semiauto._
 import io.doolse.simpledba.Iso
 import io.doolse.simpledba.circe.circeJsonUnsafe
-import fs2.Stream
 
 case class CloudProviderData(baseUrl: String,
                              iconUrl: Option[String],
@@ -49,7 +47,12 @@ case class CloudProviderData(baseUrl: String,
 
 object CloudProviderData {
 
-  import io.circe.generic.auto._
+  implicit val decoderV = deriveDecoder[Viewer]
+  implicit val encoderV = deriveEncoder[Viewer]
+  implicit val decoderS = deriveDecoder[ServiceUri]
+  implicit val encoderS = deriveEncoder[ServiceUri]
+  implicit val decoderC = deriveDecoder[CloudOAuthCredentials]
+  implicit val encoderC = deriveEncoder[CloudOAuthCredentials]
 
   implicit val decoder = deriveDecoder[CloudProviderData]
   implicit val encoder = deriveEncoder[CloudProviderData]

@@ -20,11 +20,12 @@ package com.tle.web.cloudproviders
 
 import java.util.UUID
 
+import cats.data.OptionT
 import com.dytech.edge.wizard.beans.control.CustomControl
 import com.softwaremill.sttp.Uri
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.cloudproviders.{CloudProviderDB, CloudProviderInstance, CloudProviderService}
-import com.tle.core.db.RunWithDB
+import com.tle.core.db.{DB, RunWithDB}
 import com.tle.core.wizard.controls.HTMLControl
 import com.tle.web.api.item.equella.interfaces.beans.EquellaAttachmentBean
 import com.tle.web.resources.ResourcesService
@@ -87,15 +88,12 @@ object CloudWizardControl {
       case ProviderRegex(providerIds, controlId) =>
         val providerId = UUID.fromString(providerIds)
         RunWithDB.execute {
-          CloudProviderDB
-            .get(providerId)
-            .subflatMap { provider =>
-              CloudProviderService
-                .serviceUri(provider, s"control_$controlId", Map.empty)
-                .map { uri =>
-                  new CloudWizardControl(uri, controlDef, provider, controlId)
-                }
-            }
+          (for {
+            provider   <- CloudProviderDB.get(providerId)
+            serviceUri <- OptionT.fromOption[DB](provider.serviceUris.get(s"control_$controlId"))
+            uri <- OptionT(
+              CloudProviderService.serviceUri(provider, serviceUri, Map.empty).map(_.toOption))
+          } yield new CloudWizardControl(uri, controlDef, provider, controlId))
             .getOrElse(new BrokenWebControl(controlDef))
         }
       case _ => null

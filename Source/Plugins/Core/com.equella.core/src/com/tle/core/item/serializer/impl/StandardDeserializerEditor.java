@@ -33,7 +33,6 @@ import com.tle.core.item.edit.NavigationEditor;
 import com.tle.core.item.edit.NavigationNodeEditor;
 import com.tle.core.item.serializer.AttachmentSerializer;
 import com.tle.core.item.serializer.ItemDeserializerEditor;
-import com.tle.core.plugins.PluginTracker;
 import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaAttachmentBean;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
@@ -56,7 +55,7 @@ import javax.inject.Singleton;
 @Bind
 @Singleton
 public class StandardDeserializerEditor implements ItemDeserializerEditor {
-  @Inject private PluginTracker<AttachmentSerializer> attachmentDeserializers;
+  @Inject private AttachmentSerializerProvider attachmentDeserializers;
 
   @Override
   public void edit(EquellaItemBean itemBean, ItemEditor editor, boolean importing) {
@@ -89,7 +88,8 @@ public class StandardDeserializerEditor implements ItemDeserializerEditor {
     }
     List<AttachmentBean> attachments = itemBean.getAttachments();
     if (attachments != null) {
-      Map<String, AttachmentSerializer> deserializerMap = attachmentDeserializers.getBeanMap();
+      Map<String, AttachmentSerializer> deserializerMap =
+          attachmentDeserializers.getAttachmentSerializers();
       List<String> attachmentUuids = Lists.newArrayList();
       for (AttachmentBean attachmentBean : attachments) {
         EquellaAttachmentBean equellaAttachmentBean = (EquellaAttachmentBean) attachmentBean;

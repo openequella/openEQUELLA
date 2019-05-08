@@ -22,8 +22,8 @@ import java.nio.ByteBuffer
 import java.time.Instant
 
 import cats.effect.IO
-import cats.syntax.either._
 import cats.syntax.applicative._
+import cats.syntax.either._
 import com.softwaremill.sttp._
 import com.softwaremill.sttp.circe._
 import com.tle.beans.cloudproviders.{CloudControlDefinition, ProviderControlDefinition}
@@ -60,10 +60,10 @@ object CloudProviderService {
   }
 
   def serviceUri(provider: CloudProviderInstance,
-                 serviceId: String,
-                 params: Map[String, String]): Option[Uri] = {
-    provider.serviceUris.get(serviceId).flatMap { serviceUri =>
-      UriTemplateService.replaceVariables(serviceUri.uri, provider.baseUrl, params).toOption
+                 serviceUri: ServiceUri,
+                 params: Map[String, Any]): DB[Either[UriParseError, Uri]] = {
+    contextParams.map { ctxParams =>
+      UriTemplateService.replaceVariables(serviceUri.uri, provider.baseUrl, ctxParams ++ params)
     }
   }
 

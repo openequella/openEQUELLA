@@ -25,7 +25,7 @@ import com.dytech.devlib.PropBagEx
 import com.tle.beans.item.attachments.Attachment
 import com.tle.beans.item.{ItemEditingException, ItemIdKey}
 import com.tle.common.filesystem.handle.FileHandle
-import com.tle.core.item.edit.attachment.AttachmentEditor
+import com.tle.core.item.edit.attachment.{AttachmentEditor, AttachmentEditorProvider}
 import com.tle.core.item.edit.impl.ItemEditorImpl
 import com.tle.core.item.edit.{DRMEditor, ItemEditor, ItemEditorChangeTracker, NavigationEditor}
 import com.tle.legacy.LegacyGuice
@@ -37,9 +37,8 @@ import scala.collection.mutable
 
 class WizardItemEditor(wsi: WizardStateInterface) extends ItemEditor with ItemEditorChangeTracker {
 
-  val item                = wsi.getItem
-  val attachEditorTracker = LegacyGuice.attachEditorTracker
-  val fileHandle          = wsi.getFileHandle
+  val item       = wsi.getItem
+  val fileHandle = wsi.getFileHandle
 
   val attachmentMap   = mutable.Map[String, Attachment]()
   val attachmentOrder = mutable.Buffer[String]()
@@ -97,11 +96,7 @@ class WizardItemEditor(wsi: WizardStateInterface) extends ItemEditor with ItemEd
         ItemEditorImpl.checkValidUuid(exUuid)
         (exUuid, attachmentMap.get(exUuid))
     }
-    val extMap    = attachEditorTracker.getExtensionMap
-    val extension = extMap.get(`type`.getName)
-    if (extension == null)
-      throw new ItemEditingException("No extension for '" + `type`.getName + "'")
-    val attachEditor = attachEditorTracker.getNewBeanByExtension(extension)
+    val attachEditor = AttachmentEditorProvider.createEditorForType(`type`.getName)
     attachEditor.setItemEditorChangeTracker(this)
     attachEditor.setItem(item)
     attachEditor.setFileHandle(fileHandle)
