@@ -66,10 +66,8 @@ lazy val equella = (project in file("."))
 
 checkJavaCodeStyle := {
   import com.etsy.sbt.checkstyle._
-  val rootDirectory = (baseDirectory in LocalProject("equella")).value
-  println("root directory is " + rootDirectory)
+  val rootDirectory       = (baseDirectory in LocalProject("equella")).value
   val rootTargetDirectory = (target in LocalProject("equella")).value
-  println("target directory is " + rootTargetDirectory)
   def countErrorNumber: Int = {
     val outputFile = new File("target/checkstyle-report.xml")
     if (outputFile.exists()) {

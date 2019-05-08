@@ -6,5 +6,5 @@
 
 <suppressions>
   <suppress files="[/\\]target[/\\]" checks=".*"/>
-  <suppress files="[/\\]build[/\\]" checks=".*"/>
+  <suppress files="Equella\/(.*\/)*build\/" checks=".*"/>
 </suppressions>
