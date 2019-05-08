@@ -70,12 +70,15 @@ checkJavaCodeStyle := {
   val rootTargetDirectory = (target in LocalProject("equella")).value
   def countErrorNumber: Int = {
     val outputFile = new File("target/checkstyle-report.xml")
-    println("report file is generated")
     if (outputFile.exists()) {
+      println("report file is generated")
       val report = scala.xml.XML.loadFile(outputFile)
       (report \ "file").flatMap { file =>
         (file \ "error").map { _ =>
-          1
+          {
+            println("found one error")
+            1
+          }
         }
       }.sum
     } else {
