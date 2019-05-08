@@ -17,7 +17,6 @@
  */
 
 package com.tle.core
-import java.net.URI
 import java.util.UUID
 
 import com.tle.beans.Institution

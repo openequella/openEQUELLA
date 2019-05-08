@@ -32,9 +32,9 @@ import com.tle.web.sections.render.TextLabel
 import com.tle.web.sections.standard.model.SimpleBookmark
 import com.tle.web.sections.{Bookmark, SectionInfo}
 import com.tle.web.stream.{AbstractContentStream, ContentStream}
-import com.tle.web.viewurl.{AttachmentDetail, ViewableResource}
 import com.tle.web.viewurl.attachments.AttachmentResourceExtension
 import com.tle.web.viewurl.resource.AbstractWrappedResource
+import com.tle.web.viewurl.{AttachmentDetail, ViewableResource}
 import fs2.Stream
 import io.circe.Json.Folder
 import io.circe.{Json, JsonNumber, JsonObject}

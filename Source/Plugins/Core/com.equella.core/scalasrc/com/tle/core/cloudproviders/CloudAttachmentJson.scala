@@ -21,8 +21,8 @@ package com.tle.core.cloudproviders
 import java.util.UUID
 
 import com.tle.beans.item.attachments.CustomAttachment
-import io.circe.generic.semiauto._
 import io.circe.Json
+import io.circe.generic.semiauto._
 import io.circe.parser._
 
 case class CloudAttachmentJson(providerId: UUID,

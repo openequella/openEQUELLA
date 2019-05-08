@@ -51,7 +51,7 @@ import javax.inject.Singleton;
 public class AttachmentSerializerProvider implements ItemSerializerProvider, MapperExtension {
   private static final String ALIAS_ATTACHMENTS = "attachments";
 
-  @Inject private PluginTracker<AttachmentSerializer> _tracker;
+  @Inject private PluginTracker<AttachmentSerializer> tracker;
   @Inject private ItemDao itemDao;
 
   private Map<String, AttachmentSerializer> serializerMap;
@@ -148,7 +148,7 @@ public class AttachmentSerializerProvider implements ItemSerializerProvider, Map
 
   public synchronized Map<String, AttachmentSerializer> getAttachmentSerializers() {
     if (serializerMap == null) {
-      serializerMap = _tracker.getNewBeanMap();
+      serializerMap = tracker.getNewBeanMap();
       serializerMap.put("custom/cloud", new CloudAttachmentSerializer());
     }
     return serializerMap;

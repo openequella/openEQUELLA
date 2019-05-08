@@ -18,10 +18,7 @@
 
 package com.tle.core.cloudproviders
 
-import java.net.URI
-
-import com.softwaremill.sttp.UriInterpolator
-import com.softwaremill.sttp.Uri
+import com.softwaremill.sttp.{Uri, UriInterpolator}
 
 import scala.util.parsing.combinator.{JavaTokenParsers, RegexParsers}
 

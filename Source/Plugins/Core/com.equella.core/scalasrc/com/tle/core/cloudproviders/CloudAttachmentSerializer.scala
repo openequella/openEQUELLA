@@ -26,10 +26,11 @@ import com.tle.beans.item.attachments.{Attachment, CustomAttachment}
 import com.tle.core.item.edit.ItemEditor
 import com.tle.core.item.serializer.AbstractAttachmentSerializer
 import com.tle.web.api.item.equella.interfaces.beans.{CloudAttachmentBean, EquellaAttachmentBean}
-import io.circe.{Json, JsonNumber, JsonObject}
 import io.circe.Json.Folder
-import scala.collection.JavaConverters._
 import io.circe.syntax._
+import io.circe.{Json, JsonNumber, JsonObject}
+
+import scala.collection.JavaConverters._
 
 class CloudAttachmentSerializer extends AbstractAttachmentSerializer {
   import CloudAttachmentSerializer._
