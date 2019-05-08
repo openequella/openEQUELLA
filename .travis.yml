@@ -12,11 +12,11 @@ before_install:
   - sudo apt-get install -y awscli
   - npm install --global purescript psc-package
 install:
-  - sbt checkJavaCodeStyle
   - git fetch --unshallow
   - npm install && npm run check
   - sbt headerCheck
 script:
+  - sbt checkJavaCodeStyle
   - sbt test installerZip writeLanguagePack writeScriptingJavadoc
 after_failure:
   - aws s3 --region us-east-1 cp target/checkstyle-report.html s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
