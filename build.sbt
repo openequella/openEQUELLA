@@ -99,7 +99,7 @@ checkJavaCodeStyle := {
     streams = streams.value
   )
   val errorNumber = countErrorNumber
-  print("error number " + errorNumber)
+  println("error number " + errorNumber)
   val thresholdNumber = 870
   if (errorNumber > thresholdNumber) {
     println(
