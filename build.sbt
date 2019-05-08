@@ -66,17 +66,17 @@ lazy val equella = (project in file("."))
 
 checkJavaCodeStyle := {
   import com.etsy.sbt.checkstyle._
-  val rootDirectory       = (baseDirectory in LocalProject("equella")).value
+  val rootDirectory = (baseDirectory in LocalProject("equella")).value
+  println("root directory is " + rootDirectory)
   val rootTargetDirectory = (target in LocalProject("equella")).value
+  println("target directory is " + rootTargetDirectory)
   def countErrorNumber: Int = {
     val outputFile = new File("target/checkstyle-report.xml")
     if (outputFile.exists()) {
-      println("report file is generated")
       val report = scala.xml.XML.loadFile(outputFile)
       (report \ "file").flatMap { file =>
         (file \ "error").map { _ =>
           {
-            println("found one error")
             1
           }
         }
@@ -98,9 +98,11 @@ checkJavaCodeStyle := {
     severityLevel = None,
     streams = streams.value
   )
-  val t = countErrorNumber
-  println("error number:" + t)
-  if (t > 870) {
+  val errorNumber     = countErrorNumber
+  val thresholdNumber = 870
+  if (errorNumber > thresholdNumber) {
+    println(
+      "Checkstyle error threshold (" + thresholdNumber + ") exceeded with error count of " + errorNumber)
     System.exit(1)
   }
 }
