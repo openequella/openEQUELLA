@@ -27,10 +27,6 @@ public abstract class WorkspaceModelManager<M extends IModel> extends AbstractMo
   protected Map<IProject, M> fModels = null;
   private List<ModelChange> fChangedModels;
 
-  void test() {
-    if (1 = 1) return;
-  }
-
   static class ModelChange {
     IModel model;
     int type;
@@ -60,6 +56,7 @@ public abstract class WorkspaceModelManager<M extends IModel> extends AbstractMo
 
   protected synchronized void initialize() {
     if (fModels != null) return;
+
     fModels = Collections.synchronizedMap(new HashMap<IProject, M>());
     IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
     for (int i = 0; i < projects.length; i++) {

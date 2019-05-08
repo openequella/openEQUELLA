@@ -96,8 +96,7 @@ checkJavaCodeStyle := {
     severityLevel = None,
     streams = streams.value
   )
-  val errorNumber = countErrorNumber
-  println("error number " + errorNumber)
+  val errorNumber     = countErrorNumber
   val thresholdNumber = 870
   if (errorNumber > thresholdNumber) {
     println(
@@ -105,8 +104,6 @@ checkJavaCodeStyle := {
     System.exit(1)
   }
 }
-// Make checkJavaCodeStyle executed before sbt compile
-//(compile in Compile) := (compile in Compile).dependsOn(checkJavaCodeStyle).value
 
 buildConfig in ThisBuild := Common.buildConfig
 
