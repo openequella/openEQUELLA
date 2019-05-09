@@ -20,6 +20,7 @@ package com.tle.web.viewurl.resource;
 
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.attachments.IAttachment;
+import com.tle.common.NameValue;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.render.Label;
@@ -30,9 +31,11 @@ import com.tle.web.stream.ContentStream;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.servlet.ThumbServlet.GalleryParameter;
 import com.tle.web.viewurl.AttachmentDetail;
+import com.tle.web.viewurl.ResourceViewer;
 import com.tle.web.viewurl.ViewAuditEntry;
 import com.tle.web.viewurl.ViewItemUrl;
 import com.tle.web.viewurl.ViewableResource;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractWrappedResource implements ViewableResource {
@@ -184,5 +187,15 @@ public abstract class AbstractWrappedResource implements ViewableResource {
   @Override
   public ImageRenderer createVideoThumbnailRenderer(Label label, TagState tag) {
     return inner.createVideoThumbnailRenderer(label, tag);
+  }
+
+  @Override
+  public List<NameValue> getResourceSpecificViewers() {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public ResourceViewer getResourceViewer(String viewerId) {
+    return null;
   }
 }

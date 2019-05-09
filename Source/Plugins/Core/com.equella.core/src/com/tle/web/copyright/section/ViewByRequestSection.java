@@ -94,7 +94,7 @@ public class ViewByRequestSection extends AbstractPrototypeSection<ViewByRequest
       model.setRequestUuid(null);
       ActivateRequest request = activationService.getRequest(requestUuid);
       if (request != null) {
-        attachmentSection.setAttachmentToView(info, request.getAttachment());
+        attachmentSection.setAttachmentToView(info, request.getAttachment(), false);
         info.forwardToUrl(info.getPublicBookmark().getHref());
         return null;
       }

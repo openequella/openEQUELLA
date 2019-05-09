@@ -19,6 +19,7 @@
 package com.tle.web.mimetypes.section;
 
 import com.tle.beans.item.attachments.Attachment;
+import com.tle.common.NameValue;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.render.Label;
@@ -28,9 +29,11 @@ import com.tle.web.stream.ContentStream;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.servlet.ThumbServlet.GalleryParameter;
 import com.tle.web.viewurl.AttachmentDetail;
+import com.tle.web.viewurl.ResourceViewer;
 import com.tle.web.viewurl.ViewAuditEntry;
 import com.tle.web.viewurl.ViewItemUrl;
 import com.tle.web.viewurl.ViewableResource;
+import java.util.Collections;
 import java.util.List;
 
 public class FakeMimeTypeResource implements ViewableResource {
@@ -155,6 +158,16 @@ public class FakeMimeTypeResource implements ViewableResource {
 
   @Override
   public List<AttachmentDetail> getExtraAttachmentDetails() {
+    return null;
+  }
+
+  @Override
+  public List<NameValue> getResourceSpecificViewers() {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public ResourceViewer getResourceViewer(String viewerId) {
     return null;
   }
 
