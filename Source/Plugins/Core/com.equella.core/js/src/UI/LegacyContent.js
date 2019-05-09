@@ -59,12 +59,14 @@ function collectParams(form, command, args) {
   });
   form.querySelectorAll("select").forEach(function(v) {
     var sel = v.selectedOptions;
-    for (i = 0; i < sel.length; i++) {
-      var o = sel[i];
-      var ex = vals[v.name];
-      if (ex) {
-        ex.push(o.value);
-      } else vals[v.name] = [o.value];
+    if (sel != null) {
+      for (i = 0; i < sel.length; i++) {
+        var o = sel[i];
+        var ex = vals[v.name];
+        if (ex) {
+          ex.push(o.value);
+        } else vals[v.name] = [o.value];
+      }
     }
   });
   return vals;
