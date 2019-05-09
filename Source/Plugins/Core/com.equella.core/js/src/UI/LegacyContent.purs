@@ -6,7 +6,7 @@ import Control.Monad.Maybe.Trans (MaybeT(..), lift, runMaybeT)
 import Data.Array (catMaybes, filter, length, mapWithIndex)
 import Data.Either (Either(..))
 import Data.Map as Map
-import Data.Maybe (Maybe(..), fromJust)
+import Data.Maybe (Maybe(..), fromJust, fromMaybe', maybe')
 import Data.Nullable (Nullable, toNullable)
 import Data.Set (Set)
 import Data.Set as Set
@@ -30,7 +30,7 @@ import OEQ.Environment (baseUrl)
 import OEQ.UI.Common (scrollWindowToTop)
 import OEQ.Utils.QueryString (toTuples)
 import OEQ.Utils.UUID (newUUID)
-import Partial.Unsafe (unsafePartial)
+import Partial.Unsafe (unsafeCrashWith, unsafePartial)
 import React (ReactElement, ReactRef, component, unsafeCreateLeafElement)
 import React as R
 import React.DOM (div')
@@ -52,6 +52,7 @@ import Web.HTML.HTMLDocument (toDocument)
 import Web.HTML.HTMLLinkElement as Link
 import Web.HTML.HTMLScriptElement as Script
 import Web.HTML.Window (document)
+import Unsafe.Coerce (unsafeCoerce)
 
 foreign import setInnerHtml :: {node :: ReactRef, html:: String, script::Nullable String, afterHtml :: Nullable (Effect Unit) } -> Effect Unit
 foreign import clearInnerHtml :: ReactRef -> Effect Unit
@@ -96,14 +97,14 @@ loadMissingScripts _scripts =  unsafePartial $ makeAff $ \cb -> do
   htmldoc <- document w
   let doc = toDocument htmldoc
       
-  head <- fromJust <$> (getElementsByTagName "head" doc >>= item 0)
+  head <- fromMaybe' (\_ -> unsafeCrashWith "HEAD") <$> (getElementsByTagName "head" doc >>= item 0)
   loadedScripts <- getElementsByTagName "script" doc >>= toArray
-  let getSrc elem = Script.src $ fromJust $ Script.fromElement elem
+  let getSrc elem = Script.src $ unsafeCoerce elem
   ex <- Set.fromFoldable <$> traverse getSrc loadedScripts
   let toLoad = filterUrls ex scripts
       scriptCount = length toLoad
   let createScript ind src = do 
-        tag <- fromJust <<< Script.fromElement <$> createElement "script" doc
+        tag <- unsafeCoerce <$> createElement "script" doc
         Script.setSrc src tag
         Script.setAsync false tag
         if scriptCount == ind + 1
@@ -139,7 +140,7 @@ updateStylesheets replace _sheets = unsafePartial $ makeAff $ \cb -> do
       deleteEff = if replace then traverse_ deleteSheet (Map.values toDelete) else pure unit
       sheetCount = length newSheets
       createLink ind href = do 
-        l <- fromJust <<< Link.fromElement <$> createElement "link" doc
+        l <- unsafeCoerce <$> createElement "link" doc
         Link.setRel "stylesheet" l
         Link.setHref href l
         if sheetCount == ind + 1
