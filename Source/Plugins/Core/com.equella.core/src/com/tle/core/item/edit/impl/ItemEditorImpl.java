@@ -199,6 +199,11 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
     }
   }
 
+  @Override
+  public Attachment attachmentForUuid(String uuid) {
+    return getAttachmentMap().get(uuid);
+  }
+
   public void setStagingUuid(String stagingUuid) {
     this.stagingUuid = stagingUuid;
     if (stagingUuid != null) {
@@ -325,6 +330,12 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
       attachEditor.setAttachment(existingAttachment);
     }
     return type.cast(attachEditor);
+  }
+
+  @Override
+  public Iterable<String> getAttachmentOrder() {
+    getAttachmentMap();
+    return attachmentOrder;
   }
 
   public static void checkValidUuid(String uuid) {
