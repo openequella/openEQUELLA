@@ -33,6 +33,7 @@ public abstract class AbstractTextFieldButton extends JComponent {
   public AbstractTextFieldButton(String buttonText) {
     setupGui(buttonText);
     setupListeners();
+    if (1 == 1) {}
   }
 
   protected abstract void buttonSelected();

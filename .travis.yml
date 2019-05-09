@@ -15,11 +15,9 @@ install:
   - git fetch --unshallow
   - npm install && npm run check
   - sbt headerCheck
+  - sbt checkJavaCodeStyle || aws s3 --region us-east-1 cp target/checkstyle-report.html s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
 script:
-  - sbt checkJavaCodeStyle
   - sbt test installerZip writeLanguagePack writeScriptingJavadoc
-after_failure:
-  - aws s3 --region us-east-1 cp target/checkstyle-report.html s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
 after_success:
   - aws s3 --region us-east-1 cp Source/Server/equellaserver/target/tle-upgrade*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
   - aws s3 --region us-east-1 cp Installer/target/equella-installer*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/

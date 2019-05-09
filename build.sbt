@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException
 import java.util.Properties
 
 import Path.rebase
@@ -72,15 +73,9 @@ checkJavaCodeStyle := {
     val outputFile = new File("target/checkstyle-report.xml")
     if (outputFile.exists()) {
       val report = scala.xml.XML.loadFile(outputFile)
-      (report \ "file").flatMap { file =>
-        (file \ "error").map { _ =>
-          {
-            1
-          }
-        }
-      }.sum
+      (report \\ "file" \ "error").length
     } else {
-      Int.MaxValue
+      throw new FileNotFoundException("checkstyle report is missing")
     }
   }
   // As we will specify where the config file is, the resource file can be null
