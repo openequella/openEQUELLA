@@ -100,8 +100,7 @@ public interface EquellaItemResource extends ItemResource {
   @Path("/{uuid}/{version}/edit")
   @Consumes("application/json")
   @ApiOperation(value = "Edit attachments and metadata")
-  public ItemEditResponses editCommands(
-      // @formatter:off
+  ItemEditResponses editCommands(
       @ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
       @ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,
       @ApiParam(value = "The id of the lock in use, if the item is locked") @QueryParam("lock")
@@ -118,6 +117,4 @@ public interface EquellaItemResource extends ItemResource {
           @QueryParam("taskUuid")
           final String taskUuid,
       @ApiParam(value = "The edit commands") final ItemEdits edits);
-  // @formatter:on
-
 }

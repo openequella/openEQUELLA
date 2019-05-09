@@ -59,8 +59,8 @@ case class ItemEdits(xml: Option[String], edits: Iterable[ItemEditCommand])
 case class ItemEditResponses(xml: String, results: Iterable[ItemEditResponse])
 
 object ItemEdits {
-  val editorMap            = LegacyGuice.attachmentSerializerProvider.getAttachmentSerializers.asScala
-  val attachmentSerializer = LegacyGuice.attachmentSerializerProvider
+  val attachmentSerializers = LegacyGuice.attachmentSerializerProvider
+  val editorMap             = attachmentSerializers.getAttachmentSerializers.asScala
 
   def performEdits(itemEdit: ItemEdits, editor: ItemEditor): ItemEditResponses = {
 
@@ -68,7 +68,7 @@ object ItemEdits {
     val existingAttachments = editor.getAttachmentOrder.asScala.toBuffer
 
     def serializeAttach(uuid: String): EquellaAttachmentBean =
-      attachmentSerializer.serializeAttachment(editor.attachmentForUuid(uuid))
+      attachmentSerializers.serializeAttachment(editor.attachmentForUuid(uuid))
 
     val responses = itemEdit.edits.map {
       case AddAttachment(attachment, xmlPath) =>
