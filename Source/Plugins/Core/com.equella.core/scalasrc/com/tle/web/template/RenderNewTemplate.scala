@@ -101,10 +101,6 @@ object RenderNewTemplate {
     }
 
     context.preRender(JQueryCore.PRERENDER)
-    if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident")))
-    {
-      context.getPreRenderContext.addJs("https://cdn.polyfill.io/v2/polyfill.min.js?features=es6")
-    }
     context.preRender(bundleJs)
 
     val decs = Decorations.getDecorations(context)
@@ -190,6 +186,12 @@ object RenderNewTemplate {
     }
   }
 
+  def supportIEPolyFills(context:RenderEventContext):Unit = {
+    if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident")))
+    {
+      context.getPreRenderContext.addJs("https://cdn.polyfill.io/v2/polyfill.min.js?features=es6")
+    }
+  }
   def renderCrumbs(context: RenderEventContext, d: Decorations): Option[SectionRenderable] = {
     val bc = Breadcrumbs.get(context)
     if (d.isForceBreadcrumbsOn || (d.isBreadcrumbs && !bc.getLinks.isEmpty)) Option {
