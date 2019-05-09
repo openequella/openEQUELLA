@@ -74,9 +74,7 @@ object RenderNewTemplate {
     }
     val prerender: PreRenderable = info => {
       info.preRender(JQueryCore.PRERENDER)
-      if (Option(info.getRequest.getHeader("User-Agent")).exists(_.contains("Trident"))) {
-        info.addJs("https://cdn.polyfill.io/v2/polyfill.min.js?features=es6")
-      }
+      supportIEPolyFills(info)
       info.preRender(bundleJs)
       links.foreach(l => info.addCss(r.url(l.attr("href"))))
     }
@@ -142,6 +140,13 @@ object RenderNewTemplate {
       else htmlBundleCache.computeIfAbsent(htmlPage, parseEntryHtml)
     context.preRender(scriptPreRender)
     renderReact(context, viewFactory, renderData, body.body().toString)
+  }
+
+  def supportIEPolyFills(context: PreRenderContext): Unit = {
+    if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident"))) {
+      context.addJs(
+        "https://polyfill.io/v3/polyfill.min.js?features=es6%2CURL%2CElement%2CArray.prototype.forEach%2Cdocument.querySelector%2CNodeList.prototype.forEach%2CNodeList.prototype.%40%40iterator%2CNode.prototype.contains")
+    }
   }
 
   def renderReact(context: RenderEventContext,
