@@ -6,7 +6,7 @@ import Control.Monad.Maybe.Trans (MaybeT(..), lift, runMaybeT)
 import Data.Array (filter, length, mapWithIndex)
 import Data.Either (Either(..))
 import Data.Map as Map
-import Data.Maybe (Maybe(..), fromJust)
+import Data.Maybe (Maybe(..), fromJust, fromMaybe', maybe')
 import Data.Nullable (Nullable, toNullable)
 import Data.Set (Set)
 import Data.Set as Set
@@ -23,13 +23,14 @@ import Foreign.Object (Object)
 import OEQ.Data.LegacyContent (SubmitOptions)
 import OEQ.Environment (baseUrl)
 import OEQ.Utils.QueryString (toTuples)
-import Partial.Unsafe (unsafePartial)
+import Partial.Unsafe (unsafeCrashWith, unsafePartial)
 import React (ReactElement, ReactRef, component, unsafeCreateLeafElement)
 import React as R
 import React.DOM as D
 import React.DOM.Props (Props, _type, onSubmit)
 import React.DOM.Props as DP
 import React.SyntheticEvent (preventDefault)
+import Unsafe.Coerce (unsafeCoerce)
 import Web.DOM.Document (createElement, getElementsByTagName, toNonElementParentNode)
 import Web.DOM.Element as Elem
 import Web.DOM.HTMLCollection (item, toArray)
@@ -90,12 +91,12 @@ loadMissingScripts _scripts =  unsafePartial $ makeAff $ \cb -> do
       
   head <- fromJust <$> (getElementsByTagName "head" doc >>= item 0)
   loadedScripts <- getElementsByTagName "script" doc >>= toArray
-  let getSrc elem = Script.src $ fromJust $ Script.fromElement elem
+  let getSrc elem = Script.src $ unsafeCoerce elem
   ex <- Set.fromFoldable <$> traverse getSrc loadedScripts
   let toLoad = filterUrls ex scripts
       scriptCount = length toLoad
   let createScript ind src = do 
-        tag <- fromJust <<< Script.fromElement <$> createElement "script" doc
+        tag <- unsafeCoerce <$> createElement "script" doc
         Script.setSrc src tag
         Script.setAsync false tag
         if scriptCount == ind + 1
@@ -131,7 +132,7 @@ updateStylesheets replace _sheets = unsafePartial $ makeAff $ \cb -> do
       deleteEff = if replace then traverse_ deleteSheet (Map.values toDelete) else pure unit
       sheetCount = length newSheets
       createLink ind href = do 
-        l <- fromJust <<< Link.fromElement <$> createElement "link" doc
+        l <- unsafeCoerce <$> createElement "link" doc
         Link.setRel "stylesheet" l
         Link.setHref href l
         if sheetCount == ind + 1

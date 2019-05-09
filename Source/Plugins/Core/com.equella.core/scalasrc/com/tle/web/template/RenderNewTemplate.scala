@@ -111,6 +111,12 @@ object RenderNewTemplate {
     renderReact(context, viewFactory, renderData, bundleJS)
   }
 
+  def supportIE11PolyFills(context: PreRenderContext): Unit = {
+    if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident"))) {
+      context.addJs("https://polyfill.io/v3/polyfill.min.js?features=es6%2CURL%2CElement%2CArray.prototype.forEach%2Cdocument.querySelector%2CNodeList.prototype.forEach%2CNodeList.prototype.%40%40iterator%2CNode.prototype.contains")
+      context.preRender(RenderTemplate.STYLES_CSS)
+    }
+  }
   def renderReact(context: RenderEventContext,
                   viewFactory: FreemarkerFactory,
                   renderData: ObjectExpression,
@@ -119,10 +125,7 @@ object RenderNewTemplate {
     if (DebugSettings.isAutoTestMode) {
       context.preRender(RenderTemplate.AUTOTEST_JS)
     }
-
-    if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident"))) {
-      context.getPreRenderContext.addJs("https://cdn.polyfill.io/v2/polyfill.min.js?features=es6")
-    }
+    supportIE11PolyFills(context.getPreRenderContext)
     context.preRender(bundleJs)
     val tempResult = new GenericTemplateResult()
     tempResult.addNamedResult("header", HeaderSection)
