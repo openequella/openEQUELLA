@@ -73,8 +73,8 @@ case class CloudAttachmentViewableResource(info: SectionInfo,
     extends AbstractWrappedResource(parent) {
 
   import CloudAttachmentViewableResource._
-  val fields      = CloudAttachmentFields(attach)
-  lazy val itemId = parent.getViewableItem.getItemId
+  val fields = CloudAttachmentFields(attach)
+  val itemId = parent.getViewableItem.getItemId
   val viewerId = Option(
     info
       .lookupSection(classOf[RootItemFileSection])
@@ -176,7 +176,7 @@ case class CloudAttachmentViewableResource(info: SectionInfo,
   override def getContentStream: ContentStream = {
     RunWithDB.executeWithHibernate {
       (for {
-        provider <- CloudProviderDB.get(fields.providerId)
+        provider <- OptionT.fromOption[DB](providerO)
         viewerDetails <- OptionT.fromOption[DB] {
           serviceUriForViewer(provider, cloudViewer(provider))
         }
