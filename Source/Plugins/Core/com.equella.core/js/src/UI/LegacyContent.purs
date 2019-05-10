@@ -97,7 +97,7 @@ loadMissingScripts _scripts =  unsafePartial $ makeAff $ \cb -> do
   htmldoc <- document w
   let doc = toDocument htmldoc
       
-  head <- fromMaybe' (\_ -> unsafeCrashWith "HEAD") <$> (getElementsByTagName "head" doc >>= item 0)
+  head <- fromJust <$> (getElementsByTagName "head" doc >>= item 0)
   loadedScripts <- getElementsByTagName "script" doc >>= toArray
   let getSrc elem = Script.src $ unsafeCoerce elem
   ex <- Set.fromFoldable <$> traverse getSrc loadedScripts
