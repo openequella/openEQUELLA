@@ -143,10 +143,12 @@ public class ViewAttachmentSection
   }
 
   @Override
-  public void setAttachmentToView(SectionInfo info, String uuid) {
+  public void setAttachmentToView(SectionInfo info, String uuid, boolean stream) {
+    ViewAttachmentModel model = getModel(info);
     if (uuid != null) {
-      getModel(info).setUuid(uuid);
+      model.setUuid(uuid);
     }
+    model.setStream(stream);
   }
 
   public String getUuid(SectionInfo info) {

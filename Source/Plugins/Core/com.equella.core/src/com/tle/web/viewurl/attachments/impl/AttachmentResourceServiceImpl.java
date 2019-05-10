@@ -32,6 +32,7 @@ import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.Check;
+import com.tle.common.NameValue;
 import com.tle.common.filesystem.FileSystemConstants;
 import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.i18n.CurrentLocale;
@@ -58,6 +59,7 @@ import com.tle.web.viewable.ViewableItemResolver;
 import com.tle.web.viewable.servlet.ThumbServlet.GalleryParameter;
 import com.tle.web.viewurl.AttachmentDetail;
 import com.tle.web.viewurl.FilestoreBookmark;
+import com.tle.web.viewurl.ResourceViewer;
 import com.tle.web.viewurl.ViewAttachmentUrl;
 import com.tle.web.viewurl.ViewAuditEntry;
 import com.tle.web.viewurl.ViewItemUrl;
@@ -70,6 +72,7 @@ import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -440,6 +443,16 @@ public class AttachmentResourceServiceImpl implements AttachmentResourceService 
       }
 
       return details;
+    }
+
+    @Override
+    public List<NameValue> getResourceSpecificViewers() {
+      return Collections.emptyList();
+    }
+
+    @Override
+    public ResourceViewer getResourceViewer(String viewerId) {
+      return null;
     }
   }
 

@@ -127,6 +127,15 @@ public class ViewItemServiceImpl implements ViewItemService, ItemDefinitionDelet
     return null;
   }
 
+  @Override
+  public ResourceViewer getEnabledViewer(ViewableResource resource, String viewerId) {
+    ResourceViewer viewer = resource.getResourceViewer(viewerId);
+    if (viewer == null) {
+      return getViewer(viewerId);
+    }
+    return viewer;
+  }
+
   @Inject
   public void setPluginService(PluginService pluginService) {
     viewerPlugins =
@@ -146,6 +155,7 @@ public class ViewItemServiceImpl implements ViewItemService, ItemDefinitionDelet
   @Override
   public List<NameValue> getEnabledViewers(SectionInfo info, ViewableResource resource) {
     final List<NameValue> enabledList = new ArrayList<NameValue>();
+    enabledList.addAll(resource.getResourceSpecificViewers());
     final MimeEntry mimeEntry = mimeTypeService.getEntryForMimeType(resource.getMimeType());
     final Set<String> enabledViewers;
     if (mimeEntry != null) {
@@ -193,8 +203,12 @@ public class ViewItemServiceImpl implements ViewItemService, ItemDefinitionDelet
   @Override
   public LinkTagRenderer getViewableLink(
       SectionInfo info, ViewableResource resource, String viewerId) {
+    final ResourceViewer resourceSpecific = resource.getResourceViewer(viewerId);
     final ResourceViewer viewer =
-        getViewer(Check.isEmpty(viewerId) ? getDefaultViewerId(resource.getMimeType()) : viewerId);
+        resourceSpecific != null
+            ? resourceSpecific
+            : getViewer(
+                Check.isEmpty(viewerId) ? getDefaultViewerId(resource.getMimeType()) : viewerId);
     if (viewer != null) {
       try {
         final LinkTagRenderer linkTag = viewer.createLinkRenderer(info, resource);

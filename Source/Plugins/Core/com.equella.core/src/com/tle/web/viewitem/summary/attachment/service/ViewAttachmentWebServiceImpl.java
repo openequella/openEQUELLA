@@ -642,7 +642,7 @@ public class ViewAttachmentWebServiceImpl implements ViewAttachmentWebService {
         final String otherViewer = viewerNv.getValue();
         // Ignore the configured viewer
         if (!otherViewer.equals(viewer)
-            && viewItemService.getViewer(otherViewer).supports(info, viewable)) {
+            && viewItemService.getEnabledViewer(viewable, otherViewer).supports(info, viewable)) {
           final LinkTagRenderer vlink =
               viewItemService.getViewableLink(info, viewable, otherViewer);
           vlink.addClass("viewer");
