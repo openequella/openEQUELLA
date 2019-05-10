@@ -28,6 +28,7 @@ import com.tle.core.events.services.EventService;
 import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.i18n.service.LanguageService;
 import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.edit.ItemEditorService;
 import com.tle.core.item.edit.attachment.AbstractAttachmentEditor;
 import com.tle.core.item.helper.ItemHelper;
 import com.tle.core.item.serializer.impl.AttachmentSerializerProvider;
@@ -203,6 +204,8 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static AttachmentSerializerProvider attachmentSerializerProvider;
 
   @Inject public static PluginTracker<AbstractAttachmentEditor> attachEditorTracker;
+
+  @Inject public static ItemEditorService itemEditorService;
 
   @Override
   protected void configure() {

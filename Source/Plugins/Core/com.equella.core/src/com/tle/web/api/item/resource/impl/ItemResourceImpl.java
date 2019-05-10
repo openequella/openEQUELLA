@@ -56,6 +56,9 @@ import com.tle.exceptions.PrivilegeRequiredException;
 import com.tle.web.api.interfaces.beans.BlobBean;
 import com.tle.web.api.interfaces.beans.FileListBean;
 import com.tle.web.api.interfaces.beans.UserBean;
+import com.tle.web.api.item.ItemEditResponses;
+import com.tle.web.api.item.ItemEdits;
+import com.tle.web.api.item.ItemEditsExisting;
 import com.tle.web.api.item.ItemLinkService;
 import com.tle.web.api.item.ItemSummaryApi;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
@@ -104,6 +107,7 @@ public class ItemResourceImpl implements EquellaItemResource {
   private static final String VIEW_ITEM = "VIEW_ITEM";
   private static final Pattern UUID_PLACEHOLDER_PATTERN = Pattern.compile("^uuid:(.*)$");
 
+  @Inject private ItemEditsExisting itemEditsExisting;
   @Inject private FileSystemService fileSystemService;
   @Inject private ItemSerializerService itemSerializerService;
   @Inject private ItemLinkService itemLinkService;
@@ -567,6 +571,27 @@ public class ItemResourceImpl implements EquellaItemResource {
   public Response deleteComment(UriInfo uriInfo, String uuid, int version, String commentUuid) {
     itemCommentService.deleteComment(new ItemId(uuid, version), commentUuid);
     return Response.status(Status.OK).build();
+  }
+
+  @Override
+  public ItemEditResponses editCommands(
+      String uuid,
+      int version,
+      String lockId,
+      boolean keepLocked,
+      String waitForIndex,
+      String taskUuid,
+      ItemEdits edits) {
+    boolean ensureOnIndexList = Boolean.parseBoolean(waitForIndex);
+
+    ItemKey itemKey =
+        taskUuid != null ? new ItemTaskId(uuid, version, taskUuid) : new ItemId(uuid, version);
+    Pair<ItemEditResponses, ItemIdKey> response =
+        itemEditsExisting.performEdits(edits, itemKey, lockId, ensureOnIndexList);
+    if (ensureOnIndexList) {
+      freeTextService.waitUntilIndexed(response.getSecond());
+    }
+    return response.getFirst();
   }
 
   // private methods

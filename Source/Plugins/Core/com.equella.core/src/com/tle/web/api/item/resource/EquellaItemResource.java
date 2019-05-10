@@ -18,6 +18,8 @@
 
 package com.tle.web.api.item.resource;
 
+import com.tle.web.api.item.ItemEditResponses;
+import com.tle.web.api.item.ItemEdits;
 import com.tle.web.api.item.interfaces.ItemResource;
 import com.tle.web.api.item.interfaces.beans.CommentBean;
 import io.swagger.annotations.Api;
@@ -93,4 +95,26 @@ public interface EquellaItemResource extends ItemResource {
       @ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
       @ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,
       @ApiParam(APIDOC_ITEMVERSION) @QueryParam("commentuuid") String commentUuid);
+
+  @PUT
+  @Path("/{uuid}/{version}/edit")
+  @Consumes("application/json")
+  @ApiOperation(value = "Edit attachments and metadata")
+  ItemEditResponses editCommands(
+      @ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
+      @ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,
+      @ApiParam(value = "The id of the lock in use, if the item is locked") @QueryParam("lock")
+          final String lockId,
+      @ApiParam(
+              value = "If locked, whether or not to keep the item locked after editing",
+              allowableValues = ",true,false",
+              defaultValue = "false")
+          @QueryParam("keeplocked")
+          final boolean keepLocked,
+      @ApiParam(value = APIDOC_WAITFORINDEX, required = false) @QueryParam("waitforindex")
+          final String waitForIndex,
+      @ApiParam(value = "The uuid of the task if the item is in moderation", required = false)
+          @QueryParam("taskUuid")
+          final String taskUuid,
+      @ApiParam(value = "The edit commands") final ItemEdits edits);
 }
