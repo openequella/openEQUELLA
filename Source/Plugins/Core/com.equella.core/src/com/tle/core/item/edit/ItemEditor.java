@@ -20,6 +20,7 @@ package com.tle.core.item.edit;
 
 import com.dytech.devlib.PropBagEx;
 import com.tle.beans.item.ItemIdKey;
+import com.tle.beans.item.attachments.Attachment;
 import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.item.edit.attachment.AttachmentEditor;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
@@ -35,6 +36,7 @@ public interface ItemEditor {
    */
   void doEdits(EquellaItemBean itemBean);
 
+  Attachment attachmentForUuid(String uuid);
   /**
    * Also asks each ItemDeserializerEditor to do processFiles
    *
@@ -64,6 +66,8 @@ public interface ItemEditor {
   void editThumbnail(String thumbnail);
 
   <T extends AttachmentEditor> T getAttachmentEditor(String uuid, Class<T> type);
+
+  Iterable<String> getAttachmentOrder();
 
   void editAttachmentOrder(List<String> attachmentUuids);
 

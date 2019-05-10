@@ -21,6 +21,7 @@ package com.tle.web.viewurl;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.attachments.IAttachment;
+import com.tle.common.NameValue;
 import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
@@ -115,6 +116,10 @@ public interface ViewableResource {
 
   @Nullable
   List<AttachmentDetail> getExtraAttachmentDetails();
+
+  List<NameValue> getResourceSpecificViewers();
+
+  ResourceViewer getResourceViewer(String viewerId);
 
   @NonNullByDefault(false)
   class ThumbRef {

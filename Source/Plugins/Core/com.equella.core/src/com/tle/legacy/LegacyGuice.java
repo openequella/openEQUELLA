@@ -28,6 +28,7 @@ import com.tle.core.events.services.EventService;
 import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.i18n.service.LanguageService;
 import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.edit.ItemEditorService;
 import com.tle.core.item.edit.attachment.AbstractAttachmentEditor;
 import com.tle.core.item.helper.ItemHelper;
 import com.tle.core.item.serializer.impl.AttachmentSerializerProvider;
@@ -77,6 +78,7 @@ import com.tle.web.template.TemplateFilter;
 import com.tle.web.viewable.impl.ViewableItemFactory;
 import com.tle.web.viewitem.service.ItemXsltService;
 import com.tle.web.viewurl.ViewItemService;
+import com.tle.web.viewurl.ViewItemUrlFactory;
 import com.tle.web.viewurl.attachments.AttachmentResourceService;
 import com.tle.web.workflow.tasks.ModerationService;
 import javax.inject.Inject;
@@ -203,6 +205,10 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static AttachmentSerializerProvider attachmentSerializerProvider;
 
   @Inject public static PluginTracker<AbstractAttachmentEditor> attachEditorTracker;
+
+  @Inject public static ItemEditorService itemEditorService;
+
+  @Inject public static ViewItemUrlFactory viewItemUrlFactory;
 
   @Override
   protected void configure() {

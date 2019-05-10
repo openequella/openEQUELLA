@@ -52,7 +52,7 @@ public class ViewDefaultSection extends AbstractPrototypeSection<Object> impleme
   public SectionResult view(RenderContext info, ViewItemResource resource) {
     final IAttachment attachment = getAttachment(info, resource);
     if (attachment != null) {
-      attachmentSection.setAttachmentToView(info, attachment.getUuid());
+      attachmentSection.setAttachmentToView(info, attachment.getUuid(), false);
     }
 
     final ViewableItem<?> viewableItem = resource.getViewableItem();

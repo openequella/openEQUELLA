@@ -26,6 +26,7 @@ import com.google.common.io.Closeables;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.HtmlAttachment;
 import com.tle.common.FileSizeUtils;
+import com.tle.common.NameValue;
 import com.tle.common.PathUtils;
 import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.guice.Bind;
@@ -50,6 +51,7 @@ import com.tle.web.stream.WrappedContentStream;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.servlet.ThumbServlet.GalleryParameter;
 import com.tle.web.viewurl.AttachmentDetail;
+import com.tle.web.viewurl.ResourceViewer;
 import com.tle.web.viewurl.ViewAuditEntry;
 import com.tle.web.viewurl.ViewItemUrl;
 import com.tle.web.viewurl.ViewableResource;
@@ -64,6 +66,7 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -453,6 +456,16 @@ public class MyPagesSummariser
 
     @Override
     public List<AttachmentDetail> getExtraAttachmentDetails() {
+      return null;
+    }
+
+    @Override
+    public List<NameValue> getResourceSpecificViewers() {
+      return Collections.emptyList();
+    }
+
+    @Override
+    public ResourceViewer getResourceViewer(String viewerId) {
       return null;
     }
 

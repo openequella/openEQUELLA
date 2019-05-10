@@ -23,6 +23,7 @@ object CommonSettings extends AutoPlugin {
     lazy val writeScriptingJavadoc = taskKey[File]("Write the scripting javadoc")
     lazy val mergeJPF              = inputKey[Unit]("Merge all")
     lazy val buildJS               = taskKey[Seq[File]]("Build JS resources")
+    lazy val checkJavaCodeStyle    = taskKey[Unit]("Run checkstyle")
 
     lazy val platformCommon  = LocalProject("com_tle_platform_common")
     lazy val platformSwing   = LocalProject("com_tle_platform_swing")

@@ -58,13 +58,14 @@ function collectParams(form, command, args) {
     } else vals[v.name] = [v.value];
   });
   form.querySelectorAll("select").forEach(function(v) {
-    var sel = v.selectedOptions;
-    for (i = 0; i < sel.length; i++) {
-      var o = sel[i];
-      var ex = vals[v.name];
-      if (ex) {
-        ex.push(o.value);
-      } else vals[v.name] = [o.value];
+    for (i = 0; i < v.length; i++) {
+      var o = v[i];
+      if (o.selected) {
+        var ex = vals[v.name];
+        if (ex) {
+          ex.push(o.value);
+        } else vals[v.name] = [o.value];
+      }
     }
   });
   return vals;
@@ -90,6 +91,7 @@ exports.setupLegacyHooks_ = function(ps) {
       return false;
     };
   }
+
   return function() {
     window.EQ = {
       event: stdSubmit(true),

@@ -38,6 +38,8 @@ import scala.collection.mutable
 class WizardItemEditor(wsi: WizardStateInterface) extends ItemEditor with ItemEditorChangeTracker {
 
   val item       = wsi.getItem
+  val itemPack   = wsi.getItemPack
+  var xml        = itemPack.getXml
   val fileHandle = wsi.getFileHandle
 
   val attachmentMap   = mutable.Map[String, Attachment]()
@@ -64,12 +66,14 @@ class WizardItemEditor(wsi: WizardStateInterface) extends ItemEditor with ItemEd
     if (existingSize > newSize) {
       Range(newSize, existingSize).foreach(attachments.remove)
     }
+    itemPack.setXml(xml)
+    wsi.setItemPack(itemPack)
     null
   }
 
   def unsupported = throw new UnsupportedOperationException("Can't be called in this context")
 
-  override def getMetadata: PropBagEx = unsupported
+  override def getMetadata: PropBagEx = xml
 
   override def preventSaveScript(): Unit = unsupported
 
@@ -85,7 +89,7 @@ class WizardItemEditor(wsi: WizardStateInterface) extends ItemEditor with ItemEd
 
   override def editMetadata(xml: String): Unit = unsupported
 
-  override def editMetadata(xml: PropBagEx): Unit = unsupported
+  override def editMetadata(xml: PropBagEx): Unit = this.xml = xml
 
   override def editThumbnail(thumbnail: String): Unit = unsupported
 
@@ -103,9 +107,6 @@ class WizardItemEditor(wsi: WizardStateInterface) extends ItemEditor with ItemEd
     val attachment = existingAttachmentO.filter(attachEditor.canEdit).getOrElse {
       val attachment = attachEditor.newAttachment
       attachment.setUuid(uuid)
-      if (attachmentMap.contains(uuid)) {
-        attachmentEditDetected()
-      }
       attachmentMap.put(uuid, attachment)
       attachment
     }
@@ -116,7 +117,6 @@ class WizardItemEditor(wsi: WizardStateInterface) extends ItemEditor with ItemEd
   override def editAttachmentOrder(_attachmentUuids: util.List[String]): Unit = {
     val attachmentUuids = _attachmentUuids.asScala
     if (attachmentOrder != attachmentUuids) {
-      editDetected()
       attachmentOrder.clear()
       attachmentOrder ++= attachmentUuids
     }
@@ -151,4 +151,8 @@ class WizardItemEditor(wsi: WizardStateInterface) extends ItemEditor with ItemEd
   override def addIndexingEdit(editType: String): Unit = {}
 
   override def editWithPrivilege(priv: String): Unit = {}
+
+  override def attachmentForUuid(uuid: String): Attachment = attachmentMap.get(uuid).orNull
+
+  override def getAttachmentOrder: lang.Iterable[String] = attachmentOrder.asJava
 }

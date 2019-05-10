@@ -5,9 +5,9 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle
+  DialogTitle,
+  TextField
 } from "@material-ui/core";
-import TextField from "@material-ui/core/es/TextField";
 import { cloudProviderLangStrings } from "./CloudProviderModule";
 import { commonString } from "../util/commonstrings";
 

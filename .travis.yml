@@ -15,6 +15,7 @@ install:
   - git fetch --unshallow
   - npm install && npm run check
   - sbt headerCheck
+  - sbt checkJavaCodeStyle || (aws s3 --region us-east-1 cp target/checkstyle-report.html s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/ ; exit 1)
 script:
   - sbt test installerZip writeLanguagePack writeScriptingJavadoc
 after_success:

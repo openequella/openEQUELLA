@@ -39,6 +39,9 @@ public interface ViewItemService {
   @Nullable
   ResourceViewer getViewer(String viewerId);
 
+  @Nullable
+  ResourceViewer getEnabledViewer(ViewableResource resource, String viewerId);
+
   List<NameValue> getEnabledViewers(SectionInfo info, ViewableResource resource);
 
   LinkTagRenderer getViewableLink(SectionInfo info, ViewableResource resource, String viewerId);

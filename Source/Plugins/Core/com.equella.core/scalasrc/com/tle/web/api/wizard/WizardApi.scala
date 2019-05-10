@@ -38,6 +38,16 @@ import com.tle.core.httpclient._
 import com.tle.core.item.operations.{ItemOperationParams, WorkflowOperation}
 import com.tle.core.item.standard.operations.DuringSaveOperation
 import com.tle.legacy.LegacyGuice
+import com.tle.web.api.item.{
+  AddAttachment,
+  AddAttachmentResponse,
+  DeleteAttachment,
+  DeleteAttachmentResponse,
+  EditAttachment,
+  EditAttachmentResponse,
+  ItemEditResponses,
+  ItemEdits
+}
 import com.tle.web.api.item.equella.interfaces.beans.EquellaAttachmentBean
 import com.tle.web.wizard.impl.WizardServiceImpl.WizardSessionState
 import com.tle.web.wizard.{WizardState, WizardStateInterface}
@@ -52,41 +62,6 @@ import javax.ws.rs._
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits
 
-object WizardApi {
-  val editorMap = LegacyGuice.attachmentSerializerProvider.getAttachmentSerializers.asScala
-}
-
-@JsonTypeInfo(use = Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "command")
-@JsonSubTypes(
-  Array(
-    new Type(value = classOf[AddAttachment], name = "addAttachment"),
-    new Type(value = classOf[EditAttachment], name = "editAttachment"),
-    new Type(value = classOf[DeleteAttachment], name = "deleteAttachment")
-  )
-)
-sealed trait ItemEditCommand
-case class AddAttachment(attachment: EquellaAttachmentBean, xmlPath: Option[String])
-    extends ItemEditCommand
-case class EditAttachment(attachment: EquellaAttachmentBean)       extends ItemEditCommand
-case class DeleteAttachment(uuid: String, xmlPath: Option[String]) extends ItemEditCommand
-
-case class ItemEdits(xml: Option[String], edits: Iterable[ItemEditCommand])
-
-@JsonTypeInfo(use = Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes(
-  Array(
-    new Type(value = classOf[AddAttachmentResponse], name = "added"),
-    new Type(value = classOf[EditAttachmentResponse], name = "edited"),
-    new Type(value = classOf[DeleteAttachmentResponse], name = "deleted")
-  )
-)
-sealed trait ItemEditResponse
-case class AddAttachmentResponse(attachment: EquellaAttachmentBean)  extends ItemEditResponse
-case class EditAttachmentResponse(attachment: EquellaAttachmentBean) extends ItemEditResponse
-case class DeleteAttachmentResponse(uuid: String)                    extends ItemEditResponse
-
-case class ItemEditResponses(xml: String, results: Iterable[ItemEditResponse])
-
 case class FileInfo(size: Long, files: Option[Map[String, FileInfo]])
 case class ItemState(xml: String,
                      attachments: Iterable[EquellaAttachmentBean],
@@ -95,8 +70,6 @@ case class ItemState(xml: String,
 @Api("Wizard editing")
 @Path("wizard/{wizid}")
 class WizardApi {
-
-  val attachmentSerializer = LegacyGuice.attachmentSerializerProvider
 
   def editWizardSate[A](wizid: String, req: HttpServletRequest)(f: WizardStateInterface => A): A = {
     val sessionService = LegacyGuice.userSessionService
@@ -116,7 +89,8 @@ class WizardApi {
   def getState(@PathParam("wizid") wizid: String, @Context req: HttpServletRequest): ItemState = {
     editWizardSate(wizid, req) { wsi =>
       val attachments =
-        wsi.getItem.getAttachments.asScala.map(a => attachmentSerializer.serializeAttachment(a))
+        wsi.getItem.getAttachments.asScala.map(a =>
+          ItemEdits.attachmentSerializers.serializeAttachment(a))
       val itemPack = wsi.getItemPack
 
       def writeFile(fileInfo: FileEntry): (String, FileInfo) = {
@@ -142,40 +116,10 @@ class WizardApi {
                       itemEdit: ItemEdits,
                       @Context req: HttpServletRequest): ItemEditResponses = {
     editWizardSate(wizid, req) { wsi =>
-      val editor              = new WizardItemEditor(wsi)
-      val existingAttachments = wsi.getItem.getAttachments.asScala.map(_.getUuid)
-      val itemPack            = wsi.getItemPack
-
-      itemEdit.xml.foreach { xml =>
-        itemPack.setXml(new PropBagEx(xml))
-      }
-
-      def serializeAttach(uuid: String): EquellaAttachmentBean =
-        attachmentSerializer.serializeAttachment(editor.attachmentMap(uuid))
-
-      val responses = itemEdit.edits.map {
-        case AddAttachment(attachment, xmlPath) =>
-          val edited = WizardApi
-            .editorMap(attachment.getRawAttachmentType)
-            .deserialize(attachment, editor)
-          xmlPath.foreach(p => itemPack.getXml.newSubtree(p).setNode("", edited))
-          existingAttachments += edited
-          AddAttachmentResponse(serializeAttach(edited))
-        case DeleteAttachment(uuid, xmlPath) =>
-          existingAttachments -= uuid
-          xmlPath.foreach(p => itemPack.getXml.deleteAllWithValue(p, uuid))
-          DeleteAttachmentResponse(uuid)
-        case EditAttachment(attachment) =>
-          WizardApi
-            .editorMap(attachment.getRawAttachmentType)
-            .deserialize(attachment, editor)
-          EditAttachmentResponse(serializeAttach(attachment.getUuid))
-        case c => throw new ItemEditingException(s"Invalid item edit command: $c")
-      }
-      wsi.setItemPack(itemPack)
-      editor.editAttachmentOrder(existingAttachments.asJava)
+      val editor   = new WizardItemEditor(wsi)
+      val response = ItemEdits.performEdits(itemEdit, editor)
       editor.finishedEditing(false)
-      ItemEditResponses(wsi.getItemxml.toString, responses)
+      response
     }
   }
 

@@ -1,8 +1,10 @@
+import java.io.FileNotFoundException
 import java.util.Properties
 
+import Path.rebase
 import com.typesafe.sbt.license.LicenseReport
 import sbt.io.Using
-import Path.rebase
+
 import scala.collection.JavaConverters._
 
 lazy val learningedge_config = project in file("Dev/learningedge-config")
@@ -62,6 +64,41 @@ lazy val equella = (project in file("."))
              conversion,
              UpgradeInstallation,
              learningedge_config)
+
+checkJavaCodeStyle := {
+  import com.etsy.sbt.checkstyle._
+  val rootDirectory       = (baseDirectory in LocalProject("equella")).value
+  val rootTargetDirectory = (target in LocalProject("equella")).value
+  def countErrorNumber: Int = {
+    val outputFile = new File("target/checkstyle-report.xml")
+    if (outputFile.exists()) {
+      val report = scala.xml.XML.loadFile(outputFile)
+      (report \\ "file" \ "error").length
+    } else {
+      throw new FileNotFoundException("checkstyle report is missing")
+    }
+  }
+  // As we will specify where the config file is, the resource file can be null
+  // We don't want to exit SBT if checkstyle finds any issue, so severityLevel should be None
+  Checkstyle.checkstyle(
+    javaSource = rootDirectory,
+    resources = null,
+    outputFile = rootTargetDirectory / "checkstyle-report.xml",
+    configLocation = CheckstyleConfigLocation.File("checkstyle-config.xml"),
+    xsltTransformations = Some(
+      Set(CheckstyleXSLTSettings(rootDirectory / "checkstyle-report-template.xml",
+                                 rootTargetDirectory / "checkstyle-report.html"))),
+    severityLevel = None,
+    streams = streams.value
+  )
+  val errorNumber     = countErrorNumber
+  val thresholdNumber = 870
+  if (errorNumber > thresholdNumber) {
+    println(
+      "Checkstyle error threshold (" + thresholdNumber + ") exceeded with error count of " + errorNumber)
+    System.exit(1)
+  }
+}
 
 buildConfig in ThisBuild := Common.buildConfig
 

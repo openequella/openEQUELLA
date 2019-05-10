@@ -8,6 +8,7 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "1.0.0")
 
 addSbtPlugin("de.johoop" % "sbt-testng-plugin" % "3.1.1")
 
+addSbtPlugin("com.etsy" % "sbt-checkstyle-plugin" % "3.1.1")
 // Old version used because something else depends on an old JAWN
 val circeVersion = "0.7.1"
 
@@ -36,3 +37,4 @@ libraryDependencies ++= Seq(
   "org.slf4j"              % "slf4j-nop"             % "1.7.21",
   "com.yahoo.platform.yui" % "yuicompressor"         % "2.4.8"
 )
+dependencyOverrides += "com.puppycrawl.tools" % "checkstyle" % "8.19"
