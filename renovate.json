@@ -22,8 +22,16 @@
       "groupName": "Apache CXF packages"
     },
     {
+      "packagePatterns": ["^org.apache.httpcomponents"],
+      "groupName": "Apache HTTP Components packages"
+    },
+    {
       "packagePatterns": ["^org.apache.lucene"],
       "groupName": "Apache Lucene packages"
+    },
+    {
+      "packagePatterns": ["^org.apache.tika"],
+      "groupName": "Apache Tika packages"
     },
     {
       "packagePatterns": ["^org.apache.tomcat"],
