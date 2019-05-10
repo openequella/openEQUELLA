@@ -17,13 +17,10 @@
  */
 
 package com.tle.core.db
-import java.util.UUID
-
 import com.tle.core.db.migration.DBSchemaMigration
-import com.tle.core.db.tables.CachedValue
 import com.tle.core.db.types.DbUUID
 import io.doolse.simpledba.Iso
-import io.doolse.simpledba.jdbc.JDBCIO
+import io.doolse.simpledba.jdbc.StandardJDBC
 import io.doolse.simpledba.jdbc.sqlserver._
 
 object SQLServerSchema
@@ -32,8 +29,10 @@ object SQLServerSchema
     with DBSchemaMigration
     with StdSQLServerColumns {
 
-  implicit def config = setupLogging(sqlServerConfig)
-
+  implicit lazy val config = {
+    val escaped = StandardJDBC.escapeReserved(StandardJDBC.DefaultReserved + "key") _
+    setupLogging(sqlServerConfig.copy(escapeColumnName = escaped))
+  }
   override def autoIdCol: SQLServerColumn[Long] = identityCol[Long]
 
   override def insertAuditLog = insertIdentity(auditLog)

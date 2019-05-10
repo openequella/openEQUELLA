@@ -22,7 +22,7 @@ import java.util
 
 import com.tle.core.db.migration.DBSchemaMigration
 import com.tle.core.db.tables._
-import com.tle.core.db.types.{DbUUID, InstId, JsonColumn}
+import com.tle.core.db.types.{DbUUID, InstId, JsonColumn, String255}
 import com.tle.core.hibernate.factory.guice.HibernateFactoryModule
 import fs2.Stream
 import io.circe.{Json, JsonObject}
@@ -169,6 +169,9 @@ trait DBSchema extends StdColumns {
     entityTable.query.where(Cols('inst_id), BinOp.EQ).build
   )
 
+  def cachedValueByValue: ((String255, String, InstId)) => Stream[JDBCIO, CachedValue] =
+    cachedValues.query.where(Cols('cache_id, 'value, 'institution_id), BinOp.EQ).build
+
   val cachedValues = TableMapper[CachedValue].table("cached_value").edit('id, autoIdCol).key('id)
 
   def insertCachedValue: (Long => CachedValue) => Stream[JDBCIO, CachedValue]
@@ -177,7 +180,7 @@ trait DBSchema extends StdColumns {
     insertCachedValue,
     cachedValues.writes,
     cachedValues.query.where(Cols('cache_id, 'key, 'institution_id), BinOp.EQ).build,
-    cachedValues.query.where(Cols('cache_id, 'value, 'institution_id), BinOp.EQ).build
+    cachedValueByValue
   )
 
   allTables ++= newEntityTables
