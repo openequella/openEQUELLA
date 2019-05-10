@@ -18,6 +18,7 @@ install:
   - sbt checkJavaCodeStyle || (aws s3 --region us-east-1 cp target/checkstyle-report.html s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/ ; exit 1)
 script:
   - sbt test installerZip writeLanguagePack writeScriptingJavadoc
+  - cd import-export-tool && ./gradlew build
 after_success:
   - aws s3 --region us-east-1 cp Source/Server/equellaserver/target/tle-upgrade*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
   - aws s3 --region us-east-1 cp Installer/target/equella-installer*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
