@@ -24,10 +24,10 @@ import com.tle.common.applet.SessionHolder;
 import com.tle.common.applet.client.ClientProxyFactory;
 import com.tle.common.applet.client.ClientService;
 import com.tle.core.remoting.RemoteUserService;
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
-import javax.jnlp.BasicService;
-import javax.jnlp.ServiceManager;
-import javax.jnlp.UnavailableServiceException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -41,26 +41,20 @@ public class ClientServiceImpl implements ClientService {
     this.session = session;
   }
 
-  private Object getLocalService(Class<?> clazz) {
-    try {
-      return ServiceManager.lookup(clazz.getName());
-    } catch (UnavailableServiceException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  private BasicService getBasicService() {
-    return (BasicService) getLocalService(BasicService.class);
-  }
-
   @Override
   public String getParameter(String key) {
     return System.getProperty(key);
   }
 
   @Override
-  public void showDocument(URL url, String string) {
-    getBasicService().showDocument(url);
+  public void showDocument(URL url) {
+    if (Desktop.isDesktopSupported()) {
+      try {
+        Desktop.getDesktop().browse(url.toURI());
+      } catch (IOException | URISyntaxException e) {
+        throw new RuntimeException(e);
+      }
+    }
   }
 
   @Override

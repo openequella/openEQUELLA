@@ -21,17 +21,20 @@ package com.tle.admin.boot;
 import com.dytech.devlib.Base64;
 import com.dytech.edge.common.Version;
 import com.tle.admin.PluginServiceImpl;
+import com.tle.client.ListCookieHandler;
 import com.tle.client.harness.HarnessInterface;
 import com.tle.common.Check;
 import com.tle.core.plugins.PluginAwareObjectInputStream;
 import com.tle.core.plugins.PluginAwareObjectOutputStream;
 import com.tle.core.remoting.RemotePluginDownloadService;
 import com.tle.core.remoting.SessionLogin;
+import com.tle.exceptions.BadCredentialsException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.CookieHandler;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -53,35 +56,129 @@ public final class Bootstrap {
   public static final String ENDPOINT_PARAMETER = PROPERTY_PREFIX + "ENDPOINT";
   public static final String LOCALE_PARAMETER = PROPERTY_PREFIX + "LOCALE";
   public static final String INSTITUTION_NAME_PARAMETER = PROPERTY_PREFIX + "INSTITUTIONNAME";
+  public static final String USERNAME_PARAMETER = PROPERTY_PREFIX + "USERNAME";
+  public static final String PASSWORD_PARAMETER = PROPERTY_PREFIX + "PASSWORD";
+
+  private final String endpointParam;
+  private final Locale locale;
 
   public static void main(String[] args) {
+    new Bootstrap().run();
+  }
+
+  private Bootstrap() {
+    String endpointParam = System.getProperty(ENDPOINT_PARAMETER);
+    if (endpointParam == null) {
+      endpointParam = System.getProperty("ENDPOINT");
+    }
+    if (endpointParam == null) {
+      throw new RuntimeException("ENDPOINT parameter not specified");
+    }
+    this.endpointParam = endpointParam;
+
+    final String localeParam = System.getProperty(LOCALE_PARAMETER);
+    if (localeParam != null) {
+      locale = parseLocale(localeParam);
+    } else {
+      locale = Locale.getDefault();
+    }
+  }
+
+  private void run() {
     try {
       System.setSecurityManager(null);
-      String token = new String(new Base64().decode(System.getProperty(TOKEN_PARAMETER)), "UTF-8");
-      URL endpointUrl = new URL(System.getProperty(ENDPOINT_PARAMETER));
-      Locale locale = parseLocale(System.getProperty(LOCALE_PARAMETER));
-      Map<String, String> params = new HashMap<>();
-      params.put("token", token);
-      SessionLogin.postLogin(endpointUrl, params);
-      PluginServiceImpl pluginService =
-          new PluginServiceImpl(
-              endpointUrl,
-              Version.load().getCommit(),
-              createInvoker(RemotePluginDownloadService.class, endpointUrl));
-      pluginService.registerPlugins();
-      HarnessInterface client =
-          (HarnessInterface)
-              pluginService.getBean("com.equella.admin", "com.tle.admin.AdminConsole");
-      client.setPluginService(pluginService);
-      client.setLocale(locale);
-      client.setEndpointURL(endpointUrl);
-      client.start();
+
+      final URL endpointUrl = new URL(endpointParam);
+      if (login(endpointUrl)) {
+        final PluginServiceImpl pluginService =
+            new PluginServiceImpl(
+                endpointUrl,
+                Version.load().getCommit(),
+                createInvoker(RemotePluginDownloadService.class, endpointUrl));
+        pluginService.registerPlugins();
+
+        final HarnessInterface client =
+            (HarnessInterface)
+                pluginService.getBean("com.equella.admin", "com.tle.admin.AdminConsole");
+        client.setPluginService(pluginService);
+        client.setLocale(locale);
+        client.setEndpointURL(endpointUrl);
+        client.start();
+      }
     } catch (Exception ex) {
       throw new RuntimeException(ex);
     }
   }
 
-  public static Locale parseLocale(String localeString) {
+  private boolean login(URL endpointUrl) {
+    try {
+      String tokenParam = System.getProperty(TOKEN_PARAMETER);
+      if (tokenParam != null) {
+        String token =
+            new String(new Base64().decode(System.getProperty(TOKEN_PARAMETER)), "UTF-8");
+        Map<String, String> params = new HashMap<>();
+        params.put("token", token);
+        SessionLogin.postLogin(endpointUrl, params);
+        return true;
+      } else {
+        // bring up username/password modal
+        ListCookieHandler lch = new ListCookieHandler();
+        lch.setIgnoreCookieOverrideAttempts(true);
+        CookieHandler.setDefault(lch);
+
+        String username = System.getProperty(USERNAME_PARAMETER);
+        String password = System.getProperty(PASSWORD_PARAMETER);
+
+        LoginDialog loginDialog = new LoginDialog();
+        boolean retry = false;
+        try {
+          if (username != null && password != null) {
+            if (tryLogin(endpointUrl, username, password)) {
+              return true;
+            }
+            retry = true;
+          }
+
+          while (true) {
+            loginDialog.setUsername(username);
+            loginDialog.setVisible(true);
+            if (retry) {
+              loginDialog.setErrorMessage("Invalid credentials");
+            }
+            if (loginDialog.getResult() == LoginDialog.RESULT_OK) {
+              username = loginDialog.getUsername();
+              password = loginDialog.getPassword();
+              if (tryLogin(endpointUrl, username, password)) {
+                return true;
+              }
+              retry = true;
+            } else {
+              return false;
+            }
+          }
+        } finally {
+          loginDialog.dispose();
+        }
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private static boolean tryLogin(URL endpointUrl, String username, String password)
+      throws IOException {
+    try {
+      Map<String, String> params = new HashMap<>();
+      params.put("username", username);
+      params.put("password", password);
+      SessionLogin.postLogin(endpointUrl, params);
+      return true;
+    } catch (BadCredentialsException e) {
+      return false;
+    }
+  }
+
+  private static Locale parseLocale(String localeString) {
     if (localeString != null) {
       Matcher m = LOCALE_REGEX.matcher(localeString.trim());
       if (m.matches()) {
@@ -128,11 +225,5 @@ public final class Bootstrap {
         oos.close();
       }
     }
-  }
-
-  // Noli me tangere constructor, because Sonar likes it that way for
-  // non-instantiated utility classes
-  private Bootstrap() {
-    throw new Error();
   }
 }

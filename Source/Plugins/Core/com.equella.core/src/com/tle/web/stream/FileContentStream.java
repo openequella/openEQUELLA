@@ -18,14 +18,16 @@
 
 package com.tle.web.stream;
 
+import com.tle.common.filesystem.FileSystemHelper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 public class FileContentStream extends AbstractContentStream {
-  private File file;
+  private final File file;
   private FileInputStream inp;
+  private String etag;
 
   public FileContentStream(File file, String filename, String mimeType) {
     super(filename, mimeType);
@@ -40,6 +42,18 @@ public class FileContentStream extends AbstractContentStream {
   @Override
   public long getContentLength() {
     return file.length();
+  }
+
+  @Override
+  public String calculateETag() {
+    if (etag == null) {
+      try {
+        etag = FileSystemHelper.md5recurse(file, new byte[Short.MAX_VALUE]);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    return etag;
   }
 
   @Override

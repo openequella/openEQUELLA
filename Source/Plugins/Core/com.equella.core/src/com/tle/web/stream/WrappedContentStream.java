@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import javax.annotation.Nullable;
 
 public abstract class WrappedContentStream implements ContentStream {
   protected ContentStream inner;
@@ -43,6 +44,12 @@ public abstract class WrappedContentStream implements ContentStream {
   @Override
   public long getContentLength() {
     return inner.getContentLength();
+  }
+
+  @Nullable
+  @Override
+  public String calculateETag() {
+    return inner.calculateETag();
   }
 
   @Override

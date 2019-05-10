@@ -41,7 +41,7 @@ import org.apache.commons.logging.LogFactory;
 @Singleton
 public class ContentStreamWriter {
   private static final int RANGEBUFFER_SIZE = 16384;
-  private static Pattern RANGE_PATTERN = Pattern.compile("^bytes=(\\d*)-(\\d*)$");
+  private static final Pattern RANGE_PATTERN = Pattern.compile("^bytes=(\\d*)-(\\d*)$");
   private static final Log LOGGER = LogFactory.getLog(ContentStreamWriter.class);
 
   private static final long[] NOT_RANGE_REQUEST =
@@ -59,7 +59,15 @@ public class ContentStreamWriter {
 
   public void outputStream(
       HttpServletRequest request, HttpServletResponse response, ContentStream contentStream) {
-    outputStream(request, response, contentStream, null);
+    outputStream(request, response, contentStream, null, false);
+  }
+
+  public void outputStream(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      ContentStream contentStream,
+      boolean isCalculateETag) {
+    outputStream(request, response, contentStream, null, isCalculateETag);
   }
 
   public void outputStream(
@@ -67,13 +75,22 @@ public class ContentStreamWriter {
       HttpServletResponse response,
       ContentStream contentStream,
       @Nullable OutputStream outputStream) {
+    outputStream(request, response, contentStream, outputStream, false);
+  }
+
+  public void outputStream(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      ContentStream contentStream,
+      @Nullable OutputStream outputStream,
+      boolean isCalculateETag) {
     try {
       if (!contentStream.exists()) {
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
         return;
       }
 
-      if (checkModifiedSince(request, response, contentStream.getLastModified())) {
+      if (checkModifiedSince(request, response, contentStream, isCalculateETag)) {
         String disposition = contentStream.getContentDisposition();
         if (disposition != null) {
           response.setHeader(
@@ -248,8 +265,12 @@ public class ContentStreamWriter {
     return new long[] {start, end};
   }
 
-  public boolean checkModifiedSince(
-      HttpServletRequest request, HttpServletResponse response, long lastModified) {
+  protected boolean checkModifiedSince(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      ContentStream contentStream,
+      boolean isCalculateETag) {
+    long lastModified = contentStream.getLastModified();
     long modifiedSince = request.getDateHeader("IF-MODIFIED-SINCE"); // $NON-NLS-1$
     boolean hasBeenModified = true;
     if (modifiedSince > 0) {
@@ -260,6 +281,16 @@ public class ContentStreamWriter {
 
     if (!hasBeenModified) {
       response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+    }
+
+    if (isCalculateETag) {
+      final String ifNoneMatch = request.getHeader("If-None-Match");
+      if (ifNoneMatch != null) {
+        final String etag = contentStream.calculateETag();
+        if (etag != null) {
+          hasBeenModified = hasBeenModified || (!ifNoneMatch.equals(etag));
+        }
+      }
     }
 
     return hasBeenModified;

@@ -50,11 +50,19 @@ public class PluginServiceImpl extends AbstractPluginService {
     properties.put(PathResolver.class.getName(), TleShadingPathResolver.class.getName());
     try {
       // eg, /tmp/.jpf-shadow/http%3A%2F%2Fdemo.equella.com/5.0.12345/
-      File f = new File(System.getProperty("java.io.tmpdir"), ".jpf-shadow");
-      f = new File(f, URLUtils.basicUrlEncode(serverUrl.toString()));
-      f = new File(f, shortVersion);
+      final String shadowFolderParam = System.getProperty("plugin.cache.dir");
+      final File shadowFolder;
+      if (shadowFolderParam == null) {
+        File f = new File(System.getProperty("java.io.tmpdir"), ".jpf-shadow");
+        f = new File(f, URLUtils.basicUrlEncode(serverUrl.toString()));
+        f = new File(f, shortVersion);
+        shadowFolder = f;
+      } else {
+        shadowFolder = new File(shadowFolderParam, shortVersion);
+      }
 
-      properties.put("com.tle.admin.TleShadingPathResolver.shadowFolder", f.getCanonicalPath());
+      properties.put(
+          "com.tle.admin.TleShadingPathResolver.shadowFolder", shadowFolder.getCanonicalPath());
     } catch (Exception ex) {
       throw new RuntimeException("Error", ex);
     }
