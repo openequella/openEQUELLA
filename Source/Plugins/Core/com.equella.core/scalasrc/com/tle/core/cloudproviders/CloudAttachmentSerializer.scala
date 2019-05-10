@@ -41,8 +41,11 @@ class CloudAttachmentSerializer extends AbstractAttachmentSerializer {
       cab.setCloudType(fields.cloudType)
       cab.setVendorId(fields.vendorId)
       cab.setProviderId(fields.providerId)
-      cab.setDisplay(toJavaMap(fields.cloudJson.display))
-      cab.setMeta(toJavaMap(fields.cloudJson.meta))
+      val cloudJson = fields.cloudJson
+      cab.setDisplay(toJavaMap(cloudJson.display))
+      cab.setMeta(toJavaMap(cloudJson.meta))
+      cab.setIndexText(cloudJson.indexText.orNull)
+      cab.setIndexFiles(cloudJson.indexFiles.map(_.asJavaCollection).orNull)
       cab
   }
 
@@ -57,6 +60,8 @@ class CloudAttachmentSerializer extends AbstractAttachmentSerializer {
         editor.editCloudType(cloudBean.getCloudType)
         editor.editDisplay(toScalaMap(cloudBean.getDisplay))
         editor.editMeta(toScalaMap(cloudBean.getMeta))
+        editor.editIndexText(Option(cloudBean.getIndexText))
+        editor.editIndexFiles(Option(cloudBean.getIndexFiles).map(_.asScala))
         editor.finish()
         editor.getAttachmentUuid
     }

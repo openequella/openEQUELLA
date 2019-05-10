@@ -28,6 +28,8 @@ interface CloudAttachment extends BaseAttachment {
   cloudType: string;
   display?: object;
   meta?: object;
+  indexText?: string;
+  indexFiles?: string[];
 }
 
 type Attachment =

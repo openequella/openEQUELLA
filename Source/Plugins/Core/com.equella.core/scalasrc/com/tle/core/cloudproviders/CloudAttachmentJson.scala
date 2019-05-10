@@ -27,10 +27,12 @@ import io.circe.parser._
 
 case class CloudAttachmentJson(providerId: UUID,
                                display: Option[Map[String, Json]],
-                               meta: Option[Map[String, Json]])
+                               meta: Option[Map[String, Json]],
+                               indexText: Option[String],
+                               indexFiles: Option[Iterable[String]])
 
 object CloudAttachmentJson {
-  val defaultJson = CloudAttachmentJson(new UUID(0L, 0L), None, None)
+  val defaultJson = CloudAttachmentJson(new UUID(0L, 0L), None, None, None, None)
 
   final val JsonField = "json"
   val encode          = deriveEncoder[CloudAttachmentJson]
