@@ -1,5 +1,41 @@
 {
-  "extends": [
-    "config:base"
+  "extends": ["config:base"],
+  "packageRules": [
+    {
+      "packagePatterns": ["^com.fasterxml.jackson"],
+      "groupName": "Jackson (XML) packages"
+    },
+    {
+      "packagePatterns": ["^com.google.inject"],
+      "groupName": "Google Inject/Guice packages"
+    },
+    {
+      "packagePatterns": ["^org.apache.axis2"],
+      "groupName": "Apache Axis 2 packages"
+    },
+    {
+      "packagePatterns": ["^org.apache.curator"],
+      "groupName": "Apache Curator packages"
+    },
+    {
+      "packagePatterns": ["^org.apache.cxf"],
+      "groupName": "Apache CXF packages"
+    },
+    {
+      "packagePatterns": ["^org.apache.lucene"],
+      "groupName": "Apache Lucene packages"
+    },
+    {
+      "packagePatterns": ["^org.apache.tomcat"],
+      "groupName": "Apache Tomcat packages"
+    },
+    {
+      "packagePatterns": ["^org.slf4j"],
+      "groupName": "SLF4J packages"
+    },
+    {
+      "packagePatterns": ["^io.swagger"],
+      "groupName": "Swagger packages"
+    }
   ]
 }
