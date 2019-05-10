@@ -209,20 +209,18 @@ public class TextExtracter {
             case CUSTOM:
               final CustomAttachment customAttach = (CustomAttachment) attach;
               String type = customAttach.getType();
-              if (type.equals("scorm") && indexImsPackages) {
-                indexIms(attach, sbuf, item);
-              } else if (type.equals(CloudProviderService.CloudAttachmentType())) {
+              if (type.equals(CloudProviderService.CloudAttachmentType())) {
                 for (String fname : CloudProviderService.filesToIndex(customAttach)) {
                   indexSingleFile(item, sbuf, fname);
                 }
+              } else if (type.equals("scorm") && indexImsPackages) {
+                indexIms(attach, sbuf, item);
               }
             case IMS:
-              {
-                if (indexImsPackages) {
-                  indexIms(attach, sbuf, item);
-                }
-                break;
+              if (indexImsPackages) {
+                indexIms(attach, sbuf, item);
               }
+              break;
             case IMSRES:
               break;
             case ZIP:
@@ -279,13 +277,11 @@ public class TextExtracter {
 
   private void indexSingleFile(Item item, StringBuilder sbuf, String filename) throws Exception {
     final MimeEntry mimeEntry = mimeService.getEntryForFilename(filename);
-    if (mimeEntry != null) {
-      final List<TextExtracterExtension> extractors = getExtractors(mimeEntry);
-      if (!extractors.isEmpty()) {
-        try (InputStream input =
-            fileSystemService.read(itemFileService.getItemFile(item), filename)) {
-          extractTextFromStream(extractors, input, mimeEntry, sbuf);
-        }
+    final List<TextExtracterExtension> extractors = getExtractors(mimeEntry);
+    if (!extractors.isEmpty()) {
+      try (InputStream input =
+          fileSystemService.read(itemFileService.getItemFile(item), filename)) {
+        extractTextFromStream(extractors, input, mimeEntry, sbuf);
       }
     }
   }
