@@ -12,15 +12,6 @@ buildscript {
 
 apply plugin: "com.liferay.wsdl.builder"
 
-sourceSets {
-  main {
-    java {
-      srcDir 'build/codegen'
-      srcDir 'src/main/java'
-    }
-  }
-}
-
 allprojects {
   apply plugin: "java"
   sourceCompatibility = 1.8
@@ -28,6 +19,16 @@ allprojects {
   repositories {
     mavenCentral()
   }
+  
+  sourceSets {
+    main {
+      java {
+        srcDir 'build/codegen'
+        srcDir 'src/main/java'
+      }
+    }
+  }
+  
   dependencies {
     implementation group: 'com.google.guava', name: 'guava', version: '16.0.1'
     implementation group: 'javax.xml', name: 'jaxrpc-api', version: '1.1'
@@ -80,9 +81,9 @@ task exportToolJar(type: Jar) {
 }
 
 task createImportExportTools {
-  dependsOn(importToolJar).dependsOn(exportToolJar).dependsOn(compileJava)
+  dependsOn(importToolJar).dependsOn(exportToolJar)
   doLast {
-    println "import and export tools are created under $projectDir/build/libs"
+    println "Import and export tools are created under $projectDir/build/libs"
   }
 }
 
@@ -100,4 +101,7 @@ buildWSDL {
   includeWSDLs = false
 }
 
+//We do not need the jar task executed to create a jar of the whole project so disable it
+jar.enabled = false
 compileJava.dependsOn(buildWSDL).dependsOn(compileSbtProject)
+assemble.finalizedBy(createImportExportTools)
