@@ -65,11 +65,10 @@ function collectParams(form, command, args)
     }
   );
   form.querySelectorAll("select").forEach(
-    function (v) { 
-      var sel = v.selectedOptions;
-      if (sel != null) {
-        for (i = 0; i < sel.length; i++) {
-          var o = sel[i];
+    function (v) {
+      for (i = 0; i < v.length; i++) {
+        var o = v[i];
+        if (o.selected) {
           var ex = vals[v.name];
           if (ex) {
             ex.push(o.value);
