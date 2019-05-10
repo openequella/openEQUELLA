@@ -75,12 +75,11 @@ case class CloudAttachmentViewableResource(info: SectionInfo,
   import CloudAttachmentViewableResource._
   val fields = CloudAttachmentFields(attach)
   val itemId = parent.getViewableItem.getItemId
-  val viewerId = Option(
-    info
-      .lookupSection(classOf[RootItemFileSection])
-      .asInstanceOf[RootItemFileSection]
-      .getModel(info)
-      .getViewer).filterNot(_ == EquellaViewerId)
+  val viewerId = Option(info.lookupSection[RootItemFileSection, RootItemFileSection](classOf))
+    .flatMap { rif =>
+      Option(rif.getModel(info).getViewer)
+    }
+    .filterNot(_ == EquellaViewerId)
 
   def cloudViewer(provider: CloudProviderInstance): String = {
     viewerId.filter(vId => viewerForId(provider, vId).isDefined).getOrElse("")
