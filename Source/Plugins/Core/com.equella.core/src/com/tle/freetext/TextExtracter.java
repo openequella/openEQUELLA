@@ -31,6 +31,7 @@ import com.tle.beans.mime.MimeEntry;
 import com.tle.common.URLUtils;
 import com.tle.common.settings.standard.SearchSettings;
 import com.tle.core.TextExtracterExtension;
+import com.tle.core.cloudproviders.CloudProviderService;
 import com.tle.core.filesystem.ItemFile;
 import com.tle.core.freetext.indexer.AbstractIndexingExtension;
 import com.tle.core.guice.Bind;
@@ -107,21 +108,12 @@ public class TextExtracter {
             case FILE:
               {
                 final String filename = attach.getUrl();
-                final MimeEntry mimeEntry = mimeService.getEntryForFilename(filename);
 
                 // Allow for searching by the filename
                 sbuf.append(filename);
                 sbuf.append(' ');
 
-                if (mimeEntry != null) {
-                  final List<TextExtracterExtension> extractors = getExtractors(mimeEntry);
-                  if (!extractors.isEmpty()) {
-                    try (InputStream input =
-                        fileSystemService.read(itemFileService.getItemFile(item), filename)) {
-                      extractTextFromStream(extractors, input, mimeEntry, sbuf);
-                    }
-                  }
-                }
+                indexSingleFile(item, sbuf, filename);
                 break;
               }
 
@@ -215,33 +207,20 @@ public class TextExtracter {
               }
 
             case CUSTOM:
-            case IMS:
-              {
-                if (attach instanceof CustomAttachment
-                    && !((CustomAttachment) attach).getType().equals("scorm")) {
-                  break;
-                } else if (indexImsPackages) {
-                  Attachment imsAttach = attach;
-                  String imsFolder = imsAttach.getUrl();
-                  ItemFile file = itemFileService.getItemFile(item);
-                  IMSManifest imsManifest = imsService.getImsManifest(file, imsFolder, true);
-                  if (imsManifest != null) {
-                    List<IMSResource> allResources = imsManifest.getAllResources();
-                    for (IMSResource res : allResources) {
-                      String fullHref = res.getFullHref();
-                      final MimeEntry entry = mimeService.getEntryForFilename(fullHref);
-                      final List<TextExtracterExtension> extractors = getExtractors(entry);
-                      if (!extractors.isEmpty()) {
-                        try (InputStream input =
-                            fileSystemService.read(file, imsFolder + '/' + fullHref)) {
-                          extractTextFromStream(extractors, input, entry, sbuf);
-                        }
-                      }
-                    }
-                  }
+              final CustomAttachment customAttach = (CustomAttachment) attach;
+              String type = customAttach.getType();
+              if (type.equals(CloudProviderService.CloudAttachmentType())) {
+                for (String fname : CloudProviderService.filesToIndex(customAttach)) {
+                  indexSingleFile(item, sbuf, fname);
                 }
-                break;
+              } else if (type.equals("scorm") && indexImsPackages) {
+                indexIms(attach, sbuf, item);
               }
+            case IMS:
+              if (indexImsPackages) {
+                indexIms(attach, sbuf, item);
+              }
+              break;
             case IMSRES:
               break;
             case ZIP:
@@ -294,6 +273,30 @@ public class TextExtracter {
     }
 
     return fields;
+  }
+
+  private void indexSingleFile(Item item, StringBuilder sbuf, String filename) throws Exception {
+    final MimeEntry mimeEntry = mimeService.getEntryForFilename(filename);
+    final List<TextExtracterExtension> extractors = getExtractors(mimeEntry);
+    if (!extractors.isEmpty()) {
+      try (InputStream input =
+          fileSystemService.read(itemFileService.getItemFile(item), filename)) {
+        extractTextFromStream(extractors, input, mimeEntry, sbuf);
+      }
+    }
+  }
+
+  private void indexIms(Attachment imsAttach, StringBuilder sbuf, Item item) throws Exception {
+    String imsFolder = imsAttach.getUrl();
+    ItemFile file = itemFileService.getItemFile(item);
+    IMSManifest imsManifest = imsService.getImsManifest(file, imsFolder, true);
+    if (imsManifest != null) {
+      List<IMSResource> allResources = imsManifest.getAllResources();
+      for (IMSResource res : allResources) {
+        String fullHref = res.getFullHref();
+        indexSingleFile(item, sbuf, imsFolder + '/' + fullHref);
+      }
+    }
   }
 
   private void indexMimeEntry(String mimeEntry, List<Fieldable> fields) {

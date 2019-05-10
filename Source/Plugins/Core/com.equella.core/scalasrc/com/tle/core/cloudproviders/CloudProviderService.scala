@@ -20,6 +20,9 @@ package com.tle.core.cloudproviders
 
 import java.nio.ByteBuffer
 import java.time.Instant
+import java.util
+import java.util.Collections
+import java.util.function.Consumer
 
 import cats.effect.IO
 import cats.syntax.applicative._
@@ -27,12 +30,15 @@ import cats.syntax.either._
 import com.softwaremill.sttp._
 import com.softwaremill.sttp.circe._
 import com.tle.beans.cloudproviders.{CloudControlDefinition, ProviderControlDefinition}
+import com.tle.beans.item.attachments.{CustomAttachment, UnmodifiableAttachments}
 import com.tle.core.cache.{Cacheable, DBCacheBuilder}
 import com.tle.core.db._
 import com.tle.core.httpclient._
 import com.tle.core.oauthclient.OAuthClientService
 import fs2.Stream
 import org.slf4j.LoggerFactory
+
+import scala.collection.JavaConverters._
 
 sealed trait CloudProviderError
 case class IOError(throwable: Throwable)                          extends CloudProviderError
@@ -46,8 +52,9 @@ object CloudProviderService {
   val ControlCacheValidSeconds   = 60
   val InvalidControlRetrySeconds = 20
 
-  val OAuthServiceId    = "oauth"
-  val ControlsServiceId = "controls"
+  final val OAuthServiceId      = "oauth"
+  final val ControlsServiceId   = "controls"
+  final val CloudAttachmentType = "cloud"
 
   def tokenUrlForProvider(provider: CloudProviderInstance): IO[Uri] = {
     provider.serviceUris
@@ -155,4 +162,21 @@ object CloudProviderService {
       .compile
       .toVector
 
+  def collectBodyText(attachments: UnmodifiableAttachments): String = {
+    attachments
+      .getCustomList(CloudAttachmentType)
+      .asScala
+      .flatMap { attach =>
+        CloudAttachmentJson.decodeJson(attach).indexText
+      }
+      .mkString(" ", " ", "")
+  }
+
+  def filesToIndex(attach: CustomAttachment): java.lang.Iterable[String] = {
+    CloudAttachmentJson
+      .decodeJson(attach)
+      .indexFiles
+      .map(_.asJava)
+      .getOrElse(Collections.emptyList())
+  }
 }

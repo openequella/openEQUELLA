@@ -64,6 +64,8 @@ function TestControl(p: ControlApi<MyConfig>) {
     | null
     | any);
   const [postRequest, setPostRequest] = React.useState(true);
+  const [indexText, setIndexText] = React.useState("");
+  const [indexFiles, setIndexFiles] = React.useState([] as string[]);
   React.useEffect(() => {
     p.registerNotification();
     const updateHandler = function(state: ItemState) {
@@ -164,6 +166,51 @@ function TestControl(p: ControlApi<MyConfig>) {
     </div>
   );
 
+  function makeAttachments() {
+    p.editXml(doc => {
+      const frogs = doc.createElement("frogs");
+      frogs.appendChild(new Text("hi"));
+      doc.firstChild.appendChild(frogs);
+      return doc;
+    });
+    p.edits([
+      {
+        command: "addAttachment",
+        attachment: {
+          type: "youtube",
+          description: "This is a youtube video",
+          videoId: "27awNyz-qdQ",
+          uploadedDate: new Date()
+        },
+        xmlPath: rootNode + "/two/uuid"
+      },
+      {
+        command: "addAttachment",
+        attachment: {
+          type: "cloud",
+          description: "This is a cloud attachment",
+          providerId: p.providerId,
+          cloudType: "simple",
+          vendorId: p.vendorId,
+          display: {
+            Arbitrary: "Field",
+            Size: 0,
+            Ordered: true
+          },
+          meta: {
+            viewer: "Something"
+          },
+          indexText,
+          indexFiles
+        },
+        xmlPath: rootNode + "/one/uuid"
+      }
+    ]).then(_ => {
+      setIndexFiles([]);
+      setIndexText("");
+    });
+  }
+
   return (
     <div className="control">
       <label>
@@ -213,64 +260,25 @@ function TestControl(p: ControlApi<MyConfig>) {
         type="file"
         multiple
         onChange={e => {
-          Array.from(e.currentTarget.files).forEach(f =>
-            p.uploadFile("folder/" + f.name, f)
-          );
+          Array.from(e.currentTarget.files).forEach(f => {
+            const filePath = "folder/" + f.name;
+            p.uploadFile(filePath, f).then(_ =>
+              setIndexFiles(files => [...files, filePath])
+            );
+          });
         }}
       />
       <h4>Meddle with attachments</h4>
-      <button
-        onClick={_ => {
-          p.editXml(doc => {
-            const frogs = doc.createElement("frogs");
-            frogs.appendChild(new Text("hi"));
-            doc.firstChild.appendChild(frogs);
-            return doc;
-          });
-          p.edits([
-            {
-              command: "addAttachment",
-              attachment: {
-                type: "file",
-                description: "This is a file",
-                filename: "hello.txt"
-              },
-              xmlPath: rootNode + "/one/uuid"
-            },
-            {
-              command: "addAttachment",
-              attachment: {
-                type: "youtube",
-                description: "This is a youtube video",
-                videoId: "27awNyz-qdQ",
-                uploadedDate: new Date()
-              },
-              xmlPath: rootNode + "/two/uuid"
-            },
-            {
-              command: "addAttachment",
-              attachment: {
-                type: "cloud",
-                description: "This is a cloud attachment",
-                providerId: p.providerId,
-                cloudType: "simple",
-                vendorId: p.vendorId,
-                display: {
-                  Arbitrary: "Field",
-                  Size: 0,
-                  Ordered: true
-                },
-                meta: {
-                  viewer: "Something"
-                }
-              },
-              xmlPath: rootNode + "/one/uuid"
-            }
-          ]);
-        }}
-      >
-        Append some text
-      </button>
+      IndexText:{" "}
+      <textarea
+        value={indexText}
+        onChange={e => setIndexText(e.target.value)}
+        cols={100}
+        rows={10}
+      />
+      <div>
+        <button onClick={makeAttachments}>Make some attachments</button>
+      </div>
       <h4>Communicate with provider</h4>
       {renderService}
     </div>

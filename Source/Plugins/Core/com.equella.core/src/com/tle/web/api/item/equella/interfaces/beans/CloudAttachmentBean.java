@@ -18,6 +18,7 @@
 
 package com.tle.web.api.item.equella.interfaces.beans;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
@@ -28,6 +29,8 @@ public class CloudAttachmentBean extends EquellaAttachmentBean {
   private String cloudType;
   private Map<String, Object> display;
   private Map<String, Object> meta;
+  private String indexText;
+  private Collection<String> indexFiles;
 
   public UUID getProviderId() {
     return providerId;
@@ -67,6 +70,22 @@ public class CloudAttachmentBean extends EquellaAttachmentBean {
 
   public void setMeta(Map<String, Object> meta) {
     this.meta = meta;
+  }
+
+  public String getIndexText() {
+    return indexText;
+  }
+
+  public void setIndexText(String indexText) {
+    this.indexText = indexText;
+  }
+
+  public Collection<String> getIndexFiles() {
+    return indexFiles;
+  }
+
+  public void setIndexFiles(Collection<String> indexFiles) {
+    this.indexFiles = indexFiles;
   }
 
   @Override

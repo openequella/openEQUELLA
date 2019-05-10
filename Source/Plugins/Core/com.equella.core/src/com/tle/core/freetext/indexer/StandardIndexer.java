@@ -35,6 +35,7 @@ import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.common.Check;
 import com.tle.common.util.Dates;
 import com.tle.common.util.UtcDate;
+import com.tle.core.cloudproviders.CloudProviderService;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.RunAsInstitution;
 import com.tle.freetext.FreetextIndex;
@@ -227,8 +228,10 @@ public class StandardIndexer extends AbstractIndexingExtension {
                   + "."
                   + attachment.getData(DATA_VERSION))); // $NON-NLS-1$
     }
+    String cloudBodyText = CloudProviderService.collectBodyText(attachments);
 
     StringBuilder bodyTextBuf = gatherLanguageBundles(item.getDescription());
+    bodyTextBuf.append(cloudBodyText);
     if (!Check.isEmpty(item.getComments())) {
       for (Comment comment : item.getComments()) {
         if (!Check.isEmpty(comment.getComment())) {

@@ -52,6 +52,14 @@ class CloudAttachmentEditor extends AbstractCustomAttachmentEditor {
     cloudJson = cloudJson.copy(meta = meta)
   }
 
+  def editIndexText(indexText: Option[String]): Unit = {
+    cloudJson = cloudJson.copy(indexText = indexText)
+  }
+
+  def editIndexFiles(indexFiles: Option[Iterable[String]]): Unit = {
+    cloudJson = cloudJson.copy(indexFiles = indexFiles)
+  }
+
   override def getCustomType: String = "cloud"
 
   override def newAttachment(): Attachment = {
