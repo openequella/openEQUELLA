@@ -80,8 +80,7 @@ task exportToolJar(type: Jar) {
   with jar
 }
 
-task createImportExportTools {
-  dependsOn(importToolJar).dependsOn(exportToolJar)
+task createImportExportTools(dependsOn : [importToolJar,exportToolJar] ) {
   doLast {
     println "Import and export tools are created under $projectDir/build/libs"
   }
@@ -103,5 +102,5 @@ buildWSDL {
 
 //We do not need the jar task executed to create a jar of the whole project so disable it
 jar.enabled = false
-compileJava.dependsOn(buildWSDL).dependsOn(compileSbtProject)
+compileJava.dependsOn([buildWSDL,compileSbtProject] as Object[])
 assemble.finalizedBy(createImportExportTools)
