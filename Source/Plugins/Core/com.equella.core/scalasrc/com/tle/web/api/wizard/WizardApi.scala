@@ -90,7 +90,7 @@ class WizardApi {
     editWizardSate(wizid, req) { wsi =>
       val attachments =
         wsi.getItem.getAttachments.asScala.map(a =>
-          ItemEdits.attachmentSerializer.serializeAttachment(a))
+          ItemEdits.attachmentSerializers.serializeAttachment(a))
       val itemPack = wsi.getItemPack
 
       def writeFile(fileInfo: FileEntry): (String, FileInfo) = {
