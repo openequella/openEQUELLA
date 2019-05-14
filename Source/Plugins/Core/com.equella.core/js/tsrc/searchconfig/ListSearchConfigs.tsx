@@ -6,6 +6,7 @@ import { SearchResult, handleUnexpectedApiError } from "../components";
 import { prepLangStrings, formatSize } from "../util/langstrings";
 import { SearchConfig, listAllConfigs } from ".";
 import { ErrorResponse } from "../api/errors";
+import { Template } from "../mainui/Template";
 
 interface SearchConfigsProps extends WithStyles {
   bridge: Bridge;
@@ -47,10 +48,13 @@ class ListSearchConfigs extends React.Component<
   };
 
   render() {
-    const { Template } = this.props.bridge;
     const { searchConfigs, errorResponse } = this.state;
     return (
-      <Template title={strings.title} errorResponse={errorResponse}>
+      <Template
+        bridge={this.props.bridge}
+        title={strings.title}
+        errorResponse={errorResponse}
+      >
         <EntityList
           progress={!searchConfigs}
           resultsText={formatSize(

@@ -6,6 +6,8 @@ export interface Routes {
   SettingsPage: Route;
   CloudProviderListPage: Route;
   NewCourse: Route;
+  Logout: Route;
+  UserPrefs: Route;
   CourseEdit: (uuid?: string) => Route;
   SchemaEdit: (uuid?: string) => Route;
 }

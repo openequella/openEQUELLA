@@ -40,6 +40,7 @@ import { StoreState } from "../store";
 import { commonString } from "../util/commonstrings";
 import { properties } from "../util/dictionary";
 import { prepLangStrings } from "../util/langstrings";
+import { Template } from "../mainui/Template";
 
 const styles = (theme: Theme) => {
   //TODO: get drawerWidth passed in somehow
@@ -310,7 +311,8 @@ class EditCourse extends React.Component<Props, EditCourseState> {
       availablePrivileges,
       classes
     } = this.props;
-    const { AclEditor, Template, router, routes } = this.props.bridge;
+    const bridge = this.props.bridge;
+    const { AclEditor, router, routes } = bridge;
     const { editing } = this.state;
     const typeval = strings.type;
     const versionval = strings.version;
@@ -321,7 +323,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 
     if (loading || !citations || !availablePrivileges) {
       return (
-        <Template title={title} backRoute={routes.CoursesPage}>
+        <Template bridge={bridge} title={title} backRoute={routes.CoursesPage}>
           <Loader />
         </Template>
       );
@@ -329,7 +331,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 
     if (!entity) {
       return (
-        <Template title={title} backRoute={routes.CoursesPage}>
+        <Template bridge={bridge} title={title} backRoute={routes.CoursesPage}>
           <Error>Error loading entity</Error>
         </Template>
       );
@@ -378,6 +380,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 
     return (
       <Template
+        bridge={bridge}
         title={title}
         preventNavigation={changed}
         fixedViewPort={true}

@@ -411,8 +411,8 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
           desktop = mediaQuery $ theme.breakpoints.up "md"
           mobile :: forall a. {|a} -> MediaQuery
           mobile = mediaQuery $ theme.breakpoints.up "sm"
-          extTheme = extendedTheme theme
-          menuColors = extTheme.palette.menu
+          extTheme = extendedTheme theme 
+          menuColors = extTheme.palette.menu 
       in {
       root: {
         width: "100%",

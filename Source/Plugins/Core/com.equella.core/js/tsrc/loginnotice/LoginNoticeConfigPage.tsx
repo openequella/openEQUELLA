@@ -20,6 +20,7 @@ import {
 import Tab from "@material-ui/core/Tab";
 import { NotificationType, strings } from "./LoginNoticeModule";
 import { commonString } from "../util/commonstrings";
+import { Template } from "../mainui/Template";
 
 interface LoginNoticeConfigPageProps extends WithStyles<typeof styles> {
   bridge: Bridge;
@@ -169,12 +170,13 @@ class LoginNoticeConfigPage extends React.Component<
   };
 
   render() {
-    const { Template, routes } = this.props.bridge;
+    const { routes } = this.props.bridge;
     const { classes } = this.props;
     const Notifications = this.Notifications;
     const Configurators = this.Configurators;
     return (
       <Template
+        bridge={this.props.bridge}
         title={strings.title}
         backRoute={routes.SettingsPage}
         fixedViewPort

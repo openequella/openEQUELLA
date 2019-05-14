@@ -22,6 +22,7 @@ import { Config } from "../config";
 import { prepLangStrings } from "../util/langstrings";
 import { commonString } from "../util/commonstrings";
 import { generateFromError, generateNewErrorID } from "../api/errors";
+import { Template } from "../mainui/Template";
 
 interface IThemeSettings {
   primaryColor: string;
@@ -482,10 +483,10 @@ class ThemePage extends React.Component<
   };
 
   render() {
-    const { Template } = this.props.bridge;
     const { classes } = this.props;
     return (
       <Template
+        bridge={this.props.bridge}
         title={strings.title}
         errorResponse={this.state.error || undefined}
       >

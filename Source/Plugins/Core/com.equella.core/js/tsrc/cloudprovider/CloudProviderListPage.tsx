@@ -25,6 +25,7 @@ import { sprintf } from "sprintf-js";
 import ConfirmDialog from "../components/ConfirmDialog";
 import CloudProviderAddDialog from "./CloudProviderAddDialog";
 import EquellaListItem from "../components/EquellaListItem";
+import { Template } from "../mainui/Template";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -134,7 +135,6 @@ class CloudProviderListPage extends React.Component<
   };
 
   render() {
-    const { Template } = this.props.bridge;
     const {
       error,
       cloudProviders,
@@ -147,7 +147,11 @@ class CloudProviderListPage extends React.Component<
       onClick: this.registerCloudProvider
     };
     return (
-      <Template title={cloudProviderLangStrings.title} errorResponse={error}>
+      <Template
+        bridge={this.props.bridge}
+        title={cloudProviderLangStrings.title}
+        errorResponse={error}
+      >
         {this.state.deleteDetails && (
           <ConfirmDialog
             open={deleteDialogOpen}

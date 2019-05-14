@@ -1,6 +1,6 @@
 {
   "name": "js",
-  "set": "equella-2019-03-05",
+  "set": "equella-2019-05-15",
   "source": "https://github.com/equella/package-sets.git",
   "depends": [
     "tscompat",

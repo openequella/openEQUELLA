@@ -12,6 +12,7 @@ import { prepLangStrings, formatSize } from "../util/langstrings";
 import VisibilitySensor = require("react-visibility-sensor");
 import EntityList from "../components/EntityList";
 import { sprintf } from "sprintf-js";
+import { Template } from "../mainui/Template";
 
 interface SearchCourseProps {
   bridge: Bridge;
@@ -165,7 +166,7 @@ class SearchCourse extends React.Component<
   };
 
   render() {
-    const { routes, router, Template } = this.props.bridge;
+    const { routes, router } = this.props.bridge;
     const {
       query,
       confirmOpen,
@@ -176,6 +177,7 @@ class SearchCourse extends React.Component<
     } = this.state;
     return (
       <Template
+        bridge={this.props.bridge}
         title={strings.title}
         titleExtra={<AppBarQuery query={query} onChange={this.handleQuery} />}
       >
