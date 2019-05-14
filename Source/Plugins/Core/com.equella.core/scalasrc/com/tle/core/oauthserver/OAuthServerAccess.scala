@@ -22,7 +22,7 @@ import java.time.{Duration, Instant}
 import java.util.{Date, UUID}
 
 import com.tle.common.oauth.beans.{OAuthClient, OAuthToken}
-import com.tle.common.usermanagement.user.{SystemUserState, UserState}
+import com.tle.common.usermanagement.user.{ModifiableUserState, SystemUserState, UserState}
 import com.tle.core.cloudproviders.{CloudOAuthCredentials, CloudProviderDB, CloudProviderUserState}
 import com.tle.core.db._
 import com.tle.core.db.tables.CachedValue
@@ -40,6 +40,7 @@ object OAuthServerAccess {
   private final val CloudTokenCache = "cloudProviderToken"
 
   private final val KEY_TOKEN_NOT_FOUND = "oauth.error.tokennotfound"
+  private final val KEY_USER_NOT_FOUND  = "oauth.error.usernotfound"
 
   private final val TokenTimeout = Duration.ofDays(365)
 
@@ -155,32 +156,44 @@ object OAuthServerAccess {
       .authenticateAsUser(username, LegacyGuice.userService.getWebAuthenticationDetails(request))
   }
 
+  def lookupCloudToken(tokenData: String,
+                       request: HttpServletRequest): DB[Option[ModifiableUserState]] = {
+    val (actualToken, impersonateId) = tokenData.indexOf(';') match {
+      case -1 => (tokenData, None)
+      case i  => (tokenData.substring(0, i), Some(tokenData.substring(i + 1)))
+    }
+
+    (for {
+      cpUser <- dbStream { context =>
+        tokenQueries
+          .getForKey((CloudTokenCache, actualToken, context.inst))
+          .map { tokenValue =>
+            new CloudProviderUserState(UUID.fromString(tokenValue.value), context.inst)
+          }
+      }
+      provider <- CloudProviderDB.getStream(cpUser.providerId)
+    } yield {
+      impersonateId match {
+        case Some(userid) =>
+          val impUser = Option(LegacyGuice.userService.getInformationForUser(userid)).getOrElse(
+            throw new OAuthException(403,
+                                     OAuthConstants.ERROR_ACCESS_DENIED,
+                                     CoreStrings.text(KEY_USER_NOT_FOUND, userid)))
+          val user =
+            authWithUsername(impUser.getUsername, request).asInstanceOf[ModifiableUserState]
+          user.setImpersonatedBy(provider.name)
+          user
+        case None => cpUser
+      }
+    }).compile.last
+  }
+
   def findUserState(tokenData: String, request: HttpServletRequest): UserState = {
     Option(LegacyGuice.oAuthService.getToken(tokenData))
       .map { token =>
         authWithUsername(token.getUsername, request)
       }
-      .orElse {
-
-        val tokenAvailable = RunWithDB.execute {
-          dbStream { context =>
-            tokenQueries
-              .getForKey((CloudTokenCache, tokenData, context.inst))
-              .map { tokenValue =>
-                new CloudProviderUserState(tokenValue.value, context.inst)
-              }
-          }.compile.last
-        }
-
-        tokenAvailable
-          .flatMap { _ =>
-            for {
-              userid   <- Option(request.getHeader("X-ImpersonateUser"))
-              userBean <- Option(LegacyGuice.userService.getInformationForUser(userid))
-            } yield authWithUsername(userBean.getUsername, request)
-          }
-          .orElse(tokenAvailable)
-      }
+      .orElse(RunWithDB.execute(lookupCloudToken(tokenData, request)))
       .getOrElse {
         throw new OAuthException(403,
                                  OAuthConstants.ERROR_ACCESS_DENIED,

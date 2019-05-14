@@ -83,4 +83,6 @@ public interface UserState extends Cloneable, Serializable {
   void setCachedAttribute(Object key, Object value);
 
   void removeCachedAttribute(Object key);
+
+  String getImpersonatedBy();
 }

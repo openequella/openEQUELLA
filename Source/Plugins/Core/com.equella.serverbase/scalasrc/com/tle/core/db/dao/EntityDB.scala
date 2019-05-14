@@ -71,11 +71,14 @@ object EntityDB {
     }
   }
 
+  def readOneStream[A](uuid: UUID)(implicit ee: EntityDBExt[A]): Stream[DB, A] =
+    dbStream { uc =>
+      queries.byId(uc.inst, DbUUID(uuid)).map(ee.iso.to)
+    }
+
   def readOne[A](uuid: UUID)(implicit ee: EntityDBExt[A]): OptionT[DB, A] =
     OptionT {
-      dbStream { uc =>
-        queries.byId(uc.inst, DbUUID(uuid)).map(ee.iso.to)
-      }.compile.last
+      readOneStream[A](uuid).compile.last
     }
 
   def update[A](original: OEQEntity, editedData: A)(

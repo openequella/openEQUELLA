@@ -44,4 +44,6 @@ public interface ModifiableUserState extends UserState {
   void setTokenSecretId(String tokenSecretId);
 
   void setLoggedInUser(UserBean user);
+
+  void setImpersonatedBy(String behalfOf);
 }

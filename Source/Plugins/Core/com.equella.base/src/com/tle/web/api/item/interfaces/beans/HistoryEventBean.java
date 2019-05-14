@@ -36,9 +36,18 @@ public class HistoryEventBean extends AbstractExtendableBean {
   // private boolean applies;
   private String type;
   private String state;
+  public String impersonatedBy;
 
   public UserBean getUser() {
     return user;
+  }
+
+  public String getImpersonatedBy() {
+    return impersonatedBy;
+  }
+
+  public void setImpersonatedBy(String impersonatedBy) {
+    this.impersonatedBy = impersonatedBy;
   }
 
   public void setUser(UserBean user) {

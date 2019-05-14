@@ -28,6 +28,7 @@ import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemStatus;
 import com.tle.beans.item.ModerationStatus;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.common.workflow.Workflow;
 import com.tle.core.item.operations.AbstractWorkflowOperation;
@@ -60,7 +61,7 @@ public abstract class AbstractStandardWorkflowOperation extends AbstractWorkflow
 
   protected HistoryEvent createHistory(Type type) {
     HistoryEvent historyEvent = new HistoryEvent(type, getItem());
-    historyEvent.setUser(getUserId());
+    historyEvent.setUser(getUserId(), CurrentUser.getUserState().getImpersonatedBy());
     historyEvent.setDate(params.getDateNow());
     List<HistoryEvent> history = getItem().getHistory();
     history.add(historyEvent);
