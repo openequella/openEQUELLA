@@ -398,7 +398,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
         he.setToStep(heBean.getToStep());
         he.setToStepName(heBean.getToStepName());
         if (heBean.getUser() != null) {
-          he.setUser(heBean.getUser().getId());
+          he.setUser(heBean.getUser().getId(), heBean.getBehalfOf());
         }
         history.add(he);
       }
@@ -660,7 +660,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
   protected void createHistory(Type type) {
     if (!importing) {
       HistoryEvent historyEvent = new HistoryEvent(type, item);
-      historyEvent.setUser(CurrentUser.getUserID());
+      historyEvent.setUser(CurrentUser.getUserID(), CurrentUser.getUserState().getImpersonatedBy());
       historyEvent.setDate(now);
       List<HistoryEvent> history = item.getHistory();
       history.add(historyEvent);

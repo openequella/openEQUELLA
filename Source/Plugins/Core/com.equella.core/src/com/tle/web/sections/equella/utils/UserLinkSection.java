@@ -21,6 +21,7 @@ package com.tle.web.sections.equella.utils;
 import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.core.services.user.UserService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
@@ -32,6 +33,7 @@ import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.events.js.SubmitValuesFunction;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.js.generic.OverrideHandler;
+import com.tle.web.sections.render.AppendedLabel;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.result.util.KeyLabel;
@@ -63,6 +65,8 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
 
   @PlugKey("userlink.systemuser")
   private static Label LABEL_SYSTEMUSER;
+
+  private static String KEY_IMPERSONATEDBY = "userlink.impersonatedby";
 
   @EventFactory private EventGenerator events;
 
@@ -117,6 +121,10 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
   }
 
   public HtmlLinkState createLink(SectionInfo info, String userId) {
+    return createLink(info, userId, null);
+  }
+
+  public HtmlLinkState createLink(SectionInfo info, String userId, String impersonatedBy) {
     Model model = getModel(info);
     if ("system".equals(userId)) {
       HtmlLinkState userLink = new HtmlLinkState(LABEL_SYSTEMUSER);
@@ -126,7 +134,7 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
     if (!model.foundUsers.containsKey(userId)) {
       model.usersToFind.add(userId);
     }
-    return new UserLinkState(userId, info);
+    return new UserLinkState(userId, info, impersonatedBy);
   }
 
   public Label createLabel(SectionInfo info, String userId) {
@@ -239,11 +247,13 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
   public class UserLinkState extends HtmlLinkState {
     private final SectionInfo info;
     private final String userId;
+    private final String impersonatedBy;
     private boolean lookedUp;
 
-    public UserLinkState(String userId, SectionInfo info) {
+    public UserLinkState(String userId, SectionInfo info, String impersonatedBy) {
       this.userId = userId;
       this.info = info;
+      this.impersonatedBy = impersonatedBy;
     }
 
     @SuppressWarnings("unchecked")
@@ -280,7 +290,14 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
           setTitle(new TextLabel(userId));
         } else {
           // TODO: oh dear, not i18n friendly :)
-          setLabel(new TextLabel(userBean.getFirstName() + " " + userBean.getLastName()));
+          TextLabel firstLastLabel =
+              new TextLabel(userBean.getFirstName() + " " + userBean.getLastName());
+          Label impersonateLabel =
+              impersonatedBy == null
+                  ? null
+                  : new TextLabel(
+                      CoreStrings.lookup().getString(KEY_IMPERSONATEDBY, impersonatedBy));
+          setLabel(AppendedLabel.get(firstLastLabel, impersonateLabel));
           setTitle(new TextLabel(userBean.getUsername()));
           setClickHandler(new OverrideHandler(userClickedFunc, userBean.getUniqueID()));
         }

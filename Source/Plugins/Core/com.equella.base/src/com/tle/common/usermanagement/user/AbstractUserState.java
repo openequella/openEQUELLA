@@ -61,6 +61,7 @@ public abstract class AbstractUserState implements ModifiableUserState {
   private boolean needsSessionUpdate = true;
   private boolean auditable = true;
   private transient Map<Object, Object> cacheAttr;
+  private String impersonatedBy;
 
   @Override
   public UserBean getUserBean() {
@@ -295,5 +296,14 @@ public abstract class AbstractUserState implements ModifiableUserState {
       return null;
     }
     return (T) cacheAttr.get(key);
+  }
+
+  @Override
+  public String getImpersonatedBy() {
+    return impersonatedBy;
+  }
+
+  public void setImpersonatedBy(String impersonatedBy) {
+    this.impersonatedBy = impersonatedBy;
   }
 }

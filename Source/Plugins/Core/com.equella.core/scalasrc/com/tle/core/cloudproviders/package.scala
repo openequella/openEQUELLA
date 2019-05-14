@@ -66,7 +66,7 @@ package object cloudproviders {
                                   iconUrl: Option[String],
                                   vendorId: String)
 
-  class CloudProviderUserState(providerId: String, institution: Institution)
+  class CloudProviderUserState(val providerId: UUID, institution: Institution)
       extends AbstractUserState {
 
     val userId = "cp:" + providerId

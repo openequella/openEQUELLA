@@ -177,4 +177,8 @@ public abstract class WorkflowEvent implements Serializable {
   public long getId() {
     return event.getId();
   }
+
+  public String getImpersonatedBy() {
+    return event.getImpersonatedBy();
+  }
 }

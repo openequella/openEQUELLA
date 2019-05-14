@@ -39,7 +39,7 @@ public class AssignOperation extends SpecificTaskOperation {
     HistoryEvent event = createHistory(Type.assign);
     if (assignedTo != null && assignedTo.equals(getUserId())) {
       status.setAssignedTo(null);
-      event.setUser(null);
+      event.setUser(null, null);
     } else {
       status.setAssignedTo(getUserId());
     }

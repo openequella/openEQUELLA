@@ -190,4 +190,8 @@ object CloudProviderDB {
   def get(id: UUID): OptionT[DB, CloudProviderInstance] = {
     EntityDB.readOne(id).map(toInstance)
   }
+
+  def getStream(id: UUID): Stream[DB, CloudProviderInstance] = {
+    EntityDB.readOneStream(id).map(toInstance)
+  }
 }

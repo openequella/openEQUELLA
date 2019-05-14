@@ -149,11 +149,27 @@ public class HistoryEvent implements Serializable, IdCloneable {
   }
 
   public String getUser() {
-    return user;
+    int ind = user.indexOf(':');
+    if (ind == -1) {
+      return user;
+    }
+    return user.substring(0, ind);
   }
 
-  public void setUser(String user) {
-    this.user = user;
+  public String getImpersonatedBy() {
+    int ind = user.indexOf(':');
+    if (ind == -1) {
+      return null;
+    }
+    return user.substring(ind + 1);
+  }
+
+  public void setUser(String user, String impersonatedBy) {
+    if (impersonatedBy != null) {
+      this.user = user + ":" + impersonatedBy;
+    } else {
+      this.user = user;
+    }
   }
 
   public String getStep() {
