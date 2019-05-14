@@ -398,7 +398,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
         he.setToStep(heBean.getToStep());
         he.setToStepName(heBean.getToStepName());
         if (heBean.getUser() != null) {
-          he.setUser(heBean.getUser().getId(), heBean.getBehalfOf());
+          he.setUser(heBean.getUser().getId(), heBean.getImpersonatedBy());
         }
         history.add(he);
       }

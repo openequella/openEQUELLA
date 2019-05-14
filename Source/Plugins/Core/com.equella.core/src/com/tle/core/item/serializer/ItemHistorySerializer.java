@@ -33,6 +33,7 @@ public class ItemHistorySerializer {
     UserBean user = new UserBean();
     user.setId(event.getUser());
     bean.setUser(user);
+    bean.setImpersonatedBy(event.getImpersonatedBy());
     bean.setDate(event.getDate());
     // bean.setApplies(event.isApplies());
     bean.setComment(event.getComment());
