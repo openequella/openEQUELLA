@@ -132,8 +132,8 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.fastinfoset"),
     ExclusionRule(organization = "net.sf.ehcache")
   ),
-  "org.apache.httpcomponents" % "httpclient"       % "4.3.4",
-  "org.apache.httpcomponents" % "httpcore"         % "4.3.2",
+  "org.apache.httpcomponents" % "httpclient"       % "4.5.8",
+  "org.apache.httpcomponents" % "httpcore"         % "4.4.11",
   "org.apache.lucene"         % "lucene-analyzers" % "3.5.0",
   "org.apache.lucene"         % "lucene-core"      % "3.5.0",
   "org.apache.lucene"         % "lucene-queries"   % "3.5.0",
