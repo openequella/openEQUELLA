@@ -1,5 +1,7 @@
 {
   "extends": ["config:base"],
+  "prConcurrentLimit": 10,
+  "prHourlyLimit": 1,
   "packageRules": [
     {
       "packagePatterns": ["^com.fasterxml.jackson"],
