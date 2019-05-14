@@ -7,10 +7,10 @@ libraryDependencies ++= Seq(
   "com.google.guava"     % "guava"              % "18.0",
   "org.antlr"            % "stringtemplate"     % "3.2.1",
   "com.google.code.gson" % "gson"               % "2.8.0",
-  "org.slf4j"            % "jcl-over-slf4j"     % "1.7.5",
+  "org.slf4j"            % "jcl-over-slf4j"     % "1.7.26",
   "commons-io"           % "commons-io"         % "2.4",
   "log4j"                % "log4j"              % "1.2.17",
-  "org.slf4j"            % "slf4j-log4j12"      % "1.7.5",
+  "org.slf4j"            % "slf4j-log4j12"      % "1.7.26",
   "commons-daemon"       % "commons-daemon"     % "1.0.15",
   "commons-codec"        % "commons-codec"      % "1.7"
 )
