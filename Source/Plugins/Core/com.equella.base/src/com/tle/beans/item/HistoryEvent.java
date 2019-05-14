@@ -149,6 +149,9 @@ public class HistoryEvent implements Serializable, IdCloneable {
   }
 
   public String getUser() {
+    if (user == null) {
+      return null;
+    }
     int ind = user.indexOf(':');
     if (ind == -1) {
       return user;
@@ -157,6 +160,9 @@ public class HistoryEvent implements Serializable, IdCloneable {
   }
 
   public String getImpersonatedBy() {
+    if (user == null) {
+      return null;
+    }
     int ind = user.indexOf(':');
     if (ind == -1) {
       return null;
