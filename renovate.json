@@ -1,6 +1,7 @@
 {
   "extends": ["config:base"],
   "prConcurrentLimit": 10,
+  "rebaseStalePrs": false,
   "prHourlyLimit": 1,
   "packageRules": [
     {
