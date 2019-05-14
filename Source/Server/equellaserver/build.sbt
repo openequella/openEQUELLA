@@ -13,7 +13,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_config")).value
 
-val jacksonVersion   = "2.9.4"
+val jacksonVersion   = "2.9.8"
 val axis2Version     = "1.6.2"
 val TomcatVersion    = "8.5.40"
 val SwaggerVersion   = "1.5.16"
@@ -103,9 +103,9 @@ libraryDependencies ++= Seq(
   "org.apache.axis2"          % "axis2-transport-http"  % axis2Version,
   "org.apache.axis2"          % "axis2-transport-local" % axis2Version,
   "org.apache.commons"        % "commons-compress"      % "1.1",
-  "org.apache.curator"        % "curator-client"        % "2.6.0",
-  "org.apache.curator"        % "curator-framework"     % "2.6.0",
-  "org.apache.curator"        % "curator-recipes"       % "2.6.0",
+  "org.apache.curator"        % "curator-client"        % "2.13.0",
+  "org.apache.curator"        % "curator-framework"     % "2.13.0",
+  "org.apache.curator"        % "curator-recipes"       % "2.13.0",
   "org.apache.cxf"            % "cxf-bundle"            % "2.7.6" excludeAll (
     ExclusionRule(organization = "org.apache.geronimo.specs"),
     ExclusionRule(organization = "javax.xml.bind"),
