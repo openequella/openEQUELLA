@@ -71,3 +71,10 @@ object CommonSettings extends AutoPlugin {
     libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % Test
   )
 }
+
+object PackagingTypePlugin extends AutoPlugin {
+  override val buildSettings = {
+    sys.props += "packaging.type" -> "jar"
+    Nil
+  }
+}
