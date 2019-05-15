@@ -62,7 +62,7 @@ libraryDependencies ++= Seq(
   "com.google.inject"            % "guice"                       % "3.0",
   "com.google.inject.extensions" % "guice-assistedinject"        % "3.0",
   "com.google.inject.extensions" % "guice-spring"                % "3.0",
-  "com.ibm.icu"                  % "icu4j"                       % "4.6.1.1",
+  "com.ibm.icu"                  % "icu4j"                       % "4.8.2",
   sqlServerDep,
   "com.miglayout"             % "miglayout-swing"       % "4.2",
   "com.ning"                  % "async-http-client"     % "1.9.31",
