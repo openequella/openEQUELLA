@@ -64,7 +64,7 @@
     "@types/tinymce": "4.5.20",
     "@tinymce/tinymce-react": "3.0.1",
     "@types/node": "9.6.48",
-    "@types/react": "16.8.8",
+    "@types/react": "16.8.17",
     "@types/react-autosuggest": "9.3.7",
     "@types/react-color": "2.17.0",
     "@types/react-dom": "16.8.2",
