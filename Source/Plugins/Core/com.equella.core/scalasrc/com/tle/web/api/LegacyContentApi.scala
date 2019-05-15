@@ -58,7 +58,7 @@ import io.swagger.annotations.Api
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.ws.rs._
 import javax.ws.rs.core.Response.ResponseBuilder
-import javax.ws.rs.core.{Context, Response, UriInfo}
+import javax.ws.rs.core.{CacheControl, Context, Response, UriInfo}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -267,7 +267,7 @@ class LegacyContentApi {
   @Path("currentuser")
   @Produces(value = Array("application/json"))
   def menuOptions(@Context req: HttpServletRequest,
-                  @Context resp: HttpServletResponse): CurrentUserDetails = {
+                  @Context resp: HttpServletResponse): Response = {
     val contributors = LegacyGuice.menuService.getContributors
     val noInst       = CurrentInstitution.get == null
     val (noParam, filterName) =
@@ -323,19 +323,28 @@ class LegacyContentApi {
         Collections.singletonList(new TaskListSearch))(0);
       ItemCounts(taskCount, notificationCount)
     } else None
-    val ub = cu.getUserBean
-    CurrentUserDetails(
-      id = ub.getUniqueID,
-      username = ub.getUsername,
-      firstName = ub.getFirstName,
-      lastName = ub.getLastName,
-      emailAddress = ub.getEmailAddress,
-      autoLoggedIn = cu.wasAutoLoggedIn(),
-      guest = cu.isGuest,
-      prefsEditable = prefsEditable,
-      menuGroups = menuGroups,
-      counts = counts
-    )
+    val ub           = cu.getUserBean
+    val cacheControl = new CacheControl()
+    cacheControl.setNoCache(true)
+    cacheControl.setNoStore(true)
+    cacheControl.setSMaxAge(-1)
+    Response
+      .ok(
+        CurrentUserDetails(
+          id = ub.getUniqueID,
+          username = ub.getUsername,
+          firstName = ub.getFirstName,
+          lastName = ub.getLastName,
+          emailAddress = ub.getEmailAddress,
+          autoLoggedIn = cu.wasAutoLoggedIn(),
+          guest = cu.isGuest,
+          prefsEditable = prefsEditable,
+          menuGroups = menuGroups,
+          counts = counts
+        )
+      )
+      .cacheControl(cacheControl)
+      .build()
   }
 
   @POST
