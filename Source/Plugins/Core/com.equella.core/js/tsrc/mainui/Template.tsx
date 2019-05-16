@@ -48,6 +48,10 @@ import { Bridge } from "../api/bridge";
 
 declare const bridge: Bridge;
 
+interface TemplateApi {
+  refreshUser: () => void;
+}
+
 interface TemplateProps {
   title: String;
   /* Fix the height of the main content, otherwise use min-height */
@@ -72,6 +76,7 @@ interface TemplateProps {
   hideAppBar?: boolean;
   menuMode?: string;
   disableNotifications?: boolean;
+  innerRef?: (api: TemplateApi) => void;
 }
 
 export const strings = prepLangStrings("template", {
@@ -264,6 +269,13 @@ export function Template(props: TemplateProps) {
 
   React.useEffect(() => {
     getCurrentUser().then(setCurrentUser);
+    if (props.innerRef) {
+      props.innerRef({
+        refreshUser: () => {
+          getCurrentUser().then(setCurrentUser);
+        }
+      });
+    }
   }, []);
 
   React.useEffect(() => {

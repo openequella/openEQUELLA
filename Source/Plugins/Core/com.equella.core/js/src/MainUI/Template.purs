@@ -10,6 +10,7 @@ import OEQ.Data.Error (ErrorResponse)
 import OEQ.MainUI.Routes (Route)
 import OEQ.Utils.Interop (nullAny)
 import React (ReactClass, ReactElement, ReactThis)
+import Unsafe.Coerce (unsafeCoerce)
 
 
 type RenderData = {
@@ -66,5 +67,5 @@ templateDefaults title = {
 
 
 refreshUser :: TemplateRef -> Effect Unit 
-refreshUser (TemplateRef r) = pure unit
+refreshUser (TemplateRef r) = (unsafeCoerce r).refreshUser
 
