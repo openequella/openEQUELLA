@@ -22,9 +22,8 @@ import { NotificationType, strings } from "./LoginNoticeModule";
 import { commonString } from "../util/commonstrings";
 import { Template } from "../mainui/Template";
 
-interface LoginNoticeConfigPageProps extends WithStyles<typeof styles> {
-  bridge: Bridge;
-}
+declare const bridge: Bridge;
+interface LoginNoticeConfigPageProps extends WithStyles<typeof styles> {}
 
 interface LoginNoticeConfigPageState {
   notifications: NotificationType;
@@ -170,7 +169,7 @@ class LoginNoticeConfigPage extends React.Component<
   };
 
   render() {
-    const { routes } = this.props.bridge;
+    const { routes } = bridge;
     const { classes } = this.props;
     const Notifications = this.Notifications;
     const Configurators = this.Configurators;

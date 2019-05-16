@@ -1,4 +1,3 @@
-import { Bridge } from "../api/bridge";
 import { WithStyles } from "@material-ui/core";
 import * as React from "react";
 import EntityList from "../components/EntityList";
@@ -8,9 +7,7 @@ import { SearchConfig, listAllConfigs } from ".";
 import { ErrorResponse } from "../api/errors";
 import { Template } from "../mainui/Template";
 
-interface SearchConfigsProps extends WithStyles {
-  bridge: Bridge;
-}
+interface SearchConfigsProps extends WithStyles {}
 
 interface SearchConfigsState {
   searchConfigs: SearchConfig[] | null;
