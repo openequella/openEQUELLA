@@ -25,7 +25,13 @@ import {
   List,
   ListItemIcon,
   ListItemText,
-  Divider
+  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button
 } from "@material-ui/core";
 import luxonUtils from "@date-io/luxon";
 import { makeStyles } from "@material-ui/styles";
@@ -36,11 +42,13 @@ import {
   guestUser,
   MenuItem as MI
 } from "../api/currentuser";
-import { Bridge } from "../api/bridge";
 import MessageInfo from "../components/MessageInfo";
+import { commonString } from "../util/commonstrings";
+import { Bridge } from "../api/bridge";
+
+declare const bridge: Bridge;
 
 interface TemplateProps {
-  bridge: Bridge;
   title: String;
   /* Fix the height of the main content, otherwise use min-height */
   fixedViewPort?: boolean;
@@ -66,7 +74,7 @@ interface TemplateProps {
   disableNotifications?: boolean;
 }
 
-const strings = prepLangStrings("template", {
+export const strings = prepLangStrings("template", {
   menu: {
     title: "My Account",
     logout: "Logout",
@@ -78,7 +86,7 @@ const strings = prepLangStrings("template", {
   }
 });
 
-const coreString = prepLangStrings("com.equella.core", {
+export const coreStrings = prepLangStrings("com.equella.core", {
   windowtitlepostfix: " | openEQUELLA",
   topbar: {
     link: {
@@ -88,7 +96,7 @@ const coreString = prepLangStrings("com.equella.core", {
   }
 });
 
-const topBarString = coreString.topbar.link;
+const topBarString = coreStrings.topbar.link;
 
 declare const logoURL: string;
 
@@ -120,7 +128,6 @@ export const useStyles = makeStyles((theme: Theme) => {
       position: "relative"
     },
     appBar: {
-      position: "fixed",
       marginLeft: drawerWidth,
       [desktop]: {
         width: `calc(100% - ${drawerWidth}px)`
@@ -220,26 +227,78 @@ function useFullscreen(props: TemplateProps) {
   return props.hideAppBar || modeIsFullscreen;
 }
 
+const beforeunload = function(e: Event) {
+  e.returnValue = ("Are you sure?" as unknown) as boolean;
+  return "Are you sure?";
+};
+
 export function Template(props: TemplateProps) {
   const [currentUser, setCurrentUser] = React.useState<UserData>(guestUser);
-  const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement | null>(
-    null
-  );
+  const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement>();
   const [navMenuOpen, setNavMenuOpen] = React.useState(false);
   const [errorOpen, setErrorOpen] = React.useState(false);
-
-  const { router, routes, matchRoute } = props.bridge;
+  const [attemptedRoute, setAttemptedRoute] = React.useState<Route>();
+  const { router, routes, matchRoute } = bridge;
 
   const classes = useStyles();
+
+  React.useEffect(() => {
+    bridge.setPreventNav(r => {
+      if (props.preventNavigation) {
+        setAttemptedRoute(r);
+      }
+      return Boolean(props.preventNavigation);
+    });
+    if (props.preventNavigation) {
+      window.addEventListener("beforeunload", beforeunload, false);
+    } else {
+      window.removeEventListener("beforeunload", beforeunload, false);
+    }
+  }, [props.preventNavigation]);
+
+  React.useEffect(() => {
+    if (props.errorResponse) {
+      setErrorOpen(true);
+    }
+  }, [props.errorResponse]);
 
   React.useEffect(() => {
     getCurrentUser().then(setCurrentUser);
   }, []);
 
-  function linkItem(clickable: Route, text: string) {
-    const { href, onClick } = router(clickable);
+  React.useEffect(() => {
+    const classList = window.document.getElementsByTagName("html")[0].classList;
+    var remove = "fullscreen-toolbar";
+    switch (props.fullscreenMode) {
+      case "YES":
+        classList.add("fullscreen");
+        break;
+      case "YES_WITH_TOOLBAR":
+        classList.add(remove);
+        remove = "fullscreen";
+        break;
+      default:
+        classList.remove("fullscreen");
+    }
+    classList.remove(remove);
+  }, [props.fullscreenMode]);
+
+  React.useEffect(() => {
+    window.document.title = `${props.title}${coreStrings.windowtitlepostfix}`;
+  }, [props.title]);
+
+  function menuLink(route: Route) {
+    setMenuAnchorEl(undefined);
+    bridge.pushRoute(route);
+  }
+
+  function linkItem(link: Route, text: string) {
     return (
-      <MenuItem component="a" href={href} onClick={onClick}>
+      <MenuItem
+        component="a"
+        href={bridge.routeURI(link)}
+        onClick={_ => menuLink(link)}
+      >
         {text}
       </MenuItem>
     );
@@ -327,7 +386,7 @@ export function Template(props: TemplateProps) {
     return (
       <div className={classes.titleArea}>
         {props.backRoute && (
-          <IconButton>
+          <IconButton onClick={_ => bridge.pushRoute(props.backRoute!)}>
             <BackIcon />
           </IconButton>
         )}
@@ -376,7 +435,7 @@ export function Template(props: TemplateProps) {
             <Menu
               anchorEl={menuAnchorEl}
               open={Boolean(menuAnchorEl)}
-              onClose={_ => setMenuAnchorEl(null)}
+              onClose={_ => setMenuAnchorEl(undefined)}
               anchorOrigin={{ vertical: "top", horizontal: "right" }}
               transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
@@ -397,8 +456,11 @@ export function Template(props: TemplateProps) {
       <AppBar className={classes.appBar}>
         <Toolbar disableGutters>
           {hasMenu && (
-            <IconButton className={classes.navIconHide}>
-              <MenuIcon onClick={_ => setNavMenuOpen(!navMenuOpen)} />
+            <IconButton
+              className={classes.navIconHide}
+              onClick={_ => setNavMenuOpen(!navMenuOpen)}
+            >
+              <MenuIcon />
             </IconButton>
           )}
           {titleArea()}
@@ -456,28 +518,32 @@ export function Template(props: TemplateProps) {
     );
   }
 
+  function navigateConfirm(leave: boolean) {
+    if (leave && attemptedRoute) {
+      bridge.forcePushRoute(attemptedRoute);
+    }
+    setAttemptedRoute(undefined);
+  }
+
   return (
     <MuiPickersUtilsProvider utils={luxonUtils}>
       <CssBaseline />
       <div className={classes.root}>
         {layout}
-        {/* dialog {open: isJust attempt} [
-          dialogTitle_ [ text strings.navaway.title], 
-          dialogContent_ [
-            dialogContentText_ [ text strings.navaway.content ]
-          ], 
-          dialogActions_ [
-            button {onClick: d $ NavAway false, color: secondary} [text commonString.action.cancel],
-            button {onClick: d $ NavAway true, color: primary} [text commonString.action.discard]
-          ]
-        ] ] <> catMaybes [
-        toMaybe props.errorResponse <#> \{error, description} -> messageInfo {
-                              open: state.errorOpen, 
-                              onClose: d CloseError, 
-                              title: fromMaybe error $ toMaybe description,
-                              variant: String.error 
-                            } */}
-
+        <Dialog open={Boolean(attemptedRoute)}>
+          <DialogTitle>{strings.navaway.title}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>{strings.navaway.content}</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button color="secondary" onClick={_ => navigateConfirm(false)}>
+              {commonString.action.cancel}
+            </Button>
+            <Button color="primary" onClick={_ => navigateConfirm(true)}>
+              {commonString.action.discard}
+            </Button>
+          </DialogActions>
+        </Dialog>
         {props.errorResponse && renderError(props.errorResponse)}
       </div>
     </MuiPickersUtilsProvider>

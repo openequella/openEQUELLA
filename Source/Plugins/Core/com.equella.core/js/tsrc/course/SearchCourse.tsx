@@ -14,8 +14,8 @@ import EntityList from "../components/EntityList";
 import { sprintf } from "sprintf-js";
 import { Template } from "../mainui/Template";
 
+declare const bridge: Bridge;
 interface SearchCourseProps {
-  bridge: Bridge;
   deleteCourse: (uuid: string) => Promise<{ uuid: string }>;
   checkCreate: () => Promise<boolean>;
 }
@@ -166,7 +166,7 @@ class SearchCourse extends React.Component<
   };
 
   render() {
-    const { routes, router } = this.props.bridge;
+    const { routes, router } = bridge;
     const {
       query,
       confirmOpen,
@@ -177,7 +177,6 @@ class SearchCourse extends React.Component<
     } = this.state;
     return (
       <Template
-        bridge={this.props.bridge}
         title={strings.title}
         titleExtra={<AppBarQuery query={query} onChange={this.handleQuery} />}
       >

@@ -176,7 +176,6 @@ class LoginNoticeConfigPage extends React.Component<
     const Configurators = this.Configurators;
     return (
       <Template
-        bridge={this.props.bridge}
         title={strings.title}
         backRoute={routes.SettingsPage}
         fixedViewPort

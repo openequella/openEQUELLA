@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Bridge } from "../api/bridge";
 import {
   Button,
   CardContent,
@@ -100,9 +99,7 @@ const styles = createStyles({
   }
 });
 
-interface ThemePageProps {
-  bridge: Bridge;
-}
+interface ThemePageProps {}
 
 class ThemePage extends React.Component<
   ThemePageProps & WithStyles<typeof styles>
@@ -486,7 +483,6 @@ class ThemePage extends React.Component<
     const { classes } = this.props;
     return (
       <Template
-        bridge={this.props.bridge}
         title={strings.title}
         errorResponse={this.state.error || undefined}
       >

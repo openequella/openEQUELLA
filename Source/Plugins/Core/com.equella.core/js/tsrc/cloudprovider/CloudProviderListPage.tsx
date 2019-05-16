@@ -1,4 +1,3 @@
-import { Bridge } from "../api/bridge";
 import * as React from "react";
 import {
   Avatar,
@@ -38,9 +37,7 @@ const styles = (theme: Theme) =>
     }
   });
 
-interface CloudProviderListPageProps extends WithStyles<typeof styles> {
-  bridge: Bridge;
-}
+interface CloudProviderListPageProps extends WithStyles<typeof styles> {}
 interface CloudProviderListPageState {
   cloudProviders: CloudProviderEntity[];
   error?: ErrorResponse;
@@ -147,11 +144,7 @@ class CloudProviderListPage extends React.Component<
       onClick: this.registerCloudProvider
     };
     return (
-      <Template
-        bridge={this.props.bridge}
-        title={cloudProviderLangStrings.title}
-        errorResponse={error}
-      >
+      <Template title={cloudProviderLangStrings.title} errorResponse={error}>
         {this.state.deleteDetails && (
           <ConfirmDialog
             open={deleteDialogOpen}

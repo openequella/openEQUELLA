@@ -44,6 +44,7 @@ type ExtTheme = {
     }
   }
 }
+
 extendedTheme :: Theme -> ExtTheme 
 extendedTheme = unsafeCoerce
 

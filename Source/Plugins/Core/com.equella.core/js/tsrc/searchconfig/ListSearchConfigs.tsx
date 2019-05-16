@@ -50,11 +50,7 @@ class ListSearchConfigs extends React.Component<
   render() {
     const { searchConfigs, errorResponse } = this.state;
     return (
-      <Template
-        bridge={this.props.bridge}
-        title={strings.title}
-        errorResponse={errorResponse}
-      >
+      <Template title={strings.title} errorResponse={errorResponse}>
         <EntityList
           progress={!searchConfigs}
           resultsText={formatSize(

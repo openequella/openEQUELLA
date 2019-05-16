@@ -2,7 +2,7 @@ module OEQ.MainUI.Main where
 
 import Prelude
 
-import Bridge (tsBridge)
+import Bridge (Bridge, tsBridge)
 import Control.Monad.Reader (runReaderT)
 import Data.Either (either)
 import Data.Maybe (Maybe(..), fromMaybe)
@@ -11,6 +11,7 @@ import Dispatcher.React (modifyState, stateRenderer)
 import Effect (Effect)
 import Effect.Class (liftEffect)
 import Effect.Exception (throw)
+import Effect.Uncurried (EffectFn1, runEffectFn1)
 import OEQ.Data.Item (ItemRef(..))
 import OEQ.Environment (basePath, startHearbeat)
 import OEQ.MainUI.LegacyPage (legacy)
@@ -32,10 +33,13 @@ import Web.HTML.Window (location)
 data RouterCommand = Init | ChangeRoute Route
 type State = {route::Maybe Route}
 
+foreign import setupBridge :: EffectFn1 Bridge Unit
+
 main :: Effect Unit
 main = do
   polyfill
   startHearbeat
+  runEffectFn1 setupBridge tsBridge
   bp <- either (throw <<< show) pure basePath
   w <- window
   l <- location w
@@ -59,12 +63,12 @@ main = do
           SettingsPage -> settingsPage {legacyMode:false}
           CoursesPage -> coursesPage
           NewCourse -> courseEdit Nothing
-          ThemePage -> unsafeCreateLeafElement themePageClass {bridge:tsBridge}
-          LoginNoticeConfigPage -> unsafeCreateLeafElement loginNoticeConfigPageClass {bridge:tsBridge}
-          CloudProviderListPage -> unsafeCreateLeafElement cloudProviderListPageClass {bridge:tsBridge}
+          ThemePage -> unsafeCreateLeafElement themePageClass {}
+          LoginNoticeConfigPage -> unsafeCreateLeafElement loginNoticeConfigPageClass {}
+          CloudProviderListPage -> unsafeCreateLeafElement cloudProviderListPageClass {}
           CourseEdit cid -> courseEdit $ Just cid
           ViewItemPage (ItemRef uuid version) -> viewItemPage {uuid,version}
-          SearchConfigsPage -> unsafeCreateLeafElement searchConfigsClass {bridge:tsBridge}
+          SearchConfigsPage -> unsafeCreateLeafElement searchConfigsClass {}
           LegacyPage page -> legacy {page} 
         render _ = div' []
 
