@@ -219,8 +219,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
                     FreeTextQuery.FIELD_INSTITUTION,
                     Long.toString(item.getInstitution().getUniqueId()))),
             Occur.MUST);
-        writer.deleteDocuments(delQuery);
-        long g = manager.getCurrentSearchingGen();
+        long g = writer.deleteDocuments(delQuery);
         if (item.isNewSearcherRequired()) {
           generation = g;
         }
@@ -245,8 +244,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             continue;
           }
           try {
-            writer.addDocument(doc);
-            long g = nrtManager.getCurrentSearchingGen();
+            long g = writer.addDocument(doc);
             if (item.isNewSearcherRequired()) {
               generation = g;
             }
