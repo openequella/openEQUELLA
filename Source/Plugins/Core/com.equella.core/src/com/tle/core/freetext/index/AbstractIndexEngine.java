@@ -81,7 +81,7 @@ public abstract class AbstractIndexEngine {
   private PerFieldAnalyzerWrapper analyzer = null;
   private File stopWordsFile;
   private FSDirectory directory;
-  private IndexWriter indexWriter;
+  private TrackingIndexWriter trackingIndexWriter;
   private NRTManager nrtManager;
   private NRTManagerReopenThread nrtReopenThread;
   private Timer commiterThread;
@@ -94,7 +94,7 @@ public abstract class AbstractIndexEngine {
       commiterThread.cancel();
       nrtReopenThread.close();
       nrtManager.close();
-      indexWriter.close();
+      trackingIndexWriter.getIndexWriter().close();
       directory.close();
       FileUtils.delete(indexPath);
       afterPropertiesSet();
@@ -117,10 +117,11 @@ public abstract class AbstractIndexEngine {
       IndexWriter.unlock(directory);
     }
     LOGGER.info("Opening writer for index:" + indexPath); // $NON-NLS-1$
-    indexWriter =
-        new IndexWriter(
-            directory, new IndexWriterConfig(LuceneConstants.LATEST_VERSION, getAnalyser()));
-    nrtManager = new NRTManager(new TrackingIndexWriter(indexWriter), null);
+    trackingIndexWriter =
+        new TrackingIndexWriter(
+            new IndexWriter(
+                directory, new IndexWriterConfig(LuceneConstants.LATEST_VERSION, getAnalyser())));
+    nrtManager = new NRTManager(trackingIndexWriter, null);
 
     // Possibly reopen a searcher every 5 seconds if necessary in the
     // background
@@ -138,7 +139,7 @@ public abstract class AbstractIndexEngine {
           @Override
           public void run() {
             try {
-              indexWriter.commit();
+              trackingIndexWriter.getIndexWriter().commit();
             } catch (IOException ex) {
               LOGGER.error("Error attempting to commit index writer", ex);
             }
@@ -152,7 +153,7 @@ public abstract class AbstractIndexEngine {
     try {
       long g = -1;
       try {
-        g = builder.buildIndex(nrtManager, indexWriter);
+        g = builder.buildIndex(nrtManager, trackingIndexWriter.getIndexWriter());
       } finally {
         generation = Math.max(g, generation);
       }
