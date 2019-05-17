@@ -54,8 +54,7 @@ public abstract class MultipleIndex<T extends FreetextResult> extends ItemIndex<
         if (docs != null) {
           for (Document doc : docs) {
             try {
-              writer.addDocument(doc);
-              long g = nrtManager.getCurrentSearchingGen();
+              long g = writer.addDocument(doc);
               if (item.isNewSearcherRequired()) {
                 generation = g;
               }
