@@ -153,7 +153,7 @@ public abstract class AbstractIndexEngine {
     try {
       long g = -1;
       try {
-        g = builder.buildIndex(nrtManager, trackingIndexWriter.getIndexWriter());
+        g = builder.buildIndex(nrtManager, trackingIndexWriter);
       } finally {
         generation = Math.max(g, generation);
       }
@@ -219,7 +219,7 @@ public abstract class AbstractIndexEngine {
 
   public interface IndexBuilder {
     /** @return The index generation to wait for, or -1 if you don't care. */
-    long buildIndex(NRTManager nrtManager, IndexWriter writer) throws Exception;
+    long buildIndex(NRTManager nrtManager, TrackingIndexWriter writer) throws Exception;
   }
 
   public void setIndexPath(File indexPath) {

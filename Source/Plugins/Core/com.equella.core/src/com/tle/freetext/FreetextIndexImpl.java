@@ -67,9 +67,9 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import javax.inject.Singleton;
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.NRTManager;
+import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
 import org.springframework.transaction.annotation.Transactional;
 
 /** @author jmaginnis */
@@ -219,7 +219,8 @@ public class FreetextIndexImpl
       IndexBuilder resetBuilder =
           new IndexBuilder() {
             @Override
-            public long buildIndex(NRTManager nrtManager, IndexWriter writer) throws Exception {
+            public long buildIndex(NRTManager nrtManager, TrackingIndexWriter writer)
+                throws Exception {
               return nrtManager.getCurrentSearchingGen();
             }
           };

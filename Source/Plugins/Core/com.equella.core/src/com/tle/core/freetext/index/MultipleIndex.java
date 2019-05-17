@@ -28,8 +28,8 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.NRTManager;
+import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
 
 public abstract class MultipleIndex<T extends FreetextResult> extends ItemIndex<T> {
   @Inject private FreetextIndex freetextIndex;
@@ -46,7 +46,7 @@ public abstract class MultipleIndex<T extends FreetextResult> extends ItemIndex<
 
   @Override
   public long addDocuments(
-      Collection<IndexedItem> documents, NRTManager nrtManager, IndexWriter writer) {
+      Collection<IndexedItem> documents, NRTManager nrtManager, TrackingIndexWriter writer) {
     long generation = -1;
     for (IndexedItem item : documents) {
       if (item.isAdd()) {

@@ -88,7 +88,6 @@ import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.document.FieldSelectorResult;
 import org.apache.lucene.document.SetBasedFieldSelector;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
@@ -108,6 +107,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiPhraseQuery;
 import org.apache.lucene.search.MultiTermQuery;
 import org.apache.lucene.search.NRTManager;
+import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
@@ -203,7 +203,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   }
 
   protected long removeDocuments(
-      Collection<IndexedItem> documents, NRTManager manager, IndexWriter writer) {
+      Collection<IndexedItem> documents, NRTManager manager, TrackingIndexWriter writer) {
     long generation = -1;
     for (IndexedItem item : documents) {
       ItemIdKey itemId = item.getItemIdKey();
@@ -234,7 +234,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   }
 
   public long addDocuments(
-      Collection<IndexedItem> documents, NRTManager nrtManager, IndexWriter writer) {
+      Collection<IndexedItem> documents, NRTManager nrtManager, TrackingIndexWriter writer) {
     long generation = -1;
     for (IndexedItem item : documents) {
       if (item.isAdd()) {
@@ -1360,7 +1360,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     modifyIndex(
         new IndexBuilder() {
           @Override
-          public long buildIndex(NRTManager nrtManager, IndexWriter writer) throws Exception {
+          public long buildIndex(NRTManager nrtManager, TrackingIndexWriter writer)
+              throws Exception {
             long generation = -1;
             generation = Math.max(generation, removeDocuments(batch, nrtManager, writer));
             generation = Math.max(generation, addDocuments(batch, nrtManager, writer));
@@ -1458,7 +1459,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     modifyIndex(
         new IndexBuilder() {
           @Override
-          public long buildIndex(NRTManager nrtManager, IndexWriter writer) throws Exception {
+          public long buildIndex(NRTManager nrtManager, TrackingIndexWriter writer)
+              throws Exception {
             writer.deleteDocuments(new Term(FreeTextQuery.FIELD_INSTITUTION, Long.toString(id)));
             return -1;
           }
