@@ -41,7 +41,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.NRTManager;
 import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
 import org.apache.lucene.search.NRTManagerReopenThread;
-import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.FSDirectory;
 
 /**
@@ -163,15 +162,9 @@ public abstract class AbstractIndexEngine {
   }
 
   public <RV> RV search(Searcher<RV> s) {
-    SearcherManager refMan = null;
+    IndexSearcher indexSearcher = nrtManager.acquire();
+    nrtManager.waitForGeneration(generation);
     try {
-      refMan = new SearcherManager(indexWriter, true, null);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    IndexSearcher indexSearcher = null;
-    try {
-      indexSearcher = refMan.acquire();
       return s.search(indexSearcher);
     } catch (IOException ex) {
       LOGGER.error("Error searching index", ex); // $NON-NLS-1$
@@ -179,7 +172,7 @@ public abstract class AbstractIndexEngine {
     } finally {
       if (indexSearcher != null) {
         try {
-          refMan.release(indexSearcher);
+          nrtManager.release(indexSearcher);
         } catch (IOException ex) {
           throw new ErrorDuringSearchException("Error releasing searcher", ex); // $NON-NLS-1$
         }
