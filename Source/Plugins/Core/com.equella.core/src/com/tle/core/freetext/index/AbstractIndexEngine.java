@@ -39,6 +39,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.NRTManager;
+import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
 import org.apache.lucene.search.NRTManagerReopenThread;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.FSDirectory;
@@ -120,7 +121,7 @@ public abstract class AbstractIndexEngine {
     indexWriter =
         new IndexWriter(
             directory, new IndexWriterConfig(LuceneConstants.LATEST_VERSION, getAnalyser()));
-    nrtManager = new NRTManager(indexWriter, null);
+    nrtManager = new NRTManager(new TrackingIndexWriter(indexWriter), null);
 
     // Possibly reopen a searcher every 5 seconds if necessary in the
     // background
@@ -152,7 +153,7 @@ public abstract class AbstractIndexEngine {
     try {
       long g = -1;
       try {
-        g = builder.buildIndex(nrtManager);
+        g = builder.buildIndex(nrtManager, indexWriter);
       } finally {
         generation = Math.max(g, generation);
       }
@@ -162,10 +163,15 @@ public abstract class AbstractIndexEngine {
   }
 
   public <RV> RV search(Searcher<RV> s) {
-    SearcherManager manager = nrtManager.waitForGeneration(generation, true);
+    SearcherManager refMan = null;
+    try {
+      refMan = new SearcherManager(indexWriter, true, null);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     IndexSearcher indexSearcher = null;
     try {
-      indexSearcher = manager.acquire();
+      indexSearcher = refMan.acquire();
       return s.search(indexSearcher);
     } catch (IOException ex) {
       LOGGER.error("Error searching index", ex); // $NON-NLS-1$
@@ -173,7 +179,7 @@ public abstract class AbstractIndexEngine {
     } finally {
       if (indexSearcher != null) {
         try {
-          manager.release(indexSearcher);
+          refMan.release(indexSearcher);
         } catch (IOException ex) {
           throw new ErrorDuringSearchException("Error releasing searcher", ex); // $NON-NLS-1$
         }
@@ -219,7 +225,7 @@ public abstract class AbstractIndexEngine {
 
   public interface IndexBuilder {
     /** @return The index generation to wait for, or -1 if you don't care. */
-    long buildIndex(NRTManager nrtManager) throws Exception;
+    long buildIndex(NRTManager nrtManager, IndexWriter writer) throws Exception;
   }
 
   public void setIndexPath(File indexPath) {

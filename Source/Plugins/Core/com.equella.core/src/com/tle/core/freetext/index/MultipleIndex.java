@@ -28,6 +28,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.NRTManager;
 
 public abstract class MultipleIndex<T extends FreetextResult> extends ItemIndex<T> {
@@ -44,7 +45,8 @@ public abstract class MultipleIndex<T extends FreetextResult> extends ItemIndex<
   }
 
   @Override
-  public long addDocuments(Collection<IndexedItem> documents, NRTManager nrtManager) {
+  public long addDocuments(
+      Collection<IndexedItem> documents, NRTManager nrtManager, IndexWriter writer) {
     long generation = -1;
     for (IndexedItem item : documents) {
       if (item.isAdd()) {
@@ -52,7 +54,8 @@ public abstract class MultipleIndex<T extends FreetextResult> extends ItemIndex<
         if (docs != null) {
           for (Document doc : docs) {
             try {
-              long g = nrtManager.addDocument(doc);
+              writer.addDocument(doc);
+              long g = nrtManager.getCurrentSearchingGen();
               if (item.isNewSearcherRequired()) {
                 generation = g;
               }
