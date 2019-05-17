@@ -2,7 +2,6 @@ module TSComponents where
 
 import Prelude
 
-import Bridge (tsBridge)
 import Data.Maybe (Maybe)
 import Data.Nullable (Nullable, toNullable)
 import Data.TSCompat (OptionRecord)
@@ -26,10 +25,10 @@ foreign import searchConfigsClass :: forall a. ReactClass a
 foreign import loginNoticeConfigPageClass :: forall a. ReactClass a
 foreign import cloudProviderListPageClass :: forall a. ReactClass a
 coursesPage :: ReactElement
-coursesPage = unsafeCreateLeafElement searchCourses {store:store, bridge: tsBridge}
+coursesPage = unsafeCreateLeafElement searchCourses {store:store}
 
 courseEdit :: Maybe String -> ReactElement
-courseEdit cid = unsafeCreateLeafElement editCourse {store:store, bridge: tsBridge, uuid: toNullable $ cid}
+courseEdit cid = unsafeCreateLeafElement editCourse {store:store, uuid: toNullable $ cid}
 
 appBarQuery :: { query :: String, onChange :: EffectFn1 String Unit} -> ReactElement
 appBarQuery = unsafeCreateLeafElement appBarQueryClass

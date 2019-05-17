@@ -1,4 +1,3 @@
-import { Bridge } from "../api/bridge";
 import * as React from "react";
 import {
   Avatar,
@@ -25,6 +24,7 @@ import { sprintf } from "sprintf-js";
 import ConfirmDialog from "../components/ConfirmDialog";
 import CloudProviderAddDialog from "./CloudProviderAddDialog";
 import EquellaListItem from "../components/EquellaListItem";
+import { Template } from "../mainui/Template";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -37,9 +37,7 @@ const styles = (theme: Theme) =>
     }
   });
 
-interface CloudProviderListPageProps extends WithStyles<typeof styles> {
-  bridge: Bridge;
-}
+interface CloudProviderListPageProps extends WithStyles<typeof styles> {}
 interface CloudProviderListPageState {
   cloudProviders: CloudProviderEntity[];
   error?: ErrorResponse;
@@ -134,7 +132,6 @@ class CloudProviderListPage extends React.Component<
   };
 
   render() {
-    const { Template } = this.props.bridge;
     const {
       error,
       cloudProviders,

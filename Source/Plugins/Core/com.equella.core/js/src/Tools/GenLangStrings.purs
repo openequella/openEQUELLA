@@ -13,7 +13,6 @@ import Effect.Class.Console (log)
 import Foreign.Object as SM
 import OEQ.MainUI.SearchPage (coreStrings, rawStrings) as SearchPage
 import OEQ.MainUI.SettingsPage (coreStrings, rawStrings) as SettingsPage
-import OEQ.MainUI.Template (rawStrings, coreStrings) as Template
 import OEQ.UI.ItemSummary.ItemComments as ItemComments
 import OEQ.UI.Security.ACLEditor (aclRawStrings)
 import OEQ.UI.Security.TermSelection (termRawStrings)
@@ -31,6 +30,8 @@ foreign import courseString :: DynamicString
 foreign import courseEditString :: DynamicString
 foreign import entityStrings :: DynamicString
 foreign import uiThemeSettingStrings :: DynamicString
+foreign import templateStrings :: DynamicString
+foreign import templateCoreStrings :: DynamicString
 foreign import genStringsDynamic :: (String -> String -> Tuple String String) -> String -> DynamicString -> Array (Tuple String String)
 
 instance nilStrings :: ConvertToStrings (Tuple (RLProxy Nil) (Record r)) where
@@ -63,8 +64,8 @@ genTopLevel {prefix,strings} = genStrings "" (Tuple prefix strings)
 main :: Effect Unit
 main = do
   log $ stringify $ encodeJson $ SM.fromFoldable $
-    genTopLevel Template.rawStrings <>
-    genTopLevel Template.coreStrings <>
+    genTopLevel {prefix: "template", strings:templateStrings} <>
+    genTopLevel {prefix: "com.equella.core", strings:templateCoreStrings} <>
     genTopLevel SearchPage.rawStrings <>
     genTopLevel SearchPage.coreStrings <> 
     genTopLevel UISettings.rawStrings <>

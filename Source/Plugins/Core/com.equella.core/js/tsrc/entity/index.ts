@@ -5,7 +5,6 @@ import {
   ReducerBuilder,
   reducerWithInitialState
 } from "typescript-fsa-reducers";
-import { Bridge } from "../api/bridge";
 import { Entity } from "../api/Entity";
 import { Config } from "../config";
 import { actionCreator, wrapAsyncWorker } from "../util/actionutil";
@@ -72,7 +71,6 @@ export interface EditEntityDispatchProps<E extends Entity> {
 export interface EditEntityProps<E extends Entity>
   extends EditEntityStateProps<E>,
     EditEntityDispatchProps<E> {
-  bridge: Bridge;
   uuid?: string;
 }
 

@@ -12,9 +12,10 @@ import { prepLangStrings, formatSize } from "../util/langstrings";
 import VisibilitySensor = require("react-visibility-sensor");
 import EntityList from "../components/EntityList";
 import { sprintf } from "sprintf-js";
+import { Template } from "../mainui/Template";
 
+declare const bridge: Bridge;
 interface SearchCourseProps {
-  bridge: Bridge;
   deleteCourse: (uuid: string) => Promise<{ uuid: string }>;
   checkCreate: () => Promise<boolean>;
 }
@@ -165,7 +166,7 @@ class SearchCourse extends React.Component<
   };
 
   render() {
-    const { routes, router, Template } = this.props.bridge;
+    const { routes, router } = bridge;
     const {
       query,
       confirmOpen,

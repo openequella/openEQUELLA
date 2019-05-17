@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Bridge } from "../api/bridge";
 import {
   Button,
   CardContent,
@@ -22,6 +21,7 @@ import { Config } from "../config";
 import { prepLangStrings } from "../util/langstrings";
 import { commonString } from "../util/commonstrings";
 import { generateFromError, generateNewErrorID } from "../api/errors";
+import { Template } from "../mainui/Template";
 
 interface IThemeSettings {
   primaryColor: string;
@@ -99,9 +99,7 @@ const styles = createStyles({
   }
 });
 
-interface ThemePageProps {
-  bridge: Bridge;
-}
+interface ThemePageProps {}
 
 class ThemePage extends React.Component<
   ThemePageProps & WithStyles<typeof styles>
@@ -482,7 +480,6 @@ class ThemePage extends React.Component<
   };
 
   render() {
-    const { Template } = this.props.bridge;
     const { classes } = this.props;
     return (
       <Template

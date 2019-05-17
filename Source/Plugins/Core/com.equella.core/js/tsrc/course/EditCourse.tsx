@@ -40,6 +40,10 @@ import { StoreState } from "../store";
 import { commonString } from "../util/commonstrings";
 import { properties } from "../util/dictionary";
 import { prepLangStrings } from "../util/langstrings";
+import { Template } from "../mainui/Template";
+import { Bridge } from "../api/bridge";
+
+declare const bridge: Bridge;
 
 const styles = (theme: Theme) => {
   //TODO: get drawerWidth passed in somehow
@@ -209,7 +213,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
   handleSave() {
     if (this.props.entity) {
       const { versionSelection } = this.props.entity;
-      const { router, routes } = this.props.bridge;
+      const { router, routes } = bridge;
       const vs = versionSelection === "DEFAULT" ? undefined : versionSelection;
 
       let course = {
@@ -310,7 +314,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
       availablePrivileges,
       classes
     } = this.props;
-    const { AclEditor, Template, router, routes } = this.props.bridge;
+    const { AclEditor, router, routes } = bridge;
     const { editing } = this.state;
     const typeval = strings.type;
     const versionval = strings.version;
