@@ -65,7 +65,7 @@ libraryDependencies ++= Seq(
   "com.ibm.icu"                  % "icu4j"                       % "4.8.2",
   sqlServerDep,
   "com.miglayout"             % "miglayout-swing"       % "4.2",
-  "com.ning"                  % "async-http-client"     % "1.9.31",
+  "com.ning"                  % "async-http-client"     % "1.9.40",
   "com.rometools"             % "rome"                  % "1.7.2",
   "io.swagger"                % "swagger-core"          % SwaggerVersion,
   "io.swagger"                % "swagger-annotations"   % SwaggerVersion,
