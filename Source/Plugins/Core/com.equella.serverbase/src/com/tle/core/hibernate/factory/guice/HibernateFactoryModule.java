@@ -21,8 +21,6 @@ package com.tle.core.hibernate.factory.guice;
 import com.tle.core.config.guice.PropertiesModule;
 import com.tle.core.hibernate.ExtendedDialect;
 import com.tle.core.hibernate.type.ImmutableHibernateXStreamType;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 @SuppressWarnings("nls")
 public class HibernateFactoryModule extends PropertiesModule {
@@ -39,9 +37,5 @@ public class HibernateFactoryModule extends PropertiesModule {
     bindProp("hibernate.connection.username");
     bindProp("hibernate.connection.password");
     bindProp("hibernate.connection.url");
-  }
-
-  static {
-    Logger.getLogger("com.zaxxer.hikari.pool.ProxyConnection").setLevel(Level.ERROR);
   }
 }

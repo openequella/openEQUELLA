@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.java.plugin.ObjectFactory;
 import org.java.plugin.Plugin;
@@ -98,7 +100,7 @@ public class EQUELLAServer {
         // Do not stop - But unable to delete equella.lock
       }
     }
-
+    Logger.getLogger("com.zaxxer.hikari.pool.ProxyConnection").setLevel(Level.ERROR);
     PropertyConfigurator.configure(loader.getResource("learningedge-log4j.properties"));
     Properties mandatory = new Properties();
     Properties optional = new Properties();
