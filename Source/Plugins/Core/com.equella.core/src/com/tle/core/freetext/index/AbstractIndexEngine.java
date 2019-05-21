@@ -39,8 +39,8 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.NRTManager;
+import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
 import org.apache.lucene.search.NRTManagerReopenThread;
-import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.FSDirectory;
 
 /**
@@ -81,7 +81,7 @@ public abstract class AbstractIndexEngine {
   private PerFieldAnalyzerWrapper analyzer = null;
   private File stopWordsFile;
   private FSDirectory directory;
-  private IndexWriter indexWriter;
+  private TrackingIndexWriter trackingIndexWriter;
   private NRTManager nrtManager;
   private NRTManagerReopenThread nrtReopenThread;
   private Timer commiterThread;
@@ -94,7 +94,7 @@ public abstract class AbstractIndexEngine {
       commiterThread.cancel();
       nrtReopenThread.close();
       nrtManager.close();
-      indexWriter.close();
+      trackingIndexWriter.getIndexWriter().close();
       directory.close();
       FileUtils.delete(indexPath);
       afterPropertiesSet();
@@ -117,10 +117,11 @@ public abstract class AbstractIndexEngine {
       IndexWriter.unlock(directory);
     }
     LOGGER.info("Opening writer for index:" + indexPath); // $NON-NLS-1$
-    indexWriter =
-        new IndexWriter(
-            directory, new IndexWriterConfig(LuceneConstants.LATEST_VERSION, getAnalyser()));
-    nrtManager = new NRTManager(indexWriter, null);
+    trackingIndexWriter =
+        new TrackingIndexWriter(
+            new IndexWriter(
+                directory, new IndexWriterConfig(LuceneConstants.LATEST_VERSION, getAnalyser())));
+    nrtManager = new NRTManager(trackingIndexWriter, null);
 
     // Possibly reopen a searcher every 5 seconds if necessary in the
     // background
@@ -138,7 +139,7 @@ public abstract class AbstractIndexEngine {
           @Override
           public void run() {
             try {
-              indexWriter.commit();
+              trackingIndexWriter.getIndexWriter().commit();
             } catch (IOException ex) {
               LOGGER.error("Error attempting to commit index writer", ex);
             }
@@ -152,7 +153,7 @@ public abstract class AbstractIndexEngine {
     try {
       long g = -1;
       try {
-        g = builder.buildIndex(nrtManager);
+        g = builder.buildIndex(nrtManager, trackingIndexWriter);
       } finally {
         generation = Math.max(g, generation);
       }
@@ -162,10 +163,9 @@ public abstract class AbstractIndexEngine {
   }
 
   public <RV> RV search(Searcher<RV> s) {
-    SearcherManager manager = nrtManager.waitForGeneration(generation, true);
-    IndexSearcher indexSearcher = null;
+    nrtManager.waitForGeneration(generation);
+    IndexSearcher indexSearcher = nrtManager.acquire();
     try {
-      indexSearcher = manager.acquire();
       return s.search(indexSearcher);
     } catch (IOException ex) {
       LOGGER.error("Error searching index", ex); // $NON-NLS-1$
@@ -173,7 +173,7 @@ public abstract class AbstractIndexEngine {
     } finally {
       if (indexSearcher != null) {
         try {
-          manager.release(indexSearcher);
+          nrtManager.release(indexSearcher);
         } catch (IOException ex) {
           throw new ErrorDuringSearchException("Error releasing searcher", ex); // $NON-NLS-1$
         }
@@ -219,7 +219,7 @@ public abstract class AbstractIndexEngine {
 
   public interface IndexBuilder {
     /** @return The index generation to wait for, or -1 if you don't care. */
-    long buildIndex(NRTManager nrtManager) throws Exception;
+    long buildIndex(NRTManager nrtManager, TrackingIndexWriter writer) throws Exception;
   }
 
   public void setIndexPath(File indexPath) {

@@ -107,6 +107,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiPhraseQuery;
 import org.apache.lucene.search.MultiTermQuery;
 import org.apache.lucene.search.NRTManager;
+import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
@@ -201,7 +202,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     this.attachmentBoost = attachmentBoost;
   }
 
-  protected long removeDocuments(Collection<IndexedItem> documents, NRTManager nrtManager) {
+  protected long removeDocuments(
+      Collection<IndexedItem> documents, NRTManager manager, TrackingIndexWriter writer) {
     long generation = -1;
     for (IndexedItem item : documents) {
       ItemIdKey itemId = item.getItemIdKey();
@@ -217,8 +219,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
                     FreeTextQuery.FIELD_INSTITUTION,
                     Long.toString(item.getInstitution().getUniqueId()))),
             Occur.MUST);
-        long g = nrtManager.deleteDocuments(delQuery);
-
+        long g = writer.deleteDocuments(delQuery);
         if (item.isNewSearcherRequired()) {
           generation = g;
         }
@@ -231,7 +232,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     return generation;
   }
 
-  public long addDocuments(Collection<IndexedItem> documents, NRTManager nrtManager) {
+  public long addDocuments(
+      Collection<IndexedItem> documents, NRTManager nrtManager, TrackingIndexWriter writer) {
     long generation = -1;
     for (IndexedItem item : documents) {
       if (item.isAdd()) {
@@ -242,7 +244,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             continue;
           }
           try {
-            long g = nrtManager.addDocument(doc);
+            long g = writer.addDocument(doc);
             if (item.isNewSearcherRequired()) {
               generation = g;
             }
@@ -1356,10 +1358,11 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     modifyIndex(
         new IndexBuilder() {
           @Override
-          public long buildIndex(NRTManager nrtManager) throws Exception {
+          public long buildIndex(NRTManager nrtManager, TrackingIndexWriter writer)
+              throws Exception {
             long generation = -1;
-            generation = Math.max(generation, removeDocuments(batch, nrtManager));
-            generation = Math.max(generation, addDocuments(batch, nrtManager));
+            generation = Math.max(generation, removeDocuments(batch, nrtManager, writer));
+            generation = Math.max(generation, addDocuments(batch, nrtManager, writer));
             return generation;
           }
         });
@@ -1454,9 +1457,9 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     modifyIndex(
         new IndexBuilder() {
           @Override
-          public long buildIndex(NRTManager nrtManager) throws Exception {
-            nrtManager.deleteDocuments(
-                new Term(FreeTextQuery.FIELD_INSTITUTION, Long.toString(id)));
+          public long buildIndex(NRTManager nrtManager, TrackingIndexWriter writer)
+              throws Exception {
+            writer.deleteDocuments(new Term(FreeTextQuery.FIELD_INSTITUTION, Long.toString(id)));
             return -1;
           }
         });

@@ -134,9 +134,9 @@ libraryDependencies ++= Seq(
   ),
   "org.apache.httpcomponents" % "httpclient"       % "4.5.8",
   "org.apache.httpcomponents" % "httpcore"         % "4.4.11",
-  "org.apache.lucene"         % "lucene-analyzers" % "3.5.0",
-  "org.apache.lucene"         % "lucene-core"      % "3.5.0",
-  "org.apache.lucene"         % "lucene-queries"   % "3.5.0",
+  "org.apache.lucene"         % "lucene-analyzers" % "3.6.2",
+  "org.apache.lucene"         % "lucene-core"      % "3.6.2",
+  "org.apache.lucene"         % "lucene-queries"   % "3.6.2",
   "org.apache.pdfbox"         % "pdfbox"           % "1.8.7",
   "org.apache.poi"            % "poi-ooxml"        % "3.9",
   "org.apache.rampart"        % "rampart-core"     % "1.6.2" excludeAll (
