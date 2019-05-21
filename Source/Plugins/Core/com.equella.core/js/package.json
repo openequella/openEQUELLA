@@ -10,7 +10,7 @@
   },
   "scripts": {
     "install": "cross-env-shell \"psc-package install && mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang}\"",
-    "clean": "rm -rf target/ output/ node_modules/ bower_components/",
+    "clean": "rm -rf target/ output/ node_modules/ bower_components/ .cache/ .psc-package/ .pulp-cache/",
     "dev": "pulp build && cross-env-shell parcel watch --no-autoinstall --public-url=./reactjs/ --out-dir=${npm_package_config_devjs} entrydev/*.html entrydev/scripts/*.js",
     "dev:build": "run-s bundleps && cross-env-shell parcel build --public-url=./reactjs/ --out-dir=${npm_package_config_devjs} entrybuild/*.html entrybuild/scripts/*.js",
     "build": "npm-run-all build:*",
