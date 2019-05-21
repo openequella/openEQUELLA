@@ -1,19 +1,19 @@
 buildscript {
   dependencies {
-    classpath group: "com.liferay", name: "com.liferay.gradle.plugins.wsdl.builder", version: "2.0.3"
+    classpath group: 'com.liferay', name: 'com.liferay.gradle.plugins.wsdl.builder', version: '2.0.3'
   }
 
   repositories {
     maven {
-      url "https://repository-cdn.liferay.com/nexus/content/groups/public"
+      url 'https://repository-cdn.liferay.com/nexus/content/groups/public'
     }
   }
 }
 
-apply plugin: "com.liferay.wsdl.builder"
+apply plugin: 'com.liferay.wsdl.builder'
 
 allprojects {
-  apply plugin: "java"
+  apply plugin: 'java'
   sourceCompatibility = 1.8
   version = '1.0.0'
   repositories {
@@ -49,10 +49,10 @@ allprojects {
 }
 
 subprojects {
-  apply plugin: "application"
+  apply plugin: 'application'
 }
 
-task importToolJar(type: Jar) {
+task importToolJar(type: Jar, description: 'Create a fat JAR for Import Tool') {
   baseName = 'import-tool'
   manifest {
     attributes('Main-Class':'com.dytech.edge.importexport.importutil.ImportUtility',
@@ -66,7 +66,7 @@ task importToolJar(type: Jar) {
   with jar
 }
 
-task exportToolJar(type: Jar) {
+task exportToolJar(type: Jar, description: 'Create a fat JAR for Export Tool') {
   baseName = 'export-tool'
   manifest {
     attributes('Main-Class':'com.dytech.edge.importexport.exportutil.ExportUtility',
@@ -80,22 +80,29 @@ task exportToolJar(type: Jar) {
   with jar
 }
 
-task createImportExportTools(dependsOn : [importToolJar,exportToolJar] ) {
+task createImportExportTools(dependsOn : [importToolJar,exportToolJar], description: 'Create fat JARs for both Import and Export Tool' ) {
   doLast {
     println "Import and export tools are created under $projectDir/build/libs"
   }
 }
 
-task compileSbtProject(type: Exec) {
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
+task compileSbtProject(type: Exec, description: 'Assemble sbt dependencies') {
+  def commands = ['sbt','com_tle_platform_swing/assembly','com_tle_platform_common/assembly']
+  if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows()) {
+    commands.add(0,'cmd')
+  }
+
   //sbt assembly is only available when called from sbt root project
-  workingDir "../"
-  commandLine "sbt","com_tle_platform_swing/assembly","com_tle_platform_common/assembly"
+  workingDir '../'
+  commandLine commands
 }
 
 // buildWSDL is a task provided by plugin: "com.liferay.wsdl.builder"
 buildWSDL {
-  destinationDir = file("build/codegen")
-  generateOptions.mappings = ["http://soap.remoting.web.tle.com" : "com.tle.web.remoting.soap", "http://lang.java":"com.tle.web.remoting.exception"]
+  destinationDir = file('build/codegen')
+  generateOptions.mappings = ['http://soap.remoting.web.tle.com' : 'com.tle.web.remoting.soap', 'http://lang.java':'com.tle.web.remoting.exception']
   buildLibs = false
   includeWSDLs = false
 }
