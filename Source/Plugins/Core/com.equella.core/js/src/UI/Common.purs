@@ -11,7 +11,7 @@ import Effect.Ref as Ref
 import Effect.Uncurried (EffectFn1, EffectFn2, mkEffectFn1, mkEffectFn2)
 import ExtUI.MaterialUIPicker.MuiPickersUtilsProvider (luxonUtils, muiPickersUtilsProvider)
 import MaterialUI.CssBaseline (cssBaseline')
-import MaterialUI.Styles (createMuiTheme, muiThemeProvider)
+import MaterialUI.Styles (createMuiTheme, muiThemeProvider, themeProvider)
 import MaterialUI.Theme (Theme)
 import Partial.Unsafe (unsafePartial)
 import React (ReactElement, ReactRef, ReactThis)
@@ -84,7 +84,7 @@ rootTag rootClass content =
   ]
 renderReact :: String -> ReactElement -> Effect Unit
 renderReact divId main = do
-  void (elm' >>= render (muiThemeProvider {theme:ourTheme} [ main ]))
+  void (elm' >>= render (themeProvider {theme:ourTheme} [ main ]))
   where
 
   elm' = do
