@@ -163,8 +163,8 @@ public abstract class AbstractIndexEngine {
   }
 
   public <RV> RV search(Searcher<RV> s) {
-    IndexSearcher indexSearcher = nrtManager.acquire();
     nrtManager.waitForGeneration(generation);
+    IndexSearcher indexSearcher = nrtManager.acquire();
     try {
       return s.search(indexSearcher);
     } catch (IOException ex) {
