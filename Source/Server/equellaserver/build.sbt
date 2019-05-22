@@ -76,7 +76,7 @@ libraryDependencies ++= Seq(
   "commons-codec"             % "commons-codec"         % "1.12",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.9",
-  "commons-daemon"            % "commons-daemon"        % "1.0.15",
+  "commons-daemon"            % "commons-daemon"        % "1.1.0",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
   "commons-io"                % "commons-io"            % "2.4",
