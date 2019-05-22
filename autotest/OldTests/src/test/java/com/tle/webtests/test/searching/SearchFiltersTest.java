@@ -35,7 +35,7 @@ public class SearchFiltersTest extends AbstractCleanupAutoTest {
     return false;
   }
 
-  @Test
+  @Test(enabled = false)
   public void testFilterByOwner() {
     SearchPage sp = new SearchPage(context).load();
     String owner = "DoNotUse";
@@ -50,6 +50,7 @@ public class SearchFiltersTest extends AbstractCleanupAutoTest {
   }
 
   @Test(
+      enabled = false,
       dataProvider = "datefilters",
       dependsOnMethods = {"testFilterByOwner"})
   public void testFilterByDateModified(String range, String date1, String result)
