@@ -57,6 +57,7 @@ object RenderNewTemplate {
         s"api/language/bundle/${LocaleLookup.selectLocale.getLocale.toLanguageTag}/bundle.js")
         .preRender(info)
       new IncludeFile(s"api/theme/theme.js").preRender(info)
+      RenderTemplate.STYLES_CSS.preRender(info)
     }
   }
 
