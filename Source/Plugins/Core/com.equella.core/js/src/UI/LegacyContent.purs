@@ -17,6 +17,7 @@ import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, propsRenderer, renderer, saveRef, withRef)
 import Effect (Effect)
 import Effect.Aff (Aff, makeAff, nonCanceler, runAff_)
+import Effect.Aff.Compat (EffectFnAff(..), fromEffectFnAff)
 import Effect.Class (liftEffect)
 import Effect.Ref as Ref
 import Effect.Uncurried (EffectFn1, EffectFn2, mkEffectFn1, mkEffectFn2, runEffectFn1)
@@ -38,6 +39,7 @@ import React.DOM as D
 import React.DOM.Props (Props, _id, _type, onSubmit)
 import React.DOM.Props as DP
 import React.SyntheticEvent (preventDefault)
+import Unsafe.Coerce (unsafeCoerce)
 import Unsafe.Reference (unsafeRefEq)
 import Web.DOM.Document (createElement, getElementsByTagName, toNonElementParentNode)
 import Web.DOM.Element as Elem
@@ -52,7 +54,6 @@ import Web.HTML.HTMLDocument (toDocument)
 import Web.HTML.HTMLLinkElement as Link
 import Web.HTML.HTMLScriptElement as Script
 import Web.HTML.Window (document)
-import Unsafe.Coerce (unsafeCoerce)
 
 foreign import setInnerHtml :: {node :: ReactRef, html:: String, script::Nullable String, afterHtml :: Nullable (Effect Unit) } -> Effect Unit
 foreign import clearInnerHtml :: ReactRef -> Effect Unit
@@ -118,41 +119,11 @@ loadMissingScripts _scripts =  unsafePartial $ makeAff $ \cb -> do
   pure nonCanceler
 
 
-updateStylesheets :: Boolean -> Array String -> Aff (Effect Unit)
-updateStylesheets replace _sheets = unsafePartial $ makeAff $ \cb -> do 
-  let sheets = resolveUrl <$> _sheets
-  w <- window
-  htmldoc <- document w
-  let doc = toDocument htmldoc
-      findPreviousLinks e = previousElementSibling (Elem.toNonDocumentTypeChildNode e) >>= case _ of 
-        Just prevElem | Just l <- Link.fromElement prevElem -> do 
-          href <- Link.href l 
-          map (append [Tuple href l]) $ findPreviousLinks $ prevElem
-        _ -> pure []
+foreign import updateStylesheets_ :: Boolean -> Array String -> EffectFnAff (Effect Unit)
 
-  {head, insertPoint, previous} <- map fromJust $ runMaybeT $ do 
-    head <- Elem.toNode <$> MaybeT (getElementsByTagName "head" doc >>= item 0)
-    insertPoint <- MaybeT $ getElementById "_dynamicInsert" (toNonElementParentNode doc)
-    previous <- lift $ Map.fromFoldable <$> findPreviousLinks insertPoint
-    pure $ {head, insertPoint, previous}
-  let newSheets = (filterUrls (Map.keys previous) sheets)
-      toDelete = Map.filterKeys (not <<< flip Set.member $ Set.fromFoldable sheets) previous
-      deleteEff = if replace then traverse_ deleteSheet (Map.values toDelete) else pure unit
-      sheetCount = length newSheets
-      createLink ind href = do 
-        l <- unsafeCoerce <$> createElement "link" doc
-        Link.setRel "stylesheet" l
-        Link.setHref href l
-        if sheetCount == ind + 1
-          then do 
-            el <- eventListener (\_ -> cb $ Right deleteEff)
-            addEventListener (EventType "load") el false (Link.toEventTarget l)
-          else pure unit
-        insertBefore (Link.toNode l) (Elem.toNode insertPoint) head
-      deleteSheet c = removeChild (Link.toNode c) head
-  sequence_ $ mapWithIndex createLink newSheets
-  if sheetCount == 0 then (cb $ Right deleteEff) else pure unit
-  pure nonCanceler
+updateStylesheets :: Boolean -> Array String -> Aff (Effect Unit)
+updateStylesheets replace sheets = fromEffectFnAff $ updateStylesheets_ replace sheets
+
 
 updateIncludes :: Boolean -> Array String -> Array String -> Aff (Effect Unit)
 updateIncludes replace css js = do 
