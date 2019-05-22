@@ -74,7 +74,7 @@ libraryDependencies ++= Seq(
   "com.zaxxer"                % "HikariCP"              % "2.7.9",
   "commons-beanutils"         % "commons-beanutils"     % "1.9.3",
   "commons-codec"             % "commons-codec"         % "1.12",
-  "commons-collections"       % "commons-collections"   % "3.2.1",
+  "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.9",
   "commons-daemon"            % "commons-daemon"        % "1.0.15",
   "commons-discovery"         % "commons-discovery"     % "0.5",
