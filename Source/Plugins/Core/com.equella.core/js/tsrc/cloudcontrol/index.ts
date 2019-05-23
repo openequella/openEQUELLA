@@ -12,6 +12,7 @@ import {
 } from "oeq-cloudproviders/controls";
 
 const wgxpath = require("wicked-good-xpath");
+wgxpath.install(window);
 interface ItemStateJSON {
   xml: string;
   attachments: Attachment[];
@@ -99,7 +100,6 @@ function encodeFilepath(filepath: string): string {
 }
 
 const observer = new MutationObserver(function() {
-  wgxpath.install(window);
   const liveElements = document.evaluate(
     "id('wizard-controls')//div[@data-clientupdate = 'true']",
     document,
