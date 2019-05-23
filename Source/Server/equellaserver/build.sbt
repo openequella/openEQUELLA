@@ -86,7 +86,7 @@ libraryDependencies ++= Seq(
   "com.github.equella.legacy" % "mets"                  % "1.0",
   "com.metamx"                % "extendedset"           % "1.5.0-mmx",
   "javax.inject"              % "javax.inject"          % "1",
-  "javax.mail"                % "mail"                  % "1.4.3",
+  "javax.mail"                % "mail"                  % "1.4.7",
   "javax.servlet"             % "jstl"                  % "1.1.2",
   "javax.xml"                 % "jaxrpc"                % "1.1",
   "jdom"                      % "jdom"                  % "1.0",
@@ -237,7 +237,7 @@ libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1"
 )
 
-dependencyOverrides += "javax.mail" % "mail" % "1.4.3"
+dependencyOverrides += "javax.mail" % "mail" % "1.4.7"
 
 excludeDependencies ++= Seq(
   "com.google.guava"             % "guava-jdk5",
