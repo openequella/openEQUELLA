@@ -1,6 +1,7 @@
-exports.resolveUrl = function(url) {
+function resolveUrl(url) {
   return new URL(url, $("base").attr("href")).href;
-};
+}
+exports.resolveUrl = resolveUrl;
 
 exports.setInnerHtml = function(props) {
   return function() {
@@ -102,6 +103,47 @@ exports.setupLegacyHooks_ = function(ps) {
       },
       updateIncludes: ps.updateIncludes,
       updateForm: ps.updateForm
+    };
+  };
+};
+
+exports.updateStylesheets_ = function(replace) {
+  return function(_sheets) {
+    const sheets = _sheets.map(resolveUrl);
+    return function(onError, onSuccess) {
+      const doc = window.document;
+      const insertPoint = doc.getElementById("_dynamicInsert");
+      const head = doc.getElementsByTagName("head")[0];
+      var current = insertPoint.previousElementSibling;
+      const existingSheets = {};
+      while (current != null && current.tagName == "LINK") {
+        existingSheets[current.href] = current;
+        current = current.previousElementSibling;
+      }
+      const lastSheet = sheets.reduce(function(lastLink, cssUrl) {
+        if (existingSheets[cssUrl]) {
+          delete existingSheets[cssUrl];
+        } else {
+          var newCss = doc.createElement("link");
+          newCss.rel = "stylesheet";
+          newCss.href = cssUrl;
+          head.insertBefore(newCss, insertPoint);
+          lastLink = newCss;
+        }
+        return lastLink;
+      }, null);
+      const deleteSheets = function() {
+        for (key in existingSheets) {
+          head.removeChild(existingSheets[key]);
+        }
+      };
+      if (!lastSheet) onSuccess(deleteSheets);
+      else {
+        const loaded = function(w, e) {
+          onSuccess(deleteSheets);
+        };
+        lastSheet.addEventListener("load", loaded, false);
+      }
     };
   };
 };

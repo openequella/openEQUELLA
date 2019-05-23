@@ -146,6 +146,10 @@ object RenderNewTemplate {
     if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident"))) {
       context.addJs(
         "https://polyfill.io/v3/polyfill.min.js?features=es6%2CURL%2CElement%2CArray.prototype.forEach%2Cdocument.querySelector%2CNodeList.prototype.forEach%2CNodeList.prototype.%40%40iterator%2CNode.prototype.contains")
+      RenderTemplate.TINYMCE_CONTENT_CSS.preRender(context)
+      RenderTemplate.TINYMCE_CONTENT_MIN_CSS.preRender(context)
+      RenderTemplate.TINYMCE_SKIN_CSS.preRender(context)
+      RenderTemplate.IE11_COMPAT_CSS.preRender(context)
     }
   }
 

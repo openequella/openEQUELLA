@@ -9,11 +9,6 @@
   font-style: normal;
 }
 
-.material-icons {
-  /* Support for IE */
-  font-feature-settings: "liga";
-}
-
 /*****************************************************************************
  CSS Reset (excluding img since width and height style override image attributes)
 *****************************************************************************/
