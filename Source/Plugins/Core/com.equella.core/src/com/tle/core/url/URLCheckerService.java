@@ -26,6 +26,7 @@ import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.ning.http.client.AsyncHandler;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.AsyncHttpClientConfig;
@@ -215,7 +216,8 @@ public class URLCheckerService {
               public ListenableFuture<ReferencedURL> apply(Pair<ReferencedURL, Boolean> input) {
                 return Futures.immediateFuture(input.getFirst());
               }
-            });
+            },
+            MoreExecutors.directExecutor());
 
     // If the above futures throw an exception, it's probably because we
     // haven't been able to check the URL (eg,
@@ -243,7 +245,8 @@ public class URLCheckerService {
 
             return Futures.immediateFuture(newRurl);
           }
-        });
+        },
+        MoreExecutors.directExecutor());
   }
 
   /** @return second value will be true if it failed and needs trying with a GET request. */
@@ -374,7 +377,8 @@ public class URLCheckerService {
               }
               return Futures.immediateFuture(result);
             }
-          });
+          },
+          MoreExecutors.directExecutor());
     } catch (IllegalArgumentException ex) {
       // Most likely because the URL is not a URL at all, like "http://"
       // or "beatlejuice".
