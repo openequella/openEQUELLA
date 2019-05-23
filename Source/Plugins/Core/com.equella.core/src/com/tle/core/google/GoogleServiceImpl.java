@@ -23,7 +23,7 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.repackaged.com.google.common.base.Joiner;
+import com.google.api.client.util.Joiner;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelListResponse;
@@ -147,7 +147,7 @@ public class GoogleServiceImpl implements GoogleService {
     try {
       YouTube.Channels.List channels = getTubeService().channels().list("snippet");
       channels.setKey(getApiKey());
-      channels.setId(Joiner.on(",").join(channelIds));
+      channels.setId(Joiner.on(',').join(channelIds));
       ChannelListResponse channelListResponse = channels.execute();
 
       return channelListResponse.getItems();
@@ -168,7 +168,7 @@ public class GoogleServiceImpl implements GoogleService {
       YouTube.Videos.List videos =
           getTubeService().videos().list("id,snippet,player,contentDetails,statistics");
       videos.setKey(getApiKey());
-      videos.setId(Joiner.on(",").join(videoIds));
+      videos.setId(Joiner.on(',').join(videoIds));
       VideoListResponse vlr = videos.execute();
 
       return vlr.getItems();
