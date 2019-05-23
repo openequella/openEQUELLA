@@ -32,6 +32,7 @@ allprojects {
   dependencies {
     implementation group: 'com.google.guava', name: 'guava', version: '16.0.1'
     implementation group: 'javax.xml', name: 'jaxrpc-api', version: '1.1'
+    implementation group: 'javax.xml.soap', name: 'javax.xml.soap-api', version: '1.4.0'
     implementation group: 'log4j', name: 'log4j', version: '1.2.17'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.6.1'
     implementation group: 'commons-codec', name: 'commons-codec', version: '1.7'
@@ -41,8 +42,8 @@ allprojects {
     implementation group: 'wsdl4j', name: 'wsdl4j', version: '1.6.3'
     implementation group: 'net.sf.jpf', name: 'jpf', version: '1.5'
     implementation group: 'org.slf4j', name: 'jcl-over-slf4j', version: '1.7.0'
-    implementation fileTree(dir : '../Platform/Plugins/com.tle.platform.common/target/scala-2.12', include:['*.jar'])
-    implementation fileTree(dir : '../Source/Plugins/Platform/com.tle.platform.swing/target/scala-2.12', include:['*.jar'])
+    implementation fileTree(dir: '../Platform/Plugins/com.tle.platform.common/target/scala-2.12', include: ['*.jar'])
+    implementation fileTree(dir: '../Source/Plugins/Platform/com.tle.platform.swing/target/scala-2.12', include: ['*.jar'])
     testImplementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.6.1'
     testImplementation group: 'junit', name: 'junit', version: '4.12'
   }
@@ -55,9 +56,9 @@ subprojects {
 task importToolJar(type: Jar, description: 'Create a fat JAR for Import Tool') {
   baseName = 'import-tool'
   manifest {
-    attributes('Main-Class':'com.dytech.edge.importexport.importutil.ImportUtility',
-      'Implementation-Title':'import-tool',
-      'Implementation-Version': version,
+    attributes('Main-Class': 'com.dytech.edge.importexport.importutil.ImportUtility',
+      'Implementation-Title': 'import-tool',
+      'Implementation-Version': version
     )
   }
   from {
@@ -69,9 +70,9 @@ task importToolJar(type: Jar, description: 'Create a fat JAR for Import Tool') {
 task exportToolJar(type: Jar, description: 'Create a fat JAR for Export Tool') {
   baseName = 'export-tool'
   manifest {
-    attributes('Main-Class':'com.dytech.edge.importexport.exportutil.ExportUtility',
-      'Implementation-Title':'export-tool',
-      'Implementation-Version': version,
+    attributes('Main-Class': 'com.dytech.edge.importexport.exportutil.ExportUtility',
+      'Implementation-Title': 'export-tool',
+      'Implementation-Version': version
     )
   }
   from {
@@ -80,7 +81,7 @@ task exportToolJar(type: Jar, description: 'Create a fat JAR for Export Tool') {
   with jar
 }
 
-task createImportExportTools(dependsOn : [importToolJar,exportToolJar], description: 'Create fat JARs for both Import and Export Tool' ) {
+task createImportExportTools(dependsOn: [importToolJar,exportToolJar], description: 'Create fat JARs for both Import and Export Tool' ) {
   doLast {
     println "Import and export tools are created under $projectDir/build/libs"
   }
@@ -91,18 +92,17 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 task compileSbtProject(type: Exec, description: 'Assemble sbt dependencies') {
   def commands = ['sbt','com_tle_platform_swing/assembly','com_tle_platform_common/assembly']
   if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows()) {
-    commands.add(0,'cmd')
+    commands.addAll(0, ['cmd', '/c'])
   }
-
   //sbt assembly is only available when called from sbt root project
   workingDir '../'
-  commandLine commands
+  commandLine commands as Object[]
 }
 
 // buildWSDL is a task provided by plugin: "com.liferay.wsdl.builder"
 buildWSDL {
   destinationDir = file('build/codegen')
-  generateOptions.mappings = ['http://soap.remoting.web.tle.com' : 'com.tle.web.remoting.soap', 'http://lang.java':'com.tle.web.remoting.exception']
+  generateOptions.mappings = ['http://soap.remoting.web.tle.com': 'com.tle.web.remoting.soap', 'http://lang.java': 'com.tle.web.remoting.exception']
   buildLibs = false
   includeWSDLs = false
 }
