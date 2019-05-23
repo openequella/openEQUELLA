@@ -57,7 +57,6 @@ object RenderNewTemplate {
         s"api/language/bundle/${LocaleLookup.selectLocale.getLocale.toLanguageTag}/bundle.js")
         .preRender(info)
       new IncludeFile(s"api/theme/theme.js").preRender(info)
-      RenderTemplate.STYLES_CSS.preRender(info)
     }
   }
 
@@ -150,6 +149,7 @@ object RenderNewTemplate {
       RenderTemplate.TINYMCE_CONTENT_CSS.preRender(context)
       RenderTemplate.TINYMCE_CONTENT_MIN_CSS.preRender(context)
       RenderTemplate.TINYMCE_SKIN_CSS.preRender(context)
+      RenderTemplate.IE11_COMPAT_CSS.preRender(context)
     }
   }
 
