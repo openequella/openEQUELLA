@@ -11,6 +11,8 @@ import {
   FileEntries
 } from "oeq-cloudproviders/controls";
 
+const wgxpath = require("wicked-good-xpath");
+wgxpath.install(window);
 interface ItemStateJSON {
   xml: string;
   attachments: Attachment[];
