@@ -75,7 +75,7 @@ libraryDependencies ++= Seq(
   "commons-beanutils"         % "commons-beanutils"     % "1.9.3",
   "commons-codec"             % "commons-codec"         % "1.12",
   "commons-collections"       % "commons-collections"   % "3.2.2",
-  "commons-configuration"     % "commons-configuration" % "1.9",
+  "commons-configuration"     % "commons-configuration" % "1.10",
   "commons-daemon"            % "commons-daemon"        % "1.1.0",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
