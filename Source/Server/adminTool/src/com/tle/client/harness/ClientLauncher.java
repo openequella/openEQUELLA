@@ -60,7 +60,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import javax.jnlp.ServiceManager;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
@@ -376,8 +375,6 @@ public class ClientLauncher extends JFrame
             System.setProperty("jnlp.INSTITUTIONNAME", "{temp inst name}");
 
             client.setEndpointURL(endpointUrl);
-            // Initialise services
-            ServiceManager.setServiceManagerStub(new ServiceManagerHarness(endpointUrl));
             client.start();
             return null;
           }

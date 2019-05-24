@@ -38,10 +38,6 @@
     <parameter id="url-pattern" value="/ds/*"/>
     <parameter id="bean" value="bean:com.tle.web.plugin.download.DownloadServlet"/>
   </extension>
-  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="jnlpServlet">
-    <parameter id="bean" value="bean:com.tle.core.adminconsole.TleJnlpDownloadServlet"/>
-    <parameter id="url-pattern" value="/jnlp/admin.jnlp"/>
-  </extension>
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="adminConsoleServlet">
     <parameter id="bean" value="bean:com.tle.core.adminconsole.AdminConsoleDownloadServlet"/>
     <parameter id="url-pattern" value="/adminconsole.jar"/>
