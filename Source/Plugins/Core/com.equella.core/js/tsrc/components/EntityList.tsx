@@ -9,8 +9,8 @@ import {
   Fab
 } from "@material-ui/core";
 import { StyleRules, withStyles } from "@material-ui/core/styles";
-import { ClickableLink } from "../api";
 import AddIcon from "@material-ui/icons/Add";
+import { FabProps } from "@material-ui/core/Fab";
 
 const styles = (theme: Theme) =>
   ({
@@ -45,7 +45,8 @@ interface EntityListProps extends WithStyles<typeof styles> {
   resultsText: React.ReactNode;
   resultsRight?: React.ReactNode;
   children: React.ReactNode;
-  createLink?: ClickableLink;
+  create?: React.ComponentType<FabProps>;
+  createOnClick?: () => void;
   progress: Boolean;
   id?: string;
 }
@@ -59,17 +60,18 @@ class EntityList extends React.Component<EntityListProps, {}> {
       resultsText,
       resultsRight,
       children,
-      createLink
+      create,
+      createOnClick
     } = this.props;
     return (
       <div id={id} className={classes.overall}>
-        {createLink && (
+        {(create || createOnClick) && (
           <Fab
             id="add-entity"
             className={classes.fab}
-            href={createLink.href}
-            onClick={createLink.onClick}
+            component={create}
             color="secondary"
+            onClick={createOnClick}
           >
             <AddIcon />
           </Fab>

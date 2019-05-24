@@ -35,7 +35,7 @@ case class CloudControlConfig(id: String,
                               name: String,
                               description: Option[String],
                               configType: CloudControlConfigType.Value,
-                              options: Iterable[CloudConfigOption],
+                              options: Option[Iterable[CloudConfigOption]],
                               min: Int,
                               max: Int) {
   def isConfigMandatory: Boolean = {
@@ -43,7 +43,7 @@ case class CloudControlConfig(id: String,
   }
 
   def getDescription = Optional.ofNullable(description.orNull)
-  def getOptions     = options.asJava
+  def getOptions     = options.getOrElse(Iterable.empty).asJava
 }
 
 case class CloudControlDefinition(providerId: UUID,

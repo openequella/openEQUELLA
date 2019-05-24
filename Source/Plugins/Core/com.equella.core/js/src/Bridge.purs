@@ -1,43 +1,38 @@
 module Bridge where 
 
+
 import Prelude
 
-import Data.Nullable (Nullable, toNullable)
-import Effect.Uncurried (EffectFn1, mkEffectFn1)
-import Foreign (Foreign)
-import OEQ.MainUI.Routes (Route(..), forcePushRoute, logoutRoute, matchRoute, pushRoute, routeHref, routeURI, setPreventNav, userPrefsRoute)
+import Data.Either (fromRight)
+import Effect (Effect)
+import OEQ.Data.LegacyContent (LegacyURI, legacyRoute)
+import OEQ.MainUI.SearchPage (searchPageClass)
+import OEQ.MainUI.SettingsPage (settingsPageClass)
+import OEQ.UI.LegacyContent (legacyContentClass)
 import OEQ.UI.Security.ACLEditor (aclEditorClass)
+import Partial.Unsafe (unsafePartial)
 import React (ReactClass)
-import React.SyntheticEvent (SyntheticMouseEvent)
+import Routing (match)
 import Unsafe.Coerce (unsafeCoerce)
 
 type Bridge = {
-    routes :: Foreign,
-    router :: Route -> {href::String, onClick :: EffectFn1 SyntheticMouseEvent Unit},
-    routeURI :: Route -> String, 
-    pushRoute ::EffectFn1 Route Unit,
-    forcePushRoute :: EffectFn1 Route Unit,
-    setPreventNav :: EffectFn1 (EffectFn1 Route Boolean) Unit,
-    matchRoute :: String -> Nullable Route,
-    "AclEditor" :: forall p. ReactClass p
+    "AclEditor" :: forall p. ReactClass p,
+    "LegacyContent" :: forall p. ReactClass p,
+    "SettingsPage" :: forall p. ReactClass p,
+    "SearchPage" :: forall p. ReactClass p,
+    legacyUri :: String -> LegacyURI
 }
 
 tsBridge :: Bridge 
 tsBridge = {
-    routes : unsafeCoerce $ {
-        "CoursesPage": CoursesPage, 
-        "CourseEdit": CourseEdit, 
-        "NewCourse": NewCourse,
-        "SettingsPage": SettingsPage,
-        "CloudProviderListPage" : CloudProviderListPage,
-        "Logout": logoutRoute,
-        "UserPrefs": userPrefsRoute
-        },
-    router : routeHref,
-    routeURI: routeURI,
-    pushRoute: mkEffectFn1 pushRoute,
-    matchRoute: toNullable <<< matchRoute,
-    setPreventNav: mkEffectFn1 setPreventNav,
-    forcePushRoute: mkEffectFn1 forcePushRoute,
-    "AclEditor" : unsafeCoerce aclEditorClass
+    "AclEditor" : unsafeCoerce aclEditorClass,
+    "LegacyContent" : unsafeCoerce legacyContentClass,
+    "SettingsPage" : unsafeCoerce settingsPageClass,
+    "SearchPage" : unsafeCoerce searchPageClass,
+    legacyUri: \uri -> unsafePartial $ fromRight $ match legacyRoute uri
 } 
+
+foreign import setupBridge :: Bridge -> Effect Unit 
+
+main :: Effect Unit
+main = setupBridge tsBridge

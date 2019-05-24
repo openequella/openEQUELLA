@@ -1,12 +1,7 @@
 import * as React from "react";
-import { Bridge } from "../api/bridge";
 import { AxiosError } from "axios";
 import MessageInfo from "../components/MessageInfo";
-import {
-  ErrorResponse,
-  generateFromError,
-  generateNewErrorID
-} from "../api/errors";
+import { generateFromError, generateNewErrorID } from "../api/errors";
 import PreLoginNoticeConfigurator from "./PreLoginNoticeConfigurator";
 import PostLoginNoticeConfigurator from "./PostLoginNoticeConfigurator";
 import {
@@ -20,15 +15,22 @@ import {
 import Tab from "@material-ui/core/Tab";
 import { NotificationType, strings } from "./LoginNoticeModule";
 import { commonString } from "../util/commonstrings";
-import { Template } from "../mainui/Template";
+import {
+  templateDefaults,
+  templateError,
+  TemplateUpdateProps
+} from "../mainui/Template";
+import { routes } from "../mainui/routes";
 
-declare const bridge: Bridge;
-interface LoginNoticeConfigPageProps extends WithStyles<typeof styles> {}
+interface LoginNoticeConfigPageProps
+  extends TemplateUpdateProps,
+    WithStyles<typeof styles> {
+  setPreventNavigation(b: boolean): void;
+}
 
 interface LoginNoticeConfigPageState {
   notifications: NotificationType;
   notificationOpen: boolean;
-  error?: ErrorResponse;
   selectedTab: number;
   preventNav: boolean;
 }
@@ -66,34 +68,56 @@ class LoginNoticeConfigPage extends React.Component<
   state: LoginNoticeConfigPageState = {
     notifications: NotificationType.Save,
     notificationOpen: false,
-    error: undefined,
     selectedTab: 0,
     preventNav: false
   };
 
+  componentDidMount() {
+    const { classes, updateTemplate } = this.props;
+    updateTemplate(tp => ({
+      ...templateDefaults(strings.title)(tp),
+      backRoute: routes.Settings.to,
+      fixedViewPort: true,
+      footer: (
+        <Button
+          id="SaveButton"
+          className={classes.floatingButton}
+          onClick={this.handleSubmitButton}
+          variant="contained"
+          size="large"
+        >
+          {commonString.action.save}
+        </Button>
+      ),
+      tabs: this.tabs()
+    }));
+  }
+
   handleError = (error: AxiosError) => {
+    var errResponse;
     if (error.response != undefined) {
       switch (error.response.status) {
         case 400:
-          this.setState({
-            error: generateNewErrorID(strings.scheduling.endbeforestart)
-          });
-          return;
+          errResponse = generateNewErrorID(strings.scheduling.endbeforestart);
+          break;
         case 403:
-          this.setState({
-            error: generateNewErrorID(strings.errors.permissions)
-          });
-          return;
+          errResponse = generateNewErrorID(strings.errors.permissions);
+          break;
         case 404:
           //do nothing, this simply means that there is no current login notice
           return;
       }
+    } else {
+      errResponse = generateFromError(error);
     }
-    this.setState({ error: generateFromError(error) });
+    if (errResponse) {
+      this.props.updateTemplate(templateError(errResponse));
+    }
   };
 
-  handleChangeTab = (event: React.ChangeEvent<{}>, value: number) => {
-    this.setState({ selectedTab: value });
+  handleChangeTab = (event: React.ChangeEvent<{}>, selectedTab: number) => {
+    this.props.updateTemplate(tp => ({ ...tp, tabs: this.tabs() }));
+    this.setState({ selectedTab });
   };
 
   clearNotifications = () => {
@@ -165,54 +189,38 @@ class LoginNoticeConfigPage extends React.Component<
   };
 
   preventNav = (preventNav: boolean) => {
-    this.setState({ preventNav });
+    this.setState({ preventNav }, () =>
+      this.props.setPreventNavigation(preventNav)
+    );
   };
 
+  tabs = () => (
+    <Tabs
+      value={this.state.selectedTab}
+      onChange={this.handleChangeTab}
+      variant="fullWidth"
+    >
+      <Tab
+        id="preTab"
+        label={strings.prelogin.label}
+        disabled={this.state.preventNav}
+      />
+      <Tab
+        id="postTab"
+        label={strings.postlogin.label}
+        disabled={this.state.preventNav}
+      />
+    </Tabs>
+  );
+
   render() {
-    const { routes } = bridge;
-    const { classes } = this.props;
     const Notifications = this.Notifications;
     const Configurators = this.Configurators;
     return (
-      <Template
-        title={strings.title}
-        backRoute={routes.SettingsPage}
-        fixedViewPort
-        preventNavigation={this.state.preventNav}
-        tabs={
-          <Tabs
-            value={this.state.selectedTab}
-            onChange={this.handleChangeTab}
-            variant="fullWidth"
-          >
-            <Tab
-              id="preTab"
-              label={strings.prelogin.label}
-              disabled={this.state.preventNav}
-            />
-            <Tab
-              id="postTab"
-              label={strings.postlogin.label}
-              disabled={this.state.preventNav}
-            />
-          </Tabs>
-        }
-        errorResponse={this.state.error}
-        footer={
-          <Button
-            id="SaveButton"
-            className={classes.floatingButton}
-            onClick={this.handleSubmitButton}
-            variant="contained"
-            size="large"
-          >
-            {commonString.action.save}
-          </Button>
-        }
-      >
+      <React.Fragment>
         <Configurators />
         <Notifications />
-      </Template>
+      </React.Fragment>
     );
   }
 }

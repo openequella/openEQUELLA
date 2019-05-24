@@ -3,6 +3,7 @@ module OEQ.Search.OwnerControl where
 import Prelude
 
 import Common.CommonStrings (commonString)
+import Common.Strings (languageStrings)
 import Data.Array (head)
 import Data.Array as Array
 import Data.Lens (set)
@@ -26,7 +27,6 @@ import MaterialUI.Enums (contained)
 import MaterialUI.Icon (icon)
 import MaterialUI.Styles (withStyles)
 import OEQ.Data.User (UserDetails(..), UserGroupRoles(..))
-import OEQ.Environment (prepLangStrings)
 import OEQ.Search.SearchControl (Chip(..), Placement, SearchControl)
 import OEQ.Search.SearchQuery (_params, singleParam)
 import OEQ.UI.Common (unsafeWithRef)
@@ -46,7 +46,8 @@ ownerControl placement = do
   let 
     _userDetails = prop (SProxy :: SProxy "userDetails")
     _owner = at "owner"
-    eval = case _ of 
+    string = languageStrings.searchpage
+    eval = case _ of
       CloseOwner -> modifyState _{selectOwner=false}
       SelectOwner -> modifyState _{selectOwner=true}
       OwnerSelected o -> do 
@@ -105,27 +106,3 @@ ownerControl placement = do
       height: 600
     } 
   }
-
-rawStrings :: { prefix :: String
-, strings :: { filterOwner :: { title :: String
-                              , chip :: String
-                              , selectTitle :: String
-                              }
-             }
-}
-rawStrings = {prefix: "searchpage", 
-  strings: {
-    filterOwner: {
-      title: "Owner",
-      chip: "Owner: ",
-      selectTitle: "Select user to filter by"
-    }
-  }
-}
-
-string :: { filterOwner :: { title :: String
-                 , chip :: String
-                 , selectTitle :: String
-                 }
-}
-string = prepLangStrings rawStrings

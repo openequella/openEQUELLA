@@ -55,7 +55,7 @@ object SearchMenuContributor extends MenuContributor {
                                                     1,
                                                     20,
                                                     "search",
-                                                    if (useNewSearch) "page/search" else null)
+                                                    if (useNewSearch) "/page/search" else null)
       Collections.singletonList(mc)
     }
   }

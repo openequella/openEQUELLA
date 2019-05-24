@@ -10,7 +10,7 @@ import { Config } from "../config";
 import { actionCreator, wrapAsyncWorker } from "../util/actionutil";
 import { IDictionary } from "../util/dictionary";
 import { encodeQuery } from "../util/encodequery";
-import { prepLangStrings } from "../util/langstrings";
+import { languageStrings } from "../util/langstrings";
 
 export function extendedEntityService<
   E extends Entity,
@@ -48,13 +48,7 @@ export function entityService<E extends Entity>(
   return extendedEntityService<E, {}, {}>(entityType);
 }
 
-export const entityStrings = prepLangStrings("entity", {
-  edit: {
-    tab: {
-      permissions: "Permissions"
-    }
-  }
-});
+export const entityStrings = languageStrings.entity;
 
 export interface EditEntityStateProps<E extends Entity> {
   loading?: boolean;

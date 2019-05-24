@@ -1,6 +1,6 @@
 import axios, { AxiosPromise } from "axios";
 import { Config } from "../config";
-import { prepLangStrings } from "../util/langstrings";
+import { languageStrings } from "../util/langstrings";
 
 export const PRE_LOGIN_NOTICE_API_URL = `${Config.baseUrl}api/preloginnotice`;
 export const POST_LOGIN_NOTICE_API_URL = `${Config.baseUrl}api/postloginnotice`;
@@ -23,39 +23,7 @@ export interface PreLoginNotice {
   endDate: Date;
 }
 
-export const strings = prepLangStrings("loginnoticepage", {
-  title: "Login notice editor",
-  clear: {
-    title: "Warning",
-    confirm: "Are you sure you want to clear this login notice?"
-  },
-  prelogin: {
-    label: "Before login notice"
-  },
-  postlogin: {
-    label: "After login notice",
-    description:
-      "Write a plaintext message to be displayed after login as an alert..."
-  },
-  notifications: {
-    saved: "Login notice saved successfully.",
-    cleared: "Login notice cleared successfully.",
-    cancelled: "Cancelled changes to login notice."
-  },
-  errors: {
-    permissions: "You do not have permission to edit these settings."
-  },
-  scheduling: {
-    title: "Schedule settings",
-    start: "Start date:",
-    end: "End date:",
-    scheduled: "Scheduled",
-    alwayson: "On",
-    disabled: "Off",
-    endbeforestart: "End date must be after start date.",
-    expired: "This login notice has expired."
-  }
-});
+export const strings = languageStrings.loginnoticepage;
 
 export function submitPreLoginNotice(notice: PreLoginNotice): AxiosPromise {
   return axios.put(PRE_LOGIN_NOTICE_API_URL, notice);

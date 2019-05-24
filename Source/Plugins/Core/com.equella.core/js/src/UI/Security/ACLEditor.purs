@@ -4,6 +4,7 @@ module OEQ.UI.Security.ACLEditor where
 import Prelude hiding (div)
 
 import Common.CommonStrings (commonAction, commonString)
+import Common.Strings (languageStrings)
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
 import Control.Monad.Reader (runReaderT)
 import Control.Monad.State (State, execState, get, gets, modify, runState)
@@ -39,7 +40,7 @@ import MaterialUI.Dialog (dialog)
 import MaterialUI.DialogActions (dialogActions_)
 import MaterialUI.DialogContent (dialogContent)
 import MaterialUI.Divider (divider')
-import MaterialUI.Enums (body1, caption, contained, h6, headline, raised, secondary, subtitle1, textSecondary)
+import MaterialUI.Enums (body1, caption, contained, h6, headline, secondary, subtitle1, textSecondary)
 import MaterialUI.Enums as SEnum
 import MaterialUI.FormControl (formControl)
 import MaterialUI.FormControlLabel (formControlLabel')
@@ -63,7 +64,7 @@ import Network.HTTP.Affjax.Response (json) as Resp
 import OEQ.API.User (lookupUsers)
 import OEQ.Data.Security (AccessEntry(..), Expression(..), ExpressionTerm(..), IpRange(..), OpType(..), ParsedTerm(..), ResolvedExpression(..), ResolvedTerm(..), TargetListEntry(..), collapseZero, entryToTargetList, expressionText, findExprInsert, findExprModify, parseTerm, parseWho, resolvedToTerm, termToWho, textForExpression, textForTerm, traverseExpr)
 import OEQ.Data.User (GroupDetails(GroupDetails), RoleDetails(RoleDetails), UserDetails(UserDetails), UserGroupRoles(UserGroupRoles))
-import OEQ.Environment (baseUrl, prepLangStrings)
+import OEQ.Environment (baseUrl)
 import OEQ.UI.Common (textChange)
 import OEQ.UI.Icons (groupIconName, roleIconName, userIconName)
 import OEQ.UI.SearchUser (UGREnabled(..))
@@ -149,7 +150,7 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
       {acls:oldAcls} <- R.getProps this 
       oldState <- R.getState this 
       pure $ acls /= oldAcls || (not $ unsafeRefEq nextState oldState)
-    aclString = prepLangStrings aclRawStrings
+    aclString = languageStrings.acleditor
     _resolvedExpr :: Prism' ExprType ResolvedExpression
     _resolvedExpr = prism' Resolved $ case _ of 
       Resolved r -> Just r
@@ -853,68 +854,6 @@ backToAccessEntry (ResolvedEntry {priv,granted,override,expr}) =
 isInvalid :: ResolvedEntry -> Boolean 
 isInvalid (ResolvedEntry {priv,granted,override,expr:(InvalidExpr _)}) = true 
 isInvalid _ = false
-
-aclRawStrings :: { prefix :: String
-, strings :: { privilege :: String
-             , privileges :: String
-             , selectpriv :: String
-             , expression :: String
-             , privplaceholder :: String
-             , dropplaceholder :: String
-             , addpriv :: String
-             , addexpression :: String
-             , targets :: String
-             , new :: { ugr :: String
-                      , ip :: String
-                      , referrer :: String
-                      , token :: String
-                      }
-             , notted :: String
-             , not :: String
-             , override :: String
-             , revoked :: String
-             , revoke :: String
-             , required :: String
-             , match :: { and :: String
-                        , or :: String
-                        , notand :: String
-                        , notor :: String
-                        }
-             , convertGroup :: String
-             }
-}
-aclRawStrings = {prefix:"acleditor",
-  strings: {
-    privilege: "Privilege",
-    privileges: "Privileges", 
-    selectpriv: "Select privilege",
-    expression: "Expression", 
-    privplaceholder: "Please select or add a privilege", 
-    dropplaceholder: "Drop targets here",
-    addpriv: "Add Privilege",
-    addexpression: "Add expression", 
-    targets: "Targets",
-    new: {
-      ugr: "User, Group or Role", 
-      ip: "IP Range",
-      referrer: "HTTP Referrer",
-      token: "Shared secret"
-    }, 
-    notted: "NOT - ",
-    not: "Not", 
-    override: "Override", 
-    revoked: "Revoked",
-    revoke: "Revoke", 
-    required: "* Required",
-    match: {
-      and: "All match",
-      or: "At least one match",
-      notand: "Not all match",
-      notor: "None match"
-    },
-    convertGroup: "Convert to group"
-  }
-}
 
 instance encAddRemove :: EncodeJson AddRemoveRecent where 
   encodeJson (AddRemove {add,remove}) = "add" := add ~> 

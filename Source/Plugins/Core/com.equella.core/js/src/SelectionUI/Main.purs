@@ -2,26 +2,23 @@ module OEQ.SelectionUI.Main where
 
 import Prelude
 
+import Common.Strings (languageStrings)
 import Control.Monad.Except (except, runExceptT)
 import Control.Monad.Trans.Class (lift)
-import Data.Argonaut (jsonParser)
 import Data.Array as Array
 import Data.Either (either)
 import Data.Lens (over)
 import Data.Lens.At (at)
 import Data.Lens.Record (prop)
 import Data.Map (Map, empty)
-import Data.Maybe (Maybe(..), fromJust, fromMaybe)
-import Data.Nullable (Nullable, toMaybe)
-import Data.String (Pattern(..), stripPrefix)
+import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Nullable (Nullable)
 import Data.Symbol (SProxy(..))
-import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..))
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer)
 import Effect (Effect)
 import Effect.Class (liftEffect)
-import Effect.Exception (throw)
 import Effect.Uncurried (mkEffectFn1)
 import MaterialUI.AppBar (appBar)
 import MaterialUI.Button (button)
@@ -31,10 +28,8 @@ import MaterialUI.Styles (withStyles)
 import MaterialUI.Toolbar (toolbar_)
 import MaterialUI.Typography (typography)
 import OEQ.Data.Error (ErrorResponse)
-import OEQ.Data.Selection (SelectionData, decodeSelection, findDefaultFolder)
-import OEQ.Environment (basePath, startHearbeat)
-import OEQ.MainUI.Routes (globalNav)
-import OEQ.MainUI.SearchPage (searchStrings)
+import OEQ.Data.Selection (SelectionData, findDefaultFolder)
+import OEQ.MainUI.TSRoutes (toLocation)
 import OEQ.Search.ItemResult (ItemSelection, Result(..), itemResultOptions)
 import OEQ.Search.OrderControl (orderControl)
 import OEQ.Search.OwnerControl (ownerControl)
@@ -45,14 +40,13 @@ import OEQ.Search.SearchQuery (blankQuery)
 import OEQ.Search.WithinLastControl (withinLastControl)
 import OEQ.SelectionUI.CourseStructure (courseStructure)
 import OEQ.SelectionUI.ReturnResult (addSelection, callReturn, removeSelection)
-import OEQ.SelectionUI.Routes (SelectionPage(..), SelectionRoute(..), SessionParams, matchSelection, pushSelectionRoute, selectionClicker, selectionPageMatch)
-import OEQ.UI.Common (renderMain, rootTag)
+import OEQ.SelectionUI.Routes (SelectionPage(..), SelectionRoute(..), SessionParams, pushSelectionRoute, selectionPageMatch)
+import OEQ.UI.Common (rootTag)
 import OEQ.UI.ItemSummary.ViewItem (viewItem)
 import OEQ.UI.Layout (dualPane)
 import OEQ.UI.LegacyContent (legacyContent)
 import OEQ.UI.MessageInfo (messageInfo)
-import OEQ.Utils.Polyfills (polyfill)
-import Partial.Unsafe (unsafeCrashWith, unsafePartial)
+import Partial.Unsafe (unsafeCrashWith)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React as R
 import React.DOM (text)
@@ -60,10 +54,6 @@ import React.DOM as RD
 import React.DOM.Dynamic (div')
 import React.DOM.Props (key)
 import Routing (match)
-import Routing.PushState (matchesWith)
-import Web.HTML (window)
-import Web.HTML.Location (pathname)
-import Web.HTML.Window (location)
 
 foreign import selectionJson :: {selection::String, integration::Nullable String}
 
@@ -113,12 +103,15 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
       {selectedFolder,selections} <- R.getState this
       pure { chips:[], render: [Tuple Selections $ renderStructure selection {selectedFolder,selections}] }
 
+    selectionClicker :: SelectionRoute -> {href::String, onClick:: Effect Unit}
+    selectionClicker = unsafeCrashWith "TODO"
+
     searchControls = [orderControl Filters, oc, withinLastControl Filters, 
       renderResults $ do 
         {sessionParams} <- R.getProps this
         pure $ \r@Result {uuid,version} -> 
           let {href,onClick} = selectionClicker $ Route sessionParams (ViewItem uuid version)
-          in (itemResultOptions {href, onClick} r) {onSelect = Just $ d <<< SelectionMade}, 
+          in (itemResultOptions (toLocation href) r) {onSelect = Just $ d <<< SelectionMade}, 
       courseControl]
 
 
@@ -133,24 +126,25 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
               selectedFolder,selections}
             } = case r of 
       Search -> let 
-        renderTemplate {queryBar,content} = rootTag classes.root $ [ 
+        renderTemplate {content} = rootTag classes.root $ [ 
           appBar {position: sticky} [ 
             toolbar_ [
-              queryBar
+              -- TODO
             ]
           ],
           content 
         ] <> renderError s
-        in searchLayout {searchControls, initialQuery:blankQuery, strings: searchStrings, renderTemplate}
+        in searchLayout {searchControls, initialQuery:blankQuery, strings: languageStrings.searchpage, renderTemplate, 
+            updateQueryBar: mkEffectFn1 \_ -> pure unit}
       LegacySelectionPage page -> 
         dualPane {
             left: [
               legacyContent {
                 page, 
-                contentUpdated: \_ -> pure unit, 
+                contentUpdated: mkEffectFn1 \_ -> pure unit, 
                 userUpdated: pure unit,
-                redirected: d <<< Redirected,
-                onError: d <<< Errored <<< _.error
+                redirected: mkEffectFn1 $ d <<< Redirected,
+                onError: mkEffectFn1 $ d <<< Errored <<< _.error
               } ],  
             right:[
               renderStructure selection {selectedFolder, selections}
@@ -210,11 +204,11 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
 
       Init -> do 
         selectDefaultFolder
-        liftEffect $ do
-          bp <- either (throw <<< show) pure basePath
-          let baseStripped p = fromMaybe p $ stripPrefix (Pattern $ bp) p
-          void $ matchesWith (matchSelection <<< baseStripped) (\_ -> affAction this <<< eval <<< ChangeRoute) globalNav
-      
+        -- liftEffect $ do
+        --   bp <- either (throw <<< show) pure basePath
+          -- let baseStripped p = fromMaybe p $ stripPrefix (Pattern $ bp) p
+          -- void $ matchesWith (matchSelection <<< baseStripped) (\_ -> affAction this <<< eval <<< ChangeRoute) globalNav
+       
       where 
         maybeError = either (\error -> modifyState _ {error = Just error}) pure
 
@@ -244,15 +238,16 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
 
 main :: Effect Unit
 main = do
-  polyfill
-  startHearbeat
-  bp <- either (throw <<< show) pure basePath
-  loc <- window >>= location
-  pagePath <- pathname loc
-  let baseStripped p = fromMaybe p $ stripPrefix (Pattern $ bp) p
-      (Route sp _) = unsafePartial $ fromJust $ matchSelection (baseStripped pagePath)
-  let decoded = do 
-        sjs <- jsonParser selectionJson.selection
-        ijs <- traverse jsonParser (toMaybe selectionJson.integration)
-        decodeSelection sjs ijs
-  either unsafeCrashWith (\s -> renderMain $ selectSearch {selection:s, sessionParams: sp}) decoded
+  pure unit
+  -- polyfill
+  -- startHeartbeat
+  -- bp <- either (throw <<< show) pure basePath
+  -- loc <- window >>= location
+  -- pagePath <- pathname loc
+  -- let baseStripped p = fromMaybe p $ stripPrefix (Pattern $ bp) p
+  --     (Route sp _) = unsafePartial $ fromJust $ matchSelection (baseStripped pagePath)
+  -- let decoded = do 
+  --       sjs <- jsonParser selectionJson.selection
+  --       ijs <- traverse jsonParser (toMaybe selectionJson.integration)
+  --       decodeSelection sjs ijs
+  -- either unsafeCrashWith (\s -> renderMain $ selectSearch {selection:s, sessionParams: sp}) decoded

@@ -3,21 +3,22 @@ import * as React from "react";
 import { Dispatch, connect } from "react-redux";
 import { searchCourses } from ".";
 import { Course } from "../api";
-import { Bridge } from "../api/bridge";
 import AppBarQuery from "../components/AppBarQuery";
 import ConfirmDialog from "../components/ConfirmDialog";
 import SearchResult from "../components/SearchResult";
 import { courseService } from "../services";
-import { prepLangStrings, formatSize } from "../util/langstrings";
+import { formatSize, languageStrings } from "../util/langstrings";
 import VisibilitySensor = require("react-visibility-sensor");
 import EntityList from "../components/EntityList";
 import { sprintf } from "sprintf-js";
-import { Template } from "../mainui/Template";
+import { TemplateProps, templateDefaults } from "../mainui/Template";
+import { routes } from "../mainui/routes";
+import { Link } from "react-router-dom";
 
-declare const bridge: Bridge;
 interface SearchCourseProps {
   deleteCourse: (uuid: string) => Promise<{ uuid: string }>;
   checkCreate: () => Promise<boolean>;
+  updateTemplate: (update: (template: TemplateProps) => TemplateProps) => void;
 }
 
 interface SearchCourseState {
@@ -38,18 +39,7 @@ interface SearchCourseState {
 
 const MaxCourses = 200;
 
-export const strings = prepLangStrings("courses", {
-  title: "Courses",
-  sure: "Are you sure you want to delete - '%s'?",
-  confirmDelete: "It will be permanently deleted.",
-  coursesAvailable: {
-    zero: "No courses available",
-    one: "%d course",
-    more: "%d courses"
-  },
-  includeArchived: "Include archived",
-  archived: "Archived"
-});
+export const strings = languageStrings.courses;
 
 class SearchCourse extends React.Component<
   SearchCourseProps,
@@ -113,6 +103,7 @@ class SearchCourse extends React.Component<
   };
   handleQuery = (q: string) => {
     this.setState({ query: q });
+    this.updateQuery(q);
     if (this.nextSearch) {
       clearTimeout(this.nextSearch);
     }
@@ -142,6 +133,15 @@ class SearchCourse extends React.Component<
     window.addEventListener("scroll", this.onScroll, false);
     this.doSearch("", false, true);
     this.props.checkCreate().then(canCreate => this.setState({ canCreate }));
+    this.props.updateTemplate(templateDefaults(strings.title));
+    this.updateQuery(this.state.query);
+  }
+
+  updateQuery(query: string) {
+    this.props.updateTemplate(tp => ({
+      ...tp,
+      titleExtra: <AppBarQuery query={query} onChange={this.handleQuery} />
+    }));
   }
 
   handleArchived = (includeArchived: boolean) => {
@@ -166,9 +166,7 @@ class SearchCourse extends React.Component<
   };
 
   render() {
-    const { routes, router } = bridge;
     const {
-      query,
       confirmOpen,
       canCreate,
       courses,
@@ -176,10 +174,7 @@ class SearchCourse extends React.Component<
       searching
     } = this.state;
     return (
-      <Template
-        title={strings.title}
-        titleExtra={<AppBarQuery query={query} onChange={this.handleQuery} />}
-      >
+      <React.Fragment>
         {this.state.deleteDetails && (
           <ConfirmDialog
             open={confirmOpen}
@@ -196,7 +191,11 @@ class SearchCourse extends React.Component<
             strings.coursesAvailable
           )}
           progress={searching}
-          createLink={canCreate ? router(routes.NewCourse) : undefined}
+          create={
+            canCreate
+              ? p => <Link {...p} to={routes.NewCourse.path} />
+              : undefined
+          }
           resultsRight={
             <FormControlLabel
               control={
@@ -211,7 +210,6 @@ class SearchCourse extends React.Component<
           }
         >
           {courses.map(course => {
-            const courseEditRoute = router(routes.CourseEdit(course.uuid));
             var onDelete;
             if (
               course.uuid &&
@@ -229,8 +227,9 @@ class SearchCourse extends React.Component<
             return (
               <SearchResult
                 key={course.uuid}
-                href={courseEditRoute.href}
-                onClick={courseEditRoute.onClick}
+                href={""}
+                onClick={_ => {}}
+                to={routes.EditCourse.to(course.uuid!)}
                 primaryText={text}
                 secondaryText={course.description}
                 onDelete={onDelete}
@@ -239,7 +238,7 @@ class SearchCourse extends React.Component<
           })}
           <VisibilitySensor onChange={this.visiblityCheck} />
         </EntityList>
-      </Template>
+      </React.Fragment>
     );
   }
 }

@@ -44,3 +44,313 @@ export function prepLangStrings<A>(prefix: string, strings: A): A {
   };
   return overrideVal(prefix, strings);
 }
+
+export function initStrings() {
+  for (var key in languageStrings) {
+    prepLangStrings(key, languageStrings[key]);
+  }
+}
+
+export const languageStrings = {
+  cp: {
+    title: "Cloud providers",
+    cloudprovideravailable: {
+      zero: "No cloud providers available",
+      one: "%d cloud provider",
+      more: "%d cloud providers"
+    },
+    newcloudprovider: {
+      title: "Register a new cloud provider",
+      label: "URL",
+      text: "Enter the URL supplied by the cloud provider",
+      help: "The URL should start with either http:// or https://"
+    },
+    deletecloudprovider: {
+      title: "Are you sure you want to delete cloud provider - '%s'?",
+      message: "It will be permanently deleted."
+    }
+  },
+  courseedit: {
+    title: "Editing course - %s",
+    newtitle: "Creating new course",
+    tab: "Course details",
+    name: {
+      label: "Name",
+      help: "Course name, e.g. Advanced EQUELLA studies"
+    },
+    description: {
+      label: "Description",
+      help: "A brief description"
+    },
+    code: {
+      label: "Code",
+      help: "Course code, e.g. EQ101"
+    },
+    type: {
+      label: "Course Type",
+      i: "Internal",
+      e: "External",
+      s: "Staff"
+    },
+    department: {
+      label: "Department name"
+    },
+    citation: {
+      label: "Citation"
+    },
+    startdate: {
+      label: "Start date"
+    },
+    enddate: {
+      label: "End date"
+    },
+    version: {
+      label: "Version selection",
+      default: "Institution default",
+      forcecurrent:
+        "Force selection to be the resource version the user is viewing",
+      forcelatest:
+        "Force selection to always be the latest live resource version",
+      defaultcurrent:
+        "User can choose, but default to be the resource version the user is viewing",
+      defaultlatest:
+        "User can choose, but default to be the latest live resource version",
+      help:
+        "When accessing EQUELLA via this course in an external system, all resources added to the external system will use this version selection strategy"
+    },
+    students: {
+      label: "Unique individuals"
+    },
+    archived: {
+      label: "Archived"
+    },
+    saved: "Successfully saved",
+    errored: "Save failed due to server error"
+  },
+  courses: {
+    title: "Courses",
+    sure: "Are you sure you want to delete - '%s'?",
+    confirmDelete: "It will be permanently deleted.",
+    coursesAvailable: {
+      zero: "No courses available",
+      one: "%d course",
+      more: "%d courses"
+    },
+    includeArchived: "Include archived",
+    archived: "Archived"
+  },
+  entity: {
+    edit: {
+      tab: {
+        permissions: "Permissions"
+      }
+    }
+  },
+  loginnoticepage: {
+    title: "Login notice editor",
+    clear: {
+      title: "Warning",
+      confirm: "Are you sure you want to clear this login notice?"
+    },
+    prelogin: {
+      label: "Before login notice"
+    },
+    postlogin: {
+      label: "After login notice",
+      description:
+        "Write a plaintext message to be displayed after login as an alert..."
+    },
+    notifications: {
+      saved: "Login notice saved successfully.",
+      cleared: "Login notice cleared successfully.",
+      cancelled: "Cancelled changes to login notice."
+    },
+    errors: {
+      permissions: "You do not have permission to edit these settings."
+    },
+    scheduling: {
+      title: "Schedule settings",
+      start: "Start date:",
+      end: "End date:",
+      scheduled: "Scheduled",
+      alwayson: "On",
+      disabled: "Off",
+      endbeforestart: "End date must be after start date.",
+      expired: "This login notice has expired."
+    }
+  },
+  template: {
+    navaway: {
+      title: "You have unsaved changes",
+      content: "If you leave this page you will lose your changes."
+    },
+    menu: {
+      title: "My Account",
+      logout: "Logout",
+      prefs: "My preferences"
+    }
+  },
+  "com.equella.core": {
+    title: "Settings",
+    windowtitlepostfix: " | openEQUELLA",
+    topbar: {
+      link: {
+        notifications: "Notifications",
+        tasks: "Tasks"
+      }
+    }
+  },
+  searchconfigs: {
+    title: "Search Configurations",
+    configsAvailable: {
+      zero: "No search configurations available",
+      one: "%d configuration",
+      more: "%d configurations"
+    }
+  },
+  newuisettings: {
+    title: "Theme Settings",
+    colourschemesettings: {
+      title: "Colour Scheme",
+      primarycolour: "Primary Colour",
+      menubackgroundcolour: "Menu Background Colour",
+      backgroundcolour: "Background Colour",
+      secondarycolour: "Secondary Colour",
+      sidebartextcolour: "Sidebar Text Colour",
+      primarytextcolour: "Primary Text Colour",
+      secondarytextcolour: "Secondary Text Colour",
+      sidebariconcolour: "Icon Colour"
+    },
+    logosettings: {
+      title: "Logo Settings",
+      imagespeclabel: "Use a PNG file of 230x36 pixels for best results.",
+      current: "Current Logo: ",
+      nofileselected: "No file selected."
+    },
+    errors: {
+      invalidimagetitle: "Image Processing Error",
+      invalidimagedescription:
+        "Invalid image file. Please check the integrity of your file and try again.",
+      nofiledescription: "Please select an image file to upload.",
+      permissiontitle: "Permission Error",
+      permissiondescription: "You do not have permission to edit the settings."
+    }
+  },
+  common: {
+    action: {
+      save: "Save",
+      cancel: "Cancel",
+      undo: "Undo",
+      add: "Add",
+      ok: "OK",
+      discard: "Discard",
+      select: "Select",
+      delete: "Delete",
+      search: "Search",
+      clear: "Clear",
+      close: "Close",
+      dismiss: "Dismiss",
+      browse: "Browse...",
+      apply: "Apply",
+      resettodefault: "Reset to Default",
+      revertchanges: "Revert Changes",
+      register: "Register"
+    },
+    users: "Users",
+    groups: "Groups",
+    roles: "Roles"
+  },
+  searchpage: {
+    resultsAvailable: "results available",
+    refineTitle: "Refine search",
+    modifiedDate: "Modified",
+    order: {
+      relevance: "Relevance",
+      name: "Name",
+      datemodified: "Date modifed",
+      datecreated: "Date created",
+      rating: "Rating"
+    },
+    filterOwner: {
+      title: "Owner",
+      chip: "Owner: ",
+      selectTitle: "Select user to filter by"
+    },
+    filterLast: {
+      label: "Modified within last",
+      chip: "Modified within: ",
+      name: "Modification date",
+      none: "\xa0-\xa0",
+      month: "Month",
+      year: "Year",
+      fiveyear: "Five years",
+      week: "Week",
+      day: "Day"
+    }
+  },
+  "com.equella.core.searching.search": {
+    title: "Search"
+  },
+  "com.equella.core.comments": {
+    anonymous: "Anonymous",
+    commentmsg: "Comment",
+    entermsg: "Enter a comment"
+  },
+  uiconfig: {
+    facet: {
+      name: "Name",
+      path: "Path",
+      title: "Search facets"
+    },
+    enableNew: "Enable new UI",
+    enableSearch: "Enable new search page",
+    themeSettingsButton: "Edit Theme Settings"
+  },
+  settings: {
+    general: { name: "General", desc: "General settings" },
+    integration: {
+      name: "Integrations",
+      desc: "Settings for integrating with external systems"
+    },
+    diagnostics: { name: "Diagnostics", desc: "Diagnostic pages" },
+    ui: { name: "UI", desc: "UI settings" }
+  },
+  aclterms: {
+    title: {
+      ugr: "Select User / Group / Role",
+      ip: "Select IP range",
+      referrer: "HTTP referrer",
+      token: "Select shared secret"
+    }
+  },
+  acleditor: {
+    privilege: "Privilege",
+    privileges: "Privileges",
+    selectpriv: "Select privilege",
+    expression: "Expression",
+    privplaceholder: "Please select or add a privilege",
+    dropplaceholder: "Drop targets here",
+    addpriv: "Add Privilege",
+    addexpression: "Add expression",
+    targets: "Targets",
+    new: {
+      ugr: "User, Group or Role",
+      ip: "IP Range",
+      referrer: "HTTP Referrer",
+      token: "Shared secret"
+    },
+    notted: "NOT - ",
+    not: "Not",
+    override: "Override",
+    revoked: "Revoked",
+    revoke: "Revoke",
+    required: "* Required",
+    match: {
+      and: "All match",
+      or: "At least one match",
+      notand: "Not all match",
+      notor: "None match"
+    },
+    convertGroup: "Convert to group"
+  }
+};

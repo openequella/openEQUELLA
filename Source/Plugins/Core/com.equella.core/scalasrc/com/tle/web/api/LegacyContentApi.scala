@@ -309,7 +309,7 @@ class LegacyContentApi {
                 menuLink.getLabelText,
                 if (relativized.isEmpty && route.isEmpty) Some(href) else None,
                 Option(mc.getSystemIcon),
-                route.orElse(relativized.map(_.toString)),
+                route.orElse(relativized.map(r => "/" + r.toString)),
                 iconUrl,
                 "_blank" == menuLink.getTarget
               )

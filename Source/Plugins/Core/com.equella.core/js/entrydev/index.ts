@@ -1,4 +1,5 @@
 require("../tsrc/installcss");
-import { main } from "../output/OEQ.MainUI.Main";
-
+import bridge from "../output/Bridge";
+import main from "../tsrc/mainui";
+bridge.main();
 main();
