@@ -114,7 +114,7 @@ public class ListCookieHandler extends CookieHandler {
         cache.remove(cookie);
       } else if (cookie.matches(uri)) {
         if (cookies.length() > 0) {
-          cookies.append(", ");
+          cookies.append("; ");
         }
         cookies.append(cookie.toString());
       }
