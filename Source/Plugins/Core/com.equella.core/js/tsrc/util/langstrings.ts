@@ -46,7 +46,7 @@ export function prepLangStrings<A>(prefix: string, strings: A): A {
 }
 
 export function initStrings() {
-  for (var key in languageStrings) {
+  for (const key in languageStrings) {
     prepLangStrings(key, languageStrings[key]);
   }
 }

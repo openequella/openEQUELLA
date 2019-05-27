@@ -11,7 +11,7 @@ export default React.memo(function JQueryDiv(props: JQueryDivProps) {
   const divElem = React.useRef<HTMLElement>();
   React.useEffect(
     () =>
-      function() {
+      () => {
         if (divElem.current) {
           $(divElem.current).empty();
         }

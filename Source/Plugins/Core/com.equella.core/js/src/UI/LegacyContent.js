@@ -157,7 +157,7 @@ exports.loadMissingScripts_ = function(_scripts) {
     const head = doc.getElementsByTagName("head")[0];
     const scriptTags = doc.getElementsByTagName("script");
     const scriptSrcs = {};
-    for (var i = 0; i < scriptTags.length; i++) {
+    for (let i = 0; i < scriptTags.length; i++) {
       const scriptTag = scriptTags[i];
       if (scriptTag.src) {
         scriptSrcs[scriptTag.src] = true;
@@ -167,7 +167,7 @@ exports.loadMissingScripts_ = function(_scripts) {
       if (scriptSrcs[scriptUrl]) {
         return lastScript;
       } else {
-        var newScript = doc.createElement("script");
+        let newScript = doc.createElement("script");
         newScript.src = scriptUrl;
         newScript.async = false;
         head.appendChild(newScript);

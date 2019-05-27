@@ -185,3 +185,4 @@ termDialog = unsafeCreateLeafElement $ withStyles styles $ component "TermDialog
       margin: theme.spacing.unit
     }
   }
+  

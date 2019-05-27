@@ -94,7 +94,7 @@ class LoginNoticeConfigPage extends React.Component<
   }
 
   handleError = (error: AxiosError) => {
-    var errResponse;
+    let errResponse;
     if (error.response != undefined) {
       switch (error.response.status) {
         case 400:

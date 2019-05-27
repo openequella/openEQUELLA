@@ -222,7 +222,7 @@ class ThemePage extends React.Component<
   };
 
   handleError = (error: AxiosError) => {
-    var errResponse: ErrorResponse;
+    let errResponse: ErrorResponse;
     if (error.response != undefined) {
       switch (error.response.status) {
         case 500:

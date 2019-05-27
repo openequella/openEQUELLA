@@ -54,8 +54,8 @@ export const LegacyPage = React.memo(function LegacyPage(
       <LegacyContent
         page={page}
         contentUpdated={content => {
-          var soHtml = content.html["so"];
-          var menuExtra = soHtml ? (
+          let soHtml = content.html["so"];
+          let menuExtra = soHtml ? (
             <ScreenOptions optionsHtml={soHtml} contentId={content.contentId} />
           ) : (
             undefined
