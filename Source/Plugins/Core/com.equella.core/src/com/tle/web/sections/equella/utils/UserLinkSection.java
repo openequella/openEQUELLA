@@ -33,7 +33,6 @@ import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.events.js.SubmitValuesFunction;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.js.generic.OverrideHandler;
-import com.tle.web.sections.render.AppendedLabel;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.result.util.KeyLabel;
@@ -296,8 +295,9 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
               impersonatedBy == null
                   ? null
                   : new TextLabel(
-                      CoreStrings.lookup().getString(KEY_IMPERSONATEDBY, impersonatedBy));
-          setLabel(AppendedLabel.get(firstLastLabel, impersonateLabel));
+                      CoreStrings.lookup()
+                          .getString(KEY_IMPERSONATEDBY, impersonatedBy, firstLastLabel));
+          setLabel(impersonateLabel != null ? impersonateLabel : firstLastLabel);
           setTitle(new TextLabel(userBean.getUsername()));
           setClickHandler(new OverrideHandler(userClickedFunc, userBean.getUniqueID()));
         }
