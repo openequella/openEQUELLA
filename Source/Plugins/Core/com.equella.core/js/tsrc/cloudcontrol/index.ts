@@ -278,6 +278,7 @@ export const CloudControl: CloudControlRegisterImpl = {
           deleteFile,
           registerNotification,
           providerUrl,
+          stagingId: wizardIds.stagingId,
           userId: wizardIds.userId
         };
         mount(api);
