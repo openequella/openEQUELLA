@@ -116,8 +116,9 @@ class LoginNoticeConfigPage extends React.Component<
   };
 
   handleChangeTab = (event: React.ChangeEvent<{}>, selectedTab: number) => {
-    this.props.updateTemplate(tp => ({ ...tp, tabs: this.tabs() }));
-    this.setState({ selectedTab });
+    this.setState({ selectedTab }, () =>
+      this.props.updateTemplate(tp => ({ ...tp, tabs: this.tabs() }))
+    );
   };
 
   clearNotifications = () => {

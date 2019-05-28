@@ -351,7 +351,7 @@ export const Template = React.memo(function Template(props: TemplateProps) {
           {item.iconUrl ? (
             <img src={item.iconUrl} />
           ) : (
-            <Icon color="inherit" className={classes.menuItem}>
+            <Icon color="inherit" className={classes.menuIcon}>
               {item.systemIcon ? item.systemIcon : "folder"}
             </Icon>
           )}

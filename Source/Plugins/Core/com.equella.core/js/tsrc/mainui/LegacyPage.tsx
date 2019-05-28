@@ -1,6 +1,5 @@
 import * as React from "react";
 import {
-  templateDefaults,
   templateError,
   TemplateUpdateProps,
   TemplateProps,
@@ -34,7 +33,15 @@ export const LegacyPage = React.memo(function LegacyPage(
   React.useEffect(() => setFullPageError(undefined), [location]);
   const { LegacyContent } = bridge;
   React.useEffect(() => {
-    updateTemplate(templateDefaults(""));
+    updateTemplate(tp => ({
+      ...tp,
+      backRoute: undefined,
+      titleExtra: undefined,
+      tabs: undefined,
+      fixedViewPort: undefined,
+      footer: undefined,
+      disableNotifications: undefined
+    }));
     setPreventNavigation(false);
   }, []);
 
@@ -49,7 +56,7 @@ export const LegacyPage = React.memo(function LegacyPage(
   }
 
   return (
-    <React.Fragment>
+    <>
       {fullPageError && <ErrorPage error={fullPageError} />}
       <LegacyContent
         page={page}
@@ -89,6 +96,6 @@ export const LegacyPage = React.memo(function LegacyPage(
         }}
         onError={processError}
       />
-    </React.Fragment>
+    </>
   );
 });

@@ -1,5 +1,11 @@
 import "../util/polyfill";
-import { Switch, Route, Prompt, RouteComponentProps } from "react-router";
+import {
+  Switch,
+  Route,
+  Prompt,
+  RouteComponentProps,
+  Redirect
+} from "react-router";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
@@ -101,6 +107,9 @@ function IndexPage() {
       />
       <Template {...templateProps}>
         <Switch>
+          <Route path="/" exact>
+            <Redirect to="/home.do" />
+          </Route>
           {Object.keys(oeqRoutes).map((key, ind) => {
             const oeqRoute = oeqRoutes[key];
             return (
@@ -141,7 +150,7 @@ export default function() {
     );
   } else {
     ReactDOM.render(
-      <BrowserRouter basename={basePath}>
+      <BrowserRouter basename={basePath} forceRefresh>
         <ThemeProvider theme={oeqTheme}>
           <bridge.SettingsPage
             refreshUser={() => {}}

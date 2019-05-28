@@ -53,7 +53,6 @@ import com.tle.web.sections.SectionsRuntimeException;
 import com.tle.web.sections.generic.AbstractSectionFilter;
 import com.tle.web.selection.*;
 import com.tle.web.selection.section.RootSelectionSection.Layout;
-import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.viewable.ViewableItemResolver;
 import com.tle.web.viewurl.ViewAuditEntry;
 import com.tle.web.viewurl.ViewableResource;
@@ -349,10 +348,10 @@ public class IntegrationServiceImpl extends AbstractSectionFilter implements Int
       forwardInfo = selectionService.getSelectionSessionForward(info, session, selectableObj);
     }
     String id = setupSessionData(forwardInfo, data);
-    if (RenderNewTemplate.isNewLayout(info)) {
-      info.forwardToUrl(NewSelectionPage.selectionUrl(forwardInfo, id));
-      return;
-    }
+    //    if (RenderNewTemplate.isNewLayout(info)) {
+    //      info.forwardToUrl(NewSelectionPage.selectionUrl(forwardInfo, id));
+    //      return;
+    //    }
     integration.forward(info, data, forwardInfo);
     // What is this?? Not required
     // info.forwardAsBookmark(forwardInfo);

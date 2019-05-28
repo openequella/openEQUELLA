@@ -157,7 +157,7 @@ exports.loadMissingScripts_ = function(_scripts) {
     const head = doc.getElementsByTagName("head")[0];
     const scriptTags = doc.getElementsByTagName("script");
     const scriptSrcs = {};
-    for (let i = 0; i < scriptTags.length; i++) {
+    for (var i = 0; i < scriptTags.length; i++) {
       const scriptTag = scriptTags[i];
       if (scriptTag.src) {
         scriptSrcs[scriptTag.src] = true;
@@ -167,11 +167,10 @@ exports.loadMissingScripts_ = function(_scripts) {
       if (scriptSrcs[scriptUrl]) {
         return lastScript;
       } else {
-        let newScript = doc.createElement("script");
+        var newScript = doc.createElement("script");
         newScript.src = scriptUrl;
         newScript.async = false;
         head.appendChild(newScript);
-        console.log(scriptUrl);
         return newScript;
       }
     }, null);

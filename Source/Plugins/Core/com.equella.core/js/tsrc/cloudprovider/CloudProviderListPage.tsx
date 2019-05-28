@@ -130,7 +130,7 @@ class CloudProviderListPage extends React.Component<
   render() {
     const { cloudProviders, deleteDialogOpen, registerDialogOpen } = this.state;
     return (
-      <React.Fragment>
+      <>
         {this.state.deleteDetails && (
           <ConfirmDialog
             open={deleteDialogOpen}
@@ -191,7 +191,7 @@ class CloudProviderListPage extends React.Component<
             );
           })}
         </EntityList>
-      </React.Fragment>
+      </>
     );
   }
 }
