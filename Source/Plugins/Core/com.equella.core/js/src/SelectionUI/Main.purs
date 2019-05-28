@@ -44,7 +44,6 @@ import OEQ.SelectionUI.Routes (SelectionPage(..), SelectionRoute(..), SessionPar
 import OEQ.UI.Common (rootTag)
 import OEQ.UI.ItemSummary.ViewItem (viewItem)
 import OEQ.UI.Layout (dualPane)
-import OEQ.UI.LegacyContent (legacyContent)
 import OEQ.UI.MessageInfo (messageInfo)
 import Partial.Unsafe (unsafeCrashWith)
 import React (ReactElement, component, unsafeCreateLeafElement)
@@ -139,13 +138,14 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
       LegacySelectionPage page -> 
         dualPane {
             left: [
-              legacyContent {
-                page, 
-                contentUpdated: mkEffectFn1 \_ -> pure unit, 
-                userUpdated: pure unit,
-                redirected: mkEffectFn1 $ d <<< Redirected,
-                onError: mkEffectFn1 $ d <<< Errored <<< _.error
-              } ],  
+              -- legacyContent {
+              --   page, 
+              --   contentUpdated: mkEffectFn1 \_ -> pure unit, 
+              --   userUpdated: pure unit,
+              --   redirected: mkEffectFn1 $ d <<< Redirected,
+              --   onError: mkEffectFn1 $ d <<< Errored <<< _.error
+              -- } 
+            ],  
             right:[
               renderStructure selection {selectedFolder, selections}
             ]

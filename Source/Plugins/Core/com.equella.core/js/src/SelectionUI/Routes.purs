@@ -7,17 +7,13 @@ import Data.Either (either)
 import Data.Maybe (Maybe(..))
 import Data.String (Pattern(..), drop, indexOf, take)
 import Effect (Effect)
-import Effect.Uncurried (EffectFn1, mkEffectFn1)
-import Foreign.Object as Object
-import OEQ.Data.LegacyContent (LegacyURI(..), legacyRoute, legacyURIToString)
 import Partial.Unsafe (unsafeCrashWith)
-import React.SyntheticEvent (SyntheticEvent_, preventDefault, stopPropagation)
 import Routing (match)
 import Routing.Match (Match, end, int, lit, str)
 
 data SessionParams = Session String (Maybe String)
+data SelectionPage = Search | ViewItem String Int | LegacySelectionPage String
 data SelectionRoute = Route SessionParams SelectionPage
-data SelectionPage = Search | ViewItem String Int | LegacySelectionPage LegacyURI
 
 paramsFromString :: String -> SessionParams
 paramsFromString s = case indexOf (Pattern ":") s of 
@@ -36,8 +32,7 @@ selectionPageMatch :: Match SelectionPage
 selectionPageMatch = 
   Search <$ (lit "search") <|>
   ViewItem <$> (lit "items" *> str) <*> int <|> 
-  LegacySelectionPage (LegacyURI "access/contribute.do" Object.empty) <$ end <|>
-  LegacySelectionPage <$> legacyRoute
+  LegacySelectionPage ("access/contribute.do") <$ end 
 
 matchSelection :: String -> Maybe SelectionRoute 
 matchSelection = match selectionRouteMatch >>> (either (const Nothing) Just)
@@ -57,7 +52,7 @@ selectionURI :: SelectionRoute -> String
 selectionURI (Route sess r) = "selection/" <> paramsToString sess <> "/" <> case r of 
   Search -> "search"
   ViewItem uuid ver -> "items/" <> uuid <> "/" <> show ver
-  LegacySelectionPage leg -> legacyURIToString leg
+  LegacySelectionPage leg -> leg
 
 pushSelectionRoute :: SelectionRoute -> Effect Unit
 pushSelectionRoute = unsafeCrashWith "PUSH"
