@@ -285,12 +285,15 @@ public class ContentStreamWriter {
 
     if (isCalculateETag) {
       final String ifNoneMatch = request.getHeader("If-None-Match");
+      final String etag = contentStream.calculateETag();
       if (ifNoneMatch != null) {
-        final String etag = contentStream.calculateETag();
-        if (etag != null) {
-          hasBeenModified = hasBeenModified || (!ifNoneMatch.equals(etag));
-        }
+        hasBeenModified = hasBeenModified || (!ifNoneMatch.equals(etag));
+      } else {
+        // That ifNoneMatch is null and isCalculateETag is true means
+        // this request is the very first one sent from users' admin console launcher
+        hasBeenModified = true;
       }
+      response.addHeader("ETag", etag);
     }
 
     return hasBeenModified;
