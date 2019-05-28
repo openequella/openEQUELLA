@@ -210,7 +210,7 @@ class SearchCourse extends React.Component<
           }
         >
           {courses.map(course => {
-             let onDelete;
+            let onDelete;
             if (
               course.uuid &&
               course.readonly &&

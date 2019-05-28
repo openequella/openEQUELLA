@@ -10,12 +10,11 @@ export interface JQueryDivProps extends React.HTMLAttributes<HTMLDivElement> {
 export default React.memo(function JQueryDiv(props: JQueryDivProps) {
   const divElem = React.useRef<HTMLElement>();
   React.useEffect(
-    () =>
-      () => {
-        if (divElem.current) {
-          $(divElem.current).empty();
-        }
-      },
+    () => () => {
+      if (divElem.current) {
+        $(divElem.current).empty();
+      }
+    },
     []
   );
   const withoutOthers = {
