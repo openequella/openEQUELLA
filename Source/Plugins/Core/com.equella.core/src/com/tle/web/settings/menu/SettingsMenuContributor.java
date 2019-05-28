@@ -59,7 +59,7 @@ public class SettingsMenuContributor implements MenuContributor {
       hls.setLabel(LABEL_KEY);
 
       MenuContribution mc =
-          new MenuContribution(hls, ICON_PATH, 30, 30, "settings", "page/settings");
+          new MenuContribution(hls, ICON_PATH, 30, 30, "settings", "/page/settings");
       mcs.add(mc);
     }
 

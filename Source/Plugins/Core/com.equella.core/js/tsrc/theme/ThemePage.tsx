@@ -18,22 +18,19 @@ import CloseIcon from "@material-ui/icons/Close";
 import ColorPickerComponent from "./ColorPickerComponent";
 import axios, { AxiosError } from "axios";
 import { Config } from "../config";
-import { prepLangStrings } from "../util/langstrings";
+import { languageStrings } from "../util/langstrings";
 import { commonString } from "../util/commonstrings";
-import { generateFromError, generateNewErrorID } from "../api/errors";
-import { Template } from "../mainui/Template";
-
-interface IThemeSettings {
-  primaryColor: string;
-  secondaryColor: string;
-  backgroundColor: string;
-  menuItemColor: string;
-  menuItemTextColor: string;
-  menuItemIconColor: string;
-  primaryTextColor: string;
-  menuTextColor: string;
-  fontSize: number;
-}
+import {
+  generateFromError,
+  generateNewErrorID,
+  ErrorResponse
+} from "../api/errors";
+import {
+  templateDefaults,
+  TemplateUpdate,
+  templateError
+} from "../mainui/Template";
+import { IThemeSettings } from ".";
 
 declare const themeSettings: IThemeSettings;
 declare const logoURL: string;
@@ -41,34 +38,7 @@ declare const logoURL: string;
 /**
  * @author Samantha Fisher
  */
-export const strings = prepLangStrings("newuisettings", {
-  title: "Theme Settings",
-  colourschemesettings: {
-    title: "Colour Scheme",
-    primarycolour: "Primary Colour",
-    menubackgroundcolour: "Menu Background Colour",
-    backgroundcolour: "Background Colour",
-    secondarycolour: "Secondary Colour",
-    sidebartextcolour: "Sidebar Text Colour",
-    primarytextcolour: "Primary Text Colour",
-    secondarytextcolour: "Secondary Text Colour",
-    sidebariconcolour: "Icon Colour"
-  },
-  logosettings: {
-    title: "Logo Settings",
-    imagespeclabel: "Use a PNG file of 230x36 pixels for best results.",
-    current: "Current Logo: ",
-    nofileselected: "No file selected."
-  },
-  errors: {
-    invalidimagetitle: "Image Processing Error",
-    invalidimagedescription:
-      "Invalid image file. Please check the integrity of your file and try again.",
-    nofiledescription: "Please select an image file to upload.",
-    permissiontitle: "Permission Error",
-    permissiondescription: "You do not have permission to edit the settings."
-  }
-});
+export const strings = languageStrings.newuisettings;
 
 const styles = createStyles({
   card: {
@@ -99,7 +69,9 @@ const styles = createStyles({
   }
 });
 
-interface ThemePageProps {}
+interface ThemePageProps {
+  updateTemplate: (update: TemplateUpdate) => void;
+}
 
 class ThemePage extends React.Component<
   ThemePageProps & WithStyles<typeof styles>
@@ -116,12 +88,12 @@ class ThemePage extends React.Component<
     logoToUpload: "",
     fileName: "",
     noFileNotification: false,
-    error: null,
     logoURL: logoURL
   };
 
   componentDidMount = () => {
     this.setColorPickerDefaults();
+    this.props.updateTemplate(templateDefaults(strings.title));
   };
 
   handleDefaultButton = () => {
@@ -250,29 +222,29 @@ class ThemePage extends React.Component<
   };
 
   handleError = (error: AxiosError) => {
+    let errResponse: ErrorResponse;
     if (error.response != undefined) {
       switch (error.response.status) {
         case 500:
-          this.setState({
-            error: generateNewErrorID(
-              strings.errors.invalidimagetitle,
-              error.response.status,
-              strings.errors.invalidimagedescription
-            )
-          });
+          errResponse = generateNewErrorID(
+            strings.errors.invalidimagetitle,
+            error.response.status,
+            strings.errors.invalidimagedescription
+          );
           break;
         case 403:
-          this.setState({
-            error: generateNewErrorID(
-              strings.errors.permissiontitle,
-              error.response.status,
-              strings.errors.permissiondescription
-            )
-          });
+          errResponse = generateNewErrorID(
+            strings.errors.permissiontitle,
+            error.response.status,
+            strings.errors.permissiondescription
+          );
           break;
         default:
-          this.setState({ error: generateFromError(error) });
+          errResponse = generateFromError(error);
           break;
+      }
+      if (errResponse) {
+        this.props.updateTemplate(templateError(errResponse));
       }
     }
   };
@@ -482,17 +454,14 @@ class ThemePage extends React.Component<
   render() {
     const { classes } = this.props;
     return (
-      <Template
-        title={strings.title}
-        errorResponse={this.state.error || undefined}
-      >
+      <React.Fragment>
         <Card raised className={classes.card}>
           <this.ColorSchemeSettings />
           <Divider light={true} />
           <this.LogoSettings />
         </Card>
         <this.Notifications />
-      </Template>
+      </React.Fragment>
     );
   }
 }

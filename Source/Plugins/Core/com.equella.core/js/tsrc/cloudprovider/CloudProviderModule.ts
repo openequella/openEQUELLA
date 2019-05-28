@@ -2,7 +2,7 @@ import { PagingResults } from "../api";
 import Axios, { AxiosPromise } from "axios";
 import { Config } from "../config";
 import { CloudProviderEntity } from "./CloudProviderEntity";
-import { prepLangStrings } from "../util/langstrings";
+import { languageStrings } from "../util/langstrings";
 
 export const GET_CLOUD_PROVIDER_LIST_URL = `${Config.baseUrl}api/cloudprovider`;
 export const DELETE_CLOUD_PROVIDER_URL = `${
@@ -11,24 +11,9 @@ export const DELETE_CLOUD_PROVIDER_URL = `${
 export const POST_CLOUD_PROVIDER_REGISTER_INIT_URL = `${
   Config.baseUrl
 }api/cloudprovider/register/init`;
-export const cloudProviderLangStrings = prepLangStrings("cp", {
-  title: "Cloud providers",
-  cloudprovideravailable: {
-    zero: "No cloud providers available",
-    one: "%d cloud provider",
-    more: "%d cloud providers"
-  },
-  newcloudprovider: {
-    title: "Register a new cloud provider",
-    label: "URL",
-    text: "Enter the URL supplied by the cloud provider",
-    help: "The URL should start with either http:// or https://"
-  },
-  deletecloudprovider: {
-    title: "Are you sure you want to delete cloud provider - '%s'?",
-    message: "It will be permanently deleted."
-  }
-});
+
+export const cloudProviderLangStrings = languageStrings.cp;
+
 interface CloudProviderInitResponse {
   url: string;
 }

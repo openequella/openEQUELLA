@@ -10,8 +10,7 @@ import Effect (Effect)
 import Effect.Uncurried (EffectFn1, mkEffectFn1)
 import Foreign.Object as Object
 import OEQ.Data.LegacyContent (LegacyURI(..), legacyRoute, legacyURIToString)
-import OEQ.MainUI.Routes (pushRoute')
-import OEQ.UI.Common (ClickableHref)
+import Partial.Unsafe (unsafeCrashWith)
 import React.SyntheticEvent (SyntheticEvent_, preventDefault, stopPropagation)
 import Routing (match)
 import Routing.Match (Match, end, int, lit, str)
@@ -43,15 +42,15 @@ selectionPageMatch =
 matchSelection :: String -> Maybe SelectionRoute 
 matchSelection = match selectionRouteMatch >>> (either (const Nothing) Just)
 
-selectionClicker :: SelectionRoute -> ClickableHref
-selectionClicker r = 
-    let href = selectionURI r
-        onClick :: forall e. EffectFn1 (SyntheticEvent_ e) Unit
-        onClick = mkEffectFn1 $ \e -> do 
-          preventDefault e 
-          stopPropagation e
-          pushSelectionRoute r
-    in { href, onClick }
+-- selectionClicker :: SelectionRoute -> ClickableHref
+-- selectionClicker r = 
+--     let href = selectionURI r
+--         onClick :: forall e. EffectFn1 (SyntheticEvent_ e) Unit
+--         onClick = mkEffectFn1 $ \e -> do 
+--           preventDefault e 
+--           stopPropagation e
+--           pushSelectionRoute r
+--     in { href, onClick }
 
 
 selectionURI :: SelectionRoute -> String 
@@ -61,4 +60,4 @@ selectionURI (Route sess r) = "selection/" <> paramsToString sess <> "/" <> case
   LegacySelectionPage leg -> legacyURIToString leg
 
 pushSelectionRoute :: SelectionRoute -> Effect Unit
-pushSelectionRoute = pushRoute' selectionURI
+pushSelectionRoute = unsafeCrashWith "PUSH"

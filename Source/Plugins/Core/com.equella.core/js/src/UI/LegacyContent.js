@@ -123,18 +123,20 @@ exports.updateStylesheets_ = function(replace) {
       const lastSheet = sheets.reduce(function(lastLink, cssUrl) {
         if (existingSheets[cssUrl]) {
           delete existingSheets[cssUrl];
+          return lastLink;
         } else {
           var newCss = doc.createElement("link");
           newCss.rel = "stylesheet";
           newCss.href = cssUrl;
           head.insertBefore(newCss, insertPoint);
-          lastLink = newCss;
+          return newCss;
         }
-        return lastLink;
       }, null);
       const deleteSheets = function() {
-        for (key in existingSheets) {
-          head.removeChild(existingSheets[key]);
+        if (replace) {
+          for (key in existingSheets) {
+            head.removeChild(existingSheets[key]);
+          }
         }
       };
       if (!lastSheet) onSuccess(deleteSheets);
@@ -145,5 +147,34 @@ exports.updateStylesheets_ = function(replace) {
         lastSheet.addEventListener("load", loaded, false);
       }
     };
+  };
+};
+
+exports.loadMissingScripts_ = function(_scripts) {
+  return function(onError, onSuccess) {
+    const scripts = _scripts.map(resolveUrl);
+    const doc = window.document;
+    const head = doc.getElementsByTagName("head")[0];
+    const scriptTags = doc.getElementsByTagName("script");
+    const scriptSrcs = {};
+    for (var i = 0; i < scriptTags.length; i++) {
+      const scriptTag = scriptTags[i];
+      if (scriptTag.src) {
+        scriptSrcs[scriptTag.src] = true;
+      }
+    }
+    const lastScript = scripts.reduce(function(lastScript, scriptUrl) {
+      if (scriptSrcs[scriptUrl]) {
+        return lastScript;
+      } else {
+        var newScript = doc.createElement("script");
+        newScript.src = scriptUrl;
+        newScript.async = false;
+        head.appendChild(newScript);
+        return newScript;
+      }
+    }, null);
+    if (!lastScript) onSuccess();
+    else lastScript.addEventListener("load", onSuccess, false);
   };
 };

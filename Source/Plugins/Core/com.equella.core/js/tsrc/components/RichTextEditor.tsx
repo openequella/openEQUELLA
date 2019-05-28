@@ -49,10 +49,25 @@ interface ImageReturnType {
   link: string;
 }
 
-class RichTextEditor extends React.Component<RichTextEditorProps> {
+interface RichTextEditorState {
+  ready: boolean;
+}
+
+class RichTextEditor extends React.Component<
+  RichTextEditorProps,
+  RichTextEditorState
+> {
   constructor(props: RichTextEditorProps) {
     super(props);
+    this.state = { ready: false };
   }
+
+  componentDidMount = () => {
+    setTimeout(() => {
+      // this is a workaround for something related to: https://github.com/tinymce/tinymce-angular/issues/76
+      this.setState({ ready: true });
+    }, 1);
+  };
 
   uploadImages = (
     blobInfo: any,
@@ -73,32 +88,34 @@ class RichTextEditor extends React.Component<RichTextEditorProps> {
 
   render() {
     return (
-      <Editor
-        init={{
-          min_height: 500,
-          automatic_uploads: true,
-          file_picker_types: "image",
-          images_reuse_filename: true,
-          images_upload_handler: this.uploadImages,
-          paste_data_images: true,
-          relative_urls: false,
-          skin: "oxide",
-          skin_url: `${baseURL}/tinymce/skins/ui/oxide`,
-          media_dimensions: false
-        }}
-        toolbar={
-          "formatselect | bold italic strikethrough underline forecolor backcolor | link image media file | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent hr | removeformat | undo redo | preview | ltr rtl"
-        }
-        plugins={
-          "anchor autolink autoresize advlist charmap code codesample  " +
-          "directionality fullscreen help hr image imagetools " +
-          "importcss insertdatetime link lists media nonbreaking noneditable pagebreak paste " +
-          "preview print quickbars save searchreplace table template " +
-          "textpattern toc visualblocks visualchars wordcount"
-        }
-        onEditorChange={this.props.onStateChange}
-        value={this.props.htmlInput}
-      />
+      this.state.ready && (
+        <Editor
+          init={{
+            min_height: 500,
+            automatic_uploads: true,
+            file_picker_types: "image",
+            images_reuse_filename: true,
+            images_upload_handler: this.uploadImages,
+            paste_data_images: true,
+            relative_urls: false,
+            skin: "oxide",
+            skin_url: `${baseURL}/tinymce/skins/ui/oxide`,
+            media_dimensions: false
+          }}
+          toolbar={
+            "formatselect | bold italic strikethrough underline forecolor backcolor | link image media file | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent hr | removeformat | undo redo | preview | ltr rtl"
+          }
+          plugins={
+            "anchor autolink autoresize advlist charmap code codesample  " +
+            "directionality fullscreen help hr image imagetools " +
+            "importcss insertdatetime link lists media nonbreaking noneditable pagebreak paste " +
+            "preview print quickbars save searchreplace table template " +
+            "textpattern toc visualblocks visualchars wordcount"
+          }
+          onEditorChange={this.props.onStateChange}
+          value={this.props.htmlInput}
+        />
+      )
     );
   }
 }

@@ -11,7 +11,8 @@ newtype Setting = Setting {
   group :: String,
   name :: String,
   description :: String,
-  pageUrl :: Maybe String
+  href :: Maybe String,
+  route :: Maybe String
 }
 
 instance decodeSetting :: DecodeJson Setting where
@@ -22,8 +23,9 @@ instance decodeSetting :: DecodeJson Setting where
     group <- o .? "group"
     description <- o .? "description"
     links <- o .? "links"
-    pageUrl <- links .?? "web"
-    pure $ Setting {id,group,name,description,pageUrl}
+    href <- links .?? "web"
+    route <- links .?? "route"
+    pure $ Setting {id,group,name,description,href,route}
 
 type NewUISettings = { enabled :: Boolean, newSearch :: Boolean }
 type UISettings = { newUI :: NewUISettings }

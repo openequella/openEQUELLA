@@ -28,7 +28,7 @@ import com.tle.web.settings.{EditableSettings, SettingsList, UISettings}
 import io.swagger.annotations.Api
 import javax.ws.rs.{GET, PUT, Path, Produces}
 
-case class SettingTypeLinks(web: Option[URI], rest: Option[URI])
+case class SettingTypeLinks(web: Option[URI], rest: Option[URI], route: Option[String])
 case class SettingType(id: String,
                        name: String,
                        description: String,
@@ -37,8 +37,8 @@ case class SettingType(id: String,
 
 object SettingTypeLinks {
   def apply(instUri: URI, ed: EditableSettings): SettingTypeLinks = ed.uriType match {
-    case "rest" => SettingTypeLinks(None, Option(instUri.resolve(ed.uri)))
-    case _      => SettingTypeLinks(Option(instUri.resolve(ed.uri)), None)
+    case "rest" => SettingTypeLinks(None, Option(instUri.resolve(ed.uri)), None)
+    case _      => SettingTypeLinks(Option(instUri.resolve(ed.uri)), None, Some("/" + ed.uri))
   }
 }
 

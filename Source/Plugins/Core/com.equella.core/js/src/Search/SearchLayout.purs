@@ -16,11 +16,11 @@ import Data.Symbol (SProxy(..))
 import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..))
 import Dispatcher (affAction)
-import Dispatcher.React (getState, modifyState)
+import Dispatcher.React (getProps, getState, modifyState)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
 import Effect.Class.Console (log)
-import Effect.Uncurried (mkEffectFn1)
+import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
 import MaterialUI.Chip (chip')
 import MaterialUI.CircularProgress (circularProgress')
 import MaterialUI.Divider (divider_)
@@ -71,13 +71,14 @@ initialState query = {
   , searchResults:Nothing
   , loadingNew: false
 }
-type SearchStrings = { resultsAvailable :: String, refineTitle :: String }
+type SearchStrings r = { resultsAvailable :: String, refineTitle :: String | r }
 
-searchLayout :: { 
+searchLayout :: forall r. { 
     searchControls::Array SearchControl, 
-    strings :: SearchStrings, 
+    strings :: SearchStrings r, 
     initialQuery :: Query,
-    renderTemplate :: {queryBar :: ReactElement, content :: ReactElement } -> ReactElement 
+    updateQueryBar :: EffectFn1 ReactElement Unit,
+    renderTemplate :: {content :: ReactElement } -> ReactElement 
     } -> ReactElement
 searchLayout = unsafeCreateLeafElement $ withStyles styles $ R.component "SearchLayout" $ \this -> do
   let
@@ -118,10 +119,7 @@ searchLayout = unsafeCreateLeafElement $ withStyles styles $ R.component "Search
         ] <> (mapMaybe (placementMatch Results) controlsRendered) 
         renderResults Nothing = []
         
-      pure $  renderTemplate { 
-          queryBar: appBarQuery {query: query.query, onChange: mkEffectFn1 $ d <<< QueryUpdate}, 
-          content: mainContent 
-        } 
+      pure $ renderTemplate { content: mainContent } 
 
     modifySearchFlag searchFlag f = modifyState $ _{searching=searchFlag} <<< f
 
@@ -144,8 +142,10 @@ searchLayout = unsafeCreateLeafElement $ withStyles styles $ R.component "Search
       sr <- lift $ callSearch 0 (f s)
       either (lift <<< log) (modifySearchFlag false <<< setJust _searchResults) $ sr
 
+
     eval = case _ of 
       InitSearch l -> do
+        doQueryUpdate ""
         searchWith identity
         liftEffect $ do 
           w <- window
@@ -161,8 +161,16 @@ searchLayout = unsafeCreateLeafElement $ withStyles styles $ R.component "Search
         if shouldScroll then searchMore else pure unit
 
       Search -> searchWith identity
-      QueryUpdate q -> searchWith \s -> s {query = s.query {query = q} }
+      QueryUpdate q -> do 
+        searchWith \s -> s {query = s.query {query = q} }
+        doQueryUpdate q
       UpdateQuery f -> searchWith \s -> s {query = f s.query}
+
+    doQueryUpdate query = do 
+     {updateQueryBar} <- getProps
+     liftEffect $ runEffectFn1 updateQueryBar $
+        appBarQuery {query, onChange: mkEffectFn1 $ affAction this <<< eval <<< QueryUpdate}
+
   scrollListener <- eventListener $ d <<< Scrolled  
   {initialQuery} <- R.getProps this 
   pure {render, state:initialState initialQuery, 

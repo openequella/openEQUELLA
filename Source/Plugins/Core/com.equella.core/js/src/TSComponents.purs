@@ -2,33 +2,19 @@ module TSComponents where
 
 import Prelude
 
-import Data.Maybe (Maybe)
-import Data.Nullable (Nullable, toNullable)
+import Data.Nullable (Nullable)
 import Data.TSCompat (OptionRecord)
 import Data.TSCompat.Class (class IsTSEq)
+import Effect (Effect)
 import Effect.Uncurried (EffectFn1)
 import MaterialUI.TextField (TextFieldPropsO, TextFieldPropsM)
 import OEQ.Data.Course (CourseEntity)
 import React (ReactClass, ReactElement, unsafeCreateLeafElement)
- 
-foreign import data Store :: Type
-foreign import store :: Store
-foreign import searchCourses :: forall a. ReactClass a
-foreign import editCourse :: forall a. ReactClass a
+
+foreign import startHeartbeat :: Effect Unit 
 foreign import appBarQueryClass ::  ReactClass {query :: String, onChange :: EffectFn1 String Unit}
 
 foreign import courseSelectClass :: forall a. ReactClass a
-
-foreign import themePageClass :: forall a. ReactClass a
-foreign import searchConfigsClass :: forall a. ReactClass a
-
-foreign import loginNoticeConfigPageClass :: forall a. ReactClass a
-foreign import cloudProviderListPageClass :: forall a. ReactClass a
-coursesPage :: ReactElement
-coursesPage = unsafeCreateLeafElement searchCourses {store:store}
-
-courseEdit :: Maybe String -> ReactElement
-courseEdit cid = unsafeCreateLeafElement editCourse {store:store, uuid: toNullable $ cid}
 
 appBarQuery :: { query :: String, onChange :: EffectFn1 String Unit} -> ReactElement
 appBarQuery = unsafeCreateLeafElement appBarQueryClass
@@ -39,3 +25,11 @@ type CourseSelectPropsM = (course :: Nullable CourseEntity, maxResults :: Int,
 
 courseSelect :: forall a. IsTSEq (Record a) (OptionRecord (CourseSelectPropsO CourseSelectPropsM) CourseSelectPropsM) => Record a -> ReactElement
 courseSelect = unsafeCreateLeafElement courseSelectClass
+
+type JQueryDivProps r = { 
+  html:: String, 
+  script :: Nullable String,
+  afterHtml :: Nullable (Effect Unit)  
+  |r }
+
+foreign import jqueryDivClass :: forall r. ReactClass (JQueryDivProps r)

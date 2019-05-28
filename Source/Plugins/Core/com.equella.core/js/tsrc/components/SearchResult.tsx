@@ -11,6 +11,8 @@ import {
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
 import * as React from "react";
+import { LocationDescriptor } from "history";
+import { Link } from "react-router-dom";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -38,6 +40,7 @@ export interface SearchResultExtraDetail {
 export interface SearchResultProps {
   href: string;
   onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+  to?: LocationDescriptor;
   onDelete?: () => void;
   primaryText: string;
   secondaryText?: string;
@@ -50,16 +53,20 @@ type PropsWithStyles = SearchResultProps &
 
 class SearchResult extends React.Component<PropsWithStyles> {
   render() {
-    const { onDelete } = this.props;
+    const { onDelete, to } = this.props;
     const link: any = (
       <Typography
         color="primary"
         variant="subtitle1"
-        component={p => (
-          <a {...p} href={this.props.href} onClick={this.props.onClick}>
-            {this.props.primaryText}
-          </a>
-        )}
+        component={p =>
+          to ? (
+            <Link to={to}>{this.props.primaryText}</Link>
+          ) : (
+            <a {...p} href={this.props.href} onClick={this.props.onClick}>
+              {this.props.primaryText}
+            </a>
+          )
+        }
       />
     );
     /*

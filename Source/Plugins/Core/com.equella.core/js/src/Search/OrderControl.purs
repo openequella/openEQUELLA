@@ -2,6 +2,7 @@ module OEQ.Search.OrderControl where
 
 import Prelude
 
+import Common.Strings (languageStrings)
 import Data.Argonaut (_String)
 import Data.Lens (_Just, preview, set)
 import Data.Lens.At (at)
@@ -12,7 +13,6 @@ import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Select (select)
 import MaterialUI.Styles (withStyles)
 import OEQ.Data.Searches (Order(..), orderValue)
-import OEQ.Environment (prepLangStrings)
 import OEQ.Search.SearchControl (Placement, SearchControl)
 import OEQ.Search.SearchQuery (ParamDataLens, Query, _data, _params, singleParam)
 import OEQ.UI.Common (valueChange)
@@ -23,7 +23,7 @@ orderEntries :: Array Order
 orderEntries = [Relevance, Name, DateModified, DateCreated ]
 
 orderName :: Order -> String
-orderName = case _ of 
+orderName = let orderString = languageStrings.searchpage.order in case _ of 
     Relevance -> orderString.relevance
     Name -> orderString.name
     DateModified -> orderString.datemodified
@@ -63,31 +63,3 @@ orderControl placement = let
     }
   }
 
-rawStrings :: { prefix :: String
-, strings :: { order :: { relevance :: String
-                        , name :: String
-                        , datemodified :: String
-                        , datecreated :: String
-                        , rating :: String
-                        }
-             }
-}
-rawStrings = {prefix: "searchpage", 
-  strings: {
-    order: {
-      relevance: "Relevance",
-      name: "Name",
-      datemodified: "Date modifed",
-      datecreated: "Date created",
-      rating: "Rating"
-    }
-  }
-}
-
-orderString :: { relevance :: String
-, name :: String
-, datemodified :: String
-, datecreated :: String
-, rating :: String
-}
-orderString = (prepLangStrings rawStrings).order 

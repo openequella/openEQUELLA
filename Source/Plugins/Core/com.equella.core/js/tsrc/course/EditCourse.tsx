@@ -39,9 +39,12 @@ import schemaService from "../schema/index";
 import { StoreState } from "../store";
 import { commonString } from "../util/commonstrings";
 import { properties } from "../util/dictionary";
-import { prepLangStrings } from "../util/langstrings";
-import { Template } from "../mainui/Template";
+import { languageStrings } from "../util/langstrings";
+import { TemplateProps, templateDefaults } from "../mainui/Template";
 import { Bridge } from "../api/bridge";
+import { routes } from "../mainui/routes";
+import { Link } from "react-router-dom";
+import { LocationDescriptor } from "history";
 
 declare const bridge: Bridge;
 
@@ -96,7 +99,11 @@ interface EditCourseDispatchProps extends EditEntityDispatchProps<Course> {
 interface EditCourseProps
   extends EditEntityProps<Course>,
     EditCourseStateProps,
-    EditCourseDispatchProps {}
+    EditCourseDispatchProps {
+  updateTemplate: (update: (template: TemplateProps) => TemplateProps) => void;
+  setPreventNavigation(b: boolean): void;
+  redirect(to: LocationDescriptor): void;
+}
 
 type Props = EditCourseProps &
   WithStyles<
@@ -118,63 +125,7 @@ interface EditCourseState {
   errored: boolean;
   editSecurity?: () => TargetListEntry[];
 }
-export const strings = prepLangStrings("courseedit", {
-  title: "Editing course - %s",
-  newtitle: "Creating new course",
-  tab: "Course details",
-  name: {
-    label: "Name",
-    help: "Course name, e.g. Advanced EQUELLA studies"
-  },
-  description: {
-    label: "Description",
-    help: "A brief description"
-  },
-  code: {
-    label: "Code",
-    help: "Course code, e.g. EQ101"
-  },
-  type: {
-    label: "Course Type",
-    i: "Internal",
-    e: "External",
-    s: "Staff"
-  },
-  department: {
-    label: "Department name"
-  },
-  citation: {
-    label: "Citation"
-  },
-  startdate: {
-    label: "Start date"
-  },
-  enddate: {
-    label: "End date"
-  },
-  version: {
-    label: "Version selection",
-    default: "Institution default",
-    forcecurrent:
-      "Force selection to be the resource version the user is viewing",
-    forcelatest:
-      "Force selection to always be the latest live resource version",
-    defaultcurrent:
-      "User can choose, but default to be the resource version the user is viewing",
-    defaultlatest:
-      "User can choose, but default to be the latest live resource version",
-    help:
-      "When accessing EQUELLA via this course in an external system, all resources added to the external system will use this version selection strategy"
-  },
-  students: {
-    label: "Unique individuals"
-  },
-  archived: {
-    label: "Archived"
-  },
-  saved: "Successfully saved",
-  errored: "Save failed due to server error"
-});
+export const strings = languageStrings.courseedit;
 
 class EditCourse extends React.Component<Props, EditCourseState> {
   constructor(props: Props) {
@@ -203,17 +154,50 @@ class EditCourse extends React.Component<Props, EditCourseState> {
     this.props.listPrivileges("COURSE_INFO");
   }
 
+  title = () => {
+    const { editing } = this.state;
+    const { entity } = this.props;
+    return sprintf(
+      editing ? strings.title : strings.newtitle,
+      entity ? entity.name : ""
+    );
+  };
+
+  componentDidMount() {
+    this.props.updateTemplate(tp => ({
+      ...templateDefaults(this.title())(tp),
+      backRoute: routes.Courses.path,
+      fixedViewPort: true,
+      tabs: this.tabs(),
+      footer: this.footer()
+    }));
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    const newUuid = this.props.uuid;
+    if (newUuid && prevProps.uuid !== newUuid) {
+      this.props.loadEntity(newUuid);
+    }
+    this.updateTitle();
+  }
+
+  updateChanged = (changed: boolean) => {
+    this.setState({ changed }, this.updateFooter);
+    this.props.setPreventNavigation(changed);
+  };
+
   modifyEntity = (c: Partial<Course>) => {
     if (this.props.entity) {
       this.props.modifyEntity({ ...this.props.entity, ...c });
-      this.setState({ changed: true });
+      if (!this.state.changed) {
+        this.updateChanged(true);
+      }
     }
   };
 
-  handleSave() {
+  handleSave = () => {
     if (this.props.entity) {
       const { versionSelection } = this.props.entity;
-      const { router, routes } = bridge;
       const vs = versionSelection === "DEFAULT" ? undefined : versionSelection;
 
       let course = {
@@ -232,22 +216,20 @@ class EditCourse extends React.Component<Props, EditCourseState> {
             .then(editedCourse => {
               // change the URL, but only if it's new
               if (!thiss.props.uuid) {
-                // FIXME: remove the unload event listener
-                //window.removeEventListener('beforeunload');
-                const uuid = editedCourse.result.uuid;
-                const courseEditRoute = router(routes.CourseEdit(uuid));
-                window.location.href = courseEditRoute.href;
-              } else {
-                thiss.setState({ changed: false, justSaved: true });
+                thiss.props.redirect(
+                  routes.EditCourse.to(editedCourse.result.uuid!)
+                );
               }
+              thiss.updateChanged(false);
+              thiss.setState({ justSaved: true });
             })
             .catch(r => thiss.setState({ errored: true }));
         } else {
-          thiss.setState({ activeTab: 0 });
+          thiss.setState({ activeTab: 0 }, thiss.updateTabs);
         }
       });
     }
-  }
+  };
 
   handleChange(
     stateFieldName: string
@@ -284,26 +266,70 @@ class EditCourse extends React.Component<Props, EditCourseState> {
     };
   }
 
-  handleTabChange(): (event: any, value: number) => void {
-    return (event: any, value: number) => {
-      this.setState({ activeTab: value });
-    };
+  tabs() {
+    return (
+      <Tabs
+        value={this.state.activeTab}
+        onChange={this.handleTabChange}
+        variant="fullWidth"
+      >
+        <Tab label={strings.tab} />
+        <Tab label={entityStrings.edit.tab.permissions} />
+      </Tabs>
+    );
   }
 
-  handleChangeTabIndex(): (index: number) => void {
-    return (index: number) => {
-      this.setState({ activeTab: index });
-    };
+  updateTabs() {
+    this.props.updateTemplate(tp => ({ ...tp, tabs: this.tabs() }));
   }
 
-  handleAclChange(): (e: AclEditorChangeEvent) => void {
-    return (e: AclEditorChangeEvent) => {
-      this.setState({
+  updateFooter() {
+    this.props.updateTemplate(tp => ({ ...tp, footer: this.footer() }));
+  }
+
+  handleTabChange = (event: any, value: number) => {
+    this.setState({ activeTab: value }, this.updateTabs);
+  };
+
+  handleAclChange = (e: AclEditorChangeEvent) => {
+    this.updateChanged(true);
+    this.setState(
+      {
         canSave: e.canSave,
         changed: true,
         editSecurity: e.getAcls
-      });
-    };
+      },
+      this.updateFooter
+    );
+  };
+
+  footer() {
+    const { classes } = this.props;
+    const { changed, canSave } = this.state;
+    return (
+      <Paper className={classes.footerActions}>
+        <Button
+          component={p => <Link {...p} to={routes.Courses.path} />}
+          color="secondary"
+        >
+          {commonString.action.cancel}
+        </Button>
+        <Button
+          onClick={this.handleSave}
+          color="primary"
+          disabled={!canSave || !changed}
+        >
+          {commonString.action.save}
+        </Button>
+      </Paper>
+    );
+  }
+
+  updateTitle() {
+    return this.props.updateTemplate(template => ({
+      ...template,
+      title: this.title()
+    }));
   }
 
   render() {
@@ -314,29 +340,16 @@ class EditCourse extends React.Component<Props, EditCourseState> {
       availablePrivileges,
       classes
     } = this.props;
-    const { AclEditor, router, routes } = bridge;
-    const { editing } = this.state;
+    const { AclEditor } = bridge;
     const typeval = strings.type;
     const versionval = strings.version;
-    const title = sprintf(
-      editing ? strings.title : strings.newtitle,
-      entity ? entity.name : ""
-    );
 
     if (loading || !citations || !availablePrivileges) {
-      return (
-        <Template title={title} backRoute={routes.CoursesPage}>
-          <Loader />
-        </Template>
-      );
+      return <Loader />;
     }
 
     if (!entity) {
-      return (
-        <Template title={title} backRoute={routes.CoursesPage}>
-          <Error>Error loading entity</Error>
-        </Template>
-      );
+      return <Error>Error loading entity</Error>;
     }
 
     const {
@@ -354,7 +367,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
       security,
       validationErrors
     } = entity;
-    const { activeTab, changed, canSave, justSaved, errored } = this.state;
+    const { justSaved, errored } = this.state;
     const vs = versionSelection ? versionSelection : "DEFAULT";
     const fromDate = from ? DateTime.fromISO(from) : null;
     const untilDate = until ? DateTime.fromISO(until) : null;
@@ -365,39 +378,8 @@ class EditCourse extends React.Component<Props, EditCourseState> {
       rules = security!.rules;
     }
 
-    const saveOrCancel = (
-      <Paper className={classes.footerActions}>
-        <Button onClick={router(routes.CoursesPage).onClick} color="secondary">
-          {commonString.action.cancel}
-        </Button>
-        <Button
-          onClick={this.handleSave.bind(this)}
-          color="primary"
-          disabled={!canSave || !changed}
-        >
-          {commonString.action.save}
-        </Button>
-      </Paper>
-    );
-
     return (
-      <Template
-        title={title}
-        preventNavigation={changed}
-        fixedViewPort={true}
-        backRoute={routes.CoursesPage}
-        footer={saveOrCancel}
-        tabs={
-          <Tabs
-            value={activeTab}
-            onChange={this.handleTabChange()}
-            variant="fullWidth"
-          >
-            <Tab label={strings.tab} />
-            <Tab label={entityStrings.edit.tab.permissions} />
-          </Tabs>
-        }
-      >
+      <React.Fragment>
         <MessageInfo
           title={strings.saved}
           open={justSaved}
@@ -589,14 +571,14 @@ class EditCourse extends React.Component<Props, EditCourseState> {
           >
             {/* TODO: priv list from API */}
             <AclEditor
-              onChange={this.handleAclChange()}
+              onChange={this.handleAclChange}
               acls={rules}
               allowedPrivs={availablePrivileges}
             />
           </div>
           <div className={classes.footer} />
         </div>
-      </Template>
+      </React.Fragment>
     );
   }
 }

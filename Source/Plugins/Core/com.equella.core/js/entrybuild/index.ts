@@ -1,2 +1,4 @@
 require("../tsrc/installcss");
-require("./target/main.js");
+import "./target/main";
+import main from "../tsrc/mainui";
+main();

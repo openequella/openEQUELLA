@@ -1,9 +1,4 @@
-exports.courseString = require("~/../tsrc/course/SearchCourse").strings;
-exports.courseEditString = require("~/../tsrc/course/EditCourse").strings;
-exports.entityStrings = require("~/../tsrc/entity").entityStrings;
-exports.uiThemeSettingStrings = require("~/../tsrc/theme/ThemePage").strings;
-exports.templateStrings = require("~/../tsrc/mainui/Template").strings;
-exports.templateCoreStrings = require("~/../tsrc/mainui/Template").coreStrings;
+exports.tsStrings = require("~/../tsrc/util/langstrings").languageStrings;
 
 exports.genStringsDynamic = function(t) {
   var strings = [];

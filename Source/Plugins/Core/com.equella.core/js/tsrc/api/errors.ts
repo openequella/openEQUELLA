@@ -4,6 +4,7 @@ export interface ErrorResponse {
   id: string;
   error: string;
   description?: string;
+  code?: number;
 }
 
 export const generateNewErrorID = (

@@ -1,15 +1,43 @@
 import * as React from "react";
-import { Routes, Route } from "./routes";
 import { AclEditorProps } from "./acleditor";
-import { ClickableLink } from "./General";
+import { ErrorResponse } from "./errors";
+import { TemplateProps } from "tsrc/mainui/Template";
+
+interface LegacyURI {
+  must: string;
+}
+
+interface PageContent {
+  html: { [key: string]: string };
+  script: string;
+  title: string;
+  contentId: string;
+  fullscreenMode: string;
+  menuMode: string;
+  hideAppBar: boolean;
+  preventUnload: boolean;
+  afterHtml: () => void;
+}
+interface LegacyContentProps {
+  page: LegacyURI;
+  contentUpdated: (content: PageContent) => void;
+  userUpdated: () => void;
+  redirected: (redir: { href: string; external: boolean }) => void;
+  onError: (cb: { error: ErrorResponse; fullScreen: boolean }) => void;
+}
+
+interface GenericPageProps {
+  updateTemplate: (update: (template: TemplateProps) => TemplateProps) => void;
+}
+
+interface SettingsPageProps extends GenericPageProps {
+  refreshUser: () => void;
+}
 
 export interface Bridge {
-  routes: Routes;
-  router: (route: Route) => ClickableLink;
-  routeURI: (route: Route) => string;
-  pushRoute: (route: Route) => void;
-  forcePushRoute: (Route: Route) => void;
-  matchRoute: (uri: string) => Route | null;
-  setPreventNav: (cb: (route: Route) => boolean) => void;
   AclEditor: React.ComponentType<AclEditorProps>;
+  LegacyContent: React.ComponentType<LegacyContentProps>;
+  SettingsPage: React.ComponentType<SettingsPageProps>;
+  SearchPage: React.ComponentType<GenericPageProps>;
+  legacyUri: (uri: string) => LegacyURI;
 }

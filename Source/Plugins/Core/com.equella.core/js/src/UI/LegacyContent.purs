@@ -2,24 +2,21 @@ module OEQ.UI.LegacyContent where
 
 import Prelude
 
-import Control.Monad.Maybe.Trans (MaybeT(..), lift, runMaybeT)
-import Data.Array (catMaybes, filter, length, mapWithIndex)
+import Control.Monad.Maybe.Trans (lift)
+import Data.Array (catMaybes, filter)
 import Data.Either (Either(..))
-import Data.Map as Map
-import Data.Maybe (Maybe(..), fromJust, fromMaybe', maybe')
+import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toNullable)
 import Data.Set (Set)
 import Data.Set as Set
 import Data.String (joinWith)
-import Data.Traversable (sequence_, traverse, traverse_)
 import Data.Tuple (Tuple(..))
 import Dispatcher (affAction)
-import Dispatcher.React (getProps, getState, modifyState, propsRenderer, renderer, saveRef, withRef)
+import Dispatcher.React (getProps, getState, modifyState, renderer)
 import Effect (Effect)
-import Effect.Aff (Aff, makeAff, nonCanceler, runAff_)
-import Effect.Aff.Compat (EffectFnAff(..), fromEffectFnAff)
+import Effect.Aff (Aff, runAff_)
+import Effect.Aff.Compat (EffectFnAff, fromEffectFnAff)
 import Effect.Class (liftEffect)
-import Effect.Ref as Ref
 import Effect.Uncurried (EffectFn1, EffectFn2, mkEffectFn1, mkEffectFn2, runEffectFn1)
 import Foreign.Object (Object, lookup)
 import Foreign.Object as Object
@@ -27,33 +24,19 @@ import MaterialUI.Styles (withStyles)
 import OEQ.API.LegacyContent (submitRequest)
 import OEQ.Data.Error (ErrorResponse)
 import OEQ.Data.LegacyContent (ContentResponse(..), LegacyURI(..), SubmitOptions)
-import OEQ.Environment (baseUrl)
 import OEQ.UI.Common (scrollWindowToTop)
+import OEQ.Utils.Interop (nullAny)
 import OEQ.Utils.QueryString (toTuples)
 import OEQ.Utils.UUID (newUUID)
-import Partial.Unsafe (unsafeCrashWith, unsafePartial)
-import React (ReactElement, ReactRef, component, unsafeCreateLeafElement)
-import React as R
+import React (ReactClass, ReactElement, ReactRef, component, unsafeCreateLeafElement)
 import React.DOM (div')
 import React.DOM as D
-import React.DOM.Props (Props, _id, _type, onSubmit)
+import React.DOM.Props (_type, onSubmit)
 import React.DOM.Props as DP
 import React.SyntheticEvent (preventDefault)
-import Unsafe.Coerce (unsafeCoerce)
+import Record.Unsafe.Union (unsafeUnion)
+import TSComponents (JQueryDivProps, jqueryDivClass)
 import Unsafe.Reference (unsafeRefEq)
-import Web.DOM.Document (createElement, getElementsByTagName, toNonElementParentNode)
-import Web.DOM.Element as Elem
-import Web.DOM.HTMLCollection (item, toArray)
-import Web.DOM.Node (appendChild, insertBefore, removeChild)
-import Web.DOM.NonDocumentTypeChildNode (previousElementSibling)
-import Web.DOM.NonElementParentNode (getElementById)
-import Web.Event.Event (EventType(..))
-import Web.Event.EventTarget (addEventListener, eventListener)
-import Web.HTML (window)
-import Web.HTML.HTMLDocument (toDocument)
-import Web.HTML.HTMLLinkElement as Link
-import Web.HTML.HTMLScriptElement as Script
-import Web.HTML.Window (document)
 
 foreign import setInnerHtml :: {node :: ReactRef, html:: String, script::Nullable String, afterHtml :: Nullable (Effect Unit) } -> Effect Unit
 foreign import clearInnerHtml :: ReactRef -> Effect Unit
@@ -67,63 +50,20 @@ foreign import setupLegacyHooks_ :: {
     updateForm :: EffectFn1 {state :: Object (Array String), partial :: Boolean} Unit
   } -> Effect Unit 
 
-divWithHtml :: {divProps :: Array Props, html :: String, script :: Maybe String, afterHtml :: Maybe (Effect Unit), contentId::String} -> ReactElement
-divWithHtml = unsafeCreateLeafElement $ component "JQueryDiv" $ \this -> do
-  domNode <- Ref.new Nothing
-  let
-    render {divProps,html} = D.div (divProps <> [ DP.ref $ runEffectFn1 $ saveRef domNode ]) []
-    updateHtml = do 
-      {html, script, afterHtml} <- R.getProps this
-      withRef domNode $ \node -> setInnerHtml {node,html,script: toNullable script, afterHtml: toNullable afterHtml}
-  pure {
-    render: propsRenderer render this,
-    componentDidMount: updateHtml,
-    componentWillUnmount: withRef domNode clearInnerHtml,
-    componentDidUpdate: \_ _  _ -> updateHtml,
-    shouldComponentUpdate: \{contentId} _ -> do 
-      {contentId:newcontentId} <- R.getProps this
-      pure $ contentId /= newcontentId
-  }
-
 foreign import resolveUrl :: String -> String 
 
 filterUrls :: Set String -> Array String -> Array String 
 filterUrls existing = filter (not <<< flip Set.member existing)
 
+foreign import loadMissingScripts_ :: Array String -> EffectFnAff Unit
 
 loadMissingScripts :: Array String -> Aff Unit
-loadMissingScripts _scripts =  unsafePartial $ makeAff $ \cb -> do 
-  let scripts = resolveUrl <$> _scripts
-  w <- window
-  htmldoc <- document w
-  let doc = toDocument htmldoc
-      
-  head <- fromJust <$> (getElementsByTagName "head" doc >>= item 0)
-  loadedScripts <- getElementsByTagName "script" doc >>= toArray
-  let getSrc elem = Script.src $ unsafeCoerce elem
-  ex <- Set.fromFoldable <$> traverse getSrc loadedScripts
-  let toLoad = filterUrls ex scripts
-      scriptCount = length toLoad
-  let createScript ind src = do 
-        tag <- unsafeCoerce <$> createElement "script" doc
-        Script.setSrc src tag
-        Script.setAsync false tag
-        if scriptCount == ind + 1
-          then do 
-            el <- eventListener (\_ -> cb $ Right unit)
-            addEventListener (EventType "load") el false (Script.toEventTarget tag)
-          else pure unit
-        appendChild (Script.toNode tag) (Elem.toNode head)
-  sequence_ $ mapWithIndex createScript toLoad
-  if scriptCount == 0 then (cb $ Right unit) else pure unit
-  pure nonCanceler
-
+loadMissingScripts scripts = fromEffectFnAff $ loadMissingScripts_ scripts
 
 foreign import updateStylesheets_ :: Boolean -> Array String -> EffectFnAff (Effect Unit)
 
 updateStylesheets :: Boolean -> Array String -> Aff (Effect Unit)
 updateStylesheets replace sheets = fromEffectFnAff $ updateStylesheets_ replace sheets
-
 
 updateIncludes :: Boolean -> Array String -> Array String -> Aff (Effect Unit)
 updateIncludes replace css js = do 
@@ -149,10 +89,10 @@ writeForm state content = D.form [DP.name "eqForm", DP._id "eqpageForm", onSubmi
 
 type LegacyContentProps = {
     page :: LegacyURI
-  , contentUpdated :: PageContent -> Effect Unit
+  , contentUpdated :: EffectFn1 PageContent  Unit
   , userUpdated :: Effect Unit
-  , redirected :: {href :: String, external :: Boolean} -> Effect Unit
-  , onError :: {error::ErrorResponse, fullScreen :: Boolean} -> Effect Unit
+  , redirected :: EffectFn1 {href :: String, external :: Boolean} Unit
+  , onError :: EffectFn1 {error::ErrorResponse, fullScreen :: Boolean} Unit
 }
 
 type PageContent = {
@@ -180,11 +120,17 @@ type State = {
   noForm :: Boolean
 }
 
+divWithHtml :: forall r. JQueryDivProps r -> ReactElement
+divWithHtml = unsafeCreateLeafElement jqueryDivClass
+
 emptyContent :: PageContent 
 emptyContent = {html:Object.empty, script:"", title:"", contentId: "0", fullscreenMode: "NO", menuMode:"NO", hideAppBar: false, preventUnload:false, afterHtml: pure unit}
 
 legacyContent :: LegacyContentProps -> ReactElement
-legacyContent = unsafeCreateLeafElement $ withStyles styles $ component "LegacyContent" $ \this -> do
+legacyContent = unsafeCreateLeafElement legacyContentClass
+
+legacyContentClass :: ReactClass LegacyContentProps 
+legacyContentClass = withStyles styles $ component "LegacyContent" $ \this -> do
   let 
     d = eval >>> affAction this
 
@@ -197,18 +143,19 @@ legacyContent = unsafeCreateLeafElement $ withStyles styles $ component "LegacyC
                 _ -> case c.menuMode of
                   "HIDDEN" -> [] 
                   _ -> [classes.withPadding]
+              
+              jqueryDiv :: forall r. (JQueryDivProps () -> JQueryDivProps r) -> String -> ReactElement
               jqueryDiv f h = divWithHtml $ f {
-                contentId, 
-                divProps:[], 
-                script:Nothing, 
-                afterHtml: Nothing, 
+                script: nullAny, 
+                afterHtml: nullAny,
                 html:h }
               jqueryDiv_ = jqueryDiv identity
 
               actualContent = D.div [DP.className $ joinWith " " $ ["content"] <> extraClass] $ catMaybes [ 
-                  (jqueryDiv (_ {divProps = [_id "breadcrumbs"]}) <$> lookup "crumbs" html),
+                  (jqueryDiv (unsafeUnion {id: "breadcrumbs" }) <$> lookup "crumbs" html),
                   jqueryDiv_  <$> lookup "upperbody" html,
-                  (jqueryDiv _ {script = Just script, afterHtml = Just afterHtml}) <$> lookup "body" html ]
+                  (jqueryDiv _ {script = toNullable $ Just script, 
+                    afterHtml = toNullable $ Just afterHtml}) <$> lookup "body" html ]
               mainContent = if s.noForm 
                 then actualContent
                 else writeForm s.state actualContent
@@ -218,7 +165,7 @@ legacyContent = unsafeCreateLeafElement $ withStyles styles $ component "LegacyC
         (lift $ submitRequest path opts) >>= case _ of 
           Left error -> do 
             {onError} <- getProps
-            liftEffect $ onError {error, fullScreen:fullError }
+            liftEffect $ runEffectFn1 onError {error, fullScreen:fullError }
           Right resp -> updateContent resp
 
     eval = case _ of 
@@ -244,7 +191,7 @@ legacyContent = unsafeCreateLeafElement $ withStyles styles $ component "LegacyC
 
     doRedir href external = do 
         {redirected} <- getProps 
-        liftEffect $ redirected {href,external}
+        liftEffect $ runEffectFn1 redirected {href,external}
 
     updateContent = case _ of 
       Callback cb -> liftEffect cb
@@ -261,7 +208,7 @@ legacyContent = unsafeCreateLeafElement $ withStyles styles $ component "LegacyC
         let newContent = {contentId,  html, script, title, fullscreenMode, menuMode, 
                             hideAppBar, preventUnload, afterHtml: deleteSheets}
         {contentUpdated} <- getProps 
-        liftEffect $ contentUpdated newContent                    
+        liftEffect $ runEffectFn1 contentUpdated newContent                    
         modifyState \s -> s {noForm = lc.noForm,
           content = Just newContent, state = state}
 
@@ -272,7 +219,7 @@ legacyContent = unsafeCreateLeafElement $ withStyles styles $ component "LegacyC
       state: Object.empty, 
       noForm: false
     } :: State, 
-    render: renderer render this, 
+    render: renderer render this,
     componentDidMount: do 
       setupLegacyHooks (d <<< Submit) (d <<< UpdateForm)
       d $ LoadPage,

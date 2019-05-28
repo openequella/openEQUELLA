@@ -2,26 +2,17 @@ import { WithStyles } from "@material-ui/core";
 import * as React from "react";
 import EntityList from "../components/EntityList";
 import { SearchResult, handleUnexpectedApiError } from "../components";
-import { prepLangStrings, formatSize } from "../util/langstrings";
+import { formatSize, languageStrings } from "../util/langstrings";
 import { SearchConfig, listAllConfigs } from ".";
-import { ErrorResponse } from "../api/errors";
-import { Template } from "../mainui/Template";
+import { TemplateUpdateProps, templateDefaults } from "../mainui/Template";
 
-interface SearchConfigsProps extends WithStyles {}
+interface SearchConfigsProps extends TemplateUpdateProps, WithStyles {}
 
 interface SearchConfigsState {
   searchConfigs: SearchConfig[] | null;
-  errorResponse?: ErrorResponse;
 }
 
-export const strings = prepLangStrings("searchconfigs", {
-  title: "Search Configurations",
-  configsAvailable: {
-    zero: "No search configurations available",
-    one: "%d configuration",
-    more: "%d configurations"
-  }
-});
+export const strings = languageStrings.searchconfigs;
 
 class ListSearchConfigs extends React.Component<
   SearchConfigsProps,
@@ -38,6 +29,7 @@ class ListSearchConfigs extends React.Component<
     listAllConfigs()
       .then(searchConfigs => this.setState({ searchConfigs }))
       .catch(handleUnexpectedApiError(this));
+    this.props.updateTemplate(templateDefaults(strings.title));
   }
 
   add = () => {
@@ -45,28 +37,26 @@ class ListSearchConfigs extends React.Component<
   };
 
   render() {
-    const { searchConfigs, errorResponse } = this.state;
+    const { searchConfigs } = this.state;
     return (
-      <Template title={strings.title} errorResponse={errorResponse}>
-        <EntityList
-          progress={!searchConfigs}
-          resultsText={formatSize(
-            searchConfigs ? searchConfigs.length : 0,
-            strings.configsAvailable
-          )}
-          createLink={{ href: "PLACEHOLDER", onClick: this.add }}
-        >
-          {!searchConfigs
-            ? null
-            : searchConfigs.map(sc => (
-                <SearchResult
-                  href="PLACEHOLDER"
-                  onClick={e => e}
-                  primaryText={sc.name}
-                />
-              ))}
-        </EntityList>
-      </Template>
+      <EntityList
+        progress={!searchConfigs}
+        resultsText={formatSize(
+          searchConfigs ? searchConfigs.length : 0,
+          strings.configsAvailable
+        )}
+        createOnClick={this.add}
+      >
+        {!searchConfigs
+          ? null
+          : searchConfigs.map(sc => (
+              <SearchResult
+                href="PLACEHOLDER"
+                onClick={e => e}
+                primaryText={sc.name}
+              />
+            ))}
+      </EntityList>
     );
   }
 }

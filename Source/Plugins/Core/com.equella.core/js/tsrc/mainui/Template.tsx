@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Route } from "../api/routes";
 import { ErrorResponse } from "../api/errors";
 import { MuiPickersUtilsProvider } from "material-ui-pickers";
 import MenuIcon from "@material-ui/icons/Menu";
@@ -25,17 +24,11 @@ import {
   List,
   ListItemIcon,
   ListItemText,
-  Divider,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Button
+  Divider
 } from "@material-ui/core";
 import luxonUtils from "@date-io/luxon";
 import { makeStyles } from "@material-ui/styles";
-import { prepLangStrings } from "../util/langstrings";
+import { languageStrings } from "../util/langstrings";
 import {
   getCurrentUser,
   UserData,
@@ -43,63 +36,76 @@ import {
   MenuItem as MI
 } from "../api/currentuser";
 import MessageInfo from "../components/MessageInfo";
-import { commonString } from "../util/commonstrings";
-import { Bridge } from "../api/bridge";
-
-declare const bridge: Bridge;
+import { Link } from "react-router-dom";
+import { LocationDescriptor } from "history";
+import { routes } from "./routes";
 
 interface TemplateApi {
   refreshUser: () => void;
 }
 
-interface TemplateProps {
+export type MenuMode = "HIDDEN" | "COLLAPSED" | "FULL";
+export type FullscreenMode = "YES" | "YES_WITH_TOOLBAR" | "NO";
+export interface TemplateProps {
   title: String;
   /* Fix the height of the main content, otherwise use min-height */
   fixedViewPort?: boolean;
   /* Extra part of the App bar (e.g. Search control) */
   titleExtra?: React.ReactNode;
   /* Extra menu options */
-  menuExtra?: [React.ReactChild];
+  menuExtra?: React.ReactNode;
   /* The main content */
   children: React.ReactNode;
   /* Additional markup for displaying tabs which integrate with the App bar */
   tabs?: React.ReactNode;
-  /* Prevent navigation away from this page (e.g. Unsaved data) */
-  preventNavigation?: boolean;
   /* An optional Route for showing a back icon button */
-  backRoute?: Route;
+  backRoute?: LocationDescriptor;
   /* Markup to show at the bottom of the main area. E.g. save/cancel options */
   footer?: React.ReactNode;
   /* Unexpected errors can be displayed by setting this property */
   errorResponse?: ErrorResponse;
-  fullscreenMode?: string;
+  fullscreenMode?: FullscreenMode;
   hideAppBar?: boolean;
-  menuMode?: string;
+  menuMode?: MenuMode;
   disableNotifications?: boolean;
   innerRef?: (api: TemplateApi) => void;
 }
 
-export const strings = prepLangStrings("template", {
-  menu: {
-    title: "My Account",
-    logout: "Logout",
-    prefs: "My preferences"
-  },
-  navaway: {
-    title: "You have unsaved changes",
-    content: "If you leave this page you will lose your changes."
-  }
-});
+export interface TemplateUpdateProps {
+  updateTemplate: (update: TemplateUpdate) => void;
+}
 
-export const coreStrings = prepLangStrings("com.equella.core", {
-  windowtitlepostfix: " | openEQUELLA",
-  topbar: {
-    link: {
-      notifications: "Notifications",
-      tasks: "Tasks"
-    }
-  }
-});
+export type TemplateUpdate = (
+  templateProps: Readonly<TemplateProps>
+) => TemplateProps;
+
+export function templateDefaults(title: string): TemplateUpdate {
+  return tp =>
+    ({
+      ...tp,
+      title,
+      backRoute: undefined,
+      titleExtra: undefined,
+      tabs: undefined,
+      fixedViewPort: undefined,
+      footer: undefined,
+      hideAppBar: undefined,
+      fullscreenMode: undefined,
+      menuMode: undefined,
+      disableNotifications: undefined
+    } as TemplateProps);
+}
+
+export function templateError(errorResponse: ErrorResponse): TemplateUpdate {
+  return tp => ({
+    ...tp,
+    errorResponse
+  });
+}
+
+export const strings = languageStrings.template;
+
+export const coreStrings = languageStrings["com.equella.core"];
 
 const topBarString = coreStrings.topbar.link;
 
@@ -232,34 +238,13 @@ function useFullscreen(props: TemplateProps) {
   return props.hideAppBar || modeIsFullscreen;
 }
 
-const beforeunload = function(e: Event) {
-  e.returnValue = ("Are you sure?" as unknown) as boolean;
-  return "Are you sure?";
-};
-
-export function Template(props: TemplateProps) {
+export const Template = React.memo(function Template(props: TemplateProps) {
   const [currentUser, setCurrentUser] = React.useState<UserData>(guestUser);
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement>();
   const [navMenuOpen, setNavMenuOpen] = React.useState(false);
   const [errorOpen, setErrorOpen] = React.useState(false);
-  const [attemptedRoute, setAttemptedRoute] = React.useState<Route>();
-  const { router, routes, matchRoute } = bridge;
 
   const classes = useStyles();
-
-  React.useEffect(() => {
-    bridge.setPreventNav(r => {
-      if (props.preventNavigation) {
-        setAttemptedRoute(r);
-      }
-      return Boolean(props.preventNavigation);
-    });
-    if (props.preventNavigation) {
-      window.addEventListener("beforeunload", beforeunload, false);
-    } else {
-      window.removeEventListener("beforeunload", beforeunload, false);
-    }
-  }, [props.preventNavigation]);
 
   React.useEffect(() => {
     if (props.errorResponse) {
@@ -267,16 +252,19 @@ export function Template(props: TemplateProps) {
     }
   }, [props.errorResponse]);
 
-  React.useEffect(() => {
+  function refreshUser() {
     getCurrentUser().then(setCurrentUser);
+  }
+
+  React.useEffect(refreshUser, []);
+
+  React.useEffect(() => {
     if (props.innerRef) {
       props.innerRef({
-        refreshUser: () => {
-          getCurrentUser().then(setCurrentUser);
-        }
+        refreshUser
       });
     }
-  }, []);
+  }, [props.innerRef]);
 
   React.useEffect(() => {
     const classList = window.document.getElementsByTagName("html")[0].classList;
@@ -299,17 +287,20 @@ export function Template(props: TemplateProps) {
     window.document.title = `${props.title}${coreStrings.windowtitlepostfix}`;
   }, [props.title]);
 
-  function menuLink(route: Route) {
-    setMenuAnchorEl(undefined);
-    bridge.pushRoute(route);
-  }
-
-  function linkItem(link: Route, text: string) {
+  function linkItem(
+    link: LocationDescriptor,
+    serverSide: boolean,
+    text: string
+  ) {
     return (
       <MenuItem
-        component="a"
-        href={bridge.routeURI(link)}
-        onClick={_ => menuLink(link)}
+        component={p =>
+          serverSide ? (
+            <a {...p} href={link as string} />
+          ) : (
+            <Link {...p} to={link} />
+          )
+        }
       >
         {text}
       </MenuItem>
@@ -324,37 +315,43 @@ export function Template(props: TemplateProps) {
   ) {
     return (
       <Tooltip title={title}>
-        <IconButton aria-label={title} href={uri}>
-          {count == 0 ? (
-            icon
-          ) : (
-            <Badge badgeContent={count} color="secondary">
-              {icon}
-            </Badge>
-          )}
-        </IconButton>
+        <Link to={uri}>
+          <IconButton aria-label={title}>
+            {count == 0 ? (
+              icon
+            ) : (
+              <Badge badgeContent={count} color="secondary">
+                {icon}
+              </Badge>
+            )}
+          </IconButton>
+        </Link>
       </Tooltip>
     );
   }
 
   function navItem(item: MI, ind: number) {
-    const matched = item.route ? matchRoute(item.route) : null;
-    const { href, onClick } = matched
-      ? router(matched)
-      : { href: item.href, onClick: undefined };
     return (
       <ListItem
-        component="a"
-        href={href}
+        component={p => {
+          const props = {
+            ...p,
+            target: item.newWindow ? "_blank" : undefined,
+            onClick: () => setNavMenuOpen(false)
+          };
+          return item.route ? (
+            <Link {...props} to={item.route} />
+          ) : (
+            <a {...props} href={item.href!} />
+          );
+        }}
         key={ind}
-        onClick={onClick}
-        target={item.newWindow ? "_blank" : undefined}
       >
         <ListItemIcon>
           {item.iconUrl ? (
             <img src={item.iconUrl} />
           ) : (
-            <Icon color="inherit" className={classes.menuItem}>
+            <Icon color="inherit" className={classes.menuIcon}>
               {item.systemIcon ? item.systemIcon : "folder"}
             </Icon>
           )}
@@ -398,9 +395,11 @@ export function Template(props: TemplateProps) {
     return (
       <div className={classes.titleArea}>
         {props.backRoute && (
-          <IconButton onClick={_ => bridge.pushRoute(props.backRoute!)}>
-            <BackIcon />
-          </IconButton>
+          <Link to={props.backRoute}>
+            <IconButton>
+              <BackIcon />
+            </IconButton>
+          </Link>
         )}
         <Typography
           variant="h5"
@@ -426,13 +425,13 @@ export function Template(props: TemplateProps) {
               {badgedLink(
                 <AssignmentIcon />,
                 itemCounts.tasks,
-                "access/tasklist.do",
+                routes.TaskList.to,
                 topBarString.tasks
               )}
               {badgedLink(
                 <NotificationsIcon />,
                 itemCounts.notifications,
-                "access/notifications.do",
+                routes.Notifications.to,
                 topBarString.notifications
               )}
             </Hidden>
@@ -451,9 +450,9 @@ export function Template(props: TemplateProps) {
               anchorOrigin={{ vertical: "top", horizontal: "right" }}
               transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
-              {linkItem(routes.Logout, strings.menu.logout)}
+              {linkItem(routes.Logout.to, true, strings.menu.logout)}
               {currentUser.prefsEditable &&
-                linkItem(routes.UserPrefs, strings.menu.prefs)}
+                linkItem(routes.UserPreferences.to, false, strings.menu.prefs)}
             </Menu>
           </React.Fragment>
         )}
@@ -530,34 +529,13 @@ export function Template(props: TemplateProps) {
     );
   }
 
-  function navigateConfirm(leave: boolean) {
-    if (leave && attemptedRoute) {
-      bridge.forcePushRoute(attemptedRoute);
-    }
-    setAttemptedRoute(undefined);
-  }
-
   return (
     <MuiPickersUtilsProvider utils={luxonUtils}>
       <CssBaseline />
       <div className={classes.root}>
         {layout}
-        <Dialog open={Boolean(attemptedRoute)}>
-          <DialogTitle>{strings.navaway.title}</DialogTitle>
-          <DialogContent>
-            <DialogContentText>{strings.navaway.content}</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button color="secondary" onClick={_ => navigateConfirm(false)}>
-              {commonString.action.cancel}
-            </Button>
-            <Button color="primary" onClick={_ => navigateConfirm(true)}>
-              {commonString.action.discard}
-            </Button>
-          </DialogActions>
-        </Dialog>
         {props.errorResponse && renderError(props.errorResponse)}
       </div>
     </MuiPickersUtilsProvider>
   );
-}
+});

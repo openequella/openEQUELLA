@@ -16,15 +16,18 @@ import {
   cloudProviderLangStrings,
   registerCloudProviderInit
 } from "./CloudProviderModule";
-import { AxiosError } from "axios";
-import { ErrorResponse, generateFromError } from "../api/errors";
 import EntityList from "../components/EntityList";
 import { formatSize } from "../util/langstrings";
 import { sprintf } from "sprintf-js";
 import ConfirmDialog from "../components/ConfirmDialog";
 import CloudProviderAddDialog from "./CloudProviderAddDialog";
 import EquellaListItem from "../components/EquellaListItem";
-import { Template } from "../mainui/Template";
+import {
+  templateDefaults,
+  templateError,
+  TemplateUpdateProps
+} from "../mainui/Template";
+import { generateFromError } from "../api/errors";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -37,10 +40,12 @@ const styles = (theme: Theme) =>
     }
   });
 
-interface CloudProviderListPageProps extends WithStyles<typeof styles> {}
+interface CloudProviderListPageProps
+  extends TemplateUpdateProps,
+    WithStyles<typeof styles> {}
+
 interface CloudProviderListPageState {
   cloudProviders: CloudProviderEntity[];
-  error?: ErrorResponse;
   deleteDialogOpen: boolean;
   registerDialogOpen: boolean;
   deleteDetails?: CloudProviderEntity;
@@ -59,8 +64,13 @@ class CloudProviderListPage extends React.Component<
     };
   }
 
+  handleError = (error: Error) => {
+    this.props.updateTemplate(templateError(generateFromError(error)));
+  };
+
   componentDidMount(): void {
     this.getCloudProviderList();
+    this.props.updateTemplate(templateDefaults(cloudProviderLangStrings.title));
   }
 
   getCloudProviderList = () => {
@@ -70,15 +80,7 @@ class CloudProviderListPage extends React.Component<
           cloudProviders: result.results
         }));
       })
-      .catch((error: AxiosError) => {
-        this.handleError(error);
-      });
-  };
-
-  handleError = (error: Error) => {
-    this.setState({
-      error: generateFromError(error)
-    });
+      .catch(this.handleError);
   };
 
   deleteCloudProvider = (cloudProvider: CloudProviderEntity) => {
@@ -101,9 +103,7 @@ class CloudProviderListPage extends React.Component<
         .then(() => {
           this.getCloudProviderList();
         })
-        .catch((error: AxiosError) => {
-          this.handleError(error);
-        });
+        .catch(this.handleError);
     }
   };
 
@@ -124,27 +124,13 @@ class CloudProviderListPage extends React.Component<
       .then(result => {
         window.location.href = result.url;
       })
-      .catch((error: AxiosError) => {
-        this.setState({
-          error: generateFromError(error)
-        });
-      });
+      .catch(this.handleError);
   };
 
   render() {
-    const {
-      error,
-      cloudProviders,
-      deleteDialogOpen,
-      registerDialogOpen
-    } = this.state;
-    //open a dialog instead of going to another page
-    const registerLink = {
-      href: "",
-      onClick: this.registerCloudProvider
-    };
+    const { cloudProviders, deleteDialogOpen, registerDialogOpen } = this.state;
     return (
-      <Template title={cloudProviderLangStrings.title} errorResponse={error}>
+      <>
         {this.state.deleteDetails && (
           <ConfirmDialog
             open={deleteDialogOpen}
@@ -170,7 +156,7 @@ class CloudProviderListPage extends React.Component<
             cloudProviderLangStrings.cloudprovideravailable
           )}
           progress={false}
-          createLink={registerLink}
+          createOnClick={this.registerCloudProvider}
         >
           {cloudProviders.map(cloudProvider => {
             let secondaryAction = (
@@ -205,7 +191,7 @@ class CloudProviderListPage extends React.Component<
             );
           })}
         </EntityList>
-      </Template>
+      </>
     );
   }
 }
