@@ -130,28 +130,24 @@ public final class Bootstrap {
         String password = System.getProperty(PASSWORD_PARAMETER);
 
         LoginDialog loginDialog = new LoginDialog();
-        boolean retry = false;
         try {
           if (username != null && password != null) {
             if (tryLogin(endpointUrl, username, password)) {
               return true;
             }
-            retry = true;
           }
 
           while (true) {
             loginDialog.setUsername(username);
             loginDialog.setVisible(true);
-            if (retry) {
-              loginDialog.setErrorMessage("Invalid credentials");
-            }
             if (loginDialog.getResult() == LoginDialog.RESULT_OK) {
               username = loginDialog.getUsername();
               password = loginDialog.getPassword();
               if (tryLogin(endpointUrl, username, password)) {
                 return true;
+              } else {
+                loginDialog.setErrorMessage("Your credentials are invalid.");
               }
-              retry = true;
             } else {
               return false;
             }
