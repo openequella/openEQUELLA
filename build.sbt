@@ -9,8 +9,8 @@ import scala.collection.JavaConverters._
 
 lazy val learningedge_config = project in file("Dev/learningedge-config")
 
-lazy val allPlugins = LocalProject("allPlugins")
-
+lazy val allPlugins      = LocalProject("allPlugins")
+lazy val allPluginsScope = ScopeFilter(inAggregates(allPlugins, includeRoot = false))
 val legacyPaths = Seq(
   javaSource in Compile := baseDirectory.value / "src",
   javaSource in Test := baseDirectory.value / "test",
@@ -150,7 +150,7 @@ versionProperties in ThisBuild := {
 updateLicenses := {
   val ourOrg         = organization.value
   val serverReport   = (updateLicenses in equellaserver).value
-  val plugsinReports = updateLicenses.all(ScopeFilter(inAggregates(allPlugins))).value
+  val plugsinReports = updateLicenses.all(allPluginsScope).value
   val allLicenses = (plugsinReports.flatMap(_.licenses) ++ serverReport.licenses)
     .groupBy(_.module)
     .values
@@ -162,7 +162,7 @@ updateLicenses := {
 writeLanguagePack := {
   IO.withTemporaryDirectory { dir =>
     val allProps = langStrings
-      .all(ScopeFilter(inAggregates(allPlugins, includeRoot = false)))
+      .all(allPluginsScope)
       .value
       .flatten
       .groupBy(ls => (ls.group, ls.xml))
@@ -201,7 +201,7 @@ mergeJPF := {
   val adminConsole = false
   val args         = spaceDelimited("<arg>").parsed
   val _allPluginDirs =
-    pluginAndLibs.all(ScopeFilter(inAggregates(allPlugins, includeRoot = false))).value
+    pluginAndLibs.all(allPluginsScope).value
   val extensionsOnly =
     (baseDirectory.value / "Source/Plugins/Extensions" * "*" / "plugin-jpf.xml").get
   val allPluginDirs = _allPluginDirs ++ (extensionsOnly.map(f => (f.getParentFile, Seq.empty)))
@@ -244,3 +244,18 @@ sources in (Compile, doc) := {
     +++ javadocSources((baseDirectory in LocalProject("com_equella_core")).value)).get
 }
 javacOptions in (Compile, doc) := Seq()
+
+lazy val cleanrun = taskKey[Unit]("clean, build and run a dev server")
+
+lazy val allEquella = ScopeFilter(inAggregates(equella))
+
+cleanrun := {
+  Def
+    .sequential(
+      clean.all(allEquella),
+      jpfWriteDevJars.all(allPluginsScope),
+      (fullClasspath in Compile).all(allEquella),
+      (run in equellaserver).toTask("")
+    )
+    .value
+}

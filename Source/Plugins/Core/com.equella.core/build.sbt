@@ -134,3 +134,11 @@ buildJS := {
 }
 
 resourceGenerators in Compile += buildJS.taskValue
+
+clean := {
+  clean.value
+  val baseSwagger = baseDirectory.value / "swaggerui"
+  val baseJs      = baseDirectory.value / "js"
+  Common.nodeScript("clean", baseSwagger)
+  Common.nodeScript("clean", baseJs)
+}
