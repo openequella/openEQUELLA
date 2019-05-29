@@ -111,7 +111,7 @@ public class LoginDialog extends JDialog implements ActionListener, WindowListen
   }
 
   public void setErrorMessage(String errorMessage) {
-    message.setText(errorMessage);
+    message.setText("<html><b><font color='red'>" + errorMessage + "</font></b></html>");
     if (errorMessage != null) {
       message.setVisible(true);
     }
