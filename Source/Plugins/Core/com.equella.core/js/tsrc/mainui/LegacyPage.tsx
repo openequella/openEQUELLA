@@ -38,18 +38,67 @@ export const LegacyPage = React.memo(function LegacyPage(
     setPreventNavigation(false);
   }, []);
 
-  function processError(err: { error: ErrorResponse; fullScreen: boolean }) {
-    const { error, fullScreen } = err;
-    if (fullScreen) {
-      setFullPageError(error);
-      updateTemplate(
-        tp =>
-          ({ ...tp, fullscreenMode: "NO", title: error.error } as TemplateProps)
+  const processError = React.useCallback(
+    (err: { error: ErrorResponse; fullScreen: boolean }) => {
+      const { error, fullScreen } = err;
+      if (fullScreen) {
+        setFullPageError(error);
+        updateTemplate(
+          tp =>
+            ({
+              ...tp,
+              fullscreenMode: "NO",
+              title: error.error
+            } as TemplateProps)
+        );
+      } else {
+        updateTemplate(templateError(error));
+      }
+    },
+    [updateTemplate, setFullPageError]
+  );
+
+  const contentUpdated = React.useCallback(
+    content => {
+      let soHtml = content.html["so"];
+      let menuExtra = soHtml ? (
+        <ScreenOptions optionsHtml={soHtml} contentId={content.contentId} />
+      ) : (
+        undefined
       );
-    } else {
-      updateTemplate(templateError(error));
-    }
-  }
+      setPreventNavigation(content.preventUnload);
+      updateTemplate(tp => ({
+        ...tp,
+        title: content.title,
+        hideAppBar: content.hideAppBar,
+        fullscreenMode: content.fullscreenMode as FullscreenMode,
+        menuMode: content.menuMode as MenuMode,
+        menuExtra
+      }));
+    },
+    [setPreventNavigation, updateTemplate]
+  );
+
+  const redirCallback = React.useCallback(
+    redir => {
+      const { href, external } = redir;
+      if (external) {
+        window.location.href = href;
+      } else {
+        const ind = href.indexOf("?");
+        const redirloc =
+          ind < 0
+            ? { pathname: "/" + href, search: "" }
+            : {
+                pathname: "/" + href.substr(0, ind),
+                search: href.substr(ind)
+              };
+        setPreventNavigation(false);
+        props.redirect(redirloc);
+      }
+    },
+    [setPreventNavigation, props.redirect]
+  );
 
   return (
     <>
@@ -57,41 +106,9 @@ export const LegacyPage = React.memo(function LegacyPage(
       <LegacyContent
         pathname={location.pathname}
         search={location.search}
-        contentUpdated={content => {
-          let soHtml = content.html["so"];
-          let menuExtra = soHtml ? (
-            <ScreenOptions optionsHtml={soHtml} contentId={content.contentId} />
-          ) : (
-            undefined
-          );
-          setPreventNavigation(content.preventUnload);
-          updateTemplate(tp => ({
-            ...tp,
-            title: content.title,
-            hideAppBar: content.hideAppBar,
-            fullscreenMode: content.fullscreenMode as FullscreenMode,
-            menuMode: content.menuMode as MenuMode,
-            menuExtra
-          }));
-        }}
+        contentUpdated={contentUpdated}
         userUpdated={props.refreshUser}
-        redirected={redir => {
-          const { href, external } = redir;
-          if (external) {
-            window.location.href = href;
-          } else {
-            const ind = href.indexOf("?");
-            const redirloc =
-              ind < 0
-                ? { pathname: "/" + href, search: "" }
-                : {
-                    pathname: "/" + href.substr(0, ind),
-                    search: href.substr(ind)
-                  };
-            props.setPreventNavigation(false);
-            props.redirect(redirloc);
-          }
-        }}
+        redirected={redirCallback}
         onError={processError}
       />
     </>

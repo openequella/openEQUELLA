@@ -502,7 +502,6 @@ export const Template = React.memo(function Template(props: TemplateProps) {
           {menuContent}
         </Drawer>
       </Hidden>
-      )}
       <main
         className={`${classes.content} ${
           props.fixedViewPort

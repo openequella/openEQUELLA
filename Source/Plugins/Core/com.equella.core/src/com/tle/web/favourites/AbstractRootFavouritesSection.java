@@ -123,10 +123,12 @@ public abstract class AbstractRootFavouritesSection
     Model model = getModel(info);
     String list = model.getSearchType();
     SectionTree tree = list.equals(SEARCHES_TYPE) ? getSearchTree() : getItemTree();
-    if (!model.treeAdded) {
-      model.setTreeAdded(true);
+    SectionTree addedTree = model.getAddedTree();
+    if (addedTree != tree) {
       MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
+      if (addedTree != null) minfo.removeTree(addedTree);
       minfo.addTreeToBottom(tree, params);
+      model.setAddedTree(tree);
     }
     return tree;
   }
@@ -156,14 +158,14 @@ public abstract class AbstractRootFavouritesSection
     @Bookmarked(parameter = SEARCHTYPE_PARAM)
     private String searchType = ITEMS_TYPE;
 
-    private boolean treeAdded;
+    private SectionTree addedTree;
 
-    public boolean isTreeAdded() {
-      return treeAdded;
+    public SectionTree getAddedTree() {
+      return addedTree;
     }
 
-    public void setTreeAdded(boolean treeAdded) {
-      this.treeAdded = treeAdded;
+    public void setAddedTree(SectionTree addedTree) {
+      this.addedTree = addedTree;
     }
 
     public String getSearchType() {

@@ -221,15 +221,17 @@ export const LegacyContent = React.memo(function LegacyContent(
   function writeForm(children: React.ReactNode) {
     return (
       <form name="eqForm" id="eqpageForm" onSubmit={e => e.preventDefault()}>
-        {Object.keys(stateData).map((k, i) => {
-          return (
-            <React.Fragment key={i}>
-              {stateData[k].map((v, i) => (
-                <input key={i} type="hidden" name={k} value={v} />
-              ))}
-            </React.Fragment>
-          );
-        })}
+        <div style={{ display: "none" }} className="_hiddenstate">
+          {Object.keys(stateData).map((k, i) => {
+            return (
+              <React.Fragment key={i}>
+                {stateData[k].map((v, i) => (
+                  <input key={i} type="hidden" name={k} value={v} />
+                ))}
+              </React.Fragment>
+            );
+          })}
+        </div>
         {children}
       </form>
     );
