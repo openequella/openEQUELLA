@@ -10,8 +10,6 @@ import {
   FileEntries
 } from "oeq-cloudproviders/controls";
 
-declare const CloudControl: CloudControlRegister;
-
 interface MyConfig {
   somethingElse: string[];
 }

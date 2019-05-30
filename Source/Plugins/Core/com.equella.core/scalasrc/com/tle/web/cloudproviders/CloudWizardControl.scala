@@ -57,9 +57,6 @@ object CloudWizardControl {
   val initRender =
     new ExternallyDefinedFunction("CloudControl.createRender", cloudJs)
 
-  val reloadState =
-    new ExternallyDefinedFunction("CloudControl.forceReload", cloudJs)
-
   class AttachmentHolder(val attachments: Iterable[EquellaAttachmentBean])
 
   val globalWizardData = new JSExpression {
@@ -82,6 +79,9 @@ object CloudWizardControl {
       info.addStatements(declareIt)
     }
   }
+
+  val reloadState =
+    new ExternallyDefinedFunction("CloudControl.forceReload", cloudJs, renderControlFunc)
 
   def cloudControl(controlDef: HTMLControl): WebControl = {
     controlDef.getControlBean.getClassType match {
