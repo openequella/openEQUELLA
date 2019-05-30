@@ -322,7 +322,8 @@ function updateStylesheets(
 
 function deleteElements(elements: { [url: string]: HTMLElement }) {
   for (const key in elements) {
-    elements[key].remove();
+    var e = elements[key];
+    e.parentElement!.removeChild(e);
   }
 }
 

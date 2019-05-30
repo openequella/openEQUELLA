@@ -24,7 +24,8 @@ import { oeqTheme } from "../theme";
 
 declare const bridge: Bridge;
 
-const baseFullPath = new URL(document.head.baseURI).pathname;
+const baseFullPath = new URL(document.head.getElementsByTagName("base")[0].href)
+  .pathname;
 const basePath = baseFullPath.substr(0, baseFullPath.length - 1);
 
 declare const renderData:

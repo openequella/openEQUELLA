@@ -20,6 +20,6 @@
     	<script type="text/javascript">
       	var renderData = ${m.renderJs};
     	</script>
-    	${m.body}
     </head>
+    ${m.body}
 </html>
