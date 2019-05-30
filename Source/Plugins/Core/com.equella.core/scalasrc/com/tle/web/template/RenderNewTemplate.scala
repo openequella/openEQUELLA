@@ -119,7 +119,6 @@ object RenderNewTemplate {
                               "text/css",
                               "href",
                               s.getHref(src))
-              writer.endTag("link")
             }
         }
       })
