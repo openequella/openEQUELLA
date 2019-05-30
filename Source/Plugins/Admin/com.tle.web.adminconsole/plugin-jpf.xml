@@ -2,6 +2,9 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0"
   "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.web.adminconsole" version="1">
+  <attributes>
+    <attribute id="unpack" value="true" />
+  </attributes>
   <requires>
     <import plugin-id="com.tle.common.i18n"/>
     <import plugin-id="com.tle.core.guice"/>
