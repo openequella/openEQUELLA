@@ -58,7 +58,7 @@ object CloudWizardControl {
     new ExternallyDefinedFunction("CloudControl.createRender", cloudJs)
 
   val reloadState =
-    new ExternallyDefinedFunction("CloudControl.forceReload", cloudJs)
+    new ExternallyDefinedFunction("CloudControl.forceReload", cloudJs, renderControlFunc)
 
   class AttachmentHolder(val attachments: Iterable[EquellaAttachmentBean])
 
