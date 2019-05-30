@@ -6,13 +6,11 @@ import {
   FullscreenMode,
   MenuMode
 } from "./Template";
-import { Bridge } from "../api/bridge";
 import { Location, LocationDescriptor } from "history";
 import { ErrorResponse } from "../api/errors";
 import ErrorPage from "./ErrorPage";
 import ScreenOptions from "./ScreenOptions";
-
-declare var bridge: Bridge;
+import { LegacyContent } from "../legacycontent/LegacyContent";
 
 interface LegacyPageProps extends TemplateUpdateProps {
   location: Location;
@@ -26,12 +24,7 @@ export const LegacyPage = React.memo(function LegacyPage(
 ) {
   const { location, updateTemplate, setPreventNavigation } = props;
   const [fullPageError, setFullPageError] = React.useState<ErrorResponse>();
-  const page = React.useMemo(
-    () => bridge.legacyUri(location.pathname + location.search),
-    [location]
-  );
   React.useEffect(() => setFullPageError(undefined), [location]);
-  const { LegacyContent } = bridge;
   React.useEffect(() => {
     updateTemplate(tp => ({
       ...tp,
@@ -49,7 +42,10 @@ export const LegacyPage = React.memo(function LegacyPage(
     const { error, fullScreen } = err;
     if (fullScreen) {
       setFullPageError(error);
-      updateTemplate(tp => ({ ...tp, title: error.error } as TemplateProps));
+      updateTemplate(
+        tp =>
+          ({ ...tp, fullscreenMode: "NO", title: error.error } as TemplateProps)
+      );
     } else {
       updateTemplate(templateError(error));
     }
@@ -59,7 +55,8 @@ export const LegacyPage = React.memo(function LegacyPage(
     <>
       {fullPageError && <ErrorPage error={fullPageError} />}
       <LegacyContent
-        page={page}
+        pathname={location.pathname}
+        search={location.search}
         contentUpdated={content => {
           let soHtml = content.html["so"];
           let menuExtra = soHtml ? (
@@ -91,6 +88,7 @@ export const LegacyPage = React.memo(function LegacyPage(
                     pathname: "/" + href.substr(0, ind),
                     search: href.substr(ind)
                   };
+            props.setPreventNavigation(false);
             props.redirect(redirloc);
           }
         }}

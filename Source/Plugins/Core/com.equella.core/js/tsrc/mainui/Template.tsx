@@ -180,7 +180,8 @@ export const useStyles = makeStyles((theme: Theme) => {
     titlePadding: {
       [desktop]: {
         marginLeft: theme.spacing.unit * 4
-      }
+      },
+      marginLeft: theme.spacing.unit
     },
     titleDense: {
       marginLeft: theme.spacing.unit
@@ -371,21 +372,21 @@ export const Template = React.memo(function Template(props: TemplateProps) {
       </ListItem>
     );
   }
-  const menuContent = (function() {
-    return (
-      <div className={classes.logo}>
-        <img role="presentation" src={logoURL} />
-        {currentUser.menuGroups.map((group, ind) => (
+
+  const hasMenu = props.menuMode !== "HIDDEN";
+
+  const menuContent = (
+    <div className={classes.logo}>
+      <img role="presentation" src={logoURL} />
+      {hasMenu &&
+        currentUser.menuGroups.map((group, ind) => (
           <React.Fragment key={ind}>
             {ind > 0 && <Divider />}
             <List component="nav">{group.map(navItem)}</List>
           </React.Fragment>
         ))}
-      </div>
-    );
-  })();
-
-  const hasMenu = props.menuMode !== "HIDDEN";
+    </div>
+  );
 
   const itemCounts = currentUser.counts
     ? currentUser.counts
@@ -405,7 +406,9 @@ export const Template = React.memo(function Template(props: TemplateProps) {
           variant="h5"
           color="inherit"
           className={`${
-            props.backRoute ? classes.titleDense : classes.titlePadding
+            props.backRoute && hasMenu
+              ? classes.titleDense
+              : classes.titlePadding
           } ${classes.title}`}
         >
           {props.title}
@@ -479,29 +482,26 @@ export const Template = React.memo(function Template(props: TemplateProps) {
         </Toolbar>
         {props.tabs}
       </AppBar>
-      {hasMenu && (
-        <React.Fragment>
-          <Hidden mdUp>
-            <Drawer
-              variant="temporary"
-              anchor="left"
-              open={navMenuOpen}
-              onClose={_ => setNavMenuOpen(false)}
-            >
-              {menuContent}
-            </Drawer>
-          </Hidden>
-          <Hidden smDown implementation="css">
-            <Drawer
-              variant="permanent"
-              anchor="left"
-              open
-              classes={{ paper: classes.drawerPaper }}
-            >
-              {menuContent}
-            </Drawer>
-          </Hidden>
-        </React.Fragment>
+      <Hidden mdUp>
+        <Drawer
+          variant="temporary"
+          anchor="left"
+          open={navMenuOpen}
+          onClose={_ => setNavMenuOpen(false)}
+        >
+          {menuContent}
+        </Drawer>
+      </Hidden>
+      <Hidden smDown implementation="css">
+        <Drawer
+          variant="permanent"
+          anchor="left"
+          open
+          classes={{ paper: classes.drawerPaper }}
+        >
+          {menuContent}
+        </Drawer>
+      </Hidden>
       )}
       <main
         className={`${classes.content} ${
@@ -524,7 +524,7 @@ export const Template = React.memo(function Template(props: TemplateProps) {
         open={errorOpen}
         onClose={() => setErrorOpen(false)}
         variant="error"
-        title={error.description ? error.description : error.error}
+        title={error.error_description ? error.error_description : error.error}
       />
     );
   }

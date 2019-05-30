@@ -3,7 +3,7 @@ import v4 = require("uuid/v4");
 export interface ErrorResponse {
   id: string;
   error: string;
-  description?: string;
+  error_description?: string;
   code?: number;
 }
 
@@ -14,7 +14,8 @@ export const generateNewErrorID = (
 ): ErrorResponse => {
   return {
     id: v4(),
-    description,
+    error_description: description,
+    code,
     error
   };
 };
@@ -23,6 +24,6 @@ export const generateFromError = (error: Error): ErrorResponse => {
   return {
     id: v4(),
     error: error.name,
-    description: error.message
+    error_description: error.message
   };
 };
