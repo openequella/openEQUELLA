@@ -14,7 +14,7 @@
 </installer>
 <install.path>/home/equella/equella</install.path>
 <java>
-  <jdk>/usr/lib/jvm/java-8-openjdk-amd64/jre</jdk>
+  <jdk>/usr/local/openjdk-8</jdk>
 </java>
 <datasource>
   <dbtype>postgresql</dbtype>

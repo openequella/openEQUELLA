@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk as baseequella
+FROM openjdk@sha256:0e25c8428a56e32861fe996b528a107933155c98fb2a9998a4a4e9423aad734d as baseequella
 
 # Install needed tools to install and run openEQUELLA
 # Clean up the apt cache afterwards.
@@ -19,7 +19,7 @@ FROM baseequella as installer
 
 # Install openEQUELLA
 
-ARG OEQ_INSTALL_FILE=equella-installer-2018.2.zip
+ARG OEQ_INSTALL_FILE=equella-installer-2019.1.zip
 
 COPY ["$OEQ_INSTALL_FILE","defaults.xml", "./"]
 
