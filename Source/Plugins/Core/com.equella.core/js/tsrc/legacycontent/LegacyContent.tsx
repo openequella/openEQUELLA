@@ -85,18 +85,12 @@ function isChangeRoute(response: SubmitResponse): response is ChangeRoute {
 
 export function submitRequest(
   path: string,
-  vals: StateData,
-  callback?: (submitResponse: SubmitResponse) => void
+  vals: StateData
 ): Promise<SubmitResponse> {
   return Axios.post<SubmitResponse>(
     "api/content/submit" + encodeURI(path),
     vals
-  ).then(res => {
-    if (callback) {
-      callback(res.data);
-    }
-    return res.data;
-  });
+  ).then(res => res.data);
 }
 
 export const LegacyContent = React.memo(function LegacyContent(
@@ -113,7 +107,7 @@ export const LegacyContent = React.memo(function LegacyContent(
     submitValues: StateData,
     callback?: (response: SubmitResponse) => void
   ) {
-    submitRequest(props.pathname, submitValues, callback)
+    submitRequest(props.pathname, submitValues)
       .then(content => {
         if (callback) {
           callback(content);
@@ -187,6 +181,7 @@ export const LegacyContent = React.memo(function LegacyContent(
           collectParams(form, name, params),
           callback
         );
+        return false;
       },
       updateIncludes(
         includes: { css: string[]; js: string[]; script: string },
