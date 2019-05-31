@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ErrorResponse } from "tsrc/api/errors";
+import { ErrorResponse, fromAxiosResponse } from "../api/errors";
 import Axios from "axios";
 import JQueryDiv from "./JQueryDiv";
 import { v4 } from "uuid";
@@ -139,9 +139,9 @@ export const LegacyContent = React.memo(function LegacyContent(
           props.redirected({ href: content.href, external: true });
         }
       })
-      .catch(error =>
-        props.onError({ error: error.response.data, fullScreen })
-      );
+      .catch(error => {
+        props.onError({ error: fromAxiosResponse(error.response), fullScreen });
+      });
   }
 
   function stdSubmit(validate: boolean) {
