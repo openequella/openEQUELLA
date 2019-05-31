@@ -1,4 +1,20 @@
-import { Button, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, Input, InputLabel, MenuItem, Paper, Switch, Tab, Tabs, TextField, Theme } from "@material-ui/core";
+import {
+  Button,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormHelperText,
+  Grid,
+  Input,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Switch,
+  Tab,
+  Tabs,
+  TextField,
+  Theme
+} from "@material-ui/core";
 import Select from "@material-ui/core/Select";
 import { StyleRules, WithStyles, withStyles } from "@material-ui/core/styles";
 import { LocationDescriptor } from "history";
@@ -16,7 +32,12 @@ import { AclEditorChangeEvent, TargetListEntry } from "../api/acleditor";
 import { Bridge } from "../api/bridge";
 import { Error, Loader } from "../components/index";
 import MessageInfo from "../components/MessageInfo";
-import { EditEntityDispatchProps, EditEntityProps, EditEntityStateProps, entityStrings } from "../entity";
+import {
+  EditEntityDispatchProps,
+  EditEntityProps,
+  EditEntityStateProps,
+  entityStrings
+} from "../entity";
 import { routes } from "../mainui/routes";
 import { templateDefaults, TemplateProps } from "../mainui/Template";
 import schemaService from "../schema/index";
@@ -178,11 +199,11 @@ class EditCourse extends React.Component<Props, EditCourseState> {
     if (this.props.entity) {
       const { versionSelection, students } = this.props.entity;
       const vs = versionSelection === "DEFAULT" ? undefined : versionSelection;
-      const st = (students === 0 ? undefined : students);
-      let course = {
+
+      const course = {
         ...this.props.entity,
         versionSelection: vs,
-        students: st,
+        students: students || undefined,
         security: this.state.editSecurity
           ? { rules: this.state.editSecurity() }
           : this.props.entity.security
@@ -190,7 +211,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 
       const { saveEntity } = this.props;
       const thiss = this;
-      this.props.validateEntity(course).then(function(valErrors) {
+      this.props.validateEntity(course).then(valErrors => {
         if (properties(valErrors).length === 0) {
           saveEntity(course)
             .then(editedCourse => {
