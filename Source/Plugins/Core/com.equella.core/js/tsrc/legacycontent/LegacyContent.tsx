@@ -313,6 +313,14 @@ function updateStylesheets(
     if (!lastSheet) resolve(existingSheets);
     else {
       lastSheet.addEventListener("load", () => resolve(existingSheets), false);
+      lastSheet.addEventListener(
+        "error",
+        err => {
+          console.error(`Failed to load css: ${lastSheet.href}`);
+          resolve();
+        },
+        false
+      );
     }
   });
 }
@@ -349,7 +357,17 @@ function loadMissingScripts(_scripts: string[]) {
       }
     }, null);
     if (!lastScript) resolve();
-    else lastScript.addEventListener("load", resolve, false);
+    else {
+      lastScript.addEventListener("load", resolve, false);
+      lastScript.addEventListener(
+        "error",
+        err => {
+          console.error(`Failed to load script: ${lastScript.src}`);
+          resolve();
+        },
+        false
+      );
+    }
   });
 }
 

@@ -49,11 +49,13 @@ interface CommandsPromise {
   rejected: (err: any) => void;
 }
 
+interface Registration {
+  mount: (api: ControlApi<object>) => void;
+  unmount: (removed: Element) => void;
+}
+
 var registrations: {
-  [key: string]: {
-    mount: (api: ControlApi<object>) => void;
-    unmount: (removed: Element) => void;
-  };
+  [key: string]: Registration | undefined;
 } = {};
 var listeners: ((doc: ItemState) => void)[] = [];
 var commandQueue: CommandsPromise[] = [];
@@ -251,9 +253,9 @@ export const CloudControl: CloudControlRegisterImpl = {
       };
       params.element.setAttribute("data-clientupdate", "true");
 
-      const { mount, unmount } = registrations[
-        params.vendorId + "_" + params.controlType
-      ];
+      const { mount, unmount } =
+        registrations[params.vendorId + "_" + params.controlType] ||
+        missingControl;
       activeElements.push({
         element: params.element,
         removed: unmount
@@ -285,4 +287,17 @@ export const CloudControl: CloudControlRegisterImpl = {
       });
     };
   }
+};
+
+const missingControl: Registration = {
+  mount: params => {
+    let errText = $(
+      `<div class="control ctrlinvalid"><p class="ctrlinvalidmessage">Failed to find registration for cloud control: "${
+        params.vendorId
+      }_${params.controlType}"</p></div>`
+    );
+    $(params.element).append(errText);
+    console.error("Parameters for failed cloud control", params);
+  },
+  unmount: elem => {}
 };
