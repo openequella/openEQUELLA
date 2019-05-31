@@ -188,6 +188,11 @@ public class SectionWriter extends PrintWriter implements PreRenderContext {
   }
 
   @Override
+  public SectionInfo createForwardForUri(String url) {
+    return renderContext.createForwardForUri(url);
+  }
+
+  @Override
   public SectionInfo createForward(String path) {
     return renderContext.createForward(path);
   }

@@ -32,8 +32,8 @@ import com.tle.core.favourites.SearchFavouritesSearchResults;
 import com.tle.core.favourites.bean.FavouriteSearch;
 import com.tle.core.favourites.dao.FavouriteSearchDao;
 import com.tle.core.guice.Bind;
+import com.tle.core.services.UrlService;
 import com.tle.web.sections.SectionInfo;
-import com.tle.web.sections.SectionsController;
 import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
@@ -49,7 +49,7 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
   private static final String DEFAULT_ORDER = "dateModified";
 
   @Inject private FavouriteSearchDao dao;
-  @Inject private SectionsController controller;
+  @Inject private UrlService urlService;
 
   @Override
   @Transactional
@@ -70,8 +70,8 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
   public void executeSearch(SectionInfo info, long id) {
     FavouriteSearch search = dao.getById(id);
     if (search != null) {
-      SectionInfo forward = controller.createForward(info, search.getUrl());
-      controller.forward(info, forward);
+      SectionInfo forward = info.createForwardForUri(search.getUrl());
+      info.forwardAsBookmark(forward);
     }
   }
 

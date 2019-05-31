@@ -529,6 +529,11 @@ public class DefaultSectionInfo implements MutableSectionInfo {
   }
 
   @Override
+  public SectionInfo createForwardForUri(String url) {
+    return controller.createForward(this, url);
+  }
+
+  @Override
   public void addEventFilter(SectionEventFilter filter) {
     if (eventFilters == null) {
       eventFilters = new ArrayList<SectionEventFilter>();

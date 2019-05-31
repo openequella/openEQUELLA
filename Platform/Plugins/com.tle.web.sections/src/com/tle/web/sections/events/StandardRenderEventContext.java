@@ -79,6 +79,11 @@ public class StandardRenderEventContext implements RenderEventContext {
   }
 
   @Override
+  public SectionInfo createForwardForUri(String url) {
+    return renderContext.createForwardForUri(url);
+  }
+
+  @Override
   public SectionInfo createForward(String path) {
     return renderContext.createForward(path);
   }
