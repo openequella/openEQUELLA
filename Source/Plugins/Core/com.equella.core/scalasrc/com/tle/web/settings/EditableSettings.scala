@@ -25,5 +25,6 @@ trait EditableSettings {
   def description: String
   def uri: String
   def uriType: String
+  def isRoute: Boolean
   def isEditable: Boolean
 }

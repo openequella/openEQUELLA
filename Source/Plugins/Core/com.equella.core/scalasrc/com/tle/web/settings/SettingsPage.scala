@@ -27,7 +27,8 @@ case class SettingsPage(helper: PluginResourceHelper,
                         descKey: String,
                         uri: String,
                         uriType: String,
-                        editable: () => Boolean)
+                        editable: () => Boolean,
+                        isRoute: Boolean = true)
     extends EditableSettings {
   override def name: String = helper.getString(nameKey)
 

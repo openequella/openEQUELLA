@@ -37,9 +37,11 @@ case class SettingType(id: String,
 
 object SettingTypeLinks {
   def apply(instUri: URI, ed: EditableSettings): SettingTypeLinks = ed.uriType match {
-    case "rest"     => SettingTypeLinks(None, Option(instUri.resolve(ed.uri)), None)
-    case "external" => SettingTypeLinks(Option(instUri.resolve(ed.uri)), None, None)
-    case _          => SettingTypeLinks(Option(instUri.resolve(ed.uri)), None, Some("/" + ed.uri))
+    case "rest" => SettingTypeLinks(None, Option(instUri.resolve(ed.uri)), None)
+    case _ =>
+      SettingTypeLinks(Option(instUri.resolve(ed.uri)),
+                       None,
+                       if (ed.isRoute) Some("/" + ed.uri) else None)
   }
 }
 
