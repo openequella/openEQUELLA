@@ -227,7 +227,6 @@ class SearchCourse extends React.Component<
             return (
               <SearchResult
                 key={course.uuid}
-                href={""}
                 onClick={_ => {}}
                 to={routes.EditCourse.to(course.uuid!)}
                 primaryText={text}

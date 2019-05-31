@@ -38,9 +38,8 @@ export interface SearchResultExtraDetail {
 }
 
 export interface SearchResultProps {
-  href: string;
   onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void;
-  to?: LocationDescriptor;
+  to: LocationDescriptor;
   onDelete?: () => void;
   primaryText: string;
   secondaryText?: string;
@@ -58,15 +57,11 @@ class SearchResult extends React.Component<PropsWithStyles> {
       <Typography
         color="primary"
         variant="subtitle1"
-        component={p =>
-          to ? (
-            <Link to={to}>{this.props.primaryText}</Link>
-          ) : (
-            <a {...p} href={this.props.href} onClick={this.props.onClick}>
-              {this.props.primaryText}
-            </a>
-          )
-        }
+        component={p => (
+          <Link {...p} to={to!}>
+            {this.props.primaryText}
+          </Link>
+        )}
       />
     );
     /*
