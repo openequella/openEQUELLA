@@ -12,7 +12,7 @@ libraryDependencies ++= Seq(
 
 excludeDependencies += "commons-logging" % "commons-logging"
 packageOptions in assembly += Package.ManifestAttributes("Permissions" -> "all-permissions")
-assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
+assemblyOption in assembly := (assemblyOption in assembly).value
 assemblyMergeStrategy in assembly := {
   case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first
   case x =>
