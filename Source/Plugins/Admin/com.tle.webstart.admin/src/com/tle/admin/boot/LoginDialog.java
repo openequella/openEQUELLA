@@ -27,6 +27,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -51,6 +52,7 @@ public class LoginDialog extends JDialog implements ActionListener, WindowListen
   public LoginDialog() {
     try {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      this.setIconImage(new ImageIcon(getClass().getResource("/adminconsoleicon.png")).getImage());
 
       message = new JLabel("Error message");
       message.setVisible(false);
