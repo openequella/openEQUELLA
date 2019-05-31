@@ -109,8 +109,10 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
     val Host      = baseUrl.host
     val Port      = baseUrl.port
     val basePaths = baseUrl.path.parts.filter(_.length > 0)
-    Url.parse(uri) match {
-      case r: RelativeUrl => Some(r)
+    val parsedUri = Url.parse(uri)
+
+    parsedUri match {
+      case r @ RelativeUrl(path: RootlessPath, _, _) => Some(r)
       case AbsoluteUrl(_, Authority(_, Host, Port), path, q, f)
           if path.parts.startsWith(basePaths) =>
         Some(RelativeUrl(RootlessPath(path.parts.drop(basePaths.length)), q, f))
