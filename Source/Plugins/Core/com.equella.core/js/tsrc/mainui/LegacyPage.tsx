@@ -100,17 +100,16 @@ export const LegacyPage = React.memo(function LegacyPage(
     [setPreventNavigation, props.redirect]
   );
 
-  return (
-    <>
-      {fullPageError && <ErrorPage error={fullPageError} />}
-      <LegacyContent
-        pathname={location.pathname}
-        search={location.search}
-        contentUpdated={contentUpdated}
-        userUpdated={props.refreshUser}
-        redirected={redirCallback}
-        onError={processError}
-      />
-    </>
+  return fullPageError ? (
+    <ErrorPage error={fullPageError} />
+  ) : (
+    <LegacyContent
+      pathname={location.pathname}
+      search={location.search}
+      contentUpdated={contentUpdated}
+      userUpdated={props.refreshUser}
+      redirected={redirCallback}
+      onError={processError}
+    />
   );
 });
