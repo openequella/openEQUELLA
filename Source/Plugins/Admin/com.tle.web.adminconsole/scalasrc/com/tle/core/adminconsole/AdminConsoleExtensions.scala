@@ -39,7 +39,7 @@ class AdminConsoleExtensions extends StartupBean {
       "admin.link.title",
       "admin.link.description",
       "https://github.com/apereo/openEQUELLA-admin-console-package/releases",
-      "web",
+      "external",
       () => !adminService.getAllowedTools.isEmpty
     )
   }
