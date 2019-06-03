@@ -144,7 +144,7 @@ object RenderNewTemplate {
   def supportIEPolyFills(context: PreRenderContext): Unit = {
     if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident"))) {
       context.addJs(
-        "https://polyfill.io/v3/polyfill.min.js?features=es6%2CURL%2CElement%2CArray.prototype.forEach%2Cdocument.querySelector%2CNodeList.prototype.forEach%2CNodeList.prototype.%40%40iterator%2CNode.prototype.contains")
+        "https://polyfill.io/v3/polyfill.min.js?features=es6%2CURL%2CElement%2CArray.prototype.forEach%2Cdocument.querySelector%2CNodeList.prototype.forEach%2CNodeList.prototype.%40%40iterator%2CNode.prototype.contains%2CString.prototype.includes%2CArray.prototype.includes")
       RenderTemplate.TINYMCE_CONTENT_CSS.preRender(context)
       RenderTemplate.TINYMCE_CONTENT_MIN_CSS.preRender(context)
       RenderTemplate.TINYMCE_SKIN_CSS.preRender(context)
