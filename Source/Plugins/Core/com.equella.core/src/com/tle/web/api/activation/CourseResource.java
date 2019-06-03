@@ -30,7 +30,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import org.jboss.resteasy.annotations.cache.NoCache;
 
+@NoCache
 @Path("course")
 @Api(value = "Courses", description = "course")
 @Produces(MediaType.APPLICATION_JSON)
