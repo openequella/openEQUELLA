@@ -2,3 +2,6 @@
   /* Support for IE */
   font-feature-settings: "liga";
 }
+input[disabled="disabled"] {
+  position: absolute;
+}
