@@ -318,11 +318,11 @@ export const languageStrings = {
   adminconsoledownload: {
     title: "Administration Console",
     text: {
-      partOne:
-        "The Administration Console is no longer accessed from this link.The Administration Console Package must be ",
-      partTwo: "downloaded ",
-      partThree:
-        "and configured on your system. Once installed, the launcher file is then used to open the openEQUELLA Administration Console Launcher dialog to open the Admin Console."
+      introTextOne:
+        "The Administration Console is no longer accessed from this link. The Administration Console Package must be ",
+      introTextTwo: "downloaded",
+      introTextThree:
+        " and configured on your system. Once installed, the launcher file is then used to open the openEQUELLA Administration Console Launcher dialog to open the Admin Console."
     },
     link: "https://github.com/apereo/openEQUELLA-admin-console-package/releases"
   },

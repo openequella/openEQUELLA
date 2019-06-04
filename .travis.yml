@@ -10,7 +10,6 @@ before_install:
   - nvm install $NODE_JS_VERSION
   - node --version
   - sudo apt-get install -y awscli
-  - npm install --global purescript psc-package
 install:
   - git fetch --unshallow
   - npm install && npm run check
