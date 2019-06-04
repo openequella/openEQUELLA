@@ -11,7 +11,8 @@ import { Bridge } from "../api/bridge";
 
 declare const bridge: Bridge;
 
-export interface OEQRouteComponentProps<T> extends RouteComponentProps<T> {
+export interface OEQRouteComponentProps<T = any>
+  extends RouteComponentProps<T> {
   updateTemplate(edit: TemplateUpdate): void;
   redirect(to: LocationDescriptor): void;
   setPreventNavigation(b: boolean): void;
