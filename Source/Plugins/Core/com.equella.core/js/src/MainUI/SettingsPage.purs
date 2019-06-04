@@ -87,7 +87,7 @@ settingsPageClass = withStyles styles $ component "SettingsPage" $ \this -> do
       ]
 
       pageLink s@{id:"adminconsole"} = listItem_ [
-        listItemText' {primary: D.a [DP.onClick $ \_ -> d $ DialogOpen true ] [D.text s.name], secondary:s.description} 
+        listItemText' {primary: D.a [DP.onClick $ \_ -> d $ DialogOpen true, DP.href "javascript:void(0)"] [D.text s.name], secondary:s.description}
       ]
       pageLink s = listItem_ [
         listItemText' {
