@@ -320,7 +320,7 @@ export const languageStrings = {
     text: {
       partOne:
         "The Administration Console is no longer accessed from this link.The Administration Console Package must be ",
-      partTwo: "downloaded",
+      partTwo: "downloaded ",
       partThree:
         "and configured on your system. Once installed, the launcher file is then used to open the openEQUELLA Administration Console Launcher dialog to open the Admin Console."
     },

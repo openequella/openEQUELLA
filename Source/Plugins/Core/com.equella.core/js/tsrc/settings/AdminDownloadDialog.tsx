@@ -22,10 +22,10 @@ export default function AdminDownloadDialog(props: {
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {text.partOne}{" "}
+          {text.partOne}
           <a href={link} target="_blank">
             {text.partTwo}
-          </a>{" "}
+          </a>
           {text.partThree}
         </DialogContentText>
       </DialogContent>
