@@ -4,9 +4,8 @@ import axios from "axios";
 
 import {
   ControlApi,
-  CloudControlRegister,
-  ItemState,
   Attachment,
+  ItemState,
   FileEntries
 } from "oeq-cloudproviders/controls";
 
@@ -46,6 +45,7 @@ function TestControl(p: ControlApi<MyConfig>) {
     const filtered = all.filter(a => uuids.indexOf(a.uuid) != -1);
     return filtered;
   };
+  const [failValidation, setFailValidation] = React.useState(false);
   const [files, setFiles] = React.useState(p.files);
   const [attachments, setAttachments] = React.useState(() => {
     return myAttachments(p.xml, p.attachments);
@@ -71,11 +71,23 @@ function TestControl(p: ControlApi<MyConfig>) {
       setAttachments(myAttachments(state.xml, state.attachments));
       setFiles(state.files);
     };
+    function validate() {
+      return !failValidation;
+    }
     p.subscribeUpdates(updateHandler);
+    p.registerValidator(validate);
     return function cleanup() {
       p.unsubscribeUpdates(updateHandler);
+      p.deregisterValidator(validate);
     };
   }, []);
+
+  const validator = React.useCallback(() => !failValidation, [failValidation]);
+
+  React.useEffect(() => {
+    p.registerValidator(validator);
+    return () => p.deregisterValidator(validator);
+  }, [validator]);
 
   function writeDir(parentPath: string, entries: FileEntries) {
     return Object.keys(entries).map(function(filename) {
@@ -279,6 +291,11 @@ function TestControl(p: ControlApi<MyConfig>) {
       </div>
       <h4>Communicate with provider</h4>
       {renderService}
+      <div>
+        <button onClick={_ => setFailValidation(v => !v)}>
+          Toggle validator - ({failValidation ? "fail" : "succeed"})
+        </button>
+      </div>
     </div>
   );
 }

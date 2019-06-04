@@ -8,11 +8,13 @@ import {
   ItemState,
   ItemCommandResponse,
   Attachment,
-  FileEntries
+  FileEntries,
+  ControlValidator
 } from "oeq-cloudproviders/controls";
 
 const wgxpath = require("wicked-good-xpath");
 wgxpath.install(window);
+
 interface ItemStateJSON {
   xml: string;
   attachments: Attachment[];
@@ -58,18 +60,20 @@ var registrations: {
   [key: string]: Registration | undefined;
 } = {};
 var listeners: ((doc: ItemState) => void)[] = [];
+var controlValidators: ControlValidator[] = [];
 var commandQueue: CommandsPromise[] = [];
 var transformState: ((doc: XMLDocument) => XMLDocument) | null = null;
 var reloadState: boolean = false;
 var wizardIds: WizardIds;
 var currentState: Promise<ItemState>;
+var latestXml: XMLDocument;
 
 const parser = new DOMParser();
 const serializer = new XMLSerializer();
 
 var activeElements: {
   element: Element;
-  removed: (removed: Element) => void;
+  removed: Registration;
 }[] = [];
 
 function wizardUri(path: string): string {
@@ -82,6 +86,7 @@ async function getState(wizid: string): Promise<ItemState> {
     ...res.data,
     xml: parser.parseFromString(res.data.xml, "text/xml")
   };
+  latestXml = nextState.xml;
   listeners.forEach(f => f(nextState));
   return nextState;
 }
@@ -115,7 +120,7 @@ const observer = new MutationObserver(function() {
   }
   activeElements = activeElements.filter(e => {
     if (res.indexOf(e.element) == -1) {
-      e.removed(e.element);
+      e.removed.unmount(e.element);
       return false;
     }
     return true;
@@ -124,6 +129,18 @@ const observer = new MutationObserver(function() {
 observer.observe(document, {
   childList: true,
   subtree: true
+});
+
+$(window).bind("validate", () => {
+  var allValid = true;
+  controlValidators.forEach(validator => {
+    let valid = validator((edit: (doc: XMLDocument) => XMLDocument) => {
+      latestXml = edit(latestXml);
+    });
+    allValid = allValid && valid;
+  });
+  console.log(serializer.serializeToString(latestXml));
+  return allValid;
 });
 
 export const CloudControl: CloudControlRegisterImpl = {
@@ -189,6 +206,7 @@ export const CloudControl: CloudControlRegisterImpl = {
       });
 
       newXml = parser.parseFromString(responses.xml, "text/xml");
+      latestXml = newXml;
       const nextState = { files: state.files, attachments: att, xml: newXml };
       listeners.forEach(f => f(nextState));
       return nextState;
@@ -206,14 +224,14 @@ export const CloudControl: CloudControlRegisterImpl = {
       CloudControl.forceReload();
     }
 
-    const editXml = function(edit: (doc: XMLDocument) => XMLDocument) {
+    function editXml(edit: (doc: XMLDocument) => XMLDocument) {
       if (transformState == null) transformState = edit;
       else {
         const oldf = transformState;
         transformState = x => edit(oldf(x));
       }
       currentState = currentState.then(CloudControl.sendBatch);
-    };
+    }
 
     const edits = function(edits: Array<ItemCommand>) {
       return new Promise<ItemCommandResponse[]>(function(resolved, rejected) {
@@ -253,12 +271,12 @@ export const CloudControl: CloudControlRegisterImpl = {
       };
       params.element.setAttribute("data-clientupdate", "true");
 
-      const { mount, unmount } =
+      const registration =
         registrations[params.vendorId + "_" + params.controlType] ||
         missingControl;
       activeElements.push({
         element: params.element,
-        removed: unmount
+        removed: registration
       });
       const providerUrl = function(serviceId: string) {
         return wizardUri(
@@ -268,6 +286,14 @@ export const CloudControl: CloudControlRegisterImpl = {
             encodeURIComponent(serviceId)
         );
       };
+
+      function registerValidator(validator: ControlValidator) {
+        controlValidators.push(validator);
+      }
+      function deregisterValidator(validator: ControlValidator) {
+        controlValidators.splice(controlValidators.indexOf(validator));
+      }
+
       currentState.then(state => {
         const api = {
           ...state,
@@ -281,9 +307,11 @@ export const CloudControl: CloudControlRegisterImpl = {
           registerNotification,
           providerUrl,
           stagingId: wizardIds.stagingId,
-          userId: wizardIds.userId
+          userId: wizardIds.userId,
+          registerValidator,
+          deregisterValidator
         };
-        mount(api);
+        registration.mount(api);
       });
     };
   }
