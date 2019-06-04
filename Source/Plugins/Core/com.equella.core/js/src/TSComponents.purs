@@ -15,6 +15,7 @@ foreign import startHeartbeat :: Effect Unit
 foreign import appBarQueryClass ::  ReactClass {query :: String, onChange :: EffectFn1 String Unit}
 
 foreign import courseSelectClass :: forall a. ReactClass a
+foreign import adminDownloadDialogClass :: forall a. ReactClass a
 
 appBarQuery :: { query :: String, onChange :: EffectFn1 String Unit} -> ReactElement
 appBarQuery = unsafeCreateLeafElement appBarQueryClass
