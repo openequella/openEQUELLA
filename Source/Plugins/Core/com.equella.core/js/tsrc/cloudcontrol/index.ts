@@ -132,14 +132,18 @@ observer.observe(document, {
 });
 
 $(window).bind("validate", () => {
-  var allValid = true;
+  let allValid = true;
+  let editXmlFunc: (doc: XMLDocument) => XMLDocument = x => x;
   controlValidators.forEach(validator => {
     let valid = validator((edit: (doc: XMLDocument) => XMLDocument) => {
-      latestXml = edit(latestXml);
+      let oldXmlFunc = editXmlFunc;
+      editXmlFunc = d => edit(oldXmlFunc(d));
     });
     allValid = allValid && valid;
   });
-  console.log(serializer.serializeToString(latestXml));
+  if (allValid) {
+    console.log(serializer.serializeToString(editXmlFunc(latestXml)));
+  }
   return allValid;
 });
 
@@ -152,22 +156,22 @@ export const CloudControl: CloudControlRegisterImpl = {
   ) {
     registrations[vendorId + "_" + controlType] = { mount, unmount };
   },
-  forceReload: function() {
+  forceReload() {
     if (currentState) {
       reloadState = true;
       currentState = currentState.then(CloudControl.sendBatch);
     }
   },
-  sendBatch: async function(state: ItemState): Promise<ItemState> {
+  async sendBatch(state: ItemState): Promise<ItemState> {
     if (reloadState) {
       reloadState = false;
       var nextState = await getState(wizardIds.wizId);
       return CloudControl.sendBatch(nextState);
     }
-    var edits: ItemCommand[] = [];
-    var currentPromises: CommandsPromise[] = [];
-    var xml;
-    var newXml = state.xml;
+    let edits: ItemCommand[] = [];
+    let currentPromises: CommandsPromise[] = [];
+    let xml;
+    let newXml = state.xml;
     if (transformState) {
       newXml = transformState(newXml);
       xml = serializer.serializeToString(newXml);
@@ -183,7 +187,7 @@ export const CloudControl: CloudControlRegisterImpl = {
     }
     try {
       const responses = await putEdits({ xml, edits });
-      var att = state.attachments;
+      let att = state.attachments;
       const updateAttachments = function(change: ItemCommandResponse) {
         switch (change.type) {
           case "added":
@@ -215,7 +219,7 @@ export const CloudControl: CloudControlRegisterImpl = {
       return state;
     }
   },
-  createRender: function(data) {
+  createRender(data) {
     const { wizId } = data;
     wizardIds = data;
     if (!currentState) {
@@ -233,42 +237,42 @@ export const CloudControl: CloudControlRegisterImpl = {
       currentState = currentState.then(CloudControl.sendBatch);
     }
 
-    const edits = function(edits: Array<ItemCommand>) {
+    function edits(edits: Array<ItemCommand>) {
       return new Promise<ItemCommandResponse[]>(function(resolved, rejected) {
         commandQueue.push({ commands: edits, resolved, rejected });
         currentState = currentState.then(CloudControl.sendBatch);
       });
-    };
-    const subscribeUpdates = function(callback: (doc: ItemState) => void) {
+    }
+    function subscribeUpdates(callback: (doc: ItemState) => void) {
       listeners.push(callback);
-    };
-    const unsubscribeUpdates = function(callback: (doc: ItemState) => void) {
+    }
+    function unsubscribeUpdates(callback: (doc: ItemState) => void) {
       listeners.splice(listeners.indexOf(callback));
-    };
+    }
     return function<T extends object>(params: ControlParameters<T>) {
-      const stagingPath = function(name: string): string {
+      function stagingPath(name: string): string {
         return (
           "api/staging/" +
           encodeURIComponent(data.stagingId) +
           "/" +
           encodeFilepath(name)
         );
-      };
-      const uploadFile = function(name: string, file: File): Promise<void> {
+      }
+      function uploadFile(name: string, file: File): Promise<void> {
         return Axios.put(stagingPath(name), file).then(
           CloudControl.forceReload
         );
-      };
-      const deleteFile = function(name: string): Promise<void> {
+      }
+      function deleteFile(name: string): Promise<void> {
         return Axios.delete(stagingPath(name)).then(CloudControl.forceReload);
-      };
-      const registerNotification = function() {
+      }
+      function registerNotification() {
         Axios.post(
           wizardUri(
             "notify?providerId=" + encodeURIComponent(params.providerId)
           )
         );
-      };
+      }
       params.element.setAttribute("data-clientupdate", "true");
 
       const registration =
@@ -278,14 +282,14 @@ export const CloudControl: CloudControlRegisterImpl = {
         element: params.element,
         removed: registration
       });
-      const providerUrl = function(serviceId: string) {
+      function providerUrl(serviceId: string) {
         return wizardUri(
           "provider/" +
             encodeURIComponent(params.providerId) +
             "/" +
             encodeURIComponent(serviceId)
         );
-      };
+      }
 
       function registerValidator(validator: ControlValidator) {
         controlValidators.push(validator);

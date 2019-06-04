@@ -63,7 +63,7 @@ function TestControl(p: ControlApi<MyConfig>) {
     | any);
   const [postRequest, setPostRequest] = React.useState(true);
   const [indexText, setIndexText] = React.useState("");
-  const [indexFiles, setIndexFiles] = React.useState([] as string[]);
+  const [indexFiles, setIndexFiles] = React.useState<string[]>([]);
   React.useEffect(() => {
     p.registerNotification();
     const updateHandler = function(state: ItemState) {
@@ -71,14 +71,9 @@ function TestControl(p: ControlApi<MyConfig>) {
       setAttachments(myAttachments(state.xml, state.attachments));
       setFiles(state.files);
     };
-    function validate() {
-      return !failValidation;
-    }
     p.subscribeUpdates(updateHandler);
-    p.registerValidator(validate);
-    return function cleanup() {
+    return () => {
       p.unsubscribeUpdates(updateHandler);
-      p.deregisterValidator(validate);
     };
   }, []);
 
