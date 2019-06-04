@@ -18,6 +18,7 @@
 
 package com.tle.admin.boot;
 
+import com.dytech.common.net.Proxy;
 import com.dytech.devlib.Base64;
 import com.dytech.edge.common.Version;
 import com.tle.admin.PluginServiceImpl;
@@ -58,6 +59,10 @@ public final class Bootstrap {
   public static final String INSTITUTION_NAME_PARAMETER = PROPERTY_PREFIX + "INSTITUTIONNAME";
   public static final String USERNAME_PARAMETER = PROPERTY_PREFIX + "USERNAME";
   public static final String PASSWORD_PARAMETER = PROPERTY_PREFIX + "PASSWORD";
+  public static final String PROXY_HOST = PROPERTY_PREFIX + "PROXYHOST";
+  public static final String PROXY_PORT = PROPERTY_PREFIX + "PROXYPORT";
+  public static final String PROXY_USERNAME = PROPERTY_PREFIX + "PROXYUSERNAME";
+  public static final String PROXY_PASSWORD = PROPERTY_PREFIX + "PROXYPASSWORD";
 
   private final String endpointParam;
   private final Locale locale;
@@ -81,6 +86,21 @@ public final class Bootstrap {
       locale = parseLocale(localeParam);
     } else {
       locale = Locale.getDefault();
+    }
+
+    final String proxyHostParam = System.getProperty(PROXY_HOST);
+    final String proxyPortParam = System.getProperty(PROXY_PORT);
+    if (proxyHostParam != null && proxyPortParam != null) {
+      try {
+        final int proxyPort = Integer.parseInt(proxyPortParam);
+        Proxy.setProxy(
+            proxyHostParam,
+            proxyPort,
+            System.getProperty(PROXY_USERNAME),
+            System.getProperty(PROXY_PASSWORD));
+      } catch (NumberFormatException nfe) {
+        throw new RuntimeException("Invalid proxy port " + proxyPortParam);
+      }
     }
   }
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding" addBOMForNewFiles="with NO BOM">
+    <file url="file://$PROJECT_DIR$/Source/Plugins/Admin/com.tle.web.adminconsole/resources/lang/i18n.properties" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Source/Plugins/Core/com.equella.core/resources/lang/i18n-resource-centre.properties" charset="UTF-8" />
   </component>
 </project>

@@ -13,8 +13,11 @@ import Dispatcher (affAction)
 import Dispatcher.React (modifyState, renderer)
 import Effect (Effect)
 import Effect.Class.Console (log)
+import Effect.Uncurried (mkEffectFn1)
 import Foreign.Object as SM
 import MaterialUI.CircularProgress (circularProgress_)
+import MaterialUI.Dialog (dialog')
+import MaterialUI.DialogContent (dialogContent_)
 import MaterialUI.ExpansionPanel (expansionPanel_)
 import MaterialUI.ExpansionPanelDetails (expansionPanelDetails_)
 import MaterialUI.ExpansionPanelSummary (expansionPanelSummary)
@@ -31,20 +34,23 @@ import OEQ.MainUI.TSRoutes (TemplateUpdateCB, link, runTemplateUpdate, toLocatio
 import OEQ.MainUI.Template (templateDefaults)
 import OEQ.UI.Icons (expandMoreIcon)
 import OEQ.UI.Settings.UISettings (uiSettingsEditor)
-import React (ReactClass, component)
+import React (ReactClass, component, unsafeCreateLeafElement)
 import React.DOM (a, div, div', text) as D
 import React.DOM.Props (_id)
 import React.DOM.Props as DP
+import TSComponents (adminDownloadDialogClass)
 
 type State = {
-  settings :: Maybe (Array Setting)
+  settings :: Maybe (Array Setting),
+  adminDialogOpen :: Boolean
 }
 
-data Command = LoadSettings
+data Command = LoadSettings | DialogOpen Boolean
 
 settingsPageClass :: ReactClass {updateTemplate :: TemplateUpdateCB, refreshUser :: Effect Unit }
 settingsPageClass = withStyles styles $ component "SettingsPage" $ \this -> do
   let 
+    d = eval >>> affAction this
     groupDetails :: Array (Tuple String { name :: String, desc :: String })
     groupDetails = [
       Tuple "general" string.general,
@@ -56,7 +62,7 @@ settingsPageClass = withStyles styles $ component "SettingsPage" $ \this -> do
     string = languageStrings.settings
     coreString = languageStrings."com.equella.core"
 
-    render {state:{settings}, props:{refreshUser, classes}} = mainContent
+    render {state:state@{settings}, props:{refreshUser, classes}} = mainContent
       where
       mainContent = maybe (D.div [DP.className classes.progress] [ circularProgress_ [] ]) renderSettings settings
       renderSettings allSettings =
@@ -68,7 +74,9 @@ settingsPageClass = withStyles styles $ component "SettingsPage" $ \this -> do
                     o -> expansionPanelDetails_ [ list_ $ map pageLink pages ]
               in Just $ settingGroup details linksOrEditor
             renderGroup _ = Nothing
-        in D.div [_id "settingsPage"] $ mapMaybe renderGroup groupDetails
+        in D.div [_id "settingsPage"] $ mapMaybe renderGroup groupDetails <> [
+          unsafeCreateLeafElement adminDownloadDialogClass {open: state.adminDialogOpen, onClose: mkEffectFn1 \_ -> d $ DialogOpen false } 
+        ]
 
       settingGroup {name,desc} contents = expansionPanel_ [
         expansionPanelSummary {expandIcon: expandMoreIcon} [
@@ -78,6 +86,9 @@ settingsPageClass = withStyles styles $ component "SettingsPage" $ \this -> do
         contents
       ]
 
+      pageLink s@{id:"adminconsole"} = listItem_ [
+        listItemText' {primary: D.a [DP.onClick $ \_ -> d $ DialogOpen true, DP.href "javascript:void(0)"] [D.text s.name], secondary:s.description}
+      ]
       pageLink s = listItem_ [
         listItemText' {
           primary: (case s.route, s.href of 
@@ -89,12 +100,16 @@ settingsPageClass = withStyles styles $ component "SettingsPage" $ \this -> do
         }
       ]
 
+    eval (DialogOpen b) = modifyState _ {adminDialogOpen = b}
     eval (LoadSettings) = do
       runTemplateUpdate \_ -> templateDefaults coreString.title
       result <- lift $ get json $ baseUrl <> "api/settings"
       either (lift <<< log) (\r -> modifyState _ {settings=Just r}) $ decodeJson result.response
 
-  pure {state:{settings:Nothing} :: State, 
+  pure {state: { 
+      settings:Nothing, 
+      adminDialogOpen:false
+    } :: State, 
         render: renderer render this, 
         componentDidMount: affAction this $ eval LoadSettings}
   where 

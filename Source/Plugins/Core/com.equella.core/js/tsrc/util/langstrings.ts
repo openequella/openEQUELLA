@@ -315,6 +315,17 @@ export const languageStrings = {
     diagnostics: { name: "Diagnostics", desc: "Diagnostic pages" },
     ui: { name: "UI", desc: "UI settings" }
   },
+  adminconsoledownload: {
+    title: "Administration Console",
+    text: {
+      introTextOne:
+        "The Administration Console is no longer accessed from this link. The Administration Console Package must be ",
+      introTextTwo: "downloaded",
+      introTextThree:
+        " and configured on your system. Once installed, the launcher file is then used to open the openEQUELLA Administration Console Launcher dialog to open the Admin Console."
+    },
+    link: "https://github.com/apereo/openEQUELLA-admin-console-package/releases"
+  },
   aclterms: {
     title: {
       ugr: "Select User / Group / Role",
