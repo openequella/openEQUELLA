@@ -60,7 +60,7 @@ var registrations: {
   [key: string]: Registration | undefined;
 } = {};
 var listeners: ((doc: ItemState) => void)[] = [];
-var controlValidators: ControlValidator[] = [];
+var controlValidators: { validator: ControlValidator; ctrlId: string }[] = [];
 var commandQueue: CommandsPromise[] = [];
 var transformState: ((doc: XMLDocument) => XMLDocument) | null = null;
 var reloadState: boolean = false;
@@ -86,7 +86,6 @@ async function getState(wizid: string): Promise<ItemState> {
     ...res.data,
     xml: parser.parseFromString(res.data.xml, "text/xml")
   };
-  latestXml = nextState.xml;
   return runListeners(nextState);
 }
 
@@ -132,12 +131,24 @@ observer.observe(document, {
 
 var allValid = true;
 var xmlDoc: string | undefined;
+var requiredControls: { ctrlId: string; required: boolean }[] = [];
 
 $(window).bind("validate", () => {
-  if (allValid && xmlDoc) {
-    $("<input>")
-      .attr({ type: "hidden", id: "xmldoc", name: "xmldoc", value: xmlDoc })
-      .appendTo("._hiddenstate");
+  if (allValid) {
+    if (xmlDoc) {
+      $("<input>")
+        .attr({ type: "hidden", name: "xmldoc", value: xmlDoc })
+        .appendTo("#cloudState");
+    }
+    requiredControls.forEach(({ ctrlId, required }) => {
+      $("<input>")
+        .attr({
+          type: "hidden",
+          name: `${ctrlId}_required`,
+          value: required.toString()
+        })
+        .appendTo("#cloudState");
+    });
   }
   return allValid;
 });
@@ -145,14 +156,20 @@ $(window).bind("validate", () => {
 $(window).bind("presubmit", () => {
   allValid = true;
   xmlDoc = undefined;
+  requiredControls = [];
+  $("#cloudState").remove();
+  $('<div id="cloudState"/>').appendTo("._hiddenstate");
   let editXmlFunc: (doc: XMLDocument) => XMLDocument = x => x;
   let xmlEdited = false;
-  controlValidators.forEach(validator => {
-    let valid = validator((edit: (doc: XMLDocument) => XMLDocument) => {
-      let oldXmlFunc = editXmlFunc;
-      editXmlFunc = d => edit(oldXmlFunc(d));
-      xmlEdited = true;
-    });
+  controlValidators.forEach(({ validator, ctrlId }) => {
+    let valid = validator(
+      (edit: (doc: XMLDocument) => XMLDocument) => {
+        let oldXmlFunc = editXmlFunc;
+        editXmlFunc = d => edit(oldXmlFunc(d));
+        xmlEdited = true;
+      },
+      required => requiredControls.push({ ctrlId, required })
+    );
     allValid = allValid && valid;
   });
   if (xmlEdited) {
@@ -161,11 +178,11 @@ $(window).bind("presubmit", () => {
     currentState = currentState.then(state =>
       runListeners({ ...state, xml: latestXml })
     );
-    console.log("XML was edited", xmlDoc);
   }
 });
 
 function runListeners(state: ItemState): ItemState {
+  latestXml = state.xml;
   listeners.forEach(f => f(state));
   return state;
 }
@@ -233,7 +250,6 @@ export const CloudControl: CloudControlRegisterImpl = {
       });
 
       newXml = parser.parseFromString(responses.xml, "text/xml");
-      latestXml = newXml;
       return runListeners({
         files: state.files,
         attachments: att,
@@ -317,10 +333,12 @@ export const CloudControl: CloudControlRegisterImpl = {
       }
 
       function registerValidator(validator: ControlValidator) {
-        controlValidators.push(validator);
+        controlValidators.push({ validator, ctrlId: params.ctrlId });
       }
       function deregisterValidator(validator: ControlValidator) {
-        controlValidators.splice(controlValidators.indexOf(validator));
+        controlValidators.splice(
+          controlValidators.findIndex(v => v.validator === validator)
+        );
       }
 
       currentState.then(state => {
@@ -338,7 +356,8 @@ export const CloudControl: CloudControlRegisterImpl = {
           stagingId: wizardIds.stagingId,
           userId: wizardIds.userId,
           registerValidator,
-          deregisterValidator
+          deregisterValidator,
+          apiVersion: { major: 1, minor: 0, patch: 0 }
         };
         registration.mount(api);
       });

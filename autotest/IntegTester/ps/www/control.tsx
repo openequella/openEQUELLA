@@ -7,7 +7,7 @@ import {
   Attachment,
   ItemState,
   FileEntries,
-  EditXML
+  ControlValidator
 } from "oeq-cloudproviders/controls";
 
 interface MyConfig {
@@ -47,6 +47,7 @@ function TestControl(p: ControlApi<MyConfig>) {
     return filtered;
   };
   const [failValidation, setFailValidation] = React.useState(false);
+  const [required, setRequired] = React.useState(false);
   const [files, setFiles] = React.useState(p.files);
   const [attachments, setAttachments] = React.useState(() => {
     return myAttachments(p.xml, p.attachments);
@@ -78,17 +79,18 @@ function TestControl(p: ControlApi<MyConfig>) {
     };
   }, []);
 
-  const validator = React.useCallback(
-    (editXml: EditXML) => {
+  const validator: ControlValidator = React.useCallback(
+    (editXml, setRequired) => {
       editXml(d => {
         let elem = d.createElement("validated");
         elem.appendChild(d.createTextNode((!failValidation).toString()));
         d.documentElement.appendChild(elem);
         return d;
       });
+      setRequired(required);
       return !failValidation;
     },
-    [failValidation]
+    [failValidation, required]
   );
 
   React.useEffect(() => {
@@ -299,6 +301,10 @@ function TestControl(p: ControlApi<MyConfig>) {
       <h4>Communicate with provider</h4>
       {renderService}
       <div>
+        <button onClick={_ => setRequired(v => !v)}>
+          Toggle requires filling out - (
+          {required ? "Required" : "Not Required"})
+        </button>
         <button onClick={_ => setFailValidation(v => !v)}>
           Toggle validator - ({failValidation ? "fail" : "succeed"})
         </button>
