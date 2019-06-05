@@ -51,7 +51,7 @@ import com.tle.web.sections.standard.renderers.{DivRenderer, LinkRenderer, SpanR
 import com.tle.web.template.Decorations.MenuMode
 import com.tle.web.template.section.HelpAndScreenOptionsSection
 import com.tle.web.template.{Breadcrumbs, Decorations, RenderTemplate}
-import com.tle.web.viewable.NewDefaultViewableItem
+import com.tle.web.viewable.{NewDefaultViewableItem, PreviewableItem}
 import com.tle.web.viewable.servlet.ItemServlet
 import io.lemonlabs.uri.{Path => _, _}
 import io.swagger.annotations.Api
@@ -109,8 +109,10 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
     val Host      = baseUrl.host
     val Port      = baseUrl.port
     val basePaths = baseUrl.path.parts.filter(_.length > 0)
-    Url.parse(uri) match {
-      case r: RelativeUrl => Some(r)
+    val parsedUri = Url.parse(uri)
+
+    parsedUri match {
+      case r @ RelativeUrl(path: RootlessPath, _, _) => Some(r)
       case AbsoluteUrl(_, Authority(_, Host, Port), path, q, f)
           if path.parts.startsWith(basePaths) =>
         Some(RelativeUrl(RootlessPath(path.parts.drop(basePaths.length)), q, f))
@@ -221,6 +223,19 @@ class LegacyContentApi {
     path match {
       case ""                          => ("/home.do", identity)
       case p if p.startsWith("items/") => itemViewer(p.substring("items/".length), (_, vi) => vi)
+      case p if p.startsWith("preview/") =>
+        val itemId = ItemTaskId.parse(p.substring("preview/".length))
+        ("/viewitem/viewitem.do", { info: MutableSectionInfo =>
+          val previewableItem =
+            LegacyGuice.userSessionService.getAttribute[PreviewableItem](itemId.getUuid)
+          if (previewableItem != null) {
+            val viewableItem = previewableItem.getViewableItem
+            viewableItem.setFromRequest(true)
+            info.setAttribute(ItemServlet.VIEWABLE_ITEM, viewableItem)
+          }
+          info
+        })
+
       case p if p.startsWith("integ/gen/") =>
         itemViewer(
           p.substring("integ/gen/".length), { (info, vi) =>

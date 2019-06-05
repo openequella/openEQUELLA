@@ -20,12 +20,17 @@ package com.tle.web.wizard.render;
 
 import com.google.inject.name.Named;
 import com.tle.annotation.NonNullByDefault;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.web.sections.SectionId;
+import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.SectionRenderable;
 import javax.inject.Inject;
 
 @NonNullByDefault
 public class WizardFreemarkerFactory extends WizardExtendedFactory {
+
+  public static final CssInclude CSS_INCLUDE =
+      CssInclude.include(CoreStrings.lookup().url("css/controls.css")).make();
   private String defaultTitleTemplate = "title/standardTitle.ftl"; // $NON-NLS-1$
   private String defaultTailTemplate = "title/standardTail.ftl"; // $NON-NLS-1$
 

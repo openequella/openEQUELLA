@@ -338,6 +338,8 @@ public interface SectionInfo extends InfoCreator {
    */
   SectionInfo createForward(String path, Map<Object, Object> attributes);
 
+  SectionInfo createForwardForUri(String url);
+
   /**
    * Add an event filter.
    *

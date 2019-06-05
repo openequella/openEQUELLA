@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ErrorResponse } from "tsrc/api/errors";
+import { ErrorResponse, fromAxiosResponse } from "../api/errors";
 import Axios from "axios";
 import JQueryDiv from "./JQueryDiv";
 import { v4 } from "uuid";
@@ -139,9 +139,9 @@ export const LegacyContent = React.memo(function LegacyContent(
           props.redirected({ href: content.href, external: true });
         }
       })
-      .catch(error =>
-        props.onError({ error: error.response.data, fullScreen })
-      );
+      .catch(error => {
+        props.onError({ error: fromAxiosResponse(error.response), fullScreen });
+      });
   }
 
   function stdSubmit(validate: boolean) {
@@ -313,6 +313,14 @@ function updateStylesheets(
     if (!lastSheet) resolve(existingSheets);
     else {
       lastSheet.addEventListener("load", () => resolve(existingSheets), false);
+      lastSheet.addEventListener(
+        "error",
+        err => {
+          console.error(`Failed to load css: ${lastSheet.href}`);
+          resolve();
+        },
+        false
+      );
     }
   });
 }
@@ -349,7 +357,17 @@ function loadMissingScripts(_scripts: string[]) {
       }
     }, null);
     if (!lastScript) resolve();
-    else lastScript.addEventListener("load", resolve, false);
+    else {
+      lastScript.addEventListener("load", resolve, false);
+      lastScript.addEventListener(
+        "error",
+        err => {
+          console.error(`Failed to load script: ${lastScript.src}`);
+          resolve();
+        },
+        false
+      );
+    }
   });
 }
 

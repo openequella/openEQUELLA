@@ -290,4 +290,9 @@ public abstract class WrappedSectionInfo implements SectionInfo {
   public Map<String, String[]> getParameterMap() {
     return info.getParameterMap();
   }
+
+  @Override
+  public SectionInfo createForwardForUri(String url) {
+    return info.createForwardForUri(url);
+  }
 }

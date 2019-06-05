@@ -215,13 +215,11 @@ class EditCourse extends React.Component<Props, EditCourseState> {
           saveEntity(course)
             .then(editedCourse => {
               // change the URL, but only if it's new
-              if (!thiss.props.uuid) {
-                thiss.props.redirect(
-                  routes.EditCourse.to(editedCourse.result.uuid!)
-                );
-              }
               thiss.updateChanged(false);
               thiss.setState({ justSaved: true });
+              if (!thiss.props.uuid) {
+                thiss.props.loadEntity(editedCourse.result.uuid!);
+              }
             })
             .catch(r => thiss.setState({ errored: true }));
         } else {

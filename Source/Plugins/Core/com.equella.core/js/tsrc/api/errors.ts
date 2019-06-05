@@ -1,4 +1,5 @@
 import v4 = require("uuid/v4");
+import { AxiosResponse } from "axios";
 
 export interface ErrorResponse {
   id: string;
@@ -27,3 +28,26 @@ export const generateFromError = (error: Error): ErrorResponse => {
     error_description: error.message
   };
 };
+
+export function fromAxiosResponse(
+  response: AxiosResponse<ErrorResponse>
+): ErrorResponse {
+  if (typeof response.data == "object") {
+    return { ...response.data, id: v4() };
+  } else {
+    const [error, error_description] = (function() {
+      switch (response.status) {
+        case 404:
+          return ["Not Found", ""];
+        default:
+          return [response.statusText, ""];
+      }
+    })();
+    return {
+      id: v4(),
+      error,
+      error_description,
+      code: response.status
+    };
+  }
+}

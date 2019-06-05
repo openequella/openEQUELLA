@@ -39,10 +39,11 @@ import com.tle.web.sections.js.generic.expression.{
 import com.tle.web.sections.js.generic.function.{ExternallyDefinedFunction, IncludeFile}
 import com.tle.web.sections.js.generic.statement.DeclarationStatement
 import com.tle.web.sections.js.{ElementId, JSExpression}
-import com.tle.web.sections.render.TagState
+import com.tle.web.sections.render.{CssInclude, TagState}
 import com.tle.web.sections.standard.renderers.DivRenderer
 import com.tle.web.sections.{SectionInfo, SectionResult}
 import com.tle.web.wizard.controls.{AbstractWebControl, WebControl, WebControlModel}
+import com.tle.web.wizard.render.WizardFreemarkerFactory
 import com.tle.web.wizard.{BrokenWebControl, WizardStateInterface}
 
 import scala.collection.JavaConverters._
@@ -52,7 +53,8 @@ object CloudWizardControl {
   private val r     = ResourcesService.getResourceHelper(getClass)
   val ProviderRegex = """cp\.(.+)\.(.+)""".r
 
-  val cloudJs = new IncludeFile(r.url("reactjs/scripts/cloudcontrol.js"))
+  val cloudJs =
+    new IncludeFile(r.url("reactjs/scripts/cloudcontrol.js"), WizardFreemarkerFactory.CSS_INCLUDE)
 
   val initRender =
     new ExternallyDefinedFunction("CloudControl.createRender", cloudJs)
@@ -75,7 +77,7 @@ object CloudWizardControl {
     def getName   = name
     val declareIt = new DeclarationStatement(this, Js.call(initRender, globalWizardData))
     override def preRender(info: PreRenderContext): Unit = {
-      info.preRender(declareIt);
+      info.preRender(declareIt)
       info.addStatements(declareIt)
     }
   }

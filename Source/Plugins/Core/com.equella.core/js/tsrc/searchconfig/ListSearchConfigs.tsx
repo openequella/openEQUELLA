@@ -5,6 +5,7 @@ import { SearchResult, handleUnexpectedApiError } from "../components";
 import { formatSize, languageStrings } from "../util/langstrings";
 import { SearchConfig, listAllConfigs } from ".";
 import { TemplateUpdateProps, templateDefaults } from "../mainui/Template";
+import { routes } from "../mainui/routes";
 
 interface SearchConfigsProps extends TemplateUpdateProps, WithStyles {}
 
@@ -51,7 +52,7 @@ class ListSearchConfigs extends React.Component<
           ? null
           : searchConfigs.map(sc => (
               <SearchResult
-                href="PLACEHOLDER"
+                to={routes.Search.path}
                 onClick={e => e}
                 primaryText={sc.name}
               />
