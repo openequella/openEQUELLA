@@ -9,7 +9,7 @@
   "dependencies": {
     "@material-ui/core": "3.9.3",
     "@material-ui/styles": "3.0.0-alpha.10",
-    "axios": "0.18.0",
+    "axios": "0.18.1",
     "babel-polyfill": "6.26.0",
     "js-md5": "0.7.3",
     "jss": "10.0.0-alpha.14",
