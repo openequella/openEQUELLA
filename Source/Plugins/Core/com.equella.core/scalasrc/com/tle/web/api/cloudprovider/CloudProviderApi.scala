@@ -19,6 +19,7 @@
 package com.tle.web.api.cloudprovider
 
 import java.util.UUID
+
 import cats.syntax.functor._
 import com.tle.core.cloudproviders._
 import com.tle.core.db._
@@ -31,9 +32,10 @@ import io.lemonlabs.uri.parsing.UrlParser
 import io.swagger.annotations.{Api, ApiOperation}
 import javax.ws.rs._
 import javax.ws.rs.core._
+import org.jboss.resteasy.annotations.cache.NoCache
 
 case class CloudProviderForward(url: String)
-
+@NoCache
 @Api("Cloud Providers")
 @Path("cloudprovider")
 @Produces(value = Array(MediaType.APPLICATION_JSON))
