@@ -6,7 +6,8 @@ import {
   ControlApi,
   Attachment,
   ItemState,
-  FileEntries
+  FileEntries,
+  EditXML
 } from "oeq-cloudproviders/controls";
 
 interface MyConfig {
@@ -77,7 +78,18 @@ function TestControl(p: ControlApi<MyConfig>) {
     };
   }, []);
 
-  const validator = React.useCallback(() => !failValidation, [failValidation]);
+  const validator = React.useCallback(
+    (editXml: EditXML) => {
+      editXml(d => {
+        let elem = d.createElement("validated");
+        elem.appendChild(d.createTextNode((!failValidation).toString()));
+        d.documentElement.appendChild(elem);
+        return d;
+      });
+      return !failValidation;
+    },
+    [failValidation]
+  );
 
   React.useEffect(() => {
     p.registerValidator(validator);

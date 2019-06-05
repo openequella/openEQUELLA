@@ -38,7 +38,7 @@
     "jspolyfill-array.prototype.find": "0.1.3",
     "luxon": "1.11.4",
     "material-ui-pickers": "2.2.4",
-    "oeq-cloudproviders": "git+https://github.com/apereo/openEQUELLA-cloudprovidersdk.git#validation",
+    "oeq-cloudproviders": "file:///home/doolse/equella/openEQUELLA-cloudprovidersdk",
     "parcel-bundler": "1.12.1",
     "prop-types": "15.7.2",
     "react": "16.8.6",

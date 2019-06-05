@@ -87,8 +87,7 @@ async function getState(wizid: string): Promise<ItemState> {
     xml: parser.parseFromString(res.data.xml, "text/xml")
   };
   latestXml = nextState.xml;
-  listeners.forEach(f => f(nextState));
-  return nextState;
+  return runListeners(nextState);
 }
 
 async function putEdits(itemEdit: ItemEdit): Promise<ItemCommandResponses> {
@@ -131,21 +130,45 @@ observer.observe(document, {
   subtree: true
 });
 
+var allValid = true;
+var xmlDoc: string | undefined;
+
 $(window).bind("validate", () => {
-  let allValid = true;
+  if (allValid && xmlDoc) {
+    $("<input>")
+      .attr({ type: "hidden", id: "xmldoc", name: "xmldoc", value: xmlDoc })
+      .appendTo("._hiddenstate");
+  }
+  return allValid;
+});
+
+$(window).bind("presubmit", () => {
+  allValid = true;
+  xmlDoc = undefined;
   let editXmlFunc: (doc: XMLDocument) => XMLDocument = x => x;
+  let xmlEdited = false;
   controlValidators.forEach(validator => {
     let valid = validator((edit: (doc: XMLDocument) => XMLDocument) => {
       let oldXmlFunc = editXmlFunc;
       editXmlFunc = d => edit(oldXmlFunc(d));
+      xmlEdited = true;
     });
     allValid = allValid && valid;
   });
-  if (allValid) {
-    console.log(serializer.serializeToString(editXmlFunc(latestXml)));
+  if (xmlEdited) {
+    latestXml = editXmlFunc(latestXml);
+    xmlDoc = serializer.serializeToString(latestXml);
+    currentState = currentState.then(state =>
+      runListeners({ ...state, xml: latestXml })
+    );
+    console.log("XML was edited", xmlDoc);
   }
-  return allValid;
 });
+
+function runListeners(state: ItemState): ItemState {
+  listeners.forEach(f => f(state));
+  return state;
+}
 
 export const CloudControl: CloudControlRegisterImpl = {
   register: function<T extends object>(
@@ -211,9 +234,11 @@ export const CloudControl: CloudControlRegisterImpl = {
 
       newXml = parser.parseFromString(responses.xml, "text/xml");
       latestXml = newXml;
-      const nextState = { files: state.files, attachments: att, xml: newXml };
-      listeners.forEach(f => f(nextState));
-      return nextState;
+      return runListeners({
+        files: state.files,
+        attachments: att,
+        xml: newXml
+      });
     } catch (err) {
       currentPromises.forEach(p => p.rejected(err));
       return state;
@@ -331,5 +356,5 @@ const missingControl: Registration = {
     $(params.element).append(errText);
     console.error("Parameters for failed cloud control", params);
   },
-  unmount: elem => {}
+  unmount: _ => {}
 };

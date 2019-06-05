@@ -36,6 +36,8 @@ import com.tle.web.sections.ajax.handler.AjaxMethod;
 import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.events.AbstractDirectEvent;
+import com.tle.web.sections.events.ParametersEvent;
+import com.tle.web.sections.events.ParametersEventListener;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.SectionEvent;
 import com.tle.web.sections.js.JSCallable;
@@ -57,7 +59,7 @@ import javax.inject.Inject;
 
 @NonNullByDefault
 public class PagesSection extends WizardSection<PagesSection.PagesModel>
-    implements SectionTabable, WizardStateListener {
+    implements SectionTabable, WizardStateListener, ParametersEventListener {
   @Inject private ItemHelper itemHelper;
   @Inject private BundleCache bundleCache;
   @Inject private WizardService wizardService;
@@ -123,6 +125,10 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel>
             public void fireDirect(SectionId sectionId, SectionInfo info) throws Exception {
               final LERepository repository = page.getRepository();
               synchronized (repository.getThreadLock()) {
+                String xmlDoc = model.getXmldoc();
+                if (xmlDoc != null) {
+                  state.setItemXml(xmlDoc);
+                }
                 page.saveToDocument(info);
                 page.setSubmitted(true);
                 itemHelper.updateItemFromXml(state.getItemPack());
@@ -220,6 +226,11 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel>
     model.setCurrentPage(Integer.parseInt(tab.getData()));
   }
 
+  @Override
+  public void handleParameters(SectionInfo info, ParametersEvent event) throws Exception {
+    getModel(info).setXmldoc(event.getParameter("xmldoc", false));
+  }
+
   public static class PagesModel {
     @Bookmarked(name = "pg", nodefault = true)
     private int currentPage = -1;
@@ -227,6 +238,8 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel>
     // nodes are opened on a popup
     @Bookmarked(name = "s", stateful = false)
     private boolean submit;
+
+    private String xmldoc;
 
     private AjaxUpdateData updateData;
     private Map<String, List<ControlResult>> pageResults;
@@ -279,6 +292,14 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel>
 
     public void setUpdateData(AjaxUpdateData updateData) {
       this.updateData = updateData;
+    }
+
+    public String getXmldoc() {
+      return xmldoc;
+    }
+
+    public void setXmldoc(String xmldoc) {
+      this.xmldoc = xmldoc;
     }
   }
 
