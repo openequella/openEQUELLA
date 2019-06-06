@@ -21,9 +21,7 @@ export function LegacyContentRenderer(props: PageContent) {
   } = props;
   const classes = useStyles();
 
-  let body = html["body"];
-  let crumbs = html["crumbs"];
-  let upperbody = html["upperbody"];
+  let { body, crumbs, upperbody } = html;
   let extraClass = (function() {
     switch (fullscreenMode) {
       case "YES":
