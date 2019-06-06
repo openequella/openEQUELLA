@@ -8,78 +8,58 @@ import {
 } from "./Template";
 import { Location, LocationDescriptor } from "history";
 import { ErrorResponse } from "../api/errors";
-import ErrorPage from "./ErrorPage";
 import ScreenOptions from "./ScreenOptions";
-import { LegacyContent } from "../legacycontent/LegacyContent";
+import {
+  PageContent,
+  LegacyContentProps
+} from "../legacycontent/LegacyContent";
+import { LegacyContentRenderer } from "../legacycontent/LegacyContentRenderer";
+import { shallowEqual } from "shallow-equal-object";
 
 interface LegacyPageProps extends TemplateUpdateProps {
   location: Location;
-  refreshUser: () => void;
-  redirect: (location: LocationDescriptor) => void;
-  setPreventNavigation: (prevent: boolean) => void;
+  refreshUser(): void;
+  redirect(location: LocationDescriptor): void;
+  setPreventNavigation(prevent: boolean): void;
+  errorCallback(error?: ErrorResponse): void;
+  legacyContent: {
+    content?: PageContent;
+    setLegacyContentProps: (
+      cb: (p: LegacyContentProps) => LegacyContentProps
+    ) => void;
+  };
+}
+
+export function templatePropsForLegacy(content: PageContent): TemplateProps {
+  let soHtml = content.html["so"];
+  let menuExtra = soHtml ? (
+    <ScreenOptions optionsHtml={soHtml} contentId={content.contentId} />
+  ) : (
+    undefined
+  );
+  return {
+    title: content.title,
+    hideAppBar: content.hideAppBar,
+    fullscreenMode: content.fullscreenMode as FullscreenMode,
+    menuMode: content.menuMode as MenuMode,
+    menuExtra,
+    children: undefined
+  };
 }
 
 export const LegacyPage = React.memo(function LegacyPage(
   props: LegacyPageProps
 ) {
+  const { legacyContent, errorCallback } = props;
+  const { content } = legacyContent;
   const { location, updateTemplate, setPreventNavigation } = props;
-  const [fullPageError, setFullPageError] = React.useState<ErrorResponse>();
-  React.useEffect(() => setFullPageError(undefined), [location]);
-  React.useEffect(() => {
-    updateTemplate(tp => ({
-      ...tp,
-      backRoute: undefined,
-      titleExtra: undefined,
-      tabs: undefined,
-      fixedViewPort: undefined,
-      footer: undefined,
-      disableNotifications: undefined
-    }));
-    setPreventNavigation(false);
-  }, []);
+  const shouldPreventNav = content ? content.preventUnload : false;
 
-  const processError = React.useCallback(
-    (err: { error: ErrorResponse; fullScreen: boolean }) => {
-      const { error, fullScreen } = err;
-      if (fullScreen) {
-        setFullPageError(error);
-        updateTemplate(
-          tp =>
-            ({
-              ...tp,
-              fullscreenMode: "NO",
-              title: error.error
-            } as TemplateProps)
-        );
-      } else {
-        updateTemplate(templateError(error));
-      }
-    },
-    [updateTemplate, setFullPageError]
-  );
+  React.useEffect(() => setPreventNavigation(shouldPreventNav), [
+    shouldPreventNav
+  ]);
 
-  const contentUpdated = React.useCallback(
-    content => {
-      let soHtml = content.html["so"];
-      let menuExtra = soHtml ? (
-        <ScreenOptions optionsHtml={soHtml} contentId={content.contentId} />
-      ) : (
-        undefined
-      );
-      setPreventNavigation(content.preventUnload);
-      updateTemplate(tp => ({
-        ...tp,
-        title: content.title,
-        hideAppBar: content.hideAppBar,
-        fullscreenMode: content.fullscreenMode as FullscreenMode,
-        menuMode: content.menuMode as MenuMode,
-        menuExtra
-      }));
-    },
-    [setPreventNavigation, updateTemplate]
-  );
-
-  const redirCallback = React.useCallback(
+  const redirected = React.useCallback(
     redir => {
       const { href, external } = redir;
       if (external) {
@@ -100,16 +80,34 @@ export const LegacyPage = React.memo(function LegacyPage(
     [setPreventNavigation, props.redirect]
   );
 
-  return fullPageError ? (
-    <ErrorPage error={fullPageError} />
-  ) : (
-    <LegacyContent
-      pathname={location.pathname}
-      search={location.search}
-      contentUpdated={contentUpdated}
-      userUpdated={props.refreshUser}
-      redirected={redirCallback}
-      onError={processError}
-    />
+  const onError = React.useCallback(
+    (err: { error: ErrorResponse; fullScreen: boolean }) => {
+      const { error, fullScreen } = err;
+      if (fullScreen) {
+        errorCallback(error);
+      } else {
+        updateTemplate(templateError(error));
+      }
+    },
+    [updateTemplate, errorCallback]
   );
+
+  React.useEffect(() => {
+    legacyContent.setLegacyContentProps(p => ({
+      ...p,
+      enabled: true,
+      pathname: location.pathname,
+      search: location.search,
+      redirected,
+      onError
+    }));
+  }, [location, redirected, onError]);
+
+  React.useEffect(
+    () => () =>
+      legacyContent.setLegacyContentProps(p => ({ ...p, enabled: false })),
+    []
+  );
+
+  return content ? <LegacyContentRenderer {...content} /> : <div />;
 });
