@@ -200,7 +200,14 @@ function IndexPage() {
       <LegacyContent
         {...legacyContentProps}
         render={content => {
-          const tp = content ? templatePropsForLegacy(content) : templateProps;
+          const tp = content
+            ? templatePropsForLegacy(content)
+            : {
+                ...templateProps,
+                fullscreenMode: legacyContentProps.enabled
+                  ? templateProps.fullscreenMode
+                  : undefined
+              };
           const withErr = fullPageError
             ? { ...tp, title: fullPageError.error, fullscreenMode: undefined }
             : tp;

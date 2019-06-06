@@ -14,7 +14,6 @@ import {
   LegacyContentProps
 } from "../legacycontent/LegacyContent";
 import { LegacyContentRenderer } from "../legacycontent/LegacyContentRenderer";
-import { shallowEqual } from "shallow-equal-object";
 
 interface LegacyPageProps extends TemplateUpdateProps {
   location: Location;
@@ -54,6 +53,12 @@ export const LegacyPage = React.memo(function LegacyPage(
   const { content } = legacyContent;
   const { location, updateTemplate, setPreventNavigation } = props;
   const shouldPreventNav = content ? content.preventUnload : false;
+
+  React.useEffect(() => {
+    if (content) {
+      updateTemplate(tp => ({ ...tp, ...templatePropsForLegacy(content) }));
+    }
+  }, [content]);
 
   React.useEffect(() => setPreventNavigation(shouldPreventNav), [
     shouldPreventNav

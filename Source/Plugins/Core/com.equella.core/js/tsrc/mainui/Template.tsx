@@ -34,7 +34,6 @@ import MessageInfo from "../components/MessageInfo";
 import { Link } from "react-router-dom";
 import { LocationDescriptor } from "history";
 import { routes } from "./routes";
-import { shallowEqual } from "shallow-equal-object";
 
 export type MenuMode = "HIDDEN" | "COLLAPSED" | "FULL";
 export type FullscreenMode = "YES" | "YES_WITH_TOOLBAR" | "NO";
@@ -77,6 +76,7 @@ export function templateDefaults(title: string): TemplateUpdate {
       ...tp,
       title,
       backRoute: undefined,
+      menuExtra: undefined,
       titleExtra: undefined,
       tabs: undefined,
       fixedViewPort: undefined,
@@ -366,7 +366,7 @@ export const Template = React.memo(function Template(props: TemplateProps) {
           ))}
       </div>
     ),
-    [currentUser]
+    [currentUser, hasMenu]
   );
 
   const itemCounts = currentUser.counts
