@@ -60,7 +60,7 @@ var registrations: {
   [key: string]: Registration | undefined;
 } = {};
 var listeners: ((doc: ItemState) => void)[] = [];
-var controlValidators: { validator: ControlValidator; ctrlId: string }[] = [];
+const controlValidators: { validator: ControlValidator; ctrlId: string }[] = [];
 var commandQueue: CommandsPromise[] = [];
 var transformState: ((doc: XMLDocument) => XMLDocument) | null = null;
 var reloadState: boolean = false;
