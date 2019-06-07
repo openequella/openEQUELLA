@@ -15,18 +15,21 @@ import {
   TextField,
   Theme
 } from "@material-ui/core";
-import { sprintf } from "sprintf-js";
 import Select from "@material-ui/core/Select";
 import { StyleRules, WithStyles, withStyles } from "@material-ui/core/styles";
+import { LocationDescriptor } from "history";
 import { DateTime } from "luxon";
 //import SwipeableViews from 'react-swipeable-views';
 import { DatePicker } from "material-ui-pickers";
 import * as React from "react";
 import { connect, Dispatch } from "react-redux";
+import { Link } from "react-router-dom";
+import { sprintf } from "sprintf-js";
 import courseService from ".";
 import aclService from "../acl/index";
 import { Course } from "../api";
 import { AclEditorChangeEvent, TargetListEntry } from "../api/acleditor";
+import { Bridge } from "../api/bridge";
 import { Error, Loader } from "../components/index";
 import MessageInfo from "../components/MessageInfo";
 import {
@@ -35,16 +38,13 @@ import {
   EditEntityStateProps,
   entityStrings
 } from "../entity";
+import { routes } from "../mainui/routes";
+import { templateDefaults, TemplateProps } from "../mainui/Template";
 import schemaService from "../schema/index";
 import { StoreState } from "../store";
 import { commonString } from "../util/commonstrings";
 import { properties } from "../util/dictionary";
 import { languageStrings } from "../util/langstrings";
-import { TemplateProps, templateDefaults } from "../mainui/Template";
-import { Bridge } from "../api/bridge";
-import { routes } from "../mainui/routes";
-import { Link } from "react-router-dom";
-import { LocationDescriptor } from "history";
 
 declare const bridge: Bridge;
 
@@ -197,12 +197,13 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 
   handleSave = () => {
     if (this.props.entity) {
-      const { versionSelection } = this.props.entity;
+      const { versionSelection, students } = this.props.entity;
       const vs = versionSelection === "DEFAULT" ? undefined : versionSelection;
 
-      let course = {
+      const course = {
         ...this.props.entity,
         versionSelection: vs,
+        students: students || undefined,
         security: this.state.editSecurity
           ? { rules: this.state.editSecurity() }
           : this.props.entity.security
@@ -210,7 +211,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 
       const { saveEntity } = this.props;
       const thiss = this;
-      this.props.validateEntity(course).then(function(valErrors) {
+      this.props.validateEntity(course).then(valErrors => {
         if (properties(valErrors).length === 0) {
           saveEntity(course)
             .then(editedCourse => {
