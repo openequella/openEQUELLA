@@ -70,6 +70,22 @@ export type TemplateUpdate = (
   templateProps: Readonly<TemplateProps>
 ) => TemplateProps;
 
+/**
+ * Return a template {@link TemplateUpdate} which resets to the template to sensible defaults.
+ *
+ * @remarks
+ *
+ * The defaults are:
+ *
+ * No extra title content
+ * No back route
+ * No tabs
+ * No fixed viewport
+ * Show app bar
+ * No footer content
+ * Show the menu
+ * Allow notifications links
+ */
 export function templateDefaults(title: string): TemplateUpdate {
   return tp =>
     ({
