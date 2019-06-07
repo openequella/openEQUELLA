@@ -24,7 +24,7 @@ Inside that it contains the following layout:
 - `tsrc/` - Typescript source code
 - `src/` - Purescript source code
 - `target/` - Output files which SBT task `buildJS` will use to copy into openEQUELLA server as web accessible resources
-- `package-json` - NPM dependencies + build tasks
+- `package.json` - NPM dependencies + build tasks
 - `psc-package.json` - Purescript dependencies for psc-package
 - `entrybuild/` - Production entrypoints for parcel to analyze
 - `entrydev/` - Development entrypoints for parcel
@@ -63,7 +63,7 @@ Refreshing in the browser after compiling should load the new changes in a runni
 
 Sometimes NPM doesn't do a great job of keeping the `node_modules/` folder up-to-date after dependency changes. So in the face of strange errors, try cleaning first:
 
-```
+```bash
 npm run clean
 ```
 
