@@ -2,11 +2,6 @@
 {
 	$.fn.setupRichDropDown = function(options)
 	{
-		var adjustWidths = function(){
-		};
-
-		$(window).on('resize.richdropdown', adjustWidths);
-
 		return this.each(function()
 		{
 			var $select = $(this);
@@ -157,13 +152,18 @@
 				}
 			});
 
-			adjustWidths();
-
 			// Show/Hide functions
 			function showOptions()
 			{
-				$richdd.slideDown(100);
 				setPosition();
+				$richdd.slideDown({
+				  duration: 100,
+          start: function () {
+            $(this).css({
+              display: "flex"
+            })
+          }
+        });
 				$richdd.addClass("active");
 				$containerDiv.addClass("active");
 			}
@@ -177,10 +177,13 @@
 
 			function setPosition()
 			{
+			  $richdd.outerWidth($richcont.outerWidth());
+			  $richdd.css("top", ($containerDiv.position().top + $containerDiv.outerHeight()) + "px");
+			  /*
 				var myPos = "top";
 				if($containerDiv.offset().left < 180)
 				{
-					myPos = "center+75 top";
+					//myPos = "center+75 top";
 				}
 				$richdd.position({
 					my : myPos,
@@ -188,7 +191,7 @@
 					of : $containerDiv,
 					offset : "0 0",
 					collision : "none none"
-				});
+				});*/
 			}
 		});
 	};
