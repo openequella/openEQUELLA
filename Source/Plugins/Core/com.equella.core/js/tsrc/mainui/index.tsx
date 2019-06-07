@@ -18,9 +18,17 @@ import { shallowEqual } from "shallow-equal-object";
 import { Bridge } from "../api/bridge";
 import { startHeartbeat } from "../util/heartbeat";
 import { NavAwayDialog, defaultNavMessage } from "./PreventNavigation";
-import { LegacyPage } from "./LegacyPage";
+import { LegacyPage, templatePropsForLegacy } from "./LegacyPage";
 import { initStrings } from "../util/langstrings";
 import { oeqTheme } from "../theme";
+import {
+  LegacyContent,
+  LegacyContentProps,
+  PageContent
+} from "../legacycontent/LegacyContent";
+import { getCurrentUser } from "../api/currentuser";
+import { ErrorResponse } from "../api/errors";
+import ErrorPage from "./ErrorPage";
 
 declare const bridge: Bridge;
 
@@ -41,22 +49,40 @@ const beforeunload = function(e: Event) {
 };
 
 function IndexPage() {
-  const refreshUser = React.useRef(() => {});
-  const innerRef = React.useCallback(
-    api => (refreshUser.current = api.refreshUser),
-    [refreshUser]
-  );
+  const [currentUser, setCurrentUser] = React.useState();
+  const [fullPageError, setFullPageError] = React.useState<ErrorResponse>();
+  const errorShowing = React.useRef(false);
+
+  const refreshUser = React.useCallback(() => {
+    getCurrentUser().then(setCurrentUser);
+  }, []);
+
+  React.useEffect(() => refreshUser(), []);
+
   const [navAwayCallback, setNavAwayCallback] = React.useState<{
     message: string;
     cb: (confirm: boolean) => void;
   }>();
+
   const [preventNavMessage, setPreventNavMessage] = React.useState<string>();
+  const [legacyContentProps, setLegacyContentProps] = React.useState<
+    LegacyContentProps
+  >({
+    enabled: false,
+    pathname: "",
+    search: "",
+    userUpdated: refreshUser,
+    redirected: () => {},
+    onError: () => {},
+    render: () => <div />
+  });
+
   const [templateProps, setTemplateProps] = React.useState({
     title: "",
     fullscreenMode: "YES",
-    children: [],
-    innerRef
+    children: []
   } as TemplateProps);
+
   const setPreventNavigation = React.useCallback(
     prevent => {
       const message = prevent ? defaultNavMessage() : undefined;
@@ -71,32 +97,97 @@ function IndexPage() {
   );
 
   const nonBlankNavMsg = preventNavMessage ? preventNavMessage : "";
-  function updateTemplate(edit: TemplateUpdate): void {
+
+  const updateTemplate = React.useCallback((edit: TemplateUpdate) => {
     setTemplateProps(tp => {
       const edited = edit(tp);
       return shallowEqual(edited, tp) ? tp : edited;
     });
-  }
+  }, []);
   const oeqRoutes: { [key: string]: OEQRoute } = routes;
+
   function mkRouteProps(
     p: RouteComponentProps<any>
   ): OEQRouteComponentProps<any> {
     return {
       ...p,
       updateTemplate,
-      refreshUser: refreshUser.current,
+      refreshUser,
       redirect: p.history.push,
       setPreventNavigation
     };
   }
+
+  const newUIRoutes = React.useMemo(() => {
+    return Object.keys(oeqRoutes).map((key, ind) => {
+      const oeqRoute = oeqRoutes[key];
+      return (
+        (oeqRoute.component || oeqRoute.render) && (
+          <Route
+            key={ind}
+            exact={oeqRoute.exact}
+            path={oeqRoute.path}
+            render={p => {
+              const oeqProps = mkRouteProps(p);
+              if (oeqRoute.component) {
+                return <oeqRoute.component {...oeqProps} />;
+              }
+              return oeqRoute.render!(oeqProps);
+            }}
+          />
+        )
+      );
+    });
+  }, [refreshUser]);
+
+  const errorCallback = React.useCallback(err => {
+    errorShowing.current = true;
+    setTemplateProps(p => ({ ...p, fullscreenMode: undefined }));
+    setFullPageError(err);
+  }, []);
+
+  function routeSwitch(content?: PageContent) {
+    return (
+      <Switch>
+        {fullPageError && (
+          <Route>
+            <ErrorPage error={fullPageError} />
+          </Route>
+        )}
+        <Route path="/" exact>
+          <Redirect to="/home.do" />
+        </Route>
+        {newUIRoutes}
+        <Route
+          render={p => (
+            <LegacyPage
+              {...mkRouteProps(p)}
+              errorCallback={errorCallback}
+              legacyContent={{ content, setLegacyContentProps }}
+            />
+          )}
+        />
+      </Switch>
+    );
+  }
+
   return (
     <BrowserRouter
       basename={basePath}
       getUserConfirmation={(message, cb) => {
-        setNavAwayCallback({ message, cb });
+        if (errorShowing.current) {
+          errorShowing.current = false;
+          setFullPageError(undefined);
+          cb(true);
+        } else {
+          setNavAwayCallback({ message, cb });
+        }
       }}
     >
-      <Prompt when={Boolean(preventNavMessage)} message={nonBlankNavMsg} />
+      <Prompt
+        when={Boolean(preventNavMessage) || errorShowing.current}
+        message={nonBlankNavMsg}
+      />
       <NavAwayDialog
         open={Boolean(navAwayCallback)}
         message={nonBlankNavMsg}
@@ -106,33 +197,27 @@ function IndexPage() {
           setNavAwayCallback(undefined);
         }}
       />
-      <Template {...templateProps}>
-        <Switch>
-          <Route path="/" exact>
-            <Redirect to="/home.do" />
-          </Route>
-          {Object.keys(oeqRoutes).map((key, ind) => {
-            const oeqRoute = oeqRoutes[key];
-            return (
-              (oeqRoute.component || oeqRoute.render) && (
-                <Route
-                  key={ind}
-                  exact={oeqRoute.exact}
-                  path={oeqRoute.path}
-                  render={p => {
-                    const oeqProps = mkRouteProps(p);
-                    if (oeqRoute.component) {
-                      return <oeqRoute.component {...oeqProps} />;
-                    }
-                    return oeqRoute.render!(oeqProps);
-                  }}
-                />
-              )
-            );
-          })}
-          <Route render={p => <LegacyPage {...mkRouteProps(p)} />} />
-        </Switch>
-      </Template>
+      <LegacyContent
+        {...legacyContentProps}
+        render={content => {
+          const tp = content
+            ? templatePropsForLegacy(content)
+            : {
+                ...templateProps,
+                fullscreenMode: legacyContentProps.enabled
+                  ? templateProps.fullscreenMode
+                  : undefined
+              };
+          const withErr = fullPageError
+            ? { ...tp, title: fullPageError.error, fullscreenMode: undefined }
+            : tp;
+          return (
+            <Template {...withErr} currentUser={currentUser}>
+              {routeSwitch(content)}
+            </Template>
+          );
+        }}
+      />
     </BrowserRouter>
   );
 }

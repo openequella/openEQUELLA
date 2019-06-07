@@ -1,9 +1,7 @@
 import * as React from "react";
 import { ErrorResponse, fromAxiosResponse } from "../api/errors";
 import Axios from "axios";
-import JQueryDiv from "./JQueryDiv";
 import { v4 } from "uuid";
-import { makeStyles } from "@material-ui/styles";
 
 declare global {
   interface Window {
@@ -46,11 +44,12 @@ type LegacyContent = {
   userUpdated: boolean;
 };
 
-interface PageContent {
+export interface PageContent {
+  contentId: string;
   html: { [key: string]: string };
+  state: StateData;
   script: string;
   title: string;
-  contentId: string;
   fullscreenMode: string;
   menuMode: string;
   hideAppBar: boolean;
@@ -58,22 +57,19 @@ interface PageContent {
   noForm: boolean;
   afterHtml: () => void;
 }
+
 export interface LegacyContentProps {
+  enabled: boolean;
   pathname: string;
   search: string;
-  contentUpdated: (content: PageContent) => void;
   userUpdated: () => void;
   redirected: (redir: { href: string; external: boolean }) => void;
   onError: (cb: { error: ErrorResponse; fullScreen: boolean }) => void;
+  render(content: PageContent | undefined): React.ReactElement;
+  children?: never;
 }
 
 type SubmitResponse = ExternalRedirect | LegacyContent | ChangeRoute;
-
-const useStyles = makeStyles(t => ({
-  withPadding: {
-    padding: t.spacing.unit * 2
-  }
-}));
 
 function isPageContent(response: SubmitResponse): response is LegacyContent {
   return (response as LegacyContent).html !== undefined;
@@ -96,10 +92,8 @@ export function submitRequest(
 export const LegacyContent = React.memo(function LegacyContent(
   props: LegacyContentProps
 ) {
-  let [content, setContent] = React.useState<PageContent>();
-  let [stateData, setStateData] = React.useState<StateData>({});
-
-  const classes = useStyles();
+  const [content, setContent] = React.useState<PageContent>();
+  const { enabled } = props;
 
   function submitCurrentForm(
     fullScreen: boolean,
@@ -126,9 +120,7 @@ export const LegacyContent = React.memo(function LegacyContent(
             if (content.userUpdated) {
               props.userUpdated();
             }
-            setStateData(content.state);
             setContent(pageContent);
-            props.contentUpdated(pageContent);
           });
         } else if (isChangeRoute(content)) {
           if (content.userUpdated) {
@@ -193,82 +185,36 @@ export const LegacyContent = React.memo(function LegacyContent(
         });
       },
       updateForm: function(formUpdate: FormUpdate) {
-        if (formUpdate.partial) {
-          setStateData(state => ({ ...state, ...formUpdate.state }));
-        } else setStateData(formUpdate.state);
+        setContent(content => {
+          if (content) {
+            let newState = formUpdate.partial
+              ? { ...content.state, ...formUpdate.state }
+              : formUpdate.state;
+            return { ...content, state: newState };
+          } else return undefined;
+        });
       }
     };
   }, [props.pathname]);
 
-  React.useEffect(
-    () => () => {
-      updateStylesheets([]).then(deleteElements);
-    },
-    []
-  );
-
   React.useEffect(() => {
-    let params = new URLSearchParams(props.search);
-    let urlValues = {};
-    params.forEach((val, key) => {
-      let exVal = urlValues[key];
-      if (exVal) exVal.push(val);
-      else urlValues[key] = [val];
-    });
-    submitCurrentForm(true, true, urlValues);
-  }, [props.pathname, props.search]);
+    if (enabled) {
+      let params = new URLSearchParams(props.search);
+      let urlValues = {};
+      params.forEach((val, key) => {
+        let exVal = urlValues[key];
+        if (exVal) exVal.push(val);
+        else urlValues[key] = [val];
+      });
+      submitCurrentForm(true, true, urlValues);
+    }
+    if (!enabled) {
+      setContent(undefined);
+      updateStylesheets([]).then(deleteElements);
+    }
+  }, [enabled, props.pathname, props.search]);
 
-  function writeForm(children: React.ReactNode) {
-    return (
-      <form name="eqForm" id="eqpageForm" onSubmit={e => e.preventDefault()}>
-        <div style={{ display: "none" }} className="_hiddenstate">
-          {Object.keys(stateData).map((k, i) => {
-            return (
-              <React.Fragment key={i}>
-                {stateData[k].map((v, i) => (
-                  <input key={i} type="hidden" name={k} value={v} />
-                ))}
-              </React.Fragment>
-            );
-          })}
-        </div>
-        {children}
-      </form>
-    );
-  }
-
-  function renderContent(content: PageContent) {
-    let body = content.html["body"];
-    let crumbs = content.html["crumbs"];
-    let upperbody = content.html["upperbody"];
-    let extraClass = (function() {
-      switch (content.fullscreenMode) {
-        case "YES":
-        case "YES_WITH_TOOLBAR":
-          return "";
-        default:
-          switch (content.menuMode) {
-            case "HIDDEN":
-              return "";
-            default:
-              return classes.withPadding;
-          }
-      }
-    })();
-    let mainContent = (
-      <div className={`content ${extraClass}`}>
-        {crumbs && <JQueryDiv id="breadcrumbs" html={crumbs} />}
-        {upperbody && <JQueryDiv html={upperbody} />}
-        <JQueryDiv
-          html={body}
-          script={content.script}
-          afterHtml={content.afterHtml}
-        />
-      </div>
-    );
-    return content.noForm ? mainContent : writeForm(mainContent);
-  }
-  return content ? renderContent(content) : <div />;
+  return props.render(enabled ? content : undefined);
 });
 
 function resolveUrl(url: string) {

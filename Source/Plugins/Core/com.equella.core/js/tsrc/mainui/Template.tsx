@@ -29,20 +29,11 @@ import {
 import luxonUtils from "@date-io/luxon";
 import { makeStyles } from "@material-ui/styles";
 import { languageStrings } from "../util/langstrings";
-import {
-  getCurrentUser,
-  UserData,
-  guestUser,
-  MenuItem as MI
-} from "../api/currentuser";
+import { UserData, guestUser, MenuItem as MI } from "../api/currentuser";
 import MessageInfo from "../components/MessageInfo";
 import { Link } from "react-router-dom";
 import { LocationDescriptor } from "history";
 import { routes } from "./routes";
-
-interface TemplateApi {
-  refreshUser: () => void;
-}
 
 export type MenuMode = "HIDDEN" | "COLLAPSED" | "FULL";
 export type FullscreenMode = "YES" | "YES_WITH_TOOLBAR" | "NO";
@@ -68,7 +59,7 @@ export interface TemplateProps {
   hideAppBar?: boolean;
   menuMode?: MenuMode;
   disableNotifications?: boolean;
-  innerRef?: (api: TemplateApi) => void;
+  currentUser?: UserData;
 }
 
 export interface TemplateUpdateProps {
@@ -85,6 +76,7 @@ export function templateDefaults(title: string): TemplateUpdate {
       ...tp,
       title,
       backRoute: undefined,
+      menuExtra: undefined,
       titleExtra: undefined,
       tabs: undefined,
       fixedViewPort: undefined,
@@ -240,7 +232,7 @@ function useFullscreen(props: TemplateProps) {
 }
 
 export const Template = React.memo(function Template(props: TemplateProps) {
-  const [currentUser, setCurrentUser] = React.useState<UserData>(guestUser);
+  const currentUser = props.currentUser ? props.currentUser : guestUser;
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement>();
   const [navMenuOpen, setNavMenuOpen] = React.useState(false);
   const [errorOpen, setErrorOpen] = React.useState(false);
@@ -252,20 +244,6 @@ export const Template = React.memo(function Template(props: TemplateProps) {
       setErrorOpen(true);
     }
   }, [props.errorResponse]);
-
-  function refreshUser() {
-    getCurrentUser().then(setCurrentUser);
-  }
-
-  React.useEffect(refreshUser, []);
-
-  React.useEffect(() => {
-    if (props.innerRef) {
-      props.innerRef({
-        refreshUser
-      });
-    }
-  }, [props.innerRef]);
 
   React.useEffect(() => {
     const classList = window.document.getElementsByTagName("html")[0].classList;
@@ -375,17 +353,20 @@ export const Template = React.memo(function Template(props: TemplateProps) {
 
   const hasMenu = props.menuMode !== "HIDDEN";
 
-  const menuContent = (
-    <div className={classes.logo}>
-      <img role="presentation" src={logoURL} />
-      {hasMenu &&
-        currentUser.menuGroups.map((group, ind) => (
-          <React.Fragment key={ind}>
-            {ind > 0 && <Divider />}
-            <List component="nav">{group.map(navItem)}</List>
-          </React.Fragment>
-        ))}
-    </div>
+  const menuContent = React.useMemo(
+    () => (
+      <div className={classes.logo}>
+        <img role="presentation" src={logoURL} />
+        {hasMenu &&
+          currentUser.menuGroups.map((group, ind) => (
+            <React.Fragment key={ind}>
+              {ind > 0 && <Divider />}
+              <List component="nav">{group.map(navItem)}</List>
+            </React.Fragment>
+          ))}
+      </div>
+    ),
+    [currentUser, hasMenu]
   );
 
   const itemCounts = currentUser.counts
