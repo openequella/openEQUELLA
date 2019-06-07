@@ -71,10 +71,6 @@
 					showMenu(event);
 				}
 			})
-			// .on('focus.richdrop', function(event)
-			// {
-			// showMenu(event);
-			// })
 			.on('keyup.richdrop', function(event)
 			{
 				//tab key 
@@ -139,9 +135,6 @@
 			{
 				hideOptions();
 			});
-			// $richdd.on("focusout.richdrop", function(){
-			// hideOptions();
-			// });
 
 			// Re-position dropdown on window resize
 			$(window).resize(function(event)
@@ -179,19 +172,6 @@
 			{
 			  $richdd.outerWidth($richcont.outerWidth());
 			  $richdd.css("top", ($containerDiv.position().top + $containerDiv.outerHeight()) + "px");
-			  /*
-				var myPos = "top";
-				if($containerDiv.offset().left < 180)
-				{
-					//myPos = "center+75 top";
-				}
-				$richdd.position({
-					my : myPos,
-					at : "bottom",
-					of : $containerDiv,
-					offset : "0 0",
-					collision : "none none"
-				});*/
 			}
 		});
 	};

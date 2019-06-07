@@ -12,7 +12,6 @@
 	flex-flow: row wrap;
 	justify-content: space-around; /* space-evenly not always supported */
 	justify-content: space-evenly;
-	/*justify-content: flex-start;*/
 }
 
 .richcontainer {
