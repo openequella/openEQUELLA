@@ -8,11 +8,13 @@ import {
   ItemState,
   ItemCommandResponse,
   Attachment,
-  FileEntries
+  FileEntries,
+  ControlValidator
 } from "oeq-cloudproviders/controls";
 
 const wgxpath = require("wicked-good-xpath");
 wgxpath.install(window);
+
 interface ItemStateJSON {
   xml: string;
   attachments: Attachment[];
@@ -58,18 +60,20 @@ var registrations: {
   [key: string]: Registration | undefined;
 } = {};
 var listeners: ((doc: ItemState) => void)[] = [];
+const controlValidators: { validator: ControlValidator; ctrlId: string }[] = [];
 var commandQueue: CommandsPromise[] = [];
 var transformState: ((doc: XMLDocument) => XMLDocument) | null = null;
 var reloadState: boolean = false;
 var wizardIds: WizardIds;
 var currentState: Promise<ItemState>;
+var latestXml: XMLDocument;
 
 const parser = new DOMParser();
 const serializer = new XMLSerializer();
 
 var activeElements: {
   element: Element;
-  removed: (removed: Element) => void;
+  removed: Registration;
 }[] = [];
 
 function wizardUri(path: string): string {
@@ -82,8 +86,7 @@ async function getState(wizid: string): Promise<ItemState> {
     ...res.data,
     xml: parser.parseFromString(res.data.xml, "text/xml")
   };
-  listeners.forEach(f => f(nextState));
-  return nextState;
+  return runListeners(nextState);
 }
 
 async function putEdits(itemEdit: ItemEdit): Promise<ItemCommandResponses> {
@@ -115,7 +118,7 @@ const observer = new MutationObserver(function() {
   }
   activeElements = activeElements.filter(e => {
     if (res.indexOf(e.element) == -1) {
-      e.removed(e.element);
+      e.removed.unmount(e.element);
       return false;
     }
     return true;
@@ -126,6 +129,64 @@ observer.observe(document, {
   subtree: true
 });
 
+var allValid = true;
+var xmlDoc: string | undefined;
+var requiredControls: { ctrlId: string; required: boolean }[] = [];
+
+$(window).bind("validate", () => {
+  if (allValid) {
+    if (xmlDoc) {
+      $("<input>")
+        .attr({ type: "hidden", name: "xmldoc", value: xmlDoc })
+        .appendTo("#cloudState");
+    }
+    requiredControls.forEach(({ ctrlId, required }) => {
+      $("<input>")
+        .attr({
+          type: "hidden",
+          name: `${ctrlId}_required`,
+          value: required.toString()
+        })
+        .appendTo("#cloudState");
+    });
+  }
+  return allValid;
+});
+
+$(window).bind("presubmit", () => {
+  allValid = true;
+  xmlDoc = undefined;
+  requiredControls = [];
+  $("#cloudState").remove();
+  $('<div id="cloudState"/>').appendTo("._hiddenstate");
+  let editXmlFunc: (doc: XMLDocument) => XMLDocument = x => x;
+  let xmlEdited = false;
+  controlValidators.forEach(({ validator, ctrlId }) => {
+    let valid = validator(
+      (edit: (doc: XMLDocument) => XMLDocument) => {
+        let oldXmlFunc = editXmlFunc;
+        editXmlFunc = d => edit(oldXmlFunc(d));
+        xmlEdited = true;
+      },
+      required => requiredControls.push({ ctrlId, required })
+    );
+    allValid = allValid && valid;
+  });
+  if (xmlEdited) {
+    latestXml = editXmlFunc(latestXml);
+    xmlDoc = serializer.serializeToString(latestXml);
+    currentState = currentState.then(state =>
+      runListeners({ ...state, xml: latestXml })
+    );
+  }
+});
+
+function runListeners(state: ItemState): ItemState {
+  latestXml = state.xml;
+  listeners.forEach(f => f(state));
+  return state;
+}
+
 export const CloudControl: CloudControlRegisterImpl = {
   register: function<T extends object>(
     vendorId: string,
@@ -135,22 +196,22 @@ export const CloudControl: CloudControlRegisterImpl = {
   ) {
     registrations[vendorId + "_" + controlType] = { mount, unmount };
   },
-  forceReload: function() {
+  forceReload() {
     if (currentState) {
       reloadState = true;
       currentState = currentState.then(CloudControl.sendBatch);
     }
   },
-  sendBatch: async function(state: ItemState): Promise<ItemState> {
+  async sendBatch(state: ItemState): Promise<ItemState> {
     if (reloadState) {
       reloadState = false;
       var nextState = await getState(wizardIds.wizId);
       return CloudControl.sendBatch(nextState);
     }
-    var edits: ItemCommand[] = [];
-    var currentPromises: CommandsPromise[] = [];
-    var xml;
-    var newXml = state.xml;
+    let edits: ItemCommand[] = [];
+    let currentPromises: CommandsPromise[] = [];
+    let xml;
+    let newXml = state.xml;
     if (transformState) {
       newXml = transformState(newXml);
       xml = serializer.serializeToString(newXml);
@@ -166,7 +227,7 @@ export const CloudControl: CloudControlRegisterImpl = {
     }
     try {
       const responses = await putEdits({ xml, edits });
-      var att = state.attachments;
+      let att = state.attachments;
       const updateAttachments = function(change: ItemCommandResponse) {
         switch (change.type) {
           case "added":
@@ -189,15 +250,17 @@ export const CloudControl: CloudControlRegisterImpl = {
       });
 
       newXml = parser.parseFromString(responses.xml, "text/xml");
-      const nextState = { files: state.files, attachments: att, xml: newXml };
-      listeners.forEach(f => f(nextState));
-      return nextState;
+      return runListeners({
+        files: state.files,
+        attachments: att,
+        xml: newXml
+      });
     } catch (err) {
       currentPromises.forEach(p => p.rejected(err));
       return state;
     }
   },
-  createRender: function(data) {
+  createRender(data) {
     const { wizId } = data;
     wizardIds = data;
     if (!currentState) {
@@ -206,68 +269,78 @@ export const CloudControl: CloudControlRegisterImpl = {
       CloudControl.forceReload();
     }
 
-    const editXml = function(edit: (doc: XMLDocument) => XMLDocument) {
+    function editXml(edit: (doc: XMLDocument) => XMLDocument) {
       if (transformState == null) transformState = edit;
       else {
         const oldf = transformState;
         transformState = x => edit(oldf(x));
       }
       currentState = currentState.then(CloudControl.sendBatch);
-    };
+    }
 
-    const edits = function(edits: Array<ItemCommand>) {
+    function edits(edits: Array<ItemCommand>) {
       return new Promise<ItemCommandResponse[]>(function(resolved, rejected) {
         commandQueue.push({ commands: edits, resolved, rejected });
         currentState = currentState.then(CloudControl.sendBatch);
       });
-    };
-    const subscribeUpdates = function(callback: (doc: ItemState) => void) {
+    }
+    function subscribeUpdates(callback: (doc: ItemState) => void) {
       listeners.push(callback);
-    };
-    const unsubscribeUpdates = function(callback: (doc: ItemState) => void) {
+    }
+    function unsubscribeUpdates(callback: (doc: ItemState) => void) {
       listeners.splice(listeners.indexOf(callback));
-    };
+    }
     return function<T extends object>(params: ControlParameters<T>) {
-      const stagingPath = function(name: string): string {
+      function stagingPath(name: string): string {
         return (
           "api/staging/" +
           encodeURIComponent(data.stagingId) +
           "/" +
           encodeFilepath(name)
         );
-      };
-      const uploadFile = function(name: string, file: File): Promise<void> {
+      }
+      function uploadFile(name: string, file: File): Promise<void> {
         return Axios.put(stagingPath(name), file).then(
           CloudControl.forceReload
         );
-      };
-      const deleteFile = function(name: string): Promise<void> {
+      }
+      function deleteFile(name: string): Promise<void> {
         return Axios.delete(stagingPath(name)).then(CloudControl.forceReload);
-      };
-      const registerNotification = function() {
+      }
+      function registerNotification() {
         Axios.post(
           wizardUri(
             "notify?providerId=" + encodeURIComponent(params.providerId)
           )
         );
-      };
+      }
       params.element.setAttribute("data-clientupdate", "true");
 
-      const { mount, unmount } =
+      const registration =
         registrations[params.vendorId + "_" + params.controlType] ||
         missingControl;
       activeElements.push({
         element: params.element,
-        removed: unmount
+        removed: registration
       });
-      const providerUrl = function(serviceId: string) {
+      function providerUrl(serviceId: string) {
         return wizardUri(
           "provider/" +
             encodeURIComponent(params.providerId) +
             "/" +
             encodeURIComponent(serviceId)
         );
-      };
+      }
+
+      function registerValidator(validator: ControlValidator) {
+        controlValidators.push({ validator, ctrlId: params.ctrlId });
+      }
+      function deregisterValidator(validator: ControlValidator) {
+        controlValidators.splice(
+          controlValidators.findIndex(v => v.validator === validator)
+        );
+      }
+
       currentState.then(state => {
         const api = {
           ...state,
@@ -281,9 +354,12 @@ export const CloudControl: CloudControlRegisterImpl = {
           registerNotification,
           providerUrl,
           stagingId: wizardIds.stagingId,
-          userId: wizardIds.userId
+          userId: wizardIds.userId,
+          registerValidator,
+          deregisterValidator,
+          apiVersion: { major: 1, minor: 0, patch: 0 }
         };
-        mount(api);
+        registration.mount(api);
       });
     };
   }
@@ -299,5 +375,5 @@ const missingControl: Registration = {
     $(params.element).append(errText);
     console.error("Parameters for failed cloud control", params);
   },
-  unmount: elem => {}
+  unmount: _ => {}
 };

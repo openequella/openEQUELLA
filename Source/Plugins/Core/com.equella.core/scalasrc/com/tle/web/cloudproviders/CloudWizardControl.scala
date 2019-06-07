@@ -29,7 +29,13 @@ import com.tle.core.db.{DB, RunWithDB}
 import com.tle.core.wizard.controls.HTMLControl
 import com.tle.web.api.item.equella.interfaces.beans.EquellaAttachmentBean
 import com.tle.web.resources.ResourcesService
-import com.tle.web.sections.events.{PreRenderContext, RenderContext, RenderEventContext}
+import com.tle.web.sections.events.{
+  ParametersEvent,
+  ParametersEventListener,
+  PreRenderContext,
+  RenderContext,
+  RenderEventContext
+}
 import com.tle.web.sections.js.generic.Js
 import com.tle.web.sections.js.generic.expression.{
   ElementByIdExpression,
@@ -106,7 +112,8 @@ object CloudWizardControl {
                            controlDef: HTMLControl,
                            provider: CloudProviderInstance,
                            controlType: String)
-      extends AbstractWebControl[WebControlModel] {
+      extends AbstractWebControl[WebControlModel]
+      with ParametersEventListener {
     setWrappedControl(controlDef)
 
     val config = controlDef.getControlBean.asInstanceOf[CustomControl]
@@ -114,6 +121,19 @@ object CloudWizardControl {
     override def getModelClass: Class[WebControlModel] = classOf[WebControlModel]
 
     override protected def getIdForLabel: ElementId = null
+
+    var required = false
+
+    override def handleParameters(info: SectionInfo, event: ParametersEvent): Unit = {
+      val requirement = event.getParameter(s"${getSectionId}_required", false)
+      if (requirement != null) {
+        required = requirement.toBoolean
+      }
+    }
+
+    override def isEmpty: Boolean = required
+
+    override def isMandatory: Boolean = required
 
     override def renderHtml(context: RenderEventContext): SectionResult = {
 
@@ -130,6 +150,7 @@ object CloudWizardControl {
       val params = new ObjectExpression()
       params.put("title", getTitle)
       params.put("vendorId", provider.vendorId)
+      params.put("ctrlId", getSectionId)
       params.put("providerId", provider.id.toString)
       params.put("controlType", controlType)
       params.put("element", new ElementByIdExpression(this))

@@ -494,4 +494,9 @@ public class WizardState implements WizardStateInterface {
   public BiMap<UUID, String> getRegisteredFilenames() {
     return registeredFilenames;
   }
+
+  public void setItemXml(String xmlDoc) {
+    xml = xmlDoc;
+    xmlBag = null;
+  }
 }

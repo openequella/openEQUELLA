@@ -4,10 +4,10 @@ import axios from "axios";
 
 import {
   ControlApi,
-  CloudControlRegister,
-  ItemState,
   Attachment,
-  FileEntries
+  ItemState,
+  FileEntries,
+  ControlValidator
 } from "oeq-cloudproviders/controls";
 
 interface MyConfig {
@@ -46,6 +46,8 @@ function TestControl(p: ControlApi<MyConfig>) {
     const filtered = all.filter(a => uuids.indexOf(a.uuid) != -1);
     return filtered;
   };
+  const [failValidation, setFailValidation] = React.useState(false);
+  const [required, setRequired] = React.useState(false);
   const [files, setFiles] = React.useState(p.files);
   const [attachments, setAttachments] = React.useState(() => {
     return myAttachments(p.xml, p.attachments);
@@ -63,7 +65,7 @@ function TestControl(p: ControlApi<MyConfig>) {
     | any);
   const [postRequest, setPostRequest] = React.useState(true);
   const [indexText, setIndexText] = React.useState("");
-  const [indexFiles, setIndexFiles] = React.useState([] as string[]);
+  const [indexFiles, setIndexFiles] = React.useState<string[]>([]);
   React.useEffect(() => {
     p.registerNotification();
     const updateHandler = function(state: ItemState) {
@@ -72,10 +74,29 @@ function TestControl(p: ControlApi<MyConfig>) {
       setFiles(state.files);
     };
     p.subscribeUpdates(updateHandler);
-    return function cleanup() {
+    return () => {
       p.unsubscribeUpdates(updateHandler);
     };
   }, []);
+
+  const validator: ControlValidator = React.useCallback(
+    (editXml, setRequired) => {
+      editXml(d => {
+        let elem = d.createElement("validated");
+        elem.appendChild(d.createTextNode((!failValidation).toString()));
+        d.documentElement.appendChild(elem);
+        return d;
+      });
+      setRequired(required);
+      return !failValidation;
+    },
+    [failValidation, required]
+  );
+
+  React.useEffect(() => {
+    p.registerValidator(validator);
+    return () => p.deregisterValidator(validator);
+  }, [validator]);
 
   function writeDir(parentPath: string, entries: FileEntries) {
     return Object.keys(entries).map(function(filename) {
@@ -279,6 +300,15 @@ function TestControl(p: ControlApi<MyConfig>) {
       </div>
       <h4>Communicate with provider</h4>
       {renderService}
+      <div>
+        <button onClick={_ => setRequired(v => !v)}>
+          Toggle requires filling out - (
+          {required ? "Required" : "Not Required"})
+        </button>
+        <button onClick={_ => setFailValidation(v => !v)}>
+          Toggle validator - ({failValidation ? "fail" : "succeed"})
+        </button>
+      </div>
     </div>
   );
 }
