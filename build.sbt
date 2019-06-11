@@ -111,7 +111,7 @@ oracleDriverJar in ThisBuild := {
 
 name := "Equella"
 
-equellaMajorMinor in ThisBuild := "2019.1"
+equellaMajorMinor in ThisBuild := "2019.2"
 equellaStream in ThisBuild := "Alpha"
 equellaBuild in ThisBuild := buildConfig.value.getString("build.buildname")
 
