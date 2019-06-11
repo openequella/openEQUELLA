@@ -9,6 +9,7 @@ phases:
   pre_build:
     commands:
       - env | grep -vi -e key -e secret -e password
+      - git status
       - setupBuild
       - npm config set unsafe-perm true
       - npm install -g npm@5.6.0
