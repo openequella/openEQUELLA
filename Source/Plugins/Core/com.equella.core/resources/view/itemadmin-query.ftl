@@ -24,6 +24,8 @@
 			<div id="withincontainer">
 				<@render id="searchform-in" section=s.collectionList class="form-control" />
 			</div>
+
+			<div id="dropdowncontainer"></div>
 			
 			<#if m.whereShowing>
 			<div id="wherecontainer">

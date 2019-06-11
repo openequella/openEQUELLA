@@ -3,20 +3,24 @@
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 	border: 1px solid #CFCBBE;
-	display: none;
 	position: absolute;
 	padding: 5px;
 	z-index: 3000;
 	box-shadow: 3px 3px 5px #888888;
+
+	display: none; /* switches to flex when shown */
+	flex-flow: row wrap;
+	justify-content: space-around; /* space-evenly not always supported */
+	justify-content: space-evenly;
 }
 
 .richcontainer {
 }
 
 .richdropdown ul {
-	float: left;
-	min-width: 175px;
-	max-width: 250px;
+  margin-top: 2px;
+	min-width: 200px;
+	flex: 1 1 33%;
 }
 
 .richdropdown ul li {

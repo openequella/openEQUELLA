@@ -390,11 +390,6 @@ function execute(script)
     }
 }
 
-function registerAjaxSuccessCallback(cb)
-{
-	ajaxHelperSuccessCallbacks.push(cb);
-}
-
 function updateFormAttributes(newContents)
 {
 	var params = newContents.formParams;
