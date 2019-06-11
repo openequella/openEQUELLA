@@ -295,7 +295,9 @@ public class UserLinkSection extends AbstractPrototypeSection<UserLinkSection.Mo
               impersonatedBy == null
                   ? null
                   : new KeyLabel(
-                      CoreStrings.lookup().key(KEY_IMPERSONATEDBY), impersonatedBy, firstLastLabel);
+                      CoreStrings.lookup().key(KEY_IMPERSONATEDBY),
+                      new TextLabel(impersonatedBy),
+                      firstLastLabel);
           setLabel(impersonateLabel != null ? impersonateLabel : firstLastLabel);
           setTitle(new TextLabel(userBean.getUsername()));
           setClickHandler(new OverrideHandler(userClickedFunc, userBean.getUniqueID()));
