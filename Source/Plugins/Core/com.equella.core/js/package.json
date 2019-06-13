@@ -68,7 +68,7 @@
     "@types/jest": "22.2.3",
     "@types/luxon": "1.11.1",
     "@types/tinymce": "4.5.22",
-    "@types/node": "9.6.48",
+    "@types/node": "9.6.49",
     "@types/react": "16.8.19",
     "@types/react-autosuggest": "9.3.8",
     "@types/react-color": "2.17.0",
