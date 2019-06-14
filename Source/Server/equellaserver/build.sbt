@@ -90,7 +90,7 @@ libraryDependencies ++= Seq(
   "javax.servlet"             % "jstl"                  % "1.1.2",
   "javax.xml"                 % "jaxrpc"                % "1.1",
   "jdom"                      % "jdom"                  % "1.0",
-  "joda-time"                 % "joda-time"             % "2.2",
+  "joda-time"                 % "joda-time"             % "2.10.2",
   "com.github.equella.jpf"    % "jpf"                   % "1.0.7",
   "log4j"                     % "log4j"                 % "1.2.17",
   "net.oauth.core"            % "oauth"                 % "20100527",
