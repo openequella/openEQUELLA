@@ -5,7 +5,7 @@ cache:
     - "$HOME/.cache"
     - "$HOME/.sbt"
 jdk:
-  - oraclejdk8
+  - openjdk8
 before_install:
   - nvm install $NODE_JS_VERSION
   - node --version
