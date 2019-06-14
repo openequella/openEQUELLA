@@ -103,8 +103,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import net.sf.json.JSONArray;
 
 @NonNullByDefault
@@ -344,15 +344,20 @@ public class TreeNavWebControl extends AbstractWebControl<TreeNavWebControl.Tree
       Map<String, ItemNavigationNode> navMap = treeControl.getNavigationMap();
       Map<String, IAttachment> attachMap = getAttachments();
 
-      // save model values
-      HttpServletRequest request = info.getRequest();
-
-      // TODO: remove getting of request vars and use model instead
-      String[] edits = request.getParameterValues(getSectionId() + "edit"); // $NON-NLS-1$
+      Map<String, String[]> params = info.getParameterMap();
+      final Function<String, String> getParameter =
+          (p) -> {
+            String[] vals = params.get(p);
+            if (vals == null || vals.length == 0) {
+              return null;
+            }
+            return vals[0];
+          };
+      String[] edits = params.get(getSectionId() + "edit"); // $NON-NLS-1$
       if (edits != null) {
         for (String id : edits) {
           ItemNavigationNode node;
-          if (request.getParameter("new-" + id) != null) // $NON-NLS-1$
+          if (getParameter.apply("new-" + id) != null) // $NON-NLS-1$
           {
             node = new ItemNavigationNode(item);
             treeControl.getAllNavigation().add(node);
@@ -360,16 +365,16 @@ public class TreeNavWebControl extends AbstractWebControl<TreeNavWebControl.Tree
           } else {
             node = navMap.get(id);
           }
-          String displayName = request.getParameter("dis-" + id); // $NON-NLS-1$
-          String parentId = request.getParameter("par-" + id); // $NON-NLS-1$
-          int index = Integer.parseInt(request.getParameter("ind-" + id)); // $NON-NLS-1$
+          String displayName = getParameter.apply("dis-" + id); // $NON-NLS-1$
+          String parentId = getParameter.apply("par-" + id); // $NON-NLS-1$
+          int index = Integer.parseInt(getParameter.apply("ind-" + id)); // $NON-NLS-1$
           ItemNavigationNode pareNode = navMap.get(parentId);
           node.setIndex(index);
           node.setParent(pareNode);
           node.setName(displayName);
 
           List<ItemNavigationTab> tabs = new ArrayList<ItemNavigationTab>();
-          String[] reqTabs = request.getParameterValues("tab-" + id); // $NON-NLS-1$
+          String[] reqTabs = params.get("tab-" + id); // $NON-NLS-1$
           if (reqTabs != null) {
             for (String tabValue : reqTabs) {
               String[] parts = tabValue.split("\\|"); // $NON-NLS-1$
@@ -389,7 +394,7 @@ public class TreeNavWebControl extends AbstractWebControl<TreeNavWebControl.Tree
           node.setTabs(tabs);
         }
       }
-      String[] deletes = request.getParameterValues(getSectionId() + "deleted"); // $NON-NLS-1$
+      String[] deletes = params.get(getSectionId() + "deleted"); // $NON-NLS-1$
       if (deletes != null) {
         for (String id : deletes) {
           ItemNavigationNode node = navMap.get(id);
@@ -398,7 +403,7 @@ public class TreeNavWebControl extends AbstractWebControl<TreeNavWebControl.Tree
           }
         }
       }
-      String[] opens = request.getParameterValues(getSectionId() + "open"); // $NON-NLS-1$
+      String[] opens = params.get(getSectionId() + "open"); // $NON-NLS-1$
       if (opens == null) {
         opens = new String[] {};
       }
