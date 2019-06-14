@@ -19,7 +19,10 @@ export default React.memo(function ScreenOptions(props: {
   const classes = useStyles();
   return (
     <React.Fragment>
-      <IconButton onClick={e => setOptionsAnchor(e.currentTarget)}>
+      <IconButton
+        id="screenOptionsOpen"
+        onClick={e => setOptionsAnchor(e.currentTarget)}
+      >
         <MoreVertIcon />
       </IconButton>
       <Popover
@@ -29,7 +32,11 @@ export default React.memo(function ScreenOptions(props: {
         anchorEl={optionsAnchor}
         onClose={_ => setOptionsAnchor(undefined)}
       >
-        <JQueryDiv className={classes.screenOptions} html={optionsHtml} />
+        <JQueryDiv
+          id="screenOptions"
+          className={classes.screenOptions}
+          html={optionsHtml}
+        />
       </Popover>
     </React.Fragment>
   );
