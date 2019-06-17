@@ -1,12 +1,11 @@
 language: scala
-dist: trusty
 cache:
   directories:
     - "$HOME/.ivy2"
     - "$HOME/.cache"
     - "$HOME/.sbt"
 jdk:
-  - oraclejdk8
+  - openjdk8
 before_install:
   - nvm install $NODE_JS_VERSION
   - node --version
