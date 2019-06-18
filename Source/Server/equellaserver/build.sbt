@@ -21,7 +21,7 @@ val RestEasyVersion  = "3.5.0.Final"
 val simpledbaVersion = "0.1.8-SNAPSHOT"
 val circeVersion     = "0.11.1"
 val jsoupVersion     = "1.11.3"
-val sttpVersion      = "1.5.11"
+val sttpVersion      = "1.6.0"
 val fs2Version       = "1.0.5"
 resolvers += Resolver.sonatypeRepo("snapshots")
 
