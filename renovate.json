@@ -47,6 +47,10 @@
     {
       "packagePatterns": ["^io.swagger"],
       "groupName": "Swagger packages"
+    },
+    {
+      "packagePatterns": ["^com.softwaremill.sttp"],
+      "groupName": "Scala HTTP packages"
     }
   ]
 }
