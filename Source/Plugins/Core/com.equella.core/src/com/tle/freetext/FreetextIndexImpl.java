@@ -104,6 +104,10 @@ public class FreetextIndexImpl
   @Named("freetext.stopwords.file")
   private File stopWordsFile;
 
+  @Inject
+  @Named("freetext.stemming.language")
+  private String stemmingLanguage;
+
   @Inject private UserPreferenceService userPrefs;
 
   private int maxBooleanClauses = 8192;
@@ -339,6 +343,11 @@ public class FreetextIndexImpl
   @Override
   public File getStopWordsFile() {
     return stopWordsFile;
+  }
+
+  @Override
+  public String getStemmingLanguage() {
+    return stemmingLanguage;
   }
 
   @Override

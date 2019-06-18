@@ -25,6 +25,7 @@ import org.apache.lucene.analysis.PorterStemFilter;
 import org.apache.lucene.analysis.ReusableAnalyzerBase;
 import org.apache.lucene.analysis.StopFilter;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.de.GermanStemFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 
@@ -32,10 +33,12 @@ import org.apache.lucene.analysis.standard.StandardTokenizer;
 public class TLEAnalyzer extends ReusableAnalyzerBase {
   private final CharArraySet stopSet;
   private final boolean useStemming;
+  private final String stemmingLanguage;
 
-  public TLEAnalyzer(CharArraySet stopWords, boolean useStemming) {
+  public TLEAnalyzer(CharArraySet stopWords, boolean useStemming, String stemmingLanguage) {
     this.stopSet = stopWords;
     this.useStemming = useStemming;
+    this.stemmingLanguage = stemmingLanguage;
   }
 
   @Override
@@ -47,7 +50,14 @@ public class TLEAnalyzer extends ReusableAnalyzerBase {
       result = new StopFilter(LuceneConstants.LATEST_VERSION, result, stopSet);
     }
     if (useStemming) {
-      result = new PorterStemFilter(result);
+      // Use switch ranther than if-else in preparation for more and more overseas clients
+      switch (stemmingLanguage.toLowerCase()) {
+        case "german":
+          result = new GermanStemFilter(result);
+          break;
+        default:
+          result = new PorterStemFilter(result);
+      }
     }
     return new TokenStreamComponents(tokenizer, result);
   }

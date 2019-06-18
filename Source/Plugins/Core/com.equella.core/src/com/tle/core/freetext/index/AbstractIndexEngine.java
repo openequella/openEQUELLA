@@ -80,6 +80,7 @@ public abstract class AbstractIndexEngine {
   private File indexPath;
   private PerFieldAnalyzerWrapper analyzer = null;
   private File stopWordsFile;
+  private String stemmingLanguage;
   private FSDirectory directory;
   private TrackingIndexWriter trackingIndexWriter;
   private NRTManager nrtManager;
@@ -185,6 +186,10 @@ public abstract class AbstractIndexEngine {
     this.stopWordsFile = stopWordsFile;
   }
 
+  public void setStemmingLanguage(String stemmingLanguage) {
+    this.stemmingLanguage = stemmingLanguage;
+  }
+
   /** Returns a new Analyser. */
   protected Analyzer getAnalyser() {
     if (analyzer == null) {
@@ -199,9 +204,9 @@ public abstract class AbstractIndexEngine {
           LOGGER.warn("No stop words available: " + stopWordsFile, e1);
         }
       }
-      TLEAnalyzer normalAnalyzer = new TLEAnalyzer(stopSet, true);
-      TLEAnalyzer autoCompleteAnalyzer = new TLEAnalyzer(null, false);
-      TLEAnalyzer nonStemmedAnalyzer = new TLEAnalyzer(stopSet, false);
+      TLEAnalyzer normalAnalyzer = new TLEAnalyzer(stopSet, true, stemmingLanguage);
+      TLEAnalyzer autoCompleteAnalyzer = new TLEAnalyzer(null, false, stemmingLanguage);
+      TLEAnalyzer nonStemmedAnalyzer = new TLEAnalyzer(stopSet, false, stemmingLanguage);
       analyzer =
           new PerFieldAnalyzerWrapper(
               normalAnalyzer, getAnalyzerFieldMap(autoCompleteAnalyzer, nonStemmedAnalyzer));
