@@ -252,14 +252,14 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
           "YES_WITH_TOOLBAR" -> true
           _ -> false
 
-      menuParts = if hasMenu then [
+      menuParts = [
                     hidden {mdUp: true} [
                         drawer {variant: temporary, anchor: left, classes: {paper: classes.drawerPaper},
                                   open: mobileOpen, onClose: d ToggleMenu } menuContent ],
                     hidden {smDown: true, implementation: css} [
                       drawer {variant: permanent, anchor: left, open: true, classes: {paper: classes.drawerPaper} } menuContent
                     ]
-                  ] else []
+                  ]
       layout = if useFullscreen 
         then D.main' children 
         else D.div [DP.className classes.appFrame] $ [topBar] <> menuParts <> [content] <> catMaybes [
@@ -326,7 +326,9 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
               c -> buttonLink $ badge {badgeContent: c, color: secondary} [iconOnly]
         
       menuContent = [D.div [DP.className classes.logo] [ D.img [ DP.role "presentation", DP.src logoSrc] ]] <>
-                    intercalate [divider_ []] (map group $ fromMaybe [] $ userMaybe _menuGroups)
+                    if hasMenu 
+                    then intercalate [divider_ []] (map group $ fromMaybe [] $ userMaybe _menuGroups) 
+                    else []
         where 
           logoSrc = logoPath
           group items = [list {component: "nav"} (navItem <$> items)]
