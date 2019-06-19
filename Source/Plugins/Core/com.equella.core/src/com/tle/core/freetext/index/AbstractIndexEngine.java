@@ -212,17 +212,19 @@ public abstract class AbstractIndexEngine {
       }
       Analyzer normalAnalyzer = new TLEAnalyzer(stopSet, true);
       Analyzer nonStemmedAnalyzer = new TLEAnalyzer(stopSet, false);
-      // As autoCompleteAnalyzer doesn't need stopwords and stemming so it is used for all languages
+      // As autoCompleteAnalyzer doesn't need stopwords and stemming so it works for all languages
       Analyzer autoCompleteAnalyzer = new TLEAnalyzer(null, false);
 
+      // For non-English
       if (!stemmingLanguage.equals("English")) {
         // Load all language analyzers provided by Lucene
         Reflections reflections = new Reflections("org.apache.lucene.analysis");
         Set<Class<? extends ReusableAnalyzerBase>> languageAnalyzers =
             reflections.getSubTypesOf(ReusableAnalyzerBase.class);
+        // Lucene3.6.2 provides one analyzer for each language supported so we can use findFirst
         Optional<Class<? extends ReusableAnalyzerBase>> languageAnalyzer =
             languageAnalyzers.stream()
-                .filter(stemFilter -> stemFilter.getName().contains(stemmingLanguage + "Analyzer"))
+                .filter(stemFilter -> stemFilter.getName().contains(stemmingLanguage))
                 .findFirst();
 
         if (languageAnalyzer.isPresent()) {
@@ -232,9 +234,7 @@ public abstract class AbstractIndexEngine {
                     .get()
                     .getDeclaredConstructor(Version.class)
                     .newInstance(Version.LUCENE_36);
-
-            // As nonStemmedAnalyzer only requires the stopwords of a certain language, we can reuse
-            // TLEAnalyzer with specific stopwords
+            // For the non-stemmed one, we can reuse TLEAnalyzer
             Method getDefaultStopSet =
                 languageAnalyzer.get().getDeclaredMethod("getDefaultStopSet");
             nonStemmedAnalyzer =
@@ -245,7 +245,9 @@ public abstract class AbstractIndexEngine {
               | NoSuchMethodException
               | InvocationTargetException
               | IllegalAccessException e) {
-            LOGGER.warn(stemmingLanguage + "is currently not supported.");
+            // For analyzers that don't have constructors or the getDefaultStopSet method
+            normalAnalyzer = autoCompleteAnalyzer;
+            nonStemmedAnalyzer = autoCompleteAnalyzer;
           }
         }
       }
