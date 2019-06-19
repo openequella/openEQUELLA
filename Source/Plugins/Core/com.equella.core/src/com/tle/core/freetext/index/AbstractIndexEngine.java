@@ -234,7 +234,8 @@ public abstract class AbstractIndexEngine {
                     .get()
                     .getDeclaredConstructor(Version.class)
                     .newInstance(Version.LUCENE_36);
-            // For the non-stemmed one, we can reuse TLEAnalyzer
+            // For the non-stemmed analyzer we still use the TLEAnalyzer, however we use the
+            // language specific stop words by loading them from the language specific analyzer.
             Method getDefaultStopSet =
                 languageAnalyzer.get().getDeclaredMethod("getDefaultStopSet");
             nonStemmedAnalyzer =
@@ -248,6 +249,9 @@ public abstract class AbstractIndexEngine {
             // For analyzers that don't have constructors or the getDefaultStopSet method
             normalAnalyzer = autoCompleteAnalyzer;
             nonStemmedAnalyzer = autoCompleteAnalyzer;
+            LOGGER.warn(
+                analyzerLanguage
+                    + " language analyzer is not avaiable so use the default analyzer");
           }
         }
       }
