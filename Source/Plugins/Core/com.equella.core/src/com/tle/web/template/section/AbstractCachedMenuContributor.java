@@ -19,21 +19,13 @@
 package com.tle.web.template.section;
 
 import com.tle.common.ExpiringValue;
-import com.tle.core.services.user.UserSessionService;
 import com.tle.web.sections.SectionInfo;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
 
-public abstract class AbstractCachedMenuContributor<T> implements MenuContributor {
+public abstract class AbstractCachedMenuContributor<T> extends AbstractUpdatableMenuContributor {
   private static final long ONE_MINUTE = TimeUnit.MINUTES.toMillis(1);
-  @Inject private UserSessionService userSessionService;
-
-  @Override
-  public void clearCachedData() {
-    userSessionService.removeAttribute(getSessionKey());
-  }
 
   @Override
   public List<MenuContribution> getMenuContributions(SectionInfo info) {

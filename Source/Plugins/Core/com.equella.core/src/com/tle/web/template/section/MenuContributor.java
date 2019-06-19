@@ -23,6 +23,8 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import java.util.List;
 
 public interface MenuContributor {
+  static final String KEY_MENU_UPDATED = "MenuUpdated";
+
   List<MenuContribution> getMenuContributions(SectionInfo info);
 
   void clearCachedData();
