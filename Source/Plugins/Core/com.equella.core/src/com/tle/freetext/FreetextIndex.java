@@ -44,7 +44,7 @@ public interface FreetextIndex {
 
   File getStopWordsFile();
 
-  String getStemmingLanguage();
+  String getAnalyzerLanguage();
 
   String getDefaultOperator();
 

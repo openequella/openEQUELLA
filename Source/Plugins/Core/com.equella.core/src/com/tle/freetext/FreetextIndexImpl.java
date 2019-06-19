@@ -105,8 +105,8 @@ public class FreetextIndexImpl
   private File stopWordsFile;
 
   @Inject
-  @Named("freetext.stemming.language")
-  private String stemmingLanguage;
+  @Named("freetext.analyzer.language")
+  private String analyzerLanguage;
 
   @Inject private UserPreferenceService userPrefs;
 
@@ -346,8 +346,8 @@ public class FreetextIndexImpl
   }
 
   @Override
-  public String getStemmingLanguage() {
-    return stemmingLanguage;
+  public String getAnalyzerLanguage() {
+    return analyzerLanguage;
   }
 
   @Override

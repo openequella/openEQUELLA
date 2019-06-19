@@ -159,7 +159,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   public void afterPropertiesSet() throws IOException {
     setStopWordsFile(freetextIndex.getStopWordsFile());
     setDefaultOperator(freetextIndex.getDefaultOperator());
-    setStemmingLanguage(freetextIndex.getStemmingLanguage());
+    setAnalyzerLanguage(freetextIndex.getAnalyzerLanguage());
     keyFieldSelector = new SetBasedFieldSelector(getKeyFields(), new HashSet<String>());
 
     super.afterPropertiesSet();

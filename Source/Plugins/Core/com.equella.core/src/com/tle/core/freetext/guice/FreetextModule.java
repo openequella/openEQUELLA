@@ -51,7 +51,7 @@ public class FreetextModule extends PropertiesModule {
   public static class FreetextOptionalModule extends OptionalConfigModule {
     @Override
     protected void configure() {
-      bindProp("freetext.stemming.language", "English");
+      bindProp("freetext.analyzer.language", "English");
     }
   }
 }

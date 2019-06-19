@@ -86,7 +86,7 @@ public abstract class AbstractIndexEngine {
   private File indexPath;
   private PerFieldAnalyzerWrapper analyzer = null;
   private File stopWordsFile;
-  private String stemmingLanguage;
+  private String analyzerLanguage;
   private FSDirectory directory;
   private TrackingIndexWriter trackingIndexWriter;
   private NRTManager nrtManager;
@@ -192,8 +192,8 @@ public abstract class AbstractIndexEngine {
     this.stopWordsFile = stopWordsFile;
   }
 
-  public void setStemmingLanguage(String stemmingLanguage) {
-    this.stemmingLanguage = stemmingLanguage;
+  public void setAnalyzerLanguage(String analyzerLanguage) {
+    this.analyzerLanguage = analyzerLanguage;
   }
 
   /** Returns a new Analyser. */
@@ -216,7 +216,7 @@ public abstract class AbstractIndexEngine {
       Analyzer autoCompleteAnalyzer = new TLEAnalyzer(null, false);
 
       // For non-English
-      if (!stemmingLanguage.equals("English")) {
+      if (!analyzerLanguage.equals("English")) {
         // Load all language analyzers provided by Lucene
         Reflections reflections = new Reflections("org.apache.lucene.analysis");
         Set<Class<? extends ReusableAnalyzerBase>> languageAnalyzers =
@@ -224,7 +224,7 @@ public abstract class AbstractIndexEngine {
         // Lucene3.6.2 provides one analyzer for each language supported so we can use findFirst
         Optional<Class<? extends ReusableAnalyzerBase>> languageAnalyzer =
             languageAnalyzers.stream()
-                .filter(stemFilter -> stemFilter.getName().contains(stemmingLanguage))
+                .filter(stemFilter -> stemFilter.getName().contains(analyzerLanguage))
                 .findFirst();
 
         if (languageAnalyzer.isPresent()) {
