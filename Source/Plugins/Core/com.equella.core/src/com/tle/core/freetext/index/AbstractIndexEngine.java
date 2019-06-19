@@ -26,7 +26,11 @@ import com.tle.freetext.TLEAnalyzer;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.annotation.PostConstruct;
@@ -34,6 +38,7 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.ReusableAnalyzerBase;
 import org.apache.lucene.analysis.WordlistLoader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -42,6 +47,8 @@ import org.apache.lucene.search.NRTManager;
 import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
 import org.apache.lucene.search.NRTManagerReopenThread;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
+import org.reflections.Reflections;
 
 /**
  * When Lucene creates an IndexSearcher it keeps a snap-shot of the index at that point in time, and
@@ -76,7 +83,6 @@ import org.apache.lucene.store.FSDirectory;
 @SuppressWarnings("nls")
 public abstract class AbstractIndexEngine {
   protected final Logger LOGGER = Logger.getLogger(getClass());
-
   private File indexPath;
   private PerFieldAnalyzerWrapper analyzer = null;
   private File stopWordsFile;
@@ -204,9 +210,46 @@ public abstract class AbstractIndexEngine {
           LOGGER.warn("No stop words available: " + stopWordsFile, e1);
         }
       }
-      TLEAnalyzer normalAnalyzer = new TLEAnalyzer(stopSet, true, stemmingLanguage);
-      TLEAnalyzer autoCompleteAnalyzer = new TLEAnalyzer(null, false, stemmingLanguage);
-      TLEAnalyzer nonStemmedAnalyzer = new TLEAnalyzer(stopSet, false, stemmingLanguage);
+      Analyzer normalAnalyzer = new TLEAnalyzer(stopSet, true);
+      Analyzer nonStemmedAnalyzer = new TLEAnalyzer(stopSet, false);
+      // As autoCompleteAnalyzer doesn't need stopwords and stemming so it is used for all languages
+      Analyzer autoCompleteAnalyzer = new TLEAnalyzer(null, false);
+
+      if (!stemmingLanguage.equals("English")) {
+        // Load all language analyzers provided by Lucene
+        Reflections reflections = new Reflections("org.apache.lucene.analysis");
+        Set<Class<? extends ReusableAnalyzerBase>> languageAnalyzers =
+            reflections.getSubTypesOf(ReusableAnalyzerBase.class);
+        Optional<Class<? extends ReusableAnalyzerBase>> languageAnalyzer =
+            languageAnalyzers.stream()
+                .filter(stemFilter -> stemFilter.getName().contains(stemmingLanguage + "Analyzer"))
+                .findFirst();
+
+        if (languageAnalyzer.isPresent()) {
+          try {
+            normalAnalyzer =
+                languageAnalyzer
+                    .get()
+                    .getDeclaredConstructor(Version.class)
+                    .newInstance(Version.LUCENE_36);
+
+            // As nonStemmedAnalyzer only requires the stopwords of a certain language, we can reuse
+            // TLEAnalyzer with specific stopwords
+            Method getDefaultStopSet =
+                languageAnalyzer.get().getDeclaredMethod("getDefaultStopSet");
+            nonStemmedAnalyzer =
+                new TLEAnalyzer(
+                    new CharArraySet(Version.LUCENE_36, (Set) getDefaultStopSet.invoke(null), true),
+                    false);
+          } catch (InstantiationException
+              | NoSuchMethodException
+              | InvocationTargetException
+              | IllegalAccessException e) {
+            LOGGER.warn(stemmingLanguage + "is currently not supported.");
+          }
+        }
+      }
+
       analyzer =
           new PerFieldAnalyzerWrapper(
               normalAnalyzer, getAnalyzerFieldMap(autoCompleteAnalyzer, nonStemmedAnalyzer));
