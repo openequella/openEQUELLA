@@ -84,7 +84,7 @@ public class BookmarkEvent extends AbstractTargettedEvent<BookmarkEvent, Bookmar
     this.rendering = rendering;
 
     if (info != null) {
-      this.existing = info.getRequest().getParameterMap().keySet();
+      this.existing = info.getParameterMap().keySet();
     } else {
       this.existing = null;
     }
