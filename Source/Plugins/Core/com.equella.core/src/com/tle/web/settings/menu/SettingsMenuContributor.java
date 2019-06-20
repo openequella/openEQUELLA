@@ -19,31 +19,27 @@
 package com.tle.web.settings.menu;
 
 import com.tle.core.guice.Bind;
-import com.tle.core.services.user.UserSessionService;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.settings.SettingsList;
-import com.tle.web.template.section.MenuContributor;
+import com.tle.web.template.section.AbstractUpdatableMenuContributor;
 import java.util.ArrayList;
 import java.util.List;
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class SettingsMenuContributor implements MenuContributor {
+public class SettingsMenuContributor extends AbstractUpdatableMenuContributor {
   private static final Label LABEL_KEY =
       new KeyLabel(ResourcesService.getResourceHelper(SettingsMenuContributor.class).key("menu"));
   private static final String ICON_PATH =
       ResourcesService.getResourceHelper(SettingsMenuContributor.class)
           .url("images/menu-icon-settings.png");
   private static final String SESSION_KEY = "SETTINGS-MENU";
-
-  @Inject private UserSessionService userSessionService;
 
   @Override
   public List<MenuContribution> getMenuContributions(SectionInfo info) {
@@ -71,7 +67,7 @@ public class SettingsMenuContributor implements MenuContributor {
   }
 
   @Override
-  public void clearCachedData() {
-    userSessionService.removeAttribute(SESSION_KEY);
+  public String getSessionKey() {
+    return SESSION_KEY;
   }
 }

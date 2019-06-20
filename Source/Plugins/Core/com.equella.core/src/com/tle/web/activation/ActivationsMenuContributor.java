@@ -19,14 +19,13 @@
 package com.tle.web.activation;
 
 import com.tle.core.guice.Bind;
-import com.tle.core.services.user.UserSessionService;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
-import com.tle.web.template.section.MenuContributor;
+import com.tle.web.template.section.AbstractUpdatableMenuContributor;
 import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
@@ -35,7 +34,7 @@ import javax.inject.Singleton;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class ActivationsMenuContributor implements MenuContributor {
+public class ActivationsMenuContributor extends AbstractUpdatableMenuContributor {
   private static final Label LABEL_KEY =
       new KeyLabel(
           ResourcesService.getResourceHelper(ActivationsMenuContributor.class)
@@ -47,12 +46,6 @@ public class ActivationsMenuContributor implements MenuContributor {
   private static final String SESSION_KEY = "ACTIVATIONS-MENU";
 
   @Inject private ActivationsPrivilegeTreeProvider securityProvider;
-  @Inject private UserSessionService userSessionService;
-
-  @Override
-  public void clearCachedData() {
-    userSessionService.removeAttribute(SESSION_KEY);
-  }
 
   @Override
   public List<MenuContribution> getMenuContributions(SectionInfo info) {
@@ -74,5 +67,10 @@ public class ActivationsMenuContributor implements MenuContributor {
     } else {
       return Collections.emptyList();
     }
+  }
+
+  @Override
+  public String getSessionKey() {
+    return SESSION_KEY;
   }
 }

@@ -49,7 +49,7 @@ import com.tle.web.sections.render._
 import com.tle.web.sections.standard.model.HtmlLinkState
 import com.tle.web.sections.standard.renderers.{DivRenderer, LinkRenderer, SpanRenderer}
 import com.tle.web.template.Decorations.MenuMode
-import com.tle.web.template.section.HelpAndScreenOptionsSection
+import com.tle.web.template.section.{HelpAndScreenOptionsSection, MenuContributor}
 import com.tle.web.template.{Breadcrumbs, Decorations, RenderTemplate}
 import com.tle.web.viewable.{NewDefaultViewableItem, PreviewableItem}
 import com.tle.web.viewable.servlet.ItemServlet
@@ -420,7 +420,7 @@ class LegacyContentApi {
   def userChanged(req: HttpServletRequest): Boolean = {
     val idNow  = CurrentUser.getUserID
     val idThen = req.getAttribute(UserIdKey).asInstanceOf[String]
-    idNow != idThen
+    Option(req.getAttribute(MenuContributor.KEY_MENU_UPDATED)).contains(true) || idNow != idThen
   }
 
   def redirectResponse(info: MutableSectionInfo): Option[ResponseBuilder] = {

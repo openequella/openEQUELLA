@@ -29,7 +29,6 @@ import com.tle.core.guice.Bind;
 import com.tle.core.hierarchy.HierarchyService;
 import com.tle.core.search.VirtualisableAndValue;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.user.UserSessionService;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -37,7 +36,7 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
-import com.tle.web.template.section.MenuContributor;
+import com.tle.web.template.section.AbstractUpdatableMenuContributor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -48,7 +47,7 @@ import javax.inject.Singleton;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class HierarchyMenuContributor implements MenuContributor {
+public class HierarchyMenuContributor extends AbstractUpdatableMenuContributor {
   private static final String ICON_PATH =
       ResourcesService.getResourceHelper(HierarchyMenuContributor.class)
           .url("images/menu-icon-hierarchy.png");
@@ -60,7 +59,6 @@ public class HierarchyMenuContributor implements MenuContributor {
 
   @Inject private TLEAclManager aclManager;
   @Inject private HierarchyService hierarchyService;
-  @Inject private UserSessionService userSessionService;
 
   @Override
   public List<MenuContribution> getMenuContributions(SectionInfo info) {
@@ -129,7 +127,7 @@ public class HierarchyMenuContributor implements MenuContributor {
   }
 
   @Override
-  public void clearCachedData() {
-    userSessionService.removeAttribute(SESSION_KEY);
+  public String getSessionKey() {
+    return SESSION_KEY;
   }
 }

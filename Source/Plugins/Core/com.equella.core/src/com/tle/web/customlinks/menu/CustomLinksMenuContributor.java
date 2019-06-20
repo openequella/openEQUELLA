@@ -24,13 +24,13 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.customlinks.service.CustomLinkService;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
-import com.tle.core.services.user.UserSessionService;
 import com.tle.web.customlinks.CustomLinkLabel;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
-import com.tle.web.template.section.MenuContributor;
+import com.tle.web.template.section.AbstractUpdatableMenuContributor;
+import com.tle.web.template.section.MenuContributor.MenuContribution;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -41,11 +41,10 @@ import javax.inject.Singleton;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class CustomLinksMenuContributor implements MenuContributor {
+public class CustomLinksMenuContributor extends AbstractUpdatableMenuContributor {
   private static final String SESSION_KEY = "CUSTOM-LINKS-MENU";
 
   @Inject private CustomLinkService linkService;
-  @Inject private UserSessionService userSessionService;
   @Inject private InstitutionService institutionService;
 
   @Override
@@ -105,7 +104,7 @@ public class CustomLinksMenuContributor implements MenuContributor {
   }
 
   @Override
-  public void clearCachedData() {
-    userSessionService.removeAttribute(SESSION_KEY);
+  public String getSessionKey() {
+    return SESSION_KEY;
   }
 }
