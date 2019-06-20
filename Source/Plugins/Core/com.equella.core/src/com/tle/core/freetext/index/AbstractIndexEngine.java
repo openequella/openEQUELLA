@@ -216,15 +216,17 @@ public abstract class AbstractIndexEngine {
       Analyzer autoCompleteAnalyzer = new TLEAnalyzer(null, false);
 
       // For non-English
-      if (!analyzerLanguage.equals("English")) {
+      if (!analyzerLanguage.equals("en")) {
         // Load all language analyzers provided by Lucene
-        Reflections reflections = new Reflections("org.apache.lucene.analysis");
+        Reflections reflections = new Reflections("org.apache.lucene.analysis." + analyzerLanguage);
         Set<Class<? extends ReusableAnalyzerBase>> languageAnalyzers =
             reflections.getSubTypesOf(ReusableAnalyzerBase.class);
         // Lucene3.6.2 provides one analyzer for each language supported so we can use findFirst
         Optional<Class<? extends ReusableAnalyzerBase>> languageAnalyzer =
             languageAnalyzers.stream()
-                .filter(stemFilter -> stemFilter.getName().contains(analyzerLanguage))
+                .filter(
+                    analyzerClassFullName ->
+                        analyzerClassFullName.getName().contains(analyzerLanguage))
                 .findFirst();
 
         if (languageAnalyzer.isPresent()) {
