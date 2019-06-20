@@ -217,16 +217,16 @@ public abstract class AbstractIndexEngine {
 
       // For non-English
       if (!analyzerLanguage.equals("en")) {
-        // Load all language analyzers provided by Lucene
-        Reflections reflections = new Reflections("org.apache.lucene.analysis." + analyzerLanguage);
+        // Load the only one analyzer from a specific language package provided by Lucene
+        String languageAnalyzerPackage = "org.apache.lucene.analysis." + analyzerLanguage;
+        Reflections reflections = new Reflections(languageAnalyzerPackage);
         Set<Class<? extends ReusableAnalyzerBase>> languageAnalyzers =
             reflections.getSubTypesOf(ReusableAnalyzerBase.class);
-        // Lucene3.6.2 provides one analyzer for each language supported so we can use findFirst
         Optional<Class<? extends ReusableAnalyzerBase>> languageAnalyzer =
             languageAnalyzers.stream()
                 .filter(
-                    analyzerClassFullName ->
-                        analyzerClassFullName.getName().contains(analyzerLanguage))
+                    languageAnalyzerClass ->
+                        languageAnalyzerClass.getName().contains(languageAnalyzerPackage))
                 .findFirst();
 
         if (languageAnalyzer.isPresent()) {
@@ -244,6 +244,8 @@ public abstract class AbstractIndexEngine {
                 new TLEAnalyzer(
                     new CharArraySet(Version.LUCENE_36, (Set) getDefaultStopSet.invoke(null), true),
                     false);
+
+            LOGGER.info("Using Lucene analyzer: " + languageAnalyzer.get().getName());
           } catch (InstantiationException
               | NoSuchMethodException
               | InvocationTargetException
