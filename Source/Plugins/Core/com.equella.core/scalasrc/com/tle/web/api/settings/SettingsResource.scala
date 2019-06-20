@@ -27,6 +27,7 @@ import com.tle.core.settings.SettingsDB
 import com.tle.web.settings.{EditableSettings, SettingsList, UISettings}
 import io.swagger.annotations.Api
 import javax.ws.rs.{GET, PUT, Path, Produces}
+import org.jboss.resteasy.annotations.cache.NoCache
 
 case class SettingTypeLinks(web: Option[URI], rest: Option[URI], route: Option[String])
 case class SettingType(id: String,
@@ -44,7 +45,7 @@ object SettingTypeLinks {
                        if (ed.isRoute) Some("/" + ed.uri) else None)
   }
 }
-
+@NoCache
 @Path("settings/")
 @Produces(value = Array("application/json"))
 @Api(value = "Settings")
