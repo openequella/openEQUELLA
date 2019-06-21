@@ -1,5 +1,5 @@
 libraryDependencies ++= Seq(
-  "net.java.dev.jna"    % "platform"     % "3.5.1",
+  "net.java.dev.jna"    % "platform"     % "3.5.2",
   "org.rococoa"         % "rococoa-core" % "0.5",
   "com.google.guava"    % "guava"        % "18.0",
   "org.springframework" % "spring-web"   % "2.5.5",
