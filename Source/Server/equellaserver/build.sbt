@@ -52,7 +52,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client"        % "google-api-client"           % "1.30.0",
+  "com.google.api-client"        % "google-api-client"           % "1.30.1",
   "com.google.apis"              % "google-api-services-books"   % "v1-rev20181212-1.28.0",
   "com.google.apis"              % "google-api-services-youtube" % "v3-rev20190513-1.28.0",
   "com.google.code.findbugs"     % "jsr305"                      % "2.0.3",
