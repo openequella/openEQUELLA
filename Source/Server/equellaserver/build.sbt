@@ -95,7 +95,7 @@ libraryDependencies ++= Seq(
   "log4j"                     % "log4j"                 % "1.2.17",
   "net.oauth.core"            % "oauth"                 % "20100527",
   "net.oauth.core"            % "oauth-provider"        % "20100527",
-  "net.sf.ezmorph"            % "ezmorph"               % "1.0.4",
+  "net.sf.ezmorph"            % "ezmorph"               % "1.0.6",
   "net.sf.json-lib"           % "json-lib"              % "2.4" classifier "jdk15",
   "net.sf.transmorph"         % "transmorph"            % "3.1.0",
   "org.apache.axis2"          % "axis2-kernel"          % axis2Version,
