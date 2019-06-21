@@ -448,10 +448,7 @@ class LegacyContentApi {
             wrapBody(context, tr.getNamedResult(context, "body")))
           val upperbody =
             SectionUtils.renderToString(context, tr.getNamedResult(context, "upperbody"))
-          val hasoMap = HelpAndScreenOptionsSection.getContent(context).asScala
-          val scrops = hasoMap
-            .get("screenoptions")
-            .map(bbr => SectionUtils.renderToString(context, bbr.getRenderable))
+          val scrops = renderScroptions(context)
           val crumbs = renderCrumbs(context, decs).map(SectionUtils.renderToString(context, _))
           Iterable(
             Some("body"                                          -> body),
@@ -558,6 +555,14 @@ class LegacyContentApi {
     }
   }
 
+  def renderScroptions(context: RenderContext): Option[String] = {
+    HelpAndScreenOptionsSection
+      .getContent(context)
+      .asScala
+      .get("screenoptions")
+      .map(bbr => SectionUtils.renderToString(context, bbr.getRenderable))
+  }
+
   def ajaxResponse(info: MutableSectionInfo, arc: AjaxRenderContext) = {
     var resp: ResponseBuilder = null
     val context               = LegacyContentController.prepareJSContext(info)
@@ -571,6 +576,7 @@ class LegacyContentApi {
       }
       formTag.setNestedRenderable(sr)
       body.setNestedRenderable(formTag)
+      renderScroptions(context)
       SectionUtils.renderToWriter(context, body, new DevNullWriter)
     }
 

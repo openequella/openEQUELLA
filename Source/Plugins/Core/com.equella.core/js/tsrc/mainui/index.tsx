@@ -29,6 +29,7 @@ import {
 import { getCurrentUser } from "../api/currentuser";
 import { ErrorResponse } from "../api/errors";
 import ErrorPage from "./ErrorPage";
+import { LegacyForm } from "../legacycontent/LegacyForm";
 
 declare const bridge: Bridge;
 
@@ -211,10 +212,15 @@ function IndexPage() {
           const withErr = fullPageError
             ? { ...tp, title: fullPageError.error, fullscreenMode: undefined }
             : tp;
-          return (
+          const template = (
             <Template {...withErr} currentUser={currentUser}>
               {routeSwitch(content)}
             </Template>
+          );
+          return !content || content.noForm ? (
+            template
+          ) : (
+            <LegacyForm state={content.state}>{template}</LegacyForm>
           );
         }}
       />
