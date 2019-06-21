@@ -21,6 +21,7 @@ package com.tle.admin;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.Version;
 import com.dytech.gui.ExceptionDialog;
+import com.tle.admin.boot.Bootstrap;
 import com.tle.admin.controls.ControlRepositoryImpl;
 import com.tle.admin.controls.repository.ControlRepository;
 import com.tle.common.Check;
@@ -28,7 +29,6 @@ import com.tle.common.applet.SessionHolder;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.remoting.RemotePluginDownloadService;
-import com.tle.web.appletcommon.AbstractAppletLauncher;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
@@ -81,8 +81,7 @@ public final class Driver {
 
     SessionHolder session = clientService.getSession();
     loggedInUserID = session.getLoginService().getLoggedInUserId();
-    institutionName =
-        clientService.getParameter(AbstractAppletLauncher.PARAMETER_PREFIX + "INSTITUTIONNAME");
+    institutionName = clientService.getParameter(Bootstrap.SERVER_NAME_PARAMETER);
 
     version = Version.load();
 
