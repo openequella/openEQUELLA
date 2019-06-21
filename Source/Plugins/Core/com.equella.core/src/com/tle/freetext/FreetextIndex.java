@@ -44,6 +44,8 @@ public interface FreetextIndex {
 
   File getStopWordsFile();
 
+  String getAnalyzerLanguage();
+
   String getDefaultOperator();
 
   File getRootIndexPath();
