@@ -56,7 +56,7 @@ public final class Bootstrap {
   public static final String TOKEN_PARAMETER = PROPERTY_PREFIX + "SESSION";
   public static final String ENDPOINT_PARAMETER = PROPERTY_PREFIX + "ENDPOINT";
   public static final String LOCALE_PARAMETER = PROPERTY_PREFIX + "LOCALE";
-  public static final String INSTITUTION_NAME_PARAMETER = PROPERTY_PREFIX + "INSTITUTIONNAME";
+  public static final String SERVER_NAME_PARAMETER = "SERVER_NAME";
   public static final String USERNAME_PARAMETER = PROPERTY_PREFIX + "USERNAME";
   public static final String PASSWORD_PARAMETER = PROPERTY_PREFIX + "PASSWORD";
   public static final String PROXY_HOST = PROPERTY_PREFIX + "PROXYHOST";
