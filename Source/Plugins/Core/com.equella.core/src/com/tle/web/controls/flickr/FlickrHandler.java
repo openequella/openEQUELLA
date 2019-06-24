@@ -69,6 +69,7 @@ import javax.inject.Inject;
 @NonNullByDefault
 public class FlickrHandler extends BasicAbstractAttachmentHandler<FlickrHandler.FlickrHandlerModel>
     implements ParametersEventListener {
+
   @PlugKey("flickr.name")
   private static Label NAME_LABEL;
 
@@ -151,7 +152,7 @@ public class FlickrHandler extends BasicAbstractAttachmentHandler<FlickrHandler.
 
   @Override
   protected SectionRenderable renderAdd(RenderContext context, DialogRenderOptions renderOptions) {
-  	ensureTreeAdded(context, false);
+    ensureTreeAdded(context, false);
     TemplateResult tr = renderToTemplate(context, flickrLayoutSection.getSectionId());
     renderOptions.setShowSave(
         !Check.isEmpty(
@@ -216,17 +217,19 @@ public class FlickrHandler extends BasicAbstractAttachmentHandler<FlickrHandler.
     }
     return attachments;
   }
-  private void ensureTreeAdded(SectionInfo info, boolean processParameters){
-	  if (!getModel(info).isTreeAdded()){
-		  info.getAttributeForClass(MutableSectionInfo.class)
-			  .addTreeToBottom(flickrTree, processParameters);
-		  getModel(info).setTreeAdded(true);
-	  }
+
+  private void ensureTreeAdded(SectionInfo info, boolean processParameters) {
+    if (!getModel(info).isTreeAdded()) {
+      info.getAttributeForClass(MutableSectionInfo.class)
+          .addTreeToBottom(flickrTree, processParameters);
+      getModel(info).setTreeAdded(true);
+    }
   }
+
   @Override
   protected SectionRenderable renderDetails(
       RenderContext context, DialogRenderOptions renderOptions) {
-  	ensureTreeAdded(context, false);
+    ensureTreeAdded(context, false);
     final FlickrHandlerModel model = getModel(context);
     // Common Details
     final Attachment a = getDetailsAttachment(context);
@@ -276,13 +279,14 @@ public class FlickrHandler extends BasicAbstractAttachmentHandler<FlickrHandler.
     return FlickrHandlerModel.class;
   }
 
-	@Override
-	public void handleParameters(SectionInfo info, ParametersEvent event) throws Exception {
-		ensureTreeAdded(info, true);
-	}
+  @Override
+  public void handleParameters(SectionInfo info, ParametersEvent event) throws Exception {
+    ensureTreeAdded(info, true);
+  }
 
-	public static class FlickrHandlerModel
+  public static class FlickrHandlerModel
       extends AbstractDetailsAttachmentHandler.AbstractAttachmentHandlerModel {
+
     /** Provide for a warning message for soft errors, specifically, user not found */
     private String warningMsg;
 
@@ -306,11 +310,14 @@ public class FlickrHandler extends BasicAbstractAttachmentHandler<FlickrHandler.
       this.noResult = noResult;
     }
 
-    public boolean isTreeAdded() { return treeAdded; }
+    public boolean isTreeAdded() {
+      return treeAdded;
+    }
 
-    public void setTreeAdded(boolean treeAdded) { this.treeAdded = treeAdded; }
-
-	}
+    public void setTreeAdded(boolean treeAdded) {
+      this.treeAdded = treeAdded;
+    }
+  }
 
   @Override
   protected boolean validateAddPage(SectionInfo info) {
