@@ -11,7 +11,6 @@ before_install:
   - nvm install $NODE_JS_VERSION
   - node --version
   - sudo apt-get install -y awscli
-  - yarn global add purescript psc-package
 install:
   - git fetch --unshallow
   - sbt headerCheck
