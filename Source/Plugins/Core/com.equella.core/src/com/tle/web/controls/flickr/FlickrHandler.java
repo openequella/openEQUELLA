@@ -40,7 +40,8 @@ import com.tle.web.sections.SectionNode;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.layout.OneColumnLayout;
-import com.tle.web.sections.events.InfoEventListener;
+import com.tle.web.sections.events.ParametersEvent;
+import com.tle.web.sections.events.ParametersEventListener;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.generic.DefaultSectionTree;
 import com.tle.web.sections.js.generic.StatementHandler;
@@ -67,7 +68,7 @@ import javax.inject.Inject;
 @Bind
 @NonNullByDefault
 public class FlickrHandler extends BasicAbstractAttachmentHandler<FlickrHandler.FlickrHandlerModel>
-    implements InfoEventListener {
+    implements ParametersEventListener {
   @PlugKey("flickr.name")
   private static Label NAME_LABEL;
 
@@ -150,6 +151,7 @@ public class FlickrHandler extends BasicAbstractAttachmentHandler<FlickrHandler.
 
   @Override
   protected SectionRenderable renderAdd(RenderContext context, DialogRenderOptions renderOptions) {
+  	ensureTreeAdded(context, false);
     TemplateResult tr = renderToTemplate(context, flickrLayoutSection.getSectionId());
     renderOptions.setShowSave(
         !Check.isEmpty(
@@ -214,10 +216,17 @@ public class FlickrHandler extends BasicAbstractAttachmentHandler<FlickrHandler.
     }
     return attachments;
   }
-
+  private void ensureTreeAdded(SectionInfo info, boolean processParameters){
+	  if (!getModel(info).isTreeAdded()){
+		  info.getAttributeForClass(MutableSectionInfo.class)
+			  .addTreeToBottom(flickrTree, processParameters);
+		  getModel(info).setTreeAdded(true);
+	  }
+  }
   @Override
   protected SectionRenderable renderDetails(
       RenderContext context, DialogRenderOptions renderOptions) {
+  	ensureTreeAdded(context, false);
     final FlickrHandlerModel model = getModel(context);
     // Common Details
     final Attachment a = getDetailsAttachment(context);
@@ -267,18 +276,17 @@ public class FlickrHandler extends BasicAbstractAttachmentHandler<FlickrHandler.
     return FlickrHandlerModel.class;
   }
 
-  @Override
-  public void handleInfoEvent(MutableSectionInfo info, boolean removed, boolean processParameters) {
-    if (!removed) {
-      info.getAttributeForClass(MutableSectionInfo.class)
-          .addTreeToBottom(flickrTree, processParameters);
-    }
-  }
+	@Override
+	public void handleParameters(SectionInfo info, ParametersEvent event) throws Exception {
+		ensureTreeAdded(info, true);
+	}
 
-  public static class FlickrHandlerModel
+	public static class FlickrHandlerModel
       extends AbstractDetailsAttachmentHandler.AbstractAttachmentHandlerModel {
     /** Provide for a warning message for soft errors, specifically, user not found */
     private String warningMsg;
+
+    private boolean treeAdded;
 
     private Boolean noResult;
 
@@ -297,7 +305,12 @@ public class FlickrHandler extends BasicAbstractAttachmentHandler<FlickrHandler.
     public void setNoResult(boolean noResult) {
       this.noResult = noResult;
     }
-  }
+
+    public boolean isTreeAdded() { return treeAdded; }
+
+    public void setTreeAdded(boolean treeAdded) { this.treeAdded = treeAdded; }
+
+	}
 
   @Override
   protected boolean validateAddPage(SectionInfo info) {
