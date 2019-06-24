@@ -41,6 +41,7 @@ public class EquellaConfig {
       Properties props = new Properties();
       props.load(propFile);
       String javaHome = props.getProperty("java.home"); // $NON-NLS-1$
+		System.out.println("---------Temporary testing java home in 2018.2:" + javaHome);
       javaBin = ExecUtils.findExe(new File(javaHome, "bin/java")); // $NON-NLS-1$
     } catch (Exception e) {
       throw new RuntimeException(e);
