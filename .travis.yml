@@ -6,6 +6,7 @@ cache:
     - "$HOME/.sbt"
 jdk:
   - oraclejdk8
+dist: trusty
 before_install:
   - nvm install $NODE_JS_VERSION
   - node --version
