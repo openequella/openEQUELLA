@@ -56,7 +56,7 @@ public class YoutubeAttachmentSerializer extends AbstractAttachmentSerializer {
       duration = (String) durationData;
     } else if (durationData instanceof Long) {
       long oldDuration = (long) durationData;
-      duration = Duration.ofMillis(oldDuration).toString();
+      duration = Duration.ofSeconds(oldDuration).toString();
     }
 
     if (duration != null) {
