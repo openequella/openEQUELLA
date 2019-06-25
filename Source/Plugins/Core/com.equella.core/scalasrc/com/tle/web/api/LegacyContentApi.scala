@@ -448,7 +448,7 @@ class LegacyContentApi {
             wrapBody(context, tr.getNamedResult(context, "body")))
           val upperbody =
             SectionUtils.renderToString(context, tr.getNamedResult(context, "upperbody"))
-          val scrops = renderScroptions(context)
+          val scrops = renderScreenOptions(context)
           val crumbs = renderCrumbs(context, decs).map(SectionUtils.renderToString(context, _))
           Iterable(
             Some("body"                                          -> body),
@@ -555,7 +555,7 @@ class LegacyContentApi {
     }
   }
 
-  def renderScroptions(context: RenderContext): Option[String] = {
+  def renderScreenOptions(context: RenderContext): Option[String] = {
     HelpAndScreenOptionsSection
       .getContent(context)
       .asScala
@@ -576,7 +576,7 @@ class LegacyContentApi {
       }
       formTag.setNestedRenderable(sr)
       body.setNestedRenderable(formTag)
-      renderScroptions(context)
+      renderScreenOptions(context)
       SectionUtils.renderToWriter(context, body, new DevNullWriter)
     }
 

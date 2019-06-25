@@ -1,8 +1,9 @@
 import * as React from "react";
+import { ReactNode, Fragment } from "react";
 
 export function LegacyForm(props: {
   state: { [key: string]: string[] };
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const { state, children } = props;
   return (
@@ -10,11 +11,11 @@ export function LegacyForm(props: {
       <div style={{ display: "none" }} className="_hiddenstate">
         {Object.keys(state).map((k, i) => {
           return (
-            <React.Fragment key={i}>
+            <Fragment key={i}>
               {state[k].map((v, i) => (
                 <input key={i} type="hidden" name={k} value={v} />
               ))}
-            </React.Fragment>
+            </Fragment>
           );
         })}
       </div>
