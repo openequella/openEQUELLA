@@ -1,6 +1,6 @@
 FROM openjdk:8-jdk as baseequella
-# Currently fails to build openEQUELLA since the build requires the JavaWS deps to 
-# build the WebStart / Applets.
+
+# Builder for openEQUELLA 2018.2 and prior
 
 # Expects a host volume:  
 # -v /host/directory/for/artifacts:/artifacts 
@@ -12,9 +12,10 @@ ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 ENV VERSION_SBT 1.1.1
 ENV VERSION_NODEJS 8.x
-LABEL supported.openequella.versions="6.6,6.7"
+LABEL supported.openequella.versions="2018.2"
 
 # Install basic tools.
+
 RUN \
   apt-get update \
   && apt-get install -y \
@@ -24,6 +25,19 @@ RUN \
     apt-utils \
 # Clean up the cache
   && rm -rf /var/lib/apt/lists/*
+
+# Install IcedTea-Web's javaws.jar into the JRE to allow Web Start / Applet builds of openEQUELLA
+
+RUN curl -o icedtea-web-1.8.linux.bin.zip http://icedtea.wildebeest.org/download/icedtea-web-binaries/1.8/linux/icedtea-web-1.8.linux.bin.zip
+RUN echo "074955c9ca36b9c02df17a71052584b2da6293808db138baa20a6bee41a2dd38  icedtea-web-1.8.linux.bin.zip" > icedtea-web-checksum.verified
+RUN sha256sum -c icedtea-web-checksum.verified
+RUN unzip icedtea-web-1.8.linux.bin.zip
+RUN cp icedtea-web-image/share/icedtea-web/javaws.jar /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/ext
+
+# Confirm Applet / Web Start abilities
+
+RUN echo "package org.apache.oe; import javax.jnlp.BasicService; import javax.jnlp.ServiceManager; import javax.jnlp.UnavailableServiceException; public class Test {public static void main(String[] args) {System.out.println();}}" > Test.java
+RUN javac Test.java
 
 RUN \
 # Prep for SBT
@@ -44,20 +58,19 @@ RUN \
   && rm -rf /var/lib/apt/lists/*
 
 # use the /home/equella as your working directory and switch to the equella user.
+
 RUN useradd -ms /bin/bash equella
 WORKDIR /home/equella
 USER equella
 
-# Pull down the master branch of openEQUELLA
+# Clone openEQUELLA, switch to 2018.2
+
 RUN \
   mkdir /home/equella/repo \
   && cd /home/equella/repo \
   && git clone https://github.com/equella/Equella.git \
   && cd /home/equella/repo/Equella \
-# Could add a 'git checkout' for a specific version if sbt 1.1.1 is bumped for later versions.
-# Run a arbitrary, no-op task in the Equella/ directory to pull a bunch of the SBT deps. 
-# If you are building an older version (such as 6.5), you can skip this command since 
-# the old deps will have to be pulled anyways
+  && git checkout stable-2018.2 \
   && sbt sbtVersion
 
 # Install psc-package
@@ -71,6 +84,8 @@ RUN curl --create-dirs -Lo /home/equella/tools/pscPackage/bundle/linux64.tar.gz 
   && tar -xvzf pscPackage/bundle/linux64.tar.gz \
   && rm -r /home/equella/tools/pscPackage
 ENV PATH "$PATH:/home/equella/tools/psc-package"
+
+# Copy in helper files
 
 COPY move-installer-to-host.sh ./
 COPY move-upgrader-to-host.sh ./
