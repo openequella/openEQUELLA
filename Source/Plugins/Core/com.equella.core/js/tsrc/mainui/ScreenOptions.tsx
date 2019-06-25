@@ -25,6 +25,7 @@ export default React.memo(function ScreenOptions(props: {
       <Popover
         open={Boolean(optionsAnchor)}
         marginThreshold={64}
+        keepMounted
         container={document.getElementById("eqpageForm")}
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
         anchorEl={optionsAnchor}
