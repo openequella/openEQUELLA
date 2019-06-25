@@ -27,6 +27,7 @@ import com.tle.common.Check;
 import com.tle.common.util.ExecUtils;
 import com.tle.upgrade.UpgradeLog.LogStatus;
 import com.tle.upgrade.upgraders.AddExifToolConfg;
+import com.tle.upgrade.upgraders.AddFreetextAnalyzerConfig;
 import com.tle.upgrade.upgraders.AddLDAPPoolingOptions;
 import com.tle.upgrade.upgraders.AddLibAvConfig;
 import com.tle.upgrade.upgraders.AddNonHttpOnly;
@@ -113,7 +114,8 @@ public class UpgradeMain {
         new UpdateLog4jConfigForTomcatLog(),
         new ConvertBoneCPtoHikariCP(),
         new AddLDAPPoolingOptions(),
-        new AddLibAvConfig()
+        new AddLibAvConfig(),
+        new AddFreetextAnalyzerConfig()
       };
 
   public static void main(String[] args) throws Throwable {
