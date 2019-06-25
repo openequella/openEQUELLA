@@ -38,11 +38,11 @@ docker exec -it oeq /bin/bash
 
 ## docker-build
 
-Pulls the latest Equella repo, and sets up the environment and helper scripts to build and save the openEQUELLA installer and upgrader.
+Pulls the latest Equella repo, sets up the environment, and copies over the helper scripts to build and save the openEQUELLA installer and upgrader. While there is an Oracle JDK version of the docker build file, you need to ensure you're within the bounds of the Oracle JDK licensing terms and conditions. All examples will use the openJDK technology so as to avoid the licensing issues.
 
 ```sh
 $ cd docker/docker-build
-$ docker build -t apereo/oeq-builder -f Dockerfile-oraclejdk .
+$ docker build -t apereo/oeq-builder -f Dockerfile-openjdk-2018.2 .
 
 $ docker run -it --name oeqbuilder -v /home/user/temp/oeqbuilder-ws:/artifacts apereo/oeq-builder
 ```
@@ -103,6 +103,4 @@ See https://github.com/equella/Equella#keystore for more details.
 
 ## Future
 
-It would be helpful to have a flag for the default Dockerfile to place the filestore on a host directory.
-
-It would be helpful to have a pre-installed openEQUELLA image of each major version get pushed to DockerHub under Apereo, as well as aim for a Production ready Docker image.
+For ideas on how to enhance docker with openEQUELLA, please review the (GitHub issues)[https://github.com/apereo/openEQUELLA/issues?q=is%3Aissue+docker+label%3ADocker] with the `docker` label.
