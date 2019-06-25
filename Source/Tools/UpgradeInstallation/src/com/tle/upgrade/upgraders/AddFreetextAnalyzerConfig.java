@@ -43,7 +43,7 @@ public class AddFreetextAnalyzerConfig extends AbstractUpgrader {
   public void upgrade(UpgradeResult result, File tleInstallDir) throws Exception {
     EquellaConfig config = new EquellaConfig(tleInstallDir);
 
-    result.addLogMessage("Updating optional-config properties");
+    result.addLogMessage("Updating optional freetext index properties");
     updateOptionalProperties(result, config.getConfigDir());
   }
 
@@ -59,9 +59,9 @@ public class AddFreetextAnalyzerConfig extends AbstractUpgrader {
 
             @Override
             protected List<String> addLines() {
-              String libavComment = "# Uncomment and specify the stemming language";
-              String libavProp = "#freetext.analyzer.language = en";
-              return Lists.newArrayList(Constants.BLANK, libavComment, libavProp);
+              String freetextComment = "# Uncomment and specify the stemming language";
+              String freetextProp = "#freetext.analyzer.language = en";
+              return Lists.newArrayList(Constants.BLANK, freetextComment, freetextProp);
             }
           };
 
