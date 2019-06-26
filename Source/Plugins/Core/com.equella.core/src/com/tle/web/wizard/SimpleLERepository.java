@@ -41,6 +41,7 @@ import com.tle.web.wizard.scripting.objects.impl.ControlScriptWrapper;
 import com.tle.web.wizard.scripting.objects.impl.PageScriptWrapper;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Function;
 import javax.inject.Inject;
 
 @Bind
@@ -208,6 +209,11 @@ public class SimpleLERepository implements LERepository {
     // nothing
   }
 
+  @Override
+  public void runUpdate(Function<WizardStateInterface, Boolean> update) {
+    throw new UnsupportedOperationException();
+  }
+
   private Stack<Pair<String, Integer>> getPathOverrides() {
     if (pathOverrides == null) {
       pathOverrides = new Stack<Pair<String, Integer>>();
@@ -223,11 +229,6 @@ public class SimpleLERepository implements LERepository {
   @Override
   public void popPathOverride() {
     getPathOverrides().pop();
-  }
-
-  @Override
-  public Object getThreadLock() {
-    return new Object();
   }
 
   @Override

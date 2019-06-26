@@ -59,9 +59,14 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 public class WizardState implements WizardStateInterface {
+
   private static final long serialVersionUID = 1;
 
   @Inject private static ItemFileService itemFileService;
+
+  public void incrementVersion() {
+    stateVersion++;
+  }
 
   public enum Operation {
     CREATING,
@@ -74,6 +79,7 @@ public class WizardState implements WizardStateInterface {
   private ItemKey itemKey;
 
   private String xml;
+  private int stateVersion;
   private String stagingId;
   private String saveMessage;
   private String referrer;
@@ -189,11 +195,7 @@ public class WizardState implements WizardStateInterface {
     return mergeDRMDefaults;
   }
 
-  /**
-   * This isn't used anywhere...?
-   *
-   * @param mergeDRMDefaults
-   */
+  /** This isn't used anywhere...? */
   public void setMergeDRMDefaults(boolean mergeDRMDefaults) {
     this.mergeDRMDefaults = mergeDRMDefaults;
   }
@@ -498,5 +500,13 @@ public class WizardState implements WizardStateInterface {
   public void setItemXml(String xmlDoc) {
     xml = xmlDoc;
     xmlBag = null;
+  }
+
+  public void setStateVersion(int stateVersion) {
+    this.stateVersion = stateVersion;
+  }
+
+  public int getStateVersion() {
+    return stateVersion;
   }
 }

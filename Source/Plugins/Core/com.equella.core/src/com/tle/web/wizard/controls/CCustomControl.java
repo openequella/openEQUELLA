@@ -63,7 +63,7 @@ public class CCustomControl extends AbstractHTMLControl {
   }
 
   @Override
-  public void saveToDocument(PropBagEx itemxml) throws Exception {
+  public void saveToDocument(PropBagEx itemxml) {
     if (hasTargets()) {
       clearTargets(itemxml);
       for (String value : values) {
