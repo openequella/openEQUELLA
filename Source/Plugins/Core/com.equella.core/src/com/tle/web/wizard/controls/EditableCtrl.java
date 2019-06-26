@@ -88,7 +88,7 @@ public abstract class EditableCtrl extends AbstractHTMLControl {
   }
 
   @Override
-  public void saveToDocument(PropBagEx itemxml) throws Exception {
+  public void saveToDocument(PropBagEx itemxml) {
     clearTargets(itemxml);
     for (String value : getValues()) {
       addValueToTargets(value, targets, itemxml);

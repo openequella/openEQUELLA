@@ -138,7 +138,7 @@ public class CRepeater extends GroupsCtrl {
   }
 
   @Override
-  public void saveToDocument(PropBagEx docPropBag) throws Exception {
+  public void saveToDocument(PropBagEx docPropBag) {
     clearTargets(docPropBag);
     String target = getFirstTarget().getTarget();
     for (ControlGroup group : getGroups()) {

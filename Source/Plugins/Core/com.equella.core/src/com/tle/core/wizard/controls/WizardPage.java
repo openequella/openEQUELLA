@@ -205,8 +205,7 @@ public abstract class WizardPage {
     }
   }
 
-  public boolean saveToDocument(List<? extends HTMLControl> controls, SetItemsInterface setitems)
-      throws Exception {
+  public boolean saveToDocument(List<? extends HTMLControl> controls, SetItemsInterface setitems) {
     // For the appropriate control call set values with the
     // request object and property bag
     if (!isEnabled()) {
@@ -309,7 +308,7 @@ public abstract class WizardPage {
   }
 
   public interface SetItemsInterface {
-    void setItems(HTMLControl wrapped) throws Exception;
+    void setItems(HTMLControl wrapped);
 
     void clearTargets(HTMLControl wrapped, PropBagEx doc);
 
