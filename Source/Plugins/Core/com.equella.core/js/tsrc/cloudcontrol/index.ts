@@ -64,14 +64,25 @@ interface Registration {
 var registrations: {
   [key: string]: Registration | undefined;
 } = {};
+
 var listeners: ((doc: ItemState) => void)[] = [];
-const controlValidators: { validator: ControlValidator; ctrlId: string }[] = [];
+var controlValidators: { validator: ControlValidator; ctrlId: string }[] = [];
 var commandQueue: CommandsPromise[] = [];
 var transformState: ((doc: XMLDocument) => XMLDocument) | null = null;
 var reloadState: boolean = false;
 var wizardIds: WizardIds;
 var currentState: Promise<VersionedItemState>;
 var latestXml: XMLDocument;
+
+function resetGlobalState() {
+  transformState = null;
+  reloadState = false;
+  commandQueue = [];
+  controlValidators = [];
+  listeners = [];
+  currentState = null!;
+  latestXml = null!;
+}
 
 const parser = new DOMParser();
 const serializer = new XMLSerializer();
@@ -217,6 +228,11 @@ export const CloudControl: CloudControlRegisterImpl = {
             state.stateVersion
           } but got ${nextState.stateVersion}`
         );
+        console.log(
+          `Already had ${serializer.serializeToString(
+            state.xml
+          )} but got ${serializer.serializeToString(nextState.xml)}`
+        );
         nextState = state;
       }
       return CloudControl.sendBatch(nextState);
@@ -276,6 +292,9 @@ export const CloudControl: CloudControlRegisterImpl = {
   },
   createRender(data) {
     const { wizId } = data;
+    if (wizardIds && wizardIds.wizId !== wizId) {
+      resetGlobalState();
+    }
     wizardIds = data;
     if (!currentState) {
       currentState = getState(wizId);
