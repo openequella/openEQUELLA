@@ -72,7 +72,7 @@ case class ItemState(xml: String,
 @Path("wizard/{wizid}")
 class WizardApi {
 
-  def editWizardState[A](wizid: String, req: HttpServletRequest)(
+  def withWizardState[A](wizid: String, req: HttpServletRequest, edit: Boolean)(
       f: WizardStateInterface => A): A = {
     val sessionService = LegacyGuice.userSessionService
     sessionService.reenableSessionUse()
@@ -80,9 +80,11 @@ class WizardApi {
       .map { wss =>
         val wsi = wss.getWizardState
         val res = sessionService.getSessionLock.synchronized {
-          wsi match {
-            case wizstate: WizardState => wizstate.incrementVersion()
-            case _                     => ()
+          if (edit) {
+            wsi match {
+              case wizstate: WizardState => wizstate.incrementVersion()
+              case _                     => ()
+            }
           }
           f(wsi)
         }
@@ -95,7 +97,7 @@ class WizardApi {
   @GET
   @Path("state")
   def getState(@PathParam("wizid") wizid: String, @Context req: HttpServletRequest): ItemState = {
-    editWizardState(wizid, req) { wsi =>
+    withWizardState(wizid, req, false) { wsi =>
       val attachments =
         wsi.getItem.getAttachments.asScala.map(a =>
           ItemEdits.attachmentSerializers.serializeAttachment(a))
@@ -126,7 +128,7 @@ class WizardApi {
   def editAttachments(@PathParam("wizid") wizid: String,
                       itemEdit: ItemEdits,
                       @Context req: HttpServletRequest): ItemEditResponses = {
-    editWizardState(wizid, req) { wsi =>
+    withWizardState(wizid, req, true) { wsi =>
       val editor   = new WizardItemEditor(wsi)
       val response = ItemEdits.performEdits(itemEdit, editor)
       editor.finishedEditing(false)
@@ -139,7 +141,7 @@ class WizardApi {
   def registerCallback(@PathParam("wizid") wizid: String,
                        @QueryParam("providerId") providerId: String,
                        @Context req: HttpServletRequest): Response = {
-    editWizardState(wizid, req) {
+    withWizardState(wizid, req, true) {
       case ws: WizardState =>
         ws.setWizardSaveOperation(providerId, NotifyProvider(UUID.fromString(providerId)))
     }
@@ -171,24 +173,26 @@ class WizardApi {
       providerId: UUID,
       serviceId: String,
       uriInfo: UriInfo)(f: Uri => Request[T, Stream[IO, ByteBuffer]]): Response = {
-    editWizardState(wizid, request) { _ =>
-      val queryParams = uriInfo.getQueryParameters.asScala.mapValues(_.asScala).toMap
-      RunWithDB
-        .execute {
-          (for {
-            cp         <- CloudProviderDB.get(providerId)
-            serviceUri <- OptionT.fromOption[DB](cp.serviceUris.get(serviceId))
-            response <- OptionT.liftF(
-              CloudProviderService.serviceRequest(
-                serviceUri,
-                cp,
-                queryParams,
-                uri => f(uri).response(asStream[Stream[IO, ByteBuffer]])))
-          } yield streamedResponse(response))
-            .getOrElse(Response.status(Status.NOT_FOUND))
-        }
-        .build()
+    withWizardState(wizid, request, false) { _ =>
+      ()
     }
+    val queryParams = uriInfo.getQueryParameters.asScala.mapValues(_.asScala).toMap
+    RunWithDB
+      .execute {
+        (for {
+          cp         <- CloudProviderDB.get(providerId)
+          serviceUri <- OptionT.fromOption[DB](cp.serviceUris.get(serviceId))
+          response <- OptionT.liftF(
+            CloudProviderService.serviceRequest(
+              serviceUri,
+              cp,
+              queryParams,
+              uri => f(uri).response(asStream[Stream[IO, ByteBuffer]])))
+        } yield streamedResponse(response))
+          .getOrElse(Response.status(Status.NOT_FOUND))
+      }
+      .build()
+
   }
 
   @GET
