@@ -107,19 +107,19 @@ export function createRegistration(params: {
     vendorId: "oeq_autotest",
     providerAuth: { clientId: params.name, clientSecret: params.name },
     serviceUris: {
-      oauth: { uri: "${baseurl}access_token", authenticated: false },
-      controls: { uri: "${baseurl}controls", authenticated: true },
+      oauth: { uri: "${baseUrl}access_token", authenticated: false },
+      controls: { uri: "${baseUrl}controls", authenticated: true },
       itemNotification: {
-        uri: "${baseurl}itemNotification?uuid=${uuid}&version=${version}",
+        uri: "${baseUrl}itemNotification?uuid=${uuid}&version=${version}",
         authenticated: true
       },
       control_testcontrol: {
-        uri: "${baseurl}control.js",
+        uri: "${baseUrl}control.js",
         authenticated: false
       },
       myService: {
         uri:
-          "${baseurl}myService?param1=${param1}&param2=${param2}&from=${userid}",
+          "${baseUrl}myService?param1=${param1}&param2=${param2}&from=${userid}",
         authenticated: true
       },
       viewattachment: {

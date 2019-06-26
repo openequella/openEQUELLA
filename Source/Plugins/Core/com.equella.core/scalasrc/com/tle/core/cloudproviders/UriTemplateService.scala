@@ -71,8 +71,8 @@ object UriTemplateService {
               case Text(t) => CollectTemplate(t :: raw, args, Some(uriTemplate))
               case Replacement(v) =>
                 val replaceValue = v match {
-                  case "baseurl" => baseurl
-                  case o         => variables.get(v).getOrElse(None)
+                  case "baseUrl" => baseurl
+                  case o         => variables.getOrElse(v, None)
                 }
                 CollectTemplate(maybeBlank(raw, last), replaceValue :: args, Some(uriTemplate))
             }
