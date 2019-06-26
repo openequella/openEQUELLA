@@ -22,7 +22,6 @@ import com.tle.common.Check;
 import com.tle.common.Utils;
 import com.tle.common.connectors.ConnectorConstants;
 import com.tle.common.connectors.entity.Connector;
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.formatter.ExpressionFormatter;
 import com.tle.common.security.SecurityConstants.Recipient;
 import com.tle.common.security.TargetList;
@@ -104,6 +103,9 @@ public abstract class AbstractConnectorEditorSection<
 
   @PlugKey("editor.label.export.summary")
   private static Label LABEL_EXPORT_SUMMARY;
+
+  @PlugKey("editor.error.url.unreachable")
+  private static String KEY_ERROR_URL_UNREACHABLE;
 
   @Inject private ConnectorService connectorService;
   @Inject private ConnectorRepositoryService connectorRepositoryService;
@@ -278,9 +280,8 @@ public abstract class AbstractConnectorEditorSection<
             .getValidationErrors()
             .put(
                 "urltest",
-                CurrentLocale.get(
-                    "com.tle.web.connectors.editor.error.url.unreachable",
-                    getConnectorLmsName(info, connector).getText()));
+                new KeyLabel(KEY_ERROR_URL_UNREACHABLE, getConnectorLmsName(info, connector))
+                    .getText());
         onTestUrlFail(info, connector);
       } else {
         connector.setAttribute(ConnectorConstants.FIELD_TESTED_URL, url);

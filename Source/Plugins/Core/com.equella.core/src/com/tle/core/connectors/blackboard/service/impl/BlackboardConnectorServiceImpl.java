@@ -87,6 +87,7 @@ import com.tle.core.guice.Bindings;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.item.helper.ItemHelper;
 import com.tle.core.item.service.ItemResolver;
+import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.services.impl.ProxyDetails;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.integration.Integration.LmsLink;
@@ -149,6 +150,9 @@ import org.apache.ws.security.handler.WSHandlerConstants;
 public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnectorRespository
     implements BlackboardConnectorService {
   private static final Logger LOGGER = Logger.getLogger(BlackboardConnectorService.class);
+
+  private static String KEY_PFX =
+      AbstractPluginService.getMyPluginId(BlackboardConnectorService.class) + ".";
 
   private static final String KEY_PROXY_TOOL_PASS = "proxyToolPass";
 
@@ -859,11 +863,11 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
   }
 
   private String getKey(String partKey) {
-    return "com.tle.core.connectors.blackboard." + partKey;
+    return KEY_PFX + partKey;
   }
 
   private String getString(String partKey) {
-    return CurrentLocale.get("com.tle.core.connectors.blackboard." + partKey);
+    return CurrentLocale.get(KEY_PFX + partKey);
   }
 
   @Override
