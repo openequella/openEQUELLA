@@ -36,14 +36,16 @@ case class CloudControlConfig(id: String,
                               description: Option[String],
                               configType: CloudControlConfigType.Value,
                               options: Option[Iterable[CloudConfigOption]],
-                              min: Int,
-                              max: Int) {
+                              min: Option[Int],
+                              max: Option[Int]) {
   def isConfigMandatory: Boolean = {
-    !(min < max)
+    getMin > 0
   }
 
   def getDescription = Optional.ofNullable(description.orNull)
   def getOptions     = options.getOrElse(Iterable.empty).asJava
+  def getMin         = min.getOrElse(0)
+  def getMax         = max.getOrElse(Int.MaxValue)
 }
 
 case class CloudControlDefinition(providerId: UUID,
