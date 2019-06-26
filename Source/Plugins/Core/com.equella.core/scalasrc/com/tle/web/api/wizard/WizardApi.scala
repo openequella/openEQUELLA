@@ -79,17 +79,17 @@ class WizardApi {
     Option(sessionService.getAttribute(wizid).asInstanceOf[WizardSessionState])
       .map { wss =>
         val wsi = wss.getWizardState
-        val res = sessionService.getSessionLock.synchronized {
+        sessionService.getSessionLock.synchronized {
           if (edit) {
             wsi match {
               case wizstate: WizardState => wizstate.incrementVersion()
               case _                     => ()
             }
           }
-          f(wsi)
+          val res = f(wsi)
+          if (edit) sessionService.setAttribute(wizid, new WizardSessionState(wsi))
+          res
         }
-        sessionService.setAttribute(wizid, new WizardSessionState(wsi))
-        res
       }
       .getOrElse(throw new WebApplicationException(404))
   }
