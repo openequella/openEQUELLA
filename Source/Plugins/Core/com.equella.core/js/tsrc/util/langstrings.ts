@@ -68,7 +68,8 @@ export const languageStrings = {
     deletecloudprovider: {
       title: "Are you sure you want to delete cloud provider - '%s'?",
       message: "It will be permanently deleted."
-    }
+    },
+    refreshed: "Completed refresh"
   },
   courseedit: {
     title: "Editing course - %s",
@@ -254,7 +255,8 @@ export const languageStrings = {
       apply: "Apply",
       resettodefault: "Reset to Default",
       revertchanges: "Revert Changes",
-      register: "Register"
+      register: "Register",
+      refresh: "Refresh"
     },
     users: "Users",
     groups: "Groups",
