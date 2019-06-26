@@ -96,7 +96,7 @@ libraryDependencies ++= Seq(
   "net.oauth.core"            % "oauth-provider"        % "20100527",
   "net.sf.ezmorph"            % "ezmorph"               % "1.0.6",
   "net.sf.json-lib"           % "json-lib"              % "2.4" classifier "jdk15",
-  "net.sf.transmorph"         % "transmorph"            % "3.1.0",
+  "net.sf.transmorph"         % "transmorph"            % "3.1.3",
   "org.apache.axis2"          % "axis2-kernel"          % axis2Version,
   "org.apache.axis2"          % "axis2-adb"             % axis2Version,
   "org.apache.axis2"          % "axis2-transport-http"  % axis2Version,
