@@ -98,7 +98,7 @@ object CloudWizardControl {
         RunWithDB.execute {
           (for {
             provider   <- CloudProviderDB.get(providerId)
-            serviceUri <- OptionT.fromOption[DB](provider.serviceUris.get(s"control_$controlId"))
+            serviceUri <- OptionT.fromOption[DB](provider.serviceUrls.get(s"control_$controlId"))
             uri <- OptionT(
               CloudProviderService.serviceUri(provider, serviceUri, Map.empty).map(_.toOption))
           } yield new CloudWizardControl(uri, controlDef, provider, controlId))

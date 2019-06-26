@@ -46,15 +46,15 @@ case class CloudProviderData(baseUrl: String,
                              vendorId: String,
                              providerAuth: CloudOAuthCredentials,
                              oeqAuth: CloudOAuthCredentials,
-                             serviceUris: Map[String, ServiceUri],
+                             serviceUrls: Map[String, ServiceUrl],
                              viewers: Map[String, Map[String, Viewer]])
 
 object CloudProviderData {
 
   implicit val decoderV = deriveDecoder[Viewer]
   implicit val encoderV = deriveEncoder[Viewer]
-  implicit val decoderS = deriveDecoder[ServiceUri]
-  implicit val encoderS = deriveEncoder[ServiceUri]
+  implicit val decoderS = deriveDecoder[ServiceUrl]
+  implicit val encoderS = deriveEncoder[ServiceUrl]
   implicit val decoderC = deriveDecoder[CloudOAuthCredentials]
   implicit val encoderC = deriveEncoder[CloudOAuthCredentials]
 
@@ -98,7 +98,7 @@ object CloudProviderDB {
       iconUrl = data.iconUrl,
       providerAuth = data.providerAuth,
       oeqAuth = data.oeqAuth,
-      serviceUris = data.serviceUris,
+      serviceUrls = data.serviceUrls,
       viewers = data.viewers
     )
   }
@@ -122,7 +122,7 @@ object CloudProviderDB {
           vendorId = reg.vendorId,
           providerAuth = reg.providerAuth,
           oeqAuth = oeqAuth,
-          serviceUris = reg.serviceUris,
+          serviceUrls = reg.serviceUrls,
           viewers = reg.viewers
         )
         CloudProviderDB(newOeq, data)
@@ -176,7 +176,7 @@ object CloudProviderDB {
     for {
       oeqProvider <- EntityDB.readOne(id)
       provider = toInstance(oeqProvider)
-      refreshService <- OptionT.fromOption[DB](provider.serviceUris.get(RefreshServiceId))
+      refreshService <- OptionT.fromOption[DB](provider.serviceUrls.get(RefreshServiceId))
       validated <- OptionT {
         CloudProviderService
           .serviceRequest(refreshService,
@@ -221,7 +221,7 @@ object CloudProviderDB {
         description = oeq.description,
         vendorId = cp.data.vendorId,
         iconUrl = cp.data.iconUrl,
-        canRefresh = DebugSettings.isDevMode && cp.data.serviceUris.contains(RefreshServiceId)
+        canRefresh = DebugSettings.isDevMode && cp.data.serviceUrls.contains(RefreshServiceId)
       )
     }
   }

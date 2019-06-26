@@ -181,7 +181,7 @@ class WizardApi {
       .execute {
         (for {
           cp         <- CloudProviderDB.get(providerId)
-          serviceUri <- OptionT.fromOption[DB](cp.serviceUris.get(serviceId))
+          serviceUri <- OptionT.fromOption[DB](cp.serviceUrls.get(serviceId))
           response <- OptionT.liftF(
             CloudProviderService.serviceRequest(
               serviceUri,
@@ -250,7 +250,7 @@ case class NotifyProvider(providerId: UUID) extends DuringSaveOperation with Ser
     override def execute(): Boolean = RunWithDB.executeWithHibernate {
       (for {
         cp         <- CloudProviderDB.get(providerId)
-        serviceUri <- OptionT.fromOption[DB](cp.serviceUris.get("itemNotification"))
+        serviceUri <- OptionT.fromOption[DB](cp.serviceUrls.get("itemNotification"))
         notifyParams = Map("uuid" -> getItem.getUuid, "version" -> getItem.getVersion.toString)
         _ <- OptionT.liftF(
           CloudProviderService.serviceRequest(serviceUri, cp, notifyParams, sttp.post))
