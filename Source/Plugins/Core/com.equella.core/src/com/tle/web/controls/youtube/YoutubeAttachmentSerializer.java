@@ -27,9 +27,9 @@ import com.tle.core.guice.Bind;
 import com.tle.core.item.edit.ItemEditor;
 import com.tle.core.item.serializer.AbstractAttachmentSerializer;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaAttachmentBean;
+import java.time.Duration;
 import java.util.Date;
 import java.util.Map;
-import org.joda.time.Duration;
 
 @Bind
 @Singleton
@@ -56,7 +56,7 @@ public class YoutubeAttachmentSerializer extends AbstractAttachmentSerializer {
       duration = (String) durationData;
     } else if (durationData instanceof Long) {
       long oldDuration = (long) durationData;
-      duration = Duration.standardSeconds(oldDuration).toPeriod().toString();
+      duration = Duration.ofSeconds(oldDuration).toString();
     }
 
     if (duration != null) {

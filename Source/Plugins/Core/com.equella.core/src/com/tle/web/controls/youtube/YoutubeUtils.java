@@ -18,8 +18,7 @@
 
 package com.tle.web.controls.youtube;
 
-import org.joda.time.Duration;
-import org.joda.time.format.ISOPeriodFormat;
+import java.time.Duration;
 
 @SuppressWarnings("nls")
 public final class YoutubeUtils {
@@ -43,15 +42,15 @@ public final class YoutubeUtils {
   // YouTube API V2 returned duration in seconds
   @Deprecated
   public static String formatDuration(long duration) {
-    return formatDuration(Duration.standardSeconds(duration).toString());
+    return formatDuration(Duration.ofSeconds(duration).toString());
   }
 
   public static String formatDuration(String duration) {
-    Duration d = ISOPeriodFormat.standard().parsePeriod(duration).toStandardDuration();
-    long hours = d.getStandardHours();
-    Duration minusHours = d.minus(Duration.standardHours(hours));
-    long minutes = minusHours.getStandardMinutes();
-    long seconds = minusHours.minus(Duration.standardMinutes(minutes)).getStandardSeconds();
+    Duration d = Duration.parse(duration);
+    long hours = d.toHours();
+    Duration minusHours = d.minus(Duration.ofHours(hours));
+    long minutes = minusHours.toMinutes();
+    long seconds = minusHours.minus(Duration.ofMinutes(minutes)).getSeconds();
     String format = hours > 0 ? "%3$d:%2$02d:%1$02d" : "%2$d:%1$02d";
     return String.format(format, seconds, minutes, hours);
   }

@@ -20,17 +20,13 @@ package com.tle.web.echo;
 
 import com.google.common.collect.Lists;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.web.controls.youtube.YoutubeUtils;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 import java.text.MessageFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
-import org.joda.time.Interval;
-import org.joda.time.Period;
-import org.joda.time.PeriodType;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
 
 @SuppressWarnings("nls")
 public final class EchoUtils {
@@ -51,29 +47,10 @@ public final class EchoUtils {
 
   // TODO refactor this out to be used elsewhere (eg. Youtube)
   public static String formatDuration(long duration) {
-    // Using Joda Time
-    DateTime now = new DateTime(); // Now
-    DateTime plus = now.plus(new Duration(duration * 1000));
-
-    // Define and calculate the interval of time
-    Interval interval = new Interval(now.getMillis(), plus.getMillis());
-    Period period = interval.toPeriod(PeriodType.time());
-
-    // Define the period formatter for pretty printing
-    String ampersand = " & ";
-    PeriodFormatter pf =
-        new PeriodFormatterBuilder()
-            .appendHours()
-            .appendSuffix(ds("hour"), ds("hours"))
-            .appendSeparator(" ", ampersand)
-            .appendMinutes()
-            .appendSuffix(ds("minute"), ds("minutes"))
-            .appendSeparator(ampersand)
-            .appendSeconds()
-            .appendSuffix(ds("second"), ds("seconds"))
-            .toFormatter();
-
-    return pf.print(period).trim();
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime plus = now.plus(Duration.ofMillis(duration * 1000));
+    Duration interval = Duration.between(now, plus);
+    return YoutubeUtils.formatDuration(interval.toString());
   }
 
   private EchoUtils() {
