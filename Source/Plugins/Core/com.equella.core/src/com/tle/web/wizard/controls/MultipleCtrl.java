@@ -57,7 +57,7 @@ public abstract class MultipleCtrl extends AbstractHTMLControl {
   }
 
   @Override
-  public void saveToDocument(PropBagEx itemxml) throws Exception {
+  public void saveToDocument(PropBagEx itemxml) {
     for (HTMLControl control : controls) {
       control.saveToDocument(itemxml);
     }

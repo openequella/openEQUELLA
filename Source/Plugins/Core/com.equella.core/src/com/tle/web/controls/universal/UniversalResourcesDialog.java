@@ -66,6 +66,7 @@ import com.tle.web.sections.standard.model.TableState.TableRow;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.wizard.WizardService;
 import com.tle.web.wizard.WizardState;
+import com.tle.web.wizard.WizardStateInterface;
 import com.tle.web.wizard.controls.CCustomControl;
 import com.tle.web.wizard.impl.WebRepository;
 import com.tle.web.wizard.section.WizardSectionInfo;
@@ -77,6 +78,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
 import javax.inject.Inject;
 import org.java.plugin.registry.Extension;
 
@@ -402,6 +404,10 @@ public class UniversalResourcesDialog
 
   public WizardState getWizardState(SectionInfo info) {
     return info.getAttributeForClass(WizardSectionInfo.class).getWizardState();
+  }
+
+  public void updateWizardState(SectionInfo info, Function<WizardStateInterface, Boolean> update) {
+    getRepository().runUpdate(update);
   }
 
   @Override

@@ -119,12 +119,14 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel>
             @Override
             public void fireDirect(SectionId sectionId, SectionInfo info) throws Exception {
               final LERepository repository = page.getRepository();
-              synchronized (repository.getThreadLock()) {
-                page.saveToDocument(info);
-                page.setSubmitted(true);
-                itemHelper.updateItemFromXml(state.getItemPack());
-                wizardService.checkPages(state);
-              }
+              repository.runUpdate(
+                  wsi -> {
+                    page.saveToDocument(info);
+                    page.setSubmitted(true);
+                    itemHelper.updateItemFromXml(state.getItemPack());
+                    wizardService.checkPages(state);
+                    return true;
+                  });
             }
           });
     }

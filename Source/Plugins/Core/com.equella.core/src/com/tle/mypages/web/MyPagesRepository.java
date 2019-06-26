@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 import javax.inject.Inject;
 
 /** @author aholland */
@@ -190,6 +191,11 @@ public class MyPagesRepository implements LERepository {
   }
 
   @Override
+  public void runUpdate(Function<WizardStateInterface, Boolean> update) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public void pushPathOverride(String path, int index) {
     // nothing
   }
@@ -197,11 +203,6 @@ public class MyPagesRepository implements LERepository {
   @Override
   public void popPathOverride() {
     // nothing
-  }
-
-  @Override
-  public Object getThreadLock() {
-    return new Object();
   }
 
   @Override

@@ -137,7 +137,7 @@ public class CMultiCtrl extends MultipleCtrl {
   }
 
   @Override
-  public void saveToDocument(PropBagEx itemxml) throws Exception {
+  public void saveToDocument(PropBagEx itemxml) {
     clearTargets(itemxml);
 
     for (NameValue nameValue : namesValues) {

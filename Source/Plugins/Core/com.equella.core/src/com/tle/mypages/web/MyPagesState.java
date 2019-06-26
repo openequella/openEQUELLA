@@ -154,4 +154,9 @@ public class MyPagesState implements WizardStateInterface {
   private Object readResolve() throws ObjectStreamException {
     return provider.get();
   }
+
+  @Override
+  public int getStateVersion() {
+    return 0;
+  }
 }

@@ -26,12 +26,14 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.ModifiableAttachments;
 import com.tle.core.wizard.controls.HTMLControl;
 import com.tle.core.wizard.controls.WizardPage;
+import com.tle.web.wizard.WizardStateInterface;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 /** Provides an interface for wizards to access specific functionality. */
 public interface LERepository {
@@ -90,7 +92,7 @@ public interface LERepository {
 
   void updateMetadataMapping();
 
-  Object getThreadLock();
+  void runUpdate(Function<WizardStateInterface, Boolean> update);
 
   boolean registerFilename(UUID id, String filename);
 
