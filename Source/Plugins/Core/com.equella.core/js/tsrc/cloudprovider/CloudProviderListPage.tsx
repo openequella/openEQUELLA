@@ -14,7 +14,8 @@ import {
   deleteCloudProvider,
   getCloudProviders,
   cloudProviderLangStrings,
-  registerCloudProviderInit
+  registerCloudProviderInit,
+  refreshCloudProvider
 } from "./CloudProviderModule";
 import EntityList from "../components/EntityList";
 import { formatSize } from "../util/langstrings";
@@ -28,6 +29,8 @@ import {
   TemplateUpdateProps
 } from "../mainui/Template";
 import { generateFromError } from "../api/errors";
+import { commonString } from "../util/commonstrings";
+import MessageInfo from "../components/MessageInfo";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -49,6 +52,7 @@ interface CloudProviderListPageState {
   deleteDialogOpen: boolean;
   registerDialogOpen: boolean;
   deleteDetails?: CloudProviderEntity;
+  showRefreshed: boolean;
 }
 
 class CloudProviderListPage extends React.Component<
@@ -60,7 +64,8 @@ class CloudProviderListPage extends React.Component<
     this.state = {
       cloudProviders: [],
       deleteDialogOpen: false,
-      registerDialogOpen: false
+      registerDialogOpen: false,
+      showRefreshed: false
     };
   }
 
@@ -89,6 +94,14 @@ class CloudProviderListPage extends React.Component<
       deleteDetails: cloudProvider
     });
   };
+
+  refreshProvider = (cloudProvider: CloudProviderEntity) => {
+    refreshCloudProvider(cloudProvider.id).then(_ => {
+      this.getCloudProviderList();
+      this.setState({ showRefreshed: true });
+    });
+  };
+
   cancelDeleteCloudProvider = () => {
     this.setState({
       deleteDialogOpen: false
@@ -131,6 +144,12 @@ class CloudProviderListPage extends React.Component<
     const { cloudProviders, deleteDialogOpen, registerDialogOpen } = this.state;
     return (
       <>
+        <MessageInfo
+          variant="success"
+          open={this.state.showRefreshed}
+          title={cloudProviderLangStrings.refreshed}
+          onClose={() => this.setState({ showRefreshed: false })}
+        />
         {this.state.deleteDetails && (
           <ConfirmDialog
             open={deleteDialogOpen}
@@ -179,11 +198,24 @@ class CloudProviderListPage extends React.Component<
               </Avatar>
             );
 
+            const secondaryText = cloudProvider.canRefresh ? (
+              <>
+                {cloudProvider.description} -{" "}
+                <a
+                  href="javascript:void"
+                  onClick={_ => this.refreshProvider(cloudProvider)}
+                >
+                  {commonString.action.refresh}
+                </a>
+              </>
+            ) : (
+              cloudProvider.description
+            );
             return (
               <EquellaListItem
                 key={cloudProvider.id}
                 listItemPrimaryText={cloudProvider.name}
-                listItemSecondText={cloudProvider.description}
+                listItemSecondText={secondaryText}
                 listItemAttributes={{ divider: true }}
                 icon={icon}
                 secondaryAction={secondaryAction}
