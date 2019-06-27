@@ -23,11 +23,15 @@ import com.dytech.edge.exceptions.ErrorDuringSearchException;
 import com.google.common.base.Throwables;
 import com.tle.freetext.LuceneConstants;
 import com.tle.freetext.TLEAnalyzer;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ClassInfoList;
+import io.github.classgraph.ScanResult;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -48,7 +52,6 @@ import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
 import org.apache.lucene.search.NRTManagerReopenThread;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
-import org.reflections.Reflections;
 
 /**
  * When Lucene creates an IndexSearcher it keeps a snap-shot of the index at that point in time, and
@@ -219,18 +222,20 @@ public abstract class AbstractIndexEngine {
       if (!analyzerLanguage.equals("en")) {
         // Load the only one analyzer from a specific language package provided by Lucene
         String languageAnalyzerPackage = "org.apache.lucene.analysis." + analyzerLanguage;
-        Reflections reflections = new Reflections(languageAnalyzerPackage);
-        Set<Class<? extends ReusableAnalyzerBase>> languageAnalyzers =
-            reflections.getSubTypesOf(ReusableAnalyzerBase.class);
-        Optional<Class<? extends ReusableAnalyzerBase>> languageAnalyzer =
-            languageAnalyzers.stream()
-                .filter(
-                    languageAnalyzerClass ->
-                        languageAnalyzerClass.getName().contains(languageAnalyzerPackage))
-                .findFirst();
+        try (ScanResult scanResult =
+            new ClassGraph().enableClassInfo().whitelistPackages(languageAnalyzerPackage).scan()) {
+          ClassInfoList languageAnalyzerClasses =
+              scanResult.getSubclasses(ReusableAnalyzerBase.class.getName());
+          List<Class<ReusableAnalyzerBase>> languageAnalyzers =
+              languageAnalyzerClasses.loadClasses(ReusableAnalyzerBase.class);
+          Optional<Class<ReusableAnalyzerBase>> languageAnalyzer =
+              languageAnalyzers.stream()
+                  .filter(
+                      languageAnalyzerClass ->
+                          languageAnalyzerClass.getName().contains(languageAnalyzerPackage))
+                  .findFirst();
 
-        if (languageAnalyzer.isPresent()) {
-          try {
+          if (languageAnalyzer.isPresent()) {
             normalAnalyzer =
                 languageAnalyzer
                     .get()
@@ -246,17 +251,16 @@ public abstract class AbstractIndexEngine {
                     false);
 
             LOGGER.info("Using Lucene analyzer: " + languageAnalyzer.get().getName());
-          } catch (InstantiationException
-              | NoSuchMethodException
-              | InvocationTargetException
-              | IllegalAccessException e) {
-            // For analyzers that don't have constructors or the getDefaultStopSet method
-            normalAnalyzer = autoCompleteAnalyzer;
-            nonStemmedAnalyzer = autoCompleteAnalyzer;
-            LOGGER.warn(
-                analyzerLanguage
-                    + " language analyzer is not avaiable so use the default analyzer");
           }
+        } catch (InstantiationException
+            | NoSuchMethodException
+            | InvocationTargetException
+            | IllegalAccessException e) {
+          // For analyzers that don't have constructors or the getDefaultStopSet method
+          normalAnalyzer = autoCompleteAnalyzer;
+          nonStemmedAnalyzer = autoCompleteAnalyzer;
+          LOGGER.warn(
+              analyzerLanguage + " language analyzer is not avaiable so use the default analyzer");
         }
       }
 

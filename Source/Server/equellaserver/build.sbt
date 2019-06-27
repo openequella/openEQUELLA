@@ -234,7 +234,8 @@ libraryDependencies ++= Seq(
   "org.scala-sbt"          %% "io"                       % "1.1.0",
   "org.mozilla"            % "rhino"                     % "1.7R4",
   "io.lemonlabs"           %% "scala-uri"                % "1.1.5",
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1"
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1",
+  "io.github.classgraph"   % "classgraph"                % "4.8.41"
 )
 
 dependencyOverrides += "javax.mail" % "mail" % "1.4.7"
