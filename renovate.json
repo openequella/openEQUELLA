@@ -37,6 +37,10 @@
       "groupName": "Apache Lucene packages"
     },
     {
+      "packagePatterns": ["^org.apache.ws.commons.axiom"],
+      "groupName": "Apache Axiom packages"
+    },
+    {
       "packagePatterns": ["^org.apache.tika"],
       "groupName": "Apache Tika packages"
     },
