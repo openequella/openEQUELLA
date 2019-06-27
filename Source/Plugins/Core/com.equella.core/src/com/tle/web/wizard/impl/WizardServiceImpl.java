@@ -1243,20 +1243,7 @@ public class WizardServiceImpl
 
     final WizardSessionState wizSessionState = userSessionService.getAttribute(id);
     if (wizSessionState != null) {
-      // copy into mutable object
-      wizState = wizSessionState.getWizardState().clone();
-
-      // make sure the states held in the repository are this one
-      if (wizState instanceof WizardState) {
-        final WizardState wizardState = (WizardState) wizState;
-        final List<WebWizardPage> pages = wizardState.getPages();
-        if (pages != null) {
-          for (WebWizardPage page : pages) {
-            ((WebRepository) page.getRepository()).setState(wizardState);
-          }
-        }
-      }
-
+      wizState = wizSessionState.getWizardState();
       info.setAttribute(WizardStateInterface.class, wizState);
       return (T) wizState;
     }
