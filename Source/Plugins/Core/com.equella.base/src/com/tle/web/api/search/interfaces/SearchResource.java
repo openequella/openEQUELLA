@@ -62,7 +62,7 @@ public interface SearchResource {
           CsvList collections,
       @ApiParam(
               value =
-                  "For details on structuring the where clause see https://equella.github.io/guides/RestAPIGuide.html#searching",
+                  "For details on structuring the where clause see https://apereo.github.io/openEQUELLA-docs/guides/RestAPIGuide.html#searching",
               required = false)
           @QueryParam("where")
           String where,
