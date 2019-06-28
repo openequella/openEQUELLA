@@ -77,7 +77,7 @@ class CloudProviderApi {
   def prepareRegistration(@QueryParam("url") @DefaultValue("") providerUrl: String,
                           @Context uriInfo: UriInfo): CloudProviderForward = {
     checkPermissions()
-    UrlParser.parseUrl(providerUrl) match {
+    UrlParser.parseUrl(providerUrl).get match {
       case u: Url =>
         RunWithDB.execute {
           SettingsDB.ensureEditSystem {
