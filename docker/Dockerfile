@@ -1,4 +1,4 @@
-FROM openjdk@sha256:0e25c8428a56e32861fe996b528a107933155c98fb2a9998a4a4e9423aad734d as baseequella
+FROM openjdk@sha256:dbdb67803b5063e9f274289bba598bf103e19d470bac4550995b28f5749f30e1 as baseequella
 
 # Install needed tools to install and run openEQUELLA
 # Clean up the apt cache afterwards.
