@@ -230,7 +230,7 @@ libraryDependencies ++= Seq(
   "xml-resolver"           % "xml-resolver"              % "1.2",
   "org.scala-sbt"          %% "io"                       % "1.1.0",
   "org.mozilla"            % "rhino"                     % "1.7R4",
-  "io.lemonlabs"           %% "scala-uri"                % "1.1.5",
+  "io.lemonlabs"           %% "scala-uri"                % "1.4.9",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1"
 )
 
