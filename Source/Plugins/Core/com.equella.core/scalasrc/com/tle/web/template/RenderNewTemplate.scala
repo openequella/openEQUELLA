@@ -126,7 +126,12 @@ object RenderNewTemplate {
   def renderNewHtml(context: RenderEventContext, viewFactory: FreemarkerFactory): SectionResult = {
     val req = context.getRequest
     val _renderData =
-      new ObjectExpression("baseResources", r.url(""), "newUI", java.lang.Boolean.TRUE)
+      new ObjectExpression("baseResources",
+                           r.url(""),
+                           "newUI",
+                           java.lang.Boolean.TRUE,
+                           "autotestMode",
+                           java.lang.Boolean.valueOf(DebugSettings.isAutoTestMode))
     val renderData =
       Option(req.getAttribute(SetupJSKey).asInstanceOf[ObjectExpression => ObjectExpression])
         .map(_.apply(_renderData))
