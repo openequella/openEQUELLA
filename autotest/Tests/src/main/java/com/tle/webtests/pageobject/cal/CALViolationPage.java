@@ -2,10 +2,13 @@ package com.tle.webtests.pageobject.cal;
 
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
+import com.tle.webtests.pageobject.ErrorPage;
+import com.tle.webtests.pageobject.ExpectWaiter;
 import com.tle.webtests.pageobject.PageObject;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class CALViolationPage extends AbstractPage<CALViolationPage> {
   @FindBy(id = "cancelButton")
@@ -21,8 +24,11 @@ public class CALViolationPage extends AbstractPage<CALViolationPage> {
   }
 
   public <T extends PageObject> T okViolation(WaitingPageObject<T> returnTo) {
+    WaitingPageObject<T> waiter =
+        ExpectWaiter.waiter(
+            ExpectedConditions.stalenessOf(driver.findElement(ErrorPage.getErrorBy())), returnTo);
     cancelButton.click();
-    return returnTo.get();
+    return waiter.get();
   }
 
   @Override

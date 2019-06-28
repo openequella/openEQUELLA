@@ -54,6 +54,7 @@ public class RepeaterControl extends AbstractWizardControl<RepeaterControl> {
   public void remove(int index) {
     WebElement element = driver.findElement(By.id(page.getControlId(ctrlnum) + "index" + index));
     ExpectedCondition<Boolean> removed = ExpectedConditions2.stalenessOrNonPresenceOf(element);
+    scrollToElement(element);
     element.click();
     waiter.until(removed);
   }

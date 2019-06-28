@@ -28,7 +28,7 @@ public class MimeTypesTest extends AbstractCleanupTest {
 
   @Override
   protected void prepareBrowserSession() {
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
   }
 
   @Test
@@ -111,7 +111,7 @@ public class MimeTypesTest extends AbstractCleanupTest {
 
   @Override
   protected void cleanupAfterClass() throws Exception {
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
     MimeSearchPage mimePage = new MimeSearchPage(context).load();
     mimePage = new MimeSearchPage(context).load();
     while (mimePage.search("deleteMe").hasResults()) {

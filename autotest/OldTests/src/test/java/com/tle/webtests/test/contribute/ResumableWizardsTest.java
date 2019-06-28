@@ -31,7 +31,7 @@ public class ResumableWizardsTest extends AbstractSessionTest {
 
     // navigate away using menu
     MenuSection menuSection = new MenuSection(context).get();
-    menuSection.clickMenuLink("searching.do", new SearchPage(context));
+    menuSection.clickMenu("Search", new SearchPage(context));
     contributePage = new ContributePage(context).load();
 
     // check for resumable open and check data

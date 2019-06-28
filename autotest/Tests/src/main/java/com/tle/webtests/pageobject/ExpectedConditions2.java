@@ -121,29 +121,6 @@ public class ExpectedConditions2 {
     };
   }
 
-  public static ExpectedCondition<WebElement> elementAttributeToBe(
-      final WebElement element, final String attribute, final String value) {
-    return new ExpectedCondition<WebElement>() {
-      private String lastValue;
-
-      @Override
-      public WebElement apply(WebDriver driver) {
-        lastValue = element.getAttribute(attribute);
-        if (value.equals(lastValue)) {
-          return element;
-        }
-        return null;
-      }
-
-      @Override
-      public String toString() {
-        return String.format(
-            "attribute '%s' = '%s' (last: '%s') in element %s",
-            attribute, value, lastValue, element);
-      }
-    };
-  }
-
   public static ExpectedCondition<WebElement> elementAttributeToContain(
       final WebElement element, final String attribute, final String value) {
     final WebElement realElement;

@@ -65,7 +65,7 @@ public class AutoCompleteOptions extends AbstractPage<AutoCompleteOptions> {
             ((JavascriptExecutor) driver)
                 .executeScript("return $(arguments[0]).data(\"real\");", promptField);
     qs.typeKeys(keys);
-    waiter.until(ExpectedConditions2.elementAttributeToBe(qs.queryField, "value", realTextEscaped));
+    waiter.until(ExpectedConditions.attributeToBe(qs.queryField, "value", realTextEscaped));
   }
 
   public void waitUntilDisappeared() {

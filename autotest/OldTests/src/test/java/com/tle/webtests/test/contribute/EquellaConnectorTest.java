@@ -41,7 +41,7 @@ public class EquellaConnectorTest extends AbstractCleanupTest {
 
   @Test
   public void setupConnector() {
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
 
     ShowConnectorsPage connectors = new ShowConnectorsPage(context).load();
     ShowEquellaConnectorsPage.addEquellaConnection(connectors, CONNECTOR);
@@ -170,7 +170,7 @@ public class EquellaConnectorTest extends AbstractCleanupTest {
   protected void cleanupAfterClass() throws Exception {
     super.cleanupAfterClass();
     if (!Check.isEmpty(testConfig.getIntegrationUrl("moodle"))) {
-      logon("TLE_ADMINISTRATOR", "tle010");
+      logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
       ShowConnectorsPage page = new ShowConnectorsPage(context).load();
       page.deleteAllNamed(CONNECTOR);
     }

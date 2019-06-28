@@ -3,13 +3,12 @@ package com.tle.webtests.pageobject.portal;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.ExpectWaiter;
-import com.tle.webtests.pageobject.ExpectedConditions2;
 import com.tle.webtests.pageobject.PrefixedName;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.generic.component.MultiLingualEditbox;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractPortalEditPage<T extends AbstractPortalEditPage<T>>
     extends AbstractPage<T> {
@@ -41,8 +40,8 @@ public abstract class AbstractPortalEditPage<T extends AbstractPortalEditPage<T>
     return driver.findElement(By.id(getId() + postfix));
   }
 
-  private WebElement getViewExpressionInput() {
-    return find(driver, By.name(getId() + "_selector_es.e"));
+  private By getViewExpressionInput() {
+    return By.name(getId() + "_selector_es.e");
   }
 
   public AbstractPortalEditPage(PageContext context) {
@@ -115,13 +114,11 @@ public abstract class AbstractPortalEditPage<T extends AbstractPortalEditPage<T>
   }
 
   public T showForExpression(String expression) {
-    setShowForOthers(true);
-    ((JavascriptExecutor) driver)
-        .executeScript("_subev('" + getId() + ".expression', '', '" + expression + "');");
 
+    setShowForOthers(true);
+    executeSubmit("('" + getId() + ".expression', '', '" + expression + "');");
     return ExpectWaiter.waiter(
-            ExpectedConditions2.elementAttributeToBe(getViewExpressionInput(), "value", expression),
-            this)
+            ExpectedConditions.attributeToBe(getViewExpressionInput(), "value", expression), this)
         .get();
   }
 

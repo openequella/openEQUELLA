@@ -105,7 +105,7 @@ public class MyResourcesPage
 
   public MyResourcesUploadFilesPage getUploadPage() {
     uploadFiles.click();
-    return new MyResourcesUploadFilesPage(this);
+    return new MyResourcesUploadFilesPage(this).get();
   }
 
   public MyResourcesPage uploadFile(File file, String description, String tags) {

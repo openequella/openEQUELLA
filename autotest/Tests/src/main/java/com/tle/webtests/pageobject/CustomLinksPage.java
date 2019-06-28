@@ -2,6 +2,7 @@ package com.tle.webtests.pageobject;
 
 import com.tle.webtests.framework.EBy;
 import com.tle.webtests.framework.PageContext;
+import com.tle.webtests.pageobject.portal.MenuSection;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -28,24 +29,14 @@ public class CustomLinksPage extends AbstractPage<CustomLinksPage> {
     return new CustomLinksEditPage(this).get();
   }
 
+  public boolean waitForLink(String name, String url, boolean icon) {
+    MenuSection menu = new MenuSection(context).get();
+    return menu.waitForCustomIconByNameAndHref(name, url) == icon;
+  }
+
   public boolean linkExistsOnMenu(String name, String url, boolean icon) {
-    if (icon) {
-      return isPresent(
-          By.xpath(
-              "//div[@class='menu-full']//a[normalize-space(text())="
-                  + AbstractPage.quoteXPath(name)
-                  + " and normalize-space(@href)="
-                  + AbstractPage.quoteXPath(url)
-                  + " and contains(@style, 'background-image')]"));
-    } else {
-      return isPresent(
-          By.xpath(
-              "//div[@class='menu-full']//a[normalize-space(text())="
-                  + AbstractPage.quoteXPath(name)
-                  + " and normalize-space(@href)="
-                  + AbstractPage.quoteXPath(url)
-                  + "]"));
-    }
+    MenuSection menu = new MenuSection(context).get();
+    return menu.linkExistsWithIcon(name, url, icon);
   }
 
   public boolean linkExists(String name, String url) {

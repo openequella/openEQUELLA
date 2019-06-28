@@ -42,6 +42,7 @@ public class UserProfilePage extends AbstractPage<UserProfilePage> {
   }
 
   private UserProfilePage save(WaitingPageObject<UserProfilePage> returnTo) {
+    scrollToElement(saveButton);
     saveButton.click();
     return returnTo.get();
   }

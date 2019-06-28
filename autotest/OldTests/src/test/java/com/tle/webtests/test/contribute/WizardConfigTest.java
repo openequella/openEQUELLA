@@ -74,10 +74,16 @@ public class WizardConfigTest extends AbstractSessionTest {
   }
 
   private void assertPages(WizardPageTab wizardPage, List<String> pages, boolean reverse) {
-    if (reverse) Collections.reverse(pages);
+    int curPage = 0;
+    if (reverse) {
+      curPage = pages.size() - 1;
+      Collections.reverse(pages);
+    }
     for (String page : pages) {
-      wizardPage.clickPage(page);
+      wizardPage.clickPage(page, curPage);
       assertEquals(wizardPage.getCurrentPageName(), page);
+      if (reverse) curPage--;
+      else curPage++;
     }
   }
 }
