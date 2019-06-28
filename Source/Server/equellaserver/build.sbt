@@ -87,7 +87,7 @@ libraryDependencies ++= Seq(
   "com.metamx"                % "extendedset"           % "1.5.0-mmx",
   "javax.inject"              % "javax.inject"          % "1",
   "javax.mail"                % "mail"                  % "1.4.7",
-  "javax.servlet"             % "jstl"                  % "1.1.2",
+  "javax.servlet"             % "jstl"                  % "1.2",
   "javax.xml"                 % "jaxrpc"                % "1.1",
   "jdom"                      % "jdom"                  % "1.0",
   "com.github.equella.jpf"    % "jpf"                   % "1.0.7",
