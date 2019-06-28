@@ -174,7 +174,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.slf4j",
                   name = "slf4j-log4j12")
   ),
-  "org.bouncycastle"       % "bcprov-jdk15on"    % "1.51",
+  "org.bouncycastle"       % "bcprov-jdk15on"    % "1.62",
   "org.ccil.cowan.tagsoup" % "tagsoup"           % "1.2.1",
   "org.codehaus.woodstox"  % "stax2-api"         % "3.1.3",
   "org.codehaus.woodstox"  % "woodstox-core-asl" % "4.2.0",
