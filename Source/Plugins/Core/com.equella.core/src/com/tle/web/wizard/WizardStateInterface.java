@@ -49,6 +49,4 @@ public interface WizardStateInterface extends Serializable, Cloneable {
   String getStagingId();
 
   void onSessionSave();
-
-  WizardStateInterface clone();
 }
