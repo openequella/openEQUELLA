@@ -2,6 +2,7 @@ package com.tle.webtests.pageobject.cal;
 
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
+import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.generic.component.Calendar;
 import com.tle.webtests.pageobject.generic.component.SelectCourseDialog;
 import org.openqa.selenium.By;
@@ -57,8 +58,9 @@ public class EditActivationPage extends AbstractPage<EditActivationPage> {
   }
 
   public void saveWithError() {
+    WaitingPageObject<EditActivationPage> updated = updateWaiter();
     saveButton.click();
-    this.get();
+    updated.get();
   }
 
   public boolean errorPresent() {

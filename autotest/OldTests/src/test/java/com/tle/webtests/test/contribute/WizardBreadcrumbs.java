@@ -55,7 +55,7 @@ public class WizardBreadcrumbs extends AbstractCleanupAutoTest {
 
     // Save. Move. Bread crumbs = ([Collection Name] > [Item name] > Move
     // the current item)
-    MoveCloneDialog move = summary.move();
+    MoveCloneDialog move = summary.move(clone.updateWaiter());
     assertEquals(
         move.getBreadcrumbs(),
         MessageFormat.format("Basic Items > {0} > Move item into another collection", FULL_NAME));

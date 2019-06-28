@@ -123,6 +123,6 @@ public class TopicPage
 
   public TopicPage clickBrowseBreadcrumb() {
     driver.findElement(By.xpath("//div[@id='breadcrumbs']/span//a[text() = 'Browse']")).click();
-    return new TopicPage(context);
+    return new TopicPage(context).get();
   }
 }

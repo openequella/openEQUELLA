@@ -102,7 +102,7 @@ public class NotificationsTest extends AbstractCleanupTest {
     logout();
 
     // Owner notifying you
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
     wizard = new ContributePage(context).load().openWizard("No Workflow");
     wizard.editbox(1, OTHER_USER);
     wizard.save().draft();
@@ -318,7 +318,7 @@ public class NotificationsTest extends AbstractCleanupTest {
   private void runNotifyNewTasksAsSystemSuperUserAndReloginAs(
       String reloginUser, String reloginPasswd) {
     logout();
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
     ScheduledTasksPage stp = new ScheduledTasksPage(context).load();
     stp.runCheckModeration();
     stp.runNotifyNewTasks();

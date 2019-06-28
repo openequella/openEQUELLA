@@ -6,10 +6,11 @@ import org.openqa.selenium.By;
 /** @author Aaron */
 public class ErrorPage extends AbstractPage<ErrorPage> {
   public ErrorPage(PageContext context) {
-    super(
-        context,
-        By.xpath(
-            "//div[@class='area error']")); //  /h2[normalize-space(text())='An error occurred']
+    super(context, getErrorBy()); //  /h2[normalize-space(text())='An error occurred']
+  }
+
+  public static By getErrorBy() {
+    return By.xpath("//div[@class='area error']");
   }
 
   public String getMainErrorMessage() {

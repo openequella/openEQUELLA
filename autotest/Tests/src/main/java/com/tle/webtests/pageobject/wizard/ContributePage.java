@@ -74,7 +74,7 @@ public class ContributePage extends AbstractPage<ContributePage> {
 
   public WizardPageTab openResumable(String collection) {
     resumableDiv.findElement(By.linkText(collection)).click();
-    return new WizardPageTab(context, 0);
+    return new WizardPageTab(context, 0).get();
   }
 
   public void removeResumable(String collection) {

@@ -6,6 +6,7 @@ import com.tle.webtests.pageobject.generic.page.AbstractScreenOptions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class PortalScreenOptions extends AbstractScreenOptions<PortalScreenOptions> {
   @FindBy(id = "ri_restoreAllButton")
@@ -18,10 +19,12 @@ public class PortalScreenOptions extends AbstractScreenOptions<PortalScreenOptio
   public <P extends AbstractPortalEditPage<P>> P addPortal(P portal) {
     By portalLink =
         By.xpath(
-            "id('bluebar_screenoptions')/ul/li/a[text()="
+            "id("
+                + quoteXPath(getOptionsId())
+                + ")/ul/li/a[text()="
                 + AbstractPage.quoteXPath(portal.getType())
                 + "]");
-    waitForElement(portalLink).click();
+    waiter.until(ExpectedConditions.elementToBeClickable(portalLink)).click();
     return portal.get();
   }
 

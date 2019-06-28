@@ -2,31 +2,46 @@ package com.tle.webtests.pageobject.portal;
 
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
+import com.tle.webtests.pageobject.MUIHelper;
 import com.tle.webtests.pageobject.generic.page.UserProfilePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 
 public class TopbarMenuSection extends AbstractPage<TopbarMenuSection> {
-  @FindBy(id = "topmenu")
-  private WebElement menuDiv;
 
   public TopbarMenuSection(PageContext context) {
-    super(context, By.id("topmenu"));
+    super(context);
+    loadedBy = isNewUI() ? By.tagName("header") : By.id("topmenu");
+  }
+
+  private WebElement getTopBarElement() {
+    return driver.findElement(loadedBy);
   }
 
   public int getNumberOfNotifications() {
-    String elemText = menuDiv.findElement(By.xpath("//*[@title = 'Notifications']")).getText();
-    return Integer.parseInt(elemText);
+    return getCountForElement(
+        getTopBarElement().findElement(By.xpath("//*[@title = 'Notifications']")));
   }
 
   public int getNumberOfTasks() {
-    String elemText = menuDiv.findElement(By.xpath("//*[@title = 'Tasks']")).getText();
-    return Integer.parseInt(elemText);
+    return getCountForElement(getTopBarElement().findElement(By.xpath("//*[@title = 'Tasks']")));
+  }
+
+  private int getCountForElement(WebElement base) {
+    String countString = isNewUI() ? MUIHelper.getBadgeText(base) : base.getText();
+    if (countString == null) {
+      return 0;
+    }
+    return Integer.parseInt(countString);
   }
 
   public UserProfilePage editMyDetails() {
-    menuDiv.findElement(By.xpath("//a[@href = 'access/user.do']")).click();
-    return new UserProfilePage(context).get();
+
+    UserProfilePage upp = new UserProfilePage(context);
+    if (isNewUI()) {
+      return upp.load();
+    }
+    getTopBarElement().findElement(By.xpath("//a[@href = 'access/user.do']")).click();
+    return upp.get();
   }
 }

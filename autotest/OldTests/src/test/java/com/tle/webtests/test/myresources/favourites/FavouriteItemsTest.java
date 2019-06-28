@@ -243,7 +243,7 @@ public class FavouriteItemsTest extends AbstractCleanupTest {
 
   @Test
   public void testNoResults() {
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
 
     FavouriteItemsPage favs = new FavouritesPage(context).load().items();
     assertFalse(favs.hasResults());

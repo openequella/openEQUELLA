@@ -73,7 +73,7 @@ public class BlackboardConnectorTest extends AbstractBlackboardTest {
 
   @Test(dependsOnMethods = "setupBlackboard")
   public void appearsInBlackboard() {
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
 
     String fullName = context.getFullName("Appears In Blackboard");
 
@@ -307,7 +307,7 @@ public class BlackboardConnectorTest extends AbstractBlackboardTest {
 
   @Test(dependsOnMethods = "setupBlackboard")
   public void appearsInUsage() {
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
     String itemName = context.getFullName("Appears In Usage");
 
     LMSExportPage lms = connectorHelper.createTestItem(itemName).adminTab().lmsPage();
@@ -323,7 +323,7 @@ public class BlackboardConnectorTest extends AbstractBlackboardTest {
 
   @Test(dependsOnMethods = "setupBlackboard")
   public void newVersionShowAllVersions() {
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
 
     LMSExportPage lms =
         connectorHelper
@@ -421,7 +421,7 @@ public class BlackboardConnectorTest extends AbstractBlackboardTest {
 
   @Test(dependsOnMethods = "setupBlackboard")
   public void selectImsPackage() {
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
     String fullName = context.getFullName("Select IMS package");
     SummaryPage item = connectorHelper.createTestItem(fullName);
     LMSExportPage lms = item.lmsPage();
@@ -440,7 +440,7 @@ public class BlackboardConnectorTest extends AbstractBlackboardTest {
 
   @Test(dependsOnMethods = "setupBlackboard")
   public void selectAttachment() {
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
     String fullName = context.getFullName("Select an attachment");
     SummaryPage item = connectorHelper.createTestItem(fullName);
     LMSExportPage lms = item.lmsPage();
@@ -460,7 +460,7 @@ public class BlackboardConnectorTest extends AbstractBlackboardTest {
 
   @Test(dependsOnMethods = "setupBlackboard")
   public void newVersionThenOldVersionAddedIntoAnAlwaysLatestCourse() {
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
     LMSExportPage lms =
         connectorHelper
             .createTestItem(context.getFullName("Add Old Version version1"))
@@ -504,7 +504,7 @@ public class BlackboardConnectorTest extends AbstractBlackboardTest {
       throw new SkipException("blackboard url not set");
     }
 
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
     ShowConnectorsPage page = new ShowConnectorsPage(context).load();
     ShowBlackboardConnectorsPage.registerProxyTool(page, context.getIntegUrl());
 
@@ -517,7 +517,7 @@ public class BlackboardConnectorTest extends AbstractBlackboardTest {
 
     String proxyPassword = ensureProxy();
 
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
     page = new ShowConnectorsPage(context).load();
     ShowBlackboardConnectorsPage.addBlackboardConnection(
         page, BLACKBOARD_CONNECTOR_NAME, context.getIntegUrl(), "testuser", proxyPassword);
@@ -553,7 +553,7 @@ public class BlackboardConnectorTest extends AbstractBlackboardTest {
       BlackboardCoursePage coursePage = indexPage.clickCourse(ARCHIVED_COURSE_NAME);
       coursePage.content().deleteResourceIfExists(FOLDER1).deleteResourceIfExists(FOLDER2);
 
-      logon("TLE_ADMINISTRATOR", "tle010");
+      logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
 
       ManageExternalResourcePage external = new ManageExternalResourcePage(context).load();
       connectorHelper.selectConnector(external);

@@ -119,12 +119,12 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     topicPage.saveSearch(searchName, topicPage);
 
     FavouritesPage favouritesPage =
-        menuSection.clickMenuLink("access/favourites.do", new FavouritesPage(context));
+        menuSection.clickMenu("Favourites", new FavouritesPage(context));
     FavouriteSearchList searches = favouritesPage.searches().results();
     searches.doesResultExist(searchName, 1);
     searches.getResultForTitle(searchName, 1).clickTitle();
 
-    Assert.assertTrue(new TopicPage(context, topic).topicExists("Child"));
+    Assert.assertTrue(new TopicPage(context, topic).get().topicExists("Child"));
     searches = new FavouritesPage(context).load().searches().results();
     searches.getResultForTitle(searchName, 1).clickActionConfirm("Remove", true, searches);
   }

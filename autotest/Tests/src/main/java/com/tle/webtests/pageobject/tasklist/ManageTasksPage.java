@@ -31,16 +31,14 @@ public class ManageTasksPage
   @FindBy(id = "moderator")
   private WebElement moderatorAjax;
 
-  @FindBy(xpath = "id('header-inner')/div[text()='Manage tasks']")
-  private WebElement mainElem;
-
   public ManageTasksPage(PageContext context) {
     super(context);
+    loadedBy = byForPageTitle("Manage tasks");
   }
 
   @Override
   protected WebElement findLoadedElement() {
-    return mainElem;
+    return driver.findElement(loadedBy);
   }
 
   @Override

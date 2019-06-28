@@ -31,6 +31,7 @@ public class BulkSection extends AbstractPage<BulkSection> {
   }
 
   public BulkSection selectAll() {
+    scrollToElement(allLink);
     WaitingPageObject<?> waiter = results.getResultsUpdateWaiter();
     allLink.click();
     waiter.get();
@@ -47,6 +48,7 @@ public class BulkSection extends AbstractPage<BulkSection> {
   }
 
   private BulkActionDialog performAction() {
+    scrollToElement(executeButton);
     executeButton.click();
     return new BulkActionDialog(context).get();
   }

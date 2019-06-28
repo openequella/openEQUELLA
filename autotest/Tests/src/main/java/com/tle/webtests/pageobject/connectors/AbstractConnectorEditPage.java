@@ -2,14 +2,13 @@ package com.tle.webtests.pageobject.connectors;
 
 import com.tle.common.Check;
 import com.tle.webtests.pageobject.ExpectWaiter;
-import com.tle.webtests.pageobject.ExpectedConditions2;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import com.tle.webtests.pageobject.generic.entities.AbstractEditEntityPage;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractConnectorEditPage<THIS extends AbstractConnectorEditPage<THIS>>
     extends AbstractEditEntityPage<THIS, ShowConnectorsPage> {
@@ -23,12 +22,12 @@ public abstract class AbstractConnectorEditPage<THIS extends AbstractConnectorEd
   @FindBy(xpath = "id('testdiv')//span[contains(@class, 'status')]")
   private WebElement testStatus;
 
-  private WebElement getViewExpressionInput() {
-    return driver.findElement(By.name(getId() + "_viewableSelector_es.e"));
+  private By getViewExpressionInput() {
+    return By.name(getId() + "_viewableSelector_es.e");
   }
 
-  private WebElement getExportExpressionInput() {
-    return driver.findElement(By.name(getId() + "_exportableSelector_es.e"));
+  private By getExportExpressionInput() {
+    return By.name(getId() + "_exportableSelector_es.e");
   }
 
   protected AbstractConnectorEditPage(ShowConnectorsPage connectorsPage) {
@@ -79,19 +78,17 @@ public abstract class AbstractConnectorEditPage<THIS extends AbstractConnectorEd
   }
 
   public THIS viewableForExpression(final String expression) {
-    ((JavascriptExecutor) driver)
-        .executeScript(
-            "_subev('"
-                + getId()
-                + ".expression', '"
-                + getId()
-                + "_viewableSelector', '"
-                + expression
-                + "');");
+    executeSubmit(
+        "('"
+            + getId()
+            + ".expression', '"
+            + getId()
+            + "_viewableSelector', '"
+            + expression
+            + "');");
 
     return ExpectWaiter.waiter(
-            ExpectedConditions2.elementAttributeToBe(getViewExpressionInput(), "value", expression),
-            this)
+            ExpectedConditions.attributeToBe(getViewExpressionInput(), "value", expression), this)
         .get();
   }
 
@@ -100,20 +97,17 @@ public abstract class AbstractConnectorEditPage<THIS extends AbstractConnectorEd
   }
 
   public THIS exportableForExpression(String expression) {
-    ((JavascriptExecutor) driver)
-        .executeScript(
-            "_subev('"
-                + getId()
-                + ".expression', '"
-                + getId()
-                + "_exportableSelector', '"
-                + expression
-                + "');");
+    executeSubmit(
+        "('"
+            + getId()
+            + ".expression', '"
+            + getId()
+            + "_exportableSelector', '"
+            + expression
+            + "');");
 
     return ExpectWaiter.waiter(
-            ExpectedConditions2.elementAttributeToBe(
-                getExportExpressionInput(), "value", expression),
-            this)
+            ExpectedConditions.attributeToBe(getExportExpressionInput(), "value", expression), this)
         .get();
   }
 

@@ -7,7 +7,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.{By, Keys, WebElement}
 
 case class LoginNoticePage(ctx: PageContext)
-    extends NewTitledPage("Login Notice Editor", "page/loginconfiguration") {
+    extends NewTitledPage("Login notice editor", "page/loginconfiguration") {
 
   private def saveButton: WebElement = findElementById("SaveButton")
 
