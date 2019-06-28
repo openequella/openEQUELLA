@@ -20,11 +20,8 @@ package com.tle.web.wizard;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.wizard.beans.DRMPage;
-import com.google.common.base.Throwables;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.Wizard;
@@ -458,31 +455,7 @@ public class WizardState implements WizardStateInterface {
     if (xmlBag != null) {
       xml = xmlBag.toString();
     }
-    xmlBag = null;
     pathOverrides = null;
-  }
-
-  @Override
-  public WizardState clone() {
-    try {
-      final WizardState other = (WizardState) super.clone();
-      other.xmlBag = null;
-
-      other.drm = Lists.newArrayList(drm);
-      other.duplicateData = Maps.newHashMap(duplicateData);
-      other.unsavedEdits = Lists.newArrayList(unsavedEdits);
-      other.saveOperations = Maps.newHashMap(saveOperations);
-      if (pageStates != null) {
-        other.pageStates = Lists.newArrayList(pageStates);
-      }
-
-      // TODO:
-      // other.pages = null;
-
-      return other;
-    } catch (CloneNotSupportedException e) {
-      throw Throwables.propagate(e);
-    }
   }
 
   public String getThumbnail() {
