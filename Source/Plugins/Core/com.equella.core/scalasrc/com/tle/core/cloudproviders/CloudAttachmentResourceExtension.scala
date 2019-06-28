@@ -106,10 +106,10 @@ case class CloudAttachmentViewableResource(info: SectionInfo,
     viewerMap(provider).flatMap(_.get(viewerId))
 
   def serviceUriForViewer(provider: CloudProviderInstance,
-                          viewerId: String): Option[(Viewer, ServiceUri)] =
+                          viewerId: String): Option[(Viewer, ServiceUrl)] =
     for {
       viewer     <- viewerForId(provider, viewerId)
-      serviceUri <- provider.serviceUris.get(viewer.serviceId)
+      serviceUri <- provider.serviceUrls.get(viewer.serviceId)
     } yield (viewer, serviceUri)
 
   def uriParameters: Map[String, Any] = {

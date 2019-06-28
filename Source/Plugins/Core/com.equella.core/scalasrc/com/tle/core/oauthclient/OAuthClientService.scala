@@ -107,11 +107,10 @@ object OAuthClientService {
       }
 
     def requestTokenAndSave(token: TokenRequest): DB[OAuthTokenState] = {
-      val postRequest = sttp
+      val postRequest = sttp.auth
+        .basic(token.clientId, token.clientSecret)
         .body(
-          OAuthWebConstants.PARAM_GRANT_TYPE    -> OAuthWebConstants.GRANT_TYPE_CREDENTIALS,
-          OAuthWebConstants.PARAM_CLIENT_ID     -> token.clientId,
-          OAuthWebConstants.PARAM_CLIENT_SECRET -> token.clientSecret
+          OAuthWebConstants.PARAM_GRANT_TYPE -> OAuthWebConstants.GRANT_TYPE_CREDENTIALS
         )
         .response(asJson[OAuthTokenResponse])
         .post(uri"${token.authTokenUrl}")

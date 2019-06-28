@@ -44,10 +44,10 @@ package object cloudproviders {
     implicit val decodeViewer: Decoder[Viewer] = deriveDecoder
   }
 
-  case class ServiceUri(uri: String, authenticated: Boolean)
+  case class ServiceUrl(url: String, authenticated: Boolean)
 
-  object ServiceUri {
-    implicit val decodeServiceUri: Decoder[ServiceUri] = deriveDecoder
+  object ServiceUrl {
+    implicit val decodeServiceUri: Decoder[ServiceUrl] = deriveDecoder
   }
 
   case class CloudProviderRegistration(name: String,
@@ -56,7 +56,7 @@ package object cloudproviders {
                                        baseUrl: String,
                                        iconUrl: Option[String],
                                        providerAuth: CloudOAuthCredentials,
-                                       serviceUris: Map[String, ServiceUri],
+                                       serviceUrls: Map[String, ServiceUrl],
                                        viewers: Map[String, Map[String, Viewer]])
 
   case class CloudProviderRegistrationResponse(instance: CloudProviderInstance, forwardUrl: String)
@@ -69,7 +69,7 @@ package object cloudproviders {
                                    iconUrl: Option[String],
                                    providerAuth: CloudOAuthCredentials,
                                    oeqAuth: CloudOAuthCredentials,
-                                   serviceUris: Map[String, ServiceUri],
+                                   serviceUrls: Map[String, ServiceUrl],
                                    viewers: Map[String, Map[String, Viewer]])
 
   case class CloudProviderDetails(id: UUID,

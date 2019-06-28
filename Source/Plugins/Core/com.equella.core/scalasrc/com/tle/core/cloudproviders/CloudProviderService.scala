@@ -57,27 +57,27 @@ object CloudProviderService {
   final val CloudAttachmentType = "cloud"
 
   def tokenUrlForProvider(provider: CloudProviderInstance): IO[Uri] = {
-    provider.serviceUris
+    provider.serviceUrls
       .get(OAuthServiceId)
       .map { oauthService =>
         IO.fromEither(
-          UriTemplateService.replaceVariables(oauthService.uri, provider.baseUrl, Map()))
+          UriTemplateService.replaceVariables(oauthService.url, provider.baseUrl, Map()))
       }
       .getOrElse(IO.raiseError(new Throwable("No OAuth service URL")))
   }
 
   def serviceUri(provider: CloudProviderInstance,
-                 serviceUri: ServiceUri,
+                 serviceUri: ServiceUrl,
                  params: Map[String, Any]): DB[Either[UriParseError, Uri]] = {
     contextParams.map { ctxParams =>
-      UriTemplateService.replaceVariables(serviceUri.uri, provider.baseUrl, ctxParams ++ params)
+      UriTemplateService.replaceVariables(serviceUri.url, provider.baseUrl, ctxParams ++ params)
     }
   }
 
   def contextParams: DB[Map[String, Any]] =
     getContext.map(c => Map("userid" -> c.user.getUserBean.getUniqueID))
 
-  def serviceRequest[T](serviceUri: ServiceUri,
+  def serviceRequest[T](serviceUri: ServiceUrl,
                         provider: CloudProviderInstance,
                         params: Map[String, Any],
                         f: Uri => Request[T, Stream[IO, ByteBuffer]]): DB[Response[T]] =
@@ -85,7 +85,7 @@ object CloudProviderService {
       cparams <- contextParams
       uri <- dbLiftIO.liftIO {
         IO.fromEither(
-          UriTemplateService.replaceVariables(serviceUri.uri, provider.baseUrl, cparams ++ params))
+          UriTemplateService.replaceVariables(serviceUri.url, provider.baseUrl, cparams ++ params))
       }
       req  = f(uri)
       auth = provider.providerAuth
@@ -114,7 +114,7 @@ object CloudProviderService {
       ControlListCacheValue(Instant.now().plusSeconds(timeoutSeconds), result)
     }
     override def query: CloudProviderInstance => DB[ControlListCacheValue] = provider => {
-      provider.serviceUris.get(ControlsServiceId) match {
+      provider.serviceUrls.get(ControlsServiceId) match {
         case None => withTimeout(Right(Iterable.empty)).pure[DB]
         case Some(controlsService) =>
           dbAttempt {
