@@ -15,7 +15,7 @@ export default React.memo(function ErrorPage(props: { error: ErrorResponse }) {
   const classes = useStyles();
   const { code, error, error_description } = props.error;
   return (
-    <div className={classes.errorPage}>
+    <div id="errorPage" className={classes.errorPage}>
       <Card>
         <CardContent>
           <Typography variant="h3" color="error">

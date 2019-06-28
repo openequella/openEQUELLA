@@ -13,9 +13,15 @@ export interface IThemeSettings {
   fontSize: number;
 }
 
+declare const renderData:
+  | {
+      autotestMode: boolean;
+    }
+  | undefined;
+
 declare const themeSettings: IThemeSettings;
 
-export const oeqTheme = createMuiTheme({
+const standardThemeSettings: ThemeOptions = {
   palette: {
     primary: {
       main: themeSettings.primaryColor
@@ -40,4 +46,18 @@ export const oeqTheme = createMuiTheme({
     useNextVariants: true,
     fontSize: themeSettings.fontSize
   }
-} as ThemeOptions);
+} as ThemeOptions;
+
+export const autotTestOptions: ThemeOptions =
+  typeof renderData == "object" && renderData.autotestMode
+    ? {
+        transitions: {
+          create: () => "none"
+        }
+      }
+    : {};
+
+export const oeqTheme = createMuiTheme({
+  ...standardThemeSettings,
+  ...autotTestOptions
+});

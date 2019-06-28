@@ -37,13 +37,6 @@ const baseFullPath = new URL(document.head.getElementsByTagName("base")[0].href)
   .pathname;
 const basePath = baseFullPath.substr(0, baseFullPath.length - 1);
 
-declare const renderData:
-  | {
-      baseResources: string;
-      newUI: boolean;
-    }
-  | undefined;
-
 const beforeunload = function(e: Event) {
   e.returnValue = ("Are you sure?" as unknown) as boolean;
   return "Are you sure?";
