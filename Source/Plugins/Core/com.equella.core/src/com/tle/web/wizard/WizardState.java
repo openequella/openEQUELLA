@@ -452,6 +452,9 @@ public class WizardState implements WizardStateInterface {
 
   @Override
   public void onSessionSave() {
+    if (xmlBag != null) {
+      xml = xmlBag.toString();
+    }
     pathOverrides = null;
   }
 
