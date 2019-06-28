@@ -3,6 +3,7 @@ package com.tle.webtests.pageobject.tasklist;
 import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
+import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.wizard.ApproveMessagePage;
 import com.tle.webtests.pageobject.wizard.CommentMessagePage;
 import com.tle.webtests.pageobject.wizard.ModerationMessagePage;
@@ -69,13 +70,15 @@ public class ModerationView extends AbstractPage<ModerationView> {
   }
 
   public ModerationView navigateNext() {
+    WaitingPageObject<ModerationView> updated = updateWaiter();
     nextTaskButton.click();
-    return new ModerationView(context).get();
+    return updated.get();
   }
 
   public ModerationView navigatePrev() {
+    WaitingPageObject<ModerationView> updated = updateWaiter();
     prevTaskButton.click();
-    return new ModerationView(context).get();
+    return updated.get();
   }
 
   // When disabled they are rendered as spans, links (a) when enabled

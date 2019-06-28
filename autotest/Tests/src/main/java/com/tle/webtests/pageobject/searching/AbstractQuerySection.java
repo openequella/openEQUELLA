@@ -46,6 +46,7 @@ public abstract class AbstractQuerySection<T extends AbstractQuerySection<T>>
 
   // Default is to clear. Only SearchAutocompleteTest needs it
   public void setQuery(String query, boolean clear) {
+    scrollToElement(queryField);
     queryField.click();
     queryField.clear();
     queryField.sendKeys(query);

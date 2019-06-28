@@ -7,10 +7,16 @@ import org.openqa.selenium.By;
 public class WizardErrorPage extends AbstractPage<WizardErrorPage> {
 
   public WizardErrorPage(PageContext context) {
-    super(context, By.xpath("//h2[text()='An error occurred in the wizard']"));
+    super(context);
+    loadedBy =
+        isNewUI()
+            ? byForPageTitle("Internal Server Error")
+            : By.xpath("//h2[text()='An error occurred in the wizard']");
   }
 
   public String getError() {
-    return driver.findElement(By.cssSelector("div.error p")).getText();
+    return driver
+        .findElement(isNewUI() ? By.xpath("id('errorPage')//h5") : By.cssSelector("div.error p"))
+        .getText();
   }
 }

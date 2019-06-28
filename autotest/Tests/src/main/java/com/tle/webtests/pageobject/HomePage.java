@@ -2,6 +2,7 @@ package com.tle.webtests.pageobject;
 
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.portal.AbstractPortalEditPage;
+import com.tle.webtests.pageobject.portal.MenuSection;
 import com.tle.webtests.pageobject.portal.PortalScreenOptions;
 import org.openqa.selenium.By;
 
@@ -20,13 +21,8 @@ public class HomePage extends AbstractPage<HomePage> {
   }
 
   public boolean containsLink(String name, String url) {
-    return isPresent(
-        By.xpath(
-            "//div[@class='menu-full']//a[normalize-space(text())="
-                + AbstractPage.quoteXPath(name)
-                + " and normalize-space(@href)="
-                + AbstractPage.quoteXPath(url)
-                + "]"));
+    MenuSection ms = new MenuSection(context).get();
+    return ms.linkExists(name, url);
   }
 
   private PortalScreenOptions openScreenOptions() {
@@ -43,10 +39,7 @@ public class HomePage extends AbstractPage<HomePage> {
   }
 
   public boolean isTopicTagVisible(String dynamicTopicName) {
-    return isPresent(
-        By.xpath(
-            "//div[@class='menu-full']//a[normalize-space(text())="
-                + AbstractPage.quoteXPath(dynamicTopicName)
-                + "]"));
+    MenuSection ms = new MenuSection(context).get();
+    return ms.hasMenuOption(dynamicTopicName);
   }
 }

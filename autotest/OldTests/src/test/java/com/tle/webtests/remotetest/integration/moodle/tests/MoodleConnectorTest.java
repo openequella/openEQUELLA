@@ -78,7 +78,7 @@ public class MoodleConnectorTest extends AbstractParallelMoodleTest {
 
   @Test(dependsOnMethods = "setupMoodle")
   public void moodleTest() {
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
 
     String fullName = context.getFullName("LMS Push");
     String attachment = "page.html";
@@ -572,7 +572,7 @@ public class MoodleConnectorTest extends AbstractParallelMoodleTest {
     adminSettings.enableRest();
     webToken = adminSettings.addToken("Token User");
 
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
     ShowConnectorsPage page = new ShowConnectorsPage(context).load();
     ShowMoodleConnectorsPage.addMoodleConnection(
         page, getConnectorName(), context.getIntegUrl(), webToken, "admin");
@@ -595,7 +595,7 @@ public class MoodleConnectorTest extends AbstractParallelMoodleTest {
   protected void cleanupAfterClass() throws Exception {
     super.cleanupAfterClass();
     if (!Check.isEmpty(testConfig.getIntegrationUrl("moodle"))) {
-      logon("TLE_ADMINISTRATOR", "tle010");
+      logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
       ShowConnectorsPage page = new ShowConnectorsPage(context).load();
       page.deleteAllNamed(Lists.newArrayList(CONNECTOR_NAME, CONNECTOR_NAME2));
 

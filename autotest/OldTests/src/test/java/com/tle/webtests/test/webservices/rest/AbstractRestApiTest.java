@@ -135,13 +135,18 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
   @BeforeClass
   public void registerClients() throws Exception {
     // Create OAuth client-credentials clients
-    logonOnly("AutoTest", "automated");
-    final List<OAuthClient> oauthClients = getOAuthClients();
-    for (OAuthClient clientInfo : oauthClients) {
-      OAuthUtils.createClient(context, clientInfo);
-      clients.add(clientInfo);
+    try {
+      logonOnly("AutoTest", "automated");
+      final List<OAuthClient> oauthClients = getOAuthClients();
+      for (OAuthClient clientInfo : oauthClients) {
+        OAuthUtils.createClient(context, clientInfo);
+        clients.add(clientInfo);
+      }
+      logout();
+    } catch (Exception e) {
+      e.printStackTrace();
+      // Avoid skipping
     }
-    logout();
   }
 
   @Override

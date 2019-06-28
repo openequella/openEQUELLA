@@ -170,8 +170,12 @@ public abstract class ItemPage<T extends ItemPage<T>> extends AbstractPage<T> {
     return clickAction("Clone item into a collection", new MoveCloneDialog(context));
   }
 
+  public MoveCloneDialog move(WaitingPageObject<MoveCloneDialog> next) {
+    return clickAction("Move item into another collection", next);
+  }
+
   public MoveCloneDialog move() {
-    return clickAction("Move item into another collection", new MoveCloneDialog(context));
+    return move(new MoveCloneDialog(context));
   }
 
   public ModifyKeyResourcePage modifyKeyResource() {

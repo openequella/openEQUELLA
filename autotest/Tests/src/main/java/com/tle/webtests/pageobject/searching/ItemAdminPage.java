@@ -78,6 +78,7 @@ public class ItemAdminPage
 
   protected void setWithin(String name) {
     WebElement selectedContainer = getSelectedContainer();
+    scrollToElement(selectedContainer);
     selectedContainer.click();
     By richdropdown = By.xpath("//div[contains(@class,'richdropdown active')]");
     waitForElement(richdropdown);

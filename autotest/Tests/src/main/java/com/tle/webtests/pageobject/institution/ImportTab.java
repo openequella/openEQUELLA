@@ -19,6 +19,7 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class ImportTab extends InstitutionTab<ImportTab> implements DbSelectable<ImportTab> {
+
   private static final String ID_SELECTDB = "isimp_selectDatabase";
 
   @FindBy(id = "isii_fileUpload")
@@ -35,6 +36,14 @@ public class ImportTab extends InstitutionTab<ImportTab> implements DbSelectable
 
   @FindBy(id = ID_SELECTDB)
   private WebElement selectDbButton;
+
+  private WebElement getPasswordElem() {
+    return driver.findElement(By.id("isimp_adminPassword"));
+  }
+
+  private WebElement getPasswordConfirmElem() {
+    return driver.findElement(By.id("isimp_adminConfirm"));
+  }
 
   @FindBy(
       xpath =
@@ -68,6 +77,13 @@ public class ImportTab extends InstitutionTab<ImportTab> implements DbSelectable
     selectFirstDbIfPresent();
     filestoreLocation.clear();
     filestoreLocation.sendKeys(shortName);
+    WebElement passwordElem = getPasswordElem();
+    WebElement passwordConfirmElem = getPasswordConfirmElem();
+    passwordElem.clear();
+    passwordConfirmElem.clear();
+    String adminPassword = context.getTestConfig().getAdminPassword();
+    passwordElem.sendKeys(adminPassword);
+    passwordConfirmElem.sendKeys(adminPassword);
     importButton.click();
     acceptConfirmation();
     return new StatusPage<ImportTab>(context, this, timeout).get();
@@ -93,7 +109,9 @@ public class ImportTab extends InstitutionTab<ImportTab> implements DbSelectable
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
     } finally {
-      if (zipFile != null) zipFile.delete();
+      if (zipFile != null) {
+        zipFile.delete();
+      }
     }
   }
 }

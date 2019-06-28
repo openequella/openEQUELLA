@@ -16,7 +16,7 @@ import org.testng.annotations.Test;
 public class CustomLinksTest extends AbstractSessionTest {
   @Override
   protected void prepareBrowserSession() {
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
   }
 
   @DataProvider(name = "links", parallel = false)
@@ -36,7 +36,7 @@ public class CustomLinksTest extends AbstractSessionTest {
       newLink.downloadIcon();
     }
     clp = newLink.save();
-    assertTrue(clp.linkExistsOnMenu(name, url, icon));
+    assertTrue(clp.waitForLink(name, url, icon));
   }
 
   @Test(
@@ -50,7 +50,7 @@ public class CustomLinksTest extends AbstractSessionTest {
     clep.setName(newName);
     clep.setUrl(newUrl);
     clp = clep.save();
-    assertTrue(clp.linkExistsOnMenu(newName, newUrl, icon));
+    assertTrue(clp.waitForLink(newName, newUrl, icon));
     clep = clp.editLink(newName, newUrl);
     clep.setName(name);
     clep.setUrl(url);
@@ -67,7 +67,7 @@ public class CustomLinksTest extends AbstractSessionTest {
     URL upIcon = Attachments.get("favicon.ico");
     clep.uploadIcon(upIcon, icon); // overwriting blank icon / downloaded icon with one on disk
     clp = clep.save();
-    assertTrue(clp.linkExistsOnMenu(name, url, true)); // testing that a link exists with an icon
+    assertTrue(clp.waitForLink(name, url, true)); // testing that a link exists with an icon
     clep = clp.editLink(name, url);
     clep.deleteIcon();
     if (icon) {
@@ -82,19 +82,19 @@ public class CustomLinksTest extends AbstractSessionTest {
   public void testDeleteLink(String name, String url, boolean icon) {
     CustomLinksPage clp = new CustomLinksPage(context).load();
     clp.deleteLink(name, url);
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
     clp = new CustomLinksPage(context).load();
     assertFalse(clp.linkExistsOnMenu(name, url, icon));
   }
 
   @Override
   protected void cleanupAfterClass() throws Exception {
-    logon("TLE_ADMINISTRATOR", "tle010");
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
     CustomLinksPage clp = new CustomLinksPage(context).load();
-    if (clp.linkExistsOnMenu("Google", "http://www.google.com/", false)) {
+    if (clp.linkExists("Google", "http://www.google.com/")) {
       clp.deleteLink("Google", "http://www.google.com/");
     }
-    if (clp.linkExistsOnMenu("Yahoo", "http://www.yahoo.com/", false)) {
+    if (clp.linkExists("Yahoo", "http://www.yahoo.com/")) {
       clp.deleteLink("Yahoo", "http://www.yahoo.com/");
     }
     super.cleanupAfterClass();
