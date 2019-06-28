@@ -25,12 +25,8 @@ import java.util.UUID
 
 import cats.data.OptionT
 import cats.effect.IO
-import com.dytech.devlib.PropBagEx
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id
-import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
 import com.softwaremill.sttp._
-import com.tle.beans.item.{Item, ItemEditingException, ItemPack}
+import com.tle.beans.item.{Item, ItemPack}
 import com.tle.common.filesystem.FileEntry
 import com.tle.core.cloudproviders.{CloudProviderDB, CloudProviderService}
 import com.tle.core.db.{DB, RunWithDB}
@@ -38,26 +34,17 @@ import com.tle.core.httpclient._
 import com.tle.core.item.operations.{ItemOperationParams, WorkflowOperation}
 import com.tle.core.item.standard.operations.DuringSaveOperation
 import com.tle.legacy.LegacyGuice
-import com.tle.web.api.item.{
-  AddAttachment,
-  AddAttachmentResponse,
-  DeleteAttachment,
-  DeleteAttachmentResponse,
-  EditAttachment,
-  EditAttachmentResponse,
-  ItemEditResponses,
-  ItemEdits
-}
 import com.tle.web.api.item.equella.interfaces.beans.EquellaAttachmentBean
+import com.tle.web.api.item.{ItemEditResponses, ItemEdits}
 import com.tle.web.wizard.impl.WizardServiceImpl.WizardSessionState
 import com.tle.web.wizard.{WizardState, WizardStateInterface}
 import fs2.Stream
 import fs2.io._
 import io.swagger.annotations.Api
 import javax.servlet.http.HttpServletRequest
+import javax.ws.rs._
 import javax.ws.rs.core.Response.{ResponseBuilder, Status}
 import javax.ws.rs.core.{Context, Response, StreamingOutput, UriInfo}
-import javax.ws.rs._
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits
