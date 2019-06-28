@@ -34,6 +34,8 @@ import javax.ws.rs._
 import javax.ws.rs.core._
 import org.jboss.resteasy.annotations.cache.NoCache
 
+import scala.util.Success
+
 case class CloudProviderForward(url: String)
 @NoCache
 @Api("Cloud Providers")
@@ -78,7 +80,7 @@ class CloudProviderApi {
                           @Context uriInfo: UriInfo): CloudProviderForward = {
     checkPermissions()
     UrlParser.parseUrl(providerUrl) match {
-      case u: Url =>
+      case Success(u: Url) =>
         RunWithDB.execute {
           SettingsDB.ensureEditSystem {
             for {
