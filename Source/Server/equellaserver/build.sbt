@@ -101,7 +101,6 @@ libraryDependencies ++= Seq(
   "org.apache.axis2"          % "axis2-adb"             % axis2Version,
   "org.apache.axis2"          % "axis2-transport-http"  % axis2Version,
   "org.apache.axis2"          % "axis2-transport-local" % axis2Version,
-  "org.apache.commons"        % "commons-compress"      % "1.18",
   "org.apache.curator"        % "curator-client"        % "2.13.0",
   "org.apache.curator"        % "curator-framework"     % "2.13.0",
   "org.apache.curator"        % "curator-recipes"       % "2.13.0",
