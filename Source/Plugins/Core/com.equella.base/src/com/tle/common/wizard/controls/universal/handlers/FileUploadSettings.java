@@ -26,7 +26,7 @@ import java.util.List;
 @SuppressWarnings("nls")
 public class FileUploadSettings extends UniversalSettings {
   private static final String NO_UNZIP = "FILE_NOUNZIP";
-  private static final String PACKAGE_ONLY = "FILE_PACKAGE_ONLY";
+  private static final String PACKAGE_ONLY = "FILE_PACKAGEONLY";
   private static final String QTI_PACKAGE = "FILE_QTI_PACKAGE";
   private static final String SCORM_PACKAGE = "FILE_SCORM_PACKAGE";
   private static final String SUPPRESS_THUMBS = "FILE_SUPPRESS_THUMBS";
