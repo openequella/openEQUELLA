@@ -53,6 +53,7 @@ public class FileUploadSettingsPanel extends UniversalControlSettingPanel {
   private final JCheckBox showSuppressOption;
   private final JCheckBox restrictMime;
   private final JCheckBox restrictFileSize;
+  private final JCheckBox fileDuplicationCheck;
   private final JShuffleBox<NameValue> mimeShuffle;
   private final JSpinner fileSizeEdit;
   private final SpinnerNumberModel fileSizeEditModel;
@@ -74,6 +75,7 @@ public class FileUploadSettingsPanel extends UniversalControlSettingPanel {
     showSuppressOption = new JCheckBox(getString("fileupload.settings.forcethumboption"));
     restrictMime = new JCheckBox(getString("fileupload.settings.restrictbymime"));
     restrictFileSize = new JCheckBox(getString("fileupload.settings.restrictfilesize"));
+    fileDuplicationCheck = new JCheckBox(getString("fileupload.settings.duplicate.check"));
     fileSizeLabel = new JLabel(getString("fileupload.settings.filesize"));
     mimeShuffle = new JShuffleBox<NameValue>();
     fileSizeEditModel = new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1);
@@ -105,6 +107,7 @@ public class FileUploadSettingsPanel extends UniversalControlSettingPanel {
     add(restrictFileSize, "span 2");
     add(fileSizeLabel, "gapleft 18");
     add(fileSizeEdit, "w 60!");
+    add(fileDuplicationCheck, "span 2");
     add(noUnzip, "span 2, gapbottom 8");
 
     add(packageHeading, "span 2");
@@ -133,6 +136,7 @@ public class FileUploadSettingsPanel extends UniversalControlSettingPanel {
   public void load(UniversalSettings state) {
     FileUploadSettings settings = new FileUploadSettings(state);
     noUnzip.setSelected(settings.isNoUnzip());
+    fileDuplicationCheck.setSelected(settings.isDuplicationCheck());
     packageOnly.setSelected(settings.isPackagesOnly());
     qtiPackage.setSelected(settings.isQtiPackagesOnly());
     scormPackage.setSelected(settings.isScormPackagesOnly());
@@ -156,6 +160,7 @@ public class FileUploadSettingsPanel extends UniversalControlSettingPanel {
   public void save(UniversalSettings state) {
     FileUploadSettings settings = new FileUploadSettings(state);
     settings.setNoUnzip(noUnzip.isSelected());
+    settings.setDuplicationCheck(fileDuplicationCheck.isSelected());
     settings.setPackagesOnly(packageOnly.isSelected());
     settings.setQtiPackagesOnly(qtiPackage.isSelected());
     settings.setScormPackagesOnly(scormPackage.isSelected());

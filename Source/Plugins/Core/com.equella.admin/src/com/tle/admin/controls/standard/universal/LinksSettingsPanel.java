@@ -20,12 +20,18 @@ package com.tle.admin.controls.standard.universal;
 
 import com.tle.admin.controls.universal.UniversalControlSettingPanel;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
+import com.tle.common.wizard.controls.universal.handlers.LinkSettings;
+import javax.swing.JCheckBox;
 
 /** @author Aaron */
 @SuppressWarnings("nls")
 public class LinksSettingsPanel extends UniversalControlSettingPanel {
+  private final JCheckBox linkDuplicationCheck =
+      new JCheckBox(getString("links.settings.duplicate.check"));
+
   public LinksSettingsPanel() {
     super();
+    add(linkDuplicationCheck, "span 2");
   }
 
   @Override
@@ -35,7 +41,8 @@ public class LinksSettingsPanel extends UniversalControlSettingPanel {
 
   @Override
   public void load(UniversalSettings state) {
-    // Nothing to do
+    LinkSettings settings = new LinkSettings(state);
+    linkDuplicationCheck.setSelected(settings.isDuplicationCheck());
   }
 
   @Override
@@ -45,6 +52,7 @@ public class LinksSettingsPanel extends UniversalControlSettingPanel {
 
   @Override
   public void save(UniversalSettings state) {
-    // Nothing to do
+    LinkSettings settings = new LinkSettings(state);
+    settings.setDuplicationCheck(linkDuplicationCheck.isSelected());
   }
 }

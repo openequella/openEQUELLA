@@ -35,6 +35,7 @@ public class FileUploadSettings extends UniversalSettings {
   private static final String KEY_MIMETYPES = "MIMETYPES";
   private static final String RESTRICTFILESIZE = "FILE_RESTRICTSIZE";
   private static final String MAXFILESIZE = "FILE_MAXFILESIZE";
+  private static final String DUPLICATIONCHECK = "FILE_DUPLICATIONCHECK";
 
   public FileUploadSettings(CustomControl wrapped) {
     super(wrapped);
@@ -50,6 +51,14 @@ public class FileUploadSettings extends UniversalSettings {
 
   public void setNoUnzip(boolean noUnzip) {
     wrapped.getAttributes().put(NOUNZIP, noUnzip);
+  }
+
+  public boolean isDuplicationCheck() {
+    return wrapped.getBooleanAttribute(DUPLICATIONCHECK, false);
+  }
+
+  public void setDuplicationCheck(boolean duplicationCheck) {
+    wrapped.getAttributes().put(DUPLICATIONCHECK, duplicationCheck);
   }
 
   public boolean isPackagesOnly() {
