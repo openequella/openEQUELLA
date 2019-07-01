@@ -22,7 +22,7 @@ import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
 
 public class LinkSettings extends UniversalSettings {
-  private static final String DUPLICATIONCHECK = "LINK_DUPLICATIONCHECK";
+  private static final String DUPLICATION_CHECK = "LINK_DUPLICATION_CHECK";
 
   public LinkSettings(CustomControl customControl) {
     super(customControl);
@@ -33,10 +33,10 @@ public class LinkSettings extends UniversalSettings {
   }
 
   public boolean isDuplicationCheck() {
-    return wrapped.getBooleanAttribute(DUPLICATIONCHECK, false);
+    return wrapped.getBooleanAttribute(DUPLICATION_CHECK, false);
   }
 
   public void setDuplicationCheck(boolean duplicationCheck) {
-    wrapped.getAttributes().put(DUPLICATIONCHECK, duplicationCheck);
+    wrapped.getAttributes().put(DUPLICATION_CHECK, duplicationCheck);
   }
 }
