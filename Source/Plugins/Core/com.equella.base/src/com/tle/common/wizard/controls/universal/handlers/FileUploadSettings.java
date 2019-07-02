@@ -25,16 +25,17 @@ import java.util.List;
 /** @author Aaron */
 @SuppressWarnings("nls")
 public class FileUploadSettings extends UniversalSettings {
-  private static final String NOUNZIP = "FILE_NOUNZIP";
-  private static final String PACKAGEONLY = "FILE_PACKAGEONLY";
-  private static final String QTIPACKAGE = "FILE_QTI_PACKAGE";
-  private static final String SCORMPACKAGE = "FILE_SCORM_PACKAGE";
-  private static final String SUPPRESSTHUMBS = "FILE_SUPPRESS_THUMBS";
-  private static final String SHOWTHUMBOPTION = "FILE_SHOW_THUMB_OPT";
-  private static final String RESTRICTMIME = "FILE_RESTRICTMIME";
+  private static final String NO_UNZIP = "FILE_NOUNZIP";
+  private static final String PACKAGE_ONLY = "FILE_PACKAGEONLY";
+  private static final String QTI_PACKAGE = "FILE_QTI_PACKAGE";
+  private static final String SCORM_PACKAGE = "FILE_SCORM_PACKAGE";
+  private static final String SUPPRESS_THUMBS = "FILE_SUPPRESS_THUMBS";
+  private static final String SHOW_THUMB_OPTION = "FILE_SHOW_THUMB_OPT";
+  private static final String RESTRICT_MIME = "FILE_RESTRICTMIME";
   private static final String KEY_MIMETYPES = "MIMETYPES";
-  private static final String RESTRICTFILESIZE = "FILE_RESTRICTSIZE";
-  private static final String MAXFILESIZE = "FILE_MAXFILESIZE";
+  private static final String RESTRICT_FILE_SIZE = "FILE_RESTRICTSIZE";
+  private static final String MAX_FILE_SIZE = "FILE_MAXFILESIZE";
+  private static final String DUPLICATION_CHECK = "FILE_DUPLICATION_CHECK";
 
   public FileUploadSettings(CustomControl wrapped) {
     super(wrapped);
@@ -45,59 +46,67 @@ public class FileUploadSettings extends UniversalSettings {
   }
 
   public boolean isNoUnzip() {
-    return wrapped.getBooleanAttribute(NOUNZIP, false);
+    return wrapped.getBooleanAttribute(NO_UNZIP, false);
   }
 
   public void setNoUnzip(boolean noUnzip) {
-    wrapped.getAttributes().put(NOUNZIP, noUnzip);
+    wrapped.getAttributes().put(NO_UNZIP, noUnzip);
+  }
+
+  public boolean isDuplicationCheck() {
+    return wrapped.getBooleanAttribute(DUPLICATION_CHECK, false);
+  }
+
+  public void setDuplicationCheck(boolean duplicationCheck) {
+    wrapped.getAttributes().put(DUPLICATION_CHECK, duplicationCheck);
   }
 
   public boolean isPackagesOnly() {
-    return wrapped.getBooleanAttribute(PACKAGEONLY, false);
+    return wrapped.getBooleanAttribute(PACKAGE_ONLY, false);
   }
 
   public void setPackagesOnly(boolean packagesOnly) {
-    wrapped.getAttributes().put(PACKAGEONLY, packagesOnly);
+    wrapped.getAttributes().put(PACKAGE_ONLY, packagesOnly);
   }
 
   public boolean isQtiPackagesOnly() {
-    return wrapped.getBooleanAttribute(QTIPACKAGE, false);
+    return wrapped.getBooleanAttribute(QTI_PACKAGE, false);
   }
 
   public void setQtiPackagesOnly(boolean qtiOnly) {
-    wrapped.getAttributes().put(QTIPACKAGE, qtiOnly);
+    wrapped.getAttributes().put(QTI_PACKAGE, qtiOnly);
   }
 
   public boolean isScormPackagesOnly() {
-    return wrapped.getBooleanAttribute(SCORMPACKAGE, false);
+    return wrapped.getBooleanAttribute(SCORM_PACKAGE, false);
   }
 
   public void setScormPackagesOnly(boolean scormOnly) {
-    wrapped.getAttributes().put(SCORMPACKAGE, scormOnly);
+    wrapped.getAttributes().put(SCORM_PACKAGE, scormOnly);
   }
 
   public boolean isSuppressThumbnails() {
-    return wrapped.getBooleanAttribute(SUPPRESSTHUMBS, false);
+    return wrapped.getBooleanAttribute(SUPPRESS_THUMBS, false);
   }
 
   public void setSuppressThumbnails(boolean suppress) {
-    wrapped.getAttributes().put(SUPPRESSTHUMBS, suppress);
+    wrapped.getAttributes().put(SUPPRESS_THUMBS, suppress);
   }
 
   public boolean isShowThumbOption() {
-    return wrapped.getBooleanAttribute(SHOWTHUMBOPTION, false);
+    return wrapped.getBooleanAttribute(SHOW_THUMB_OPTION, false);
   }
 
   public void setShowThumbOption(boolean showOption) {
-    wrapped.getAttributes().put(SHOWTHUMBOPTION, showOption);
+    wrapped.getAttributes().put(SHOW_THUMB_OPTION, showOption);
   }
 
   public boolean isRestrictByMime() {
-    return wrapped.getBooleanAttribute(RESTRICTMIME, false);
+    return wrapped.getBooleanAttribute(RESTRICT_MIME, false);
   }
 
   public void setRestrictByMime(boolean restrictMime) {
-    wrapped.getAttributes().put(RESTRICTMIME, restrictMime);
+    wrapped.getAttributes().put(RESTRICT_MIME, restrictMime);
   }
 
   public List<String> getMimeTypes() {
@@ -109,15 +118,15 @@ public class FileUploadSettings extends UniversalSettings {
   }
 
   public boolean isRestrictFileSize() {
-    return wrapped.getBooleanAttribute(RESTRICTFILESIZE, false);
+    return wrapped.getBooleanAttribute(RESTRICT_FILE_SIZE, false);
   }
 
   public void setRestrictFileSize(boolean restrictFileSize) {
-    wrapped.getAttributes().put(RESTRICTFILESIZE, restrictFileSize);
+    wrapped.getAttributes().put(RESTRICT_FILE_SIZE, restrictFileSize);
   }
 
   public int getMaxFileSize() {
-    Integer maxFileSize = (Integer) wrapped.getAttributes().get(MAXFILESIZE);
+    Integer maxFileSize = (Integer) wrapped.getAttributes().get(MAX_FILE_SIZE);
     if (maxFileSize != null) {
       return maxFileSize;
     }
@@ -125,7 +134,7 @@ public class FileUploadSettings extends UniversalSettings {
   }
 
   public void setMaxFileSize(int maxFileSize) {
-    wrapped.getAttributes().put(MAXFILESIZE, maxFileSize);
+    wrapped.getAttributes().put(MAX_FILE_SIZE, maxFileSize);
   }
 
   // public boolean isNoScrapbook()
@@ -135,6 +144,6 @@ public class FileUploadSettings extends UniversalSettings {
   //
   // public void setNoScrapbook(boolean noScrapbook)
   // {
-  // wrapped.getAttributes().put(NOUNZIP, noScrapbook);
+  // wrapped.getAttributes().put(NO_UNZIP, noScrapbook);
   // }
 }
