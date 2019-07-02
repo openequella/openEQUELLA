@@ -1120,7 +1120,7 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
           new OMMetaFactoryLocator() {
             @Override
             public OMMetaFactory getOMMetaFactory(String feature) {
-              return new OMLinkedListMetaFactory();
+              return OMLinkedListMetaFactory.INSTANCE;
             }
           });
       axisConfig =
