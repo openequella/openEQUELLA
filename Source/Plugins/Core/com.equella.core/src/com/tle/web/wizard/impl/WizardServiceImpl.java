@@ -64,6 +64,7 @@ import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
 import com.tle.core.guice.BindFactory;
 import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.dao.AttachmentDao;
 import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.service.ItemService;
 import com.tle.core.item.standard.ItemOperationFactory;
@@ -121,6 +122,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -160,6 +162,7 @@ public class WizardServiceImpl
   @Inject private ItemOperationFactory workflowFactory;
   @Inject private CloneFactory cloneFactory;
   @Inject private WizardOperationFactory wizardOpFactory;
+  @Inject private AttachmentDao attachmentDao;
 
   private PluginTracker<WizardScriptObjectContributor> scriptObjectTracker;
 
@@ -728,6 +731,23 @@ public class WizardServiceImpl
       String identifier = prefix + url;
       setDuplicates(
           state, identifier, url, itemService.getItemsWithUrl(url, itemdef, ignoreItem), true);
+    }
+  }
+
+  @Override
+  public void checkDuplicateAttachments(WizardState state, String fileName, String fileUuid) {
+    try {
+      String md5 = fileSystemService.getMD5Checksum(state.getFileHandle(), fileName);
+      List<Attachment> duplicateFileAttachments = attachmentDao.findByMd5Sum(md5, null, true);
+      if (duplicateFileAttachments.size() > 0) {
+        List<ItemId> list =
+            duplicateFileAttachments.stream()
+                .map(attachment -> attachment.getItem().getItemId())
+                .collect(Collectors.toList());
+        setDuplicates(state, fileUuid, fileName, list, true);
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
 

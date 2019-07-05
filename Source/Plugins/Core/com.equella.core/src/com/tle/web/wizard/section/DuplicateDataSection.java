@@ -144,6 +144,12 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
 
   private boolean isInvalid(Collection<DuplicateData> duplicateURLs) {
     for (DuplicateData data : duplicateURLs) {
+
+      if (!data.isCanAccept()) {
+        return false;
+      } else {
+        data.setAccepted(true);
+      }
       if (data.isVisible() && !data.isAccepted()) {
         return true;
       }

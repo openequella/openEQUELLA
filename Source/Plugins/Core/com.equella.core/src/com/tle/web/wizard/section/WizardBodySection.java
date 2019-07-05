@@ -59,6 +59,7 @@ import com.tle.web.wizard.section.model.WizardBodyModel.Tab;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 public class WizardBodySection extends WizardSection<WizardBodyModel> implements AjaxPageUpdate {
@@ -414,6 +415,19 @@ public class WizardBodySection extends WizardSection<WizardBodyModel> implements
       current++;
     }
     return false;
+  }
+
+  public void goToDuplicateDataTab(SectionInfo info) {
+    WizardBodyModel model = getModel(info);
+    List<SectionTab> tabs = getTabs(info);
+
+    SectionTab duplicateTab =
+        tabs.stream()
+            .filter(tab -> tab.getSectionName().equals("dups"))
+            .collect(Collectors.toList())
+            .get(0);
+    int i = tabs.indexOf(duplicateTab);
+    model.setCurrentTab(i);
   }
 
   public void setModalDisplay(
