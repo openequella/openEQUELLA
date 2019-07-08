@@ -107,13 +107,23 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
 
     boolean canAcceptAny = false;
     boolean mustChangeAny = false;
+    // Add two properties to indicate there is textfield/attachment duplicate information to be
+    // displayed
+    boolean attachmentDupIncluded = false;
+    boolean textfieldDupIncluded = false;
+
     for (Map.Entry<String, DuplicateData> entry : duplicated.entrySet()) {
       DuplicateData data = entry.getValue();
 
-      if (data.isCanAccept()) {
-        canAcceptAny = true;
+      if (!data.isCheckAttachmentDup()) {
+        if (data.isCanAccept()) {
+          canAcceptAny = true;
+        } else {
+          mustChangeAny = true;
+        }
+        textfieldDupIncluded = true;
       } else {
-        mustChangeAny = true;
+        attachmentDupIncluded = true;
       }
 
       duplicateCheckboxes.setValue(context, entry.getKey(), data.isAccepted());
@@ -124,6 +134,8 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
     model.setDuplicateData(views);
     model.setCanAcceptAny(canAcceptAny);
     model.setMustChangeAny(mustChangeAny);
+    model.setAttachmentDupIncluded(attachmentDupIncluded);
+    model.setTextfieldDupIncludeded(textfieldDupIncluded);
 
     Map<ItemId, LanguageBundle> itemNames = itemService.getItemNames(allItemIds);
     for (DuplicateDataView view : views) {
@@ -144,12 +156,6 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
 
   private boolean isInvalid(Collection<DuplicateData> duplicateURLs) {
     for (DuplicateData data : duplicateURLs) {
-
-      if (!data.isCanAccept()) {
-        return false;
-      } else {
-        data.setAccepted(true);
-      }
       if (data.isVisible() && !data.isAccepted()) {
         return true;
       }
@@ -190,6 +196,8 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
 
     protected boolean canAcceptAny;
     protected boolean mustChangeAny;
+    private boolean attachmentDupIncluded;
+    private boolean textfieldDupIncluded;
 
     public void setDuplicateData(Collection<DuplicateDataView> duplicateData) {
       this.duplicateData = duplicateData;
@@ -207,8 +215,24 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
       this.canAcceptAny = canAcceptAny;
     }
 
+    public void setAttachmentDupIncluded(boolean attachmentDupIncluded) {
+      this.attachmentDupIncluded = attachmentDupIncluded;
+    }
+
+    public void setTextfieldDupIncludeded(boolean textfieldDupIncluded) {
+      this.textfieldDupIncluded = textfieldDupIncluded;
+    }
+
     public boolean isMustChangeAny() {
       return mustChangeAny;
+    }
+
+    public boolean isAttachmentDupIncluded() {
+      return attachmentDupIncluded;
+    }
+
+    public boolean isTextfieldDupIncluded() {
+      return textfieldDupIncluded;
     }
 
     public void setMustChangeAny(boolean mustChangeAny) {
@@ -273,6 +297,10 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
 
       public boolean isCanAccept() {
         return dupe.isCanAccept();
+      }
+
+      public boolean isCheckAttachmentDup() {
+        return dupe.isCheckAttachmentDup();
       }
     }
 

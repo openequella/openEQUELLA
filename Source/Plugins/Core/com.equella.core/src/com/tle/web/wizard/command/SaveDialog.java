@@ -34,7 +34,6 @@ import com.tle.web.sections.equella.dialog.EquellaDialog;
 import com.tle.web.sections.equella.receipt.ReceiptService;
 import com.tle.web.sections.equella.render.ButtonRenderer.ButtonType;
 import com.tle.web.sections.events.RenderContext;
-import com.tle.web.sections.events.SectionEvent;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.OverrideHandler;
@@ -50,13 +49,11 @@ import com.tle.web.sections.standard.dialog.model.DialogModel;
 import com.tle.web.wizard.WebWizardService;
 import com.tle.web.wizard.WizardService;
 import com.tle.web.wizard.WizardState;
-import com.tle.web.wizard.section.SectionTab;
 import com.tle.web.wizard.section.WizardBodySection;
 import com.tle.web.wizard.section.WizardSectionInfo;
-import com.tle.web.wizard.section.model.WizardBodyModel;
+import com.tle.web.wizard.section.model.DuplicateData;
 import com.tle.web.workflow.tasks.ModerationService;
 import java.util.Collection;
-import java.util.List;
 import javax.inject.Inject;
 
 @SuppressWarnings("nls")
@@ -183,20 +180,18 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
         prompt = LABEL_PUBLISH_NOMOD_MSG;
         buttons.add(publish);
       }
-    }
-
-    if (state.getDuplicateData().size() > 0 && savable) {
-      state
-          .getDuplicateData()
-          .values()
-          .forEach(
-              duplicateData -> {
-                duplicateData
-                    .getItems()
-                    .forEach(itemId -> System.out.println("item received: " + itemId));
-              });
-      prompt = LABEL_CHECK_DUPLICATION;
-      buttons.add(checkDuplication);
+      // Add this button when a file attachment has duplicates and current tab isn't the duplicate
+      // data tab
+      if (state.getDuplicateData().values().stream()
+          .anyMatch(DuplicateData::isCheckAttachmentDup)) {
+        int currentTabIndex = wizardBodySection.getCurrentTab(context);
+        String currentTabSectionName =
+            wizardBodySection.getTabs(context).get(currentTabIndex).getSectionName();
+        if (!currentTabSectionName.equals("dups")) {
+          buttons.add(checkDuplication);
+          model.setDuplicateInfo(LABEL_CHECK_DUPLICATION);
+        }
+      }
     }
 
     buttons.add(draft);
@@ -211,26 +206,6 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
   @Override
   protected Collection<Button> collectFooterActions(RenderContext context) {
     return getModel(context).getActions();
-  }
-
-  @Override
-  public void registered(String id, SectionTree tree) {
-    super.registered(id, tree);
-    checkDuplication.setClickHandler(events.getNamedHandler("viewDuplicate"));
-    System.out.println("register dup");
-  }
-
-  @EventHandlerMethod(priority = SectionEvent.PRIORITY_HIGH)
-  public void viewDuplicate(SectionInfo info) {
-    System.out.println("view dup");
-    WizardBodyModel model = wizardBodySection.getModel(info);
-    List<SectionTab> tabs = wizardBodySection.getTabs(info);
-    SectionTab oldTab = tabs.get(model.getCurrentTab());
-    oldTab.getTabSection().leavingTab(info, oldTab);
-    SectionTab tab = tabs.get(1);
-    tab.setCurrent(true);
-    model.setCurrentTab(1);
-    closeDialog(info);
   }
 
   @EventHandlerMethod
@@ -250,11 +225,12 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
     if (doCheck) {
       return;
     }
-
+    // Respond to the event of clicking view duplicates
     if (doViewDuplicate) {
       wizardBodySection.goToDuplicateDataTab(info);
       return;
     }
+
     boolean stayInWizard = !state.isEntryThroughEdit() && !state.isNewItem();
     if (doSubmit) {
       ops = new WorkflowOperation[] {workflowFactory.submit(message)};
@@ -276,6 +252,16 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
     private Label prompt;
     private boolean showMessage;
     private Collection<Button> actions;
+    // Add a new property used to display the duplicate prompt message
+    private Label duplicateInfo;
+
+    public Label getDuplicateInfo() {
+      return duplicateInfo;
+    }
+
+    public void setDuplicateInfo(Label duplicateInfo) {
+      this.duplicateInfo = duplicateInfo;
+    }
 
     public Label getPrompt() {
       return prompt;

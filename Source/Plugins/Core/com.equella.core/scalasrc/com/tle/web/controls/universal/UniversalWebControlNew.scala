@@ -22,7 +22,7 @@ import java.util.UUID
 
 import com.dytech.edge.wizard.beans.control.CustomControl
 import com.google.common.io.ByteStreams
-import com.tle.beans.item.attachments.IAttachment
+import com.tle.beans.item.attachments.{FileAttachment, IAttachment}
 import com.tle.common.i18n.CurrentLocale
 import com.tle.common.wizard.controls.universal.UniversalSettings
 import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings
@@ -67,6 +67,7 @@ import com.tle.web.viewurl.attachments.{
   AttachmentResourceService,
   AttachmentTreeService
 }
+import com.tle.web.wizard.WizardService
 import com.tle.web.wizard.controls.{AbstractWebControl, CCustomControl, WebControlModel}
 import com.tle.web.wizard.impl.WebRepository
 import com.tle.web.wizard.render.WizardFreemarkerFactory
@@ -111,6 +112,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
   @Inject var attachmentResourceService: AttachmentResourceService = _
   @Inject var thumbnailService: ThumbnailService                   = _
   @Inject var videoService: VideoService                           = _
+  @Inject var wizardService: WizardService                         = _
 
   var ctx: AfterRegister = _
 
@@ -241,6 +243,24 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
             (uploadedAttachments - definition.getMaxFiles).asInstanceOf[Object]
           )
         )
+      }
+
+      // Do duplicate checks within validate so that editing, cloning or creating new version can keep the duplicate information
+      val duplicateCheck =
+        dialog.getControlConfiguration.getBooleanAttribute("FILE_DUPLICATION_CHECK")
+      if (duplicateCheck) {
+        val attachments = dialog.getAttachments.asScala
+        if (attachments.nonEmpty) {
+          val state = repository.getState
+          // For file attachments
+          val fileAttachments =
+            attachments.filter(_.isInstanceOf[FileAttachment]).map(_.asInstanceOf[FileAttachment])
+          for (fileAttachment <- fileAttachments) {
+            wizardService.checkDuplicateAttachments(state,
+                                                    fileAttachment.getFilename,
+                                                    fileAttachment.getUuid)
+          }
+        }
       }
     }
 

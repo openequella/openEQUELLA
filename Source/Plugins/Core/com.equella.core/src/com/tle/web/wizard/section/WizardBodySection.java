@@ -420,14 +420,15 @@ public class WizardBodySection extends WizardSection<WizardBodyModel> implements
   public void goToDuplicateDataTab(SectionInfo info) {
     WizardBodyModel model = getModel(info);
     List<SectionTab> tabs = getTabs(info);
-
+    // The duplicate data tab has a hardcoded name 'dups' and it's impossible to have more than 1 of
+    // this tab
     SectionTab duplicateTab =
         tabs.stream()
             .filter(tab -> tab.getSectionName().equals("dups"))
             .collect(Collectors.toList())
             .get(0);
-    int i = tabs.indexOf(duplicateTab);
-    model.setCurrentTab(i);
+    int duplicateTabPosition = tabs.indexOf(duplicateTab);
+    model.setCurrentTab(duplicateTabPosition);
   }
 
   public void setModalDisplay(

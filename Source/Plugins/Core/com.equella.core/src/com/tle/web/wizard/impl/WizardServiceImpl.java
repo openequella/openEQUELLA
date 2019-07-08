@@ -709,7 +709,8 @@ public class WizardServiceImpl
                 identifier,
                 value,
                 freeTextService.getKeysForNodeValue(uuid, state.getItemDefinition(), xpath, value),
-                canAccept);
+                canAccept,
+                false);
       }
     }
     return isUnique;
@@ -730,7 +731,12 @@ public class WizardServiceImpl
     for (String url : urls) {
       String identifier = prefix + url;
       setDuplicates(
-          state, identifier, url, itemService.getItemsWithUrl(url, itemdef, ignoreItem), true);
+          state,
+          identifier,
+          url,
+          itemService.getItemsWithUrl(url, itemdef, ignoreItem),
+          true,
+          false);
     }
   }
 
@@ -744,7 +750,7 @@ public class WizardServiceImpl
             duplicateFileAttachments.stream()
                 .map(attachment -> attachment.getItem().getItemId())
                 .collect(Collectors.toList());
-        setDuplicates(state, fileUuid, fileName, list, true);
+        setDuplicates(state, fileUuid, fileName, list, true, true);
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -765,14 +771,16 @@ public class WizardServiceImpl
       String identifier,
       String value,
       List<? extends ItemKey> list,
-      boolean canAccept) {
+      boolean canAccept,
+      boolean isAttachmentDuplicate) {
     Map<String, DuplicateData> duplicatesMap = state.getDuplicateData();
 
     boolean isUnique = Check.isEmpty(list);
     if (isUnique) {
       duplicatesMap.remove(identifier);
     } else {
-      duplicatesMap.put(identifier, new DuplicateData(identifier, value, list, canAccept));
+      duplicatesMap.put(
+          identifier, new DuplicateData(identifier, value, list, canAccept, isAttachmentDuplicate));
     }
     return isUnique;
   }

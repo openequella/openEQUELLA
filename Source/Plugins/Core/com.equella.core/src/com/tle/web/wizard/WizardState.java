@@ -128,14 +128,6 @@ public class WizardState implements WizardStateInterface {
     return referrer;
   }
 
-  public boolean getDuplicateCheck() {
-    return duplicateCheck;
-  }
-
-  public void setDuplicateCheck(boolean duplicateCheck) {
-    duplicateCheck = duplicateCheck;
-  }
-
   @Override
   public ModifiableAttachments getAttachments() {
     return new ModifiableAttachments(getItem());

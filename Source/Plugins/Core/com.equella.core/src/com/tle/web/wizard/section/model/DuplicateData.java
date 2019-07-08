@@ -35,9 +35,15 @@ public class DuplicateData implements Serializable {
 
   private boolean visible;
   private boolean accepted;
+  // Add a new property to indicate this instance includes attachment duplicate information
+  private boolean checkAttachmentDup;
 
   public DuplicateData(
-      String identifier, String value, List<? extends ItemKey> items, boolean canAccept) {
+      String identifier,
+      String value,
+      List<? extends ItemKey> items,
+      boolean canAccept,
+      boolean checkAttachmentDup) {
     this.identifier = identifier;
     this.value = value;
     this.items = new ArrayList<ItemId>();
@@ -45,7 +51,11 @@ public class DuplicateData implements Serializable {
       this.items.add(new ItemId(itemKey.getUuid(), itemKey.getVersion()));
     }
     this.canAccept = canAccept;
-
+    this.checkAttachmentDup = checkAttachmentDup;
+    // Duplicate checks coming from attachments don't require users to accept or not
+    if (checkAttachmentDup) {
+      this.accepted = true;
+    }
     visible = true;
   }
 
@@ -63,6 +73,10 @@ public class DuplicateData implements Serializable {
 
   public boolean isAccepted() {
     return accepted;
+  }
+
+  public boolean isCheckAttachmentDup() {
+    return checkAttachmentDup;
   }
 
   public void setAccepted(boolean accepted) {

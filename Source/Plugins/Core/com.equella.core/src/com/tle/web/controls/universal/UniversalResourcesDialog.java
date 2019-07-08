@@ -24,7 +24,6 @@ import com.google.common.collect.Maps;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.attachments.Attachment;
-import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
@@ -541,14 +540,6 @@ public class UniversalResourcesDialog
   @Override
   public void addAttachment(SectionInfo info, Attachment attachment) {
     repository.getAttachments().addAttachment(attachment);
-    if (isDuplicateCheck()) {
-      if (attachment instanceof FileAttachment) {
-        wizardService.checkDuplicateAttachments(
-            repository.getState(),
-            ((FileAttachment) attachment).getFilename(),
-            attachment.getUuid());
-      }
-    }
   }
 
   @Override
@@ -582,19 +573,6 @@ public class UniversalResourcesDialog
     Attachment attachment = getAttachmentByUuid(info, attachmentUuid);
     AttachmentHandler handler = findHandlerForAttachment(attachment);
     handler.remove(info, attachment, false);
-    if (isDuplicateCheck()) {
-      if (attachment instanceof FileAttachment) {
-        repository.getState().getDuplicateData().remove(attachmentUuid);
-      }
-    }
-  }
-
-  private boolean isDuplicateCheck() {
-    if (getControlConfiguration().getBooleanAttribute("FILE_DUPLICATION_CHECK")) {
-      repository.getState().setDuplicateCheck(true);
-      return true;
-    }
-    return false;
   }
 
   @Override
