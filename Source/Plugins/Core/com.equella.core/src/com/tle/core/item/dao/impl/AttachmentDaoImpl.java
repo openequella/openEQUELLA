@@ -29,8 +29,6 @@ import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericDaoImpl;
 import com.tle.core.item.dao.AttachmentDao;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.inject.Singleton;
 
@@ -46,16 +44,9 @@ public class AttachmentDaoImpl extends GenericDaoImpl<Attachment, Long> implemen
   @SuppressWarnings("unchecked")
   public List<Attachment> findByMd5Sum(
       final String md5Sum, ItemDefinition collection, boolean ignoreDeletedRejectedSuspenedItems) {
-    ArrayList<String> paraNames = new ArrayList<>(Arrays.asList("md5sum", "institution"));
-    ArrayList<Object> values = new ArrayList<>(Arrays.asList(md5Sum, CurrentInstitution.get()));
     String hql =
         "SELECT a FROM Item i LEFT JOIN i.attachments a WHERE a.md5sum = :md5sum"
-            + " AND i.institution = :institution";
-    if (collection != null) {
-      hql += " AND i.itemDefinition = :collection";
-      paraNames.add("collection");
-      values.add(collection);
-    }
+            + " AND i.itemDefinition = :collection AND i.institution = :institution";
     if (ignoreDeletedRejectedSuspenedItems) {
       hql += " AND i.status NOT IN ('REJECTED', 'SUSPENDED', 'DELETED')";
     }
@@ -64,8 +55,8 @@ public class AttachmentDaoImpl extends GenericDaoImpl<Attachment, Long> implemen
         getHibernateTemplate()
             .findByNamedParam(
                 hql,
-                paraNames.toArray(new String[paraNames.size()]),
-                values.toArray(new Object[values.size()]));
+                new String[] {"md5sum", "collection", "institution"},
+                new Object[] {md5Sum, collection, CurrentInstitution.get()});
 
     return attachments;
   }

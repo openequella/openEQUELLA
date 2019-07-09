@@ -13,7 +13,7 @@
       <p>${b.key("duplicatedatasection.mustchange")}</p>
     </#if>
     <#list m.duplicateData as duplicateData>
-      <#if !duplicateData.checkAttachmentDup>
+      <#if !duplicateData.attachmentDupCheck>
         <#if duplicateData.visible>
           <div class="input checkbox">
             <label>
@@ -37,9 +37,9 @@
 
   <#if m.attachmentDupIncluded>
     <br/>
-    <h4>${b.key("duplicatedatasection.preamble1")}</h4>
+    <h4>${b.key("duplicatedatasection.preambleforattachment")}</h4>
     <#list m.duplicateData as duplicateData>
-      <#if duplicateData.checkAttachmentDup>
+      <#if duplicateData.attachmentDupCheck>
         <label>${b.key("duplicatedatasection.usedby", [duplicateData.value])}</label>
         <ul class="blue">
           <#list duplicateData.items as item>

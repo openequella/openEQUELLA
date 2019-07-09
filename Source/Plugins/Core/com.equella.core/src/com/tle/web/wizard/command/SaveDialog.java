@@ -140,6 +140,7 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
 
     submit.setComponentAttribute(ButtonType.class, ButtonType.SAVE);
     publish.setComponentAttribute(ButtonType.class, ButtonType.SAVE);
+
     super.treeFinished(id, tree);
   }
 
@@ -164,14 +165,11 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
     final Label prompt;
 
     final SaveDialogModel model = getModel(context);
-    final WizardState state =
-        context.getAttributeForClass(WizardSectionInfo.class).getWizardState();
-    final boolean savable = wizardBodySection.isSaveableApartFromCurrent(context);
-    if (!savable) {
+    if (!wizardBodySection.isSaveableApartFromCurrent(context)) {
       prompt = LABEL_UNFINISHEDMSG;
       buttons.add(complete);
     } else {
-
+      WizardState state = context.getAttributeForClass(WizardSectionInfo.class).getWizardState();
       if (state.getItemDefinition().getWorkflow() != null) {
         prompt = LABEL_PUBLISHMSG;
         buttons.add(submit);
@@ -180,10 +178,10 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
         prompt = LABEL_PUBLISH_NOMOD_MSG;
         buttons.add(publish);
       }
-      // Add this button when a file attachment has duplicates and current tab isn't the duplicate
-      // data tab
+      // Add this button when attachments have duplicates and current tab isn't the duplicate data
+      // tab
       if (state.getDuplicateData().values().stream()
-          .anyMatch(DuplicateData::isCheckAttachmentDup)) {
+          .anyMatch(DuplicateData::isAttachmentDupCheck)) {
         int currentTabIndex = wizardBodySection.getCurrentTab(context);
         String currentTabSectionName =
             wizardBodySection.getTabs(context).get(currentTabIndex).getSectionName();
@@ -193,7 +191,6 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
         }
       }
     }
-
     buttons.add(draft);
     buttons.add(cancel);
 
@@ -230,7 +227,6 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
       wizardBodySection.goToDuplicateDataTab(info);
       return;
     }
-
     boolean stayInWizard = !state.isEntryThroughEdit() && !state.isNewItem();
     if (doSubmit) {
       ops = new WorkflowOperation[] {workflowFactory.submit(message)};

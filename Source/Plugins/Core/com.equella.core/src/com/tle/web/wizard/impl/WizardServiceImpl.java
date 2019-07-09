@@ -744,7 +744,8 @@ public class WizardServiceImpl
   public void checkDuplicateAttachments(WizardState state, String fileName, String fileUuid) {
     try {
       String md5 = fileSystemService.getMD5Checksum(state.getFileHandle(), fileName);
-      List<Attachment> duplicateFileAttachments = attachmentDao.findByMd5Sum(md5, null, true);
+      List<Attachment> duplicateFileAttachments =
+          attachmentDao.findByMd5Sum(md5, state.getItemDefinition(), true);
       if (duplicateFileAttachments.size() > 0) {
         List<ItemId> list =
             duplicateFileAttachments.stream()

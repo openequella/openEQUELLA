@@ -115,7 +115,7 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
     for (Map.Entry<String, DuplicateData> entry : duplicated.entrySet()) {
       DuplicateData data = entry.getValue();
 
-      if (!data.isCheckAttachmentDup()) {
+      if (!data.isAttachmentDupCheck()) {
         if (data.isCanAccept()) {
           canAcceptAny = true;
         } else {
@@ -135,7 +135,7 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
     model.setCanAcceptAny(canAcceptAny);
     model.setMustChangeAny(mustChangeAny);
     model.setAttachmentDupIncluded(attachmentDupIncluded);
-    model.setTextfieldDupIncludeded(textfieldDupIncluded);
+    model.setTextfieldDupIncluded(textfieldDupIncluded);
 
     Map<ItemId, LanguageBundle> itemNames = itemService.getItemNames(allItemIds);
     for (DuplicateDataView view : views) {
@@ -219,7 +219,7 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
       this.attachmentDupIncluded = attachmentDupIncluded;
     }
 
-    public void setTextfieldDupIncludeded(boolean textfieldDupIncluded) {
+    public void setTextfieldDupIncluded(boolean textfieldDupIncluded) {
       this.textfieldDupIncluded = textfieldDupIncluded;
     }
 
@@ -299,8 +299,8 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
         return dupe.isCanAccept();
       }
 
-      public boolean isCheckAttachmentDup() {
-        return dupe.isCheckAttachmentDup();
+      public boolean isAttachmentDupCheck() {
+        return dupe.isAttachmentDupCheck();
       }
     }
 
