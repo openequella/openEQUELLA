@@ -161,7 +161,7 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
   @Override
   protected SectionRenderable getRenderableContents(RenderContext context) {
     final Collection<Button> buttons = Lists.newArrayList();
-    Label prompt;
+    final Label prompt;
 
     final SaveDialogModel model = getModel(context);
     final WizardState state =

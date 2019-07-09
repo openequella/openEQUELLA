@@ -97,7 +97,6 @@ public class WizardState implements WizardStateInterface {
   private final Operation operation;
   // Can't be final due to clone
   private /* final */ List<DRMPage> drm = new ArrayList<DRMPage>();
-  private boolean duplicateCheck = false;
   private /* final */ Map<String, DuplicateData> duplicateData =
       new HashMap<String, DuplicateData>();
   private /* final */ List<UnsavedEditOperation> unsavedEdits =

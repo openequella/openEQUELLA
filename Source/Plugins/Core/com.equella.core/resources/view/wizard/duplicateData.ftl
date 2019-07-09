@@ -17,12 +17,13 @@
         <#if duplicateData.visible>
           <div class="input checkbox">
             <label>
-            <#if duplicateData.canAccept>
-              <@render s.getCheckbox(_info, duplicateData.identifier)/>
-            <#else>
-              <span class="mandatory">${b.key("duplicatedatasection.mustchangesymbol")}</span>
-            </#if>
-            ${b.key("duplicatedatasection.usedby", [duplicateData.value])}</label>
+              <#if duplicateData.canAccept>
+                <@render s.getCheckbox(_info, duplicateData.identifier)/>
+              <#else>
+                <span class="mandatory">${b.key("duplicatedatasection.mustchangesymbol")}</span>
+              </#if>
+              <span>${b.key("duplicatedatasection.usedby", [duplicateData.value])}</span>
+            </label>
             <ul class="blue">
               <#list duplicateData.items as item>
                 <li><@render item.link/></li>
