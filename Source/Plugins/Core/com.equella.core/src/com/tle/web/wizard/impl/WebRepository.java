@@ -268,7 +268,7 @@ public class WebRepository implements LERepository {
   public FileInfo uploadStream(String filename, InputStream inp, boolean calcMd5)
       throws IOException {
     try {
-      return fsys.write(stagingHandle, filename, inp, false);
+      return fsys.write(stagingHandle, filename, inp, false, calcMd5);
     } catch (IOException io) {
       throw io;
     } catch (Exception ex) {
