@@ -66,7 +66,7 @@ public interface FreetextIndex {
   /** @return Collection of value/count pairs */
   Multimap<String, Pair<String, Integer>> facetCount(Search search, Collection<String> fields);
 
-  MatrixResults matrixSearch(Search searchRequest, List<String> fields, boolean countOnly);
+  MatrixResults matrixSearch(Search searchRequest, List<String> fields, boolean countOnly, boolean searchAttachments);
 
   ItemIndex<? extends FreetextResult> getIndexer(String indexItem);
 
