@@ -164,7 +164,7 @@ public class FreetextQueryDelegate extends SimpleTypeQuery {
     Search search = setupSearchRequest(queryStrings, 1);
     List<String> fields = getFields(queryStrings[0]);
     ArrayList<Object[]> resultSet = new ArrayList<Object[]>();
-    MatrixResults results = freetextIndex.matrixSearch(search, fields, false);
+    MatrixResults results = freetextIndex.matrixSearch(search, fields, false, false);
     List<MatrixEntry> entries = results.getEntries();
     for (MatrixEntry entry : entries) {
       List<ItemIdKey> items = entry.getItems();
@@ -198,7 +198,7 @@ public class FreetextQueryDelegate extends SimpleTypeQuery {
     Search search = setupSearchRequest(queryStrings, 1);
     List<String> fields = getFields(queryStrings[0]);
     List<Object[]> resultSet = new ArrayList<Object[]>();
-    MatrixResults results = freetextIndex.matrixSearch(search, fields, true);
+    MatrixResults results = freetextIndex.matrixSearch(search, fields, true, false);
     List<MatrixEntry> entries = results.getEntries();
     for (MatrixEntry entry : entries) {
       List<String> fieldValues = entry.getFieldValues();
