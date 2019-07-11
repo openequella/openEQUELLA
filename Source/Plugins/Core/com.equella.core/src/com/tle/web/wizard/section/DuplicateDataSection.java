@@ -69,7 +69,7 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
     return PROP_NAME;
   }
 
-  @DirectEvent(priority = SectionEvent.PRIORITY_AFTER_EVENTS)
+  @DirectEvent(priority = SectionEvent.PRIORITY_NORMAL)
   public void submit(SectionInfo info) throws Exception {
     Model model = getModel(info);
     if (model.isSubmit()) {
