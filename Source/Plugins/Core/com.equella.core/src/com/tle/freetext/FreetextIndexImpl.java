@@ -243,7 +243,8 @@ public class FreetextIndexImpl
   }
 
   @Override
-  public MatrixResults matrixSearch(Search search, List<String> fields, boolean countOnly, boolean searchAttachments) {
+  public MatrixResults matrixSearch(
+      Search search, List<String> fields, boolean countOnly, boolean searchAttachments) {
     return getIndexer(Search.INDEX_ITEM).matrixSearch(search, fields, countOnly, searchAttachments);
   }
 

@@ -597,7 +597,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           public Multimap<String, Pair<String, Integer>> search(IndexSearcher searcher)
               throws IOException {
             final IndexReader reader = searcher.getIndexReader();
-            final OpenBitSet filteredBits = searchRequestToBitSet(searchreq, searcher, reader, false);
+            final OpenBitSet filteredBits =
+                searchRequestToBitSet(searchreq, searcher, reader, false);
 
             final Multimap<String, Pair<String, Integer>> rv = ArrayListMultimap.create();
             for (String field : fields) {
@@ -623,14 +624,18 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   }
 
   public MatrixResults matrixSearch(
-      @Nullable final Search searchreq, final List<String> fields, final boolean countOnly, final boolean searchAttachments) {
+      @Nullable final Search searchreq,
+      final List<String> fields,
+      final boolean countOnly,
+      final boolean searchAttachments) {
     return search(
         new Searcher<MatrixResults>() {
           @Override
           public MatrixResults search(IndexSearcher searcher) throws IOException {
             IndexReader reader = searcher.getIndexReader();
 
-            OpenBitSet filteredBits = searchRequestToBitSet(searchreq, searcher, reader, searchAttachments);
+            OpenBitSet filteredBits =
+                searchRequestToBitSet(searchreq, searcher, reader, searchAttachments);
             int maxDoc = reader.maxDoc();
 
             Map<String, Map<String, List<TermBitSet>>> xpathMap =
@@ -698,7 +703,10 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   }
 
   private OpenBitSet searchRequestToBitSet(
-      @Nullable final Search searchreq, IndexSearcher searcher, IndexReader reader, boolean searchAttachments)
+      @Nullable final Search searchreq,
+      IndexSearcher searcher,
+      IndexReader reader,
+      boolean searchAttachments)
       throws IOException {
     if (searchreq != null) {
       Filter filters = getFilter(searchreq);
