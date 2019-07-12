@@ -69,7 +69,9 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
     return PROP_NAME;
   }
 
-  @DirectEvent(priority = SectionEvent.PRIORITY_NORMAL)
+  // Make sure submit gets executed after the page check event(line 127 of PageSection),
+  // and before other events whose  priorities are PRIORITY_NORMAL
+  @DirectEvent(priority = SectionEvent.PRIORITY_AFTER_EVENTS_BEFORE_NORMAL)
   public void submit(SectionInfo info) throws Exception {
     Model model = getModel(info);
     if (model.isSubmit()) {
