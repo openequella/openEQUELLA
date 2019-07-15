@@ -49,6 +49,7 @@ import com.tle.web.sections.standard.dialog.model.DialogModel;
 import com.tle.web.wizard.WebWizardService;
 import com.tle.web.wizard.WizardService;
 import com.tle.web.wizard.WizardState;
+import com.tle.web.wizard.section.DuplicateDataSection;
 import com.tle.web.wizard.section.WizardBodySection;
 import com.tle.web.wizard.section.WizardSectionInfo;
 import com.tle.web.wizard.section.model.DuplicateData;
@@ -74,9 +75,9 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
   private static Label LABEL_PUBLISH_NOMOD_MSG;
 
   @PlugKey("command.save.successreceipt")
-  private static Label SUCCESS_RECEIPT_LABEL;
+  private static Label LABEL_SUCCESS_RECEIPT;
 
-  @PlugKey("command.save.checkduplicationmsg")
+  @PlugKey("command.save.checkduplicatemessage")
   private static Label LABEL_CHECK_DUPLICATION;
 
   @Inject private ModerationService moderationService;
@@ -111,8 +112,8 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
   private Button publish;
 
   @Component
-  @PlugKey("command.save.checkduplication")
-  private Button checkDuplication;
+  @PlugKey("command.save.checkduplicate")
+  private Button checkDuplicate;
 
   public SaveDialog() {
     setAjax(true);
@@ -136,7 +137,7 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
     complete.setClickHandler(new OverrideHandler(execFunc, "check", ""));
     submit.setClickHandler(new OverrideHandler(execFunc, "submit", message.createGetExpression()));
     publish.setClickHandler(new OverrideHandler(execFunc, "submit", ""));
-    checkDuplication.setClickHandler(new OverrideHandler(execFunc, "viewDuplicate", ""));
+    checkDuplicate.setClickHandler(new OverrideHandler(execFunc, "viewDuplicate", ""));
 
     submit.setComponentAttribute(ButtonType.class, ButtonType.SAVE);
     publish.setComponentAttribute(ButtonType.class, ButtonType.SAVE);
@@ -178,15 +179,15 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
         prompt = LABEL_PUBLISH_NOMOD_MSG;
         buttons.add(publish);
       }
-      // Add this button when attachments have duplicates and current tab isn't the duplicate data
-      // tab
+      // Add this button when attachments have duplicates,
+      // and current tab isn't the duplicate data tab
       if (state.getDuplicateData().values().stream()
           .anyMatch(DuplicateData::isAttachmentDupCheck)) {
         int currentTabIndex = wizardBodySection.getCurrentTab(context);
         String currentTabSectionName =
             wizardBodySection.getTabs(context).get(currentTabIndex).getSectionName();
-        if (!currentTabSectionName.equals("dups")) {
-          buttons.add(checkDuplication);
+        if (!currentTabSectionName.equals(DuplicateDataSection.PROP_NAME)) {
+          buttons.add(checkDuplicate);
           model.setDuplicateInfo(LABEL_CHECK_DUPLICATION);
         }
       }
@@ -237,7 +238,7 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
 
     if (!stayInWizard) {
       webWizardService.forwardToViewItem(info, state);
-      receiptService.setReceipt(SUCCESS_RECEIPT_LABEL);
+      receiptService.setReceipt(LABEL_SUCCESS_RECEIPT);
     } else {
       wizardService.reload(state, false);
       moderationService.setEditing(info, false);
@@ -248,7 +249,7 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
     private Label prompt;
     private boolean showMessage;
     private Collection<Button> actions;
-    // Add a new property used to display the duplicate prompt message
+    // Property used to display the duplicate prompt message
     private Label duplicateInfo;
 
     public Label getDuplicateInfo() {

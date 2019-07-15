@@ -125,6 +125,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.apache.log4j.Logger;
 
 /**
  * @author jmaginnis
@@ -165,6 +166,8 @@ public class WizardServiceImpl
   @Inject private AttachmentDao attachmentDao;
 
   private PluginTracker<WizardScriptObjectContributor> scriptObjectTracker;
+
+  private static final Logger LOGGER = Logger.getLogger(WizardServiceImpl.class);
 
   public WizardServiceImpl() {
     super();
@@ -754,7 +757,7 @@ public class WizardServiceImpl
         setDuplicates(state, fileUuid, fileName, list, true, true);
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      LOGGER.error("Failed to check duplicates of " + fileName);
     }
   }
 
