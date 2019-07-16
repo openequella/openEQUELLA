@@ -55,7 +55,7 @@ public abstract class AbstractWebControl<M extends WebControlModel> extends HTML
   private String sectionId;
   private boolean nested;
   private boolean groupLabelNeeded = false;
-
+  private boolean duplicateWarning = false;
   private boolean used;
   private SectionTree tree;
 
@@ -72,6 +72,8 @@ public abstract class AbstractWebControl<M extends WebControlModel> extends HTML
     control.setTopLevel(this);
   }
 
+  //  @Component(name="dup_page_link")
+  //  private static Link dupLink;
   public AbstractWebControl() {
     // spring
   }
@@ -168,6 +170,7 @@ public abstract class AbstractWebControl<M extends WebControlModel> extends HTML
   public void registered(String id, SectionTree tree) {
     this.sectionId = id;
     this.tree = tree;
+    // dupLink.setClickHandler(new OverrideHandler(Js.alert_s("12122")));
   }
 
   @Override
@@ -299,7 +302,15 @@ public abstract class AbstractWebControl<M extends WebControlModel> extends HTML
     return groupLabelNeeded;
   }
 
+  public boolean isDuplicateWarning() {
+    return duplicateWarning;
+  }
+
   public void setGroupLabellNeeded(boolean groupLabellNeeded) {
     this.groupLabelNeeded = groupLabellNeeded;
+  }
+
+  public void setDuplicateWarning(boolean duplicateWarning) {
+    this.duplicateWarning = duplicateWarning;
   }
 }
