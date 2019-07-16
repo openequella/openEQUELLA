@@ -69,7 +69,7 @@
     "@types/luxon": "1.15.1",
     "@types/tinymce": "4.5.22",
     "@types/node": "9.6.49",
-    "@types/react": "16.8.22",
+    "@types/react": "16.8.23",
     "@types/react-autosuggest": "9.3.9",
     "@types/react-color": "2.17.0",
     "@types/react-dom": "16.8.4",
