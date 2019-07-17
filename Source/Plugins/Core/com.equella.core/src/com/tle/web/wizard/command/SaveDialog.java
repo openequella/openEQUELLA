@@ -49,10 +49,8 @@ import com.tle.web.sections.standard.dialog.model.DialogModel;
 import com.tle.web.wizard.WebWizardService;
 import com.tle.web.wizard.WizardService;
 import com.tle.web.wizard.WizardState;
-import com.tle.web.wizard.section.DuplicateDataSection;
 import com.tle.web.wizard.section.WizardBodySection;
 import com.tle.web.wizard.section.WizardSectionInfo;
-import com.tle.web.wizard.section.model.DuplicateData;
 import com.tle.web.workflow.tasks.ModerationService;
 import java.util.Collection;
 import javax.inject.Inject;
@@ -76,9 +74,6 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
 
   @PlugKey("command.save.successreceipt")
   private static Label LABEL_SUCCESS_RECEIPT;
-
-  @PlugKey("command.save.checkduplicatemessage")
-  private static Label LABEL_CHECK_DUPLICATION;
 
   @Inject private ModerationService moderationService;
   @Inject private ReceiptService receiptService;
@@ -111,10 +106,6 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
   @PlugKey("command.save.submitnoworkflow")
   private Button publish;
 
-  @Component
-  @PlugKey("command.save.checkduplicate")
-  private Button checkDuplicate;
-
   public SaveDialog() {
     setAjax(true);
   }
@@ -137,7 +128,6 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
     complete.setClickHandler(new OverrideHandler(execFunc, "check", ""));
     submit.setClickHandler(new OverrideHandler(execFunc, "submit", message.createGetExpression()));
     publish.setClickHandler(new OverrideHandler(execFunc, "submit", ""));
-    checkDuplicate.setClickHandler(new OverrideHandler(execFunc, "viewDuplicate", ""));
 
     submit.setComponentAttribute(ButtonType.class, ButtonType.SAVE);
     publish.setComponentAttribute(ButtonType.class, ButtonType.SAVE);
@@ -179,18 +169,6 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
         prompt = LABEL_PUBLISH_NOMOD_MSG;
         buttons.add(publish);
       }
-      // Add this button when attachments have duplicates,
-      // and current tab isn't the duplicate data tab
-      if (state.getDuplicateData().values().stream()
-          .anyMatch(DuplicateData::isAttachmentDupCheck)) {
-        int currentTabIndex = wizardBodySection.getCurrentTab(context);
-        String currentTabSectionName =
-            wizardBodySection.getTabs(context).get(currentTabIndex).getSectionName();
-        if (!currentTabSectionName.equals(DuplicateDataSection.PROP_NAME)) {
-          buttons.add(checkDuplicate);
-          model.setDuplicateInfo(LABEL_CHECK_DUPLICATION);
-        }
-      }
     }
     buttons.add(draft);
     buttons.add(cancel);
@@ -213,7 +191,6 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
     WorkflowOperation[] ops = new WorkflowOperation[] {};
     boolean doSubmit = type.equals("submit");
     boolean doCheck = type.equals("check");
-    boolean doViewDuplicate = type.equals("viewDuplicate");
 
     if (doSubmit || !state.isInDraft() || doCheck) {
       if (!wizardBodySection.isSaveable(info) && wizardBodySection.goToFirstUnfinished(info)) {
@@ -221,11 +198,6 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
       }
     }
     if (doCheck) {
-      return;
-    }
-    // Respond to the event of clicking view duplicates
-    if (doViewDuplicate) {
-      wizardBodySection.goToDuplicateDataTab(info);
       return;
     }
     boolean stayInWizard = !state.isEntryThroughEdit() && !state.isNewItem();
@@ -249,16 +221,6 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
     private Label prompt;
     private boolean showMessage;
     private Collection<Button> actions;
-    // Property used to display the duplicate prompt message
-    private Label duplicateInfo;
-
-    public Label getDuplicateInfo() {
-      return duplicateInfo;
-    }
-
-    public void setDuplicateInfo(Label duplicateInfo) {
-      this.duplicateInfo = duplicateInfo;
-    }
 
     public Label getPrompt() {
       return prompt;

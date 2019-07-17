@@ -757,7 +757,7 @@ public class WizardServiceImpl
         setDuplicates(state, fileUuid, fileName, list, true, true);
       }
     } catch (IOException e) {
-      LOGGER.error("Failed to check duplicates of " + fileName);
+      LOGGER.error("Failed to check duplicates of " + fileName, e);
     }
   }
 

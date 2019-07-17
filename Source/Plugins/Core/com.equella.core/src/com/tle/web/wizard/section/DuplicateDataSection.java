@@ -85,7 +85,10 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
 
       Set<String> accepts = duplicateCheckboxes.getCheckedSet(info);
       for (String accepted : accepts) {
-        duplicates.get(accepted).setAccepted(true);
+        DuplicateData duplicateData = duplicates.get(accepted);
+        if (duplicateData != null) {
+          duplicates.get(accepted).setAccepted(true);
+        }
       }
 
       // We need this here to reset saveable
@@ -112,12 +115,10 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
     for (Map.Entry<String, DuplicateData> entry : duplicated.entrySet()) {
       DuplicateData data = entry.getValue();
 
-      if (!data.isAttachmentDupCheck()) {
-        if (data.isCanAccept()) {
-          canAcceptAny = true;
-        } else {
-          mustChangeAny = true;
-        }
+      if (data.isCanAccept()) {
+        canAcceptAny = true;
+      } else {
+        mustChangeAny = true;
       }
 
       duplicateCheckboxes.setValue(context, entry.getKey(), data.isAccepted());
@@ -301,11 +302,11 @@ public class DuplicateDataSection extends WizardSection<DuplicateDataSection.Mod
 
   @Override
   public void leavingTab(SectionInfo info, SectionTab tab) {
-    // nothing
+    unfinishedTab(info, tab);
   }
 
   @Override
   public void unfinishedTab(SectionInfo info, SectionTab tab) {
-    // nothing
+    info.forceRedirect();
   }
 }

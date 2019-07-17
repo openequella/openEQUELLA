@@ -427,6 +427,11 @@ public class WizardBodySection extends WizardSection<WizardBodyModel> implements
             .filter(tab -> tab.getSectionName().equals(DuplicateDataSection.PROP_NAME))
             .collect(Collectors.toList())
             .get(0);
+    int oldTab = model.getCurrentTab();
+    SectionTab currentTab = tabs.get(oldTab);
+    // Must explicitly leave current tab before going another tab
+    currentTab.getTabSection().leavingTab(info, currentTab);
+
     int duplicateTabPosition = tabs.indexOf(duplicateTab);
     model.setCurrentTab(duplicateTabPosition);
   }

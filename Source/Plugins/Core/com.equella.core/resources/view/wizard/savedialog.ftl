@@ -13,9 +13,4 @@
 			<@textarea section=s.message class="focus"/>
 		</div>
 	</#if>
-  <#if m.duplicateInfo?has_content>
-    <div id="duplicateInfoMessage">
-      <p>${m.duplicateInfo}</p>
-    </div>
-  </#if>
 </div>
