@@ -187,7 +187,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
 
       def getId = id
 
-      // Property indicates if duplicate message should be displayed or not
+      // These two methods are called in universalattachmentlist.ftl
       def isDisplayDuplicateWarning: Boolean = isDuplicateWarning
       def getDuplicateWarningMessage         = duplicateWarningMessage
 

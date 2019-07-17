@@ -72,8 +72,6 @@ public abstract class AbstractWebControl<M extends WebControlModel> extends HTML
     control.setTopLevel(this);
   }
 
-  //  @Component(name="dup_page_link")
-  //  private static Link dupLink;
   public AbstractWebControl() {
     // spring
   }
@@ -170,7 +168,6 @@ public abstract class AbstractWebControl<M extends WebControlModel> extends HTML
   public void registered(String id, SectionTree tree) {
     this.sectionId = id;
     this.tree = tree;
-    // dupLink.setClickHandler(new OverrideHandler(Js.alert_s("12122")));
   }
 
   @Override
