@@ -228,7 +228,7 @@ abstract class AbstractTaskActionDialog
   @AjaxMethod
   def dndUpload(info: SectionInfo): Boolean = {
     val model             = getModel(info)
-    val uploadId          = UUID.fromString(info.getRequest.getHeader("X_UUID"))
+    val uploadId          = UUID.fromString(info.getRequest.getHeader("X-UUID"))
     val stagingFolderUuid = model.stagingFolderUuid
     val filename          = _fileDrop.getFilename(info)
     val fn                = if (!Check.isEmpty(filename)) filename.toLowerCase else ""

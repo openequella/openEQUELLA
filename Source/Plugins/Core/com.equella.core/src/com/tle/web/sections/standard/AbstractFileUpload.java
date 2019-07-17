@@ -43,6 +43,8 @@ public abstract class AbstractFileUpload<S extends HtmlFileUploadState>
     super(defaultRenderer);
   }
 
+  private final String FILENAME_HEADER = "X-FILENAME";
+
   public long getFileSize(SectionInfo info) {
     Part file = getMultipartFile(info);
     if (file != null) {
@@ -87,7 +89,7 @@ public abstract class AbstractFileUpload<S extends HtmlFileUploadState>
   public Part getMultipartFile(SectionInfo info) {
     HttpServletRequest request = info.getRequest();
     if (!isMultipartRequest(request)) {
-      if (request.getHeader("X_FILENAME") != null) {
+      if (request.getHeader(FILENAME_HEADER) != null) {
         return new Part() {
 
           @Override
@@ -102,7 +104,7 @@ public abstract class AbstractFileUpload<S extends HtmlFileUploadState>
 
           @Override
           public String getName() {
-            String base64 = request.getHeader("X_FILENAME");
+            String base64 = request.getHeader(FILENAME_HEADER);
             return new String(Base64.getDecoder().decode(base64), Charsets.UTF_8);
           }
 
