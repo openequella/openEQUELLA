@@ -65,6 +65,12 @@ function IndexPage() {
     cb: (confirm: boolean) => void;
   }>();
 
+  const [reRender, setReRender] = React.useState(false);
+  function forceReRender() {
+    setReRender(!reRender);
+    setLegacyContentProps({ ...legacyContentProps, reRender: reRender });
+  }
+
   const [preventNavMessage, setPreventNavMessage] = React.useState<string>();
   const [legacyContentProps, setLegacyContentProps] = React.useState<
     LegacyContentProps
@@ -72,6 +78,8 @@ function IndexPage() {
     enabled: false,
     pathname: "",
     search: "",
+    reRender,
+    forceReRender,
     userUpdated: refreshUser,
     redirected: () => {},
     onError: () => {},
