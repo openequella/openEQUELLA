@@ -63,6 +63,8 @@ export interface LegacyContentProps {
   pathname: string;
   search: string;
   userUpdated: () => void;
+  reRender: boolean;
+  forceReRender: () => void;
   redirected: (redir: { href: string; external: boolean }) => void;
   onError: (cb: { error: ErrorResponse; fullScreen: boolean }) => void;
   render(content: PageContent | undefined): React.ReactElement;
@@ -136,6 +138,10 @@ export const LegacyContent = React.memo(function LegacyContent(
             props.userUpdated();
           }
           props.redirected({ href: content.route, external: false });
+          if (window.location.href.endsWith(content.route)) {
+            //if you are being redirected to the same URI, don't ignore the state update
+            props.forceReRender();
+          }
         } else {
           props.redirected({ href: content.href, external: true });
         }
