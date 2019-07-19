@@ -1,7 +1,6 @@
 <#include "/com.tle.web.freemarker@/macro/sections.ftl"/>
 <#include "/com.tle.web.sections.standard@/textarea.ftl"/>
 <#include "/com.tle.web.sections.standard@/textfield.ftl"/>
-<#include "/com.tle.web.sections.standard@/link.ftl">
 
 <div class="input text">
 	<#if c.size2 lt 2>
