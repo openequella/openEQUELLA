@@ -73,7 +73,7 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
   private static Label LABEL_PUBLISH_NOMOD_MSG;
 
   @PlugKey("command.save.successreceipt")
-  private static Label SUCCESS_RECEIPT_LABEL;
+  private static Label LABEL_SUCCESS_RECEIPT;
 
   @Inject private ModerationService moderationService;
   @Inject private ReceiptService receiptService;
@@ -210,7 +210,7 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel> {
 
     if (!stayInWizard) {
       webWizardService.forwardToViewItem(info, state);
-      receiptService.setReceipt(SUCCESS_RECEIPT_LABEL);
+      receiptService.setReceipt(LABEL_SUCCESS_RECEIPT);
     } else {
       wizardService.reload(state, false);
       moderationService.setEditing(info, false);

@@ -204,7 +204,14 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
     }
     ctx.controlState.removeAttachments(info, da.attachments.asJavaCollection)
     da.deleteFiles(ctx.stagingContext)
+    // Remove attachment duplicate information, too
+    if (attachment.isInstanceOf[FileAttachment] && isDuplicateCheck) {
+      ctx.repo.getState.getDuplicateData.remove(attachment.getUuid)
+    }
   }
+
+  def isDuplicateCheck =
+    ctx.controlState.getControlConfiguration.getBooleanAttribute("FILE_DUPLICATION_CHECK")
 
   def getTitleLabel(context: RenderContext, editing: Boolean): Label =
     if (editing) EDIT_TITLE_LABEL else ADD_TITLE_LABEL;

@@ -22,7 +22,7 @@ import java.util.UUID
 
 import com.dytech.edge.wizard.beans.control.CustomControl
 import com.google.common.io.ByteStreams
-import com.tle.beans.item.attachments.IAttachment
+import com.tle.beans.item.attachments.{FileAttachment, IAttachment}
 import com.tle.common.i18n.CurrentLocale
 import com.tle.common.wizard.controls.universal.UniversalSettings
 import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings
@@ -44,14 +44,15 @@ import com.tle.web.freemarker.FreemarkerFactory
 import com.tle.web.freemarker.annotations.ViewFactory
 import com.tle.web.sections.ajax.AjaxGenerator
 import com.tle.web.sections.ajax.handler.{AjaxFactory, AjaxMethod}
-import com.tle.web.sections.annotations.{EventFactory, EventHandlerMethod}
+import com.tle.web.sections.annotations.{EventFactory, EventHandlerMethod, TreeLookup}
 import com.tle.web.sections.equella.ajaxupload._
+import com.tle.web.sections.equella.annotation.PlugKey
 import com.tle.web.sections.equella.render.ZebraTableRenderer
 import com.tle.web.sections.events.RenderEventContext
 import com.tle.web.sections.events.js.{BookmarkAndModify, EventGenerator}
 import com.tle.web.sections.jquery.libraries.JQueryProgression
 import com.tle.web.sections.js.ElementId
-import com.tle.web.sections.js.generic.ReloadHandler
+import com.tle.web.sections.js.generic.{Js, OverrideHandler, ReloadHandler}
 import com.tle.web.sections.js.generic.expression.ObjectExpression
 import com.tle.web.sections.js.generic.function.{
   ExternallyDefinedFunction,
@@ -60,6 +61,8 @@ import com.tle.web.sections.js.generic.function.{
 }
 import com.tle.web.sections.render._
 import com.tle.web.sections.result.util.KeyLabel
+import com.tle.web.sections.standard.Button
+import com.tle.web.sections.standard.annotations.Component
 import com.tle.web.sections.standard.renderers.{DivRenderer, FileDropRenderer}
 import com.tle.web.sections.{SectionInfo, SectionResult, SectionTree, SimpleBookmarkModifier}
 import com.tle.web.viewurl.attachments.{
@@ -67,9 +70,11 @@ import com.tle.web.viewurl.attachments.{
   AttachmentResourceService,
   AttachmentTreeService
 }
+import com.tle.web.wizard.WizardService
 import com.tle.web.wizard.controls.{AbstractWebControl, CCustomControl, WebControlModel}
 import com.tle.web.wizard.impl.WebRepository
 import com.tle.web.wizard.render.WizardFreemarkerFactory
+import com.tle.web.wizard.section.WizardBodySection
 import io.circe.parser._
 import io.circe.syntax._
 import javax.inject.Inject
@@ -111,6 +116,11 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
   @Inject var attachmentResourceService: AttachmentResourceService = _
   @Inject var thumbnailService: ThumbnailService                   = _
   @Inject var videoService: VideoService                           = _
+  @Inject var wizardService: WizardService                         = _
+
+  @Component
+  @PlugKey("duplicatewarningmessage")
+  var duplicateWarningMessage: Button = _
 
   var ctx: AfterRegister = _
 
@@ -123,6 +133,14 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
   override def registered(id: String, tree: SectionTree): Unit = {
     super.registered(id, tree)
     ctx = new AfterRegister(id, tree, getWrappedControl.asInstanceOf[CCustomControl])
+    duplicateWarningMessage.setClickHandler(events.getNamedHandler("openDuplicatePage"))
+  }
+
+  @EventHandlerMethod
+  def openDuplicatePage(info: SectionInfo): Unit = {
+    val wizardBodySection =
+      info.lookupSection(classOf[WizardBodySection]).asInstanceOf[WizardBodySection]
+    wizardBodySection.goToDuplicateDataTab(info)
   }
 
   @EventHandlerMethod def reloaded(info: SectionInfo): Unit = {
@@ -168,6 +186,11 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
 //      sys.error("metadatamapping")
 
       def getId = id
+
+      // These two methods are called in universalattachmentlist.ftl
+      def isDisplayDuplicateWarning: Boolean = isDuplicateWarning
+      def getDuplicateWarningMessage         = duplicateWarningMessage
+
       def getDivTag = {
         def entries(attachments: Iterable[AttachmentNode],
                     editable: Boolean): Iterable[AjaxFileEntry] = {
@@ -177,6 +200,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
             entryForAttachment(info, attachment, editable, children)
           }
         }
+
         val ts = new TagState()
         ts.setId(id + "_r")
         val topLevelAttachments =
@@ -241,6 +265,26 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
             (uploadedAttachments - definition.getMaxFiles).asInstanceOf[Object]
           )
         )
+      }
+
+      val attachments = dialog.getAttachments.asScala
+      val state       = repository.getState
+      val fileDuplicateCheck =
+        dialog.getControlConfiguration.getBooleanAttribute("FILE_DUPLICATION_CHECK")
+      if (fileDuplicateCheck) {
+        if (attachments.nonEmpty) {
+          // For file attachments
+          val fileAttachments =
+            attachments.filter(_.isInstanceOf[FileAttachment]).map(_.asInstanceOf[FileAttachment])
+          for (fileAttachment <- fileAttachments) {
+            wizardService.checkDuplicateAttachments(state,
+                                                    fileAttachment.getFilename,
+                                                    fileAttachment.getUuid)
+          }
+        }
+      }
+      if (attachments.exists(attachment => state.getDuplicateData.containsKey(attachment.getUuid))) {
+        setDuplicateWarning(true)
       }
     }
 

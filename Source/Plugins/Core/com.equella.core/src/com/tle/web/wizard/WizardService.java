@@ -83,6 +83,8 @@ public interface WizardService extends ScriptEvaluator {
 
   void checkDuplicateUrls(WizardState state, String[] urls);
 
+  void checkDuplicateAttachments(WizardState state, String fileName, String fileUuid);
+
   ScriptContext createScriptContext(
       WizardState state, WizardPage page, HTMLControl control, Map<String, Object> attributes);
 

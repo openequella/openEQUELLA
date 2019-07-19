@@ -64,6 +64,7 @@ import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
 import com.tle.core.guice.BindFactory;
 import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.dao.AttachmentDao;
 import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.service.ItemService;
 import com.tle.core.item.standard.ItemOperationFactory;
@@ -121,8 +122,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.apache.log4j.Logger;
 
 /**
  * @author jmaginnis
@@ -160,8 +163,11 @@ public class WizardServiceImpl
   @Inject private ItemOperationFactory workflowFactory;
   @Inject private CloneFactory cloneFactory;
   @Inject private WizardOperationFactory wizardOpFactory;
+  @Inject private AttachmentDao attachmentDao;
 
   private PluginTracker<WizardScriptObjectContributor> scriptObjectTracker;
+
+  private static final Logger LOGGER = Logger.getLogger(WizardServiceImpl.class);
 
   public WizardServiceImpl() {
     super();
@@ -706,7 +712,8 @@ public class WizardServiceImpl
                 identifier,
                 value,
                 freeTextService.getKeysForNodeValue(uuid, state.getItemDefinition(), xpath, value),
-                canAccept);
+                canAccept,
+                false);
       }
     }
     return isUnique;
@@ -727,7 +734,30 @@ public class WizardServiceImpl
     for (String url : urls) {
       String identifier = prefix + url;
       setDuplicates(
-          state, identifier, url, itemService.getItemsWithUrl(url, itemdef, ignoreItem), true);
+          state,
+          identifier,
+          url,
+          itemService.getItemsWithUrl(url, itemdef, ignoreItem),
+          true,
+          false);
+    }
+  }
+
+  @Override
+  public void checkDuplicateAttachments(WizardState state, String fileName, String fileUuid) {
+    try {
+      String md5 = fileSystemService.getMD5Checksum(state.getFileHandle(), fileName);
+      List<Attachment> duplicateFileAttachments =
+          attachmentDao.findByMd5Sum(md5, state.getItemDefinition(), true);
+      if (duplicateFileAttachments.size() > 0) {
+        List<ItemId> list =
+            duplicateFileAttachments.stream()
+                .map(attachment -> attachment.getItem().getItemId())
+                .collect(Collectors.toList());
+        setDuplicates(state, fileUuid, fileName, list, true, true);
+      }
+    } catch (IOException e) {
+      LOGGER.error("Failed to check duplicates of " + fileName, e);
     }
   }
 
@@ -745,14 +775,16 @@ public class WizardServiceImpl
       String identifier,
       String value,
       List<? extends ItemKey> list,
-      boolean canAccept) {
+      boolean canAccept,
+      boolean isAttachmentDuplicate) {
     Map<String, DuplicateData> duplicatesMap = state.getDuplicateData();
 
     boolean isUnique = Check.isEmpty(list);
     if (isUnique) {
       duplicatesMap.remove(identifier);
     } else {
-      duplicatesMap.put(identifier, new DuplicateData(identifier, value, list, canAccept));
+      duplicatesMap.put(
+          identifier, new DuplicateData(identifier, value, list, canAccept, isAttachmentDuplicate));
     }
     return isUnique;
   }

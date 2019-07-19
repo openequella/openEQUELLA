@@ -12,7 +12,7 @@ public class DuplicatesTab extends AbstractWizardTab<DuplicatesTab> {
     driver
         .findElement(
             By.xpath(
-                "//div[./label[normalize-space(text())="
+                "//div/label[./span[normalize-space(text())="
                     + quoteXPath("'" + data + "' is also used by:")
                     + "]]/input[@type='checkbox']"))
         .click();

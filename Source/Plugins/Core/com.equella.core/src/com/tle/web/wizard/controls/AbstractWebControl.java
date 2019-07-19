@@ -55,7 +55,7 @@ public abstract class AbstractWebControl<M extends WebControlModel> extends HTML
   private String sectionId;
   private boolean nested;
   private boolean groupLabelNeeded = false;
-
+  private boolean duplicateWarning = false;
   private boolean used;
   private SectionTree tree;
 
@@ -299,7 +299,15 @@ public abstract class AbstractWebControl<M extends WebControlModel> extends HTML
     return groupLabelNeeded;
   }
 
+  public boolean isDuplicateWarning() {
+    return duplicateWarning;
+  }
+
   public void setGroupLabellNeeded(boolean groupLabellNeeded) {
     this.groupLabelNeeded = groupLabellNeeded;
+  }
+
+  public void setDuplicateWarning(boolean duplicateWarning) {
+    this.duplicateWarning = duplicateWarning;
   }
 }
