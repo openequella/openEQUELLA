@@ -135,7 +135,20 @@ export const LegacyContent = React.memo(function LegacyContent(
           if (content.userUpdated) {
             props.userUpdated();
           }
-          props.redirected({ href: content.route, external: false });
+          // Ensure the operation is one of those item-related commands
+          const isNavCommand =
+            submitValues.event__.toString() === "nav.command";
+          // Ensure current URL is as same as the route to be redirected to
+          const isSameUrl = window.location.href.endsWith(content.route);
+          // Ensure it's a moderation page
+          const isModeration = content.route.indexOf("_taskState") > -1;
+          if (isSameUrl && isNavCommand && isModeration) {
+            // The essence of the second clicking is submitting the form. So here manually do it.
+            const rerender = stdSubmit(false);
+            rerender.call("");
+          } else {
+            props.redirected({ href: content.route, external: false });
+          }
         } else {
           props.redirected({ href: content.href, external: true });
         }
