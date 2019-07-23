@@ -122,7 +122,7 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel>
     if (model.isSubmit()) {
       String xmlDoc = model.getXmldoc();
       if (xmlDoc != null) {
-        PropBagEx itemXml = state.getItemPack().getXml();
+        PropBagEx itemXml = state.getItemxml();
         PropBagEx cloudControlXml = new PropBagEx(xmlDoc);
         itemXml.mergeTree(cloudControlXml);
         state.setItemXml(itemXml.toString());
