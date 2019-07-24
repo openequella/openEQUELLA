@@ -139,7 +139,7 @@ export const LegacyContent = React.memo(function LegacyContent(
     const isSameUrl = window.location.href.endsWith(content.route);
     // Ensure it's a moderation page
     const isModeration = content.route.indexOf("_taskState") > -1;
-    if (isSameUrl && isNavCommand && isModeration) {
+    if (isSameUrl && isNavCommand() && isModeration) {
       // The essence of the second clicking is submitting the form. So here manually do it.
       const rerender = stdSubmit(false);
       rerender.call("");
