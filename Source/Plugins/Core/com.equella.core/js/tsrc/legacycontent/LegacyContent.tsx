@@ -62,6 +62,7 @@ export interface LegacyContentProps {
   enabled: boolean;
   pathname: string;
   search: string;
+  locationKey?: string;
   userUpdated: () => void;
   redirected: (redir: { href: string; external: boolean }) => void;
   onError: (cb: { error: ErrorResponse; fullScreen: boolean }) => void;
@@ -219,7 +220,7 @@ export const LegacyContent = React.memo(function LegacyContent(
       setContent(undefined);
       updateStylesheets([]).then(deleteElements);
     }
-  }, [enabled, props.pathname, props.search]);
+  }, [enabled, props.pathname, props.search, props.locationKey]);
 
   return props.render(enabled ? content : undefined);
 });

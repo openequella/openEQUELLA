@@ -114,6 +114,7 @@ export const LegacyPage = React.memo(
         enabled: true,
         pathname: location.pathname,
         search: location.search,
+        locationKey: location.key,
         redirected,
         onError
       }));

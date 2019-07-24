@@ -72,6 +72,7 @@ function IndexPage() {
     enabled: false,
     pathname: "",
     search: "",
+    locationKey: "",
     userUpdated: refreshUser,
     redirected: () => {},
     onError: () => {},
