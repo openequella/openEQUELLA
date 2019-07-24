@@ -29,15 +29,19 @@ public abstract class AbstractScreenOptions<T extends AbstractScreenOptions<T>>
     return driver.findElement(getOpenOptionsBy());
   }
 
+  protected boolean isOptionsOpen() {
+    return isVisible(loadedBy);
+  }
+
   public T open() {
-    if (!isPresent(loadedBy)) {
+    if (!isOptionsOpen()) {
       getOpenOptions().click();
     }
     return get();
   }
 
   public void close() {
-    if (isPresent(loadedBy)) {
+    if (isOptionsOpen()) {
       getOpenOptions().click();
     }
   }
