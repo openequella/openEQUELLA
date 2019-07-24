@@ -127,7 +127,14 @@ export const LegacyContent = React.memo(function LegacyContent(
       props.userUpdated();
     }
     // Ensure the operation is one of those item-related commands
-    const isNavCommand = submitValues.event__.toString() === "nav.command";
+    const submitEvent = submitValues.event__;
+    const isNavCommand = () => {
+      if (submitEvent != undefined) {
+        return submitEvent.toString() === "nav.command";
+      } else {
+        return false;
+      }
+    };
     // Ensure current URL is as same as the route to be redirected to
     const isSameUrl = window.location.href.endsWith(content.route);
     // Ensure it's a moderation page
