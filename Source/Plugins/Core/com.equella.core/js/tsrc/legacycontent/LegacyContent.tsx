@@ -104,6 +104,25 @@ export const LegacyContent = React.memo(function LegacyContent(
     return relUrl.indexOf("/") == 0 ? relUrl : "/" + relUrl;
   }
 
+  function updatePageContent(content: LegacyContent, scrollTop: boolean) {
+    updateIncludes(content.css, content.js).then(extraCss => {
+      const pageContent = {
+        ...content,
+        contentId: v4(),
+        afterHtml: () => {
+          deleteElements(extraCss);
+          if (scrollTop) {
+            document.documentElement.scrollTop = 0;
+          }
+        }
+      } as PageContent;
+      if (content.userUpdated) {
+        props.userUpdated();
+      }
+      setContent(pageContent);
+    });
+  }
+
   function submitCurrentForm(
     fullScreen: boolean,
     scrollTop: boolean,
@@ -116,22 +135,7 @@ export const LegacyContent = React.memo(function LegacyContent(
         if (callback) {
           callback(content);
         } else if (isPageContent(content)) {
-          updateIncludes(content.css, content.js).then(extraCss => {
-            const pageContent = {
-              ...content,
-              contentId: v4(),
-              afterHtml: () => {
-                deleteElements(extraCss);
-                if (scrollTop) {
-                  document.documentElement.scrollTop = 0;
-                }
-              }
-            } as PageContent;
-            if (content.userUpdated) {
-              props.userUpdated();
-            }
-            setContent(pageContent);
-          });
+          updatePageContent(content, scrollTop);
         } else if (isChangeRoute(content)) {
           if (content.userUpdated) {
             props.userUpdated();
