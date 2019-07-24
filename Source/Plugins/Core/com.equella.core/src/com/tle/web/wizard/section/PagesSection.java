@@ -18,6 +18,7 @@
 
 package com.tle.web.wizard.section;
 
+import com.dytech.devlib.PropBagEx;
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.entity.itemdef.Wizard;
@@ -121,7 +122,10 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel>
     if (model.isSubmit()) {
       String xmlDoc = model.getXmldoc();
       if (xmlDoc != null) {
-        state.setItemXml(xmlDoc);
+        PropBagEx itemXml = state.getItemxml();
+        PropBagEx cloudControlXml = new PropBagEx(xmlDoc);
+        itemXml.mergeTree(cloudControlXml);
+        state.setItemXml(itemXml.toString());
       }
       info.queueEvent(
           new AbstractDirectEvent(SectionEvent.PRIORITY_AFTER_EVENTS, getSectionId()) {
