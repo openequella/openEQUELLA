@@ -21,7 +21,7 @@ interface CloudProviderAddDialogProps {
 }
 interface CloudProviderAddDialogState {
   cloudProviderUrl: string;
-  openDisclaimerDialog: boolean;
+  disclaimerDialogOpen: boolean;
 }
 
 export default class CloudProviderAddDialog extends React.Component<
@@ -32,7 +32,7 @@ export default class CloudProviderAddDialog extends React.Component<
     super(props);
     this.state = {
       cloudProviderUrl: "",
-      openDisclaimerDialog: false
+      disclaimerDialogOpen: false
     };
   }
 
@@ -53,19 +53,19 @@ export default class CloudProviderAddDialog extends React.Component<
 
   openDisclaimerDialog = () => {
     this.setState({
-      openDisclaimerDialog: true
+      disclaimerDialogOpen: true
     });
   };
 
   closeDisclaimerDialog = () => {
     this.setState({
-      openDisclaimerDialog: false
+      disclaimerDialogOpen: false
     });
   };
 
   render() {
     const { open, onCancel, onRegister } = this.props;
-    const { cloudProviderUrl, openDisclaimerDialog } = this.state;
+    const { cloudProviderUrl, disclaimerDialogOpen } = this.state;
     let isUrlValid = this.validateUrl();
     return (
       <div>
@@ -124,7 +124,7 @@ export default class CloudProviderAddDialog extends React.Component<
         </Dialog>
 
         <CloudProviderDisclaimerDialog
-          openDialog={openDisclaimerDialog}
+          openDialog={disclaimerDialogOpen}
           onClose={this.closeDisclaimerDialog}
         />
       </div>
