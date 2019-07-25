@@ -2,6 +2,7 @@ package com.tle.webtests.pageobject.wizard;
 
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
+import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -31,12 +32,12 @@ public class ConfirmationDialog extends AbstractPage<ConfirmationDialog> {
     super(context, By.id("savePrompt"), 60);
   }
 
-  public <T extends AbstractPage<T>> T finishInvalid(T page) {
+  public <T extends AbstractPage<T>> T finishInvalid(WaitingPageObject<T> page) {
     confirm(ConfirmButton.COMPLETE);
     return page.get();
   }
 
-  public <T extends AbstractPage<T>> T publishInvalid(T page) {
+  public <T extends AbstractPage<T>> T publishInvalid(WaitingPageObject<T> page) {
     confirm(ConfirmButton.PUBLISH);
     return page.get();
   }
