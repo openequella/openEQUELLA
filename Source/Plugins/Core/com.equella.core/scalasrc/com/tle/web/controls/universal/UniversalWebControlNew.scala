@@ -22,7 +22,7 @@ import java.util.UUID
 
 import com.dytech.edge.wizard.beans.control.CustomControl
 import com.google.common.io.ByteStreams
-import com.tle.beans.item.attachments.{FileAttachment, IAttachment}
+import com.tle.beans.item.attachments.{FileAttachment, IAttachment, LinkAttachment}
 import com.tle.common.i18n.CurrentLocale
 import com.tle.common.wizard.controls.universal.UniversalSettings
 import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings
@@ -255,7 +255,47 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
     }
 
     def validate(): Unit = {
+      val attachments         = dialog.getAttachments.asScala
+      val state               = repository.getState
       val uploadedAttachments = dialog.getAttachments.size
+
+      def fileDuplicateCheck(): Unit = {
+        val DuplicateCheckEnabled =
+          dialog.getControlConfiguration.getBooleanAttribute("FILE_DUPLICATION_CHECK")
+        if (DuplicateCheckEnabled) {
+          val fileAttachments =
+            attachments.filter(_.isInstanceOf[FileAttachment]).map(_.asInstanceOf[FileAttachment])
+          for (fileAttachment <- fileAttachments) {
+            wizardService.checkFileAttachmentDuplicate(state,
+                                                       fileAttachment.getFilename,
+                                                       fileAttachment.getUuid)
+          }
+        }
+      }
+
+      def linkDuplicateCheck(): Unit = {
+        val DuplicateCheckEnabled =
+          dialog.getControlConfiguration.getBooleanAttribute("LINK_DUPLICATION_CHECK")
+        if (DuplicateCheckEnabled) {
+          val linkAttachments =
+            attachments.filter(_.isInstanceOf[LinkAttachment]).map(_.asInstanceOf[LinkAttachment])
+          for (linkAttachment <- linkAttachments) {
+            wizardService.checkLinkAttachmentDuplicate(state,
+                                                       linkAttachment.getDescription,
+                                                       linkAttachment.getUuid)
+          }
+        }
+      }
+
+      def updateDuplicateWarningMessage(): Unit = {
+        if (attachments.exists(
+              attachment => state.getDuplicateData.containsKey(attachment.getUuid))) {
+          setDuplicateWarning(true)
+        } else {
+          setDuplicateWarning(false)
+        }
+      }
+
       if (definition.isMaxFilesEnabled && uploadedAttachments > definition.getMaxFiles) {
         setInvalid(
           true,
@@ -267,25 +307,12 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
         )
       }
 
-      val attachments = dialog.getAttachments.asScala
-      val state       = repository.getState
-      val fileDuplicateCheck =
-        dialog.getControlConfiguration.getBooleanAttribute("FILE_DUPLICATION_CHECK")
-      if (fileDuplicateCheck) {
-        if (attachments.nonEmpty) {
-          // For file attachments
-          val fileAttachments =
-            attachments.filter(_.isInstanceOf[FileAttachment]).map(_.asInstanceOf[FileAttachment])
-          for (fileAttachment <- fileAttachments) {
-            wizardService.checkDuplicateAttachments(state,
-                                                    fileAttachment.getFilename,
-                                                    fileAttachment.getUuid)
-          }
-        }
+      if (attachments.nonEmpty) {
+        fileDuplicateCheck
+        linkDuplicateCheck
       }
-      if (attachments.exists(attachment => state.getDuplicateData.containsKey(attachment.getUuid))) {
-        setDuplicateWarning(true)
-      }
+
+      updateDuplicateWarningMessage
     }
 
     def renderControl(context: RenderEventContext): SectionResult = {
