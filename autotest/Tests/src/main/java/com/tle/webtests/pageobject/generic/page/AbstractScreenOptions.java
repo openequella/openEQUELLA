@@ -4,6 +4,8 @@ import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractScreenOptions<T extends AbstractScreenOptions<T>>
     extends AbstractPage<T> {
@@ -35,14 +37,26 @@ public abstract class AbstractScreenOptions<T extends AbstractScreenOptions<T>>
 
   public T open() {
     if (!isOptionsOpen()) {
+      ExpectedCondition<WebElement> visible =
+          ExpectedConditions.visibilityOfElementLocated(loadedBy);
       getOpenOptions().click();
+      waiter.until(visible);
     }
     return get();
   }
 
   public void close() {
     if (isOptionsOpen()) {
+      ExpectedCondition<Boolean> invisible =
+          ExpectedConditions.invisibilityOfElementLocated(loadedBy);
       getOpenOptions().click();
+      waiter.until(invisible);
+    }
+  }
+
+  public void ensureOptionsGone() {
+    if (isNewUI()) {
+      driver.findElement(By.xpath("//body")).click();
     }
   }
 }
