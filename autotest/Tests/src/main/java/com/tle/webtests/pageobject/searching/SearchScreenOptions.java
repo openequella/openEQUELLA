@@ -26,6 +26,7 @@ public class SearchScreenOptions extends AbstractSearchPageScreenOptions<SearchS
       includeNonLive.click();
       waiter.get();
     }
+    close();
     return this;
   }
 }

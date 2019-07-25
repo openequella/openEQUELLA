@@ -1,35 +1,19 @@
 name: Failures
 threadCount: 4
-
+parallel: classes
 tests:
   - name: BrokenBits
     classes:
       - com.tle.webtests.test.searching.SearchAutoCompleteTest
       - com.tle.webtests.test.contribute.EquellaConnectorTest
-      - com.tle.webtests.test.drm.DRMTestWithCleanup
       - com.tle.webtests.test.contribute.DiscoverabilityTest
-      - com.tle.webtests.test.contribute.UniquenessTest
       - com.tle.webtests.test.searching.CloudSearchingTest
       - com.tle.webtests.test.users.TokenLoginTest
       - com.tle.webtests.test.dashboard.PortalsTest
-      - com.tle.webtests.test.webservices.soap.Soap51Test
-      - com.tle.webtests.test.webservices.rest.NotificationsApiTest
-      - com.tle.webtests.test.workflow.TaskListNavigationTest
       - com.tle.webtests.test.drm.DRMTest
-      - com.tle.webtests.test.searching.manage.ManageResourcesFavouritesTest
       - com.tle.webtests.test.drm.DRMPrivilegeTest
-      - com.tle.webtests.test.cal.CALViolationTest
-      - com.tle.webtests.test.workflow.TasksSortingAndFilteringTest
-      - com.tle.webtests.test.contribute.WizardBreadcrumbs
+      - com.tle.webtests.test.drm.DRMTestWithCleanup
       - com.tle.webtests.test.searching.SearchSettingsTest
       - com.tle.webtests.test.contribute.controls.asc.AdvancedScriptControlTests
       - com.tle.webtests.test.admin.ServerMessageTest
-      - com.tle.webtests.test.workflow.ModerationProgressTest
-      - com.tle.webtests.test.myresources.MyResourcesTest
       - com.tle.webtests.test.usersscripts.UserScriptTest
-      - com.tle.webtests.test.searching.GuidedSearchingTest
-      - com.tle.webtests.test.searching.hierarchy.HierarchyTopicTest
-      - com.tle.webtests.test.dynamichierarchy.DynamicHierarchyTest
-      - com.tle.webtests.test.cal.CALBookRulesTest
-      - com.tle.webtests.test.searching.manage.ManageResourcesSearchTest
-      - com.tle.webtests.test.workflow.ManageTasksTest

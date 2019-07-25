@@ -15,4 +15,9 @@ public class AttachmentAccessDeniedPage extends ErrorPage {
   protected void loadUrl() {
     driver.get(URL);
   }
+
+  @Override
+  protected boolean isNewUI() {
+    return false;
+  }
 }

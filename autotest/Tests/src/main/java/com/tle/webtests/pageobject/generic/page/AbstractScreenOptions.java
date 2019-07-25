@@ -47,16 +47,18 @@ public abstract class AbstractScreenOptions<T extends AbstractScreenOptions<T>>
 
   public void close() {
     if (isOptionsOpen()) {
-      ExpectedCondition<Boolean> invisible =
-          ExpectedConditions.invisibilityOfElementLocated(loadedBy);
-      getOpenOptions().click();
-      waiter.until(invisible);
-    }
-  }
-
-  public void ensureOptionsGone() {
-    if (isNewUI()) {
-      driver.findElement(By.xpath("//body")).click();
+      if (isNewUI()) {
+        WebElement element =
+            driver.findElement(
+                By.xpath("//div[div/div[@id = " + quoteXPath(getOptionsId()) + "]]"));
+        driver.findElement(By.xpath("//body")).click();
+        waiter.until(w -> "hidden".equals(element.getCssValue("visibility")));
+      } else {
+        ExpectedCondition<Boolean> invisible =
+            ExpectedConditions.invisibilityOfElementLocated(loadedBy);
+        getOpenOptions().click();
+        waiter.until(invisible);
+      }
     }
   }
 }

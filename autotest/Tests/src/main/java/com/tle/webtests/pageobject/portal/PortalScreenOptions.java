@@ -33,6 +33,6 @@ public class PortalScreenOptions extends AbstractScreenOptions<PortalScreenOptio
     WebElement restoreAll = getRestoreAll();
     restoreAll.click();
     waiter.until(ExpectedConditions.stalenessOf(restoreAll));
-    ensureOptionsGone();
+    close();
   }
 }

@@ -10,6 +10,7 @@ import static org.testng.Assert.assertTrue;
 
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.AbstractPage;
+import com.tle.webtests.pageobject.ErrorPage;
 import com.tle.webtests.pageobject.PageObject;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.searching.SearchPage;
@@ -359,42 +360,27 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
             .openWizard("dtec15097 Wizard Control - Advanced Scripting - Prohibited Operations");
     wizard.editbox(1, itemName);
 
-    clickAscButtonExpectError("Class For Name", wizard);
+    ErrorPage errorPage = clickAscButtonExpectError("Class For Name", wizard);
     assertTrue(
-        wizard
-            .errorPage()
-            .getDetail()
-            .contains("Access to Java class \"java.lang.Class\" is prohibited"));
+        errorPage.getDetail().contains("Access to Java class \"java.lang.Class\" is prohibited"));
+    errorPage.goBack(wizard);
+    errorPage = clickAscButtonExpectError("System", wizard);
+    assertTrue(errorPage.getDetail().contains("ReferenceError: \"System\" is not defined"));
 
-    context.getDriver().navigate().back();
-    wizard.get();
-    clickAscButtonExpectError("System", wizard);
+    errorPage.goBack(wizard);
+    errorPage = clickAscButtonExpectError("Runtime", wizard);
+    assertTrue(errorPage.getDetail().contains("ReferenceError: \"Runtime\" is not defined"));
+
+    errorPage.goBack(wizard);
+    errorPage = clickAscButtonExpectError("Propbag", wizard);
+    assertTrue(errorPage.getDetail().contains("ReferenceError: \"Packages\" is not defined"));
+
+    errorPage.goBack(wizard);
+    errorPage = clickAscButtonExpectError("Class Loophole", wizard);
     assertTrue(
-        wizard.errorPage().getDetail().contains("ReferenceError: \"System\" is not defined"));
+        errorPage.getDetail().contains("Access to Java class \"java.lang.Class\" is prohibited"));
 
-    context.getDriver().navigate().back();
-    wizard.get();
-    clickAscButtonExpectError("Runtime", wizard);
-    assertTrue(
-        wizard.errorPage().getDetail().contains("ReferenceError: \"Runtime\" is not defined"));
-
-    context.getDriver().navigate().back();
-    wizard.get();
-    clickAscButtonExpectError("Propbag", wizard);
-    assertTrue(
-        wizard.errorPage().getDetail().contains("ReferenceError: \"Packages\" is not defined"));
-
-    context.getDriver().navigate().back();
-    wizard.get();
-    clickAscButtonExpectError("Class Loophole", wizard);
-    assertTrue(
-        wizard
-            .errorPage()
-            .getDetail()
-            .contains("Access to Java class \"java.lang.Class\" is prohibited"));
-
-    context.getDriver().navigate().back();
-    wizard.get();
+    errorPage.goBack(wizard);
 
     wizard.editbox(1, itemName);
     wizard.save().publish();
@@ -980,8 +966,9 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     return returnTo.get();
   }
 
-  private void clickAscButtonExpectError(String text, WizardPageTab wizard) {
+  private ErrorPage clickAscButtonExpectError(String text, WizardPageTab wizard) {
     getAscInput(text).click();
+    return new ErrorPage(context).get();
   }
 
   /**

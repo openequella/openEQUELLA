@@ -33,14 +33,13 @@ public abstract class AbstractSearchPageScreenOptions<T extends AbstractSearchPa
    *
    * @param perPage - Must be either min, middle, max
    */
-  public T setPerPage(String perPage) {
+  public void setPerPage(String perPage) {
     if (perPageList != null) {
       perPageList.selectByValue(perPage);
     } else {
       newPerPageList.selectByValue(perPage);
       close();
     }
-    return get();
   }
 
   public int getPerPage() {
