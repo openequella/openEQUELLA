@@ -1,20 +1,31 @@
 import * as React from "react";
 import {
   Button,
+  createStyles,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
   TextField,
-  Typography
+  Theme,
+  Typography,
+  WithStyles,
+  withStyles
 } from "@material-ui/core";
 import { cloudProviderLangStrings } from "./CloudProviderModule";
 import { commonString } from "../util/commonstrings";
 import Link from "@material-ui/core/Link";
 import CloudProviderDisclaimerDialog from "./CloudProviderDisclaimerDialog";
 
-interface CloudProviderAddDialogProps {
+const styles = (theme: Theme) =>
+  createStyles({
+    disclaimerText: {
+      marginTop: theme.spacing.unit
+    }
+  });
+
+interface CloudProviderAddDialogProps extends WithStyles<typeof styles> {
   open: boolean;
   onCancel: () => void;
   onRegister: (url: string) => void;
@@ -24,7 +35,7 @@ interface CloudProviderAddDialogState {
   disclaimerDialogOpen: boolean;
 }
 
-export default class CloudProviderAddDialog extends React.Component<
+class CloudProviderAddDialog extends React.Component<
   CloudProviderAddDialogProps,
   CloudProviderAddDialogState
 > {
@@ -64,7 +75,7 @@ export default class CloudProviderAddDialog extends React.Component<
   };
 
   render() {
-    const { open, onCancel, onRegister } = this.props;
+    const { open, onCancel, onRegister, classes } = this.props;
     const { cloudProviderUrl, disclaimerDialogOpen } = this.state;
     let isUrlValid = this.validateUrl();
     return (
@@ -97,7 +108,7 @@ export default class CloudProviderAddDialog extends React.Component<
               helperText={cloudProviderLangStrings.newcloudprovider.help}
             />
 
-            <Typography variant="body2" style={{ marginTop: "10px" }}>
+            <Typography variant="body2" className={classes.disclaimerText}>
               {cloudProviderLangStrings.newcloudprovider.disclaimer.text}
               <Link underline="always" onClick={this.openDisclaimerDialog}>
                 <b>
@@ -131,3 +142,5 @@ export default class CloudProviderAddDialog extends React.Component<
     );
   }
 }
+
+export default withStyles(styles)(CloudProviderAddDialog);

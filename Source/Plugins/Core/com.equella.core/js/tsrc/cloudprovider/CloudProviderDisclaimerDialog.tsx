@@ -1,20 +1,36 @@
 import * as React from "react";
-import { Dialog, DialogContent, DialogTitle } from "@material-ui/core";
+import {
+  createStyles,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Theme,
+  withStyles,
+  WithStyles
+} from "@material-ui/core";
 import { cloudProviderLangStrings } from "./CloudProviderModule";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 
-interface CloudProviderDisclaimerDialogProps {
+const styles = (theme: Theme) =>
+  createStyles({
+    closeButton: {
+      position: "absolute",
+      right: theme.spacing.unit
+    }
+  });
+
+interface CloudProviderDisclaimerDialogProps extends WithStyles<typeof styles> {
   openDialog: boolean;
   onClose: () => void;
 }
 
-export default class CloudProviderDisclaimerDialog extends React.Component<
+class CloudProviderDisclaimerDialog extends React.Component<
   CloudProviderDisclaimerDialogProps
 > {
   render() {
-    const { openDialog, onClose } = this.props;
+    const { openDialog, onClose, classes } = this.props;
     return (
       <Dialog fullWidth open={openDialog} onClose={onClose}>
         <DialogTitle>
@@ -22,7 +38,7 @@ export default class CloudProviderDisclaimerDialog extends React.Component<
           <IconButton
             aria-label="Close"
             onClick={onClose}
-            style={{ position: "absolute", right: "10px" }}
+            className={classes.closeButton}
           >
             <CloseIcon />
           </IconButton>
@@ -69,3 +85,5 @@ export default class CloudProviderDisclaimerDialog extends React.Component<
     );
   }
 }
+
+export default withStyles(styles)(CloudProviderDisclaimerDialog);
