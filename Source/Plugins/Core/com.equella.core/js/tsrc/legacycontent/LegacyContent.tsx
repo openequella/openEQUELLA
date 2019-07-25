@@ -62,6 +62,7 @@ export interface LegacyContentProps {
   enabled: boolean;
   pathname: string;
   search: string;
+  locationKey?: string;
   userUpdated: () => void;
   redirected: (redir: { href: string; external: boolean }) => void;
   onError: (cb: { error: ErrorResponse; fullScreen: boolean }) => void;
@@ -103,7 +104,7 @@ export const LegacyContent = React.memo(function LegacyContent(
     return relUrl.indexOf("/") == 0 ? relUrl : "/" + relUrl;
   }
 
-  function displayLegacyContent(content: LegacyContent, scrollTop: boolean) {
+  function updatePageContent(content: LegacyContent, scrollTop: boolean) {
     updateIncludes(content.css, content.js).then(extraCss => {
       const pageContent = {
         ...content,
@@ -122,32 +123,6 @@ export const LegacyContent = React.memo(function LegacyContent(
     });
   }
 
-  function changeInternalRoute(content: ChangeRoute, submitValues: StateData) {
-    if (content.userUpdated) {
-      props.userUpdated();
-    }
-    // Ensure the operation is one of those item-related commands
-    const submitEvent = submitValues.event__;
-    const isNavCommand = () => {
-      if (submitEvent != undefined) {
-        return submitEvent.toString() === "nav.command";
-      } else {
-        return false;
-      }
-    };
-    // Ensure current URL is as same as the route to be redirected to
-    const isSameUrl = window.location.href.endsWith(content.route);
-    // Ensure it's a moderation page
-    const isModeration = content.route.indexOf("_taskState") > -1;
-    if (isSameUrl && isNavCommand() && isModeration) {
-      // The essence of the second clicking is submitting the form. So here manually do it.
-      const rerender = stdSubmit(false);
-      rerender.call("");
-    } else {
-      props.redirected({ href: content.route, external: false });
-    }
-  }
-
   function submitCurrentForm(
     fullScreen: boolean,
     scrollTop: boolean,
@@ -160,9 +135,12 @@ export const LegacyContent = React.memo(function LegacyContent(
         if (callback) {
           callback(content);
         } else if (isPageContent(content)) {
-          displayLegacyContent(content, scrollTop);
+          updatePageContent(content, scrollTop);
         } else if (isChangeRoute(content)) {
-          changeInternalRoute(content, submitValues);
+          if (content.userUpdated) {
+            props.userUpdated();
+          }
+          props.redirected({ href: content.route, external: false });
         } else {
           props.redirected({ href: content.href, external: true });
         }
@@ -246,7 +224,7 @@ export const LegacyContent = React.memo(function LegacyContent(
       setContent(undefined);
       updateStylesheets([]).then(deleteElements);
     }
-  }, [enabled, props.pathname, props.search]);
+  }, [enabled, props.pathname, props.search, props.locationKey]);
 
   return props.render(enabled ? content : undefined);
 });
