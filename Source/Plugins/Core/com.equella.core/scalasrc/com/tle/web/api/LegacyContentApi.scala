@@ -29,7 +29,7 @@ import com.tle.common.settings.standard.AutoLogin
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.i18n.CoreStrings
 import com.tle.core.notification.standard.indexer.NotificationSearch
-import com.tle.core.plugins.PluginTracker
+import com.tle.core.plugins.{AbstractPluginService, PluginTracker}
 import com.tle.core.workflow.freetext.TaskListSearch
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.LegacyContentController.getBookmarkState
@@ -44,7 +44,12 @@ import com.tle.web.sections.jquery.libraries.JQueryCore
 import com.tle.web.sections.js.JSStatements
 import com.tle.web.sections.js.generic.function.{AnonymousFunction, ExternallyDefinedFunction}
 import com.tle.web.sections.js.generic.statement.{FunctionCallStatement, StatementBlock}
-import com.tle.web.sections.registry.{AbstractSectionsController, SectionsControllerImpl}
+import com.tle.web.sections.registry.{
+  AbstractSectionsController,
+  ExceptionHandlerMatch,
+  ExtensionExceptionHandlerMatch,
+  SectionsControllerImpl
+}
 import com.tle.web.sections.render._
 import com.tle.web.sections.standard.model.HtmlLinkState
 import com.tle.web.sections.standard.renderers.{DivRenderer, LinkRenderer, SpanRenderer}
@@ -103,6 +108,15 @@ case class CurrentUserDetails(id: String,
 object LegacyContentController extends AbstractSectionsController with SectionFilter {
 
   import LegacyGuice.urlService
+
+  override lazy val getExceptionHandlers: util.Collection[ExceptionHandlerMatch] = {
+    val disableHandlers = Set("ajaxExceptionHandler", "defaultEquellaErrorHandler")
+    val tracker         = SectionsControllerImpl.createExceptionTracker(AbstractPluginService.get())
+    tracker.getExtensions.asScala
+      .filter(e => !disableHandlers.contains(e.getId))
+      .map(e => new ExtensionExceptionHandlerMatch(e, tracker): ExceptionHandlerMatch)
+      .asJavaCollection
+  }
 
   def relativeURI(uri: String): Option[RelativeUrl] = {
     val baseUrl   = AbsoluteUrl.parse(urlService.getBaseInstitutionURI.toString)
@@ -196,12 +210,6 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
   override def forwardToUrl(info: SectionInfo, link: String, code: Int): Unit = {
     info.setRendered()
     info.getRequest.setAttribute(RedirectedAttr, link)
-  }
-
-  override def handleException(info: SectionInfo,
-                               exception: Throwable,
-                               event: SectionEvent[_]): Unit = {
-    throw exception
   }
 }
 
