@@ -63,7 +63,12 @@ export const languageStrings = {
       title: "Register a new cloud provider",
       label: "URL",
       text: "Enter the URL supplied by the cloud provider",
-      help: "The URL should start with either http:// or https://"
+      help: "The URL should start with either http:// or https://",
+      disclaimer: {
+        text:
+          "By proceeding with this registration you are acknowleding that you agree to the terms and conditions of the ",
+        title: "Cloud provider disclaimer"
+      }
     },
     deletecloudprovider: {
       title: "Are you sure you want to delete cloud provider - '%s'?",
