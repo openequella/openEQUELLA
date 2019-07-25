@@ -2,7 +2,6 @@ package com.tle.webtests.pageobject.settings;
 
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -32,7 +31,8 @@ public class ScheduledTasksPage extends AbstractPage<ScheduledTasksPage> {
   WebElement runHarvesterProfilesLink;
 
   public ScheduledTasksPage(PageContext context) {
-    super(context, By.xpath("//div[@id='header-inner']/div[text()='Task debug page']"));
+    super(context);
+    loadedBy = byForPageTitle("Task debug page");
   }
 
   @Override
