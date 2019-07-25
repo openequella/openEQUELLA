@@ -960,6 +960,7 @@ public class Soap51Test extends AbstractCleanupTest {
 
     // Delete child topic one
     soapService.deleteTopic(newFirstChildUUID);
+    logon("AutoTest", "automated"); // Refresh topics
     newTopicPage = menuSection.clickTopic(newTopicName);
     assertFalse(newTopicPage.hasSubTopic(firstChildEdited));
 
