@@ -6,10 +6,13 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  TextField
+  TextField,
+  Typography
 } from "@material-ui/core";
 import { cloudProviderLangStrings } from "./CloudProviderModule";
 import { commonString } from "../util/commonstrings";
+import Link from "@material-ui/core/Link";
+import CloudProviderDisclaimerDialog from "./CloudProviderDisclaimerDialog";
 
 interface CloudProviderAddDialogProps {
   open: boolean;
@@ -18,6 +21,7 @@ interface CloudProviderAddDialogProps {
 }
 interface CloudProviderAddDialogState {
   cloudProviderUrl: string;
+  openDisclaimerDialog: boolean;
 }
 
 export default class CloudProviderAddDialog extends React.Component<
@@ -27,7 +31,8 @@ export default class CloudProviderAddDialog extends React.Component<
   constructor(props: CloudProviderAddDialogProps) {
     super(props);
     this.state = {
-      cloudProviderUrl: ""
+      cloudProviderUrl: "",
+      openDisclaimerDialog: false
     };
   }
 
@@ -46,9 +51,21 @@ export default class CloudProviderAddDialog extends React.Component<
     }
   };
 
+  openDisclaimerDialog = () => {
+    this.setState({
+      openDisclaimerDialog: true
+    });
+  };
+
+  closeDisclaimerDialog = () => {
+    this.setState({
+      openDisclaimerDialog: false
+    });
+  };
+
   render() {
     const { open, onCancel, onRegister } = this.props;
-    const { cloudProviderUrl } = this.state;
+    const { cloudProviderUrl, openDisclaimerDialog } = this.state;
     let isUrlValid = this.validateUrl();
     return (
       <div>
@@ -79,6 +96,15 @@ export default class CloudProviderAddDialog extends React.Component<
               error={!isUrlValid}
               helperText={cloudProviderLangStrings.newcloudprovider.help}
             />
+
+            <Typography variant="body2" style={{ marginTop: "10px" }}>
+              {cloudProviderLangStrings.newcloudprovider.disclaimer.text}
+              <Link underline="always" onClick={this.openDisclaimerDialog}>
+                <b>
+                  {cloudProviderLangStrings.newcloudprovider.disclaimer.title}
+                </b>
+              </Link>
+            </Typography>
           </DialogContent>
           <DialogActions>
             <Button id="cancel-register" onClick={onCancel} color="primary">
@@ -96,6 +122,11 @@ export default class CloudProviderAddDialog extends React.Component<
             </Button>
           </DialogActions>
         </Dialog>
+
+        <CloudProviderDisclaimerDialog
+          openDialog={openDisclaimerDialog}
+          onClose={this.closeDisclaimerDialog}
+        />
       </div>
     );
   }
