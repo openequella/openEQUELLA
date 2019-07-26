@@ -22,6 +22,9 @@ const styles = (theme: Theme) =>
   createStyles({
     disclaimerText: {
       marginTop: theme.spacing.unit
+    },
+    link: {
+      cursor: "pointer"
     }
   });
 
@@ -110,7 +113,11 @@ class CloudProviderAddDialog extends React.Component<
 
             <Typography variant="body2" className={classes.disclaimerText}>
               {cloudProviderLangStrings.newcloudprovider.disclaimer.text}
-              <Link underline="always" onClick={this.openDisclaimerDialog}>
+              <Link
+                className={classes.link}
+                underline="always"
+                onClick={this.openDisclaimerDialog}
+              >
                 <b>
                   {cloudProviderLangStrings.newcloudprovider.disclaimer.title}
                 </b>
