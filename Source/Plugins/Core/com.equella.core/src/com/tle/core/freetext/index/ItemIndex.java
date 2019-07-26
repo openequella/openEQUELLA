@@ -616,7 +616,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 			public Multimap<String, Pair<String, Integer>> search(IndexSearcher searcher) throws IOException
 			{
 				final IndexReader reader = searcher.getIndexReader();
-				final OpenBitSet filteredBits = searchRequestToBitSet(searchreq, searcher, reader);
+				final OpenBitSet filteredBits = searchRequestToBitSet(searchreq, searcher, reader, false);
 
 				final Multimap<String, Pair<String, Integer>> rv = ArrayListMultimap.create();
 				for( String field : fields )
@@ -647,7 +647,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 	}
 
 	public MatrixResults matrixSearch(@Nullable final Search searchreq, final List<String> fields,
-		final boolean countOnly)
+		final boolean countOnly, final boolean searchAttachments)
 	{
 		return search(new Searcher<MatrixResults>()
 		{
@@ -656,7 +656,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 			{
 				IndexReader reader = searcher.getIndexReader();
 
-				OpenBitSet filteredBits = searchRequestToBitSet(searchreq, searcher, reader);
+				OpenBitSet filteredBits = searchRequestToBitSet(searchreq, searcher, reader, searchAttachments);
 				int maxDoc = reader.maxDoc();
 
 				Map<String, Map<String, List<TermBitSet>>> xpathMap = new HashMap<String, Map<String, List<TermBitSet>>>();
@@ -726,12 +726,12 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 	}
 
 	private OpenBitSet searchRequestToBitSet(@Nullable final Search searchreq, IndexSearcher searcher,
-		IndexReader reader) throws IOException
+		IndexReader reader, boolean searchAttachments) throws IOException
 	{
 		if( searchreq != null )
 		{
 			Filter filters = getFilter(searchreq);
-			Query query = getQuery(searchreq, null, false);
+			Query query = getQuery(searchreq, null, searchAttachments);
 
 			BitSetCollector collector = new BitSetCollector();
 			searcher.search(query, filters, collector);

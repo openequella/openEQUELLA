@@ -195,7 +195,7 @@ public class SearchResourceImpl implements EquellaSearchResource
 		final DefaultSearch search = createSearch(q, cols, whereClause, onlyLive, SortType.RANK, false, modifiedAfter, modifiedBefore,
 			null, null, owner, new DefaultSearch());
 
-		final MatrixResults matrixResults = freetextService.matrixSearch(search, nodeList, true, width);
+		final MatrixResults matrixResults = freetextService.matrixSearch(search, nodeList, true, width, true);
 
 		final FacetSearchBean resultsBean = new FacetSearchBean();
 		final List<FacetBean> facetBeans = Lists.newArrayList();

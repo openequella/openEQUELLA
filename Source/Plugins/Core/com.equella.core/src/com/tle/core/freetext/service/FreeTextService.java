@@ -61,5 +61,5 @@ public interface FreeTextService
 
 	void waitUntilIndexed(ItemIdKey itemIdKey);
 
-	MatrixResults matrixSearch(Search searchRequest, List<String> fields, boolean countOnly, int width);
+	MatrixResults matrixSearch(Search searchRequest, List<String> fields, boolean countOnly, int width, boolean searchAttachments);
 }

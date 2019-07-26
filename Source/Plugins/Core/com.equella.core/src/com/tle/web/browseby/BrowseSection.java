@@ -143,7 +143,7 @@ public class BrowseSection extends AbstractPrototypeSection<BrowseSection.Model>
 		{
 			search.setCollectionUuids(collectionUuids);
 		}
-		MatrixResults results = freetextIndex.matrixSearch(search, getFields(info), true);
+		MatrixResults results = freetextIndex.matrixSearch(search, getFields(info), true, false);
 		BrowseRow rootNode = new BrowseRow(null, 0);
 		BrowseRow displayRootNode = rootNode;
 		rootNode.setTitle(LABEL_ROOT);
