@@ -34,7 +34,6 @@ import com.tle.web.sections.equella.annotation.PlugURL;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;
 import com.tle.web.sections.equella.layout.ContentLayout;
 import com.tle.web.sections.equella.utils.VoidKeyOption;
-import com.tle.web.sections.events.BeforeEventsListener;
 import com.tle.web.sections.events.BookmarkEvent;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.js.EventGenerator;
@@ -73,7 +72,7 @@ import javax.inject.Inject;
 @SuppressWarnings("nls")
 public class ItemAdminWhereSection
     extends AbstractPrototypeSection<ItemAdminWhereSection.ItemAdminWhereSectionModel>
-    implements HtmlRenderer, BeforeEventsListener {
+    implements HtmlRenderer {
   static {
     PluginResourceHandler.init(ItemAdminWhereSection.class);
   }
@@ -198,6 +197,7 @@ public class ItemAdminWhereSection
     getModel(info).setEditQuery(false);
     List<String> clauses = whereClauses.getValues(info);
     querySection.getModel(info).setCriteria(clauses);
+    info.forceRedirect();
   }
 
   public void clearOptions(SectionInfo info) {
@@ -225,13 +225,6 @@ public class ItemAdminWhereSection
     whereOperator.setListModel(new SimpleHtmlListModel<Void>(exprOps));
   }
 
-  @Override
-  public void beforeEvents(SectionInfo info) {
-    if (getModel(info).isEditQuery()) {
-      rootItemAdmin.setModalSection(info, this);
-    }
-  }
-
   public void setEditQuery(SectionInfo info, boolean edit, String collectionId) {
     ItemAdminWhereSectionModel model = getModel(info);
     model.setEditQuery(edit);
@@ -240,21 +233,25 @@ public class ItemAdminWhereSection
 
   @Override
   public Object instantiateModel(SectionInfo info) {
-    return new ItemAdminWhereSectionModel();
+    return new ItemAdminWhereSectionModel(info);
   }
 
-  public static class ItemAdminWhereSectionModel {
+  public class ItemAdminWhereSectionModel {
     @Bookmarked(contexts = BookmarkEvent.CONTEXT_SESSION)
     private boolean editQuery;
 
     @Bookmarked private String collectionId;
+    private SectionInfo info;
 
-    public boolean isEditQuery() {
-      return editQuery;
+    public ItemAdminWhereSectionModel(SectionInfo info) {
+      this.info = info;
     }
 
     public void setEditQuery(boolean editQuery) {
       this.editQuery = editQuery;
+      if (editQuery) {
+        rootItemAdmin.setModalSection(info, ItemAdminWhereSection.this);
+      }
     }
 
     public String getCollectionId() {
