@@ -258,33 +258,21 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
       val attachments         = dialog.getAttachments.asScala
       val state               = repository.getState
       val uploadedAttachments = dialog.getAttachments.size
+      val fileDuplicateCheckEnabled =
+        dialog.getControlConfiguration.getBooleanAttribute("FILE_DUPLICATION_CHECK")
+      val linkDuplicateCheckEnabled =
+        dialog.getControlConfiguration.getBooleanAttribute("LINK_DUPLICATION_CHECK")
 
-      def fileDuplicateCheck(): Unit = {
-        val DuplicateCheckEnabled =
-          dialog.getControlConfiguration.getBooleanAttribute("FILE_DUPLICATION_CHECK")
-        if (DuplicateCheckEnabled) {
-          val fileAttachments =
-            attachments.filter(_.isInstanceOf[FileAttachment]).map(_.asInstanceOf[FileAttachment])
-          for (fileAttachment <- fileAttachments) {
-            wizardService.checkFileAttachmentDuplicate(state,
-                                                       fileAttachment.getFilename,
-                                                       fileAttachment.getUuid)
-          }
-        }
+      def fileDuplicateCheck(fileAttachment: FileAttachment): Unit = {
+        wizardService.checkFileAttachmentDuplicate(state,
+                                                   fileAttachment.getFilename,
+                                                   fileAttachment.getUuid)
       }
 
-      def linkDuplicateCheck(): Unit = {
-        val DuplicateCheckEnabled =
-          dialog.getControlConfiguration.getBooleanAttribute("LINK_DUPLICATION_CHECK")
-        if (DuplicateCheckEnabled) {
-          val linkAttachments =
-            attachments.filter(_.isInstanceOf[LinkAttachment]).map(_.asInstanceOf[LinkAttachment])
-          for (linkAttachment <- linkAttachments) {
-            wizardService.checkLinkAttachmentDuplicate(state,
-                                                       linkAttachment.getDescription,
-                                                       linkAttachment.getUuid)
-          }
-        }
+      def linkDuplicateCheck(linkAttachment: LinkAttachment): Unit = {
+        wizardService.checkLinkAttachmentDuplicate(state,
+                                                   linkAttachment.getDescription,
+                                                   linkAttachment.getUuid)
       }
 
       def updateDuplicateWarningMessage(): Unit = {
@@ -308,8 +296,12 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
       }
 
       if (attachments.nonEmpty) {
-        fileDuplicateCheck
-        linkDuplicateCheck
+        attachments.collect {
+          case fileAttachment: FileAttachment if fileDuplicateCheckEnabled =>
+            fileDuplicateCheck(fileAttachment)
+          case linkAttachment: LinkAttachment if linkDuplicateCheckEnabled =>
+            linkDuplicateCheck(linkAttachment)
+        }
       }
 
       updateDuplicateWarningMessage
