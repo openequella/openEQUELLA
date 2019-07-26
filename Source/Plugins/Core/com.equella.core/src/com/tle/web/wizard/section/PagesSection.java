@@ -124,8 +124,24 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel>
       if (xmlDoc != null) {
         PropBagEx itemXml = state.getItemxml();
         PropBagEx cloudControlXml = new PropBagEx(xmlDoc);
-        itemXml.mergeTree(cloudControlXml);
-        state.setItemXml(itemXml.toString());
+
+        /*
+         * Cloud control writes its metadata based on the item's xml.
+         * However in some cases (e.g. single page collection), at the moment when it is writing,
+         * the item's xml doesn't include the latest values of other controls in its node called <item>.
+         * So we must update this node, and don't change anything returned from cloud control.
+         */
+        final String ITEM_XML_NODE = "item";
+        PropBagEx oldItemNode = cloudControlXml.getSubtree(ITEM_XML_NODE);
+        PropBagEx newItemNode = itemXml.getSubtree(ITEM_XML_NODE);
+
+        if (oldItemNode != null) {
+          cloudControlXml.deleteSubtree(oldItemNode);
+        }
+        if (newItemNode != null) {
+          cloudControlXml.appendChildren(ITEM_XML_NODE, newItemNode);
+        }
+        state.setItemXml(cloudControlXml.toString());
       }
       info.queueEvent(
           new AbstractDirectEvent(SectionEvent.PRIORITY_AFTER_EVENTS, getSectionId()) {
