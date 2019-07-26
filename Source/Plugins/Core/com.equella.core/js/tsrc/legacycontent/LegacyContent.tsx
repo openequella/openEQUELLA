@@ -245,18 +245,18 @@ async function updateIncludes(
 function updateStylesheets(
   _sheets: string[]
 ): Promise<{ [url: string]: HTMLLinkElement }> {
-  return new Promise((resolve, reject) => {
-    const sheets = _sheets.map(resolveUrl);
-    const doc = window.document;
-    const insertPoint = doc.getElementById("_dynamicInsert")!;
-    const head = doc.getElementsByTagName("head")[0];
-    let current = insertPoint.previousElementSibling;
-    const existingSheets = {};
-    while (current != null && current.tagName == "LINK") {
-      existingSheets[(current as HTMLLinkElement).href] = current;
-      current = current.previousElementSibling;
-    }
-    const lastSheet = sheets.reduce((lastLink, cssUrl) => {
+  const sheets = _sheets.map(resolveUrl);
+  const doc = window.document;
+  const insertPoint = doc.getElementById("_dynamicInsert")!;
+  const head = doc.getElementsByTagName("head")[0];
+  let current = insertPoint.previousElementSibling;
+  const existingSheets = {};
+  while (current != null && current.tagName == "LINK") {
+    existingSheets[(current as HTMLLinkElement).href] = current;
+    current = current.previousElementSibling;
+  }
+  const cssPromises = sheets.reduce(
+    (lastLink, cssUrl) => {
       if (existingSheets[cssUrl]) {
         delete existingSheets[cssUrl];
         return lastLink;
@@ -265,22 +265,24 @@ function updateStylesheets(
         newCss.rel = "stylesheet";
         newCss.href = cssUrl;
         head.insertBefore(newCss, insertPoint);
-        return newCss;
+        const p = new Promise((resolve, reject) => {
+          newCss.addEventListener("load", resolve, false);
+          newCss.addEventListener(
+            "error",
+            err => {
+              console.error(`Failed to load css: ${newCss.href}`);
+              resolve();
+            },
+            false
+          );
+        });
+        lastLink.push(p);
+        return lastLink;
       }
-    }, null);
-    if (!lastSheet) resolve(existingSheets);
-    else {
-      lastSheet.addEventListener("load", () => resolve(existingSheets), false);
-      lastSheet.addEventListener(
-        "error",
-        err => {
-          console.error(`Failed to load css: ${lastSheet.href}`);
-          resolve();
-        },
-        false
-      );
-    }
-  });
+    },
+    [] as Promise<any>[]
+  );
+  return Promise.all(cssPromises).then(_ => existingSheets);
 }
 
 function deleteElements(elements: { [url: string]: HTMLElement }) {
