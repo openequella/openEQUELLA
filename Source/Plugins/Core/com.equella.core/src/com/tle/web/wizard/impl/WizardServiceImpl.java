@@ -744,7 +744,17 @@ public class WizardServiceImpl
   }
 
   @Override
-  public void checkDuplicateAttachments(WizardState state, String fileName, String fileUuid) {
+  public void checkLinkAttachmentDuplicate(WizardState state, String url, String linkUuid) {
+    final String ignoreItem = state.getItemId().getUuid();
+    final ItemDefinition itemdef = state.getItemDefinition();
+    List<ItemId> duplicateLinkAttachments = itemService.getItemsWithUrl(url, itemdef, ignoreItem);
+    if (duplicateLinkAttachments.size() > 0) {
+      setDuplicates(state, linkUuid, url, duplicateLinkAttachments, true, true);
+    }
+  }
+
+  @Override
+  public void checkFileAttachmentDuplicate(WizardState state, String fileName, String fileUuid) {
     try {
       String md5 = fileSystemService.getMD5Checksum(state.getFileHandle(), fileName);
       List<Attachment> duplicateFileAttachments =

@@ -116,6 +116,27 @@ public class UrlHandler extends BasicAbstractAttachmentHandler<AbstractAttachmen
   }
 
   @Override
+  public void remove(SectionInfo info, Attachment attachment, boolean willBeReplaced) {
+    super.remove(info, attachment, willBeReplaced);
+    removeDuplicateInfo(attachment.getUuid());
+  }
+
+  @Override
+  public void saveEdited(SectionInfo info, Attachment attachment) {
+    super.saveEdited(info, attachment);
+    // When editing a link, its old duplicate information must be removed
+    removeDuplicateInfo(attachment.getUuid());
+  }
+
+  private void removeDuplicateInfo(String uuid) {
+    boolean isDuplicateCheck =
+        dialogState.getControlConfiguration().getBooleanAttribute("LINK_DUPLICATION_CHECK");
+    if (isDuplicateCheck) {
+      dialogState.getRepository().getState().getDuplicateData().remove(uuid);
+    }
+  }
+
+  @Override
   public boolean isMultipleAllowed(SectionInfo info) {
     return false;
   }
