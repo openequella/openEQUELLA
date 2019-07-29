@@ -5,6 +5,18 @@ exports.updateCtrlErrorText = function(ctrlId, text) {
   contElem.querySelector("P.ctrlinvalidmessage").textContent = text;
 };
 
+exports.updateDuplicateMessage = function(display) {
+  var duplicateMessageDiv = document.querySelector(
+    ".attachment-duplicate-message"
+  );
+  console.log(display);
+  if (display) {
+    duplicateMessageDiv.setAttribute("style", "color:red; display:inline");
+  } else {
+    duplicateMessageDiv.setAttribute("style", "color:red; display:none");
+  }
+};
+
 exports.simpleFormat = function(format) {
   return function(args) {
     return format.replace(/{(\d+)}/g, function(match, number) {

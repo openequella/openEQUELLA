@@ -5,6 +5,11 @@
 
 <@css "universalresource.css" />
 <#if m.displayDuplicateWarning>
-  <@link section=s.duplicateWarningMessage style="color:red"/>
+  <#assign visibility = "inline">
+<#else >
+  <#assign visibility = "none">
 </#if>
+<!-- Control the visibility of duplicateWarningMessage via CSS so that Purescript can control it consistently -->
+  <@link section=s.duplicateWarningMessage style="color:red; display: ${visibility}" class="attachment-duplicate-message"/>
+
 <@render m.divTag />

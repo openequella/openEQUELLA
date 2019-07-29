@@ -33,8 +33,8 @@ type EntryId = String
 
 data UploadCommand = NewUpload String Number | Delete EntryId
 data UploadResponse = NewUploadResponse {uploadUrl:: String, id:: EntryId, name:: String}
-  | AddEntries (Array FileElement) | UploadFailed String | RemoveEntries (Array EntryId)
-  | UpdateEntry FileElement
+  | AddEntries (Array FileElement) | UploadFailed String | RemoveEntries {removed :: Array EntryId, hasAttachmentDuplicate:: Maybe Boolean}
+  | UpdateEntry {entry :: FileElement, hasAttachmentDuplicate :: Maybe Boolean}
 
 type CurrentUpload = {id::String, name::String, length:: Number, finished:: Number, fiber :: Fiber Unit }
 newtype FileElement = FileElement {id::EntryId, name::String, link::String, preview::Boolean, editable::Boolean, children::Array FileElement }
@@ -49,7 +49,8 @@ type Entry = Tuple String (Either FileElement CurrentUpload)
 
 type State = {
   entries :: Array Entry,
-  error :: Maybe String
+  error :: Maybe String,
+  hasAttachmentDuplicate :: Maybe Boolean
 }
 
 fileToEntry :: FileElement -> Entry 
@@ -98,8 +99,14 @@ instance decodeUR :: DecodeJson UploadResponse where
         name <- o .? "name"
         pure $ NewUploadResponse {id, uploadUrl, name}
       "addentries" -> AddEntries <$> o .? "entries"
-      "removeentries" -> RemoveEntries <$> o .? "ids"
-      "updateentry" -> UpdateEntry <$> o .? "entry"
+      "removeentries" -> do
+        removed <- o .? "ids"
+        hasAttachmentDuplicate <- o .? "hasAttachmentDuplicate"
+        pure $ RemoveEntries {removed, hasAttachmentDuplicate}
+      "updateentry" -> do
+        entry <- o .? "entry"
+        hasAttachmentDuplicate <- o .? "hasAttachmentDuplicate"
+        pure $ UpdateEntry {entry, hasAttachmentDuplicate}
       "uploadfailed" -> do
         reason <- o .? "reason"
         pure $ UploadFailed reason
@@ -112,7 +119,7 @@ commandEval {commandUrl,updateUI} = eval
   where 
   responseJson :: Aff (AffjaxResponse Json) -> Aff UploadResponse
   responseJson a = (a >>= \res -> either (error >>> throwError) pure $ decodeJson res.response) 
-    <|> (pure $ UploadFailed "FAILED")
+    <|> (pure $ UploadFailed "FAILED11111")
   
   runUpdate = liftEffect $ fromMaybe (pure unit) updateUI
 
@@ -151,8 +158,8 @@ commandEval {commandUrl,updateUI} = eval
             case postr of
               (AddEntries entries) -> do 
                 modifyState $ removeOne id <<< \s -> s {entries = s.entries <> (fileToEntry <$> entries), error=Nothing}
-              (UpdateEntry entry) -> do
-                modifyState $ (set (_entryForId id) $ Just $ fileToEntry entry) >>> _ {error=Nothing}
+              (UpdateEntry {entry, hasAttachmentDuplicate}) -> do
+                modifyState $ (set (_entryForId id) $ Just $ fileToEntry entry) >>> _ {error=Nothing,  hasAttachmentDuplicate= hasAttachmentDuplicate}
               o -> do 
                 modifyState $ removeOne id
                 errorResponse o
@@ -165,13 +172,13 @@ commandEval {commandUrl,updateUI} = eval
   eval (DeleteFile fileid) = do 
     r <- lift $ responseJson $ post AXResp.json commandUrl $ AXReq.json $ encodeJson $ Delete fileid
     case r of 
-      (RemoveEntries removed) -> do
+      (RemoveEntries {removed, hasAttachmentDuplicate}) -> do
         let remEntry (Tuple id o) | any (eq id) removed = Nothing
             remEntry (Tuple id (Left fe@(FileElement _))) = fileToEntry <$> remRecurse fe
             remEntry o = Just o
             remRecurse (FileElement {id}) | any (eq id) removed = Nothing
             remRecurse (FileElement fe@{children}) = Just $ FileElement fe {children = mapMaybe remRecurse children}
-        modifyState \s -> s {entries = mapMaybe remEntry s.entries }
+        modifyState \s -> s {entries = mapMaybe remEntry s.entries, hasAttachmentDuplicate= hasAttachmentDuplicate}
       o -> errorResponse o
     runUpdate
 

@@ -6,7 +6,7 @@ import Control.MonadZero (guard)
 import Data.Array (catMaybes, concat, intercalate, length, mapWithIndex)
 import Data.Either (Either(..), either)
 import Data.Int (floor)
-import Data.Maybe (Maybe(Just, Nothing), maybe)
+import Data.Maybe (Maybe(Just, Nothing), fromMaybe, maybe)
 import Data.Nullable (Nullable, toMaybe)
 import Data.Tuple (Tuple(..))
 import Data.Unfoldable as U
@@ -51,7 +51,9 @@ renderError msg = div [ className "ctrlinvalid" ] [ p [ className "ctrlinvalidme
 foreign import register :: forall a. EffectFn1 a Unit 
 
 foreign import updateCtrlErrorText :: EffectFn2 String String Unit
-foreign import simpleFormat :: String -> Array String -> String 
+foreign import simpleFormat :: String -> Array String -> String
+
+foreign import updateDuplicateMessage :: EffectFn1 Boolean Unit
 
 type InlineProps = (
     ctrlId :: String,
@@ -74,10 +76,11 @@ inlineUploadClass = component "InlineUpload" $ \this -> do
     maxAttach = toMaybe props.maxAttachments
 
     componentDidUpdate _ {entries:oldEntries} _ = do
-      {entries} <- getState this
+      {entries, hasAttachmentDuplicate} <- getState this
       let oldError = ctrlError oldEntries
           newError = ctrlError entries
       if oldError /= newError then runEffectFn2 updateCtrlErrorText ctrlId newError else pure unit
+      runEffectFn1 updateDuplicateMessage $ fromMaybe false hasAttachmentDuplicate
 
     ctrlError entries = if compareMax (>) entries 
       then maybe "" (\ma -> simpleFormat strings.toomany [show ma, show (length entries - ma)]) maxAttach
@@ -85,7 +88,7 @@ inlineUploadClass = component "InlineUpload" $ \this -> do
     compareMax f entries = maybe false (f $ length entries) maxAttach
 
     initialState :: State
-    initialState = {entries: fileToEntry <$> props.entries, error:Nothing}
+    initialState = {entries: fileToEntry <$> props.entries, error:Nothing, hasAttachmentDuplicate: Just false}
 
     render {error, entries} = 
       div [_id $ ctrlId <> "universalresources", className "universalresources"] $ concat [
@@ -152,7 +155,7 @@ universalUpload {elem:renderElem,ctrlId,commandUrl,updateFooter, scrapBookOnClic
   void $ flip RD.render renderElem $ flip unsafeCreateLeafElement {} $ component "UniversalUpload" $ \this -> do
     let  
       d = commandEval {commandUrl,updateUI:Just $ updateFooter} >>> affAction this
-      render {entries, error} = div [_id "uploads"] $ [ 
+      render {entries, error, hasAttachmentDuplicate} = div [_id "uploads"] $ [
         div [ className "uploadsprogress" ] $ renderEntry <$> entries,
         fileDrop { fileInput: customFile $ ctrlId <> "_fileUpload", 
             dropText: strings.drop, onFiles: d <<< UploadFiles }
@@ -181,4 +184,4 @@ universalUpload {elem:renderElem,ctrlId,commandUrl,updateFooter, scrapBookOnClic
         renderScrap clicked = div [ className "addLink" ] [
           a [ _id $ ctrlId <> "_filesFromScrapbookLink", className "add", jsVoid, onClick \_ -> clicked] [text strings.scrapbook]
         ]
-    pure {render: stateRenderer render this, state: {entries:[], error:Nothing}}
+    pure {render: stateRenderer render this, state: {entries:[], error:Nothing, hasAttachmentDuplicate: Just false}}

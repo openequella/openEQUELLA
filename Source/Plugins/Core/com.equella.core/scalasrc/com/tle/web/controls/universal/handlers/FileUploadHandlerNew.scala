@@ -701,19 +701,20 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
               .getOrElse {
                 WebFileUploads.writeStream(uf, this, request.getInputStream) match {
                   case Successful(fileInfo) =>
+                    System.out.println("121212")
                     validateContent(info, this, uf.uploadPath) match {
                       case Left(ifr) =>
                         illegal(ifr)
                       case Right(detected) =>
                         val v = ValidatedUpload(uf.success(fileInfo), detected)
                         (v,
-                         UpdateEntry(
-                           AjaxFileEntry(uploadId.toString,
-                                         uf.originalFilename,
-                                         "",
-                                         true,
-                                         false,
-                                         Iterable.empty)))
+                         UpdateEntry(AjaxFileEntry(uploadId.toString,
+                                                   uf.originalFilename,
+                                                   "",
+                                                   true,
+                                                   false,
+                                                   Iterable.empty),
+                                     None))
                     }
                   case IllegalFile(reason) => illegal(reason)
                   case e @ Errored(t) =>
@@ -737,7 +738,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
           decode[AjaxUploadCommand](jsonSource).fold(throw _, identity) match {
             case Delete(uploadId) =>
               stopOrCancel(info, UUID.fromString(uploadId))
-              RemoveEntries(Iterable(uploadId))
+              RemoveEntries(Iterable(uploadId), None)
             case NewUpload(filename, size) =>
               val uploadId   = UUID.randomUUID()
               val uniqueName = WebFileUploads.uniqueName(filename, replaceFilename, uploadId, this)

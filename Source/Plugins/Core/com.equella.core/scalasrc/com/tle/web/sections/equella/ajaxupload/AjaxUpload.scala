@@ -65,8 +65,10 @@ sealed trait AjaxUploadResponse
 case class NewUploadResponse(uploadUrl: String, id: String, name: String) extends AjaxUploadResponse
 case class UploadFailed(reason: String)                                   extends AjaxUploadResponse
 case class AddEntries(entries: Iterable[AjaxFileEntry])                   extends AjaxUploadResponse
-case class UpdateEntry(entry: AjaxFileEntry)                              extends AjaxUploadResponse
-case class RemoveEntries(ids: Iterable[String])                           extends AjaxUploadResponse
+case class UpdateEntry(entry: AjaxFileEntry, hasAttachmentDuplicate: Option[Boolean])
+    extends AjaxUploadResponse
+case class RemoveEntries(ids: Iterable[String], hasAttachmentDuplicate: Option[Boolean])
+    extends AjaxUploadResponse
 
 object AjaxUploadCommand {
   implicit val config = Configuration.default
