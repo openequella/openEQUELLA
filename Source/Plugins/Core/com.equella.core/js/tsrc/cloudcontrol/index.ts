@@ -146,33 +146,11 @@ observer.observe(document, {
 });
 
 var allValid = true;
-var xmlDoc: string | undefined;
-var requiredControls: { ctrlId: string; required: boolean }[] = [];
 
-$(window).bind("validate", () => {
-  if (allValid) {
-    if (xmlDoc) {
-      $("<input>")
-        .attr({ type: "hidden", name: "xmldoc", value: xmlDoc })
-        .appendTo("#cloudState");
-    }
-    requiredControls.forEach(({ ctrlId, required }) => {
-      $("<input>")
-        .attr({
-          type: "hidden",
-          name: `${ctrlId}_required`,
-          value: required.toString()
-        })
-        .appendTo("#cloudState");
-    });
-  }
-  return allValid;
-});
+$(window).bind("validate", () => allValid);
 
 $(window).bind("presubmit", () => {
   allValid = true;
-  xmlDoc = undefined;
-  requiredControls = [];
   $("#cloudState").remove();
   $('<div id="cloudState"/>').appendTo("._hiddenstate");
   let editXmlFunc: (doc: XMLDocument) => XMLDocument = x => x;
@@ -184,13 +162,24 @@ $(window).bind("presubmit", () => {
         editXmlFunc = d => edit(oldXmlFunc(d));
         xmlEdited = true;
       },
-      required => requiredControls.push({ ctrlId, required })
+      required => {
+        $("<input>")
+          .attr({
+            type: "hidden",
+            name: `${ctrlId}_required`,
+            value: required.toString()
+          })
+          .appendTo("#cloudState");
+      }
     );
     allValid = allValid && valid;
   });
   if (xmlEdited) {
     latestXml = editXmlFunc(latestXml);
-    xmlDoc = serializer.serializeToString(latestXml);
+    let xmlDoc = serializer.serializeToString(latestXml);
+    $("<input>")
+      .attr({ type: "hidden", name: "xmldoc", value: xmlDoc })
+      .appendTo("#cloudState");
     currentState = currentState.then(state =>
       runListeners({ ...state, xml: latestXml })
     );
