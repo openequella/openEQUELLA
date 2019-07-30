@@ -32,7 +32,12 @@ public class ScheduledTasksPage extends AbstractPage<ScheduledTasksPage> {
   WebElement runHarvesterProfilesLink;
 
   public ScheduledTasksPage(PageContext context) {
-    super(context, By.xpath("//div[@id='header-inner']/div[text()='Task debug page']"));
+    super(context);
+    if (isNewUI()) {
+      super.loadedBy = By.xpath("//header/div/div[1]/h5[text()='Task debug page']");
+    } else {
+      super.loadedBy = By.xpath("//div[@id='header-inner']/div[text()='Task debug page']");
+    }
   }
 
   @Override
