@@ -40,6 +40,10 @@ public class AutoCompleteOptions extends AbstractPage<AutoCompleteOptions> {
     return promptField.getAttribute("value");
   }
 
+  public WebElement getPromptField() {
+    return promptField;
+  }
+
   public List<String> getAutoCompleteOptions() {
     listWait();
     List<WebElement> opts = listElement.findElements(By.xpath("li/a"));
