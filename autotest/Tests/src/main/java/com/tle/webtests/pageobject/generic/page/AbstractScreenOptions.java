@@ -3,7 +3,10 @@ package com.tle.webtests.pageobject.generic.page;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractScreenOptions<T extends AbstractScreenOptions<T>>
     extends AbstractPage<T> {
@@ -30,15 +33,24 @@ public abstract class AbstractScreenOptions<T extends AbstractScreenOptions<T>>
   }
 
   public T open() {
-    if (!isPresent(loadedBy)) {
+    if (!isVisible(loadedBy)) {
       getOpenOptions().click();
     }
     return get();
   }
 
-  public void close() {
-    if (isPresent(loadedBy)) {
-      getOpenOptions().click();
+  public T close() {
+    if (isNewUI()) {
+      Actions action = new Actions(driver);
+      action.sendKeys(Keys.ESCAPE).build().perform();
+      waiter.until(ExpectedConditions.invisibilityOfElementLocated(loadedBy));
+      action.click();
+      return actualPage();
+    } else {
+      if (!isPresent(loadedBy)) {
+        getOpenOptions().click();
+      }
+      return get();
     }
   }
 }

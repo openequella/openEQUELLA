@@ -29,6 +29,7 @@ export default React.memo(function ScreenOptions(props: {
         open={Boolean(optionsAnchor)}
         marginThreshold={64}
         keepMounted
+        hidden={!Boolean(optionsAnchor)}
         container={document.getElementById("eqpageForm")}
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
         anchorEl={optionsAnchor}

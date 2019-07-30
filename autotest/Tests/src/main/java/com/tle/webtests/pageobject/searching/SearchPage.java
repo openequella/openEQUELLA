@@ -94,6 +94,10 @@ public class SearchPage
     return new SearchScreenOptions(resultsPageObject()).open();
   }
 
+  public SearchScreenOptions closeScreenOptions() {
+    return new SearchScreenOptions(resultsPageObject()).close();
+  }
+
   @Override
   public void checkLoaded() throws Error {
     super.checkLoaded();
@@ -115,7 +119,8 @@ public class SearchPage
 
   public SearchPage setIncludeNonLive(boolean b) {
     openScreenOptions().setNonLiveOption(b);
-    return this;
+    closeScreenOptions();
+    return actualPage();
   }
 
   protected void setWithin(String name) {
