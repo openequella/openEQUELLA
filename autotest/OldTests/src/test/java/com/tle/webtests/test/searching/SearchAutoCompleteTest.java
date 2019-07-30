@@ -87,21 +87,14 @@ public class SearchAutoCompleteTest extends AbstractCleanupAutoTest {
     ac = qs.autoCompleteOptions(STEMMING_QUERY, STEMMING_RESULT);
 
     assertKeyboardNav(qs, Keys.ARROW_UP, Lists.reverse(opts));
+
     // Set the query to partial long item name
     // Super flakey...
     partialQuery = LONG_ITEM.substring(0, 52);
     ac = qs.autoCompleteOptions(partialQuery, LONG_ITEM);
 
     // Check there is no prompt text when name is longer than queryfield
-    // The width of queryfield is fixed as 682 in old UI
-    final int PROMPT_WIDTH = 682;
-    if (ac.getPromptField().getSize().width <= PROMPT_WIDTH) {
-      assertEquals(ac.getPromptText(), "");
-    } else {
-      // New UI has enough spaces for this long string so we should expect the whole string
-      // displayed
-      assertEquals(ac.getPromptText(), LONG_ITEM);
-    }
+    assertEquals(ac.getPromptText(), "");
 
     // Check single term
     qs.setQuery(QUERY_NOAUTOCOMPLETE);
