@@ -15,7 +15,7 @@
     "profunctor-lenses",
     "effect",
     "dispatcher-react",
-    "prelude", 
+    "prelude",
     "debug"
   ]
 }

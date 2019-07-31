@@ -20,14 +20,14 @@ package object cloudprovider {
 
   case class RViewer(name: String, serviceId: String)
 
-  case class RServiceUri(authenticated: Boolean, uri: String)
+  case class RServiceUrl(authenticated: Boolean, url: String)
 
   case class RCloudProviderRegistration(name: String,
                                         description: Option[String],
                                         baseUrl: String,
                                         iconUrl: Option[String],
                                         providerAuth: RCloudOAuthCredentials,
-                                        serviceUris: Map[String, RServiceUri],
+                                        serviceUrls: Map[String, RServiceUrl],
                                         viewers: Map[String, Map[String, RViewer]])
 
   case class RCloudProviderRegistrationResponse(instance: RCloudProviderInstance,
@@ -40,7 +40,7 @@ package object cloudprovider {
                                     iconUrl: Option[String],
                                     providerAuth: RCloudOAuthCredentials,
                                     oeqAuth: RCloudOAuthCredentials,
-                                    serviceUris: Map[String, RServiceUri],
+                                    serviceUrls: Map[String, RServiceUrl],
                                     viewers: Map[String, Map[String, RViewer]])
 
   case class RCloudProviderForward(url: String)

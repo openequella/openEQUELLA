@@ -123,17 +123,19 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel>
           new AbstractDirectEvent(SectionEvent.PRIORITY_AFTER_EVENTS, getSectionId()) {
             @Override
             public void fireDirect(SectionId sectionId, SectionInfo info) throws Exception {
-              final LERepository repository = page.getRepository();
-              synchronized (repository.getThreadLock()) {
-                String xmlDoc = model.getXmldoc();
-                if (xmlDoc != null) {
-                  state.setItemXml(xmlDoc);
-                }
-                page.saveToDocument(info);
-                page.setSubmitted(true);
-                itemHelper.updateItemFromXml(state.getItemPack());
-                wizardService.checkPages(state);
+              String xmlDoc = model.getXmldoc();
+              if (xmlDoc != null) {
+                state.setItemXml(xmlDoc);
               }
+              final LERepository repository = page.getRepository();
+              repository.runUpdate(
+                  wsi -> {
+                    page.saveToDocument(info);
+                    page.setSubmitted(true);
+                    itemHelper.updateItemFromXml(state.getItemPack());
+                    wizardService.checkPages(state);
+                    return true;
+                  });
             }
           });
     }

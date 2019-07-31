@@ -131,6 +131,14 @@ class CloudProviderApi {
     CloudProviderDB.deleteRegistration(uuid).as(Response.noContent())
   }
 
+  @POST
+  @Path("provider/{uuid}/refresh")
+  @ApiOperation(value = "Refresh a cloud provider")
+  def refreshRegistration(@PathParam("uuid") uuid: UUID): Response = ApiHelper.runAndBuild {
+    checkPermissions()
+    CloudProviderDB.refreshRegistration(uuid).value.as(Response.noContent())
+  }
+
   @GET
   @Path("")
   @ApiOperation("List current cloud providers")

@@ -8,7 +8,7 @@ import {
 
 interface EquellaListItemProps {
   listItemPrimaryText: string;
-  listItemSecondText?: string;
+  listItemSecondText?: ReactNode;
   listItemAttributes: {};
   secondaryAction?: ReactNode;
   icon?: ReactNode;

@@ -62,6 +62,7 @@ export interface LegacyContentProps {
   enabled: boolean;
   pathname: string;
   search: string;
+  locationKey?: string;
   userUpdated: () => void;
   redirected: (redir: { href: string; external: boolean }) => void;
   onError: (cb: { error: ErrorResponse; fullScreen: boolean }) => void;
@@ -94,34 +95,47 @@ export const LegacyContent = React.memo(function LegacyContent(
 ) {
   const [content, setContent] = React.useState<PageContent>();
   const { enabled } = props;
+  const baseUrl = (document.getElementsByTagName("base")[0] as HTMLBaseElement)
+    .href;
+
+  function toRelativeUrl(url: string) {
+    let relUrl =
+      url.indexOf(baseUrl) == 0 ? url.substring(baseUrl.length) : url;
+    return relUrl.indexOf("/") == 0 ? relUrl : "/" + relUrl;
+  }
+
+  function updatePageContent(content: LegacyContent, scrollTop: boolean) {
+    updateIncludes(content.css, content.js).then(extraCss => {
+      const pageContent = {
+        ...content,
+        contentId: v4(),
+        afterHtml: () => {
+          deleteElements(extraCss);
+          if (scrollTop) {
+            document.documentElement.scrollTop = 0;
+          }
+        }
+      } as PageContent;
+      if (content.userUpdated) {
+        props.userUpdated();
+      }
+      setContent(pageContent);
+    });
+  }
 
   function submitCurrentForm(
     fullScreen: boolean,
     scrollTop: boolean,
+    formAction: string | undefined,
     submitValues: StateData,
     callback?: (response: SubmitResponse) => void
   ) {
-    submitRequest(props.pathname, submitValues)
+    submitRequest(toRelativeUrl(formAction || props.pathname), submitValues)
       .then(content => {
         if (callback) {
           callback(content);
         } else if (isPageContent(content)) {
-          updateIncludes(content.css, content.js).then(extraCss => {
-            const pageContent = {
-              ...content,
-              contentId: v4(),
-              afterHtml: () => {
-                deleteElements(extraCss);
-                if (scrollTop) {
-                  document.documentElement.scrollTop = 0;
-                }
-              }
-            } as PageContent;
-            if (content.userUpdated) {
-              props.userUpdated();
-            }
-            setContent(pageContent);
-          });
+          updatePageContent(content, scrollTop);
         } else if (isChangeRoute(content)) {
           if (content.userUpdated) {
             props.userUpdated();
@@ -146,12 +160,9 @@ export const LegacyContent = React.memo(function LegacyContent(
           }
         }
       }
-      var vals = collectParams(
-        document.getElementById("eqpageForm") as HTMLFormElement,
-        command,
-        [].slice.call(arguments, 1)
-      );
-      submitCurrentForm(true, false, vals);
+      const form = document.getElementById("eqpageForm") as HTMLFormElement;
+      const vals = collectParams(form, command, [].slice.call(arguments, 1));
+      submitCurrentForm(true, false, form.action, vals);
       return false;
     };
   }
@@ -170,6 +181,7 @@ export const LegacyContent = React.memo(function LegacyContent(
         submitCurrentForm(
           false,
           false,
+          form.action,
           collectParams(form, name, params),
           callback
         );
@@ -206,13 +218,13 @@ export const LegacyContent = React.memo(function LegacyContent(
         if (exVal) exVal.push(val);
         else urlValues[key] = [val];
       });
-      submitCurrentForm(true, true, urlValues);
+      submitCurrentForm(true, true, undefined, urlValues);
     }
     if (!enabled) {
       setContent(undefined);
       updateStylesheets([]).then(deleteElements);
     }
-  }, [enabled, props.pathname, props.search]);
+  }, [enabled, props.pathname, props.search, props.locationKey]);
 
   return props.render(enabled ? content : undefined);
 });
@@ -238,7 +250,7 @@ function updateStylesheets(
     const doc = window.document;
     const insertPoint = doc.getElementById("_dynamicInsert")!;
     const head = doc.getElementsByTagName("head")[0];
-    var current = insertPoint.previousElementSibling;
+    let current = insertPoint.previousElementSibling;
     const existingSheets = {};
     while (current != null && current.tagName == "LINK") {
       existingSheets[(current as HTMLLinkElement).href] = current;
@@ -249,7 +261,7 @@ function updateStylesheets(
         delete existingSheets[cssUrl];
         return lastLink;
       } else {
-        var newCss = doc.createElement("link");
+        const newCss = doc.createElement("link");
         newCss.rel = "stylesheet";
         newCss.href = cssUrl;
         head.insertBefore(newCss, insertPoint);
@@ -273,7 +285,7 @@ function updateStylesheets(
 
 function deleteElements(elements: { [url: string]: HTMLElement }) {
   for (const key in elements) {
-    var e = elements[key];
+    const e = elements[key];
     e.parentElement!.removeChild(e);
   }
 }
@@ -322,7 +334,7 @@ function collectParams(
   command: string | null,
   args: string[]
 ) {
-  var vals = {};
+  const vals = {};
   if (command) {
     vals["event__"] = [command];
   }

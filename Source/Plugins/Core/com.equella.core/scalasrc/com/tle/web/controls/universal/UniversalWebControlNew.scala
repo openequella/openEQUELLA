@@ -173,13 +173,14 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
     def controlState = dialog
 
     def stateAction[A](info: SectionInfo)(f: => A): A = {
-      val state = dialog.getWizardState(info).getItem
-      state.synchronized {
-        val r = f
+      var ret: Any = null
+      dialog.updateWizardState(info, { _ =>
+        ret = f
         controlState.getStorageControl.getWizardPage
           .saveToDocument(List(controlState.getStorageControl).asJava, null)
-        r
-      }
+        true
+      })
+      ret.asInstanceOf[A]
     }
 
     class UniversalRenderModel(info: SectionInfo) extends WebControlModel {

@@ -19,6 +19,11 @@ interface ItemStateJSON {
   xml: string;
   attachments: Attachment[];
   files: FileEntries;
+  stateVersion: number;
+}
+
+interface VersionedItemState extends ItemState {
+  stateVersion: number;
 }
 
 interface ItemEdit {
@@ -37,7 +42,7 @@ interface CloudControlRegisterImpl extends CloudControlRegister {
     data: WizardIds
   ) => (params: ControlApi<T>) => void;
   forceReload(): void;
-  sendBatch(state: ItemState): Promise<ItemState>;
+  sendBatch(state: VersionedItemState): Promise<VersionedItemState>;
 }
 
 interface ItemCommandResponses {
@@ -59,14 +64,25 @@ interface Registration {
 var registrations: {
   [key: string]: Registration | undefined;
 } = {};
+
 var listeners: ((doc: ItemState) => void)[] = [];
-const controlValidators: { validator: ControlValidator; ctrlId: string }[] = [];
+var controlValidators: { validator: ControlValidator; ctrlId: string }[] = [];
 var commandQueue: CommandsPromise[] = [];
 var transformState: ((doc: XMLDocument) => XMLDocument) | null = null;
 var reloadState: boolean = false;
 var wizardIds: WizardIds;
-var currentState: Promise<ItemState>;
+var currentState: Promise<VersionedItemState>;
 var latestXml: XMLDocument;
+
+function resetGlobalState() {
+  transformState = null;
+  reloadState = false;
+  commandQueue = [];
+  controlValidators = [];
+  listeners = [];
+  currentState = null!;
+  latestXml = null!;
+}
 
 const parser = new DOMParser();
 const serializer = new XMLSerializer();
@@ -80,7 +96,7 @@ function wizardUri(path: string): string {
   return "api/wizard/" + encodeURIComponent(wizardIds.wizId) + "/" + path;
 }
 
-async function getState(wizid: string): Promise<ItemState> {
+async function getState(wizid: string): Promise<VersionedItemState> {
   const res = await Axios.get<ItemStateJSON>(wizardUri("state"));
   const nextState = {
     ...res.data,
@@ -130,33 +146,11 @@ observer.observe(document, {
 });
 
 var allValid = true;
-var xmlDoc: string | undefined;
-var requiredControls: { ctrlId: string; required: boolean }[] = [];
 
-$(window).bind("validate", () => {
-  if (allValid) {
-    if (xmlDoc) {
-      $("<input>")
-        .attr({ type: "hidden", name: "xmldoc", value: xmlDoc })
-        .appendTo("#cloudState");
-    }
-    requiredControls.forEach(({ ctrlId, required }) => {
-      $("<input>")
-        .attr({
-          type: "hidden",
-          name: `${ctrlId}_required`,
-          value: required.toString()
-        })
-        .appendTo("#cloudState");
-    });
-  }
-  return allValid;
-});
+$(window).bind("validate", () => allValid);
 
 $(window).bind("presubmit", () => {
   allValid = true;
-  xmlDoc = undefined;
-  requiredControls = [];
   $("#cloudState").remove();
   $('<div id="cloudState"/>').appendTo("._hiddenstate");
   let editXmlFunc: (doc: XMLDocument) => XMLDocument = x => x;
@@ -168,20 +162,31 @@ $(window).bind("presubmit", () => {
         editXmlFunc = d => edit(oldXmlFunc(d));
         xmlEdited = true;
       },
-      required => requiredControls.push({ ctrlId, required })
+      required => {
+        $("<input>")
+          .attr({
+            type: "hidden",
+            name: `${ctrlId}_required`,
+            value: required.toString()
+          })
+          .appendTo("#cloudState");
+      }
     );
     allValid = allValid && valid;
   });
   if (xmlEdited) {
     latestXml = editXmlFunc(latestXml);
-    xmlDoc = serializer.serializeToString(latestXml);
+    let xmlDoc = serializer.serializeToString(latestXml);
+    $("<input>")
+      .attr({ type: "hidden", name: "xmldoc", value: xmlDoc })
+      .appendTo("#cloudState");
     currentState = currentState.then(state =>
       runListeners({ ...state, xml: latestXml })
     );
   }
 });
 
-function runListeners(state: ItemState): ItemState {
+function runListeners(state: VersionedItemState): VersionedItemState {
   latestXml = state.xml;
   listeners.forEach(f => f(state));
   return state;
@@ -202,10 +207,23 @@ export const CloudControl: CloudControlRegisterImpl = {
       currentState = currentState.then(CloudControl.sendBatch);
     }
   },
-  async sendBatch(state: ItemState): Promise<ItemState> {
+  async sendBatch(state: VersionedItemState): Promise<VersionedItemState> {
     if (reloadState) {
       reloadState = false;
       var nextState = await getState(wizardIds.wizId);
+      if (nextState.stateVersion < state.stateVersion) {
+        console.log(
+          `Out of order state detected, already had ${
+            state.stateVersion
+          } but got ${nextState.stateVersion}`
+        );
+        console.log(
+          `Already had ${serializer.serializeToString(
+            state.xml
+          )} but got ${serializer.serializeToString(nextState.xml)}`
+        );
+        nextState = state;
+      }
       return CloudControl.sendBatch(nextState);
     }
     let edits: ItemCommand[] = [];
@@ -253,7 +271,8 @@ export const CloudControl: CloudControlRegisterImpl = {
       return runListeners({
         files: state.files,
         attachments: att,
-        xml: newXml
+        xml: newXml,
+        stateVersion: state.stateVersion
       });
     } catch (err) {
       currentPromises.forEach(p => p.rejected(err));
@@ -262,6 +281,9 @@ export const CloudControl: CloudControlRegisterImpl = {
   },
   createRender(data) {
     const { wizId } = data;
+    if (wizardIds && wizardIds.wizId !== wizId) {
+      resetGlobalState();
+    }
     wizardIds = data;
     if (!currentState) {
       currentState = getState(wizId);

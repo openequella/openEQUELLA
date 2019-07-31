@@ -16,39 +16,23 @@
  * limitations under the License.
  */
 
-package com.tle.web.wizard;
+package com.tle.web.template.section;
 
-import com.dytech.devlib.PropBagEx;
-import com.tle.beans.item.Item;
-import com.tle.beans.item.ItemKey;
-import com.tle.beans.item.ItemPack;
-import com.tle.beans.item.attachments.ModifiableAttachments;
-import com.tle.beans.workflow.WorkflowStatus;
-import com.tle.common.filesystem.handle.FileHandle;
-import java.io.Serializable;
+import com.tle.core.services.user.UserSessionService;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
-public interface WizardStateInterface extends Serializable, Cloneable {
-  String getWizid();
+public abstract class AbstractUpdatableMenuContributor implements MenuContributor {
+  @Inject protected UserSessionService userSessionService;
 
-  ModifiableAttachments getAttachments();
+  protected abstract String getSessionKey();
 
-  void setItemPack(ItemPack<Item> pack);
-
-  ItemPack<Item> getItemPack();
-
-  int getStateVersion();
-
-  FileHandle getFileHandle();
-
-  Item getItem();
-
-  ItemKey getItemId();
-
-  PropBagEx getItemxml();
-
-  WorkflowStatus getWorkflowStatus();
-
-  String getStagingId();
-
-  void onSessionSave();
+  @Override
+  public final void clearCachedData() {
+    HttpServletRequest request = userSessionService.getAssociatedRequest();
+    if (request != null) {
+      request.setAttribute(MenuContributor.KEY_MENU_UPDATED, true);
+    }
+    userSessionService.removeAttribute(getSessionKey());
+  }
 }

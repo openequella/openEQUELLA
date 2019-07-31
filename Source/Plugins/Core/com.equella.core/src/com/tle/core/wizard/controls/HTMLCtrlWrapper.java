@@ -79,7 +79,7 @@ public class HTMLCtrlWrapper implements HTMLControl {
   }
 
   @Override
-  public void saveToDocument(PropBagEx itemxml) throws Exception {
+  public void saveToDocument(PropBagEx itemxml) {
     control.saveToDocument(itemxml);
   }
 
@@ -149,7 +149,7 @@ public class HTMLCtrlWrapper implements HTMLControl {
   }
 
   @Override
-  public void afterSaveValidate() throws Exception {
+  public void afterSaveValidate() {
     control.afterSaveValidate();
   }
 

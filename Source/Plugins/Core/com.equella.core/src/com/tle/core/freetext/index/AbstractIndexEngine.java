@@ -23,10 +23,18 @@ import com.dytech.edge.exceptions.ErrorDuringSearchException;
 import com.google.common.base.Throwables;
 import com.tle.freetext.LuceneConstants;
 import com.tle.freetext.TLEAnalyzer;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ClassInfoList;
+import io.github.classgraph.ScanResult;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.annotation.PostConstruct;
@@ -34,6 +42,7 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.ReusableAnalyzerBase;
 import org.apache.lucene.analysis.WordlistLoader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -42,6 +51,7 @@ import org.apache.lucene.search.NRTManager;
 import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
 import org.apache.lucene.search.NRTManagerReopenThread;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
 
 /**
  * When Lucene creates an IndexSearcher it keeps a snap-shot of the index at that point in time, and
@@ -76,10 +86,10 @@ import org.apache.lucene.store.FSDirectory;
 @SuppressWarnings("nls")
 public abstract class AbstractIndexEngine {
   protected final Logger LOGGER = Logger.getLogger(getClass());
-
   private File indexPath;
   private PerFieldAnalyzerWrapper analyzer = null;
   private File stopWordsFile;
+  private String analyzerLanguage;
   private FSDirectory directory;
   private TrackingIndexWriter trackingIndexWriter;
   private NRTManager nrtManager;
@@ -185,6 +195,10 @@ public abstract class AbstractIndexEngine {
     this.stopWordsFile = stopWordsFile;
   }
 
+  public void setAnalyzerLanguage(String analyzerLanguage) {
+    this.analyzerLanguage = analyzerLanguage;
+  }
+
   /** Returns a new Analyser. */
   protected Analyzer getAnalyser() {
     if (analyzer == null) {
@@ -199,9 +213,57 @@ public abstract class AbstractIndexEngine {
           LOGGER.warn("No stop words available: " + stopWordsFile, e1);
         }
       }
-      TLEAnalyzer normalAnalyzer = new TLEAnalyzer(stopSet, true);
-      TLEAnalyzer autoCompleteAnalyzer = new TLEAnalyzer(null, false);
-      TLEAnalyzer nonStemmedAnalyzer = new TLEAnalyzer(stopSet, false);
+      Analyzer normalAnalyzer = new TLEAnalyzer(stopSet, true);
+      Analyzer nonStemmedAnalyzer = new TLEAnalyzer(stopSet, false);
+      // As autoCompleteAnalyzer doesn't need stopwords and stemming so it works for all languages
+      Analyzer autoCompleteAnalyzer = new TLEAnalyzer(null, false);
+
+      // For non-English
+      if (!analyzerLanguage.equals("en")) {
+        // Load the only one analyzer from a specific language package provided by Lucene
+        String languageAnalyzerPackage = "org.apache.lucene.analysis." + analyzerLanguage;
+        try (ScanResult scanResult =
+            new ClassGraph().enableClassInfo().whitelistPackages(languageAnalyzerPackage).scan()) {
+          ClassInfoList languageAnalyzerClasses =
+              scanResult.getSubclasses(ReusableAnalyzerBase.class.getName());
+          List<Class<ReusableAnalyzerBase>> languageAnalyzers =
+              languageAnalyzerClasses.loadClasses(ReusableAnalyzerBase.class);
+          Optional<Class<ReusableAnalyzerBase>> languageAnalyzer =
+              languageAnalyzers.stream()
+                  .filter(
+                      languageAnalyzerClass ->
+                          languageAnalyzerClass.getName().contains(languageAnalyzerPackage))
+                  .findFirst();
+
+          if (languageAnalyzer.isPresent()) {
+            normalAnalyzer =
+                languageAnalyzer
+                    .get()
+                    .getDeclaredConstructor(Version.class)
+                    .newInstance(Version.LUCENE_36);
+            // For the non-stemmed analyzer we still use the TLEAnalyzer, however we use the
+            // language specific stop words by loading them from the language specific analyzer.
+            Method getDefaultStopSet =
+                languageAnalyzer.get().getDeclaredMethod("getDefaultStopSet");
+            nonStemmedAnalyzer =
+                new TLEAnalyzer(
+                    new CharArraySet(Version.LUCENE_36, (Set) getDefaultStopSet.invoke(null), true),
+                    false);
+
+            LOGGER.info("Using Lucene analyzer: " + languageAnalyzer.get().getName());
+          }
+        } catch (InstantiationException
+            | NoSuchMethodException
+            | InvocationTargetException
+            | IllegalAccessException e) {
+          // For analyzers that don't have constructors or the getDefaultStopSet method
+          normalAnalyzer = autoCompleteAnalyzer;
+          nonStemmedAnalyzer = autoCompleteAnalyzer;
+          LOGGER.warn(
+              analyzerLanguage + " language analyzer is not avaiable so use the default analyzer");
+        }
+      }
+
       analyzer =
           new PerFieldAnalyzerWrapper(
               normalAnalyzer, getAnalyzerFieldMap(autoCompleteAnalyzer, nonStemmedAnalyzer));

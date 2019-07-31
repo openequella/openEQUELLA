@@ -27,30 +27,34 @@ import cats.effect.{IO, LiftIO}
 import cats.syntax.applicative._
 import cats.syntax.apply._
 import cats.syntax.validated._
+import com.softwaremill.sttp._
+import com.softwaremill.sttp.circe._
 import com.tle.core.db._
 import com.tle.core.db.dao.{EntityDB, EntityDBExt}
 import com.tle.core.db.tables.OEQEntity
 import com.tle.core.validation.{EntityValidation, OEQEntityEdits}
 import com.tle.legacy.LegacyGuice
+import com.tle.web.DebugSettings
 import fs2.Stream
 import io.circe.generic.semiauto._
 import io.doolse.simpledba.Iso
 import io.doolse.simpledba.circe.circeJsonUnsafe
+import org.slf4j.LoggerFactory
 
 case class CloudProviderData(baseUrl: String,
                              iconUrl: Option[String],
                              vendorId: String,
                              providerAuth: CloudOAuthCredentials,
                              oeqAuth: CloudOAuthCredentials,
-                             serviceUris: Map[String, ServiceUri],
+                             serviceUrls: Map[String, ServiceUrl],
                              viewers: Map[String, Map[String, Viewer]])
 
 object CloudProviderData {
 
   implicit val decoderV = deriveDecoder[Viewer]
   implicit val encoderV = deriveEncoder[Viewer]
-  implicit val decoderS = deriveDecoder[ServiceUri]
-  implicit val encoderS = deriveEncoder[ServiceUri]
+  implicit val decoderS = deriveDecoder[ServiceUrl]
+  implicit val encoderS = deriveEncoder[ServiceUrl]
   implicit val decoderC = deriveDecoder[CloudOAuthCredentials]
   implicit val encoderC = deriveEncoder[CloudOAuthCredentials]
 
@@ -62,7 +66,9 @@ case class CloudProviderDB(entity: OEQEntity, data: CloudProviderData)
 
 object CloudProviderDB {
 
-  val FieldVendorId = "vendorId"
+  val FieldVendorId    = "vendorId"
+  val RefreshServiceId = "refresh"
+  val Logger           = LoggerFactory.getLogger(getClass)
 
   val tokenCache =
     LegacyGuice.replicatedCacheService.getCache[String]("cloudRegTokens", 100, 1, TimeUnit.HOURS)
@@ -92,7 +98,7 @@ object CloudProviderDB {
       iconUrl = data.iconUrl,
       providerAuth = data.providerAuth,
       oeqAuth = data.oeqAuth,
-      serviceUris = data.serviceUris,
+      serviceUrls = data.serviceUrls,
       viewers = data.viewers
     )
   }
@@ -116,7 +122,7 @@ object CloudProviderDB {
           vendorId = reg.vendorId,
           providerAuth = reg.providerAuth,
           oeqAuth = oeqAuth,
-          serviceUris = reg.serviceUris,
+          serviceUrls = reg.serviceUrls,
           viewers = reg.viewers
         )
         CloudProviderDB(newOeq, data)
@@ -154,12 +160,45 @@ object CloudProviderDB {
   def editRegistered(id: UUID, registration: CloudProviderRegistration)
     : OptionT[DB, CloudProviderVal[CloudProviderInstance]] =
     EntityDB.readOne(id).semiflatMap { oeq =>
-      for {
-        locale <- getContext.map(_.locale)
-        validated = validateRegistrationFields(oeq.entity, registration, oeq.data.oeqAuth, locale)
-        _ <- validated.traverse(cdb => flushDB(EntityDB.update[CloudProviderDB](oeq.entity, cdb)))
-      } yield validated.map(toInstance)
+      doEdit(oeq, registration)
     }
+
+  private def doEdit(
+      oeq: CloudProviderDB,
+      registration: CloudProviderRegistration): DB[CloudProviderVal[CloudProviderInstance]] =
+    for {
+      locale <- getContext.map(_.locale)
+      validated = validateRegistrationFields(oeq.entity, registration, oeq.data.oeqAuth, locale)
+      _ <- validated.traverse(cdb => flushDB(EntityDB.update[CloudProviderDB](oeq.entity, cdb)))
+    } yield validated.map(toInstance)
+
+  def refreshRegistration(id: UUID): OptionT[DB, CloudProviderVal[CloudProviderInstance]] =
+    for {
+      oeqProvider <- EntityDB.readOne(id)
+      provider = toInstance(oeqProvider)
+      refreshService <- OptionT.fromOption[DB](provider.serviceUrls.get(RefreshServiceId))
+      validated <- OptionT {
+        CloudProviderService
+          .serviceRequest(refreshService,
+                          provider,
+                          Map.empty,
+                          uri =>
+                            sttp
+                              .post(uri)
+                              .body(CloudProviderRefreshRequest(id))
+                              .response(asJson[CloudProviderRegistration]))
+          .flatMap { response =>
+            response.body match {
+              case Right(Right(registration)) => doEdit(oeqProvider, registration).map(Option(_))
+              case err =>
+                dbLiftIO.liftIO(IO {
+                  Logger.warn(s"Failed to refresh provider - $err")
+                  Option.empty[CloudProviderVal[CloudProviderInstance]]
+                })
+            }
+          }
+      }
+    } yield validated
 
   val createRegistrationToken: DB[String] = {
     LiftIO[DB].liftIO(IO {
@@ -176,11 +215,14 @@ object CloudProviderDB {
   val allProviders: Stream[DB, CloudProviderDetails] = {
     EntityDB.readAll[CloudProviderDB].map { cp =>
       val oeq = cp.entity
-      CloudProviderDetails(id = oeq.uuid.id,
-                           name = oeq.name,
-                           description = oeq.description,
-                           vendorId = cp.data.vendorId,
-                           iconUrl = cp.data.iconUrl)
+      CloudProviderDetails(
+        id = oeq.uuid.id,
+        name = oeq.name,
+        description = oeq.description,
+        vendorId = cp.data.vendorId,
+        iconUrl = cp.data.iconUrl,
+        canRefresh = DebugSettings.isDevMode && cp.data.serviceUrls.contains(RefreshServiceId)
+      )
     }
   }
 

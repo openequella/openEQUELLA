@@ -5,7 +5,7 @@ import { CloudProviderEntity } from "./CloudProviderEntity";
 import { languageStrings } from "../util/langstrings";
 
 export const GET_CLOUD_PROVIDER_LIST_URL = `${Config.baseUrl}api/cloudprovider`;
-export const DELETE_CLOUD_PROVIDER_URL = `${
+export const BASE_CLOUD_PROVIDER_URL = `${
   Config.baseUrl
 }api/cloudprovider/provider`;
 export const POST_CLOUD_PROVIDER_REGISTER_INIT_URL = `${
@@ -27,7 +27,13 @@ export function getCloudProviders(): Promise<
 }
 
 export function deleteCloudProvider(cloudProviderId: string): AxiosPromise {
-  return Axios.delete(DELETE_CLOUD_PROVIDER_URL + "/" + cloudProviderId);
+  return Axios.delete(BASE_CLOUD_PROVIDER_URL + "/" + cloudProviderId);
+}
+
+export function refreshCloudProvider(cloudProviderId: string): AxiosPromise {
+  return Axios.post(
+    BASE_CLOUD_PROVIDER_URL + "/" + cloudProviderId + "/refresh"
+  );
 }
 
 export function registerCloudProviderInit(

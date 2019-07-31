@@ -19,6 +19,7 @@
 package com.tle.core.freetext.guice;
 
 import com.tle.core.config.guice.MandatoryConfigModule;
+import com.tle.core.config.guice.OptionalConfigModule;
 import com.tle.core.config.guice.PropertiesModule;
 
 @SuppressWarnings("nls")
@@ -36,6 +37,7 @@ public class FreetextModule extends PropertiesModule {
     bindBoolean("textExtracter.indexImsPackages");
     bindLong("textExtracter.parseDurationCap");
     install(new FreetextMandatoryModule());
+    install(new FreetextOptionalModule());
   }
 
   public static class FreetextMandatoryModule extends MandatoryConfigModule {
@@ -43,6 +45,13 @@ public class FreetextModule extends PropertiesModule {
     protected void configure() {
       bindFile("freetext.stopwords.file");
       bindFile("freetext.index.location");
+    }
+  }
+
+  public static class FreetextOptionalModule extends OptionalConfigModule {
+    @Override
+    protected void configure() {
+      bindProp("freetext.analyzer.language", "en");
     }
   }
 }

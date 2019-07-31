@@ -39,6 +39,7 @@
     </JavaCodeStyleSettings>
     <ScalaCodeStyleSettings>
       <option name="FORMATTER" value="1" />
+      <option name="MULTILINE_STRING_SUPPORT" value="-1" />
     </ScalaCodeStyleSettings>
     <codeStyleSettings language="JAVA">
       <option name="KEEP_CONTROL_STATEMENT_IN_ONE_LINE" value="false" />

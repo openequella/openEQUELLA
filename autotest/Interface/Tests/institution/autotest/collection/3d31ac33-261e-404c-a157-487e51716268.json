@@ -1,29 +1,29 @@
 {
-  "uuid" : "3d31ac33-261e-404c-a157-487e51716268",
-  "name" : "Basic Items (moderated)",
-  "nameStrings" : {
-    "en" : "Basic Items (moderated)"
+  "uuid": "3d31ac33-261e-404c-a157-487e51716268",
+  "name": "Basic Items (moderated)",
+  "nameStrings": {
+    "en": "Basic Items (moderated)"
   },
-  "modifiedDate" : "2014-05-12T15:43:42.163+10:00",
-  "createdDate" : "2014-05-12T15:43:42.158+10:00",
-  "owner" : {
-    "id" : "system"
+  "modifiedDate": "2014-05-12T15:43:42.163+10:00",
+  "createdDate": "2014-05-12T15:43:42.158+10:00",
+  "owner": {
+    "id": "system"
   },
-  "security" : {
-    "rules" : [ ],
-    "metadata" : { },
-    "statuses" : { }
+  "security": {
+    "rules": [],
+    "metadata": {},
+    "statuses": {}
   },
-  "schema" : {
-    "uuid" : "8d6cf2dd-6166-2e2d-f8bb-129de8b90d3d"
+  "schema": {
+    "uuid": "8d6cf2dd-6166-2e2d-f8bb-129de8b90d3d"
   },
-  "workflow" : {
-    "uuid" : "fcbe1b85-33a5-4739-8472-a9255d9caaf9"
+  "workflow": {
+    "uuid": "fcbe1b85-33a5-4739-8472-a9255d9caaf9"
   },
-  "_export" : {
-    "exportVersion" : "1.0"
+  "_export": {
+    "exportVersion": "1.0"
   },
-  "links" : {
-    "self" : "http://boorah/dev/autotest/api/collection/3d31ac33-261e-404c-a157-487e51716268"
+  "links": {
+    "self": "http://boorah/dev/autotest/api/collection/3d31ac33-261e-404c-a157-487e51716268"
   }
 }

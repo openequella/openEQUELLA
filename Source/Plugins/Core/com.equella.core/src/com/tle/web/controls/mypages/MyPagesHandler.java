@@ -52,7 +52,8 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.annotation.PlugKey;
-import com.tle.web.sections.events.InfoEventListener;
+import com.tle.web.sections.events.ParametersEvent;
+import com.tle.web.sections.events.ParametersEventListener;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.generic.DefaultSectionTree;
 import com.tle.web.sections.generic.InfoBookmark;
@@ -80,7 +81,7 @@ import net.sf.json.JSONArray;
 @SuppressWarnings("nls")
 @Bind
 public class MyPagesHandler extends AbstractAttachmentHandler<MyPagesHandler.MyPagesHandlerModel>
-    implements InfoEventListener, MyPagesPageFilter {
+    implements ParametersEventListener, MyPagesPageFilter {
   @PlugKey("handlers.mypages.name")
   private static Label LABEL_NAME;
 
@@ -131,6 +132,7 @@ public class MyPagesHandler extends AbstractAttachmentHandler<MyPagesHandler.MyP
 
   @Override
   public SectionRenderable render(RenderContext context, DialogRenderOptions renderOptions) {
+    ensureTreeAdded(context, false);
     final MyPagesHandlerModel model = getModel(context);
 
     if (model.isSelecting()) {
@@ -169,6 +171,7 @@ public class MyPagesHandler extends AbstractAttachmentHandler<MyPagesHandler.MyP
 
   private SectionRenderable renderSelection(
       RenderContext context, DialogRenderOptions renderOptions) {
+    ensureTreeAdded(context, false);
     Decorations.getDecorations(context).clearAllDecorations();
     renderOptions.setFullscreen(true);
 
@@ -317,19 +320,6 @@ public class MyPagesHandler extends AbstractAttachmentHandler<MyPagesHandler.MyP
   }
 
   @Override
-  public void handleInfoEvent(MutableSectionInfo info, boolean removed, boolean processParameters) {
-    if (!removed) {
-      info.getAttributeForClass(MutableSectionInfo.class)
-          .addTreeToBottom(mypagesTree, processParameters);
-      contrib.setSessionId(info, dialogState.getRepository().getWizid());
-      pages.setPageFilter(info, this);
-      // FIXME: always false until fixed, see bug #7668
-      extraOptions.setShowPreview(info, false);
-      extraOptions.setShowRestrict(info, canRestrictAttachments());
-    }
-  }
-
-  @Override
   public void createNew(SectionInfo info) {
     if (dialogState.isReplacing(info)) {
       pages.createPage(info);
@@ -392,10 +382,28 @@ public class MyPagesHandler extends AbstractAttachmentHandler<MyPagesHandler.MyP
     ensureCleanupOperation();
   }
 
+  private void ensureTreeAdded(SectionInfo info, boolean processParameters) {
+    if (!getModel(info).isTreeAdded()) {
+      info.getAttributeForClass(MutableSectionInfo.class)
+          .addTreeToBottom(mypagesTree, processParameters);
+      contrib.setSessionId(info, dialogState.getRepository().getWizid());
+      pages.setPageFilter(info, this);
+      extraOptions.setShowPreview(info, false);
+      extraOptions.setShowRestrict(info, canRestrictAttachments());
+      getModel(info).setTreeAdded(true);
+    }
+  }
+
+  @Override
+  public void handleParameters(SectionInfo info, ParametersEvent event) throws Exception {
+    ensureTreeAdded(info, true);
+  }
+
   public static class MyPagesHandlerModel {
     @Bookmarked(name = "s")
     private boolean selecting;
 
+    private boolean treeAdded;
     private String selectionUrl;
     private SectionRenderable myPages;
     private Label warnLabel;
@@ -430,6 +438,14 @@ public class MyPagesHandler extends AbstractAttachmentHandler<MyPagesHandler.MyP
 
     public void setMyPages(SectionRenderable myPages) {
       this.myPages = myPages;
+    }
+
+    public boolean isTreeAdded() {
+      return treeAdded;
+    }
+
+    public void setTreeAdded(boolean treeAdded) {
+      this.treeAdded = treeAdded;
     }
   }
 }

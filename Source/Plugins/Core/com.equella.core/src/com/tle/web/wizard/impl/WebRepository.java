@@ -69,6 +69,7 @@ import com.tle.web.wizard.PackageTreeBuilder;
 import com.tle.web.wizard.WizardMetadataMapper;
 import com.tle.web.wizard.WizardService;
 import com.tle.web.wizard.WizardState;
+import com.tle.web.wizard.WizardStateInterface;
 import com.tle.web.wizard.controls.AbstractWebControl;
 import com.tle.web.wizard.scripting.WizardScriptConstants;
 import com.tle.web.wizard.scripting.objects.impl.ControlScriptWrapper;
@@ -77,6 +78,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Function;
 import javax.inject.Inject;
 import org.apache.log4j.Logger;
 
@@ -534,13 +536,17 @@ public class WebRepository implements LERepository {
     }
   }
 
-  public boolean isArchive(String filename) {
-    return fsys.isArchive(stagingHandle, filename);
+  @Override
+  public void runUpdate(Function<WizardStateInterface, Boolean> update) {
+    synchronized (wizardService.getThreadLock()) {
+      if (update.apply(state)) {
+        state.incrementVersion();
+      }
+    }
   }
 
-  @Override
-  public Object getThreadLock() {
-    return wizardService.getThreadLock();
+  public boolean isArchive(String filename) {
+    return fsys.isArchive(stagingHandle, filename);
   }
 
   @Override

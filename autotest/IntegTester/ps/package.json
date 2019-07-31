@@ -13,7 +13,7 @@
     "babel-polyfill": "6.26.0",
     "js-md5": "0.7.3",
     "jss": "10.0.0-alpha.21",
-    "oeq-cloudproviders": "git+https://github.com/apereo/openEQUELLA-cloudprovidersdk.git",
+    "oeq-cloudproviders": "git+https://github.com/apereo/openEQUELLA-cloudprovidersdk.git#32d958ddfff64ca748e7e1b2eae0f0487946a487",
     "query-string": "6.4.0",
     "react": "16.8.4",
     "react-dom": "16.8.4"

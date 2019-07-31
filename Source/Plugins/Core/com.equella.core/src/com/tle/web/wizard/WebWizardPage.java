@@ -277,12 +277,12 @@ public class WebWizardPage extends WizardPage implements com.tle.web.wizard.page
   }
 
   @Override
-  public void saveToDocument(final SectionInfo info) throws Exception {
+  public void saveToDocument(final SectionInfo info) {
     saveToDocument(
         pageControls,
         new SetItemsInterface() {
           @Override
-          public void setItems(HTMLControl wrapped) throws Exception {
+          public void setItems(HTMLControl wrapped) {
             WebControl webControl = (WebControl) wrapped;
             webControl.doEditsIfRequired(info);
           }

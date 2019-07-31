@@ -25,12 +25,8 @@ import java.util.UUID
 
 import cats.data.OptionT
 import cats.effect.IO
-import com.dytech.devlib.PropBagEx
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id
-import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
 import com.softwaremill.sttp._
-import com.tle.beans.item.{Item, ItemEditingException, ItemPack}
+import com.tle.beans.item.{Item, ItemPack}
 import com.tle.common.filesystem.FileEntry
 import com.tle.core.cloudproviders.{CloudProviderDB, CloudProviderService}
 import com.tle.core.db.{DB, RunWithDB}
@@ -38,26 +34,17 @@ import com.tle.core.httpclient._
 import com.tle.core.item.operations.{ItemOperationParams, WorkflowOperation}
 import com.tle.core.item.standard.operations.DuringSaveOperation
 import com.tle.legacy.LegacyGuice
-import com.tle.web.api.item.{
-  AddAttachment,
-  AddAttachmentResponse,
-  DeleteAttachment,
-  DeleteAttachmentResponse,
-  EditAttachment,
-  EditAttachmentResponse,
-  ItemEditResponses,
-  ItemEdits
-}
 import com.tle.web.api.item.equella.interfaces.beans.EquellaAttachmentBean
+import com.tle.web.api.item.{ItemEditResponses, ItemEdits}
 import com.tle.web.wizard.impl.WizardServiceImpl.WizardSessionState
 import com.tle.web.wizard.{WizardState, WizardStateInterface}
 import fs2.Stream
 import fs2.io._
 import io.swagger.annotations.Api
 import javax.servlet.http.HttpServletRequest
+import javax.ws.rs._
 import javax.ws.rs.core.Response.{ResponseBuilder, Status}
 import javax.ws.rs.core.{Context, Response, StreamingOutput, UriInfo}
-import javax.ws.rs._
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits
@@ -65,21 +52,31 @@ import scala.concurrent.ExecutionContext.Implicits
 case class FileInfo(size: Long, files: Option[Map[String, FileInfo]])
 case class ItemState(xml: String,
                      attachments: Iterable[EquellaAttachmentBean],
-                     files: Map[String, FileInfo])
+                     files: Map[String, FileInfo],
+                     stateVersion: Int)
 
 @Api("Wizard editing")
 @Path("wizard/{wizid}")
 class WizardApi {
 
-  def editWizardSate[A](wizid: String, req: HttpServletRequest)(f: WizardStateInterface => A): A = {
+  def withWizardState[A](wizid: String, req: HttpServletRequest, edit: Boolean)(
+      f: WizardStateInterface => A): A = {
     val sessionService = LegacyGuice.userSessionService
     sessionService.reenableSessionUse()
     Option(sessionService.getAttribute(wizid).asInstanceOf[WizardSessionState])
       .map { wss =>
         val wsi = wss.getWizardState
-        val res = f(wsi)
-        sessionService.setAttribute(wizid, new WizardSessionState(wsi))
-        res
+        sessionService.getSessionLock.synchronized {
+          if (edit) {
+            wsi match {
+              case wizstate: WizardState => wizstate.incrementVersion()
+              case _                     => ()
+            }
+          }
+          val res = f(wsi)
+          if (edit) sessionService.setAttribute(wizid, new WizardSessionState(wsi))
+          res
+        }
       }
       .getOrElse(throw new WebApplicationException(404))
   }
@@ -87,7 +84,7 @@ class WizardApi {
   @GET
   @Path("state")
   def getState(@PathParam("wizid") wizid: String, @Context req: HttpServletRequest): ItemState = {
-    editWizardSate(wizid, req) { wsi =>
+    withWizardState(wizid, req, false) { wsi =>
       val attachments =
         wsi.getItem.getAttachments.asScala.map(a =>
           ItemEdits.attachmentSerializers.serializeAttachment(a))
@@ -106,7 +103,10 @@ class WizardApi {
         entries.map(writeFile).toMap
       }
       val files = LegacyGuice.fileSystemService.enumerateTree(wsi.getFileHandle, "", null)
-      ItemState(itemPack.getXml.toString, attachments, writeFiles(files.getFiles.asScala))
+      ItemState(itemPack.getXml.toString,
+                attachments,
+                writeFiles(files.getFiles.asScala),
+                wsi.getStateVersion)
     }
   }
 
@@ -115,7 +115,7 @@ class WizardApi {
   def editAttachments(@PathParam("wizid") wizid: String,
                       itemEdit: ItemEdits,
                       @Context req: HttpServletRequest): ItemEditResponses = {
-    editWizardSate(wizid, req) { wsi =>
+    withWizardState(wizid, req, true) { wsi =>
       val editor   = new WizardItemEditor(wsi)
       val response = ItemEdits.performEdits(itemEdit, editor)
       editor.finishedEditing(false)
@@ -128,7 +128,7 @@ class WizardApi {
   def registerCallback(@PathParam("wizid") wizid: String,
                        @QueryParam("providerId") providerId: String,
                        @Context req: HttpServletRequest): Response = {
-    editWizardSate(wizid, req) {
+    withWizardState(wizid, req, true) {
       case ws: WizardState =>
         ws.setWizardSaveOperation(providerId, NotifyProvider(UUID.fromString(providerId)))
     }
@@ -160,24 +160,26 @@ class WizardApi {
       providerId: UUID,
       serviceId: String,
       uriInfo: UriInfo)(f: Uri => Request[T, Stream[IO, ByteBuffer]]): Response = {
-    editWizardSate(wizid, request) { _ =>
-      val queryParams = uriInfo.getQueryParameters.asScala.mapValues(_.asScala).toMap
-      RunWithDB
-        .execute {
-          (for {
-            cp         <- CloudProviderDB.get(providerId)
-            serviceUri <- OptionT.fromOption[DB](cp.serviceUris.get(serviceId))
-            response <- OptionT.liftF(
-              CloudProviderService.serviceRequest(
-                serviceUri,
-                cp,
-                queryParams,
-                uri => f(uri).response(asStream[Stream[IO, ByteBuffer]])))
-          } yield streamedResponse(response))
-            .getOrElse(Response.status(Status.NOT_FOUND))
-        }
-        .build()
+    withWizardState(wizid, request, false) { _ =>
+      ()
     }
+    val queryParams = uriInfo.getQueryParameters.asScala.mapValues(_.asScala).toMap
+    RunWithDB
+      .execute {
+        (for {
+          cp         <- CloudProviderDB.get(providerId)
+          serviceUri <- OptionT.fromOption[DB](cp.serviceUrls.get(serviceId))
+          response <- OptionT.liftF(
+            CloudProviderService.serviceRequest(
+              serviceUri,
+              cp,
+              queryParams,
+              uri => f(uri).response(asStream[Stream[IO, ByteBuffer]])))
+        } yield streamedResponse(response))
+          .getOrElse(Response.status(Status.NOT_FOUND))
+      }
+      .build()
+
   }
 
   @GET
@@ -235,7 +237,7 @@ case class NotifyProvider(providerId: UUID) extends DuringSaveOperation with Ser
     override def execute(): Boolean = RunWithDB.executeWithHibernate {
       (for {
         cp         <- CloudProviderDB.get(providerId)
-        serviceUri <- OptionT.fromOption[DB](cp.serviceUris.get("itemNotification"))
+        serviceUri <- OptionT.fromOption[DB](cp.serviceUrls.get("itemNotification"))
         notifyParams = Map("uuid" -> getItem.getUuid, "version" -> getItem.getVersion.toString)
         _ <- OptionT.liftF(
           CloudProviderService.serviceRequest(serviceUri, cp, notifyParams, sttp.post))

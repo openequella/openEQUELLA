@@ -68,6 +68,7 @@ public interface SectionEvent<L extends EventListener> extends Comparable<Sectio
   int PRIORITY_AFTER_EVENTS = 25;
   int PRIORITY_NORMAL = 0;
   int PRIORITY_LOW = -100;
+  int PRIORITY_AFTER_EVENTS_BEFORE_NORMAL = 24;
 
   /**
    * Get the priority of this event. <br>

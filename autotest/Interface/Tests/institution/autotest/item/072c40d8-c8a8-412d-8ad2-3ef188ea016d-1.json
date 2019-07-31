@@ -1,64 +1,68 @@
 {
-  "uuid" : "072c40d8-c8a8-412d-8ad2-3ef188ea016d",
-  "version" : 1,
-  "name" : "SearchStemming - Walking",
-  "nameStrings" : {
-    "en_AU" : "SearchStemming - Walking"
+  "uuid": "072c40d8-c8a8-412d-8ad2-3ef188ea016d",
+  "version": 1,
+  "name": "SearchStemming - Walking",
+  "nameStrings": {
+    "en_AU": "SearchStemming - Walking"
   },
-  "description" : "Test item to test porter stemming",
-  "descriptionStrings" : {
-    "en_AU" : "Test item to test porter stemming"
+  "description": "Test item to test porter stemming",
+  "descriptionStrings": {
+    "en_AU": "Test item to test porter stemming"
   },
-  "metadata" : "<xml><item><name>SearchStemming - Walking</name><description>Test item to test porter stemming</description></item></xml>",
-  "status" : "live",
-  "createdDate" : "2014-05-12T15:43:46.441+10:00",
-  "modifiedDate" : "2014-05-12T15:43:49.232+10:00",
-  "owner" : {
-    "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  "metadata": "<xml><item><name>SearchStemming - Walking</name><description>Test item to test porter stemming</description></item></xml>",
+  "status": "live",
+  "createdDate": "2014-05-12T15:43:46.441+10:00",
+  "modifiedDate": "2014-05-12T15:43:49.232+10:00",
+  "owner": {
+    "id": "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
   },
-  "collaborators" : [ ],
-  "collection" : {
-    "uuid" : "b28f1ffe-2008-4f5e-d559-83c8acd79316"
+  "collaborators": [],
+  "collection": {
+    "uuid": "b28f1ffe-2008-4f5e-d559-83c8acd79316"
   },
-  "rating" : -1.0,
-  "attachments" : [ ],
-  "navigation" : {
-    "hideUnreferencedAttachments" : false,
-    "showSplitOption" : false,
-    "nodes" : [ ]
+  "rating": -1.0,
+  "attachments": [],
+  "navigation": {
+    "hideUnreferencedAttachments": false,
+    "showSplitOption": false,
+    "nodes": []
   },
-  "drm" : { },
-  "_export" : {
-    "exportVersion" : "1.0",
-    "history" : [ {
-      "user" : {
-        "id" : "system"
+  "drm": {},
+  "_export": {
+    "exportVersion": "1.0",
+    "history": [
+      {
+        "user": {
+          "id": "system"
+        },
+        "date": "2014-05-12T15:43:46.441+10:00",
+        "type": "edit",
+        "state": "draft"
       },
-      "date" : "2014-05-12T15:43:46.441+10:00",
-      "type" : "edit",
-      "state" : "draft"
-    }, {
-      "user" : {
-        "id" : "system"
+      {
+        "user": {
+          "id": "system"
+        },
+        "date": "2014-05-12T15:43:46.446+10:00",
+        "type": "statechange",
+        "state": "live"
       },
-      "date" : "2014-05-12T15:43:46.446+10:00",
-      "type" : "statechange",
-      "state" : "live"
-    }, {
-      "user" : {
-        "id" : "system"
-      },
-      "date" : "2014-05-12T15:43:49.232+10:00",
-      "type" : "edit",
-      "state" : "live"
-    } ],
-    "statuses" : [ ],
-    "moderating" : false,
-    "liveApprovalDate" : "2014-05-12T15:43:46.446+10:00",
-    "start" : "2014-05-12T15:45:23.539+10:00",
-    "lastAction" : "2014-05-12T15:43:46.446+10:00"
+      {
+        "user": {
+          "id": "system"
+        },
+        "date": "2014-05-12T15:43:49.232+10:00",
+        "type": "edit",
+        "state": "live"
+      }
+    ],
+    "statuses": [],
+    "moderating": false,
+    "liveApprovalDate": "2014-05-12T15:43:46.446+10:00",
+    "start": "2014-05-12T15:45:23.539+10:00",
+    "lastAction": "2014-05-12T15:43:46.446+10:00"
   },
-  "links" : {
-    "self" : "http://boorah/dev/autotest/api/item/072c40d8-c8a8-412d-8ad2-3ef188ea016d/1"
+  "links": {
+    "self": "http://boorah/dev/autotest/api/item/072c40d8-c8a8-412d-8ad2-3ef188ea016d/1"
   }
 }

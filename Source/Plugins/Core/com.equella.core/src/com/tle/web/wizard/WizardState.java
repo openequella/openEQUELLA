@@ -20,11 +20,8 @@ package com.tle.web.wizard;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.wizard.beans.DRMPage;
-import com.google.common.base.Throwables;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.Wizard;
@@ -59,9 +56,14 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 public class WizardState implements WizardStateInterface {
+
   private static final long serialVersionUID = 1;
 
   @Inject private static ItemFileService itemFileService;
+
+  public void incrementVersion() {
+    stateVersion++;
+  }
 
   public enum Operation {
     CREATING,
@@ -74,6 +76,7 @@ public class WizardState implements WizardStateInterface {
   private ItemKey itemKey;
 
   private String xml;
+  private int stateVersion;
   private String stagingId;
   private String saveMessage;
   private String referrer;
@@ -189,11 +192,7 @@ public class WizardState implements WizardStateInterface {
     return mergeDRMDefaults;
   }
 
-  /**
-   * This isn't used anywhere...?
-   *
-   * @param mergeDRMDefaults
-   */
+  /** This isn't used anywhere...? */
   public void setMergeDRMDefaults(boolean mergeDRMDefaults) {
     this.mergeDRMDefaults = mergeDRMDefaults;
   }
@@ -456,31 +455,7 @@ public class WizardState implements WizardStateInterface {
     if (xmlBag != null) {
       xml = xmlBag.toString();
     }
-    xmlBag = null;
     pathOverrides = null;
-  }
-
-  @Override
-  public WizardState clone() {
-    try {
-      final WizardState other = (WizardState) super.clone();
-      other.xmlBag = null;
-
-      other.drm = Lists.newArrayList(drm);
-      other.duplicateData = Maps.newHashMap(duplicateData);
-      other.unsavedEdits = Lists.newArrayList(unsavedEdits);
-      other.saveOperations = Maps.newHashMap(saveOperations);
-      if (pageStates != null) {
-        other.pageStates = Lists.newArrayList(pageStates);
-      }
-
-      // TODO:
-      // other.pages = null;
-
-      return other;
-    } catch (CloneNotSupportedException e) {
-      throw Throwables.propagate(e);
-    }
   }
 
   public String getThumbnail() {
@@ -498,5 +473,13 @@ public class WizardState implements WizardStateInterface {
   public void setItemXml(String xmlDoc) {
     xml = xmlDoc;
     xmlBag = null;
+  }
+
+  public void setStateVersion(int stateVersion) {
+    this.stateVersion = stateVersion;
+  }
+
+  public int getStateVersion() {
+    return stateVersion;
   }
 }

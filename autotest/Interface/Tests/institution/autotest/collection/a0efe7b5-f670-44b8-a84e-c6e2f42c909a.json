@@ -1,107 +1,123 @@
 {
-  "uuid" : "a0efe7b5-f670-44b8-a84e-c6e2f42c909a",
-  "name" : "Changable Permissions Collection",
-  "nameStrings" : {
-    "en" : "Changable Permissions Collection"
+  "uuid": "a0efe7b5-f670-44b8-a84e-c6e2f42c909a",
+  "name": "Changable Permissions Collection",
+  "nameStrings": {
+    "en": "Changable Permissions Collection"
   },
-  "modifiedDate" : "2014-05-12T15:43:42.040+10:00",
-  "createdDate" : "2014-05-12T15:43:42.022+10:00",
-  "owner" : {
-    "id" : "system"
+  "modifiedDate": "2014-05-12T15:43:42.040+10:00",
+  "createdDate": "2014-05-12T15:43:42.022+10:00",
+  "owner": {
+    "id": "system"
   },
-  "security" : {
-    "rules" : [ ],
-    "metadata" : {
-      "b3b0eaba-5f63-483f-8754-a63a75a89b05" : {
-        "name" : "VIEW_ITEM",
-        "script" : "var bRet = false; \nif( xml.contains('/item/controls/checkboxes', 'VIEW_ITEM') ) \n{ \n    bRet = true; \n} \nreturn bRet; \n",
-        "entries" : [ {
-          "granted" : false,
-          "override" : true,
-          "privilege" : "VIEW_ITEM",
-          "who" : "*"
-        } ]
+  "security": {
+    "rules": [],
+    "metadata": {
+      "b3b0eaba-5f63-483f-8754-a63a75a89b05": {
+        "name": "VIEW_ITEM",
+        "script": "var bRet = false; \nif( xml.contains('/item/controls/checkboxes', 'VIEW_ITEM') ) \n{ \n    bRet = true; \n} \nreturn bRet; \n",
+        "entries": [
+          {
+            "granted": false,
+            "override": true,
+            "privilege": "VIEW_ITEM",
+            "who": "*"
+          }
+        ]
       },
-      "17de0d56-24c3-4fd7-ab60-740248129356" : {
-        "name" : "DISCOVER_ITEM",
-        "script" : "var bRet = false; \nif( xml.contains('/item/controls/checkboxes', 'DISCOVER_ITEM') ) \n{ \n    bRet = true; \n} \nreturn bRet; \n",
-        "entries" : [ {
-          "granted" : false,
-          "override" : true,
-          "privilege" : "DISCOVER_ITEM",
-          "who" : "*"
-        } ]
+      "17de0d56-24c3-4fd7-ab60-740248129356": {
+        "name": "DISCOVER_ITEM",
+        "script": "var bRet = false; \nif( xml.contains('/item/controls/checkboxes', 'DISCOVER_ITEM') ) \n{ \n    bRet = true; \n} \nreturn bRet; \n",
+        "entries": [
+          {
+            "granted": false,
+            "override": true,
+            "privilege": "DISCOVER_ITEM",
+            "who": "*"
+          }
+        ]
       },
-      "67d8e25b-6859-4078-9583-5e6c73e0062b" : {
-        "name" : "VIEW_HISTORY_ITEM",
-        "script" : "var bRet = false; \nif( xml.contains('/item/controls/checkboxes', 'VIEW_HISTORY_ITEM') ) \n{ \n    bRet = true; \n} \nreturn bRet; \n",
-        "entries" : [ {
-          "granted" : false,
-          "override" : true,
-          "privilege" : "VIEW_HISTORY_ITEM",
-          "who" : "*"
-        } ]
+      "67d8e25b-6859-4078-9583-5e6c73e0062b": {
+        "name": "VIEW_HISTORY_ITEM",
+        "script": "var bRet = false; \nif( xml.contains('/item/controls/checkboxes', 'VIEW_HISTORY_ITEM') ) \n{ \n    bRet = true; \n} \nreturn bRet; \n",
+        "entries": [
+          {
+            "granted": false,
+            "override": true,
+            "privilege": "VIEW_HISTORY_ITEM",
+            "who": "*"
+          }
+        ]
       },
-      "27686c1f-a8f8-40e9-b479-6c0ddf98a146" : {
-        "name" : "COMMENT_*",
-        "script" : "var bRet = false; \nif( xml.contains('/item/controls/checkboxes', 'COMMENT_*') ) \n{ \n    bRet = true; \n} \nreturn bRet; \n",
-        "entries" : [ {
-          "granted" : false,
-          "override" : true,
-          "privilege" : "COMMENT_VIEW_ITEM",
-          "who" : "*"
-        }, {
-          "granted" : false,
-          "override" : true,
-          "privilege" : "COMMENT_CREATE_ITEM",
-          "who" : "*"
-        }, {
-          "granted" : false,
-          "override" : true,
-          "privilege" : "COMMENT_DELETE_ITEM",
-          "who" : "*"
-        } ]
+      "27686c1f-a8f8-40e9-b479-6c0ddf98a146": {
+        "name": "COMMENT_*",
+        "script": "var bRet = false; \nif( xml.contains('/item/controls/checkboxes', 'COMMENT_*') ) \n{ \n    bRet = true; \n} \nreturn bRet; \n",
+        "entries": [
+          {
+            "granted": false,
+            "override": true,
+            "privilege": "COMMENT_VIEW_ITEM",
+            "who": "*"
+          },
+          {
+            "granted": false,
+            "override": true,
+            "privilege": "COMMENT_CREATE_ITEM",
+            "who": "*"
+          },
+          {
+            "granted": false,
+            "override": true,
+            "privilege": "COMMENT_DELETE_ITEM",
+            "who": "*"
+          }
+        ]
       },
-      "5e51f9f8-e4d1-4a77-9a5a-729553f1e118" : {
-        "name" : "DIGITAL_RIGHTS_ITEM",
-        "script" : "var bRet = false; \nif( xml.contains('/item/controls/checkboxes', 'DIGITAL_RIGHTS_ITEM') ) \n{ \n    bRet = true; \n} \nreturn bRet; \n",
-        "entries" : [ {
-          "granted" : false,
-          "override" : true,
-          "privilege" : "DIGITAL_RIGHTS_ITEM",
-          "who" : "*"
-        } ]
+      "5e51f9f8-e4d1-4a77-9a5a-729553f1e118": {
+        "name": "DIGITAL_RIGHTS_ITEM",
+        "script": "var bRet = false; \nif( xml.contains('/item/controls/checkboxes', 'DIGITAL_RIGHTS_ITEM') ) \n{ \n    bRet = true; \n} \nreturn bRet; \n",
+        "entries": [
+          {
+            "granted": false,
+            "override": true,
+            "privilege": "DIGITAL_RIGHTS_ITEM",
+            "who": "*"
+          }
+        ]
       },
-      "0a83ec33-7f9f-45ed-ad67-f49896f3a463" : {
-        "name" : "EDIT_ITEM",
-        "script" : "var bRet = false; \nif( xml.contains('/item/controls/checkboxes', 'EDIT_ITEM') ) \n{ \n    bRet = true; \n} \nreturn bRet; \n",
-        "entries" : [ {
-          "granted" : false,
-          "override" : true,
-          "privilege" : "EDIT_ITEM",
-          "who" : "*"
-        } ]
+      "0a83ec33-7f9f-45ed-ad67-f49896f3a463": {
+        "name": "EDIT_ITEM",
+        "script": "var bRet = false; \nif( xml.contains('/item/controls/checkboxes', 'EDIT_ITEM') ) \n{ \n    bRet = true; \n} \nreturn bRet; \n",
+        "entries": [
+          {
+            "granted": false,
+            "override": true,
+            "privilege": "EDIT_ITEM",
+            "who": "*"
+          }
+        ]
       },
-      "c849e844-031d-4fdc-be01-42ba338607b7" : {
-        "name" : "REASSIGN_OWNERSHIP_ITEM",
-        "script" : "var bRet = false; \nif( xml.contains('/item/controls/checkboxes', 'REASSIGN_OWNERSHIP_ITEM') ) \n{ \n    bRet = true; \n} \nreturn bRet; \n",
-        "entries" : [ {
-          "granted" : false,
-          "override" : false,
-          "privilege" : "REASSIGN_OWNERSHIP_ITEM",
-          "who" : "*"
-        } ]
+      "c849e844-031d-4fdc-be01-42ba338607b7": {
+        "name": "REASSIGN_OWNERSHIP_ITEM",
+        "script": "var bRet = false; \nif( xml.contains('/item/controls/checkboxes', 'REASSIGN_OWNERSHIP_ITEM') ) \n{ \n    bRet = true; \n} \nreturn bRet; \n",
+        "entries": [
+          {
+            "granted": false,
+            "override": false,
+            "privilege": "REASSIGN_OWNERSHIP_ITEM",
+            "who": "*"
+          }
+        ]
       }
     },
-    "statuses" : { }
+    "statuses": {}
   },
-  "schema" : {
-    "uuid" : "8d6cf2dd-6166-2e2d-f8bb-129de8b90d3d"
+  "schema": {
+    "uuid": "8d6cf2dd-6166-2e2d-f8bb-129de8b90d3d"
   },
-  "_export" : {
-    "exportVersion" : "1.0"
+  "_export": {
+    "exportVersion": "1.0"
   },
-  "links" : {
-    "self" : "http://boorah/dev/autotest/api/collection/a0efe7b5-f670-44b8-a84e-c6e2f42c909a"
+  "links": {
+    "self": "http://boorah/dev/autotest/api/collection/a0efe7b5-f670-44b8-a84e-c6e2f42c909a"
   }
 }

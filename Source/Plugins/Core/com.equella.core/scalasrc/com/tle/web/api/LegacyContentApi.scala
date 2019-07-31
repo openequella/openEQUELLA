@@ -49,7 +49,7 @@ import com.tle.web.sections.render._
 import com.tle.web.sections.standard.model.HtmlLinkState
 import com.tle.web.sections.standard.renderers.{DivRenderer, LinkRenderer, SpanRenderer}
 import com.tle.web.template.Decorations.MenuMode
-import com.tle.web.template.section.HelpAndScreenOptionsSection
+import com.tle.web.template.section.{HelpAndScreenOptionsSection, MenuContributor}
 import com.tle.web.template.{Breadcrumbs, Decorations, RenderTemplate}
 import com.tle.web.viewable.{NewDefaultViewableItem, PreviewableItem}
 import com.tle.web.viewable.servlet.ItemServlet
@@ -420,7 +420,7 @@ class LegacyContentApi {
   def userChanged(req: HttpServletRequest): Boolean = {
     val idNow  = CurrentUser.getUserID
     val idThen = req.getAttribute(UserIdKey).asInstanceOf[String]
-    idNow != idThen
+    Option(req.getAttribute(MenuContributor.KEY_MENU_UPDATED)).contains(true) || idNow != idThen
   }
 
   def redirectResponse(info: MutableSectionInfo): Option[ResponseBuilder] = {
@@ -448,10 +448,7 @@ class LegacyContentApi {
             wrapBody(context, tr.getNamedResult(context, "body")))
           val upperbody =
             SectionUtils.renderToString(context, tr.getNamedResult(context, "upperbody"))
-          val hasoMap = HelpAndScreenOptionsSection.getContent(context).asScala
-          val scrops = hasoMap
-            .get("screenoptions")
-            .map(bbr => SectionUtils.renderToString(context, bbr.getRenderable))
+          val scrops = renderScreenOptions(context)
           val crumbs = renderCrumbs(context, decs).map(SectionUtils.renderToString(context, _))
           Iterable(
             Some("body"                                          -> body),
@@ -558,6 +555,14 @@ class LegacyContentApi {
     }
   }
 
+  def renderScreenOptions(context: RenderContext): Option[String] = {
+    HelpAndScreenOptionsSection
+      .getContent(context)
+      .asScala
+      .get("screenoptions")
+      .map(bbr => SectionUtils.renderToString(context, bbr.getRenderable))
+  }
+
   def ajaxResponse(info: MutableSectionInfo, arc: AjaxRenderContext) = {
     var resp: ResponseBuilder = null
     val context               = LegacyContentController.prepareJSContext(info)
@@ -571,6 +576,7 @@ class LegacyContentApi {
       }
       formTag.setNestedRenderable(sr)
       body.setNestedRenderable(formTag)
+      renderScreenOptions(context)
       SectionUtils.renderToWriter(context, body, new DevNullWriter)
     }
 

@@ -104,6 +104,10 @@ public class FreetextIndexImpl
   @Named("freetext.stopwords.file")
   private File stopWordsFile;
 
+  @Inject
+  @Named("freetext.analyzer.language")
+  private String analyzerLanguage;
+
   @Inject private UserPreferenceService userPrefs;
 
   private int maxBooleanClauses = 8192;
@@ -239,8 +243,9 @@ public class FreetextIndexImpl
   }
 
   @Override
-  public MatrixResults matrixSearch(Search search, List<String> fields, boolean countOnly) {
-    return getIndexer(Search.INDEX_ITEM).matrixSearch(search, fields, countOnly);
+  public MatrixResults matrixSearch(
+      Search search, List<String> fields, boolean countOnly, boolean searchAttachments) {
+    return getIndexer(Search.INDEX_ITEM).matrixSearch(search, fields, countOnly, searchAttachments);
   }
 
   public int getMaxBooleanClauses() {
@@ -339,6 +344,11 @@ public class FreetextIndexImpl
   @Override
   public File getStopWordsFile() {
     return stopWordsFile;
+  }
+
+  @Override
+  public String getAnalyzerLanguage() {
+    return analyzerLanguage;
   }
 
   @Override

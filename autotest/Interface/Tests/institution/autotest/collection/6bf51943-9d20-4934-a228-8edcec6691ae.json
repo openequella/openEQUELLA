@@ -1,33 +1,33 @@
 {
-  "uuid" : "6bf51943-9d20-4934-a228-8edcec6691ae",
-  "name" : "Complex workflow collection",
-  "nameStrings" : {
-    "en" : "Complex workflow collection"
+  "uuid": "6bf51943-9d20-4934-a228-8edcec6691ae",
+  "name": "Complex workflow collection",
+  "nameStrings": {
+    "en": "Complex workflow collection"
   },
-  "description" : "Has a few steps, priorities and due dates",
-  "descriptionStrings" : {
-    "en" : "Has a few steps, priorities and due dates"
+  "description": "Has a few steps, priorities and due dates",
+  "descriptionStrings": {
+    "en": "Has a few steps, priorities and due dates"
   },
-  "modifiedDate" : "2014-05-12T15:43:41.937+10:00",
-  "createdDate" : "2014-05-12T15:43:41.934+10:00",
-  "owner" : {
-    "id" : "system"
+  "modifiedDate": "2014-05-12T15:43:41.937+10:00",
+  "createdDate": "2014-05-12T15:43:41.934+10:00",
+  "owner": {
+    "id": "system"
   },
-  "security" : {
-    "rules" : [ ],
-    "metadata" : { },
-    "statuses" : { }
+  "security": {
+    "rules": [],
+    "metadata": {},
+    "statuses": {}
   },
-  "schema" : {
-    "uuid" : "d9aba963-4648-e497-d62b-fc1ddf2d0199"
+  "schema": {
+    "uuid": "d9aba963-4648-e497-d62b-fc1ddf2d0199"
   },
-  "workflow" : {
-    "uuid" : "0f7bd496-8466-4fa5-b166-8132cc5294e4"
+  "workflow": {
+    "uuid": "0f7bd496-8466-4fa5-b166-8132cc5294e4"
   },
-  "_export" : {
-    "exportVersion" : "1.0"
+  "_export": {
+    "exportVersion": "1.0"
   },
-  "links" : {
-    "self" : "http://boorah/dev/autotest/api/collection/6bf51943-9d20-4934-a228-8edcec6691ae"
+  "links": {
+    "self": "http://boorah/dev/autotest/api/collection/6bf51943-9d20-4934-a228-8edcec6691ae"
   }
 }

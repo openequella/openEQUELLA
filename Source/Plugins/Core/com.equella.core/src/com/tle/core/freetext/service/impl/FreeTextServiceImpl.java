@@ -368,7 +368,11 @@ public class FreeTextServiceImpl
 
   @Override
   public MatrixResults matrixSearch(
-      Search searchRequest, List<String> fields, boolean countOnly, int width) {
-    return indexer.matrixSearch(searchRequest, fields, countOnly);
+      Search searchRequest,
+      List<String> fields,
+      boolean countOnly,
+      int width,
+      boolean searchAttachments) {
+    return indexer.matrixSearch(searchRequest, fields, countOnly, searchAttachments);
   }
 }

@@ -25,6 +25,8 @@ import com.tle.common.usermanagement.user.valuebean.DefaultUserBean
 import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.legacy.LegacyGuice
 import com.tle.web.cloudprovider.CloudProviderConstants
+import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto._
 
 package object cloudproviders {
 
@@ -32,11 +34,21 @@ package object cloudproviders {
 
   object CloudOAuthCredentials {
     def random() = CloudOAuthCredentials(UUID.randomUUID().toString, UUID.randomUUID().toString)
+
+    implicit val decodeCreds: Decoder[CloudOAuthCredentials] = deriveDecoder
   }
 
   case class Viewer(name: String, serviceId: String)
 
-  case class ServiceUri(uri: String, authenticated: Boolean)
+  object Viewer {
+    implicit val decodeViewer: Decoder[Viewer] = deriveDecoder
+  }
+
+  case class ServiceUrl(url: String, authenticated: Boolean)
+
+  object ServiceUrl {
+    implicit val decodeServiceUri: Decoder[ServiceUrl] = deriveDecoder
+  }
 
   case class CloudProviderRegistration(name: String,
                                        description: Option[String],
@@ -44,7 +56,7 @@ package object cloudproviders {
                                        baseUrl: String,
                                        iconUrl: Option[String],
                                        providerAuth: CloudOAuthCredentials,
-                                       serviceUris: Map[String, ServiceUri],
+                                       serviceUrls: Map[String, ServiceUrl],
                                        viewers: Map[String, Map[String, Viewer]])
 
   case class CloudProviderRegistrationResponse(instance: CloudProviderInstance, forwardUrl: String)
@@ -57,14 +69,24 @@ package object cloudproviders {
                                    iconUrl: Option[String],
                                    providerAuth: CloudOAuthCredentials,
                                    oeqAuth: CloudOAuthCredentials,
-                                   serviceUris: Map[String, ServiceUri],
+                                   serviceUrls: Map[String, ServiceUrl],
                                    viewers: Map[String, Map[String, Viewer]])
 
   case class CloudProviderDetails(id: UUID,
                                   name: String,
                                   description: Option[String],
                                   iconUrl: Option[String],
-                                  vendorId: String)
+                                  vendorId: String,
+                                  canRefresh: Boolean)
+
+  case class CloudProviderRefreshRequest(id: UUID)
+
+  object CloudProviderRefreshRequest {
+    implicit val encoder: Encoder[CloudProviderRefreshRequest] = deriveEncoder
+  }
+  object CloudProviderRegistration {
+    implicit val decoder: Decoder[CloudProviderRegistration] = deriveDecoder
+  }
 
   class CloudProviderUserState(val providerId: UUID, institution: Institution)
       extends AbstractUserState {
